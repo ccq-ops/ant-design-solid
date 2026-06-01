@@ -51,6 +51,18 @@ importers:
         specifier: latest
         version: 4.1.7(@types/node@25.9.1)(jsdom@29.1.1)(vite@8.0.14(@types/node@25.9.1))
 
+  apps/docs:
+    dependencies:
+      '@ant-design-solid/core':
+        specifier: workspace:*
+        version: link:../../packages/components
+      '@ant-design-solid/cssinjs':
+        specifier: workspace:*
+        version: link:../../packages/cssinjs
+      solid-js:
+        specifier: latest
+        version: 1.9.13
+
   packages/components:
     dependencies:
       '@ant-design-solid/cssinjs':

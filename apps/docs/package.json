@@ -1,0 +1,6 @@
+{
+  "name": "@ant-design-solid/docs", "version": "0.0.0", "private": true, "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "test": "vitest run --passWithNoTests", "typecheck": "tsc -p tsconfig.json --noEmit", "lint": "eslint ." },
+  "dependencies": { "@ant-design-solid/core": "workspace:*", "@ant-design-solid/cssinjs": "workspace:*", "solid-js": "latest" },
+  "devDependencies": {}
+}
