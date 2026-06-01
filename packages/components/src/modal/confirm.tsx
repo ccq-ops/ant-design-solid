@@ -17,7 +17,12 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   const type = () => props.config.type ?? 'confirm'
   const isConfirm = () => type() === 'confirm'
   const handleOk = async () => {
-    const result = props.config.onOk?.()
+    let result: void | Promise<void>
+    try {
+      result = props.config.onOk?.()
+    } catch {
+      return
+    }
     if (result && typeof (result as Promise<void>).then === 'function') {
       setLoading(true)
       try {

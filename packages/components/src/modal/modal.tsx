@@ -1,4 +1,4 @@
-import { Show, createRenderEffect, onCleanup, splitProps } from 'solid-js'
+import { Show, createRenderEffect, createUniqueId, onCleanup, splitProps } from 'solid-js'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -6,6 +6,13 @@ import { addDocumentKeydown, lockBodyScroll, unlockBodyScroll } from '../shared/
 import { InternalPortal } from '../shared/portal'
 import type { ModalProps } from './interface'
 import { useModalStyle } from './modal.style'
+
+const modalStack: object[] = []
+
+function removeFromStack(item: object) {
+  const index = modalStack.lastIndexOf(item)
+  if (index !== -1) modalStack.splice(index, 1)
+}
 
 export function ModalBase(props: ModalProps) {
   const [local] = splitProps(props, [
@@ -29,20 +36,26 @@ export function ModalBase(props: ModalProps) {
     'class',
     'classList',
     'style',
+    'aria-label',
+    'aria-labelledby',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-modal`
   const [, hashId] = useModalStyle(prefixCls())
+  const titleId = createUniqueId()
+  const stackItem = {}
   let locked = false
   let wasOpen = false
 
   createRenderEffect(() => {
     if (local.open && !locked) {
       lockBodyScroll()
+      modalStack.push(stackItem)
       locked = true
     }
     if (!local.open && locked) {
       unlockBodyScroll()
+      removeFromStack(stackItem)
       locked = false
     }
     if (!local.open && wasOpen) local.afterClose?.()
@@ -50,12 +63,22 @@ export function ModalBase(props: ModalProps) {
   })
 
   const cleanupKeydown = addDocumentKeydown((event) => {
-    if (event.key === 'Escape' && local.open && (local.keyboard ?? true)) local.onCancel?.()
+    if (
+      event.key === 'Escape' &&
+      local.open &&
+      (local.keyboard ?? true) &&
+      modalStack[modalStack.length - 1] === stackItem
+    ) {
+      local.onCancel?.()
+    }
   })
 
   onCleanup(() => {
     cleanupKeydown()
-    if (locked) unlockBodyScroll()
+    if (locked) {
+      unlockBodyScroll()
+      removeFromStack(stackItem)
+    }
   })
 
   const widthStyle = () => {
@@ -63,28 +86,42 @@ export function ModalBase(props: ModalProps) {
     return typeof local.width === 'number' ? `${local.width}px` : local.width
   }
   const rootStyle = () => ({ 'z-index': local.zIndex, ...local.style })
+  const titleLabelId = () => local['aria-labelledby'] ?? (local.title ? titleId : undefined)
+  const handleOk = () => {
+    try {
+      const result = local.onOk?.()
+      if (result && typeof (result as Promise<void>).catch === 'function') {
+        ;(result as Promise<void>).catch(() => undefined)
+      }
+    } catch {
+      // Keep controlled modal open and avoid surfacing handler failures through Solid's event system.
+    }
+  }
 
   return (
     <Show when={local.open}>
       <InternalPortal>
         <div class={classNames(`${prefixCls()}-root`, hashId())} style={rootStyle()}>
           <Show when={local.mask ?? true}>
-            <div
-              class={`${prefixCls()}-mask`}
-              onClick={() => {
-                if (local.maskClosable ?? true) local.onCancel?.()
-              }}
-            />
+            <div class={`${prefixCls()}-mask`} />
           </Show>
           <div
             class={classNames(`${prefixCls()}-wrap`, local.centered && `${prefixCls()}-centered`)}
             role="dialog"
             aria-modal="true"
+            aria-label={local['aria-label']}
+            aria-labelledby={titleLabelId()}
+            onClick={(event) => {
+              if (event.target === event.currentTarget && (local.maskClosable ?? true)) {
+                local.onCancel?.()
+              }
+            }}
           >
             <div
               class={classNames(prefixCls(), local.class)}
               classList={local.classList}
               style={{ width: widthStyle() }}
+              onClick={(event) => event.stopPropagation()}
             >
               <div class={`${prefixCls()}-content`}>
                 <Show when={local.closable ?? true}>
@@ -99,7 +136,9 @@ export function ModalBase(props: ModalProps) {
                 </Show>
                 <Show when={local.title}>
                   <div class={`${prefixCls()}-header`}>
-                    <div class={`${prefixCls()}-title`}>{local.title}</div>
+                    <div id={titleId} class={`${prefixCls()}-title`}>
+                      {local.title}
+                    </div>
                   </div>
                 </Show>
                 <div class={`${prefixCls()}-body`}>{local.children}</div>
@@ -110,11 +149,7 @@ export function ModalBase(props: ModalProps) {
                         <Button onClick={() => local.onCancel?.()}>
                           {local.cancelText ?? 'Cancel'}
                         </Button>
-                        <Button
-                          type="primary"
-                          loading={local.confirmLoading}
-                          onClick={() => local.onOk?.()}
-                        >
+                        <Button type="primary" loading={local.confirmLoading} onClick={handleOk}>
                           {local.okText ?? 'OK'}
                         </Button>
                       </>

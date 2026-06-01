@@ -19,8 +19,11 @@ function openConfirm(config: ModalFuncProps): ModalFuncReturn {
   let disposeRoot: (() => void) | undefined
   let setConfig!: (value: ModalFuncProps) => ModalFuncProps
   let currentConfig = config
+  let destroyed = false
 
   const destroy = () => {
+    if (destroyed) return
+    destroyed = true
     disposeRoot?.()
     disposeRoot = undefined
     container.remove()
@@ -30,6 +33,7 @@ function openConfirm(config: ModalFuncProps): ModalFuncReturn {
   const instance: ModalFuncReturn = {
     destroy,
     update: (next) => {
+      if (destroyed) return
       currentConfig = { ...currentConfig, ...next }
       setConfig(currentConfig)
     },

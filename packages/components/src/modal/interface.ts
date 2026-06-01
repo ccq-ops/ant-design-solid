@@ -21,6 +21,8 @@ export interface ModalProps {
   class?: string
   classList?: Record<string, boolean | undefined>
   style?: JSX.CSSProperties
+  'aria-label'?: string
+  'aria-labelledby'?: string
 }
 
 export type ModalFuncType = 'info' | 'success' | 'error' | 'warning' | 'confirm'

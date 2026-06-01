@@ -66,13 +66,28 @@ describe('Modal', () => {
       </Modal>
     ))
 
-    fireEvent.click(document.body.querySelector('.ads-modal-mask')!)
+    fireEvent.click(document.body.querySelector('.ads-modal-wrap')!)
     fireEvent.keyDown(document, { key: 'Escape' })
 
     expect(onCancel).not.toHaveBeenCalled()
   })
 
-  it('calls onCancel for mask click and Escape by default', () => {
+  it('cancels from wrap backdrop clicks but not dialog content clicks', () => {
+    const onCancel = vi.fn()
+    render(() => (
+      <Modal open title="Backdrop" onCancel={onCancel}>
+        Body
+      </Modal>
+    ))
+
+    fireEvent.click(document.body.querySelector('.ads-modal-content')!)
+    expect(onCancel).not.toHaveBeenCalled()
+
+    fireEvent.click(document.body.querySelector('.ads-modal-wrap')!)
+    expect(onCancel).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls onCancel for backdrop click and Escape by default', () => {
     const onCancel = vi.fn()
     render(() => (
       <Modal open title="Closable" onCancel={onCancel}>
@@ -80,10 +95,78 @@ describe('Modal', () => {
       </Modal>
     ))
 
-    fireEvent.click(document.body.querySelector('.ads-modal-mask')!)
+    fireEvent.click(document.body.querySelector('.ads-modal-wrap')!)
     fireEvent.keyDown(document, { key: 'Escape' })
 
     expect(onCancel).toHaveBeenCalledTimes(2)
+  })
+
+  it('only lets the topmost modal handle Escape', () => {
+    const onFirstCancel = vi.fn()
+    const onSecondCancel = vi.fn()
+    render(() => (
+      <>
+        <Modal open title="First" onCancel={onFirstCancel}>
+          First body
+        </Modal>
+        <Modal open title="Second" onCancel={onSecondCancel}>
+          Second body
+        </Modal>
+      </>
+    ))
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(onFirstCancel).not.toHaveBeenCalled()
+    expect(onSecondCancel).toHaveBeenCalledTimes(1)
+  })
+
+  it('labels the dialog from its title', () => {
+    render(() => (
+      <Modal open title="Accessible title">
+        Body
+      </Modal>
+    ))
+
+    const dialog = document.body.querySelector<HTMLElement>('[role="dialog"]')!
+    const labelId = dialog.getAttribute('aria-labelledby')
+
+    expect(labelId).toBeTruthy()
+    expect(document.getElementById(labelId!)).toHaveTextContent('Accessible title')
+  })
+
+  it('catches sync throws and rejected promises from base modal OK handler', async () => {
+    const onThrow = vi.fn(() => {
+      throw new Error('sync failure')
+    })
+    const onReject = vi.fn(() => Promise.reject(new Error('async failure')))
+
+    const { unmount } = render(() => (
+      <Modal open title="Throw" onOk={onThrow}>
+        Body
+      </Modal>
+    ))
+
+    expect(() => {
+      fireEvent.click(
+        document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!,
+      )
+    }).not.toThrow()
+    expect(onThrow).toHaveBeenCalledTimes(1)
+
+    unmount()
+    render(() => (
+      <Modal open title="Reject base" onOk={onReject}>
+        Body
+      </Modal>
+    ))
+
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!,
+    )
+    await Promise.resolve()
+    expect(onReject).toHaveBeenCalledTimes(1)
+    expect(document.body).toHaveTextContent('Reject base')
   })
 
   it('locks body scroll while open and unlocks when closed or unmounted', () => {
@@ -118,6 +201,10 @@ describe('Modal', () => {
 
     instance.destroy()
     expect(document.body).not.toHaveTextContent('Updated')
+
+    expect(() => instance.destroy()).not.toThrow()
+    expect(() => instance.update({ title: 'After destroy' })).not.toThrow()
+    expect(document.body).not.toHaveTextContent('After destroy')
   })
 
   it('renders info success error and warning static methods with OK only', () => {
@@ -157,6 +244,23 @@ describe('Modal', () => {
 
     resolve()
     await waitFor(() => expect(document.body).not.toHaveTextContent('Async'))
+  })
+
+  it('keeps confirm modal open when onOk throws synchronously', () => {
+    const onOk = vi.fn(() => {
+      throw new Error('sync confirm failure')
+    })
+    Modal.confirm({ title: 'Sync throw', onOk })
+
+    expect(() => {
+      fireEvent.click(
+        document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!,
+      )
+    }).not.toThrow()
+
+    expect(onOk).toHaveBeenCalledTimes(1)
+    expect(document.body).toHaveTextContent('Sync throw')
+    expect(document.body.querySelector('.ads-btn-loading')).toBeFalsy()
   })
 
   it('keeps confirm modal open and clears loading when async onOk rejects', async () => {
