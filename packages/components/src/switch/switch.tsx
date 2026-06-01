@@ -2,7 +2,7 @@ import { createEffect, createSignal, on, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { useSwitchStyle } from './switch.style'
 import type { SwitchProps } from './interface'
 

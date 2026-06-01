@@ -1,5 +1,5 @@
-import { RadioRoot } from './Radio'
-import { RadioGroup } from './RadioGroup'
+import { RadioRoot } from './radio'
+import { RadioGroup } from './radio-group'
 
 export const Radio = Object.assign(RadioRoot, { Group: RadioGroup })
 export { RadioGroup, RadioRoot }

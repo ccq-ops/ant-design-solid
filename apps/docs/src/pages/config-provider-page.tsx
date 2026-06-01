@@ -1,5 +1,5 @@
 import { Button, ConfigProvider } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/DemoBlock'
+import { DemoBlock } from '../site/demo-block'
 export function ConfigProviderPage() {
   return (
     <>

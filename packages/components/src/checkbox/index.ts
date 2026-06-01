@@ -1,5 +1,5 @@
-import { CheckboxRoot } from './Checkbox'
-import { CheckboxGroup } from './CheckboxGroup'
+import { CheckboxRoot } from './checkbox'
+import { CheckboxGroup } from './checkbox-group'
 
 export const Checkbox = Object.assign(CheckboxRoot, { Group: CheckboxGroup })
 export { CheckboxRoot, CheckboxGroup }

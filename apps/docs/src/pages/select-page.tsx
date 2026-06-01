@@ -1,5 +1,5 @@
 import { Form, Select, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/DemoBlock'
+import { DemoBlock } from '../site/demo-block'
 
 const options = [
   { label: 'Apple', value: 'apple' },

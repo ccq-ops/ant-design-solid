@@ -1,6 +1,6 @@
 import { splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { useGridStyle } from './grid.style'
 import type { Gutter, RowProps } from './interface'
 function normalizeGutter(gutter: Gutter | undefined): [number, number] {

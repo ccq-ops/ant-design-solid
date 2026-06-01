@@ -1,7 +1,7 @@
 import { children, For, splitProps } from 'solid-js'
 import { getComponentToken, type GlobalToken } from '@ant-design-solid/theme'
 import { useConfig, useToken } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { useSpaceStyle } from './space.style'
 import type { SpaceProps, SpaceSize } from './interface'
 function resolveGap(size: SpaceSize | undefined, token: GlobalToken): [number, number] {

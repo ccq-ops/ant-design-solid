@@ -1,6 +1,6 @@
 import { createEffect, createSignal, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { callHandler } from '../shared/events'
 import { useRadioStyle } from './radio.style'
 import type { RadioProps } from './interface'

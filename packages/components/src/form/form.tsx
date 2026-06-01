@@ -1,6 +1,6 @@
 import { createEffect, createMemo, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { FormContext } from './context'
 import { useForm, setFormCallbacks, setFormInitialValues } from './store'
 import { useFormStyle } from './form.style'

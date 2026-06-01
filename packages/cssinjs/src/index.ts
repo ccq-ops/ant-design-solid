@@ -1,6 +1,6 @@
 export { createCache, extractStyle } from './cache'
 export { hashString, stableStringify } from './hash'
 export { serializeCSS } from './serializer'
-export { StyleProvider, useStyleContext } from './StyleProvider'
-export { useStyleRegister } from './useStyleRegister'
+export { StyleProvider, useStyleContext } from './style-provider'
+export { useStyleRegister } from './use-style-register'
 export type * from './types'

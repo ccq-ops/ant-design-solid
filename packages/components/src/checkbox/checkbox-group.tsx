@@ -2,19 +2,22 @@ import { For, createEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { normalizeOptions, type OptionValue } from '../shared/options'
-import { RadioRoot } from './Radio'
-import { useRadioStyle } from './radio.style'
-import type { RadioGroupProps } from './interface'
+import { CheckboxRoot } from './checkbox'
+import { useCheckboxStyle } from './checkbox.style'
+import type { CheckboxGroupProps } from './interface'
 
-export function RadioGroup(props: RadioGroupProps) {
+function includesValue(values: OptionValue[], value: OptionValue): boolean {
+  return values.some((item) => item === value)
+}
+
+export function CheckboxGroup(props: CheckboxGroupProps) {
   const [local, rest] = splitProps(props, [
     'value',
     'defaultValue',
     'options',
     'disabled',
-    'optionType',
     'prefixCls',
     'children',
     'class',
@@ -24,27 +27,30 @@ export function RadioGroup(props: RadioGroupProps) {
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
-  const radioPrefixCls = () => local.prefixCls ?? `${config.prefixCls()}-radio`
-  const groupPrefixCls = () => `${radioPrefixCls()}-group`
-  const [, hashId] = useRadioStyle(radioPrefixCls())
-  const [innerValue, setInnerValue] = createSignal<OptionValue | undefined>(local.defaultValue)
+  const checkboxPrefixCls = () => local.prefixCls ?? `${config.prefixCls()}-checkbox`
+  const groupPrefixCls = () => `${checkboxPrefixCls()}-group`
+  const [, hashId] = useCheckboxStyle(checkboxPrefixCls())
+  const [innerValue, setInnerValue] = createSignal<OptionValue[]>(local.defaultValue ?? [])
   const disabled = () => Boolean(local.disabled)
-  const isButton = () => local.optionType === 'button'
 
   createEffect(() => {
     const formValue = formItem?.value()
     if (formItem && formItem.trigger() !== 'onChange')
-      setInnerValue(formValue as OptionValue | undefined)
+      setInnerValue(Array.isArray(formValue) ? (formValue as OptionValue[]) : [])
   })
 
   const value = () => {
     const formValue = formItem?.value()
-    if (formItem && formItem.trigger() === 'onChange') return formValue as OptionValue | undefined
+    if (formItem && formItem.trigger() === 'onChange')
+      return Array.isArray(formValue) ? (formValue as OptionValue[]) : []
     if (local.value !== undefined) return local.value
     return innerValue()
   }
 
-  function updateValue(nextValue: OptionValue): void {
+  function updateValue(optionValue: OptionValue, nextChecked: boolean): void {
+    const current = value()
+    const withoutValue = current.filter((item) => item !== optionValue)
+    const nextValue = nextChecked ? [...withoutValue, optionValue] : withoutValue
     if (local.value === undefined && formItem?.trigger() !== 'onChange') setInnerValue(nextValue)
     local.onChange?.(nextValue)
     if (formItem?.trigger() === 'onChange') formItem.setFieldValueFromControl(nextValue)
@@ -65,26 +71,20 @@ export function RadioGroup(props: RadioGroupProps) {
   return (
     <div
       {...rest}
-      class={classNames(
-        groupPrefixCls(),
-        isButton() && `${groupPrefixCls()}-button`,
-        hashId(),
-        local.class,
-      )}
+      class={classNames(groupPrefixCls(), hashId(), local.class)}
       style={local.style}
       onFocusOut={handleBlur}
     >
       <For each={normalizeOptions(local.options)}>
         {(option) => (
-          <RadioRoot
-            checked={value() === option.value}
+          <CheckboxRoot
+            checked={includesValue(value(), option.value)}
             disabled={disabled() || Boolean(option.disabled)}
-            value={option.value}
-            prefixCls={isButton() ? `${radioPrefixCls()}-button-wrapper` : radioPrefixCls()}
-            onChange={() => updateValue(option.value)}
+            prefixCls={checkboxPrefixCls()}
+            onChange={(event) => updateValue(option.value, event.currentTarget.checked)}
           >
             {option.label}
-          </RadioRoot>
+          </CheckboxRoot>
         )}
       </For>
       {local.children}

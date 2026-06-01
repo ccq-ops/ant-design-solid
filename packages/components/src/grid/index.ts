@@ -1,3 +1,3 @@
-export { Col } from './Col'
-export { Row } from './Row'
+export { Col } from './col'
+export { Row } from './row'
 export type { ColProps, Gutter, RowProps } from './interface'

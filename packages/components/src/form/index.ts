@@ -1,5 +1,5 @@
-import { FormRoot } from './Form'
-import { FormItem } from './FormItem'
+import { FormRoot } from './form'
+import { FormItem } from './form-item'
 
 export const Form = Object.assign(FormRoot, { Item: FormItem })
 export { FormItem }

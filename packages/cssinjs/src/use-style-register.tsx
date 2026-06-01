@@ -1,7 +1,7 @@
 import { createMemo, createRenderEffect, type Accessor } from 'solid-js'
 import { hashString, stableStringify } from './hash'
 import { serializeCSS } from './serializer'
-import { useStyleContext } from './StyleProvider'
+import { useStyleContext } from './style-provider'
 import type { StyleObject, StyleRegisterInfo, WrapSSR } from './types'
 
 function injectStyle(styleId: string, css: string): void {

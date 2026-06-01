@@ -1,7 +1,7 @@
 import { splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { useTypographyStyle } from './typography.style'
 import type { TitleProps, TypographyBaseProps } from './interface'
 function useTypographyClasses() {

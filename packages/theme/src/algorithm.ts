@@ -1,5 +1,5 @@
 import { getPrimaryActive, getPrimaryHover } from './color'
-import { defaultSeedToken } from './defaultSeedToken'
+import { defaultSeedToken } from './default-seed-token'
 import type { AliasToken, SeedToken, ThemeConfig } from './types'
 
 export function defaultAlgorithm(seed: SeedToken): AliasToken {

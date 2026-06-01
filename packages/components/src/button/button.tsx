@@ -1,7 +1,7 @@
 import { Show, splitProps } from 'solid-js'
 import { LoadingIcon } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { useButtonStyle } from './button.style'
 import type { JSX } from 'solid-js'
 import type { ButtonProps } from './interface'

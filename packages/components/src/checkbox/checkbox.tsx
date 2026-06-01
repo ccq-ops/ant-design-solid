@@ -1,7 +1,7 @@
 import { createEffect, createSignal, on, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { callHandler } from '../shared/events'
 import { useCheckboxStyle } from './checkbox.style'
 import type { JSX } from 'solid-js'

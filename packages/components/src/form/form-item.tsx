@@ -1,6 +1,6 @@
 import { createEffect, createMemo, onCleanup, Show } from 'solid-js'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/classNames'
+import { classNames } from '../shared/class-names'
 import { FormItemContext, useFormContext } from './context'
 import type { FieldValue, FormItemControl, FormItemProps } from './interface'
 import type { JSX } from 'solid-js'
