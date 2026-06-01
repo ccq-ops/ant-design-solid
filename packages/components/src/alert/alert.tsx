@@ -53,7 +53,9 @@ export function Alert(props: AlertProps) {
         style={local.style}
       >
         <Show when={local.showIcon}>
-          <span class={`${prefixCls()}-icon`}>{iconMap[type()]}</span>
+          <span class={`${prefixCls()}-icon`} aria-hidden="true">
+            {iconMap[type()]}
+          </span>
         </Show>
         <div class={`${prefixCls()}-content`}>
           <div class={`${prefixCls()}-message`}>{local.message}</div>
@@ -65,7 +67,12 @@ export function Alert(props: AlertProps) {
           <div class={`${prefixCls()}-action`}>{local.action}</div>
         </Show>
         <Show when={local.closable}>
-          <button type="button" class={`${prefixCls()}-close`} aria-label="close alert" onClick={close}>
+          <button
+            type="button"
+            class={`${prefixCls()}-close`}
+            aria-label="close alert"
+            onClick={close}
+          >
             ×
           </button>
         </Show>
