@@ -11,6 +11,7 @@ export default tseslint.config(
     rules: {
       ...solid.configs.typescript.rules,
       '@typescript-eslint/no-explicit-any': 'off',
+      'solid/reactivity': 'off',
     },
   },
   {

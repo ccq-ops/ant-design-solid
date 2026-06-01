@@ -6,7 +6,9 @@ const defaultCache = createCache()
 const StyleContext = createContext<StyleContextValue>({ cache: defaultCache, hashPriority: () => 'low' as const })
 
 export function StyleProvider(props: StyleProviderProps) {
-  const value: StyleContextValue = { cache: props.cache ?? createCache(), hashPriority: createMemo(() => props.hashPriority ?? 'low') }
+  const cache = props.cache ?? createCache()
+  const hashPriority = createMemo(() => props.hashPriority ?? 'low')
+  const value: StyleContextValue = { cache, hashPriority }
   return <StyleContext.Provider value={value}>{props.children}</StyleContext.Provider>
 }
 export function useStyleContext(): StyleContextValue { return useContext(StyleContext) ?? { cache: defaultCache, hashPriority: () => 'low' as const } }
