@@ -54,4 +54,27 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Switch', token).handleSize).toBe(16)
     expect(getComponentToken('Switch', token).trackMinWidth).toBe(44)
   })
+
+  it('derives feedback component token defaults and applies overrides', () => {
+    const token = mergeTheme({
+      components: {
+        Alert: { iconSize: 18 },
+        Message: { noticeBorderRadius: 10 },
+        Notification: { width: 420 },
+        Modal: { titleFontSize: 18 },
+        Popconfirm: { width: 240 },
+      },
+    })
+
+    expect(getComponentToken('Alert', token).iconSize).toBe(18)
+    expect(getComponentToken('Alert', token).borderRadius).toBe(token.borderRadius)
+    expect(getComponentToken('Message', token).noticeBorderRadius).toBe(10)
+    expect(getComponentToken('Message', token).contentBg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Notification', token).width).toBe(420)
+    expect(getComponentToken('Notification', token).bg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Modal', token).titleFontSize).toBe(18)
+    expect(getComponentToken('Modal', token).maskBg).toBe('rgba(0, 0, 0, 0.45)')
+    expect(getComponentToken('Popconfirm', token).width).toBe(240)
+    expect(getComponentToken('Popconfirm', token).bg).toBe(token.colorBgElevated)
+  })
 })
