@@ -12,3 +12,5 @@ export * from './select'
 
 export * from './alert'
 export * from './message'
+
+export * from './notification'
