@@ -66,12 +66,50 @@ export interface SpaceComponentToken { gapSmall: number; gapMiddle: number; gapL
 export interface TypographyComponentToken { titleMarginBottom: number; titleFontWeight: number; paragraphMarginBottom: number }
 export interface GridComponentToken { columns: number }
 
+export interface FormComponentToken {
+  labelColor: string
+  labelRequiredMarkColor: string
+  itemMarginBottom: number
+  verticalLabelPadding: number
+  explainColor: string
+}
+
+export interface SelectComponentToken {
+  optionHeight: number
+  optionPadding: number
+  optionSelectedBg: string
+  optionActiveBg: string
+  clearIconColor: string
+}
+
+export interface CheckboxComponentToken {
+  size: number
+  borderRadius: number
+  checkColor: string
+}
+
+export interface RadioComponentToken {
+  size: number
+  dotSize: number
+}
+
+export interface SwitchComponentToken {
+  trackHeight: number
+  trackMinWidth: number
+  handleSize: number
+}
+
 export interface ComponentTokenMap {
   Button: ButtonComponentToken
   Input: InputComponentToken
   Space: SpaceComponentToken
   Typography: TypographyComponentToken
   Grid: GridComponentToken
+  Form: FormComponentToken
+  Select: SelectComponentToken
+  Checkbox: CheckboxComponentToken
+  Radio: RadioComponentToken
+  Switch: SwitchComponentToken
 }
 
 export interface ThemeConfig {
