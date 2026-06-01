@@ -13,13 +13,25 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "types": [
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@ant-design-solid/theme": ["packages/theme/src"],
-      "@ant-design-solid/cssinjs": ["packages/cssinjs/src"],
-      "@ant-design-solid/icons": ["packages/icons/src"],
-      "@ant-design-solid/core": ["packages/components/src"]
-    }
+      "@ant-design-solid/theme": [
+        "packages/theme/src"
+      ],
+      "@ant-design-solid/cssinjs": [
+        "packages/cssinjs/src"
+      ],
+      "@ant-design-solid/icons": [
+        "packages/icons/src"
+      ],
+      "@ant-design-solid/core": [
+        "packages/components/src"
+      ]
+    },
+    "ignoreDeprecations": "6.0"
   }
 }
