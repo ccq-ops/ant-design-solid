@@ -70,6 +70,47 @@ describe('Popconfirm', () => {
     expect(open()).toBe(false)
   })
 
+  it('opens controlled popup when child click handler also opens it', async () => {
+    const [open, setOpen] = createSignal(false)
+    const onConfirm = vi.fn()
+    const onCancel = vi.fn()
+    const result = render(() => (
+      <Popconfirm
+        open={open()}
+        onOpenChange={setOpen}
+        title="Controlled trigger"
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      >
+        <Button onClick={() => setOpen(true)}>Trigger</Button>
+      </Popconfirm>
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Trigger' }))
+    expect(open()).toBe(true)
+    expect(document.body).toHaveTextContent('Controlled trigger')
+
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ads-popconfirm-buttons .ads-btn-primary')!,
+    )
+    await waitFor(() => expect(onConfirm).toHaveBeenCalledTimes(1))
+    expect(open()).toBe(false)
+    expect(document.body).not.toHaveTextContent('Controlled trigger')
+
+    fireEvent.click(result.getByRole('button', { name: 'Trigger' }))
+    expect(open()).toBe(true)
+    expect(document.body).toHaveTextContent('Controlled trigger')
+
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.ads-popconfirm-buttons .ads-btn:not(.ads-btn-primary)',
+      )!,
+    )
+    expect(open()).toBe(false)
+    expect(document.body).not.toHaveTextContent('Controlled trigger')
+    expect(onCancel).toHaveBeenCalledTimes(1)
+  })
+
   it('does not let action clicks bubble back to controlled trigger handlers', async () => {
     const [open, setOpen] = createSignal(false)
     const onConfirm = vi.fn()

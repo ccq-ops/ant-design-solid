@@ -69,7 +69,7 @@ export function Popconfirm(props: PopconfirmProps) {
         onClick={(event) => {
           if (props.disabled) return
           setPosition(getPosition(event.currentTarget))
-          setOpen(!mergedOpen())
+          setOpen(true)
         }}
       >
         {props.children}
