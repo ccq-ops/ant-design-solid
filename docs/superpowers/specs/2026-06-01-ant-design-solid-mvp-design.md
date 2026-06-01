@@ -437,6 +437,12 @@ All docs examples must import from the workspace component package rather than l
 
 ## Scripts and Developer Experience
 
+Linting and formatting use the Oxc toolchain directly:
+
+- `oxlint` for JavaScript/TypeScript/Solid lint checks.
+- `oxfmt` for formatting.
+- No ESLint or Prettier configuration should be added in MVP.
+
 Root scripts:
 
 ```json
@@ -447,7 +453,9 @@ Root scripts:
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
-    "format": "prettier --write ."
+    "lint:fix": "pnpm -r lint:fix",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check ."
   }
 }
 ```
@@ -527,7 +535,7 @@ Mitigation: Start with a custom Vite + SolidJS docs app and hand-written pages. 
 
 Risk: Vite 8 and pnpm 11 are new enough that ecosystem plugins may still be catching up.
 
-Mitigation: Keep Vite config simple, minimize plugin surface, and use official Solid/Vite integration paths where possible.
+Mitigation: Keep Vite config simple, minimize plugin surface, use official Solid/Vite integration paths where possible, and keep Oxc tooling configuration minimal.
 
 ## Acceptance Criteria
 
@@ -539,4 +547,4 @@ The MVP is accepted when:
 4. Components use token-driven CSS-in-JS styles.
 5. Theme overrides through `ConfigProvider` affect rendered component styles.
 6. The docs site demonstrates every MVP component.
-7. Build, test, typecheck, and lint scripts exist and are expected to pass.
+7. Build, test, typecheck, and oxlint, oxfmt, build, test, and typecheck scripts exist and are expected to pass.

@@ -6,7 +6,7 @@
 
 **Architecture:** The repository is a pnpm workspace with separate packages for theme tokens, CSS-in-JS, components, icons, and docs. Components consume token data from `@ant-design-solid/theme` and register styles through `@ant-design-solid/cssinjs`, while the docs app dogfoods `@ant-design-solid/core`.
 
-**Tech Stack:** TypeScript, SolidJS, Vite 8, pnpm 11, Vitest, jsdom, @solidjs/testing-library, ESLint flat config, Prettier.
+**Tech Stack:** TypeScript, SolidJS, Vite 8, pnpm 11, Vitest, jsdom, @solidjs/testing-library, oxlint, oxfmt.
 
 ---
 
@@ -19,8 +19,8 @@
 - Create `.npmrc`: strict peer dependency and workspace settings.
 - Create `.nvmrc`: Node 22 marker.
 - Create `tsconfig.base.json`: shared strict TS settings and path aliases.
-- Create `eslint.config.js`: flat ESLint config for TS/Solid files.
-- Create `prettier.config.js`: shared formatting rules.
+- Create `.oxlintrc.json`: minimal oxlint config.
+- Create `.oxfmtrc.json`: shared oxfmt formatting rules.
 - Create `vitest.config.ts`: shared test environment and coverage defaults.
 - Modify `.gitignore`: keep generated and local files ignored.
 
@@ -88,8 +88,8 @@
 - Create: `.npmrc`
 - Create: `.nvmrc`
 - Create: `tsconfig.base.json`
-- Create: `eslint.config.js`
-- Create: `prettier.config.js`
+- Create: `.oxlintrc.json`
+- Create: `.oxfmtrc.json`
 - Create: `vitest.config.ts`
 - Modify: `.gitignore`
 
@@ -114,20 +114,19 @@ Create `package.json`:
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
-    "format": "prettier --write ."
+    "lint:fix": "pnpm -r lint:fix",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check ."
   },
   "devDependencies": {
-    "@eslint/js": "latest",
     "@solidjs/testing-library": "latest",
     "@testing-library/jest-dom": "latest",
     "@types/node": "latest",
-    "eslint": "latest",
-    "eslint-plugin-solid": "latest",
     "jsdom": "latest",
-    "prettier": "latest",
+    "oxfmt": "latest",
+    "oxlint": "latest",
     "solid-js": "latest",
     "typescript": "latest",
-    "typescript-eslint": "latest",
     "vite": "^8.0.0",
     "vite-plugin-solid": "latest",
     "vitest": "latest"
@@ -188,38 +187,24 @@ Create `tsconfig.base.json`:
 }
 ```
 
-Create `eslint.config.js`:
+Create `.oxlintrc.json`:
 
-```js
-import js from '@eslint/js'
-import solid from 'eslint-plugin-solid'
-import tseslint from 'typescript-eslint'
-
-export default tseslint.config(
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
-    files: ['**/*.{ts,tsx}'],
-    plugins: { solid },
-    rules: {
-      ...solid.configs.typescript.rules,
-      '@typescript-eslint/no-explicit-any': 'off'
-    }
-  },
-  {
-    ignores: ['node_modules', 'dist', 'coverage', '.superpowers']
-  }
-)
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["dist", "coverage", "node_modules", ".superpowers"]
+}
 ```
 
-Create `prettier.config.js`:
+Create `.oxfmtrc.json`:
 
-```js
-export default {
-  semi: false,
-  singleQuote: true,
-  trailingComma: 'all',
-  printWidth: 100
+```json
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100
 }
 ```
 
@@ -269,7 +254,7 @@ Expected: prints `root json ok`.
 - [ ] **Step 3: Commit workspace foundation**
 
 ```bash
-git add package.json pnpm-workspace.yaml .npmrc .nvmrc tsconfig.base.json eslint.config.js prettier.config.js vitest.config.ts .gitignore
+git add package.json pnpm-workspace.yaml .npmrc .nvmrc tsconfig.base.json .oxlintrc.json .oxfmtrc.json vitest.config.ts .gitignore
 git commit -m "chore: scaffold workspace foundation"
 ```
 
@@ -311,7 +296,8 @@ Create `packages/theme/package.json`:
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src"
   },
   "devDependencies": {}
 }
@@ -723,7 +709,8 @@ Create `packages/cssinjs/package.json`:
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src"
   }
 }
 ```
@@ -1157,7 +1144,8 @@ Create `packages/icons/package.json`:
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src"
   }
 }
 ```
@@ -1293,7 +1281,8 @@ Create `packages/components/package.json`:
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src"
   }
 }
 ```
@@ -2751,7 +2740,8 @@ Create `apps/docs/package.json`:
     "build": "vite build",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint ."
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src"
   },
   "dependencies": {
     "@ant-design-solid/core": "workspace:*",
@@ -3176,6 +3166,7 @@ Ant Design-inspired components for SolidJS.
 - pnpm 11
 - TypeScript
 - Token-driven CSS-in-JS
+- oxlint + oxfmt
 
 ## Development
 
@@ -3245,7 +3236,7 @@ Run:
 pnpm lint
 ```
 
-Expected: no lint errors. If lint finds formatting-only issues, run `pnpm format`, inspect changes, then rerun lint.
+Expected: no lint errors. If formatting check fails, run `pnpm format`, inspect changes, then rerun `pnpm format:check` and `pnpm lint`.
 
 - [ ] **Step 7: Commit final verification changes**
 
