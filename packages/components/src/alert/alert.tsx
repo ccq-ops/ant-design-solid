@@ -27,7 +27,7 @@ export function Alert(props: AlertProps) {
     'style',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls() === 'ads' ? 'ant' : config.prefixCls()}-alert`
+  const prefixCls = () => `${config.prefixCls()}-alert`
   const [, hashId] = useAlertStyle(prefixCls())
   const type = () => local.type ?? 'info'
 

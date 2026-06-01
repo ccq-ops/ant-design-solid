@@ -8,14 +8,14 @@ describe('Alert', () => {
     const result = render(() => <Alert type="success" message="Saved" description="Everything is safe" />)
     expect(result.getByText('Saved')).toBeTruthy()
     expect(result.getByText('Everything is safe')).toBeTruthy()
-    expect(result.container.querySelector('.ant-alert-success')).toBeTruthy()
-    expect(result.container.querySelector('.ant-alert-with-description')).toBeTruthy()
+    expect(result.container.querySelector('.ads-alert-success')).toBeTruthy()
+    expect(result.container.querySelector('.ads-alert-with-description')).toBeTruthy()
   })
 
   it('renders action and icon when requested', () => {
     const result = render(() => <Alert showIcon message="Warning" action={<button>Retry</button>} />)
     expect(result.getByText('Retry')).toBeTruthy()
-    expect(result.container.querySelector('.ant-alert-icon')).toBeTruthy()
+    expect(result.container.querySelector('.ads-alert-icon')).toBeTruthy()
   })
 
   it('closes and calls close callbacks', () => {
