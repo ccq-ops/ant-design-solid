@@ -13,7 +13,20 @@ describe('Button', () => {
   })
   it('supports size, danger, block, htmlType, disabled and loading states', () => {
     const onClick = vi.fn()
-    const result = render(() => <Button type="default" size="large" danger block loading disabled htmlType="submit" onClick={onClick}>Save</Button>)
+    const result = render(() => (
+      <Button
+        type="default"
+        size="large"
+        danger
+        block
+        loading
+        disabled
+        htmlType="submit"
+        onClick={onClick}
+      >
+        Save
+      </Button>
+    ))
     const button = result.getByRole('button') as HTMLButtonElement
     expect(button.type).toBe('submit')
     expect(button.disabled).toBe(true)
@@ -25,7 +38,11 @@ describe('Button', () => {
     expect(onClick).not.toHaveBeenCalled()
   })
   it('uses custom prefix from ConfigProvider', () => {
-    const result = render(() => <ConfigProvider prefixCls="custom"><Button>Button</Button></ConfigProvider>)
+    const result = render(() => (
+      <ConfigProvider prefixCls="custom">
+        <Button>Button</Button>
+      </ConfigProvider>
+    ))
     expect(result.getByRole('button').className).toContain('custom-btn')
   })
 })

@@ -10,7 +10,11 @@ describe('Checkbox', () => {
   it('supports controlled checked state', () => {
     const onChange = vi.fn()
     const [checked, setChecked] = createSignal(true)
-    const result = render(() => <Checkbox checked={checked()} onChange={onChange}>Agree</Checkbox>)
+    const result = render(() => (
+      <Checkbox checked={checked()} onChange={onChange}>
+        Agree
+      </Checkbox>
+    ))
     const input = result.getByRole('checkbox', { name: 'Agree' }) as HTMLInputElement
 
     expect(input.checked).toBe(true)
@@ -24,7 +28,11 @@ describe('Checkbox', () => {
 
   it('restores controlled checked state when parent does not update', () => {
     const onChange = vi.fn()
-    const result = render(() => <Checkbox checked={false} onChange={onChange}>Controlled</Checkbox>)
+    const result = render(() => (
+      <Checkbox checked={false} onChange={onChange}>
+        Controlled
+      </Checkbox>
+    ))
     const input = result.getByRole('checkbox', { name: 'Controlled' }) as HTMLInputElement
 
     fireEvent.click(input)
@@ -36,7 +44,11 @@ describe('Checkbox', () => {
 
   it('toggles from defaultChecked when uncontrolled', () => {
     const onChange = vi.fn()
-    const result = render(() => <Checkbox defaultChecked onChange={onChange}>Toggle</Checkbox>)
+    const result = render(() => (
+      <Checkbox defaultChecked onChange={onChange}>
+        Toggle
+      </Checkbox>
+    ))
     const input = result.getByRole('checkbox', { name: 'Toggle' }) as HTMLInputElement
 
     expect(input.checked).toBe(true)
@@ -49,7 +61,11 @@ describe('Checkbox', () => {
 
   it('does not update or fire onChange when disabled', () => {
     const onChange = vi.fn()
-    const result = render(() => <Checkbox defaultChecked disabled onChange={onChange}>Disabled</Checkbox>)
+    const result = render(() => (
+      <Checkbox defaultChecked disabled onChange={onChange}>
+        Disabled
+      </Checkbox>
+    ))
     const input = result.getByRole('checkbox', { name: 'Disabled' }) as HTMLInputElement
 
     expect(input.disabled).toBe(true)
@@ -87,7 +103,6 @@ describe('Checkbox', () => {
 
     expect(form.getFieldValue('agree')).toBe(true)
   })
-
 
   it('clears pending onBlur checked DOM when resetFields runs before blur', () => {
     const [form] = useForm()
@@ -148,7 +163,16 @@ describe('Checkbox', () => {
 describe('Checkbox.Group', () => {
   it('updates array values using options', () => {
     const onChange = vi.fn()
-    const result = render(() => <Checkbox.Group defaultValue={['a']} options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} onChange={onChange} />)
+    const result = render(() => (
+      <Checkbox.Group
+        defaultValue={['a']}
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+        onChange={onChange}
+      />
+    ))
     const a = result.getByRole('checkbox', { name: 'A' }) as HTMLInputElement
     const b = result.getByRole('checkbox', { name: 'B' }) as HTMLInputElement
 
@@ -168,7 +192,16 @@ describe('Checkbox.Group', () => {
 
   it('restores controlled option checked state when parent does not update', () => {
     const onChange = vi.fn()
-    const result = render(() => <Checkbox.Group value={['a']} options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} onChange={onChange} />)
+    const result = render(() => (
+      <Checkbox.Group
+        value={['a']}
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+        onChange={onChange}
+      />
+    ))
     const a = result.getByRole('checkbox', { name: 'A' }) as HTMLInputElement
     const b = result.getByRole('checkbox', { name: 'B' }) as HTMLInputElement
 
@@ -179,10 +212,19 @@ describe('Checkbox.Group', () => {
     expect(b.checked).toBe(false)
   })
 
-
   it('does not update group state or call onChange for group-level disabled options', async () => {
     const onChange = vi.fn()
-    const result = render(() => <Checkbox.Group disabled defaultValue={['a']} options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} onChange={onChange} />)
+    const result = render(() => (
+      <Checkbox.Group
+        disabled
+        defaultValue={['a']}
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+        onChange={onChange}
+      />
+    ))
     const a = result.getByRole('checkbox', { name: 'A' }) as HTMLInputElement
     const b = result.getByRole('checkbox', { name: 'B' }) as HTMLInputElement
 
@@ -205,7 +247,13 @@ describe('Checkbox.Group', () => {
     const result = render(() => (
       <Form form={form} initialValues={{ choices: ['a'] }}>
         <Form.Item name="choices">
-          <Checkbox.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b', disabled: true }]} onChange={onChange} />
+          <Checkbox.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b', disabled: true },
+            ]}
+            onChange={onChange}
+          />
         </Form.Item>
       </Form>
     ))
@@ -225,7 +273,12 @@ describe('Checkbox.Group', () => {
     const result = render(() => (
       <Form form={form} initialValues={{ choices: ['a'] }}>
         <Form.Item name="choices" trigger="onBlur">
-          <Checkbox.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} />
+          <Checkbox.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+          />
         </Form.Item>
       </Form>
     ))
@@ -245,13 +298,17 @@ describe('Checkbox.Group', () => {
     expect(form.getFieldValue('choices')).toEqual(['a', 'b'])
   })
 
-
   it('clears Form.Item group display when resetFields resets to undefined', () => {
     const [form] = useForm()
     const result = render(() => (
       <Form form={form}>
         <Form.Item name="choices">
-          <Checkbox.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} />
+          <Checkbox.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+          />
         </Form.Item>
       </Form>
     ))

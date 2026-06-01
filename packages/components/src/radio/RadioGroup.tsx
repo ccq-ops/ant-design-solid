@@ -9,7 +9,19 @@ import { useRadioStyle } from './radio.style'
 import type { RadioGroupProps } from './interface'
 
 export function RadioGroup(props: RadioGroupProps) {
-  const [local, rest] = splitProps(props, ['value', 'defaultValue', 'options', 'disabled', 'optionType', 'prefixCls', 'children', 'class', 'style', 'onChange', 'onBlur'])
+  const [local, rest] = splitProps(props, [
+    'value',
+    'defaultValue',
+    'options',
+    'disabled',
+    'optionType',
+    'prefixCls',
+    'children',
+    'class',
+    'style',
+    'onChange',
+    'onBlur',
+  ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const radioPrefixCls = () => local.prefixCls ?? `${config.prefixCls()}-radio`
@@ -21,7 +33,8 @@ export function RadioGroup(props: RadioGroupProps) {
 
   createEffect(() => {
     const formValue = formItem?.value()
-    if (formItem && formItem.trigger() !== 'onChange') setInnerValue(formValue as OptionValue | undefined)
+    if (formItem && formItem.trigger() !== 'onChange')
+      setInnerValue(formValue as OptionValue | undefined)
   })
 
   const value = () => {
@@ -37,14 +50,30 @@ export function RadioGroup(props: RadioGroupProps) {
     if (formItem?.trigger() === 'onChange') formItem.setFieldValueFromControl(nextValue)
   }
 
-  function handleBlur(event: FocusEvent & { currentTarget: HTMLDivElement; target: Element }): void {
+  function handleBlur(
+    event: FocusEvent & { currentTarget: HTMLDivElement; target: Element },
+  ): void {
     ;(local.onBlur as JSX.EventHandler<HTMLDivElement, FocusEvent> | undefined)?.(event)
     const nextFocused = event.relatedTarget
-    if (formItem?.trigger() === 'onBlur' && !(nextFocused instanceof Node && event.currentTarget.contains(nextFocused))) formItem.setFieldValueFromControl(value())
+    if (
+      formItem?.trigger() === 'onBlur' &&
+      !(nextFocused instanceof Node && event.currentTarget.contains(nextFocused))
+    )
+      formItem.setFieldValueFromControl(value())
   }
 
   return (
-    <div {...rest} class={classNames(groupPrefixCls(), isButton() && `${groupPrefixCls()}-button`, hashId(), local.class)} style={local.style} onFocusOut={handleBlur}>
+    <div
+      {...rest}
+      class={classNames(
+        groupPrefixCls(),
+        isButton() && `${groupPrefixCls()}-button`,
+        hashId(),
+        local.class,
+      )}
+      style={local.style}
+      onFocusOut={handleBlur}
+    >
       <For each={normalizeOptions(local.options)}>
         {(option) => (
           <RadioRoot

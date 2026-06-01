@@ -83,6 +83,7 @@
 ### Task 1: Workspace foundation
 
 **Files:**
+
 - Create: `package.json`
 - Create: `pnpm-workspace.yaml`
 - Create: `.npmrc`
@@ -138,8 +139,8 @@ Create `pnpm-workspace.yaml`:
 
 ```yaml
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 ```
 
 Create `.npmrc`:
@@ -222,9 +223,9 @@ export default defineConfig({
     setupFiles: [],
     css: false,
     coverage: {
-      reporter: ['text', 'html']
-    }
-  }
+      reporter: ['text', 'html'],
+    },
+  },
 })
 ```
 
@@ -261,6 +262,7 @@ git commit -m "chore: scaffold workspace foundation"
 ### Task 2: Theme package
 
 **Files:**
+
 - Create: `packages/theme/package.json`
 - Create: `packages/theme/tsconfig.json`
 - Create: `packages/theme/vite.config.ts`
@@ -329,12 +331,12 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs')
+      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
-      external: []
-    }
-  }
+      external: [],
+    },
+  },
 })
 ```
 
@@ -349,7 +351,7 @@ import {
   defaultSeedToken,
   getComponentToken,
   mergeTheme,
-  type ThemeConfig
+  type ThemeConfig,
 } from '../index'
 
 describe('@ant-design-solid/theme', () => {
@@ -367,8 +369,8 @@ describe('@ant-design-solid/theme', () => {
     const config: ThemeConfig = {
       token: { colorPrimary: '#722ed1', borderRadius: 8 },
       components: {
-        Button: { borderRadius: 10 }
-      }
+        Button: { borderRadius: 10 },
+      },
     }
 
     const merged = mergeTheme(config)
@@ -517,7 +519,7 @@ export const defaultSeedToken: SeedToken = {
   motionDurationMid: '0.2s',
   motionEaseInOut: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
   boxShadow:
-    '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)'
+    '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
 }
 ```
 
@@ -526,7 +528,7 @@ Create `packages/theme/src/color.ts`:
 ```ts
 const primaryMap: Record<string, { hover: string; active: string }> = {
   '#1677ff': { hover: '#4096ff', active: '#0958d9' },
-  '#722ed1': { hover: '#9254de', active: '#531dab' }
+  '#722ed1': { hover: '#9254de', active: '#531dab' },
 }
 
 export function getPrimaryHover(colorPrimary: string): string {
@@ -568,7 +570,7 @@ export function defaultAlgorithm(seed: SeedToken): AliasToken {
     marginXS: seed.sizeUnit * 2,
     marginSM: seed.sizeUnit * 3,
     margin: seed.sizeUnit * 4,
-    marginLG: seed.sizeUnit * 6
+    marginLG: seed.sizeUnit * 6,
   }
 }
 
@@ -586,7 +588,7 @@ const overrideStore = new WeakMap<AliasToken, ThemeConfig['components']>()
 
 export function attachComponentOverrides(
   token: AliasToken,
-  components: ThemeConfig['components'] = {}
+  components: ThemeConfig['components'] = {},
 ): AliasToken {
   overrideStore.set(token, components)
   return token
@@ -594,7 +596,7 @@ export function attachComponentOverrides(
 
 export function getComponentToken<K extends keyof ComponentTokenMap>(
   componentName: K,
-  token: AliasToken
+  token: AliasToken,
 ): ComponentTokenMap[K] {
   const defaults: ComponentTokenMap = {
     Button: {
@@ -602,27 +604,27 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       fontWeight: 400,
       primaryColor: '#fff',
       defaultBorderColor: token.colorBorder,
-      paddingInline: token.padding
+      paddingInline: token.padding,
     },
     Input: {
       activeBorderColor: token.colorPrimary,
       hoverBorderColor: token.colorPrimaryHover,
       clearIconColor: token.colorTextDisabled,
-      paddingInline: token.paddingSM
+      paddingInline: token.paddingSM,
     },
     Space: {
       gapSmall: token.marginXS,
       gapMiddle: token.marginSM,
-      gapLarge: token.margin
+      gapLarge: token.margin,
     },
     Typography: {
       titleMarginBottom: token.marginSM,
       titleFontWeight: 600,
-      paragraphMarginBottom: token.margin
+      paragraphMarginBottom: token.margin,
     },
     Grid: {
-      columns: 24
-    }
+      columns: 24,
+    },
   }
 
   const overrides = overrideStore.get(token)?.[componentName] ?? {}
@@ -667,6 +669,7 @@ git commit -m "feat: add theme token package"
 ### Task 3: CSS-in-JS runtime
 
 **Files:**
+
 - Create: `packages/cssinjs/package.json`
 - Create: `packages/cssinjs/tsconfig.json`
 - Create: `packages/cssinjs/vite.config.ts`
@@ -743,12 +746,12 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs')
+      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
-      external: ['solid-js', 'solid-js/web']
-    }
-  }
+      external: ['solid-js', 'solid-js/web'],
+    },
+  },
 })
 ```
 
@@ -783,8 +786,8 @@ describe('serializeCSS', () => {
     const css = serializeCSS({
       '.ads-btn': {
         color: 'red',
-        '&:hover': { color: 'blue' }
-      }
+        '&:hover': { color: 'blue' },
+      },
     })
 
     expect(css).toContain('.ads-btn{color:red;}')
@@ -824,8 +827,8 @@ function Demo() {
   const [, hashId] = useStyleRegister(
     { path: ['Demo'], token: { color: 'red' }, theme: 'default' },
     () => ({
-      '.demo': { color: 'red' }
-    })
+      '.demo': { color: 'red' },
+    }),
   )
 
   return <div class={`demo ${hashId()}`}>Demo</div>
@@ -999,7 +1002,7 @@ export function createCache(): StyleCache {
     },
     size() {
       return styles.size
-    }
+    },
   }
 }
 
@@ -1022,13 +1025,13 @@ import type { StyleContextValue, StyleProviderProps } from './types'
 const defaultCache = createCache()
 const StyleContext = createContext<StyleContextValue>({
   cache: defaultCache,
-  hashPriority: () => 'low'
+  hashPriority: () => 'low',
 })
 
 export function StyleProvider(props: StyleProviderProps) {
   const value: StyleContextValue = {
     cache: props.cache ?? createCache(),
-    hashPriority: createMemo(() => props.hashPriority ?? 'low')
+    hashPriority: createMemo(() => props.hashPriority ?? 'low'),
   }
 
   return <StyleContext.Provider value={value}>{props.children}</StyleContext.Provider>
@@ -1060,7 +1063,7 @@ function injectStyle(key: string, css: string): void {
 
 export function useStyleRegister(
   info: StyleRegisterInfo,
-  styleFn: () => StyleObject
+  styleFn: () => StyleObject,
 ): [WrapSSR, Accessor<string>] {
   const context = useStyleContext()
   const cacheKey = createMemo(() => stableStringify(info))
@@ -1112,6 +1115,7 @@ git commit -m "feat: add solid css-in-js runtime"
 ### Task 4: Icons package
 
 **Files:**
+
 - Create: `packages/icons/package.json`
 - Create: `packages/icons/tsconfig.json`
 - Create: `packages/icons/vite.config.ts`
@@ -1178,12 +1182,12 @@ export default defineConfig({
     lib: {
       entry: 'src/index.tsx',
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs')
+      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
-      external: ['solid-js', 'solid-js/web']
-    }
-  }
+      external: ['solid-js', 'solid-js/web'],
+    },
+  },
 })
 ```
 
@@ -1199,11 +1203,26 @@ export interface IconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {
 export function LoadingIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor" {...props}>
-      <path d="M512 64a32 32 0 0 1 32 32v160a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32Z" opacity="0.85" />
-      <path d="M512 736a32 32 0 0 1 32 32v160a32 32 0 1 1-64 0V768a32 32 0 0 1 32-32Z" opacity="0.25" />
-      <path d="M195.2 195.2a32 32 0 0 1 45.3 0l113.1 113.1a32 32 0 0 1-45.3 45.3L195.2 240.5a32 32 0 0 1 0-45.3Z" opacity="0.65" />
-      <path d="M670.4 670.4a32 32 0 0 1 45.3 0l113.1 113.1a32 32 0 1 1-45.3 45.3L670.4 715.7a32 32 0 0 1 0-45.3Z" opacity="0.2" />
-      <path d="M64 512a32 32 0 0 1 32-32h160a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32Z" opacity="0.45" />
+      <path
+        d="M512 64a32 32 0 0 1 32 32v160a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32Z"
+        opacity="0.85"
+      />
+      <path
+        d="M512 736a32 32 0 0 1 32 32v160a32 32 0 1 1-64 0V768a32 32 0 0 1 32-32Z"
+        opacity="0.25"
+      />
+      <path
+        d="M195.2 195.2a32 32 0 0 1 45.3 0l113.1 113.1a32 32 0 0 1-45.3 45.3L195.2 240.5a32 32 0 0 1 0-45.3Z"
+        opacity="0.65"
+      />
+      <path
+        d="M670.4 670.4a32 32 0 0 1 45.3 0l113.1 113.1a32 32 0 1 1-45.3 45.3L670.4 715.7a32 32 0 0 1 0-45.3Z"
+        opacity="0.2"
+      />
+      <path
+        d="M64 512a32 32 0 0 1 32-32h160a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32Z"
+        opacity="0.45"
+      />
       <path d="M736 512a32 32 0 0 1 32-32h160a32 32 0 1 1 0 64H768a32 32 0 0 1-32-32Z" />
     </svg>
   )
@@ -1238,6 +1257,7 @@ git commit -m "feat: add minimal icon package"
 ### Task 5: Components package foundation and ConfigProvider
 
 **Files:**
+
 - Create: `packages/components/package.json`
 - Create: `packages/components/tsconfig.json`
 - Create: `packages/components/vite.config.ts`
@@ -1315,7 +1335,7 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs')
+      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
       external: [
@@ -1323,10 +1343,10 @@ export default defineConfig({
         'solid-js/web',
         '@ant-design-solid/theme',
         '@ant-design-solid/cssinjs',
-        '@ant-design-solid/icons'
-      ]
-    }
-  }
+        '@ant-design-solid/icons',
+      ],
+    },
+  },
 })
 ```
 
@@ -1439,7 +1459,7 @@ export const defaultConfigContext: ConfigContextValue = {
   componentSize: () => 'middle' as ComponentSize,
   direction: () => 'ltr',
   theme: () => emptyTheme,
-  token: () => mergeTheme(emptyTheme)
+  token: () => mergeTheme(emptyTheme),
 }
 
 export const ConfigContext = createContext<ConfigContextValue>(defaultConfigContext)
@@ -1455,7 +1475,7 @@ export function useToken() {
 export function mergeThemeConfig(parent: ThemeConfig, child: ThemeConfig): ThemeConfig {
   return {
     token: { ...parent.token, ...child.token },
-    components: { ...parent.components, ...child.components }
+    components: { ...parent.components, ...child.components },
   }
 }
 
@@ -1466,7 +1486,7 @@ export function createConfigValue(
     componentSize?: ComponentSize
     direction?: 'ltr' | 'rtl'
     theme?: ThemeConfig
-  }
+  },
 ): ConfigContextValue {
   const theme = createMemo(() => mergeThemeConfig(parent.theme(), props.theme ?? {}))
 
@@ -1475,7 +1495,7 @@ export function createConfigValue(
     componentSize: createMemo(() => props.componentSize ?? parent.componentSize()),
     direction: createMemo(() => props.direction ?? parent.direction()),
     theme,
-    token: createMemo(() => mergeTheme(theme()))
+    token: createMemo(() => mergeTheme(theme())),
   }
 }
 ```
@@ -1528,6 +1548,7 @@ git commit -m "feat: add config provider foundation"
 ### Task 6: Button component
 
 **Files:**
+
 - Create: `packages/components/src/button/interface.ts`
 - Create: `packages/components/src/button/button.style.ts`
 - Create: `packages/components/src/button/Button.tsx`
@@ -1636,58 +1657,65 @@ import { useToken } from '../config-provider'
 
 export function useButtonStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister(
-    { theme: 'default', token: token(), path: ['Button', prefixCls] },
-    () => {
-      const buttonToken = getComponentToken('Button', token())
-      return {
-        [`.${prefixCls}`]: {
-          'box-sizing': 'border-box',
-          margin: 0,
-          padding: `4px ${buttonToken.paddingInline}px`,
-          color: token().colorText,
-          'font-size': `${token().fontSize}px`,
-          'font-family': token().fontFamily,
-          'line-height': token().lineHeight,
-          height: token().controlHeight,
-          border: `${token().lineWidth}px solid ${buttonToken.defaultBorderColor}`,
-          'border-radius': buttonToken.borderRadius,
-          background: token().colorBgContainer,
-          cursor: 'pointer',
-          transition: `all ${token().motionDurationMid} ${token().motionEaseInOut}`,
-          '&:hover': {
-            color: token().colorPrimaryHover,
-            borderColor: token().colorPrimaryHover
-          },
-          '&[disabled]': {
-            color: token().colorTextDisabled,
-            cursor: 'not-allowed',
-            background: token().colorFillAlter,
-            borderColor: token().colorBorder
-          }
+  return useStyleRegister({ theme: 'default', token: token(), path: ['Button', prefixCls] }, () => {
+    const buttonToken = getComponentToken('Button', token())
+    return {
+      [`.${prefixCls}`]: {
+        'box-sizing': 'border-box',
+        margin: 0,
+        padding: `4px ${buttonToken.paddingInline}px`,
+        color: token().colorText,
+        'font-size': `${token().fontSize}px`,
+        'font-family': token().fontFamily,
+        'line-height': token().lineHeight,
+        height: token().controlHeight,
+        border: `${token().lineWidth}px solid ${buttonToken.defaultBorderColor}`,
+        'border-radius': buttonToken.borderRadius,
+        background: token().colorBgContainer,
+        cursor: 'pointer',
+        transition: `all ${token().motionDurationMid} ${token().motionEaseInOut}`,
+        '&:hover': {
+          color: token().colorPrimaryHover,
+          borderColor: token().colorPrimaryHover,
         },
-        [`.${prefixCls}-primary`]: {
+        '&[disabled]': {
+          color: token().colorTextDisabled,
+          cursor: 'not-allowed',
+          background: token().colorFillAlter,
+          borderColor: token().colorBorder,
+        },
+      },
+      [`.${prefixCls}-primary`]: {
+        color: buttonToken.primaryColor,
+        background: token().colorPrimary,
+        borderColor: token().colorPrimary,
+        '&:hover': {
           color: buttonToken.primaryColor,
-          background: token().colorPrimary,
-          borderColor: token().colorPrimary,
-          '&:hover': {
-            color: buttonToken.primaryColor,
-            background: token().colorPrimaryHover,
-            borderColor: token().colorPrimaryHover
-          }
+          background: token().colorPrimaryHover,
+          borderColor: token().colorPrimaryHover,
         },
-        [`.${prefixCls}-dashed`]: { borderStyle: 'dashed' },
-        [`.${prefixCls}-text`]: { borderColor: 'transparent', background: 'transparent' },
-        [`.${prefixCls}-link`]: { borderColor: 'transparent', background: 'transparent', color: token().colorPrimary },
-        [`.${prefixCls}-sm`]: { height: token().controlHeightSM, padding: `0 ${token().paddingSM}px` },
-        [`.${prefixCls}-lg`]: { height: token().controlHeightLG, padding: `6px ${token().paddingLG}px` },
-        [`.${prefixCls}-dangerous`]: { color: token().colorError, borderColor: token().colorError },
-        [`.${prefixCls}-block`]: { width: '100%' },
-        [`.${prefixCls}-loading`]: { cursor: 'default' },
-        [`.${prefixCls}-icon`]: { display: 'inline-flex', 'margin-inline-end': 8 }
-      }
+      },
+      [`.${prefixCls}-dashed`]: { borderStyle: 'dashed' },
+      [`.${prefixCls}-text`]: { borderColor: 'transparent', background: 'transparent' },
+      [`.${prefixCls}-link`]: {
+        borderColor: 'transparent',
+        background: 'transparent',
+        color: token().colorPrimary,
+      },
+      [`.${prefixCls}-sm`]: {
+        height: token().controlHeightSM,
+        padding: `0 ${token().paddingSM}px`,
+      },
+      [`.${prefixCls}-lg`]: {
+        height: token().controlHeightLG,
+        padding: `6px ${token().paddingLG}px`,
+      },
+      [`.${prefixCls}-dangerous`]: { color: token().colorError, borderColor: token().colorError },
+      [`.${prefixCls}-block`]: { width: '100%' },
+      [`.${prefixCls}-loading`]: { cursor: 'default' },
+      [`.${prefixCls}-icon`]: { display: 'inline-flex', 'margin-inline-end': 8 },
     }
-  )
+  })
 }
 ```
 
@@ -1712,7 +1740,7 @@ export function Button(props: ButtonProps) {
     'class',
     'children',
     'disabled',
-    'onClick'
+    'onClick',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-btn`
@@ -1734,7 +1762,7 @@ export function Button(props: ButtonProps) {
         local.block && `${prefixCls()}-block`,
         local.loading && `${prefixCls()}-loading`,
         hashId(),
-        local.class
+        local.class,
       )}
       onClick={(event) => {
         if (disabled()) return
@@ -1786,6 +1814,7 @@ git commit -m "feat: add button component"
 ### Task 7: Input component
 
 **Files:**
+
 - Create: `packages/components/src/input/interface.ts`
 - Create: `packages/components/src/input/input.style.ts`
 - Create: `packages/components/src/input/Input.tsx`
@@ -1816,7 +1845,14 @@ describe('Input', () => {
   it('renders prefix, suffix, status and allowClear', () => {
     const onChange = vi.fn()
     const result = render(() => (
-      <Input status="error" prefix={<span data-testid="prefix">P</span>} suffix="RMB" defaultValue="100" allowClear onChange={onChange} />
+      <Input
+        status="error"
+        prefix={<span data-testid="prefix">P</span>}
+        suffix="RMB"
+        defaultValue="100"
+        allowClear
+        onChange={onChange}
+      />
     ))
 
     expect(result.getByTestId('prefix')).toHaveTextContent('P')
@@ -1848,7 +1884,10 @@ Create `packages/components/src/input/interface.ts`:
 import type { JSX } from 'solid-js'
 import type { ComponentSize } from '@ant-design-solid/theme'
 
-export interface InputProps extends Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
+export interface InputProps extends Omit<
+  JSX.InputHTMLAttributes<HTMLInputElement>,
+  'size' | 'prefix'
+> {
   size?: ComponentSize
   status?: 'error' | 'warning'
   prefix?: JSX.Element
@@ -1866,56 +1905,56 @@ import { useToken } from '../config-provider'
 
 export function useInputStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister(
-    { theme: 'default', token: token(), path: ['Input', prefixCls] },
-    () => {
-      const inputToken = getComponentToken('Input', token())
-      return {
-        [`.${prefixCls}-affix-wrapper`]: {
-          display: 'inline-flex',
-          'align-items': 'center',
-          'box-sizing': 'border-box',
-          width: '100%',
-          padding: `0 ${inputToken.paddingInline}px`,
-          color: token().colorText,
-          'font-size': token().fontSize,
-          'font-family': token().fontFamily,
-          background: token().colorBgContainer,
-          border: `${token().lineWidth}px solid ${token().colorBorder}`,
-          'border-radius': token().borderRadius,
-          transition: `all ${token().motionDurationMid} ${token().motionEaseInOut}`,
-          '&:hover': { borderColor: inputToken.hoverBorderColor }
-        },
-        [`.${prefixCls}`]: {
-          flex: 1,
-          width: '100%',
-          minWidth: 0,
-          height: token().controlHeight,
-          padding: 0,
-          color: 'inherit',
-          'font-size': 'inherit',
-          border: 0,
-          outline: 0,
-          background: 'transparent'
-        },
-        [`.${prefixCls}-sm`]: { height: token().controlHeightSM },
-        [`.${prefixCls}-lg`]: { height: token().controlHeightLG },
-        [`.${prefixCls}-status-error`]: { borderColor: token().colorError },
-        [`.${prefixCls}-status-warning`]: { borderColor: token().colorWarning },
-        [`.${prefixCls}-disabled`]: { color: token().colorTextDisabled, background: token().colorFillAlter },
-        [`.${prefixCls}-prefix`]: { 'margin-inline-end': 8 },
-        [`.${prefixCls}-suffix`]: { 'margin-inline-start': 8 },
-        [`.${prefixCls}-clear`]: {
-          border: 0,
-          padding: 0,
-          color: inputToken.clearIconColor,
-          background: 'transparent',
-          cursor: 'pointer',
-          'margin-inline-start': 8
-        }
-      }
+  return useStyleRegister({ theme: 'default', token: token(), path: ['Input', prefixCls] }, () => {
+    const inputToken = getComponentToken('Input', token())
+    return {
+      [`.${prefixCls}-affix-wrapper`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'box-sizing': 'border-box',
+        width: '100%',
+        padding: `0 ${inputToken.paddingInline}px`,
+        color: token().colorText,
+        'font-size': token().fontSize,
+        'font-family': token().fontFamily,
+        background: token().colorBgContainer,
+        border: `${token().lineWidth}px solid ${token().colorBorder}`,
+        'border-radius': token().borderRadius,
+        transition: `all ${token().motionDurationMid} ${token().motionEaseInOut}`,
+        '&:hover': { borderColor: inputToken.hoverBorderColor },
+      },
+      [`.${prefixCls}`]: {
+        flex: 1,
+        width: '100%',
+        minWidth: 0,
+        height: token().controlHeight,
+        padding: 0,
+        color: 'inherit',
+        'font-size': 'inherit',
+        border: 0,
+        outline: 0,
+        background: 'transparent',
+      },
+      [`.${prefixCls}-sm`]: { height: token().controlHeightSM },
+      [`.${prefixCls}-lg`]: { height: token().controlHeightLG },
+      [`.${prefixCls}-status-error`]: { borderColor: token().colorError },
+      [`.${prefixCls}-status-warning`]: { borderColor: token().colorWarning },
+      [`.${prefixCls}-disabled`]: {
+        color: token().colorTextDisabled,
+        background: token().colorFillAlter,
+      },
+      [`.${prefixCls}-prefix`]: { 'margin-inline-end': 8 },
+      [`.${prefixCls}-suffix`]: { 'margin-inline-start': 8 },
+      [`.${prefixCls}-clear`]: {
+        border: 0,
+        padding: 0,
+        color: inputToken.clearIconColor,
+        background: 'transparent',
+        cursor: 'pointer',
+        'margin-inline-start': 8,
+      },
     }
-  )
+  })
 }
 ```
 
@@ -1941,7 +1980,7 @@ export function Input(props: InputProps) {
     'value',
     'defaultValue',
     'onInput',
-    'onChange'
+    'onChange',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-input`
@@ -1959,7 +1998,7 @@ export function Input(props: InputProps) {
         local.status && `${prefixCls()}-status-${local.status}`,
         local.disabled && `${prefixCls()}-disabled`,
         hashId(),
-        local.class
+        local.class,
       )}
     >
       <Show when={local.prefix}>
@@ -1983,8 +2022,14 @@ export function Input(props: InputProps) {
           class={`${prefixCls()}-clear`}
           onClick={() => {
             setInnerValue('')
-            const input = document.activeElement instanceof HTMLInputElement ? document.activeElement : undefined
-            local.onChange?.({ currentTarget: input ?? ({} as HTMLInputElement), target: input ?? ({} as HTMLInputElement) } as Event & { currentTarget: HTMLInputElement; target: HTMLInputElement })
+            const input =
+              document.activeElement instanceof HTMLInputElement
+                ? document.activeElement
+                : undefined
+            local.onChange?.({
+              currentTarget: input ?? ({} as HTMLInputElement),
+              target: input ?? ({} as HTMLInputElement),
+            } as Event & { currentTarget: HTMLInputElement; target: HTMLInputElement })
           }}
         >
           <CloseCircleIcon />
@@ -2033,6 +2078,7 @@ git commit -m "feat: add input component"
 ### Task 8: Space component
 
 **Files:**
+
 - Create: `packages/components/src/space/interface.ts`
 - Create: `packages/components/src/space/space.style.ts`
 - Create: `packages/components/src/space/Space.tsx`
@@ -2116,26 +2162,23 @@ import { useToken } from '../config-provider'
 
 export function useSpaceStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister(
-    { theme: 'default', token: token(), path: ['Space', prefixCls] },
-    () => {
-      const spaceToken = getComponentToken('Space', token())
-      return {
-        [`.${prefixCls}`]: {
-          display: 'inline-flex',
-          'align-items': 'center',
-          gap: `${spaceToken.gapMiddle}px`
-        },
-        [`.${prefixCls}-vertical`]: {
-          'flex-direction': 'column',
-          'align-items': 'stretch'
-        },
-        [`.${prefixCls}-wrap`]: { 'flex-wrap': 'wrap' },
-        [`.${prefixCls}-item`]: { display: 'inline-flex' },
-        [`.${prefixCls}-split`]: { color: token().colorTextSecondary }
-      }
+  return useStyleRegister({ theme: 'default', token: token(), path: ['Space', prefixCls] }, () => {
+    const spaceToken = getComponentToken('Space', token())
+    return {
+      [`.${prefixCls}`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        gap: `${spaceToken.gapMiddle}px`,
+      },
+      [`.${prefixCls}-vertical`]: {
+        'flex-direction': 'column',
+        'align-items': 'stretch',
+      },
+      [`.${prefixCls}-wrap`]: { 'flex-wrap': 'wrap' },
+      [`.${prefixCls}-item`]: { display: 'inline-flex' },
+      [`.${prefixCls}-split`]: { color: token().colorTextSecondary },
     }
-  )
+  })
 }
 ```
 
@@ -2149,7 +2192,10 @@ import { classNames } from '../shared/classNames'
 import { useSpaceStyle } from './space.style'
 import type { SpaceProps, SpaceSize } from './interface'
 
-function resolveGap(size: SpaceSize | undefined, token: ReturnType<typeof useToken> extends () => infer T ? T : never): [number, number] {
+function resolveGap(
+  size: SpaceSize | undefined,
+  token: ReturnType<typeof useToken> extends () => infer T ? T : never,
+): [number, number] {
   const componentToken = getComponentToken('Space', token)
   if (Array.isArray(size)) return size
   if (typeof size === 'number') return [size, size]
@@ -2159,13 +2205,22 @@ function resolveGap(size: SpaceSize | undefined, token: ReturnType<typeof useTok
 }
 
 export function Space(props: SpaceProps) {
-  const [local, rest] = splitProps(props, ['size', 'direction', 'align', 'wrap', 'split', 'class', 'children'])
+  const [local, rest] = splitProps(props, [
+    'size',
+    'direction',
+    'align',
+    'wrap',
+    'split',
+    'class',
+    'children',
+  ])
   const config = useConfig()
   const token = useToken()
   const prefixCls = () => `${config.prefixCls()}-space`
   const [, hashId] = useSpaceStyle(prefixCls())
   const resolved = children(() => local.children)
-  const items = () => resolved.toArray().filter((item) => item !== null && item !== undefined && item !== false)
+  const items = () =>
+    resolved.toArray().filter((item) => item !== null && item !== undefined && item !== false)
   const gap = () => resolveGap(local.size, token())
 
   return (
@@ -2176,19 +2231,21 @@ export function Space(props: SpaceProps) {
         (local.direction ?? 'horizontal') === 'vertical' && `${prefixCls()}-vertical`,
         local.wrap && `${prefixCls()}-wrap`,
         hashId(),
-        local.class
+        local.class,
       )}
       style={{
         'row-gap': `${gap()[1]}px`,
         'column-gap': `${gap()[0]}px`,
-        'align-items': local.align
+        'align-items': local.align,
       }}
     >
       <For each={items()}>
         {(item, index) => (
           <>
             <span class={`${prefixCls()}-item`}>{item}</span>
-            {local.split && index() < items().length - 1 ? <span class={`${prefixCls()}-split`}>{local.split}</span> : null}
+            {local.split && index() < items().length - 1 ? (
+              <span class={`${prefixCls()}-split`}>{local.split}</span>
+            ) : null}
           </>
         )}
       </For>
@@ -2233,6 +2290,7 @@ git commit -m "feat: add space component"
 ### Task 9: Typography component
 
 **Files:**
+
 - Create: `packages/components/src/typography/interface.ts`
 - Create: `packages/components/src/typography/typography.style.ts`
 - Create: `packages/components/src/typography/Typography.tsx`
@@ -2320,12 +2378,12 @@ export function useTypographyStyle(prefixCls: string) {
           color: token().colorText,
           'font-family': token().fontFamily,
           'font-size': token().fontSize,
-          'line-height': token().lineHeight
+          'line-height': token().lineHeight,
         },
         [`.${prefixCls}-title`]: {
           margin: `0 0 ${typographyToken.titleMarginBottom}px`,
           color: token().colorText,
-          'font-weight': typographyToken.titleFontWeight
+          'font-weight': typographyToken.titleFontWeight,
         },
         [`.${prefixCls}-secondary`]: { color: token().colorTextSecondary },
         [`.${prefixCls}-success`]: { color: token().colorSuccess },
@@ -2335,10 +2393,10 @@ export function useTypographyStyle(prefixCls: string) {
         [`.${prefixCls}-ellipsis`]: {
           overflow: 'hidden',
           'white-space': 'nowrap',
-          'text-overflow': 'ellipsis'
-        }
+          'text-overflow': 'ellipsis',
+        },
       }
-    }
+    },
   )
 }
 ```
@@ -2375,7 +2433,7 @@ function Title(props: TitleProps) {
         local.type && `${prefixCls()}-${local.type}`,
         local.ellipsis && `${prefixCls()}-ellipsis`,
         hashId(),
-        local.class
+        local.class,
       )}
     >
       {local.children}
@@ -2395,7 +2453,7 @@ function Text(props: TypographyBaseProps) {
         local.type && `${prefixCls()}-${local.type}`,
         local.ellipsis && `${prefixCls()}-ellipsis`,
         hashId(),
-        local.class
+        local.class,
       )}
     >
       {local.children}
@@ -2416,7 +2474,7 @@ function Paragraph(props: TypographyBaseProps) {
         local.type && `${prefixCls()}-${local.type}`,
         local.ellipsis && `${prefixCls()}-ellipsis`,
         hashId(),
-        local.class
+        local.class,
       )}
     >
       {local.children}
@@ -2464,6 +2522,7 @@ git commit -m "feat: add typography component"
 ### Task 10: Grid component
 
 **Files:**
+
 - Create: `packages/components/src/grid/interface.ts`
 - Create: `packages/components/src/grid/grid.style.ts`
 - Create: `packages/components/src/grid/Row.tsx`
@@ -2485,7 +2544,9 @@ describe('Grid', () => {
   it('renders Row and Col with 24-grid styles', () => {
     const result = render(() => (
       <Row gutter={[16, 24]} justify="center" align="middle">
-        <Col span={12} offset={2}>A</Col>
+        <Col span={12} offset={2}>
+          A
+        </Col>
         <Col span={10}>B</Col>
       </Row>
     ))
@@ -2551,26 +2612,30 @@ export function useGridStyle(rowPrefixCls: string, colPrefixCls: string) {
         [`.${rowPrefixCls}`]: {
           display: 'flex',
           'flex-flow': 'row wrap',
-          'min-width': 0
+          'min-width': 0,
         },
         [`.${rowPrefixCls}-nowrap`]: { 'flex-wrap': 'nowrap' },
         [`.${colPrefixCls}`]: {
           position: 'relative',
           'max-width': '100%',
-          'min-height': 1
-        }
+          'min-height': 1,
+        },
       }
 
       for (let index = 1; index <= 24; index += 1) {
         const percent = `${(index / 24) * 100}%`
-        styles[`.${colPrefixCls}-${index}`] = { display: 'block', flex: `0 0 ${percent}`, 'max-width': percent }
+        styles[`.${colPrefixCls}-${index}`] = {
+          display: 'block',
+          flex: `0 0 ${percent}`,
+          'max-width': percent,
+        }
         styles[`.${colPrefixCls}-offset-${index}`] = { 'margin-left': percent }
         styles[`.${colPrefixCls}-push-${index}`] = { left: percent }
         styles[`.${colPrefixCls}-pull-${index}`] = { right: percent }
       }
 
       return styles
-    }
+    },
   )
 }
 ```
@@ -2603,7 +2668,15 @@ function alignToCss(align: RowProps['align']) {
 }
 
 export function Row(props: RowProps) {
-  const [local, rest] = splitProps(props, ['gutter', 'align', 'justify', 'wrap', 'class', 'style', 'children'])
+  const [local, rest] = splitProps(props, [
+    'gutter',
+    'align',
+    'justify',
+    'wrap',
+    'class',
+    'style',
+    'children',
+  ])
   const config = useConfig()
   const rowPrefixCls = () => `${config.prefixCls()}-row`
   const colPrefixCls = () => `${config.prefixCls()}-col`
@@ -2613,14 +2686,19 @@ export function Row(props: RowProps) {
   return (
     <div
       {...rest}
-      class={classNames(rowPrefixCls(), local.wrap === false && `${rowPrefixCls()}-nowrap`, hashId(), local.class)}
+      class={classNames(
+        rowPrefixCls(),
+        local.wrap === false && `${rowPrefixCls()}-nowrap`,
+        hashId(),
+        local.class,
+      )}
       style={{
         'margin-left': gutter()[0] ? `${gutter()[0] / -2}px` : undefined,
         'margin-right': gutter()[0] ? `${gutter()[0] / -2}px` : undefined,
         'row-gap': gutter()[1] ? `${gutter()[1]}px` : undefined,
         'justify-content': justifyToCss(local.justify),
         'align-items': alignToCss(local.align),
-        ...(typeof local.style === 'object' ? local.style : {})
+        ...(typeof local.style === 'object' ? local.style : {}),
       }}
     >
       {local.children}
@@ -2638,7 +2716,16 @@ import { classNames } from '../shared/classNames'
 import type { ColProps } from './interface'
 
 export function Col(props: ColProps) {
-  const [local, rest] = splitProps(props, ['span', 'offset', 'order', 'push', 'pull', 'class', 'style', 'children'])
+  const [local, rest] = splitProps(props, [
+    'span',
+    'offset',
+    'order',
+    'push',
+    'pull',
+    'class',
+    'style',
+    'children',
+  ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-col`
 
@@ -2651,13 +2738,13 @@ export function Col(props: ColProps) {
         local.offset && `${prefixCls()}-offset-${local.offset}`,
         local.push && `${prefixCls()}-push-${local.push}`,
         local.pull && `${prefixCls()}-pull-${local.pull}`,
-        local.class
+        local.class,
       )}
       style={{
         order: local.order,
         'padding-left': '8px',
         'padding-right': '8px',
-        ...(typeof local.style === 'object' ? local.style : {})
+        ...(typeof local.style === 'object' ? local.style : {}),
       }}
     >
       {local.children}
@@ -2705,6 +2792,7 @@ git commit -m "feat: add grid component"
 ### Task 11: Docs app
 
 **Files:**
+
 - Create: `apps/docs/package.json`
 - Create: `apps/docs/tsconfig.json`
 - Create: `apps/docs/vite.config.ts`
@@ -2773,8 +2861,8 @@ import solid from 'vite-plugin-solid'
 export default defineConfig({
   plugins: [solid()],
   server: {
-    port: 5173
-  }
+    port: 5173,
+  },
 })
 ```
 
@@ -2814,7 +2902,7 @@ render(
       </ConfigProvider>
     </StyleProvider>
   ),
-  document.getElementById('root')!
+  document.getElementById('root')!,
 )
 ```
 
@@ -2830,7 +2918,7 @@ export const navItems = [
   { path: '/components/input', label: 'Input' },
   { path: '/components/space', label: 'Space' },
   { path: '/components/typography', label: 'Typography' },
-  { path: '/components/grid', label: 'Grid' }
+  { path: '/components/grid', label: 'Grid' },
 ]
 ```
 
@@ -2844,7 +2932,9 @@ export function Layout(props: { children: JSX.Element }) {
   return (
     <div class="site-shell">
       <header class="site-header">
-        <a class="site-logo" href="/">Ant Design Solid</a>
+        <a class="site-logo" href="/">
+          Ant Design Solid
+        </a>
         <nav class="site-topnav">
           <a href="/docs/getting-started">Docs</a>
           <a href="/components/button">Components</a>
@@ -2872,7 +2962,9 @@ export function DemoBlock(props: { title: string; code: string; children: JSX.El
     <section class="demo-block">
       <h3>{props.title}</h3>
       <div class="demo-preview">{props.children}</div>
-      <pre><code>{props.code}</code></pre>
+      <pre>
+        <code>{props.code}</code>
+      </pre>
     </section>
   )
 }
@@ -2902,41 +2994,133 @@ const routes: Record<string, () => JSX.Element> = {
   '/components/space': SpacePage,
   '/components/typography': TypographyPage,
   '/components/grid': GridPage,
-  '/components/config-provider': ConfigProviderPage
+  '/components/config-provider': ConfigProviderPage,
 }
 
 import type { JSX } from 'solid-js'
 
 export function App() {
   const Page = createMemo(() => routes[window.location.pathname] ?? Home)
-  return <Layout><Page /></Layout>
+  return (
+    <Layout>
+      <Page />
+    </Layout>
+  )
 }
 ```
 
 Create `apps/docs/src/app.css`:
 
 ```css
-* { box-sizing: border-box; }
-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1f1f1f; background: #fff; }
-a { color: inherit; text-decoration: none; }
-.site-header { position: sticky; top: 0; z-index: 10; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; border-bottom: 1px solid #f0f0f0; background: rgba(255,255,255,.9); backdrop-filter: blur(8px); }
-.site-logo { font-weight: 700; font-size: 18px; color: #1677ff; }
-.site-topnav { display: flex; gap: 24px; color: rgba(0,0,0,.65); }
-.site-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: calc(100vh - 64px); }
-.site-sidebar { padding: 24px; border-right: 1px solid #f0f0f0; display: flex; flex-direction: column; gap: 8px; }
-.site-sidebar a { padding: 8px 12px; border-radius: 8px; }
-.site-sidebar a:hover { background: rgba(22,119,255,.08); color: #1677ff; }
-.site-main { padding: 40px 56px; max-width: 1100px; }
-.hero { padding: 56px; border-radius: 24px; background: linear-gradient(135deg, rgba(22,119,255,.12), rgba(114,46,209,.10)); }
-.hero h1 { margin: 0 0 16px; font-size: 48px; }
-.hero p { max-width: 680px; color: rgba(0,0,0,.65); font-size: 18px; line-height: 1.7; }
-.demo-block { margin: 24px 0; border: 1px solid #f0f0f0; border-radius: 12px; overflow: hidden; }
-.demo-block h3 { margin: 0; padding: 16px 20px; border-bottom: 1px solid #f0f0f0; }
-.demo-preview { padding: 24px; }
-.demo-block pre { margin: 0; padding: 16px 20px; background: #fafafa; overflow: auto; }
-.api-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
-.api-table th, .api-table td { border: 1px solid #f0f0f0; padding: 10px 12px; text-align: left; }
-.api-table th { background: #fafafa; }
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #1f1f1f;
+  background: #fff;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  border-bottom: 1px solid #f0f0f0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
+.site-logo {
+  font-weight: 700;
+  font-size: 18px;
+  color: #1677ff;
+}
+.site-topnav {
+  display: flex;
+  gap: 24px;
+  color: rgba(0, 0, 0, 0.65);
+}
+.site-body {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: calc(100vh - 64px);
+}
+.site-sidebar {
+  padding: 24px;
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.site-sidebar a {
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.site-sidebar a:hover {
+  background: rgba(22, 119, 255, 0.08);
+  color: #1677ff;
+}
+.site-main {
+  padding: 40px 56px;
+  max-width: 1100px;
+}
+.hero {
+  padding: 56px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.12), rgba(114, 46, 209, 0.1));
+}
+.hero h1 {
+  margin: 0 0 16px;
+  font-size: 48px;
+}
+.hero p {
+  max-width: 680px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 18px;
+  line-height: 1.7;
+}
+.demo-block {
+  margin: 24px 0;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.demo-block h3 {
+  margin: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.demo-preview {
+  padding: 24px;
+}
+.demo-block pre {
+  margin: 0;
+  padding: 16px 20px;
+  background: #fafafa;
+  overflow: auto;
+}
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+}
+.api-table th,
+.api-table td {
+  border: 1px solid #f0f0f0;
+  padding: 10px 12px;
+  text-align: left;
+}
+.api-table th {
+  background: #fafafa;
+}
 ```
 
 - [ ] **Step 3: Create docs pages**
@@ -2951,7 +3135,10 @@ export function Home() {
     <>
       <section class="hero">
         <h1>Ant Design Solid</h1>
-        <p>An Ant Design-inspired component system built with SolidJS, Vite 8, pnpm 11, token-driven theming, and a Solid-native CSS-in-JS runtime.</p>
+        <p>
+          An Ant Design-inspired component system built with SolidJS, Vite 8, pnpm 11, token-driven
+          theming, and a Solid-native CSS-in-JS runtime.
+        </p>
         <Space>
           <Button type="primary">Get Started</Button>
           <Button>View Components</Button>
@@ -2969,8 +3156,12 @@ export function GettingStarted() {
   return (
     <>
       <h1>Getting Started</h1>
-      <p>Install with pnpm and import components from <code>@ant-design-solid/core</code>.</p>
-      <pre><code>{`pnpm add @ant-design-solid/core @ant-design-solid/cssinjs solid-js`}</code></pre>
+      <p>
+        Install with pnpm and import components from <code>@ant-design-solid/core</code>.
+      </p>
+      <pre>
+        <code>{`pnpm add @ant-design-solid/core @ant-design-solid/cssinjs solid-js`}</code>
+      </pre>
     </>
   )
 }
@@ -2987,9 +3178,14 @@ export function Theming() {
     <>
       <h1>Theming</h1>
       <p>Use ConfigProvider to override seed tokens and component tokens.</p>
-      <DemoBlock title="Custom primary color" code={`<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}><Button type="primary" /></ConfigProvider>`}>
+      <DemoBlock
+        title="Custom primary color"
+        code={`<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}><Button type="primary" /></ConfigProvider>`}
+      >
         <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
-          <Space><Button type="primary">Purple Button</Button></Space>
+          <Space>
+            <Button type="primary">Purple Button</Button>
+          </Space>
         </ConfigProvider>
       </DemoBlock>
     </>
@@ -3079,7 +3275,9 @@ export function TypographyPage() {
       <DemoBlock title="Basic" code={`<Typography.Title level={2}>Title</Typography.Title>`}>
         <Typography.Title level={2}>Title</Typography.Title>
         <Typography.Text type="secondary">Secondary text</Typography.Text>
-        <Typography.Paragraph ellipsis>Long paragraph long paragraph long paragraph long paragraph.</Typography.Paragraph>
+        <Typography.Paragraph ellipsis>
+          Long paragraph long paragraph long paragraph long paragraph.
+        </Typography.Paragraph>
       </DemoBlock>
     </>
   )
@@ -3096,10 +3294,17 @@ export function GridPage() {
   return (
     <>
       <h1>Grid</h1>
-      <DemoBlock title="24 columns" code={`<Row gutter={[16, 24]}><Col span={12}>A</Col><Col span={12}>B</Col></Row>`}>
+      <DemoBlock
+        title="24 columns"
+        code={`<Row gutter={[16, 24]}><Col span={12}>A</Col><Col span={12}>B</Col></Row>`}
+      >
         <Row gutter={[16, 24]}>
-          <Col span={12}><div style={{ background: '#e6f4ff', padding: '16px' }}>A</div></Col>
-          <Col span={12}><div style={{ background: '#bae0ff', padding: '16px' }}>B</div></Col>
+          <Col span={12}>
+            <div style={{ background: '#e6f4ff', padding: '16px' }}>A</div>
+          </Col>
+          <Col span={12}>
+            <div style={{ background: '#bae0ff', padding: '16px' }}>B</div>
+          </Col>
         </Row>
       </DemoBlock>
     </>
@@ -3117,7 +3322,10 @@ export function ConfigProviderPage() {
   return (
     <>
       <h1>ConfigProvider</h1>
-      <DemoBlock title="Theme override" code={`<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}><Button type="primary" /></ConfigProvider>`}>
+      <DemoBlock
+        title="Theme override"
+        code={`<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}><Button type="primary" /></ConfigProvider>`}
+      >
         <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
           <Button type="primary">Custom Theme</Button>
         </ConfigProvider>
@@ -3147,6 +3355,7 @@ git commit -m "feat: add solid docs app"
 ### Task 12: Full verification and polish
 
 **Files:**
+
 - Modify files only as required by verification failures.
 - Create `README.md` if missing.
 
@@ -3154,7 +3363,7 @@ git commit -m "feat: add solid docs app"
 
 Create `README.md`:
 
-```md
+````md
 # Ant Design Solid
 
 Ant Design-inspired components for SolidJS.
@@ -3178,6 +3387,7 @@ pnpm test
 pnpm typecheck
 pnpm lint
 ```
+````
 
 ## Packages
 
@@ -3186,7 +3396,8 @@ pnpm lint
 - `@ant-design-solid/cssinjs`
 - `@ant-design-solid/icons`
 - `@ant-design-solid/docs`
-```
+
+````
 
 - [ ] **Step 2: Install dependencies**
 
@@ -3194,7 +3405,7 @@ Run:
 
 ```bash
 pnpm install
-```
+````
 
 Expected: dependencies install successfully and `pnpm-lock.yaml` is created. If this fails because network access is blocked, request escalation and rerun exactly `pnpm install`.
 

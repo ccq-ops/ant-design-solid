@@ -7,12 +7,30 @@ import { normalizeOptions, type LabeledOption, type OptionValue } from '../share
 import { useSelectStyle } from './select.style'
 import type { SelectProps } from './interface'
 
-function findOption(options: LabeledOption[], value: OptionValue | undefined): LabeledOption | undefined {
+function findOption(
+  options: LabeledOption[],
+  value: OptionValue | undefined,
+): LabeledOption | undefined {
   return options.find((option) => option.value === value)
 }
 
 export function Select(props: SelectProps) {
-  const [local, rest] = splitProps(props, ['value', 'defaultValue', 'open', 'defaultOpen', 'options', 'placeholder', 'disabled', 'allowClear', 'prefixCls', 'class', 'style', 'onChange', 'onOpenChange', 'onKeyDown'])
+  const [local, rest] = splitProps(props, [
+    'value',
+    'defaultValue',
+    'open',
+    'defaultOpen',
+    'options',
+    'placeholder',
+    'disabled',
+    'allowClear',
+    'prefixCls',
+    'class',
+    'style',
+    'onChange',
+    'onOpenChange',
+    'onKeyDown',
+  ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-select`
@@ -21,13 +39,15 @@ export function Select(props: SelectProps) {
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
 
   createEffect(() => {
-    if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange') setInnerValue(formItem.value() as OptionValue | undefined)
+    if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
+      setInnerValue(formItem.value() as OptionValue | undefined)
   })
 
   const disabled = () => Boolean(local.disabled)
   const options = () => normalizeOptions(local.options)
   const value = () => {
-    if (formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange') return formItem.value() as OptionValue | undefined
+    if (formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange')
+      return formItem.value() as OptionValue | undefined
     if (local.value !== undefined) return local.value
     return innerValue()
   }
@@ -40,10 +60,18 @@ export function Select(props: SelectProps) {
     local.onOpenChange?.(nextOpen)
   }
 
-  function changeValue(nextValue: OptionValue | undefined, option: LabeledOption | undefined): void {
-    if (local.value === undefined && !(formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange')) setInnerValue(nextValue)
+  function changeValue(
+    nextValue: OptionValue | undefined,
+    option: LabeledOption | undefined,
+  ): void {
+    if (
+      local.value === undefined &&
+      !(formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange')
+    )
+      setInnerValue(nextValue)
     local.onChange?.(nextValue, option)
-    if (formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange') formItem.setFieldValueFromControl(nextValue)
+    if (formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange')
+      formItem.setFieldValueFromControl(nextValue)
   }
 
   function selectOption(option: LabeledOption): void {
@@ -58,7 +86,17 @@ export function Select(props: SelectProps) {
   }
 
   return (
-    <div {...rest} class={classNames(prefixCls(), disabled() && `${prefixCls()}-disabled`, open() && `${prefixCls()}-open`, hashId(), local.class)} style={local.style}>
+    <div
+      {...rest}
+      class={classNames(
+        prefixCls(),
+        disabled() && `${prefixCls()}-disabled`,
+        open() && `${prefixCls()}-open`,
+        hashId(),
+        local.class,
+      )}
+      style={local.style}
+    >
       <div
         role="combobox"
         tabindex={disabled() ? undefined : 0}
@@ -68,7 +106,11 @@ export function Select(props: SelectProps) {
         onClick={() => setOpen(!open())}
         onFocusOut={(event) => {
           const nextFocused = event.relatedTarget
-          if (formItem?.valuePropName() === 'value' && formItem.trigger() === 'onBlur' && !(nextFocused instanceof Node && event.currentTarget.contains(nextFocused))) {
+          if (
+            formItem?.valuePropName() === 'value' &&
+            formItem.trigger() === 'onBlur' &&
+            !(nextFocused instanceof Node && event.currentTarget.contains(nextFocused))
+          ) {
             formItem.setFieldValueFromControl(value())
           }
         }}
@@ -78,7 +120,11 @@ export function Select(props: SelectProps) {
           if (event.key === 'Enter' && open()) selectFirstEnabled()
         }}
       >
-        <span class={selectedOption() ? `${prefixCls()}-selection-item` : `${prefixCls()}-placeholder`}>{selectedOption()?.label ?? local.placeholder}</span>
+        <span
+          class={selectedOption() ? `${prefixCls()}-selection-item` : `${prefixCls()}-placeholder`}
+        >
+          {selectedOption()?.label ?? local.placeholder}
+        </span>
         <Show when={local.allowClear && !disabled() && value() !== undefined}>
           <button
             type="button"

@@ -29,9 +29,19 @@ export function useRadioStyle(prefixCls: string) {
         'line-height': t.controlHeight,
         background: t.colorBgContainer,
       },
-      [`.${prefixCls}-button-wrapper:first-child`]: { 'border-inline-start-width': `${t.lineWidth}px`, 'border-start-start-radius': t.borderRadius, 'border-end-start-radius': t.borderRadius },
-      [`.${prefixCls}-button-wrapper:last-child`]: { 'border-start-end-radius': t.borderRadius, 'border-end-end-radius': t.borderRadius },
-      [`.${prefixCls}-button-wrapper-checked`]: { color: t.colorPrimary, borderColor: t.colorPrimary },
+      [`.${prefixCls}-button-wrapper:first-child`]: {
+        'border-inline-start-width': `${t.lineWidth}px`,
+        'border-start-start-radius': t.borderRadius,
+        'border-end-start-radius': t.borderRadius,
+      },
+      [`.${prefixCls}-button-wrapper:last-child`]: {
+        'border-start-end-radius': t.borderRadius,
+        'border-end-end-radius': t.borderRadius,
+      },
+      [`.${prefixCls}-button-wrapper-checked`]: {
+        color: t.colorPrimary,
+        borderColor: t.colorPrimary,
+      },
     }
   })
 }

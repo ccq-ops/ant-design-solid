@@ -1,5 +1,13 @@
 import { batch, createRoot, createSignal, untrack, type Accessor } from 'solid-js'
-import type { FieldError, FieldMeta, FieldName, FieldValue, FormInstance, FormValues, ValidateErrorInfo } from './interface'
+import type {
+  FieldError,
+  FieldMeta,
+  FieldName,
+  FieldValue,
+  FormInstance,
+  FormValues,
+  ValidateErrorInfo,
+} from './interface'
 import { validateValue } from './validation'
 
 interface CreateFormOptions {
@@ -16,7 +24,7 @@ interface InternalFormInstance extends FormInstance {
 
 export function createFormInstance(options: CreateFormOptions = {}): FormInstance {
   return createRoot(() => {
-    let formInitialValues = { ...(options.initialValues ?? {}) }
+    let formInitialValues = { ...options.initialValues }
     let callbacks: Omit<CreateFormOptions, 'initialValues'> = {
       onFinish: options.onFinish,
       onFinishFailed: options.onFinishFailed,
@@ -55,7 +63,10 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       })
     }
 
-    function validateFieldNames(names: FieldName[]): { values: FormValues; errorFields: FieldError[] } {
+    function validateFieldNames(names: FieldName[]): {
+      values: FormValues
+      errorFields: FieldError[]
+    } {
       const currentValues = values()
       const errorFields: FieldError[] = []
       for (const name of names) {
@@ -127,7 +138,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         return ensureErrorSignal(name)[0]
       },
       setInitialValues(nextInitialValues) {
-        formInitialValues = { ...(nextInitialValues ?? {}) }
+        formInitialValues = { ...nextInitialValues }
         setValues((current) => ({ ...formInitialValues, ...current }))
       },
       setCallbacks(nextCallbacks) {
@@ -147,6 +158,9 @@ export function setFormInitialValues(form: FormInstance, initialValues?: FormVal
   ;(form as InternalFormInstance).setInitialValues?.(initialValues)
 }
 
-export function setFormCallbacks(form: FormInstance, callbacks: Omit<CreateFormOptions, 'initialValues'>): void {
+export function setFormCallbacks(
+  form: FormInstance,
+  callbacks: Omit<CreateFormOptions, 'initialValues'>,
+): void {
   ;(form as InternalFormInstance).setCallbacks?.(callbacks)
 }

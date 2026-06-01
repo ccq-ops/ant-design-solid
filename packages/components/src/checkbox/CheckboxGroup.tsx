@@ -13,7 +13,18 @@ function includesValue(values: OptionValue[], value: OptionValue): boolean {
 }
 
 export function CheckboxGroup(props: CheckboxGroupProps) {
-  const [local, rest] = splitProps(props, ['value', 'defaultValue', 'options', 'disabled', 'prefixCls', 'children', 'class', 'style', 'onChange', 'onBlur'])
+  const [local, rest] = splitProps(props, [
+    'value',
+    'defaultValue',
+    'options',
+    'disabled',
+    'prefixCls',
+    'children',
+    'class',
+    'style',
+    'onChange',
+    'onBlur',
+  ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const checkboxPrefixCls = () => local.prefixCls ?? `${config.prefixCls()}-checkbox`
@@ -24,12 +35,14 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
 
   createEffect(() => {
     const formValue = formItem?.value()
-    if (formItem && formItem.trigger() !== 'onChange') setInnerValue(Array.isArray(formValue) ? (formValue as OptionValue[]) : [])
+    if (formItem && formItem.trigger() !== 'onChange')
+      setInnerValue(Array.isArray(formValue) ? (formValue as OptionValue[]) : [])
   })
 
   const value = () => {
     const formValue = formItem?.value()
-    if (formItem && formItem.trigger() === 'onChange') return Array.isArray(formValue) ? (formValue as OptionValue[]) : []
+    if (formItem && formItem.trigger() === 'onChange')
+      return Array.isArray(formValue) ? (formValue as OptionValue[]) : []
     if (local.value !== undefined) return local.value
     return innerValue()
   }
@@ -43,14 +56,25 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
     if (formItem?.trigger() === 'onChange') formItem.setFieldValueFromControl(nextValue)
   }
 
-  function handleBlur(event: FocusEvent & { currentTarget: HTMLDivElement; target: Element }): void {
+  function handleBlur(
+    event: FocusEvent & { currentTarget: HTMLDivElement; target: Element },
+  ): void {
     ;(local.onBlur as JSX.EventHandler<HTMLDivElement, FocusEvent> | undefined)?.(event)
     const nextFocused = event.relatedTarget
-    if (formItem?.trigger() === 'onBlur' && !(nextFocused instanceof Node && event.currentTarget.contains(nextFocused))) formItem.setFieldValueFromControl(value())
+    if (
+      formItem?.trigger() === 'onBlur' &&
+      !(nextFocused instanceof Node && event.currentTarget.contains(nextFocused))
+    )
+      formItem.setFieldValueFromControl(value())
   }
 
   return (
-    <div {...rest} class={classNames(groupPrefixCls(), hashId(), local.class)} style={local.style} onFocusOut={handleBlur}>
+    <div
+      {...rest}
+      class={classNames(groupPrefixCls(), hashId(), local.class)}
+      style={local.style}
+      onFocusOut={handleBlur}
+    >
       <For each={normalizeOptions(local.options)}>
         {(option) => (
           <CheckboxRoot

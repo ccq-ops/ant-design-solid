@@ -11,7 +11,10 @@ export function InputPage() {
           <Input status="error" prefix="￥" suffix="RMB" defaultValue="100" allowClear />
         </Space>
       </DemoBlock>
-      <DemoBlock title="TextArea" code={`<Input.TextArea rows={4} showCount maxLength={100} defaultValue="Solid form components" />`}>
+      <DemoBlock
+        title="TextArea"
+        code={`<Input.TextArea rows={4} showCount maxLength={100} defaultValue="Solid form components" />`}
+      >
         <Input.TextArea rows={4} showCount maxLength={100} defaultValue="Solid form components" />
       </DemoBlock>
     </>

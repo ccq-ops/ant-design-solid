@@ -8,7 +8,17 @@ import type { FormInstance, FormProps } from './interface'
 import type { JSX } from 'solid-js'
 
 export function FormRoot(props: FormProps) {
-  const [local, rest] = splitProps(props, ['form', 'initialValues', 'onFinish', 'onFinishFailed', 'onValuesChange', 'children', 'class', 'onSubmit', 'onReset'])
+  const [local, rest] = splitProps(props, [
+    'form',
+    'initialValues',
+    'onFinish',
+    'onFinishFailed',
+    'onValuesChange',
+    'children',
+    'class',
+    'onSubmit',
+    'onReset',
+  ])
   const [createdForm] = useForm(local.form)
   const form = createMemo<FormInstance>(() => local.form ?? createdForm)
   const config = useConfig()

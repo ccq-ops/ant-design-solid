@@ -13,7 +13,16 @@ describe('Input', () => {
   })
   it('renders prefix, suffix, status and allowClear', () => {
     const onChange = vi.fn()
-    const result = render(() => <Input status="error" prefix={<span data-testid="prefix">P</span>} suffix="RMB" defaultValue="100" allowClear onChange={onChange} />)
+    const result = render(() => (
+      <Input
+        status="error"
+        prefix={<span data-testid="prefix">P</span>}
+        suffix="RMB"
+        defaultValue="100"
+        allowClear
+        onChange={onChange}
+      />
+    ))
     expect(result.getByTestId('prefix')).toHaveTextContent('P')
     expect(result.getByText('RMB')).toBeInTheDocument()
     expect(result.container.querySelector('.ads-input-status-error')).toBeTruthy()

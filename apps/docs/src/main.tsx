@@ -3,4 +3,13 @@ import { ConfigProvider } from '@ant-design-solid/core'
 import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { App } from './App'
 import './app.css'
-render(() => <StyleProvider><ConfigProvider><App /></ConfigProvider></StyleProvider>, document.getElementById('root')!)
+render(
+  () => (
+    <StyleProvider>
+      <ConfigProvider>
+        <App />
+      </ConfigProvider>
+    </StyleProvider>
+  ),
+  document.getElementById('root')!,
+)

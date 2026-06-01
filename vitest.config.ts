@@ -7,9 +7,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@ant-design-solid/theme': fileURLToPath(new URL('./packages/theme/src', import.meta.url)),
-      '@ant-design-solid/cssinjs': fileURLToPath(new URL('./packages/cssinjs/src', import.meta.url)),
+      '@ant-design-solid/cssinjs': fileURLToPath(
+        new URL('./packages/cssinjs/src', import.meta.url),
+      ),
       '@ant-design-solid/icons': fileURLToPath(new URL('./packages/icons/src', import.meta.url)),
-      '@ant-design-solid/core': fileURLToPath(new URL('./packages/components/src', import.meta.url)),
+      '@ant-design-solid/core': fileURLToPath(
+        new URL('./packages/components/src', import.meta.url),
+      ),
     },
   },
   test: {

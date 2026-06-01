@@ -1,6 +1,9 @@
 import type { JSX } from 'solid-js'
 
-export interface SwitchProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'role' | 'disabled' | 'onChange'> {
+export interface SwitchProps extends Omit<
+  JSX.ButtonHTMLAttributes<HTMLButtonElement>,
+  'type' | 'role' | 'disabled' | 'onChange'
+> {
   checked?: boolean
   defaultChecked?: boolean
   disabled?: boolean

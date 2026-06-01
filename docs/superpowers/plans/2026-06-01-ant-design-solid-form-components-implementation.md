@@ -99,6 +99,7 @@
 ### Task 1: Theme tokens for form controls
 
 **Files:**
+
 - Modify: `packages/theme/src/types.ts`
 - Modify: `packages/theme/src/components.ts`
 - Modify: `packages/theme/src/__tests__/theme.test.ts`
@@ -247,6 +248,7 @@ git commit -m "feat: add form component theme tokens"
 ### Task 2: Shared form-control helpers
 
 **Files:**
+
 - Create: `packages/components/src/shared/events.ts`
 - Create: `packages/components/src/shared/options.ts`
 
@@ -312,6 +314,7 @@ git commit -m "feat: add form control shared helpers"
 ### Task 3: Form core store, validation, and context
 
 **Files:**
+
 - Create: `packages/components/src/form/interface.ts`
 - Create: `packages/components/src/form/validation.ts`
 - Create: `packages/components/src/form/store.ts`
@@ -334,10 +337,21 @@ import { Button } from '../../button'
 import { Input } from '../../input'
 import { Form, useForm } from '../index'
 
-function RequiredForm(props: { onFinish?: (values: Record<string, unknown>) => void; onFinishFailed?: (info: unknown) => void }) {
+function RequiredForm(props: {
+  onFinish?: (values: Record<string, unknown>) => void
+  onFinishFailed?: (info: unknown) => void
+}) {
   return (
-    <Form initialValues={{ username: 'seed' }} onFinish={props.onFinish} onFinishFailed={props.onFinishFailed}>
-      <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Username is required' }]}>
+    <Form
+      initialValues={{ username: 'seed' }}
+      onFinish={props.onFinish}
+      onFinishFailed={props.onFinishFailed}
+    >
+      <Form.Item
+        label="Username"
+        name="username"
+        rules={[{ required: true, message: 'Username is required' }]}
+      >
         <Input placeholder="username" />
       </Form.Item>
       <Button htmlType="submit">Submit</Button>
@@ -359,7 +373,9 @@ describe('Form', () => {
   it('blocks submit and displays rule errors', async () => {
     const onFinish = vi.fn()
     const onFinishFailed = vi.fn()
-    const result = render(() => <RequiredForm onFinish={onFinish} onFinishFailed={onFinishFailed} />)
+    const result = render(() => (
+      <RequiredForm onFinish={onFinish} onFinishFailed={onFinishFailed} />
+    ))
 
     fireEvent.input(result.getByPlaceholderText('username'), { target: { value: '' } })
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
@@ -486,7 +502,12 @@ Create `packages/components/src/form/validation.ts`:
 import type { FieldValue, FormValues, Rule } from './interface'
 
 function isEmpty(value: FieldValue): boolean {
-  return value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)
+  return (
+    value === undefined ||
+    value === null ||
+    value === '' ||
+    (Array.isArray(value) && value.length === 0)
+  )
 }
 
 function getLength(value: FieldValue): number | undefined {
@@ -494,28 +515,42 @@ function getLength(value: FieldValue): number | undefined {
   return undefined
 }
 
-export function validateValue(name: string, value: FieldValue, values: FormValues, rules: Rule[] = []): string[] {
+export function validateValue(
+  name: string,
+  value: FieldValue,
+  values: FormValues,
+  rules: Rule[] = [],
+): string[] {
   for (const rule of rules) {
     if (rule.required && isEmpty(value)) return [rule.message ?? `${name} is required`]
     if (isEmpty(value)) continue
 
-    if (rule.type === 'array' && !Array.isArray(value)) return [rule.message ?? `${name} is not an array`]
-    if (rule.type && rule.type !== 'array' && typeof value !== rule.type) return [rule.message ?? `${name} is not a valid ${rule.type}`]
+    if (rule.type === 'array' && !Array.isArray(value))
+      return [rule.message ?? `${name} is not an array`]
+    if (rule.type && rule.type !== 'array' && typeof value !== rule.type)
+      return [rule.message ?? `${name} is not a valid ${rule.type}`]
 
     if (typeof value === 'number') {
-      if (rule.len !== undefined && value !== rule.len) return [rule.message ?? `${name} must equal ${rule.len}`]
-      if (rule.min !== undefined && value < rule.min) return [rule.message ?? `${name} must be at least ${rule.min}`]
-      if (rule.max !== undefined && value > rule.max) return [rule.message ?? `${name} must be at most ${rule.max}`]
+      if (rule.len !== undefined && value !== rule.len)
+        return [rule.message ?? `${name} must equal ${rule.len}`]
+      if (rule.min !== undefined && value < rule.min)
+        return [rule.message ?? `${name} must be at least ${rule.min}`]
+      if (rule.max !== undefined && value > rule.max)
+        return [rule.message ?? `${name} must be at most ${rule.max}`]
     }
 
     const length = getLength(value)
     if (length !== undefined) {
-      if (rule.len !== undefined && length !== rule.len) return [rule.message ?? `${name} must be ${rule.len} characters`]
-      if (rule.min !== undefined && length < rule.min) return [rule.message ?? `${name} must be at least ${rule.min} characters`]
-      if (rule.max !== undefined && length > rule.max) return [rule.message ?? `${name} must be at most ${rule.max} characters`]
+      if (rule.len !== undefined && length !== rule.len)
+        return [rule.message ?? `${name} must be ${rule.len} characters`]
+      if (rule.min !== undefined && length < rule.min)
+        return [rule.message ?? `${name} must be at least ${rule.min} characters`]
+      if (rule.max !== undefined && length > rule.max)
+        return [rule.message ?? `${name} must be at most ${rule.max} characters`]
     }
 
-    if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) return [rule.message ?? `${name} format is invalid`]
+    if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value))
+      return [rule.message ?? `${name} format is invalid`]
 
     const customError = rule.validator?.(value, values)
     if (customError) return [customError]
@@ -531,7 +566,15 @@ Create `packages/components/src/form/store.ts` with a signal-backed `createFormI
 
 ```ts
 import { createRoot, createSignal, type Accessor } from 'solid-js'
-import type { FieldError, FieldMeta, FieldName, FieldValue, FormInstance, FormValues, ValidateErrorInfo } from './interface'
+import type {
+  FieldError,
+  FieldMeta,
+  FieldName,
+  FieldValue,
+  FormInstance,
+  FormValues,
+  ValidateErrorInfo,
+} from './interface'
 import { validateValue } from './validation'
 
 interface CreateFormOptions {
@@ -565,7 +608,10 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       })
     }
 
-    function validateFieldNames(names: FieldName[]): { values: FormValues; errorFields: FieldError[] } {
+    function validateFieldNames(names: FieldName[]): {
+      values: FormValues
+      errorFields: FieldError[]
+    } {
       const currentValues = values()
       const errorFields: FieldError[] = []
       for (const name of names) {
@@ -614,7 +660,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       registerField(meta) {
         fields.set(meta.name, meta)
-        if (meta.initialValue !== undefined && values()[meta.name] === undefined) setFieldValue(meta.name, meta.initialValue)
+        if (meta.initialValue !== undefined && values()[meta.name] === undefined)
+          setFieldValue(meta.name, meta.initialValue)
         ensureErrorSignal(meta.name)
         return () => fields.delete(meta.name)
       },
@@ -658,11 +705,25 @@ export function useFormStyle(prefixCls: string) {
   return useStyleRegister({ theme: 'default', token: token(), path: ['Form', prefixCls] }, () => {
     const formToken = getComponentToken('Form', token())
     return {
-      [`.${prefixCls}`]: { 'font-family': token().fontFamily, 'font-size': token().fontSize, color: token().colorText },
+      [`.${prefixCls}`]: {
+        'font-family': token().fontFamily,
+        'font-size': token().fontSize,
+        color: token().colorText,
+      },
       [`.${prefixCls}-item`]: { 'margin-bottom': formToken.itemMarginBottom },
-      [`.${prefixCls}-item-label`]: { color: formToken.labelColor, 'margin-bottom': formToken.verticalLabelPadding },
-      [`.${prefixCls}-item-required`]: { color: formToken.labelRequiredMarkColor, 'margin-inline-end': 4 },
-      [`.${prefixCls}-item-explain-error`]: { color: formToken.explainColor, 'font-size': 12, 'margin-top': 4 },
+      [`.${prefixCls}-item-label`]: {
+        color: formToken.labelColor,
+        'margin-bottom': formToken.verticalLabelPadding,
+      },
+      [`.${prefixCls}-item-required`]: {
+        color: formToken.labelRequiredMarkColor,
+        'margin-inline-end': 4,
+      },
+      [`.${prefixCls}-item-explain-error`]: {
+        color: formToken.explainColor,
+        'font-size': 12,
+        'margin-top': 4,
+      },
     }
   })
 }
@@ -702,6 +763,7 @@ git commit -m "feat: add form core"
 ### Task 4: Checkbox and Checkbox.Group
 
 **Files:**
+
 - Create: `packages/components/src/checkbox/interface.ts`
 - Create: `packages/components/src/checkbox/checkbox.style.ts`
 - Create: `packages/components/src/checkbox/Checkbox.tsx`
@@ -758,6 +820,7 @@ git commit -m "feat: add checkbox component"
 ### Task 5: Radio and Radio.Group
 
 **Files:**
+
 - Create: `packages/components/src/radio/interface.ts`
 - Create: `packages/components/src/radio/radio.style.ts`
 - Create: `packages/components/src/radio/Radio.tsx`
@@ -808,6 +871,7 @@ git commit -m "feat: add radio component"
 ### Task 6: Switch
 
 **Files:**
+
 - Create: `packages/components/src/switch/interface.ts`
 - Create: `packages/components/src/switch/switch.style.ts`
 - Create: `packages/components/src/switch/Switch.tsx`
@@ -857,6 +921,7 @@ git commit -m "feat: add switch component"
 ### Task 7: Select
 
 **Files:**
+
 - Create: `packages/components/src/select/interface.ts`
 - Create: `packages/components/src/select/select.style.ts`
 - Create: `packages/components/src/select/Select.tsx`
@@ -917,6 +982,7 @@ git commit -m "feat: add select component"
 ### Task 8: Input.TextArea
 
 **Files:**
+
 - Modify: `packages/components/src/input/interface.ts`
 - Modify: `packages/components/src/input/input.style.ts`
 - Create: `packages/components/src/input/TextArea.tsx`
@@ -957,6 +1023,7 @@ git commit -m "feat: add input textarea"
 ### Task 9: Docs pages for form controls
 
 **Files:**
+
 - Modify: `apps/docs/src/site/nav.ts`
 - Modify: `apps/docs/src/App.tsx`
 - Create: `apps/docs/src/pages/FormPage.tsx`
@@ -1010,6 +1077,7 @@ git commit -m "docs: add form component pages"
 ### Task 10: Full verification and cleanup
 
 **Files:**
+
 - Modify only files required by failures.
 
 - [ ] **Step 1: Run all tests**

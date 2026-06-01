@@ -7,11 +7,25 @@ export function useFormStyle(prefixCls: string) {
   return useStyleRegister({ theme: 'default', token: token(), path: ['Form', prefixCls] }, () => {
     const formToken = getComponentToken('Form', token())
     return {
-      [`.${prefixCls}`]: { 'font-family': token().fontFamily, 'font-size': token().fontSize, color: token().colorText },
+      [`.${prefixCls}`]: {
+        'font-family': token().fontFamily,
+        'font-size': token().fontSize,
+        color: token().colorText,
+      },
       [`.${prefixCls}-item`]: { 'margin-bottom': formToken.itemMarginBottom },
-      [`.${prefixCls}-item-label`]: { color: formToken.labelColor, 'margin-bottom': formToken.verticalLabelPadding },
-      [`.${prefixCls}-item-required`]: { color: formToken.labelRequiredMarkColor, 'margin-inline-end': 4 },
-      [`.${prefixCls}-item-explain-error`]: { color: formToken.explainColor, 'font-size': 12, 'margin-top': 4 },
+      [`.${prefixCls}-item-label`]: {
+        color: formToken.labelColor,
+        'margin-bottom': formToken.verticalLabelPadding,
+      },
+      [`.${prefixCls}-item-required`]: {
+        color: formToken.labelRequiredMarkColor,
+        'margin-inline-end': 4,
+      },
+      [`.${prefixCls}-item-explain-error`]: {
+        color: formToken.explainColor,
+        'font-size': 12,
+        'margin-top': 4,
+      },
     }
   })
 }

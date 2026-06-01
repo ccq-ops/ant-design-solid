@@ -6,7 +6,17 @@ import { useRadioStyle } from './radio.style'
 import type { RadioProps } from './interface'
 
 export function RadioRoot(props: RadioProps) {
-  const [local, rest] = splitProps(props, ['checked', 'defaultChecked', 'disabled', 'value', 'prefixCls', 'children', 'class', 'style', 'onChange'])
+  const [local, rest] = splitProps(props, [
+    'checked',
+    'defaultChecked',
+    'disabled',
+    'value',
+    'prefixCls',
+    'children',
+    'class',
+    'style',
+    'onChange',
+  ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-radio`
   const [, hashId] = useRadioStyle(prefixCls())
@@ -21,7 +31,16 @@ export function RadioRoot(props: RadioProps) {
   })
 
   return (
-    <label class={classNames(prefixCls(), checked() && `${prefixCls()}-checked`, disabled() && `${prefixCls()}-disabled`, hashId(), local.class)} style={local.style}>
+    <label
+      class={classNames(
+        prefixCls(),
+        checked() && `${prefixCls()}-checked`,
+        disabled() && `${prefixCls()}-disabled`,
+        hashId(),
+        local.class,
+      )}
+      style={local.style}
+    >
       <input
         {...rest}
         ref={(el) => {

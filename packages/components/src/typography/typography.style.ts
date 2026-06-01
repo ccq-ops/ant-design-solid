@@ -1,4 +1,36 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
-export function useTypographyStyle(prefixCls: string) { const token = useToken(); return useStyleRegister({ theme: 'default', token: token(), path: ['Typography', prefixCls] }, () => { const t = token(); const tt = getComponentToken('Typography', t); return { [`.${prefixCls}`]: { color: t.colorText, 'font-family': t.fontFamily, 'font-size': t.fontSize, 'line-height': t.lineHeight }, [`.${prefixCls}-title`]: { margin: `0 0 ${tt.titleMarginBottom}px`, color: t.colorText, 'font-weight': tt.titleFontWeight }, [`.${prefixCls}-secondary`]: { color: t.colorTextSecondary }, [`.${prefixCls}-success`]: { color: t.colorSuccess }, [`.${prefixCls}-warning`]: { color: t.colorWarning }, [`.${prefixCls}-danger`]: { color: t.colorError }, [`.${prefixCls}-paragraph`]: { margin: `0 0 ${tt.paragraphMarginBottom}px` }, [`.${prefixCls}-ellipsis`]: { overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis' } } }) }
+export function useTypographyStyle(prefixCls: string) {
+  const token = useToken()
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Typography', prefixCls] },
+    () => {
+      const t = token()
+      const tt = getComponentToken('Typography', t)
+      return {
+        [`.${prefixCls}`]: {
+          color: t.colorText,
+          'font-family': t.fontFamily,
+          'font-size': t.fontSize,
+          'line-height': t.lineHeight,
+        },
+        [`.${prefixCls}-title`]: {
+          margin: `0 0 ${tt.titleMarginBottom}px`,
+          color: t.colorText,
+          'font-weight': tt.titleFontWeight,
+        },
+        [`.${prefixCls}-secondary`]: { color: t.colorTextSecondary },
+        [`.${prefixCls}-success`]: { color: t.colorSuccess },
+        [`.${prefixCls}-warning`]: { color: t.colorWarning },
+        [`.${prefixCls}-danger`]: { color: t.colorError },
+        [`.${prefixCls}-paragraph`]: { margin: `0 0 ${tt.paragraphMarginBottom}px` },
+        [`.${prefixCls}-ellipsis`]: {
+          overflow: 'hidden',
+          'white-space': 'nowrap',
+          'text-overflow': 'ellipsis',
+        },
+      }
+    },
+  )
+}

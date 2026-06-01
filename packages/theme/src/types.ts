@@ -62,9 +62,19 @@ export interface InputComponentToken {
   paddingInline: number
 }
 
-export interface SpaceComponentToken { gapSmall: number; gapMiddle: number; gapLarge: number }
-export interface TypographyComponentToken { titleMarginBottom: number; titleFontWeight: number; paragraphMarginBottom: number }
-export interface GridComponentToken { columns: number }
+export interface SpaceComponentToken {
+  gapSmall: number
+  gapMiddle: number
+  gapLarge: number
+}
+export interface TypographyComponentToken {
+  titleMarginBottom: number
+  titleFontWeight: number
+  paragraphMarginBottom: number
+}
+export interface GridComponentToken {
+  columns: number
+}
 
 export interface FormComponentToken {
   labelColor: string

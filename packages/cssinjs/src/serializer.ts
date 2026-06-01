@@ -1,7 +1,11 @@
 import type { CSSObject, CSSValue, StyleObject } from './types'
 
-function toKebabCase(property: string): string { return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`) }
-function formatValue(value: CSSValue): string { return typeof value === 'number' ? (value === 0 ? '0' : `${value}px`) : String(value) }
+function toKebabCase(property: string): string {
+  return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
+}
+function formatValue(value: CSSValue): string {
+  return typeof value === 'number' ? (value === 0 ? '0' : `${value}px`) : String(value)
+}
 function serializeRule(selector: string, object: CSSObject): string {
   const declarations: string[] = []
   const nested: string[] = []
@@ -18,4 +22,9 @@ function serializeRule(selector: string, object: CSSObject): string {
   const current = declarations.length > 0 ? `${selector}{${declarations.join('')}}` : ''
   return [current, ...nested].filter(Boolean).join('\n')
 }
-export function serializeCSS(style: StyleObject): string { return Object.keys(style).sort().map((selector) => serializeRule(selector, style[selector])).join('\n') }
+export function serializeCSS(style: StyleObject): string {
+  return Object.keys(style)
+    .sort()
+    .map((selector) => serializeRule(selector, style[selector]))
+    .join('\n')
+}

@@ -8,13 +8,21 @@ import type { FormItemControl } from '../index'
 
 function DirectValueControl(props: { value?: unknown; onChange?: (value: string) => void }) {
   return (
-    <button type="button" data-testid="direct-control" data-value={String(props.value ?? '')} onClick={() => props.onChange?.('custom')}>
+    <button
+      type="button"
+      data-testid="direct-control"
+      data-value={String(props.value ?? '')}
+      onClick={() => props.onChange?.('custom')}
+    >
       Direct
     </button>
   )
 }
 
-function ObjectValueControl(props: { value?: unknown; onChange?: (value: { id: number }) => void }) {
+function ObjectValueControl(props: {
+  value?: unknown
+  onChange?: (value: { id: number }) => void
+}) {
   return (
     <button type="button" data-testid="object-control" onClick={() => props.onChange?.({ id: 2 })}>
       Object
@@ -30,10 +38,21 @@ function ArrayValueControl(props: { value?: unknown; onChange?: (value: string[]
   )
 }
 
-function RequiredForm(props: { onFinish?: (values: Record<string, unknown>) => void; onFinishFailed?: (info: unknown) => void }) {
+function RequiredForm(props: {
+  onFinish?: (values: Record<string, unknown>) => void
+  onFinishFailed?: (info: unknown) => void
+}) {
   return (
-    <Form initialValues={{ username: 'seed' }} onFinish={props.onFinish} onFinishFailed={props.onFinishFailed}>
-      <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Username is required' }]}>
+    <Form
+      initialValues={{ username: 'seed' }}
+      onFinish={props.onFinish}
+      onFinishFailed={props.onFinishFailed}
+    >
+      <Form.Item
+        label="Username"
+        name="username"
+        rules={[{ required: true, message: 'Username is required' }]}
+      >
         <Input placeholder="username" />
       </Form.Item>
       <Button htmlType="submit">Submit</Button>
@@ -55,7 +74,9 @@ describe('Form', () => {
   it('blocks submit and displays rule errors', async () => {
     const onFinish = vi.fn()
     const onFinishFailed = vi.fn()
-    const result = render(() => <RequiredForm onFinish={onFinish} onFinishFailed={onFinishFailed} />)
+    const result = render(() => (
+      <RequiredForm onFinish={onFinish} onFinishFailed={onFinishFailed} />
+    ))
 
     fireEvent.change(result.getByPlaceholderText('username'), { target: { value: '' } })
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
@@ -81,7 +102,12 @@ describe('Form', () => {
     const [form] = useForm()
     const result = render(() => (
       <Form form={form}>
-        <Form.Item label="A" name="a" initialValue="" rules={[{ required: true, message: 'A required' }]}>
+        <Form.Item
+          label="A"
+          name="a"
+          initialValue=""
+          rules={[{ required: true, message: 'A required' }]}
+        >
           <Input placeholder="a" />
         </Form.Item>
         <Form.Item label="B" name="b">
@@ -136,7 +162,12 @@ describe('Form', () => {
     const result = render(() => (
       <Form form={form} initialValues={{ choice: { id: 1 } }} onFinish={onFinish}>
         <Form.Item name="choice">
-          {(control: FormItemControl) => <ObjectValueControl value={control.value()} onChange={control.onChange as (value: { id: number }) => void} />}
+          {(control: FormItemControl) => (
+            <ObjectValueControl
+              value={control.value()}
+              onChange={control.onChange as (value: { id: number }) => void}
+            />
+          )}
         </Form.Item>
         <Button htmlType="submit">Submit</Button>
       </Form>
@@ -155,7 +186,12 @@ describe('Form', () => {
     const result = render(() => (
       <Form form={form} initialValues={{ choice: ['a'] }} onFinish={onFinish}>
         <Form.Item name="choice">
-          {(control: FormItemControl) => <ArrayValueControl value={control.value()} onChange={control.onChange as (value: string[]) => void} />}
+          {(control: FormItemControl) => (
+            <ArrayValueControl
+              value={control.value()}
+              onChange={control.onChange as (value: string[]) => void}
+            />
+          )}
         </Form.Item>
         <Button htmlType="submit">Submit</Button>
       </Form>
@@ -211,7 +247,10 @@ describe('Form', () => {
     const secondOnFinish = vi.fn()
     const [useSecondCallback, setUseSecondCallback] = createSignal(false)
     const result = render(() => (
-      <Form initialValues={{ username: 'seed' }} onFinish={useSecondCallback() ? secondOnFinish : firstOnFinish}>
+      <Form
+        initialValues={{ username: 'seed' }}
+        onFinish={useSecondCallback() ? secondOnFinish : firstOnFinish}
+      >
         <Form.Item name="username">
           <Input placeholder="username" />
         </Form.Item>
@@ -234,7 +273,10 @@ describe('Form', () => {
     const secondOnFinishFailed = vi.fn()
     const [useSecondCallback, setUseSecondCallback] = createSignal(false)
     const result = render(() => (
-      <Form initialValues={{ username: '' }} onFinishFailed={useSecondCallback() ? secondOnFinishFailed : firstOnFinishFailed}>
+      <Form
+        initialValues={{ username: '' }}
+        onFinishFailed={useSecondCallback() ? secondOnFinishFailed : firstOnFinishFailed}
+      >
         <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
           <Input placeholder="username" />
         </Form.Item>
@@ -243,13 +285,19 @@ describe('Form', () => {
     ))
 
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
-    expect(firstOnFinishFailed).toHaveBeenCalledWith({ values: { username: '' }, errorFields: [{ name: 'username', errors: ['Required'] }] })
+    expect(firstOnFinishFailed).toHaveBeenCalledWith({
+      values: { username: '' },
+      errorFields: [{ name: 'username', errors: ['Required'] }],
+    })
 
     setUseSecondCallback(true)
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
 
     expect(firstOnFinishFailed).toHaveBeenCalledOnce()
-    expect(secondOnFinishFailed).toHaveBeenCalledWith({ values: { username: '' }, errorFields: [{ name: 'username', errors: ['Required'] }] })
+    expect(secondOnFinishFailed).toHaveBeenCalledWith({
+      values: { username: '' },
+      errorFields: [{ name: 'username', errors: ['Required'] }],
+    })
     expect(await result.findByText('Required')).toBeInTheDocument()
   })
 
@@ -259,7 +307,10 @@ describe('Form', () => {
     const secondOnValuesChange = vi.fn()
     const [useSecondCallback, setUseSecondCallback] = createSignal(false)
     const result = render(() => (
-      <Form form={form} onValuesChange={useSecondCallback() ? secondOnValuesChange : firstOnValuesChange}>
+      <Form
+        form={form}
+        onValuesChange={useSecondCallback() ? secondOnValuesChange : firstOnValuesChange}
+      >
         <Form.Item name="username">
           <Input placeholder="username" />
         </Form.Item>
@@ -274,7 +325,10 @@ describe('Form', () => {
     fireEvent.change(input, { target: { value: 'second' } })
 
     expect(firstOnValuesChange).toHaveBeenCalledOnce()
-    expect(secondOnValuesChange).toHaveBeenCalledWith({ username: 'second' }, { username: 'second' })
+    expect(secondOnValuesChange).toHaveBeenCalledWith(
+      { username: 'second' },
+      { username: 'second' },
+    )
   })
 
   it('uses updated Form.Item trigger when handling Input events', () => {
@@ -305,7 +359,9 @@ describe('Form', () => {
     const result = render(() => (
       <Form>
         <Form.Item name="enabled" valuePropName={valuePropName()}>
-          {(control: FormItemControl) => <span data-testid="value-prop-name">{control.valuePropName()}</span>}
+          {(control: FormItemControl) => (
+            <span data-testid="value-prop-name">{control.valuePropName()}</span>
+          )}
         </Form.Item>
       </Form>
     ))
@@ -380,7 +436,10 @@ describe('Form', () => {
     const [form] = useForm()
     render(() => (
       <Form form={form} initialValues={{ username: '' }}>
-        <Form.Item name="username" rules={required() ? [{ required: true, message: 'Now required' }] : []}>
+        <Form.Item
+          name="username"
+          rules={required() ? [{ required: true, message: 'Now required' }] : []}
+        >
           <Input placeholder="username" />
         </Form.Item>
       </Form>
@@ -390,7 +449,9 @@ describe('Form', () => {
 
     setRequired(true)
 
-    await expect(form.validateFields()).rejects.toMatchObject({ errorFields: [{ name: 'username', errors: ['Now required'] }] })
+    await expect(form.validateFields()).rejects.toMatchObject({
+      errorFields: [{ name: 'username', errors: ['Now required'] }],
+    })
   })
 
   it('supports form instance value APIs', async () => {

@@ -13,7 +13,10 @@ export function SwitchPage() {
           <Switch loading />
         </Space>
       </DemoBlock>
-      <DemoBlock title="Form integration" code={`<Form.Item name="enabled" valuePropName="checked"><Switch /></Form.Item>`}>
+      <DemoBlock
+        title="Form integration"
+        code={`<Form.Item name="enabled" valuePropName="checked"><Switch /></Form.Item>`}
+      >
         <Form>
           <Form.Item name="enabled" valuePropName="checked">
             <Switch />

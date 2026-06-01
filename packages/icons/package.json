@@ -1,6 +1,9 @@
 {
   "name": "@ant-design-solid/icons",
   "version": "0.0.0",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -12,16 +15,13 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": [
-    "dist"
-  ],
-  "peerDependencies": {
-    "solid-js": ">=1.9.0"
-  },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src"
+    "lint": "oxlint src"
+  },
+  "peerDependencies": {
+    "solid-js": ">=1.9.0"
   }
 }

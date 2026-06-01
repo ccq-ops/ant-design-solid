@@ -1,7 +1,11 @@
 import { Form, Radio, Space } from '@ant-design-solid/core'
 import { DemoBlock } from '../site/DemoBlock'
 
-const options = [{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }, { label: 'Disabled', value: 'disabled', disabled: true }]
+const options = [
+  { label: 'A', value: 'a' },
+  { label: 'B', value: 'b' },
+  { label: 'Disabled', value: 'disabled', disabled: true },
+]
 
 export function RadioPage() {
   return (
@@ -14,7 +18,10 @@ export function RadioPage() {
           <Radio.Group disabled options={options} defaultValue="a" />
         </Space>
       </DemoBlock>
-      <DemoBlock title="Form integration" code={`<Form.Item name="choice"><Radio.Group options={options} /></Form.Item>`}>
+      <DemoBlock
+        title="Form integration"
+        code={`<Form.Item name="choice"><Radio.Group options={options} /></Form.Item>`}
+      >
         <Form initialValues={{ choice: 'a' }}>
           <Form.Item name="choice">
             <Radio.Group options={options} />

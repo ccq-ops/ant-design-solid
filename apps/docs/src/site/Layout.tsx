@@ -1,3 +1,24 @@
 import { For, type JSX } from 'solid-js'
 import { navItems } from './nav'
-export function Layout(props: { children: JSX.Element }) { return <div class="site-shell"><header class="site-header"><a class="site-logo" href="/">Ant Design Solid</a><nav class="site-topnav"><a href="/docs/getting-started">Docs</a><a href="/components/button">Components</a><a href="https://github.com/ant-design-solid/ant-design-solid">GitHub</a></nav></header><div class="site-body"><aside class="site-sidebar"><For each={navItems}>{(item) => <a href={item.path}>{item.label}</a>}</For></aside><main class="site-main">{props.children}</main></div></div> }
+export function Layout(props: { children: JSX.Element }) {
+  return (
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="site-logo" href="/">
+          Ant Design Solid
+        </a>
+        <nav class="site-topnav">
+          <a href="/docs/getting-started">Docs</a>
+          <a href="/components/button">Components</a>
+          <a href="https://github.com/ant-design-solid/ant-design-solid">GitHub</a>
+        </nav>
+      </header>
+      <div class="site-body">
+        <aside class="site-sidebar">
+          <For each={navItems}>{(item) => <a href={item.path}>{item.label}</a>}</For>
+        </aside>
+        <main class="site-main">{props.children}</main>
+      </div>
+    </div>
+  )
+}

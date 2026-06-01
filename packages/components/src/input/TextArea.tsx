@@ -6,7 +6,16 @@ import { useInputStyle } from './input.style'
 import type { TextAreaProps } from './interface'
 
 export function TextArea(props: TextAreaProps) {
-  const [local, rest] = splitProps(props, ['value', 'defaultValue', 'showCount', 'status', 'class', 'disabled', 'onInput', 'onChange'])
+  const [local, rest] = splitProps(props, [
+    'value',
+    'defaultValue',
+    'showCount',
+    'status',
+    'class',
+    'disabled',
+    'onInput',
+    'onChange',
+  ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-input`
   const [, hashId] = useInputStyle(prefixCls())
@@ -24,7 +33,14 @@ export function TextArea(props: TextAreaProps) {
   }
 
   return (
-    <span class={classNames(`${prefixCls()}-textarea-wrapper`, local.status && `${prefixCls()}-status-${local.status}`, local.disabled && `${prefixCls()}-disabled`, hashId())}>
+    <span
+      class={classNames(
+        `${prefixCls()}-textarea-wrapper`,
+        local.status && `${prefixCls()}-status-${local.status}`,
+        local.disabled && `${prefixCls()}-disabled`,
+        hashId(),
+      )}
+    >
       <textarea
         {...rest}
         ref={(el) => {
@@ -50,7 +66,11 @@ export function TextArea(props: TextAreaProps) {
           ;(local.onChange as JSX.EventHandler<HTMLTextAreaElement, Event> | undefined)?.(event)
         }}
       />
-      {local.showCount && <span class={`${prefixCls()}-textarea-count`}>{`${value().length}${rest.maxLength !== undefined ? ` / ${rest.maxLength}` : ''}`}</span>}
+      {local.showCount && (
+        <span
+          class={`${prefixCls()}-textarea-count`}
+        >{`${value().length}${rest.maxLength !== undefined ? ` / ${rest.maxLength}` : ''}`}</span>
+      )}
     </span>
   )
 }

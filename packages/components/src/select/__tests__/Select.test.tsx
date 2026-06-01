@@ -14,7 +14,9 @@ describe('Select', () => {
 
   it('renders placeholder and opens/closes dropdown', () => {
     const onOpenChange = vi.fn()
-    const result = render(() => <Select placeholder="Pick one" options={options} onOpenChange={onOpenChange} />)
+    const result = render(() => (
+      <Select placeholder="Pick one" options={options} onOpenChange={onOpenChange} />
+    ))
     const combobox = result.getByRole('combobox')
 
     expect(combobox).toHaveTextContent('Pick one')
@@ -50,7 +52,15 @@ describe('Select', () => {
     const [value, setValue] = createSignal('a')
     const [open, setOpen] = createSignal(false)
     const onOpenChange = vi.fn((next: boolean) => setOpen(next))
-    const result = render(() => <Select value={value()} open={open()} options={options} onOpenChange={onOpenChange} onChange={(next) => setValue(next as string)} />)
+    const result = render(() => (
+      <Select
+        value={value()}
+        open={open()}
+        options={options}
+        onOpenChange={onOpenChange}
+        onChange={(next) => setValue(next as string)}
+      />
+    ))
     const combobox = result.getByRole('combobox')
 
     expect(combobox).toHaveTextContent('Alpha')
@@ -67,7 +77,9 @@ describe('Select', () => {
 
   it('clears value with allowClear', () => {
     const onChange = vi.fn()
-    const result = render(() => <Select allowClear defaultValue="a" options={options} onChange={onChange} />)
+    const result = render(() => (
+      <Select allowClear defaultValue="a" options={options} onChange={onChange} />
+    ))
     const combobox = result.getByRole('combobox')
 
     expect(combobox).toHaveTextContent('Alpha')
@@ -81,7 +93,16 @@ describe('Select', () => {
   it('does not open or clear when disabled', () => {
     const onOpenChange = vi.fn()
     const onChange = vi.fn()
-    const result = render(() => <Select disabled allowClear defaultValue="a" options={options} onOpenChange={onOpenChange} onChange={onChange} />)
+    const result = render(() => (
+      <Select
+        disabled
+        allowClear
+        defaultValue="a"
+        options={options}
+        onOpenChange={onOpenChange}
+        onChange={onChange}
+      />
+    ))
     const combobox = result.getByRole('combobox')
 
     expect(combobox).toHaveAttribute('aria-disabled', 'true')
@@ -95,7 +116,12 @@ describe('Select', () => {
 
   it('closes with Escape and selects first enabled option with Enter', () => {
     const onChange = vi.fn()
-    const result = render(() => <Select options={[{ label: 'Disabled', value: 'x', disabled: true }, ...options]} onChange={onChange} />)
+    const result = render(() => (
+      <Select
+        options={[{ label: 'Disabled', value: 'x', disabled: true }, ...options]}
+        onChange={onChange}
+      />
+    ))
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
@@ -121,8 +147,6 @@ describe('Select', () => {
     ))
     expect(withProvider.container.querySelector('.custom-select')).toBeTruthy()
   })
-
-
 
   it('updates Form.Item value on blur when trigger is onBlur', () => {
     const [form] = useForm()

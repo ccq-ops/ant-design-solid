@@ -36,7 +36,9 @@ describe('Switch', () => {
 
   it('does not toggle or fire onChange when disabled or loading', () => {
     const disabledChange = vi.fn()
-    const disabledResult = render(() => <Switch disabled defaultChecked onChange={disabledChange} />)
+    const disabledResult = render(() => (
+      <Switch disabled defaultChecked onChange={disabledChange} />
+    ))
     const disabledButton = disabledResult.getByRole('switch') as HTMLButtonElement
 
     expect(disabledButton.disabled).toBe(true)
@@ -56,7 +58,9 @@ describe('Switch', () => {
   })
 
   it('renders checkedChildren, unCheckedChildren, and size class', () => {
-    const result = render(() => <Switch size="small" checkedChildren="On" unCheckedChildren="Off" />)
+    const result = render(() => (
+      <Switch size="small" checkedChildren="On" unCheckedChildren="Off" />
+    ))
     const button = result.getByRole('switch')
 
     expect(result.container.querySelector('.ads-switch-sm')).toBeTruthy()

@@ -4,7 +4,14 @@ import { Col, Row } from '../index'
 
 describe('Grid', () => {
   it('renders Row and Col with 24-grid styles', () => {
-    const result = render(() => <Row gutter={[16, 24]} justify="center" align="middle"><Col span={12} offset={2}>A</Col><Col span={10}>B</Col></Row>)
+    const result = render(() => (
+      <Row gutter={[16, 24]} justify="center" align="middle">
+        <Col span={12} offset={2}>
+          A
+        </Col>
+        <Col span={10}>B</Col>
+      </Row>
+    ))
     const row = result.container.firstElementChild as HTMLElement
     const cols = result.container.querySelectorAll('.ads-col')
     expect(row.className).toContain('ads-row')

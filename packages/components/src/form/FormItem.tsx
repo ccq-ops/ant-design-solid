@@ -5,8 +5,15 @@ import { FormItemContext, useFormContext } from './context'
 import type { FieldValue, FormItemControl, FormItemProps } from './interface'
 import type { JSX } from 'solid-js'
 
-function hasUsableEventValue(target: unknown, valuePropName: string): target is Record<string, unknown> {
-  return Boolean(target && typeof target === 'object' && (valuePropName === 'checked' ? 'checked' in target : 'value' in target))
+function hasUsableEventValue(
+  target: unknown,
+  valuePropName: string,
+): target is Record<string, unknown> {
+  return Boolean(
+    target &&
+    typeof target === 'object' &&
+    (valuePropName === 'checked' ? 'checked' in target : 'value' in target),
+  )
 }
 
 export function getValueFromControl(valuePropName: string, nextOrEvent: FieldValue): FieldValue {
@@ -22,7 +29,9 @@ export function getValueFromControl(valuePropName: string, nextOrEvent: FieldVal
   return nextOrEvent
 }
 
-function isRenderProp(children: FormItemProps['children']): children is (control: FormItemControl) => JSX.Element {
+function isRenderProp(
+  children: FormItemProps['children'],
+): children is (control: FormItemControl) => JSX.Element {
   return typeof children === 'function'
 }
 
@@ -32,13 +41,18 @@ export function FormItem(props: FormItemProps) {
   const prefixCls = () => `${config.prefixCls()}-form`
   const valuePropName = () => props.valuePropName ?? 'value'
   const trigger = () => props.trigger ?? 'onChange'
-  const rules = () => (props.required ? [{ required: true }, ...(props.rules ?? [])] : (props.rules ?? []))
+  const rules = () =>
+    props.required ? [{ required: true }, ...(props.rules ?? [])] : (props.rules ?? [])
   const errors = () => (props.name && form ? form.getFieldError(props.name)() : [])
   const mergedStatus = () => props.validateStatus ?? (errors().length > 0 ? 'error' : undefined)
 
   createEffect(() => {
     if (!props.name || !form) return
-    const unregister = form.registerField({ name: props.name, rules: rules(), initialValue: props.initialValue })
+    const unregister = form.registerField({
+      name: props.name,
+      rules: rules(),
+      initialValue: props.initialValue,
+    })
     onCleanup(unregister)
   })
 
@@ -50,8 +64,10 @@ export function FormItem(props: FormItemProps) {
       value: () => form.getFieldValue(name),
       valuePropName,
       trigger,
-      onChange: (nextOrEvent) => form.setFieldValue(name, getValueFromControl(valuePropName(), nextOrEvent)),
-      setFieldValueFromControl: (nextOrEvent) => form.setFieldValue(name, getValueFromControl(valuePropName(), nextOrEvent)),
+      onChange: (nextOrEvent) =>
+        form.setFieldValue(name, getValueFromControl(valuePropName(), nextOrEvent)),
+      setFieldValueFromControl: (nextOrEvent) =>
+        form.setFieldValue(name, getValueFromControl(valuePropName(), nextOrEvent)),
       errors,
       status: mergedStatus,
     }
@@ -64,7 +80,12 @@ export function FormItem(props: FormItemProps) {
   }
 
   return (
-    <div class={classNames(`${prefixCls()}-item`, mergedStatus() && `${prefixCls()}-item-has-${mergedStatus()}`)}>
+    <div
+      class={classNames(
+        `${prefixCls()}-item`,
+        mergedStatus() && `${prefixCls()}-item-has-${mergedStatus()}`,
+      )}
+    >
       <Show when={props.label}>
         <label class={`${prefixCls()}-item-label`}>
           <Show when={props.required || rules().some((rule) => rule.required)}>
@@ -76,7 +97,14 @@ export function FormItem(props: FormItemProps) {
       <div class={`${prefixCls()}-item-control`}>
         <FormItemContext.Provider value={control()}>{content()}</FormItemContext.Provider>
         <Show when={props.help ?? errors()[0]}>
-          <div class={classNames(`${prefixCls()}-item-explain`, mergedStatus() === 'error' && `${prefixCls()}-item-explain-error`)}>{props.help ?? errors()[0]}</div>
+          <div
+            class={classNames(
+              `${prefixCls()}-item-explain`,
+              mergedStatus() === 'error' && `${prefixCls()}-item-explain-error`,
+            )}
+          >
+            {props.help ?? errors()[0]}
+          </div>
         </Show>
       </div>
     </div>

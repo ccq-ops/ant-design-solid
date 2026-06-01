@@ -10,7 +10,12 @@ describe('Typography', () => {
     expect(heading.className).toContain('ads-typography-title')
   })
   it('renders text type and paragraph ellipsis', () => {
-    const result = render(() => <><Typography.Text type="secondary">Secondary</Typography.Text><Typography.Paragraph ellipsis>Long text</Typography.Paragraph></>)
+    const result = render(() => (
+      <>
+        <Typography.Text type="secondary">Secondary</Typography.Text>
+        <Typography.Paragraph ellipsis>Long text</Typography.Paragraph>
+      </>
+    ))
     expect(result.getByText('Secondary').className).toContain('ads-typography-secondary')
     expect(result.getByText('Long text').className).toContain('ads-typography-ellipsis')
   })

@@ -3,5 +3,9 @@ const primaryMap: Record<string, { hover: string; active: string }> = {
   '#722ed1': { hover: '#9254de', active: '#531dab' },
 }
 
-export function getPrimaryHover(colorPrimary: string): string { return primaryMap[colorPrimary]?.hover ?? colorPrimary }
-export function getPrimaryActive(colorPrimary: string): string { return primaryMap[colorPrimary]?.active ?? colorPrimary }
+export function getPrimaryHover(colorPrimary: string): string {
+  return primaryMap[colorPrimary]?.hover ?? colorPrimary
+}
+export function getPrimaryActive(colorPrimary: string): string {
+  return primaryMap[colorPrimary]?.active ?? colorPrimary
+}

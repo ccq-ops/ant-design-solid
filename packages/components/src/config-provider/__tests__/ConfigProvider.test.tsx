@@ -5,7 +5,14 @@ import { ConfigProvider, useConfig, useToken } from '../index'
 function Probe() {
   const config = useConfig()
   const token = useToken()
-  return <div data-prefix={config.prefixCls()} data-size={config.componentSize()} data-primary={token().colorPrimary} data-radius={token().borderRadius} />
+  return (
+    <div
+      data-prefix={config.prefixCls()}
+      data-size={config.componentSize()}
+      data-primary={token().colorPrimary}
+      data-radius={token().borderRadius}
+    />
+  )
 }
 
 describe('ConfigProvider', () => {

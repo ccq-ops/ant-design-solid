@@ -10,7 +10,11 @@ describe('Radio', () => {
   it('supports controlled checked state', () => {
     const [checked, setChecked] = createSignal(true)
     const onChange = vi.fn()
-    const result = render(() => <Radio checked={checked()} onChange={onChange}>Choice</Radio>)
+    const result = render(() => (
+      <Radio checked={checked()} onChange={onChange}>
+        Choice
+      </Radio>
+    ))
     const input = result.getByRole('radio', { name: 'Choice' }) as HTMLInputElement
 
     expect(input.checked).toBe(true)
@@ -24,7 +28,11 @@ describe('Radio', () => {
 
   it('restores controlled checked state when parent does not update', () => {
     const onChange = vi.fn()
-    const result = render(() => <Radio checked={false} onChange={onChange}>Controlled</Radio>)
+    const result = render(() => (
+      <Radio checked={false} onChange={onChange}>
+        Controlled
+      </Radio>
+    ))
     const input = result.getByRole('radio', { name: 'Controlled' }) as HTMLInputElement
 
     fireEvent.click(input)
@@ -54,7 +62,11 @@ describe('Radio', () => {
 
   it('does not update or fire onChange when disabled', () => {
     const onChange = vi.fn()
-    const result = render(() => <Radio disabled onChange={onChange}>Disabled</Radio>)
+    const result = render(() => (
+      <Radio disabled onChange={onChange}>
+        Disabled
+      </Radio>
+    ))
     const input = result.getByRole('radio', { name: 'Disabled' }) as HTMLInputElement
 
     expect(input.disabled).toBe(true)
@@ -81,7 +93,16 @@ describe('Radio', () => {
 describe('Radio.Group', () => {
   it('updates value using options', () => {
     const onChange = vi.fn()
-    const result = render(() => <Radio.Group defaultValue="a" options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} onChange={onChange} />)
+    const result = render(() => (
+      <Radio.Group
+        defaultValue="a"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+        onChange={onChange}
+      />
+    ))
     const a = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
     const b = result.getByRole('radio', { name: 'B' }) as HTMLInputElement
 
@@ -97,7 +118,16 @@ describe('Radio.Group', () => {
 
   it('restores controlled option checked state when parent does not update', () => {
     const onChange = vi.fn()
-    const result = render(() => <Radio.Group value="a" options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} onChange={onChange} />)
+    const result = render(() => (
+      <Radio.Group
+        value="a"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+        onChange={onChange}
+      />
+    ))
     const a = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
     const b = result.getByRole('radio', { name: 'B' }) as HTMLInputElement
 
@@ -110,7 +140,17 @@ describe('Radio.Group', () => {
 
   it('does not update or call onChange when group or option is disabled', () => {
     const onGroupChange = vi.fn()
-    const groupDisabled = render(() => <Radio.Group disabled defaultValue="a" options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} onChange={onGroupChange} />)
+    const groupDisabled = render(() => (
+      <Radio.Group
+        disabled
+        defaultValue="a"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+        onChange={onGroupChange}
+      />
+    ))
     const disabledB = groupDisabled.getByRole('radio', { name: 'B' }) as HTMLInputElement
 
     expect(disabledB.disabled).toBe(true)
@@ -119,7 +159,16 @@ describe('Radio.Group', () => {
     expect(onGroupChange).not.toHaveBeenCalled()
 
     const onOptionChange = vi.fn()
-    const optionDisabled = render(() => <Radio.Group defaultValue="a" options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b', disabled: true }]} onChange={onOptionChange} />)
+    const optionDisabled = render(() => (
+      <Radio.Group
+        defaultValue="a"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b', disabled: true },
+        ]}
+        onChange={onOptionChange}
+      />
+    ))
     const optionB = optionDisabled.getByRole('radio', { name: 'B' }) as HTMLInputElement
 
     expect(optionB.disabled).toBe(true)
@@ -129,7 +178,16 @@ describe('Radio.Group', () => {
   })
 
   it('supports optionType button classes', () => {
-    const result = render(() => <Radio.Group optionType="button" defaultValue="a" options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} />)
+    const result = render(() => (
+      <Radio.Group
+        optionType="button"
+        defaultValue="a"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+      />
+    ))
 
     expect(result.container.querySelector('.ads-radio-group-button')).toBeTruthy()
     expect(result.container.querySelectorAll('.ads-radio-button-wrapper')).toHaveLength(2)
@@ -141,7 +199,12 @@ describe('Radio.Group', () => {
     const result = render(() => (
       <Form form={form}>
         <Form.Item name="choice">
-          <Radio.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} />
+          <Radio.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+          />
         </Form.Item>
       </Form>
     ))
@@ -166,7 +229,12 @@ describe('Radio.Group', () => {
     const result = render(() => (
       <Form form={form} onFinish={onFinish}>
         <Form.Item name="choice">
-          <Radio.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} />
+          <Radio.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+          />
         </Form.Item>
         <Button htmlType="submit">Submit</Button>
       </Form>
@@ -188,7 +256,12 @@ describe('Radio.Group', () => {
     const result = render(() => (
       <Form form={form} initialValues={{ choice: 'a' }}>
         <Form.Item name="choice" trigger="onBlur">
-          <Radio.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} />
+          <Radio.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+          />
         </Form.Item>
       </Form>
     ))

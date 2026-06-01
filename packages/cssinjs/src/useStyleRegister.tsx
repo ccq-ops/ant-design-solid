@@ -13,7 +13,10 @@ function injectStyle(styleId: string, css: string): void {
   document.head.appendChild(style)
 }
 
-export function useStyleRegister(info: StyleRegisterInfo, styleFn: () => StyleObject): [WrapSSR, Accessor<string>] {
+export function useStyleRegister(
+  info: StyleRegisterInfo,
+  styleFn: () => StyleObject,
+): [WrapSSR, Accessor<string>] {
   const context = useStyleContext()
   const cacheKey = createMemo(() => stableStringify(info))
   const hashId = createMemo(() => hashString(cacheKey()))

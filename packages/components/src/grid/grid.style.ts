@@ -1,3 +1,27 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { useToken } from '../config-provider'
-export function useGridStyle(rowPrefixCls: string, colPrefixCls: string) { const token = useToken(); return useStyleRegister({ theme: 'default', token: token(), path: ['Grid', rowPrefixCls, colPrefixCls] }, () => { const styles: Record<string, Record<string, string | number>> = { [`.${rowPrefixCls}`]: { display: 'flex', 'flex-flow': 'row wrap', 'min-width': 0 }, [`.${rowPrefixCls}-nowrap`]: { 'flex-wrap': 'nowrap' }, [`.${colPrefixCls}`]: { position: 'relative', 'max-width': '100%', 'min-height': 1 } }; for (let index = 1; index <= 24; index += 1) { const percent = `${(index / 24) * 100}%`; styles[`.${colPrefixCls}-${index}`] = { display: 'block', flex: `0 0 ${percent}`, 'max-width': percent }; styles[`.${colPrefixCls}-offset-${index}`] = { 'margin-left': percent }; styles[`.${colPrefixCls}-push-${index}`] = { left: percent }; styles[`.${colPrefixCls}-pull-${index}`] = { right: percent } } return styles }) }
+export function useGridStyle(rowPrefixCls: string, colPrefixCls: string) {
+  const token = useToken()
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Grid', rowPrefixCls, colPrefixCls] },
+    () => {
+      const styles: Record<string, Record<string, string | number>> = {
+        [`.${rowPrefixCls}`]: { display: 'flex', 'flex-flow': 'row wrap', 'min-width': 0 },
+        [`.${rowPrefixCls}-nowrap`]: { 'flex-wrap': 'nowrap' },
+        [`.${colPrefixCls}`]: { position: 'relative', 'max-width': '100%', 'min-height': 1 },
+      }
+      for (let index = 1; index <= 24; index += 1) {
+        const percent = `${(index / 24) * 100}%`
+        styles[`.${colPrefixCls}-${index}`] = {
+          display: 'block',
+          flex: `0 0 ${percent}`,
+          'max-width': percent,
+        }
+        styles[`.${colPrefixCls}-offset-${index}`] = { 'margin-left': percent }
+        styles[`.${colPrefixCls}-push-${index}`] = { left: percent }
+        styles[`.${colPrefixCls}-pull-${index}`] = { right: percent }
+      }
+      return styles
+    },
+  )
+}

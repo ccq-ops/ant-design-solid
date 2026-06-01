@@ -9,10 +9,19 @@ export function CheckboxPage() {
         <Space direction="vertical">
           <Checkbox defaultChecked>Agree</Checkbox>
           <Checkbox disabled>Disabled</Checkbox>
-          <Checkbox.Group options={[{ label: 'A', value: 'a' }, { label: 'B', value: 'b' }]} defaultValue={['a']} />
+          <Checkbox.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+            defaultValue={['a']}
+          />
         </Space>
       </DemoBlock>
-      <DemoBlock title="Form integration" code={`<Form.Item name="agree" valuePropName="checked"><Checkbox>Agree</Checkbox></Form.Item>`}>
+      <DemoBlock
+        title="Form integration"
+        code={`<Form.Item name="agree" valuePropName="checked"><Checkbox>Agree</Checkbox></Form.Item>`}
+      >
         <Form>
           <Form.Item name="agree" valuePropName="checked">
             <Checkbox>Agree to terms</Checkbox>

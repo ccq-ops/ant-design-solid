@@ -8,7 +8,20 @@ import type { JSX } from 'solid-js'
 import type { InputProps } from './interface'
 
 export function Input(props: InputProps) {
-  const [local, rest] = splitProps(props, ['size', 'status', 'prefix', 'suffix', 'allowClear', 'class', 'disabled', 'value', 'defaultValue', 'onInput', 'onChange', 'onBlur'])
+  const [local, rest] = splitProps(props, [
+    'size',
+    'status',
+    'prefix',
+    'suffix',
+    'allowClear',
+    'class',
+    'disabled',
+    'value',
+    'defaultValue',
+    'onInput',
+    'onChange',
+    'onBlur',
+  ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => `${config.prefixCls()}-input`
@@ -23,22 +36,39 @@ export function Input(props: InputProps) {
   const size = () => local.size ?? config.componentSize()
   let inputRef: HTMLInputElement | undefined
 
-  function syncForm(event: Event & { currentTarget: HTMLInputElement; target: Element }, handlerName: 'onInput' | 'onChange' | 'onBlur') {
+  function syncForm(
+    event: Event & { currentTarget: HTMLInputElement; target: Element },
+    handlerName: 'onInput' | 'onChange' | 'onBlur',
+  ) {
     if (!formItem || formItem.valuePropName() !== 'value') return
     const trigger = formItem.trigger()
-    if (trigger === handlerName || (trigger === 'onChange' && handlerName === 'onInput')) formItem.setFieldValueFromControl(event)
+    if (trigger === handlerName || (trigger === 'onChange' && handlerName === 'onInput'))
+      formItem.setFieldValueFromControl(event)
   }
 
   function clearValue() {
     setInnerValue('')
     if (inputRef) inputRef.value = ''
-    const event = { currentTarget: inputRef ?? ({} as HTMLInputElement), target: inputRef ?? ({} as HTMLInputElement) } as Event & { currentTarget: HTMLInputElement; target: HTMLInputElement }
+    const event = {
+      currentTarget: inputRef ?? ({} as HTMLInputElement),
+      target: inputRef ?? ({} as HTMLInputElement),
+    } as Event & { currentTarget: HTMLInputElement; target: HTMLInputElement }
     ;(local.onChange as JSX.EventHandler<HTMLInputElement, Event> | undefined)?.(event)
     syncForm(event, 'onChange')
   }
 
   return (
-    <span class={classNames(`${prefixCls()}-affix-wrapper`, size() === 'small' && `${prefixCls()}-sm`, size() === 'large' && `${prefixCls()}-lg`, local.status && `${prefixCls()}-status-${local.status}`, local.disabled && `${prefixCls()}-disabled`, hashId(), local.class)}>
+    <span
+      class={classNames(
+        `${prefixCls()}-affix-wrapper`,
+        size() === 'small' && `${prefixCls()}-sm`,
+        size() === 'large' && `${prefixCls()}-lg`,
+        local.status && `${prefixCls()}-status-${local.status}`,
+        local.disabled && `${prefixCls()}-disabled`,
+        hashId(),
+        local.class,
+      )}
+    >
       <Show when={local.prefix}>
         <span class={`${prefixCls()}-prefix`}>{local.prefix}</span>
       </Show>
@@ -66,7 +96,12 @@ export function Input(props: InputProps) {
         }}
       />
       <Show when={local.allowClear && value()}>
-        <button type="button" aria-label="clear input" class={`${prefixCls()}-clear`} onClick={clearValue}>
+        <button
+          type="button"
+          aria-label="clear input"
+          class={`${prefixCls()}-clear`}
+          onClick={clearValue}
+        >
           <CloseCircleIcon />
         </button>
       </Show>
