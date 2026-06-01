@@ -1,0 +1,32 @@
+{
+  "name": "@ant-design-solid/core",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "solid-js": ">=1.9.0"
+  },
+  "dependencies": {
+    "@ant-design-solid/cssinjs": "workspace:*",
+    "@ant-design-solid/icons": "workspace:*",
+    "@ant-design-solid/theme": "workspace:*"
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src"
+  }
+}
