@@ -18,8 +18,14 @@ describe('shared overlay helpers', () => {
   })
 
   it('renders portal content into document.body', () => {
-    render(() => <InternalPortal><div data-testid="portal-child">Portal child</div></InternalPortal>)
-    expect(document.body.querySelector('[data-testid="portal-child"]')).toHaveTextContent('Portal child')
+    render(() => (
+      <InternalPortal>
+        <div data-testid="portal-child">Portal child</div>
+      </InternalPortal>
+    ))
+    expect(document.body.querySelector('[data-testid="portal-child"]')).toHaveTextContent(
+      'Portal child',
+    )
   })
 
   it('adds and removes Escape keydown handlers', () => {

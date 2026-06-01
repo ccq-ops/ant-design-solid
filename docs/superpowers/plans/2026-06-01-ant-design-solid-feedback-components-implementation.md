@@ -180,11 +180,11 @@ export interface PopconfirmComponentToken {
 Then extend `ComponentTokenMap` with these entries:
 
 ```ts
-  Alert: AlertComponentToken
-  Message: MessageComponentToken
-  Notification: NotificationComponentToken
-  Modal: ModalComponentToken
-  Popconfirm: PopconfirmComponentToken
+Alert: AlertComponentToken
+Message: MessageComponentToken
+Notification: NotificationComponentToken
+Modal: ModalComponentToken
+Popconfirm: PopconfirmComponentToken
 ```
 
 - [ ] **Step 4: Add default token derivation**
@@ -280,8 +280,14 @@ describe('shared overlay helpers', () => {
   })
 
   it('renders portal content into document.body', () => {
-    render(() => <InternalPortal><div data-testid="portal-child">Portal child</div></InternalPortal>)
-    expect(document.body.querySelector('[data-testid="portal-child"]')).toHaveTextContent('Portal child')
+    render(() => (
+      <InternalPortal>
+        <div data-testid="portal-child">Portal child</div>
+      </InternalPortal>
+    ))
+    expect(document.body.querySelector('[data-testid="portal-child"]')).toHaveTextContent(
+      'Portal child',
+    )
   })
 
   it('adds and removes Escape keydown handlers', () => {
@@ -450,7 +456,9 @@ import { Alert } from '../index'
 
 describe('Alert', () => {
   it('renders message and description', () => {
-    const result = render(() => <Alert type="success" message="Saved" description="Everything is safe" />)
+    const result = render(() => (
+      <Alert type="success" message="Saved" description="Everything is safe" />
+    ))
     expect(result.getByText('Saved')).toBeTruthy()
     expect(result.getByText('Everything is safe')).toBeTruthy()
     expect(result.container.querySelector('.ant-alert-success')).toBeTruthy()
@@ -458,7 +466,9 @@ describe('Alert', () => {
   })
 
   it('renders action and icon when requested', () => {
-    const result = render(() => <Alert showIcon message="Warning" action={<button>Retry</button>} />)
+    const result = render(() => (
+      <Alert showIcon message="Warning" action={<button>Retry</button>} />
+    ))
     expect(result.getByText('Retry')).toBeTruthy()
     expect(result.container.querySelector('.ant-alert-icon')).toBeTruthy()
   })
@@ -466,7 +476,9 @@ describe('Alert', () => {
   it('closes and calls close callbacks', () => {
     const onClose = vi.fn()
     const afterClose = vi.fn()
-    const result = render(() => <Alert closable message="Close me" onClose={onClose} afterClose={afterClose} />)
+    const result = render(() => (
+      <Alert closable message="Close me" onClose={onClose} afterClose={afterClose} />
+    ))
 
     fireEvent.click(result.getByRole('button', { name: 'close alert' }))
 
@@ -641,7 +653,12 @@ export function Alert(props: AlertProps) {
           <div class={`${prefixCls()}-action`}>{local.action}</div>
         </Show>
         <Show when={local.closable}>
-          <button type="button" class={`${prefixCls()}-close`} aria-label="close alert" onClick={close}>
+          <button
+            type="button"
+            class={`${prefixCls()}-close`}
+            aria-label="close alert"
+            onClick={close}
+          >
             ×
           </button>
         </Show>
@@ -814,40 +831,43 @@ import { useToken } from '../config-provider'
 
 export function useMessageStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Message', prefixCls] }, () => {
-    const t = token()
-    const mt = getComponentToken('Message', t)
-    return {
-      [`.${prefixCls}`]: {
-        position: 'fixed',
-        top: 8,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        'z-index': 1000,
-        'pointer-events': 'none',
-      },
-      [`.${prefixCls}-notice`]: {
-        padding: `${t.paddingXS}px 0`,
-        'text-align': 'center',
-      },
-      [`.${prefixCls}-notice-content`]: {
-        display: 'inline-flex',
-        'align-items': 'center',
-        gap: t.marginXS,
-        padding: mt.noticePadding,
-        color: t.colorText,
-        background: mt.contentBg,
-        'border-radius': mt.noticeBorderRadius,
-        'box-shadow': mt.contentShadow,
-        'pointer-events': 'auto',
-      },
-      [`.${prefixCls}-icon-success`]: { color: t.colorSuccess },
-      [`.${prefixCls}-icon-info`]: { color: t.colorInfo },
-      [`.${prefixCls}-icon-error`]: { color: t.colorError },
-      [`.${prefixCls}-icon-warning`]: { color: t.colorWarning },
-      [`.${prefixCls}-icon-loading`]: { color: t.colorInfo },
-    }
-  })
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Message', prefixCls] },
+    () => {
+      const t = token()
+      const mt = getComponentToken('Message', t)
+      return {
+        [`.${prefixCls}`]: {
+          position: 'fixed',
+          top: 8,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          'z-index': 1000,
+          'pointer-events': 'none',
+        },
+        [`.${prefixCls}-notice`]: {
+          padding: `${t.paddingXS}px 0`,
+          'text-align': 'center',
+        },
+        [`.${prefixCls}-notice-content`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          gap: t.marginXS,
+          padding: mt.noticePadding,
+          color: t.colorText,
+          background: mt.contentBg,
+          'border-radius': mt.noticeBorderRadius,
+          'box-shadow': mt.contentShadow,
+          'pointer-events': 'auto',
+        },
+        [`.${prefixCls}-icon-success`]: { color: t.colorSuccess },
+        [`.${prefixCls}-icon-info`]: { color: t.colorInfo },
+        [`.${prefixCls}-icon-error`]: { color: t.colorError },
+        [`.${prefixCls}-icon-warning`]: { color: t.colorWarning },
+        [`.${prefixCls}-icon-loading`]: { color: t.colorInfo },
+      }
+    },
+  )
 }
 ```
 
@@ -886,7 +906,9 @@ function MessageHolder(props: MessageHolderProps) {
       <div class={classNames(prefixCls(), hashId())}>
         <For each={props.notices()}>
           {(notice) => (
-            <div class={classNames(`${prefixCls()}-notice`, `${prefixCls()}-notice-${notice.type}`)}>
+            <div
+              class={classNames(`${prefixCls()}-notice`, `${prefixCls()}-notice-${notice.type}`)}
+            >
               <div class={`${prefixCls()}-notice-content`}>
                 <span class={`${prefixCls()}-icon-${notice.type}`}>{iconMap[notice.type]}</span>
                 <span>{notice.content}</span>
@@ -902,7 +924,14 @@ function MessageHolder(props: MessageHolderProps) {
 export function mountMessageHolder(props: MessageHolderProps) {
   const container = document.createElement('div')
   document.body.appendChild(container)
-  const dispose = render(() => <ConfigProvider><MessageHolder {...props} /></ConfigProvider>, container)
+  const dispose = render(
+    () => (
+      <ConfigProvider>
+        <MessageHolder {...props} />
+      </ConfigProvider>
+    ),
+    container,
+  )
   return () => {
     dispose()
     container.remove()
@@ -918,11 +947,19 @@ Create `packages/components/src/message/message.ts`:
 import { createRoot, createSignal } from 'solid-js'
 import { mountMessageHolder } from './holder'
 import type { JSX } from 'solid-js'
-import type { MessageArgs, MessageHandle, MessageInstance, MessageNotice, MessageType } from './interface'
+import type {
+  MessageArgs,
+  MessageHandle,
+  MessageInstance,
+  MessageNotice,
+  MessageType,
+} from './interface'
 
 let seed = 0
 let disposeRoot: (() => void) | undefined
-let setNotices: ((updater: MessageNotice[] | ((value: MessageNotice[]) => MessageNotice[])) => MessageNotice[]) | undefined
+let setNotices:
+  | ((updater: MessageNotice[] | ((value: MessageNotice[]) => MessageNotice[])) => MessageNotice[])
+  | undefined
 const timers = new Map<string, ReturnType<typeof setTimeout>>()
 
 function ensureHolder() {
@@ -938,7 +975,11 @@ function ensureHolder() {
   })
 }
 
-function normalize(type: MessageType, content: JSX.Element | MessageArgs, duration?: number): MessageArgs {
+function normalize(
+  type: MessageType,
+  content: JSX.Element | MessageArgs,
+  duration?: number,
+): MessageArgs {
   if (typeof content === 'object' && content !== null && 'content' in content) {
     return { type, ...content }
   }
@@ -971,10 +1012,13 @@ function open(args: MessageArgs): MessageHandle {
 
   const duration = args.duration ?? (type === 'loading' ? 0 : 3)
   if (duration > 0) {
-    timers.set(key, setTimeout(() => {
-      remove(key)
-      args.onClose?.()
-    }, duration * 1000))
+    timers.set(
+      key,
+      setTimeout(() => {
+        remove(key)
+        args.onClose?.()
+      }, duration * 1000),
+    )
   }
 
   return { close: () => remove(key) }
@@ -1163,42 +1207,48 @@ import { useToken } from '../config-provider'
 
 export function useNotificationStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Notification', prefixCls] }, () => {
-    const t = token()
-    const nt = getComponentToken('Notification', t)
-    const placementBase = { position: 'fixed', 'z-index': 1010 }
-    return {
-      [`.${prefixCls}-top-right`]: { ...placementBase, top: 24, right: 24 },
-      [`.${prefixCls}-top-left`]: { ...placementBase, top: 24, left: 24 },
-      [`.${prefixCls}-bottom-right`]: { ...placementBase, bottom: 24, right: 24 },
-      [`.${prefixCls}-bottom-left`]: { ...placementBase, bottom: 24, left: 24 },
-      [`.${prefixCls}-notice`]: {
-        position: 'relative',
-        width: nt.width,
-        padding: nt.padding,
-        'margin-bottom': t.margin,
-        color: t.colorText,
-        background: nt.bg,
-        'border-radius': nt.borderRadius,
-        'box-shadow': nt.boxShadow,
-      },
-      [`.${prefixCls}-notice-message`]: { 'font-weight': 600, 'padding-inline-end': 24 },
-      [`.${prefixCls}-notice-description`]: { color: t.colorTextSecondary, 'margin-top': t.marginXS },
-      [`.${prefixCls}-notice-close`]: {
-        position: 'absolute',
-        top: t.paddingSM,
-        right: t.paddingSM,
-        border: 0,
-        background: 'transparent',
-        cursor: 'pointer',
-        color: t.colorTextSecondary,
-      },
-      [`.${prefixCls}-notice-success .${prefixCls}-notice-message`]: { color: t.colorSuccess },
-      [`.${prefixCls}-notice-info .${prefixCls}-notice-message`]: { color: t.colorInfo },
-      [`.${prefixCls}-notice-warning .${prefixCls}-notice-message`]: { color: t.colorWarning },
-      [`.${prefixCls}-notice-error .${prefixCls}-notice-message`]: { color: t.colorError },
-    }
-  })
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Notification', prefixCls] },
+    () => {
+      const t = token()
+      const nt = getComponentToken('Notification', t)
+      const placementBase = { position: 'fixed', 'z-index': 1010 }
+      return {
+        [`.${prefixCls}-top-right`]: { ...placementBase, top: 24, right: 24 },
+        [`.${prefixCls}-top-left`]: { ...placementBase, top: 24, left: 24 },
+        [`.${prefixCls}-bottom-right`]: { ...placementBase, bottom: 24, right: 24 },
+        [`.${prefixCls}-bottom-left`]: { ...placementBase, bottom: 24, left: 24 },
+        [`.${prefixCls}-notice`]: {
+          position: 'relative',
+          width: nt.width,
+          padding: nt.padding,
+          'margin-bottom': t.margin,
+          color: t.colorText,
+          background: nt.bg,
+          'border-radius': nt.borderRadius,
+          'box-shadow': nt.boxShadow,
+        },
+        [`.${prefixCls}-notice-message`]: { 'font-weight': 600, 'padding-inline-end': 24 },
+        [`.${prefixCls}-notice-description`]: {
+          color: t.colorTextSecondary,
+          'margin-top': t.marginXS,
+        },
+        [`.${prefixCls}-notice-close`]: {
+          position: 'absolute',
+          top: t.paddingSM,
+          right: t.paddingSM,
+          border: 0,
+          background: 'transparent',
+          cursor: 'pointer',
+          color: t.colorTextSecondary,
+        },
+        [`.${prefixCls}-notice-success .${prefixCls}-notice-message`]: { color: t.colorSuccess },
+        [`.${prefixCls}-notice-info .${prefixCls}-notice-message`]: { color: t.colorInfo },
+        [`.${prefixCls}-notice-warning .${prefixCls}-notice-message`]: { color: t.colorWarning },
+        [`.${prefixCls}-notice-error .${prefixCls}-notice-message`]: { color: t.colorError },
+      }
+    },
+  )
 }
 ```
 
@@ -1233,7 +1283,8 @@ function NotificationHolder(props: NotificationHolderProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-notification`
   const [, hashId] = useNotificationStyle(prefixCls())
-  const byPlacement = (placement: NotificationPlacement) => props.notices().filter((item) => item.placement === placement)
+  const byPlacement = (placement: NotificationPlacement) =>
+    props.notices().filter((item) => item.placement === placement)
   return (
     <InternalPortal>
       <For each={placements}>
@@ -1241,8 +1292,20 @@ function NotificationHolder(props: NotificationHolderProps) {
           <div class={classNames(`${prefixCls()}-${classByPlacement[placement]}`, hashId())}>
             <For each={byPlacement(placement)}>
               {(notice) => (
-                <div class={classNames(`${prefixCls()}-notice`, notice.type && `${prefixCls()}-notice-${notice.type}`)}>
-                  <button type="button" class={`${prefixCls()}-notice-close`} aria-label="close notification" onClick={() => props.close(notice.key)}>×</button>
+                <div
+                  class={classNames(
+                    `${prefixCls()}-notice`,
+                    notice.type && `${prefixCls()}-notice-${notice.type}`,
+                  )}
+                >
+                  <button
+                    type="button"
+                    class={`${prefixCls()}-notice-close`}
+                    aria-label="close notification"
+                    onClick={() => props.close(notice.key)}
+                  >
+                    ×
+                  </button>
                   <div class={`${prefixCls()}-notice-message`}>{notice.message}</div>
                   <div class={`${prefixCls()}-notice-description`}>{notice.description}</div>
                 </div>
@@ -1258,7 +1321,14 @@ function NotificationHolder(props: NotificationHolderProps) {
 export function mountNotificationHolder(props: NotificationHolderProps) {
   const container = document.createElement('div')
   document.body.appendChild(container)
-  const dispose = render(() => <ConfigProvider><NotificationHolder {...props} /></ConfigProvider>, container)
+  const dispose = render(
+    () => (
+      <ConfigProvider>
+        <NotificationHolder {...props} />
+      </ConfigProvider>
+    ),
+    container,
+  )
   return () => {
     dispose()
     container.remove()
@@ -1271,11 +1341,21 @@ Create `packages/components/src/notification/notification.ts`:
 ```ts
 import { createRoot, createSignal } from 'solid-js'
 import { mountNotificationHolder } from './holder'
-import type { NotificationArgs, NotificationHandle, NotificationInstance, NotificationNotice, NotificationType } from './interface'
+import type {
+  NotificationArgs,
+  NotificationHandle,
+  NotificationInstance,
+  NotificationNotice,
+  NotificationType,
+} from './interface'
 
 let seed = 0
 let disposeRoot: (() => void) | undefined
-let setNotices: ((updater: NotificationNotice[] | ((value: NotificationNotice[]) => NotificationNotice[])) => NotificationNotice[]) | undefined
+let setNotices:
+  | ((
+      updater: NotificationNotice[] | ((value: NotificationNotice[]) => NotificationNotice[]),
+    ) => NotificationNotice[])
+  | undefined
 const timers = new Map<string, ReturnType<typeof setTimeout>>()
 
 function ensureHolder() {
@@ -1316,10 +1396,13 @@ function open(args: NotificationArgs): NotificationHandle {
 
   const duration = args.duration ?? 4.5
   if (duration > 0) {
-    timers.set(key, setTimeout(() => {
-      remove(key)
-      args.onClose?.()
-    }, duration * 1000))
+    timers.set(
+      key,
+      setTimeout(() => {
+        remove(key)
+        args.onClose?.()
+      }, duration * 1000),
+    )
   }
 
   return { close: () => remove(key) }
@@ -1417,21 +1500,35 @@ describe('Modal', () => {
   it('renders title body and default footer when open', () => {
     const onOk = vi.fn()
     const onCancel = vi.fn()
-    render(() => <Modal open title="Title" onOk={onOk} onCancel={onCancel}>Body</Modal>)
+    render(() => (
+      <Modal open title="Title" onOk={onOk} onCancel={onCancel}>
+        Body
+      </Modal>
+    ))
 
     expect(document.body).toHaveTextContent('Title')
     expect(document.body).toHaveTextContent('Body')
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-modal-footer .ant-btn-primary')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ant-modal-footer .ant-btn-primary')!,
+    )
     expect(onOk).toHaveBeenCalledTimes(1)
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-modal-footer .ant-btn:not(.ant-btn-primary)')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.ant-modal-footer .ant-btn:not(.ant-btn-primary)',
+      )!,
+    )
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
   it('respects maskClosable and keyboard', () => {
     const onCancel = vi.fn()
-    render(() => <Modal open title="Locked" maskClosable={false} keyboard={false} onCancel={onCancel}>Body</Modal>)
+    render(() => (
+      <Modal open title="Locked" maskClosable={false} keyboard={false} onCancel={onCancel}>
+        Body
+      </Modal>
+    ))
 
     fireEvent.click(document.body.querySelector('.ant-modal-mask')!)
     fireEvent.keyDown(document, { key: 'Escape' })
@@ -1441,7 +1538,11 @@ describe('Modal', () => {
 
   it('locks body scroll while open', () => {
     const [open, setOpen] = createSignal(true)
-    render(() => <Modal open={open()} title="Scroll" afterClose={() => {}}>Body</Modal>)
+    render(() => (
+      <Modal open={open()} title="Scroll" afterClose={() => {}}>
+        Body
+      </Modal>
+    ))
     expect(document.body.style.overflow).toBe('hidden')
 
     setOpen(false)
@@ -1462,10 +1563,14 @@ describe('Modal', () => {
 
   it('keeps confirm modal open while async onOk resolves', async () => {
     let resolve!: () => void
-    const promise = new Promise<void>((next) => { resolve = next })
+    const promise = new Promise<void>((next) => {
+      resolve = next
+    })
     Modal.confirm({ title: 'Async', onOk: () => promise })
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-modal-footer .ant-btn-primary')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ant-modal-footer .ant-btn-primary')!,
+    )
     expect(document.body).toHaveTextContent('Async')
 
     resolve()
@@ -1565,7 +1670,11 @@ export function useModalStyle(prefixCls: string) {
       [`.${prefixCls}-root`]: { position: 'relative', 'z-index': 1000 },
       [`.${prefixCls}-mask`]: { position: 'fixed', inset: 0, background: mt.maskBg },
       [`.${prefixCls}-wrap`]: { position: 'fixed', inset: 0, overflow: 'auto', outline: 0 },
-      [`.${prefixCls}-centered`]: { display: 'flex', 'align-items': 'center', 'justify-content': 'center' },
+      [`.${prefixCls}-centered`]: {
+        display: 'flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+      },
       [`.${prefixCls}`]: {
         position: 'relative',
         top: 100,
@@ -1580,11 +1689,32 @@ export function useModalStyle(prefixCls: string) {
         'border-radius': mt.borderRadius,
         'box-shadow': mt.boxShadow,
       },
-      [`.${prefixCls}-header`]: { padding: `${t.padding}px ${t.paddingLG}px`, background: mt.headerBg, 'border-radius': `${mt.borderRadius}px ${mt.borderRadius}px 0 0` },
-      [`.${prefixCls}-title`]: { color: mt.titleColor, 'font-size': mt.titleFontSize, 'font-weight': 600 },
+      [`.${prefixCls}-header`]: {
+        padding: `${t.padding}px ${t.paddingLG}px`,
+        background: mt.headerBg,
+        'border-radius': `${mt.borderRadius}px ${mt.borderRadius}px 0 0`,
+      },
+      [`.${prefixCls}-title`]: {
+        color: mt.titleColor,
+        'font-size': mt.titleFontSize,
+        'font-weight': 600,
+      },
       [`.${prefixCls}-body`]: { padding: t.paddingLG, color: t.colorText },
-      [`.${prefixCls}-footer`]: { display: 'flex', 'justify-content': 'flex-end', gap: t.marginSM, padding: `${t.paddingSM}px ${t.paddingLG}px ${t.paddingLG}px` },
-      [`.${prefixCls}-close`]: { position: 'absolute', top: t.padding, right: t.padding, border: 0, background: 'transparent', cursor: 'pointer', color: t.colorTextSecondary },
+      [`.${prefixCls}-footer`]: {
+        display: 'flex',
+        'justify-content': 'flex-end',
+        gap: t.marginSM,
+        padding: `${t.paddingSM}px ${t.paddingLG}px ${t.paddingLG}px`,
+      },
+      [`.${prefixCls}-close`]: {
+        position: 'absolute',
+        top: t.padding,
+        right: t.padding,
+        border: 0,
+        background: 'transparent',
+        cursor: 'pointer',
+        color: t.colorTextSecondary,
+      },
     }
   })
 }
@@ -1606,8 +1736,26 @@ import type { ModalProps } from './interface'
 
 export function ModalBase(props: ModalProps) {
   const [local] = splitProps(props, [
-    'open', 'title', 'footer', 'okText', 'cancelText', 'confirmLoading', 'closable', 'mask', 'maskClosable',
-    'keyboard', 'centered', 'width', 'zIndex', 'onOk', 'onCancel', 'afterClose', 'children', 'class', 'classList', 'style',
+    'open',
+    'title',
+    'footer',
+    'okText',
+    'cancelText',
+    'confirmLoading',
+    'closable',
+    'mask',
+    'maskClosable',
+    'keyboard',
+    'centered',
+    'width',
+    'zIndex',
+    'onOk',
+    'onCancel',
+    'afterClose',
+    'children',
+    'class',
+    'classList',
+    'style',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-modal`
@@ -1635,7 +1783,12 @@ export function ModalBase(props: ModalProps) {
     if (locked) unlockBodyScroll()
   })
 
-  const widthStyle = () => (local.width === undefined ? undefined : typeof local.width === 'number' ? `${local.width}px` : local.width)
+  const widthStyle = () =>
+    local.width === undefined
+      ? undefined
+      : typeof local.width === 'number'
+        ? `${local.width}px`
+        : local.width
   const rootStyle = () => ({ 'z-index': local.zIndex, ...(local.style ?? {}) })
 
   return (
@@ -1643,21 +1796,56 @@ export function ModalBase(props: ModalProps) {
       <InternalPortal>
         <div class={classNames(`${prefixCls()}-root`, hashId())} style={rootStyle()}>
           <Show when={local.mask ?? true}>
-            <div class={`${prefixCls()}-mask`} onClick={() => { if (local.maskClosable ?? true) local.onCancel?.() }} />
+            <div
+              class={`${prefixCls()}-mask`}
+              onClick={() => {
+                if (local.maskClosable ?? true) local.onCancel?.()
+              }}
+            />
           </Show>
-          <div class={classNames(`${prefixCls()}-wrap`, local.centered && `${prefixCls()}-centered`)} role="dialog" aria-modal="true">
-            <div class={classNames(prefixCls(), local.class)} classList={local.classList} style={{ width: widthStyle() }}>
+          <div
+            class={classNames(`${prefixCls()}-wrap`, local.centered && `${prefixCls()}-centered`)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              class={classNames(prefixCls(), local.class)}
+              classList={local.classList}
+              style={{ width: widthStyle() }}
+            >
               <div class={`${prefixCls()}-content`}>
                 <Show when={local.closable ?? true}>
-                  <button type="button" class={`${prefixCls()}-close`} aria-label="close modal" onClick={() => local.onCancel?.()}>×</button>
+                  <button
+                    type="button"
+                    class={`${prefixCls()}-close`}
+                    aria-label="close modal"
+                    onClick={() => local.onCancel?.()}
+                  >
+                    ×
+                  </button>
                 </Show>
                 <Show when={local.title}>
-                  <div class={`${prefixCls()}-header`}><div class={`${prefixCls()}-title`}>{local.title}</div></div>
+                  <div class={`${prefixCls()}-header`}>
+                    <div class={`${prefixCls()}-title`}>{local.title}</div>
+                  </div>
                 </Show>
                 <div class={`${prefixCls()}-body`}>{local.children}</div>
                 <Show when={local.footer !== null}>
                   <div class={`${prefixCls()}-footer`}>
-                    {local.footer ?? <><Button onClick={() => local.onCancel?.()}>{local.cancelText ?? 'Cancel'}</Button><Button type="primary" loading={local.confirmLoading} onClick={() => local.onOk?.()}>{local.okText ?? 'OK'}</Button></>}
+                    {local.footer ?? (
+                      <>
+                        <Button onClick={() => local.onCancel?.()}>
+                          {local.cancelText ?? 'Cancel'}
+                        </Button>
+                        <Button
+                          type="primary"
+                          loading={local.confirmLoading}
+                          onClick={() => local.onOk?.()}
+                        >
+                          {local.okText ?? 'OK'}
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </Show>
               </div>
@@ -1721,7 +1909,13 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
       onCancel={handleCancel}
     >
       {props.config.content}
-      {type() !== 'confirm' && <div class="ant-modal-footer"><button type="button" class="ant-btn ant-btn-primary" onClick={handleOk}>{props.config.okText ?? 'OK'}</button></div>}
+      {type() !== 'confirm' && (
+        <div class="ant-modal-footer">
+          <button type="button" class="ant-btn ant-btn-primary" onClick={handleOk}>
+            {props.config.okText ?? 'OK'}
+          </button>
+        </div>
+      )}
     </ModalBase>
   )
 }
@@ -1843,22 +2037,36 @@ import { Popconfirm } from '../index'
 describe('Popconfirm', () => {
   it('opens from trigger and confirms', () => {
     const onConfirm = vi.fn()
-    const result = render(() => <Popconfirm title="Delete?" onConfirm={onConfirm}><Button>Delete</Button></Popconfirm>)
+    const result = render(() => (
+      <Popconfirm title="Delete?" onConfirm={onConfirm}>
+        <Button>Delete</Button>
+      </Popconfirm>
+    ))
 
     fireEvent.click(result.getByRole('button', { name: 'Delete' }))
     expect(document.body).toHaveTextContent('Delete?')
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-popconfirm-buttons .ant-btn-primary')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ant-popconfirm-buttons .ant-btn-primary')!,
+    )
     expect(onConfirm).toHaveBeenCalledTimes(1)
     expect(document.body).not.toHaveTextContent('Delete?')
   })
 
   it('cancels and closes', () => {
     const onCancel = vi.fn()
-    const result = render(() => <Popconfirm title="Cancel?" onCancel={onCancel}><Button>Open</Button></Popconfirm>)
+    const result = render(() => (
+      <Popconfirm title="Cancel?" onCancel={onCancel}>
+        <Button>Open</Button>
+      </Popconfirm>
+    ))
 
     fireEvent.click(result.getByRole('button', { name: 'Open' }))
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
+      )!,
+    )
 
     expect(onCancel).toHaveBeenCalledTimes(1)
     expect(document.body).not.toHaveTextContent('Cancel?')
@@ -1866,23 +2074,41 @@ describe('Popconfirm', () => {
 
   it('supports controlled open', () => {
     const [open, setOpen] = createSignal(true)
-    render(() => <Popconfirm open={open()} onOpenChange={setOpen} title="Controlled"><Button>Trigger</Button></Popconfirm>)
+    render(() => (
+      <Popconfirm open={open()} onOpenChange={setOpen} title="Controlled">
+        <Button>Trigger</Button>
+      </Popconfirm>
+    ))
     expect(document.body).toHaveTextContent('Controlled')
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.ant-popconfirm-buttons .ant-btn:not(.ant-btn-primary)',
+      )!,
+    )
     expect(open()).toBe(false)
   })
 
   it('does not open when disabled', () => {
-    const result = render(() => <Popconfirm disabled title="Disabled"><Button>Trigger</Button></Popconfirm>)
+    const result = render(() => (
+      <Popconfirm disabled title="Disabled">
+        <Button>Trigger</Button>
+      </Popconfirm>
+    ))
     fireEvent.click(result.getByRole('button', { name: 'Trigger' }))
     expect(document.body).not.toHaveTextContent('Disabled')
   })
 
   it('keeps open when async confirm rejects', async () => {
-    const result = render(() => <Popconfirm title="Async" onConfirm={() => Promise.reject(new Error('fail'))}><Button>Trigger</Button></Popconfirm>)
+    const result = render(() => (
+      <Popconfirm title="Async" onConfirm={() => Promise.reject(new Error('fail'))}>
+        <Button>Trigger</Button>
+      </Popconfirm>
+    ))
     fireEvent.click(result.getByRole('button', { name: 'Trigger' }))
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ant-popconfirm-buttons .ant-btn-primary')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ant-popconfirm-buttons .ant-btn-primary')!,
+    )
     await waitFor(() => expect(document.body).toHaveTextContent('Async'))
   })
 })
@@ -1932,25 +2158,33 @@ import { useToken } from '../config-provider'
 
 export function usePopconfirmStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Popconfirm', prefixCls] }, () => {
-    const t = token()
-    const pt = getComponentToken('Popconfirm', t)
-    return {
-      [`.${prefixCls}`]: {
-        position: 'fixed',
-        width: pt.width,
-        padding: pt.padding,
-        color: t.colorText,
-        background: pt.bg,
-        'border-radius': pt.borderRadius,
-        'box-shadow': pt.boxShadow,
-        'z-index': 1030,
-      },
-      [`.${prefixCls}-title`]: { 'font-weight': 600 },
-      [`.${prefixCls}-description`]: { color: t.colorTextSecondary, 'margin-top': t.marginXS },
-      [`.${prefixCls}-buttons`]: { display: 'flex', 'justify-content': 'flex-end', gap: t.marginSM, 'margin-top': t.margin },
-    }
-  })
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Popconfirm', prefixCls] },
+    () => {
+      const t = token()
+      const pt = getComponentToken('Popconfirm', t)
+      return {
+        [`.${prefixCls}`]: {
+          position: 'fixed',
+          width: pt.width,
+          padding: pt.padding,
+          color: t.colorText,
+          background: pt.bg,
+          'border-radius': pt.borderRadius,
+          'box-shadow': pt.boxShadow,
+          'z-index': 1030,
+        },
+        [`.${prefixCls}-title`]: { 'font-weight': 600 },
+        [`.${prefixCls}-description`]: { color: t.colorTextSecondary, 'margin-top': t.marginXS },
+        [`.${prefixCls}-buttons`]: {
+          display: 'flex',
+          'justify-content': 'flex-end',
+          gap: t.marginSM,
+          'margin-top': t.margin,
+        },
+      }
+    },
+  )
 }
 ```
 
@@ -2001,17 +2235,31 @@ export function Popconfirm(props: PopconfirmProps) {
   }
   return (
     <>
-      <span ref={setTrigger} onClick={() => { if (!props.disabled) setOpen(!mergedOpen()) }}>{props.children}</span>
+      <span
+        ref={setTrigger}
+        onClick={() => {
+          if (!props.disabled) setOpen(!mergedOpen())
+        }}
+      >
+        {props.children}
+      </span>
       <Show when={mergedOpen()}>
         <InternalPortal>
-          <div class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())} style={position()}>
+          <div
+            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
+            style={position()}
+          >
             <div class={`${prefixCls()}-title`}>{props.title}</div>
             <Show when={props.description}>
               <div class={`${prefixCls()}-description`}>{props.description}</div>
             </Show>
             <div class={`${prefixCls()}-buttons`}>
-              <Button size="small" onClick={cancel}>{props.cancelText ?? 'Cancel'}</Button>
-              <Button size="small" type="primary" onClick={confirm}>{props.okText ?? 'OK'}</Button>
+              <Button size="small" onClick={cancel}>
+                {props.cancelText ?? 'Cancel'}
+              </Button>
+              <Button size="small" type="primary" onClick={confirm}>
+                {props.okText ?? 'OK'}
+              </Button>
             </div>
           </div>
         </InternalPortal>
@@ -2083,7 +2331,10 @@ export function AlertPage() {
           <Alert message="Error" type="error" showIcon />
         </Space>
       </DemoBlock>
-      <DemoBlock title="Closable" code={`<Alert closable message="Closable" description="More detail" />`}>
+      <DemoBlock
+        title="Closable"
+        code={`<Alert closable message="Closable" description="More detail" />`}
+      >
         <Alert closable message="Closable" description="More detail" />
       </DemoBlock>
     </>
@@ -2123,10 +2374,21 @@ export function NotificationPage() {
   return (
     <>
       <h1>Notification</h1>
-      <DemoBlock title="Basic" code={`notification.success({ message: 'Done', description: 'Task finished' })`}>
+      <DemoBlock
+        title="Basic"
+        code={`notification.success({ message: 'Done', description: 'Task finished' })`}
+      >
         <Space>
-          <Button onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}>Success</Button>
-          <Button onClick={() => notification.open({ message: 'Bottom left', placement: 'bottomLeft' })}>Bottom left</Button>
+          <Button
+            onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}
+          >
+            Success
+          </Button>
+          <Button
+            onClick={() => notification.open({ message: 'Bottom left', placement: 'bottomLeft' })}
+          >
+            Bottom left
+          </Button>
         </Space>
       </DemoBlock>
     </>
@@ -2148,10 +2410,19 @@ export function ModalPage() {
       <h1>Modal</h1>
       <DemoBlock title="Basic" code={`<Modal open={open()} title="Basic modal">Content</Modal>`}>
         <Space>
-          <Button type="primary" onClick={() => setOpen(true)}>Open modal</Button>
-          <Button onClick={() => Modal.confirm({ title: 'Confirm', content: 'Are you sure?' })}>Confirm</Button>
+          <Button type="primary" onClick={() => setOpen(true)}>
+            Open modal
+          </Button>
+          <Button onClick={() => Modal.confirm({ title: 'Confirm', content: 'Are you sure?' })}>
+            Confirm
+          </Button>
         </Space>
-        <Modal open={open()} title="Basic modal" onOk={() => setOpen(false)} onCancel={() => setOpen(false)}>
+        <Modal
+          open={open()}
+          title="Basic modal"
+          onOk={() => setOpen(false)}
+          onCancel={() => setOpen(false)}
+        >
           Content
         </Modal>
       </DemoBlock>
@@ -2170,8 +2441,15 @@ export function PopconfirmPage() {
   return (
     <>
       <h1>Popconfirm</h1>
-      <DemoBlock title="Basic" code={`<Popconfirm title="Delete?" onConfirm={remove}><Button danger>Delete</Button></Popconfirm>`}>
-        <Popconfirm title="Delete?" description="This action cannot be undone." onConfirm={() => message.success('Deleted')}>
+      <DemoBlock
+        title="Basic"
+        code={`<Popconfirm title="Delete?" onConfirm={remove}><Button danger>Delete</Button></Popconfirm>`}
+      >
+        <Popconfirm
+          title="Delete?"
+          description="This action cannot be undone."
+          onConfirm={() => message.success('Deleted')}
+        >
           <Button danger>Delete</Button>
         </Popconfirm>
       </DemoBlock>
