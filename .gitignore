@@ -13,3 +13,5 @@ coverage/
 .k2/
 
 .pnpm-store/
+
+.worktrees/
