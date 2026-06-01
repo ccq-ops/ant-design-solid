@@ -46,7 +46,8 @@ export function Popconfirm(props: PopconfirmProps) {
   }
   const [position, setPosition] = createSignal(getPosition())
 
-  const confirm = async () => {
+  const confirm = async (event?: MouseEvent) => {
+    event?.stopPropagation()
     try {
       await props.onConfirm?.()
       setOpen(false)
@@ -55,7 +56,8 @@ export function Popconfirm(props: PopconfirmProps) {
     }
   }
 
-  const cancel = () => {
+  const cancel = (event?: MouseEvent) => {
+    event?.stopPropagation()
     props.onCancel?.()
     setOpen(false)
   }
@@ -78,16 +80,17 @@ export function Popconfirm(props: PopconfirmProps) {
             class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
             style={position()}
             role="dialog"
+            on:click={(event) => event.stopPropagation()}
           >
             <div class={`${prefixCls()}-title`}>{props.title}</div>
             <Show when={props.description}>
               <div class={`${prefixCls()}-description`}>{props.description}</div>
             </Show>
             <div class={`${prefixCls()}-buttons`}>
-              <Button size="small" onClick={cancel}>
+              <Button size="small" on:click={cancel}>
                 {props.cancelText ?? 'Cancel'}
               </Button>
-              <Button size="small" type="primary" onClick={confirm}>
+              <Button size="small" type="primary" on:click={confirm}>
                 {props.okText ?? 'OK'}
               </Button>
             </div>

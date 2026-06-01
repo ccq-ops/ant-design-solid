@@ -70,6 +70,59 @@ describe('Popconfirm', () => {
     expect(open()).toBe(false)
   })
 
+  it('does not let action clicks bubble back to controlled trigger handlers', async () => {
+    const [open, setOpen] = createSignal(false)
+    const onConfirm = vi.fn()
+    const onCancel = vi.fn()
+    const reopenFromBubbledAction = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest('.ads-popconfirm-buttons')) {
+        queueMicrotask(() => setOpen(true))
+      }
+    }
+    document.body.addEventListener('click', reopenFromBubbledAction)
+
+    try {
+      render(() => (
+        <Popconfirm
+          open={open()}
+          onOpenChange={setOpen}
+          title="Controlled bubble"
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+        >
+          <Button onClick={() => setOpen(true)}>Trigger</Button>
+        </Popconfirm>
+      ))
+
+      setOpen(true)
+      await waitFor(() => expect(document.body).toHaveTextContent('Controlled bubble'))
+
+      fireEvent.click(
+        document.body.querySelector<HTMLButtonElement>('.ads-popconfirm-buttons .ads-btn-primary')!,
+      )
+      await waitFor(() => expect(onConfirm).toHaveBeenCalledTimes(1))
+      await Promise.resolve()
+      expect(open()).toBe(false)
+      expect(document.body).not.toHaveTextContent('Controlled bubble')
+
+      setOpen(true)
+      await waitFor(() => expect(document.body).toHaveTextContent('Controlled bubble'))
+
+      fireEvent.click(
+        document.body.querySelector<HTMLButtonElement>(
+          '.ads-popconfirm-buttons .ads-btn:not(.ads-btn-primary)',
+        )!,
+      )
+      await Promise.resolve()
+      expect(open()).toBe(false)
+      expect(document.body).not.toHaveTextContent('Controlled bubble')
+      expect(onCancel).toHaveBeenCalledTimes(1)
+    } finally {
+      document.body.removeEventListener('click', reopenFromBubbledAction)
+    }
+  })
+
   it('does not open when disabled', () => {
     const result = render(() => (
       <Popconfirm disabled title="Disabled">
