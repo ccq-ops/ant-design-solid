@@ -18,7 +18,8 @@ export function Divider(props: DividerProps) {
   const [, hashId] = useDividerStyle(prefixCls())
   const type = () => local.type ?? 'horizontal'
   const orientation = () => local.orientation ?? 'center'
-  const hasText = () => type() === 'horizontal' && local.children !== undefined && local.children !== null
+  const hasText = () =>
+    type() === 'horizontal' && local.children !== undefined && local.children !== null
 
   return (
     <div
