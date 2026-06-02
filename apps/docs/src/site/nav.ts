@@ -15,6 +15,7 @@ export const navItems = [
   { path: '/components/tabs', label: 'Tabs' },
   { path: '/components/tooltip', label: 'Tooltip' },
   { path: '/components/dropdown', label: 'Dropdown' },
+  { path: '/components/breadcrumb', label: 'Breadcrumb' },
   { path: '/components/alert', label: 'Alert' },
   { path: '/components/message', label: 'Message' },
   { path: '/components/notification', label: 'Notification' },
