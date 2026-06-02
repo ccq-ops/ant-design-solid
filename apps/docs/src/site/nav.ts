@@ -9,6 +9,7 @@ export const navItems = [
   { path: '/components/checkbox', label: 'Checkbox' },
   { path: '/components/radio', label: 'Radio' },
   { path: '/components/switch', label: 'Switch' },
+  { path: '/components/rate', label: 'Rate' },
   { path: '/components/table', label: 'Table' },
   { path: '/components/tag', label: 'Tag' },
   { path: '/components/badge', label: 'Badge' },
