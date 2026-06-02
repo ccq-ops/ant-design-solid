@@ -16,6 +16,31 @@ function input(container: HTMLElement) {
 afterEach(() => cleanup())
 
 describe('Upload', () => {
+  it('does not expose a nested button role around button children', () => {
+    render(() => (
+      <Upload>
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Upload' })).toBeInTheDocument()
+  })
+
+  it('opens input when clicking the child or trigger wrapper', () => {
+    const result = render(() => (
+      <Upload>
+        <button>Upload</button>
+      </Upload>
+    ))
+    const element = input(result.container)
+    const click = vi.spyOn(element, 'click')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Upload' }))
+    fireEvent.click(result.container.querySelector('.ads-upload-trigger') as HTMLElement)
+
+    expect(click).toHaveBeenCalledTimes(2)
+  })
   it('adds selected files and marks them done without customRequest', async () => {
     const onChange = vi.fn()
     const result = render(() => (
@@ -134,6 +159,90 @@ describe('Upload', () => {
     )
   })
 
+  it('ignores late progress after success', async () => {
+    let progress: ((percent: number) => void) | undefined
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Upload
+        customRequest={({ onProgress, onSuccess }) => {
+          progress = onProgress
+          onSuccess({ ok: true })
+        }}
+        onChange={onChange}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), { target: { files: [file('late.txt')] } })
+
+    await waitFor(() => expect(screen.getByText('done')).toBeInTheDocument())
+    progress?.(25)
+
+    expect(screen.getByText('done')).toBeInTheDocument()
+    expect(screen.queryByText('uploading')).not.toBeInTheDocument()
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ file: expect.objectContaining({ status: 'done', percent: 100 }) }),
+    )
+  })
+
+  it('ignores callbacks after a file is removed', async () => {
+    let progress: ((percent: number) => void) | undefined
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Upload
+        customRequest={({ onProgress }) => {
+          progress = onProgress
+        }}
+        onChange={onChange}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), { target: { files: [file('removed-late.txt')] } })
+    await waitFor(() => expect(screen.getByText('removed-late.txt')).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: 'Remove removed-late.txt' }))
+    await waitFor(() => expect(screen.queryByText('removed-late.txt')).not.toBeInTheDocument())
+
+    const callsBeforeLateProgress = onChange.mock.calls.length
+    progress?.(80)
+
+    expect(onChange).toHaveBeenCalledTimes(callsBeforeLateProgress)
+    expect(screen.queryByText('removed-late.txt')).not.toBeInTheDocument()
+  })
+
+  it('ignores callbacks after maxCount trims a file', async () => {
+    const progressByFile = new Map<string, (percent: number) => void>()
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Upload
+        multiple
+        maxCount={1}
+        customRequest={({ file, onProgress }) => {
+          progressByFile.set(file.name, onProgress)
+        }}
+        onChange={onChange}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), {
+      target: { files: [file('trimmed.txt'), file('latest.txt')] },
+    })
+
+    await waitFor(() => expect(screen.queryByText('trimmed.txt')).not.toBeInTheDocument())
+    expect(screen.getByText('latest.txt')).toBeInTheDocument()
+
+    const callsBeforeLateProgress = onChange.mock.calls.length
+    progressByFile.get('trimmed.txt')?.(80)
+
+    expect(onChange).toHaveBeenCalledTimes(callsBeforeLateProgress)
+    expect(screen.queryByText('trimmed.txt')).not.toBeInTheDocument()
+    expect(screen.getByText('latest.txt')).toBeInTheDocument()
+  })
+
   it('updates error from customRequest onError and catches thrown customRequest errors', async () => {
     const onErrorChange = vi.fn()
     const error = new Error('failed')
@@ -195,7 +304,7 @@ describe('Upload', () => {
   it('removes files when onRemove allows removal', async () => {
     const onChange = vi.fn()
     const onRemove = vi.fn(async () => true)
-    const result = render(() => (
+    render(() => (
       <Upload
         defaultFileList={[{ uid: '1', name: 'remove.txt', status: 'done' }]}
         onChange={onChange}

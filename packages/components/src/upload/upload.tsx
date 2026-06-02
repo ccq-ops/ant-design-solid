@@ -54,6 +54,8 @@ export function Upload(props: UploadProps) {
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-upload`
   const [, hashId] = useUploadStyle(prefixCls())
   const [innerFileList, setInnerFileList] = createSignal<UploadFile[]>(local.defaultFileList ?? [])
+  const activeUids = new Set<string>()
+  const terminalUids = new Set<string>()
   let inputRef: HTMLInputElement | undefined
 
   const disabled = () => Boolean(local.disabled)
@@ -61,15 +63,49 @@ export function Upload(props: UploadProps) {
   const isControlled = () => 'fileList' in props
   const mergedFileList = () => (isControlled() ? (local.fileList ?? []) : innerFileList())
 
+  function markInactive(uid: string): void {
+    activeUids.delete(uid)
+    terminalUids.add(uid)
+  }
+
   function updateFileList(nextList: UploadFile[], changedFile: UploadFile): void {
     const limitedList = applyMaxCount(nextList, local.maxCount)
+    const nextUids = new Set(nextList.map((file) => file.uid))
+    const limitedUids = new Set(limitedList.map((file) => file.uid))
+
+    for (const uid of nextUids) {
+      if (!limitedUids.has(uid)) markInactive(uid)
+    }
+
     if (!isControlled()) setInnerFileList(limitedList)
     local.onChange?.({ file: changedFile, fileList: limitedList })
   }
 
-  function replaceFile(file: UploadFile): void {
+  function currentFile(uid: string): UploadFile | undefined {
+    return mergedFileList().find((file) => file.uid === uid)
+  }
+
+  function replaceExistingFile(file: UploadFile): void {
+    if (!currentFile(file.uid)) return
     const nextList = mergedFileList().map((item) => (item.uid === file.uid ? file : item))
     updateFileList(nextList, file)
+  }
+
+  function updateActiveFile(
+    uid: string,
+    updater: (file: UploadFile) => UploadFile,
+    options: { terminal?: boolean } = {},
+  ): void {
+    if (!activeUids.has(uid) || terminalUids.has(uid)) return
+    const current = currentFile(uid)
+    if (!current) {
+      markInactive(uid)
+      return
+    }
+
+    const nextFile = updater(current)
+    if (options.terminal) markInactive(uid)
+    replaceExistingFile(nextFile)
   }
 
   function addFile(file: UploadFile): void {
@@ -80,29 +116,49 @@ export function Upload(props: UploadProps) {
     const originFileObj = file.originFileObj
     if (!originFileObj) return
 
+    activeUids.add(file.uid)
+    terminalUids.delete(file.uid)
+
     if (!local.customRequest) {
-      replaceFile({ ...file, status: 'done', percent: 100 })
+      updateActiveFile(file.uid, (current) => ({ ...current, status: 'done', percent: 100 }), {
+        terminal: true,
+      })
       return
     }
 
-    const uploadingFile: UploadFile = { ...file, status: 'uploading', percent: file.percent ?? 0 }
-    replaceFile(uploadingFile)
+    updateActiveFile(file.uid, (current) => ({
+      ...current,
+      status: 'uploading',
+      percent: current.percent ?? 0,
+    }))
 
     try {
       local.customRequest({
         file: originFileObj,
         onProgress: (percent) => {
-          replaceFile({ ...uploadingFile, status: 'uploading', percent: clampPercent(percent) })
+          updateActiveFile(file.uid, (current) => ({
+            ...current,
+            status: 'uploading',
+            percent: clampPercent(percent),
+          }))
         },
         onSuccess: (response) => {
-          replaceFile({ ...uploadingFile, status: 'done', percent: 100, response })
+          updateActiveFile(
+            file.uid,
+            (current) => ({ ...current, status: 'done', percent: 100, response }),
+            { terminal: true },
+          )
         },
         onError: (error) => {
-          replaceFile({ ...uploadingFile, status: 'error', error })
+          updateActiveFile(file.uid, (current) => ({ ...current, status: 'error', error }), {
+            terminal: true,
+          })
         },
       })
     } catch (error) {
-      replaceFile({ ...uploadingFile, status: 'error', error })
+      updateActiveFile(file.uid, (current) => ({ ...current, status: 'error', error }), {
+        terminal: true,
+      })
     }
   }
 
@@ -114,6 +170,7 @@ export function Upload(props: UploadProps) {
       try {
         shouldUpload = local.beforeUpload ? await local.beforeUpload(nativeFile) : true
       } catch (error) {
+        markInactive(uploadFile.uid)
         addFile({ ...uploadFile, status: 'error', error })
         continue
       }
@@ -147,6 +204,7 @@ export function Upload(props: UploadProps) {
     }
 
     if (result === false) return
+    markInactive(file.uid)
     const removedFile: UploadFile = { ...file, status: 'removed' }
     updateFileList(
       mergedFileList().filter((item) => item.uid !== file.uid),
@@ -165,23 +223,13 @@ export function Upload(props: UploadProps) {
       )}
       style={local.style}
     >
-      <span
-        class={`${prefixCls()}-trigger`}
-        role="button"
-        tabindex={disabled() ? undefined : 0}
-        aria-disabled={disabled()}
-        onClick={openFileDialog}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault()
-            openFileDialog()
-          }
-        }}
-      >
+      <span class={`${prefixCls()}-trigger`} aria-disabled={disabled()} onClick={openFileDialog}>
         {local.children}
       </span>
       <input
-        ref={inputRef}
+        ref={(element) => {
+          inputRef = element
+        }}
         class={`${prefixCls()}-input`}
         type="file"
         accept={local.accept}
