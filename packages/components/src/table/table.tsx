@@ -5,23 +5,23 @@ import { useTableStyle } from './table.style'
 import type { JSX } from 'solid-js'
 import type { TableColumn, TableProps } from './interface'
 
-function getValue<T extends Record<string, unknown>>(record: T, dataIndex: keyof T | string | undefined) {
+function getValue<T extends object>(record: T, dataIndex: keyof T | string | undefined) {
   if (!dataIndex) return undefined
-  return record[dataIndex as keyof T]
+  return (record as Record<string, unknown>)[String(dataIndex)]
 }
 
-function getColumnKey<T extends Record<string, unknown>>(column: TableColumn<T>, index: number) {
+function getColumnKey<T extends object>(column: TableColumn<T>, index: number) {
   return column.key ?? String(column.dataIndex ?? index)
 }
 
-function getRowKey<T extends Record<string, unknown>>(record: T, index: number, rowKey: TableProps<T>['rowKey']) {
+function getRowKey<T extends object>(record: T, index: number, rowKey: TableProps<T>['rowKey']) {
   if (typeof rowKey === 'function') return rowKey(record, index)
-  if (rowKey) return String(record[rowKey])
+  if (rowKey) return String((record as Record<string, unknown>)[String(rowKey)])
   if ('key' in record && record.key != null) return String(record.key)
   return String(index)
 }
 
-export function Table<T extends Record<string, unknown> = Record<string, unknown>>(props: TableProps<T>) {
+export function Table<T extends object = object>(props: TableProps<T>) {
   const [local, rest] = splitProps(props, [
     'columns',
     'dataSource',

@@ -18,3 +18,6 @@ export * from './notification'
 export * from './modal'
 
 export * from './popconfirm'
+export * from './table'
+export * from './tag'
+export * from './badge'

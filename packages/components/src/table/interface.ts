@@ -1,7 +1,7 @@
 import type { JSX } from 'solid-js'
 import type { ComponentSize } from '@ant-design-solid/theme'
 
-export interface TableColumn<T extends Record<string, unknown> = Record<string, unknown>> {
+export interface TableColumn<T extends object = object> {
   title?: JSX.Element
   dataIndex?: keyof T | string
   key?: string
@@ -12,7 +12,7 @@ export interface TableColumn<T extends Record<string, unknown> = Record<string, 
   classList?: Record<string, boolean | undefined>
 }
 
-export interface TableProps<T extends Record<string, unknown> = Record<string, unknown>>
+export interface TableProps<T extends object = object>
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'> {
   columns?: TableColumn<T>[]
   dataSource?: T[]

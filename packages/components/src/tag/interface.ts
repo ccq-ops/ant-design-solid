@@ -1,6 +1,6 @@
 import type { JSX } from 'solid-js'
 
-export interface TagProps extends JSX.HTMLAttributes<HTMLSpanElement> {
+export interface TagProps extends Omit<JSX.HTMLAttributes<HTMLSpanElement>, 'onClose'> {
   color?: string
   closable?: boolean
   onClose?: (event: MouseEvent) => void
