@@ -20,7 +20,12 @@ describe('Tooltip', () => {
   it('opens and closes overlay on hover with delays and onOpenChange', () => {
     const onOpenChange = vi.fn()
     const result = render(() => (
-      <Tooltip title="Helpful" mouseEnterDelay={0.1} mouseLeaveDelay={0.2} onOpenChange={onOpenChange}>
+      <Tooltip
+        title="Helpful"
+        mouseEnterDelay={0.1}
+        mouseLeaveDelay={0.2}
+        onOpenChange={onOpenChange}
+      >
         <button type="button">Trigger</button>
       </Tooltip>
     ))

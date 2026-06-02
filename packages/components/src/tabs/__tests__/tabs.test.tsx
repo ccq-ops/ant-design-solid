@@ -148,7 +148,6 @@ describe('Tabs', () => {
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
   })
 
-
   it('links tabs and panels with aria attributes', () => {
     const result = render(() => <Tabs items={items} />)
     const tab = result.getByRole('tab', { name: 'One' })

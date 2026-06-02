@@ -60,6 +60,7 @@
 ## Task 1: Add Theme Tokens
 
 **Files:**
+
 - Modify: `packages/theme/src/types.ts`
 - Modify: `packages/theme/src/components.ts`
 - Modify: `packages/theme/src/__tests__/theme.test.ts`
@@ -149,9 +150,9 @@ export interface DropdownComponentToken {
 Extend `ComponentTokenMap` with:
 
 ```ts
-  Tabs: TabsComponentToken
-  Tooltip: TooltipComponentToken
-  Dropdown: DropdownComponentToken
+Tabs: TabsComponentToken
+Tooltip: TooltipComponentToken
+Dropdown: DropdownComponentToken
 ```
 
 - [ ] **Step 4: Add default token derivation**
@@ -215,6 +216,7 @@ git commit -m "feat(theme): add interaction component tokens"
 ## Task 2: Add Shared Placement Helper
 
 **Files:**
+
 - Create: `packages/components/src/shared/placement.ts`
 - Create: `packages/components/src/shared/__tests__/placement.test.ts`
 
@@ -307,7 +309,11 @@ export interface OverlayPosition {
   transform?: string
 }
 
-export function getTooltipPosition(rect: DOMRect, placement: TooltipPlacement, offset = 8): OverlayPosition {
+export function getTooltipPosition(
+  rect: DOMRect,
+  placement: TooltipPlacement,
+  offset = 8,
+): OverlayPosition {
   const centerX = rect.left + rect.width / 2
   const centerY = rect.top + rect.height / 2
 
@@ -315,23 +321,43 @@ export function getTooltipPosition(rect: DOMRect, placement: TooltipPlacement, o
     return { top: `${rect.bottom + offset}px`, left: `${centerX}px`, transform: 'translateX(-50%)' }
   }
   if (placement === 'left') {
-    return { top: `${centerY}px`, left: `${rect.left - offset}px`, transform: 'translate(-100%, -50%)' }
+    return {
+      top: `${centerY}px`,
+      left: `${rect.left - offset}px`,
+      transform: 'translate(-100%, -50%)',
+    }
   }
   if (placement === 'right') {
     return { top: `${centerY}px`, left: `${rect.right + offset}px`, transform: 'translateY(-50%)' }
   }
-  return { top: `${rect.top - offset}px`, left: `${centerX}px`, transform: 'translate(-50%, -100%)' }
+  return {
+    top: `${rect.top - offset}px`,
+    left: `${centerX}px`,
+    transform: 'translate(-50%, -100%)',
+  }
 }
 
-export function getDropdownPosition(rect: DOMRect, placement: DropdownPlacement, offset = 4): OverlayPosition {
+export function getDropdownPosition(
+  rect: DOMRect,
+  placement: DropdownPlacement,
+  offset = 4,
+): OverlayPosition {
   if (placement === 'bottomRight') {
-    return { top: `${rect.bottom + offset}px`, left: `${rect.right}px`, transform: 'translateX(-100%)' }
+    return {
+      top: `${rect.bottom + offset}px`,
+      left: `${rect.right}px`,
+      transform: 'translateX(-100%)',
+    }
   }
   if (placement === 'topLeft') {
     return { top: `${rect.top - offset}px`, left: `${rect.left}px`, transform: 'translateY(-100%)' }
   }
   if (placement === 'topRight') {
-    return { top: `${rect.top - offset}px`, left: `${rect.right}px`, transform: 'translate(-100%, -100%)' }
+    return {
+      top: `${rect.top - offset}px`,
+      left: `${rect.right}px`,
+      transform: 'translate(-100%, -100%)',
+    }
   }
   return { top: `${rect.bottom + offset}px`, left: `${rect.left}px` }
 }
@@ -359,6 +385,7 @@ git commit -m "feat(components): add overlay placement helper"
 ## Task 3: Implement Tabs
 
 **Files:**
+
 - Create: `packages/components/src/tabs/interface.ts`
 - Create: `packages/components/src/tabs/tabs.style.ts`
 - Create: `packages/components/src/tabs/tabs.tsx`
@@ -409,7 +436,9 @@ describe('Tabs', () => {
 
   it('controlled mode updates when activeKey changes', () => {
     const [activeKey, setActiveKey] = createSignal('one')
-    const result = render(() => <Tabs items={items} activeKey={activeKey()} onChange={setActiveKey} />)
+    const result = render(() => (
+      <Tabs items={items} activeKey={activeKey()} onChange={setActiveKey} />
+    ))
     fireEvent.click(result.getByRole('tab', { name: 'Two' }))
     expect(result.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true')
     expect(result.getByText('Pane two')).toBeInTheDocument()
@@ -424,7 +453,9 @@ describe('Tabs', () => {
   })
 
   it('destroys inactive panes when requested', () => {
-    const result = render(() => <Tabs items={items} defaultActiveKey="one" destroyInactiveTabPane />)
+    const result = render(() => (
+      <Tabs items={items} defaultActiveKey="one" destroyInactiveTabPane />
+    ))
     expect(result.queryByText('Pane two')).toBeNull()
     fireEvent.click(result.getByRole('tab', { name: 'Two' }))
     expect(result.queryByText('Pane one')).toBeNull()
@@ -501,9 +532,19 @@ export function useTabsStyle(prefixCls: string) {
     const t = token()
     const tabs = getComponentToken('Tabs', t)
     return {
-      [`.${prefixCls}`]: { color: t.colorText, 'font-family': t.fontFamily, 'font-size': t.fontSize },
-      [`.${prefixCls}-nav`]: { display: 'flex', borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}` },
-      [`.${prefixCls}-bottom .${prefixCls}-nav`]: { borderBottom: 0, borderTop: `${t.lineWidth}px solid ${tabs.cardBorderColor}` },
+      [`.${prefixCls}`]: {
+        color: t.colorText,
+        'font-family': t.fontFamily,
+        'font-size': t.fontSize,
+      },
+      [`.${prefixCls}-nav`]: {
+        display: 'flex',
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+      },
+      [`.${prefixCls}-bottom .${prefixCls}-nav`]: {
+        borderBottom: 0,
+        borderTop: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+      },
       [`.${prefixCls}-tab`]: {
         position: 'relative',
         padding: `0 ${tabs.horizontalItemPadding}px`,
@@ -527,8 +568,14 @@ export function useTabsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-bottom .${prefixCls}-tab-active::after`]: { top: -1, bottom: 'auto' },
       [`.${prefixCls}-tab-disabled`]: { color: tabs.itemDisabledColor, cursor: 'not-allowed' },
-      [`.${prefixCls}-small .${prefixCls}-tab`]: { height: t.controlHeightSM, padding: `0 ${tabs.horizontalItemPaddingSm}px` },
-      [`.${prefixCls}-large .${prefixCls}-tab`]: { height: t.controlHeightLG, padding: `0 ${tabs.horizontalItemPaddingLg}px` },
+      [`.${prefixCls}-small .${prefixCls}-tab`]: {
+        height: t.controlHeightSM,
+        padding: `0 ${tabs.horizontalItemPaddingSm}px`,
+      },
+      [`.${prefixCls}-large .${prefixCls}-tab`]: {
+        height: t.controlHeightLG,
+        padding: `0 ${tabs.horizontalItemPaddingLg}px`,
+      },
       [`.${prefixCls}-card .${prefixCls}-tab`]: {
         marginInlineEnd: 2,
         background: tabs.cardBg,
@@ -561,7 +608,8 @@ import { useTabsStyle } from './tabs.style'
 import type { TabsItem, TabsProps } from './interface'
 
 function getInitialActiveKey(items: TabsItem[], defaultActiveKey?: string) {
-  if (defaultActiveKey && items.some((item) => item.key === defaultActiveKey && !item.disabled)) return defaultActiveKey
+  if (defaultActiveKey && items.some((item) => item.key === defaultActiveKey && !item.disabled))
+    return defaultActiveKey
   return items.find((item) => !item.disabled)?.key ?? items[0]?.key ?? ''
 }
 
@@ -577,7 +625,9 @@ export function Tabs(props: TabsProps) {
     'destroyInactiveTabPane',
     'class',
   ])
-  const [innerActiveKey, setInnerActiveKey] = createSignal(getInitialActiveKey(local.items, local.defaultActiveKey))
+  const [innerActiveKey, setInnerActiveKey] = createSignal(
+    getInitialActiveKey(local.items, local.defaultActiveKey),
+  )
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-tabs`
   const [, hashId] = useTabsStyle(prefixCls())
@@ -622,7 +672,10 @@ export function Tabs(props: TabsProps) {
           const active = () => item.key === mergedActiveKey()
           return (
             <Show when={!local.destroyInactiveTabPane || active()}>
-              <div class={classNames(`${prefixCls()}-pane`, !active() && `${prefixCls()}-pane-hidden`)} role="tabpanel">
+              <div
+                class={classNames(`${prefixCls()}-pane`, !active() && `${prefixCls()}-pane-hidden`)}
+                role="tabpanel"
+              >
                 {item.children}
               </div>
             </Show>
@@ -644,7 +697,15 @@ export function Tabs(props: TabsProps) {
         local.class,
       )}
     >
-      <Show when={position() === 'bottom'} fallback={<>{nav()}{content()}</>}>
+      <Show
+        when={position() === 'bottom'}
+        fallback={
+          <>
+            {nav()}
+            {content()}
+          </>
+        }
+      >
         {content()}
         {nav()}
       </Show>
@@ -682,6 +743,7 @@ git commit -m "feat(components): add tabs"
 ## Task 4: Implement Tooltip
 
 **Files:**
+
 - Create: `packages/components/src/tooltip/interface.ts`
 - Create: `packages/components/src/tooltip/tooltip.style.ts`
 - Create: `packages/components/src/tooltip/tooltip.tsx`
@@ -833,27 +895,30 @@ import { useToken } from '../config-provider'
 
 export function useTooltipStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Tooltip', prefixCls] }, () => {
-    const t = token()
-    const tooltip = getComponentToken('Tooltip', t)
-    return {
-      [`.${prefixCls}-trigger`]: { display: 'inline-block' },
-      [`.${prefixCls}`]: {
-        position: 'fixed',
-        'z-index': 1070,
-        'box-sizing': 'border-box',
-        'max-width': tooltip.maxWidth,
-        padding: `${tooltip.paddingBlock}px ${tooltip.paddingInline}px`,
-        color: tooltip.color,
-        'font-size': t.fontSize,
-        'line-height': t.lineHeight,
-        background: tooltip.bg,
-        'border-radius': tooltip.borderRadius,
-        'box-shadow': tooltip.boxShadow,
-        'pointer-events': 'none',
-      },
-    }
-  })
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Tooltip', prefixCls] },
+    () => {
+      const t = token()
+      const tooltip = getComponentToken('Tooltip', t)
+      return {
+        [`.${prefixCls}-trigger`]: { display: 'inline-block' },
+        [`.${prefixCls}`]: {
+          position: 'fixed',
+          'z-index': 1070,
+          'box-sizing': 'border-box',
+          'max-width': tooltip.maxWidth,
+          padding: `${tooltip.paddingBlock}px ${tooltip.paddingInline}px`,
+          color: tooltip.color,
+          'font-size': t.fontSize,
+          'line-height': t.lineHeight,
+          background: tooltip.bg,
+          'border-radius': tooltip.borderRadius,
+          'box-shadow': tooltip.boxShadow,
+          'pointer-events': 'none',
+        },
+      }
+    },
+  )
 }
 ```
 
@@ -963,8 +1028,16 @@ export function Tooltip(props: TooltipProps) {
       <Show when={canUseDom() && mergedOpen() && hasTitle()}>
         <InternalPortal>
           <div
-            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId(), local.overlayClass)}
-            style={{ ...position(), ...(typeof local.overlayStyle === 'object' ? local.overlayStyle : {}) }}
+            class={classNames(
+              prefixCls(),
+              `${prefixCls()}-${placement()}`,
+              hashId(),
+              local.overlayClass,
+            )}
+            style={{
+              ...position(),
+              ...(typeof local.overlayStyle === 'object' ? local.overlayStyle : {}),
+            }}
             role="tooltip"
           >
             {local.title}
@@ -1005,6 +1078,7 @@ git commit -m "feat(components): add tooltip"
 ## Task 5: Implement Dropdown
 
 **Files:**
+
 - Create: `packages/components/src/dropdown/interface.ts`
 - Create: `packages/components/src/dropdown/dropdown.style.ts`
 - Create: `packages/components/src/dropdown/dropdown.tsx`
@@ -1174,33 +1248,43 @@ import { useToken } from '../config-provider'
 
 export function useDropdownStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Dropdown', prefixCls] }, () => {
-    const t = token()
-    const dropdown = getComponentToken('Dropdown', t)
-    return {
-      [`.${prefixCls}-trigger`]: { display: 'inline-block' },
-      [`.${prefixCls}`]: {
-        position: 'fixed',
-        'z-index': 1050,
-        'min-width': dropdown.minWidth,
-        padding: `${t.paddingXS}px 0`,
-        background: dropdown.bg,
-        'border-radius': dropdown.borderRadius,
-        'box-shadow': dropdown.boxShadow,
-      },
-      [`.${prefixCls}-menu`]: { margin: 0, padding: 0, 'list-style': 'none' },
-      [`.${prefixCls}-item`]: {
-        padding: `${dropdown.itemPaddingBlock}px ${dropdown.itemPaddingInline}px`,
-        color: dropdown.itemColor,
-        cursor: 'pointer',
-        'white-space': 'nowrap',
-      },
-      [`.${prefixCls}-item:hover`]: { background: dropdown.itemHoverBg },
-      [`.${prefixCls}-item-disabled`]: { color: dropdown.itemDisabledColor, cursor: 'not-allowed' },
-      [`.${prefixCls}-item-disabled:hover`]: { background: 'transparent' },
-      [`.${prefixCls}-divider`]: { height: 1, margin: `${t.marginXS}px 0`, background: t.colorBorderSecondary },
-    }
-  })
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Dropdown', prefixCls] },
+    () => {
+      const t = token()
+      const dropdown = getComponentToken('Dropdown', t)
+      return {
+        [`.${prefixCls}-trigger`]: { display: 'inline-block' },
+        [`.${prefixCls}`]: {
+          position: 'fixed',
+          'z-index': 1050,
+          'min-width': dropdown.minWidth,
+          padding: `${t.paddingXS}px 0`,
+          background: dropdown.bg,
+          'border-radius': dropdown.borderRadius,
+          'box-shadow': dropdown.boxShadow,
+        },
+        [`.${prefixCls}-menu`]: { margin: 0, padding: 0, 'list-style': 'none' },
+        [`.${prefixCls}-item`]: {
+          padding: `${dropdown.itemPaddingBlock}px ${dropdown.itemPaddingInline}px`,
+          color: dropdown.itemColor,
+          cursor: 'pointer',
+          'white-space': 'nowrap',
+        },
+        [`.${prefixCls}-item:hover`]: { background: dropdown.itemHoverBg },
+        [`.${prefixCls}-item-disabled`]: {
+          color: dropdown.itemDisabledColor,
+          cursor: 'not-allowed',
+        },
+        [`.${prefixCls}-item-disabled:hover`]: { background: 'transparent' },
+        [`.${prefixCls}-divider`]: {
+          height: 1,
+          margin: `${t.marginXS}px 0`,
+          background: t.colorBorderSecondary,
+        },
+      }
+    },
+  )
 }
 ```
 
@@ -1296,8 +1380,16 @@ export function Dropdown(props: DropdownProps) {
       <Show when={canUseDom() && mergedOpen()}>
         <InternalPortal>
           <div
-            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId(), local.overlayClass)}
-            style={{ ...position(), ...(typeof local.overlayStyle === 'object' ? local.overlayStyle : {}) }}
+            class={classNames(
+              prefixCls(),
+              `${prefixCls()}-${placement()}`,
+              hashId(),
+              local.overlayClass,
+            )}
+            style={{
+              ...position(),
+              ...(typeof local.overlayStyle === 'object' ? local.overlayStyle : {}),
+            }}
           >
             <ul class={`${prefixCls()}-menu`} role="menu">
               <For each={local.menu.items}>
@@ -1308,7 +1400,10 @@ export function Dropdown(props: DropdownProps) {
                       <li
                         role="menuitem"
                         data-menu-key={item.key}
-                        class={classNames(`${prefixCls()}-item`, item.disabled && `${prefixCls()}-item-disabled`)}
+                        class={classNames(
+                          `${prefixCls()}-item`,
+                          item.disabled && `${prefixCls()}-item-disabled`,
+                        )}
                         aria-disabled={item.disabled ? 'true' : 'false'}
                         onClick={(event) => clickItem(item, event)}
                       >
@@ -1358,6 +1453,7 @@ git commit -m "feat(components): add dropdown"
 ## Task 6: Add Root Exports and Docs
 
 **Files:**
+
 - Modify: `packages/components/src/index.ts`
 - Modify: `apps/docs/src/site/nav.ts`
 - Create: `apps/docs/src/routes/components/tabs.tsx`
@@ -1411,7 +1507,10 @@ export default function TabsPage() {
       <DemoBlock title="Bottom" code={`<Tabs tabPosition="bottom" items={items} />`}>
         <Tabs tabPosition="bottom" items={items} />
       </DemoBlock>
-      <DemoBlock title="Destroy inactive pane" code={`<Tabs destroyInactiveTabPane items={items} />`}>
+      <DemoBlock
+        title="Destroy inactive pane"
+        code={`<Tabs destroyInactiveTabPane items={items} />`}
+      >
         <Tabs destroyInactiveTabPane items={items} />
       </DemoBlock>
     </>
@@ -1431,12 +1530,18 @@ export default function TooltipPage() {
   return (
     <>
       <h1>Tooltip</h1>
-      <DemoBlock title="Hover" code={`<Tooltip title="Helpful text"><Button>Hover</Button></Tooltip>`}>
+      <DemoBlock
+        title="Hover"
+        code={`<Tooltip title="Helpful text"><Button>Hover</Button></Tooltip>`}
+      >
         <Tooltip title="Helpful text">
           <Button>Hover</Button>
         </Tooltip>
       </DemoBlock>
-      <DemoBlock title="Triggers" code={`<Tooltip trigger="click" title="Clicked"><Button>Click</Button></Tooltip>`}>
+      <DemoBlock
+        title="Triggers"
+        code={`<Tooltip trigger="click" title="Clicked"><Button>Click</Button></Tooltip>`}
+      >
         <Space wrap>
           <Tooltip trigger="click" title="Clicked">
             <Button>Click</Button>
@@ -1446,7 +1551,10 @@ export default function TooltipPage() {
           </Tooltip>
         </Space>
       </DemoBlock>
-      <DemoBlock title="Placement" code={`<Tooltip placement="right" title="Right"><Button>Right</Button></Tooltip>`}>
+      <DemoBlock
+        title="Placement"
+        code={`<Tooltip placement="right" title="Right"><Button>Right</Button></Tooltip>`}
+      >
         <Space wrap>
           <Tooltip placement="top" title="Top">
             <Button>Top</Button>
@@ -1487,17 +1595,26 @@ export default function DropdownPage() {
   return (
     <>
       <h1>Dropdown</h1>
-      <DemoBlock title="Click" code={`<Dropdown menu={{ items }}><Button>Actions</Button></Dropdown>`}>
+      <DemoBlock
+        title="Click"
+        code={`<Dropdown menu={{ items }}><Button>Actions</Button></Dropdown>`}
+      >
         <Dropdown menu={{ items, onClick: (info) => console.log(info.key) }}>
           <Button>Actions</Button>
         </Dropdown>
       </DemoBlock>
-      <DemoBlock title="Hover" code={`<Dropdown trigger="hover" menu={{ items }}><Button>Hover</Button></Dropdown>`}>
+      <DemoBlock
+        title="Hover"
+        code={`<Dropdown trigger="hover" menu={{ items }}><Button>Hover</Button></Dropdown>`}
+      >
         <Dropdown trigger="hover" menu={{ items }}>
           <Button>Hover</Button>
         </Dropdown>
       </DemoBlock>
-      <DemoBlock title="Placement" code={`<Dropdown placement="topRight" menu={{ items }}><Button>Top right</Button></Dropdown>`}>
+      <DemoBlock
+        title="Placement"
+        code={`<Dropdown placement="topRight" menu={{ items }}><Button>Top right</Button></Dropdown>`}
+      >
         <Space wrap>
           <Dropdown placement="bottomLeft" menu={{ items }}>
             <Button>Bottom left</Button>
@@ -1542,6 +1659,7 @@ git commit -m "docs: add interaction component pages"
 ## Task 7: Full Verification and Cleanup
 
 **Files:**
+
 - Check all files created or modified by previous tasks.
 
 - [ ] **Step 1: Check file naming rule**

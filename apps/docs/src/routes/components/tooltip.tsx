@@ -5,12 +5,18 @@ export default function TooltipPage() {
   return (
     <>
       <h1>Tooltip</h1>
-      <DemoBlock title="Hover" code={`<Tooltip title="Helpful text"><Button>Hover</Button></Tooltip>`}>
+      <DemoBlock
+        title="Hover"
+        code={`<Tooltip title="Helpful text"><Button>Hover</Button></Tooltip>`}
+      >
         <Tooltip title="Helpful text">
           <Button>Hover</Button>
         </Tooltip>
       </DemoBlock>
-      <DemoBlock title="Triggers" code={`<Tooltip trigger="click" title="Clicked"><Button>Click</Button></Tooltip>`}>
+      <DemoBlock
+        title="Triggers"
+        code={`<Tooltip trigger="click" title="Clicked"><Button>Click</Button></Tooltip>`}
+      >
         <Space wrap>
           <Tooltip trigger="click" title="Clicked">
             <Button>Click</Button>
@@ -20,7 +26,10 @@ export default function TooltipPage() {
           </Tooltip>
         </Space>
       </DemoBlock>
-      <DemoBlock title="Placement" code={`<Tooltip placement="right" title="Right"><Button>Right</Button></Tooltip>`}>
+      <DemoBlock
+        title="Placement"
+        code={`<Tooltip placement="right" title="Right"><Button>Right</Button></Tooltip>`}
+      >
         <Space wrap>
           <Tooltip placement="top" title="Top">
             <Button>Top</Button>

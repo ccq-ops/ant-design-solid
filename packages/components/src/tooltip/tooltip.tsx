@@ -83,14 +83,18 @@ export function Tooltip(props: TooltipProps) {
     cleanupKeydown()
   })
 
-  const handleMouseEnter = (event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element }) => {
+  const handleMouseEnter = (
+    event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element },
+  ) => {
     ;(local.onMouseEnter as ((event: MouseEvent) => void) | undefined)?.(event)
     if (trigger() !== 'hover') return
     clearTimer(leaveTimer)
     enterTimer = setTimeout(() => setOpen(true), (local.mouseEnterDelay ?? 0) * 1000)
   }
 
-  const handleMouseLeave = (event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element }) => {
+  const handleMouseLeave = (
+    event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element },
+  ) => {
     ;(local.onMouseLeave as ((event: MouseEvent) => void) | undefined)?.(event)
     if (trigger() !== 'hover') return
     clearTimer(enterTimer)
@@ -117,7 +121,9 @@ export function Tooltip(props: TooltipProps) {
     <>
       <span
         {...rest}
-        ref={triggerRef}
+        ref={(element) => {
+          triggerRef = element
+        }}
         class={classNames(`${prefixCls()}-trigger`, hashId(), local.class)}
         classList={local.classList}
         style={local.style}
@@ -133,7 +139,12 @@ export function Tooltip(props: TooltipProps) {
         <InternalPortal>
           <div
             role="tooltip"
-            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId(), local.overlayClass)}
+            class={classNames(
+              prefixCls(),
+              `${prefixCls()}-${placement()}`,
+              hashId(),
+              local.overlayClass,
+            )}
             style={{ ...position(), ...local.overlayStyle }}
           >
             {local.title}

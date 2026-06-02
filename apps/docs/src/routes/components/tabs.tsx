@@ -20,7 +20,10 @@ export default function TabsPage() {
       <DemoBlock title="Bottom" code={`<Tabs tabPosition="bottom" items={items} />`}>
         <Tabs tabPosition="bottom" items={items} />
       </DemoBlock>
-      <DemoBlock title="Destroy inactive pane" code={`<Tabs destroyInactiveTabPane items={items} />`}>
+      <DemoBlock
+        title="Destroy inactive pane"
+        code={`<Tabs destroyInactiveTabPane items={items} />`}
+      >
         <Tabs destroyInactiveTabPane items={items} />
       </DemoBlock>
     </>

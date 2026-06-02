@@ -53,7 +53,7 @@ export function Dropdown(props: DropdownProps) {
   function containsTarget(target: EventTarget | null) {
     return Boolean(
       target instanceof Node &&
-        (triggerElement()?.contains(target) || overlayElement()?.contains(target)),
+      (triggerElement()?.contains(target) || overlayElement()?.contains(target)),
     )
   }
 
@@ -101,7 +101,12 @@ export function Dropdown(props: DropdownProps) {
         <InternalPortal>
           <div
             ref={setOverlayElement}
-            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId(), local.overlayClass)}
+            class={classNames(
+              prefixCls(),
+              `${prefixCls()}-${placement()}`,
+              hashId(),
+              local.overlayClass,
+            )}
             style={{ ...position(), ...local.overlayStyle }}
             on:click={(event) => event.stopPropagation()}
           >
