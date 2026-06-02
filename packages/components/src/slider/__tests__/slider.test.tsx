@@ -111,6 +111,77 @@ describe('Slider', () => {
     expect(onAfterChange).toHaveBeenLastCalledWith(0)
   })
 
+  it('supports all keyboard increment and decrement keys', () => {
+    const onChange = vi.fn()
+    const onAfterChange = vi.fn()
+    const result = render(() => (
+      <Slider defaultValue={50} step={5} onChange={onChange} onAfterChange={onAfterChange} />
+    ))
+
+    fireEvent.keyDown(result.getByRole('slider'), { key: 'ArrowLeft' })
+    expect(onChange).toHaveBeenLastCalledWith(45)
+    expect(onAfterChange).toHaveBeenLastCalledWith(45)
+
+    fireEvent.keyDown(result.getByRole('slider'), { key: 'ArrowUp' })
+    expect(onChange).toHaveBeenLastCalledWith(50)
+    expect(onAfterChange).toHaveBeenLastCalledWith(50)
+
+    fireEvent.keyDown(result.getByRole('slider'), { key: 'ArrowDown' })
+    expect(onChange).toHaveBeenLastCalledWith(45)
+    expect(onAfterChange).toHaveBeenLastCalledWith(45)
+
+    fireEvent.keyDown(result.getByRole('slider'), { key: 'PageUp' })
+    expect(onChange).toHaveBeenLastCalledWith(95)
+    expect(onAfterChange).toHaveBeenLastCalledWith(95)
+  })
+
+  it('uses custom aria min and max attributes', () => {
+    const result = render(() => <Slider min={10} max={50} defaultValue={30} />)
+    const slider = result.getByRole('slider')
+
+    expect(slider).toHaveAttribute('aria-valuemin', '10')
+    expect(slider).toHaveAttribute('aria-valuemax', '50')
+    expect(slider).toHaveAttribute('aria-valuenow', '30')
+  })
+
+  it('renders single mode with one handle and track from min to value', () => {
+    const result = render(() => <Slider defaultValue={25} />)
+    const handles = result.getAllByRole('slider')
+    const track = result.container.querySelector('.ads-slider-track') as HTMLElement
+
+    expect(handles).toHaveLength(1)
+    expect(track.style.left).toBe('0%')
+    expect(track.style.width).toBe('25%')
+    expect(handles[0]).toHaveStyle('left: 25%')
+  })
+
+  it('renders range mode with two handles and track between values', () => {
+    const result = render(() => <Slider range defaultValue={[20, 70]} />)
+    const handles = result.getAllByRole('slider')
+    const track = result.container.querySelector('.ads-slider-track') as HTMLElement
+
+    expect(handles).toHaveLength(2)
+    expect(result.getByRole('slider', { name: 'Minimum value' })).toHaveStyle('left: 20%')
+    expect(result.getByRole('slider', { name: 'Maximum value' })).toHaveStyle('left: 70%')
+    expect(track.style.left).toBe('20%')
+    expect(track.style.width).toBe('50%')
+  })
+
+  it('clamps values to custom min and max before rendering', () => {
+    const single = render(() => <Slider min={10} max={20} defaultValue={100} />)
+    expect(single.getByRole('slider')).toHaveAttribute('aria-valuenow', '20')
+
+    const range = render(() => <Slider range min={10} max={20} defaultValue={[5, 25]} />)
+    expect(range.getByRole('slider', { name: 'Minimum value' })).toHaveAttribute(
+      'aria-valuenow',
+      '10',
+    )
+    expect(range.getByRole('slider', { name: 'Maximum value' })).toHaveAttribute(
+      'aria-valuenow',
+      '20',
+    )
+  })
+
   it('renders marks with labels and custom style', () => {
     const result = render(() => (
       <Slider
