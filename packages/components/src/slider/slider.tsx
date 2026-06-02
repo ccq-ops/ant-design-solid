@@ -304,7 +304,9 @@ export function Slider(props: SliderProps) {
       aria-disabled={disabled() || undefined}
     >
       <div
-        ref={railRef}
+        ref={(el) => {
+          railRef = el
+        }}
         class={`${prefixCls()}-rail`}
         onPointerDown={handleRailPointerDown}
         aria-hidden="true"

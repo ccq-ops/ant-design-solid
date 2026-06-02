@@ -22,7 +22,6 @@ describe('Slider', () => {
   it('changes uncontrolled single value from rail clicks and snaps to step', () => {
     const onChange = vi.fn()
     const result = render(() => <Slider defaultValue={10} step={5} onChange={onChange} />)
-    const slider = result.getByRole('slider')
     const rail = result.container.querySelector('.ads-slider-rail')!
     mockRect(rail, { left: 0, right: 100, width: 100 })
 
@@ -40,7 +39,6 @@ describe('Slider', () => {
       if (typeof next === 'number') setValue(next)
     })
     const result = render(() => <Slider value={value()} onChange={onChange} />)
-    const slider = result.getByRole('slider')
     const rail = result.container.querySelector('.ads-slider-rail')!
     mockRect(rail, { left: 0, right: 200, width: 200 })
 
