@@ -81,7 +81,57 @@ describe('TimePicker', () => {
     fireEvent.click(screen.getByRole('combobox'))
 
     expect(onOpenChange).toHaveBeenLastCalledWith(true)
-    expect(screen.getByRole('listbox', { name: 'Time selection' })).toBeInTheDocument()
+    expect(screen.getByRole('listbox', { name: 'hours' })).toBeInTheDocument()
+  })
+
+  it('treats value={undefined} as controlled', () => {
+    const onChange = vi.fn()
+
+    render(() => <TimePicker value={undefined} defaultOpen onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+
+    expect(onChange).toHaveBeenLastCalledWith('09:05:07')
+    expect(screen.getByRole('combobox')).toHaveTextContent('Select time')
+  })
+
+  it('resets draft parts when controlled value becomes undefined', () => {
+    const onChange = vi.fn()
+
+    function Demo() {
+      const [value, setValue] = createSignal<string | undefined>('01:02:03')
+      return (
+        <>
+          <button type="button" onClick={() => setValue(undefined)}>
+            Clear externally
+          </button>
+          <TimePicker value={value()} defaultOpen onChange={onChange} />
+        </>
+      )
+    }
+
+    render(() => <Demo />)
+    expect(screen.getByRole('combobox')).toHaveTextContent('01:02:03')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear externally' }))
+    expect(screen.getByRole('combobox')).toHaveTextContent('Select time')
+
+    fireEvent.click(screen.getByRole('option', { name: '04 hours' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('combobox')).toHaveTextContent('Select time')
+  })
+
+  it('uses listbox roles only for time columns', () => {
+    render(() => <TimePicker defaultOpen />)
+
+    expect(screen.queryByRole('listbox', { name: 'Time selection' })).not.toBeInTheDocument()
+    expect(screen.getAllByRole('listbox')).toHaveLength(3)
+    expect(screen.getByRole('listbox', { name: 'hours' })).toBeInTheDocument()
+    expect(screen.getByRole('listbox', { name: 'minutes' })).toBeInTheDocument()
+    expect(screen.getByRole('listbox', { name: 'seconds' })).toBeInTheDocument()
   })
 
   it('normalizes and clamps provided values', () => {

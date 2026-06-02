@@ -93,19 +93,18 @@ export function TimePicker(props: TimePickerProps) {
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [draftParts, setDraftParts] = createSignal<Partial<TimeParts>>({})
 
+  const isValueControlled = () => 'value' in props
   const format = () => local.format ?? DEFAULT_FORMAT
   const disabled = () => Boolean(local.disabled)
   const minuteStep = () => normalizeStep(local.minuteStep)
   const secondStep = () => normalizeStep(local.secondStep)
-  const parsedValue = createMemo(() =>
-    parseTime(local.value !== undefined ? local.value : innerValue()),
-  )
+  const parsedValue = createMemo(() => parseTime(isValueControlled() ? local.value : innerValue()))
   const value = () => (parsedValue() ? formatTime(parsedValue() as TimeParts, format()) : undefined)
   const open = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
 
   createEffect(() => {
     const parts = parsedValue()
-    if (parts) setDraftParts(parts)
+    setDraftParts(parts ?? {})
   })
 
   function setOpen(nextOpen: boolean): void {
@@ -115,7 +114,7 @@ export function TimePicker(props: TimePickerProps) {
   }
 
   function changeValue(nextValue: string | undefined): void {
-    if (local.value === undefined) setInnerValue(nextValue)
+    if (!isValueControlled()) setInnerValue(nextValue)
     local.onChange?.(nextValue)
   }
 
@@ -243,7 +242,7 @@ export function TimePicker(props: TimePickerProps) {
       </div>
       <Show when={open()}>
         <div class={`${prefixCls()}-dropdown`}>
-          <div role="listbox" aria-label="Time selection" class={`${prefixCls()}-panel`}>
+          <div role="group" aria-label="Time selection" class={`${prefixCls()}-panel`}>
             {renderColumn('hour', 23)}
             {renderColumn('minute', 59, minuteStep())}
             <Show when={format() === 'HH:mm:ss'}>{renderColumn('second', 59, secondStep())}</Show>
