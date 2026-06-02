@@ -24,6 +24,7 @@ export const navItems = [
   { path: '/components/divider', label: 'Divider' },
   { path: '/components/card', label: 'Card' },
   { path: '/components/avatar', label: 'Avatar' },
+  { path: '/components/empty', label: 'Empty' },
   { path: '/components/space', label: 'Space' },
   { path: '/components/typography', label: 'Typography' },
   { path: '/components/grid', label: 'Grid' },
