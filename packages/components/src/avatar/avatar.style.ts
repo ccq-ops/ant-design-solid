@@ -61,7 +61,7 @@ export function useAvatarStyle(prefixCls: string) {
         width: '100%',
         height: '100%',
         'font-size': 'inherit',
-        'line-height': 1,
+        'line-height': '1',
       },
       [`.${prefixCls}-string`]: {
         position: 'absolute',
@@ -78,23 +78,6 @@ export function useAvatarStyle(prefixCls: string) {
       },
       [`.${prefixCls}-group > .${prefixCls}:not(:first-child)`]: {
         'margin-inline-start': '-8px',
-      },
-      [`.${prefixCls}-group-sm > .${prefixCls}:not([class*="${prefixCls}-lg"]):not([style*="width"])`]:
-        {
-          width: '24px',
-          height: '24px',
-          'font-size': `${t.fontSize}px`,
-          'line-height': '24px',
-        },
-      [`.${prefixCls}-group-lg > .${prefixCls}:not([class*="${prefixCls}-sm"]):not([style*="width"])`]:
-        {
-          width: '40px',
-          height: '40px',
-          'font-size': `${t.fontSize + 4}px`,
-          'line-height': '40px',
-        },
-      [`.${prefixCls}-group-square > .${prefixCls}`]: {
-        'border-radius': `${t.borderRadius}px`,
       },
       [`.${prefixCls}-group > .${prefixCls}-overflow`]: {
         color: t.colorText,

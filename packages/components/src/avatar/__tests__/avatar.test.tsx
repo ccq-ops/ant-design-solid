@@ -1,3 +1,4 @@
+import { createSignal } from 'solid-js'
 import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -70,22 +71,34 @@ describe('Avatar', () => {
     expect(avatars[1]).toHaveClass('ads-avatar-circle')
   })
 
-  it('inherits group size and shape for child avatars and overflow avatar', () => {
+  it('inherits group size and shape for visible child avatars and overflow avatar', () => {
     const result = render(() => (
       <Avatar.Group maxCount={1} size="large" shape="square">
         <Avatar>A</Avatar>
         <Avatar>B</Avatar>
       </Avatar.Group>
     ))
-    const group = result.container.firstElementChild as HTMLElement
     const avatars = result.container.querySelectorAll('.ads-avatar')
 
-    expect(group).toHaveClass('ads-avatar-group-lg')
-    expect(group).toHaveClass('ads-avatar-group-square')
     expect(avatars).toHaveLength(2)
+    expect(avatars[0]).toHaveClass('ads-avatar-lg')
+    expect(avatars[0]).toHaveClass('ads-avatar-square')
     expect(avatars[1]).toHaveClass('ads-avatar-lg')
     expect(avatars[1]).toHaveClass('ads-avatar-square')
     expect(result.getByText('+1')).toBeInTheDocument()
+  })
+
+  it('applies numeric group size as inline dimensions to visible child avatars', () => {
+    const result = render(() => (
+      <Avatar.Group size={48}>
+        <Avatar>A</Avatar>
+        <Avatar>B</Avatar>
+      </Avatar.Group>
+    ))
+    const avatars = result.container.querySelectorAll('.ads-avatar')
+
+    expect(avatars[0]).toHaveStyle({ width: '48px', height: '48px', 'line-height': '48px' })
+    expect(avatars[1]).toHaveStyle({ width: '48px', height: '48px', 'line-height': '48px' })
   })
 
   it('applies maxStyle to overflow avatar', () => {
@@ -114,6 +127,25 @@ describe('Avatar', () => {
     expect(result.container.querySelector('.custom-avatar-group')).toBeInTheDocument()
     expect(result.getByText('A').parentElement).toHaveClass('custom-avatar')
     expect(result.getByText('+1')).toHaveClass('custom-avatar-string')
+  })
+
+  it('retries image rendering when src changes after a load failure', () => {
+    const [src, setSrc] = createSignal('https://example.invalid/first.png')
+    const result = render(() => (
+      <Avatar src={src()} alt="Jane Doe">
+        JD
+      </Avatar>
+    ))
+
+    fireEvent.error(result.getByAltText('Jane Doe'))
+
+    expect(result.queryByAltText('Jane Doe')).toBeNull()
+    expect(result.getByText('JD')).toBeInTheDocument()
+
+    setSrc('https://example.com/second.png')
+
+    expect(result.getByAltText('Jane Doe')).toHaveAttribute('src', 'https://example.com/second.png')
+    expect(result.queryByText('JD')).toBeNull()
   })
 
   it('falls back to children when image loading fails', () => {

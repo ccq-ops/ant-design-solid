@@ -37,7 +37,8 @@ function mergeStyle(
   style: string | JSX.CSSProperties | undefined,
 ): string | JSX.CSSProperties {
   if (typeof style === 'string') return style
-  return { ...base, ...(style ?? {}) }
+  if (style) return { ...base, ...style }
+  return base
 }
 
 function AvatarBase(props: AvatarProps) {
@@ -56,10 +57,10 @@ function AvatarBase(props: AvatarProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-avatar`
   const [, hashId] = useAvatarStyle(prefixCls())
-  const [imageFailed, setImageFailed] = createSignal(false)
+  const [failedSrc, setFailedSrc] = createSignal<string>()
   const size = () => local.size ?? groupContext?.size ?? 'default'
   const shape = () => local.shape ?? groupContext?.shape ?? 'circle'
-  const canShowImage = () => Boolean(local.src && !imageFailed())
+  const canShowImage = () => Boolean(local.src && failedSrc() !== local.src)
   const showIcon = () => !canShowImage() && isPresent(local.icon)
   const showChildren = () => !canShowImage() && !showIcon() && isPresent(local.children)
 
@@ -77,7 +78,7 @@ function AvatarBase(props: AvatarProps) {
       style={mergeStyle(numericSizeStyle(size()), local.style)}
     >
       <Show when={canShowImage()}>
-        <img src={local.src} alt={local.alt} onError={() => setImageFailed(true)} />
+        <img src={local.src} alt={local.alt} onError={() => setFailedSrc(local.src)} />
       </Show>
       <Show when={showIcon()}>
         <span class={`${prefixCls()}-icon`}>{local.icon}</span>
@@ -86,6 +87,36 @@ function AvatarBase(props: AvatarProps) {
         <span class={`${prefixCls()}-string`}>{local.children}</span>
       </Show>
     </span>
+  )
+}
+
+function AvatarGroupItems(props: {
+  children?: JSX.Element
+  maxCount?: number
+  maxStyle?: JSX.CSSProperties
+  prefixCls: string
+}) {
+  const resolved = children(() => props.children)
+  const items = () =>
+    resolved.toArray().filter((item) => item !== null && item !== undefined && item !== false)
+  const visibleItems = () => {
+    if (props.maxCount === undefined) return items()
+    return items().slice(0, Math.max(0, props.maxCount))
+  }
+  const overflowCount = () => {
+    if (props.maxCount === undefined) return 0
+    return Math.max(0, items().length - props.maxCount)
+  }
+
+  return (
+    <>
+      <For each={visibleItems()}>{(item) => item}</For>
+      <Show when={overflowCount() > 0}>
+        <AvatarBase class={`${props.prefixCls}-overflow`} style={props.maxStyle}>
+          +{overflowCount()}
+        </AvatarBase>
+      </Show>
+    </>
   )
 }
 
@@ -101,39 +132,17 @@ function AvatarGroup(props: AvatarGroupProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-avatar`
   const [, hashId] = useAvatarStyle(prefixCls())
-  const resolved = children(() => local.children)
-  const items = () =>
-    resolved.toArray().filter((item) => item !== null && item !== undefined && item !== false)
-  const visibleItems = () => {
-    if (local.maxCount === undefined) return items()
-    return items().slice(0, Math.max(0, local.maxCount))
-  }
-  const overflowCount = () => {
-    if (local.maxCount === undefined) return 0
-    return Math.max(0, items().length - local.maxCount)
-  }
-
-  const groupSize = () => local.size ?? 'default'
-  const groupShape = () => local.shape ?? 'circle'
 
   return (
-    <div
-      {...rest}
-      class={classNames(
-        `${prefixCls()}-group`,
-        `${prefixCls()}-group-${groupShape()}`,
-        sizeClass(`${prefixCls()}-group`, groupSize()),
-        hashId(),
-        local.class,
-      )}
-    >
+    <div {...rest} class={classNames(`${prefixCls()}-group`, hashId(), local.class)}>
       <AvatarGroupContext.Provider value={{ size: local.size, shape: local.shape }}>
-        <For each={visibleItems()}>{(item) => item}</For>
-        <Show when={overflowCount() > 0}>
-          <AvatarBase class={`${prefixCls()}-overflow`} style={local.maxStyle}>
-            +{overflowCount()}
-          </AvatarBase>
-        </Show>
+        <AvatarGroupItems
+          prefixCls={prefixCls()}
+          maxCount={local.maxCount}
+          maxStyle={local.maxStyle}
+        >
+          {local.children}
+        </AvatarGroupItems>
       </AvatarGroupContext.Provider>
     </div>
   )
