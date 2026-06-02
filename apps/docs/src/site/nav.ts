@@ -6,6 +6,7 @@ export const navItems = [
   { path: '/components/input', label: 'Input' },
   { path: '/components/form', label: 'Form' },
   { path: '/components/select', label: 'Select' },
+  { path: '/components/time-picker', label: 'TimePicker' },
   { path: '/components/checkbox', label: 'Checkbox' },
   { path: '/components/radio', label: 'Radio' },
   { path: '/components/switch', label: 'Switch' },
