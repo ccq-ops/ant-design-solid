@@ -67,7 +67,10 @@ export default function CardPage() {
           </Card>
         </Space>
       </DemoBlock>
-      <DemoBlock title="With actions" code={`<Card actions={[<Button>Edit</Button>]}>Content</Card>`}>
+      <DemoBlock
+        title="With actions"
+        code={`<Card actions={[<Button>Edit</Button>]}>Content</Card>`}
+      >
         <Card actions={[<Button type="text">Edit</Button>, <Button type="text">Archive</Button>]}>
           Action slots accept any JSX element, including buttons.
         </Card>
