@@ -28,6 +28,7 @@ export const navItems = [
   { path: '/components/notification', label: 'Notification' },
   { path: '/components/spin', label: 'Spin' },
   { path: '/components/progress', label: 'Progress' },
+  { path: '/components/skeleton', label: 'Skeleton' },
   { path: '/components/modal', label: 'Modal' },
   { path: '/components/popconfirm', label: 'Popconfirm' },
   { path: '/components/button', label: 'Button' },

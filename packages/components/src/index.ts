@@ -16,6 +16,7 @@ export * from './message'
 export * from './notification'
 export * from './spin'
 export * from './progress'
+export * from './skeleton'
 
 export * from './modal'
 
