@@ -129,7 +129,13 @@ export function Pagination(props: PaginationProps) {
   }
 
   function commitInput(value: string, reset: () => void): void {
-    const numeric = Number(value)
+    const trimmedValue = value.trim()
+    if (!trimmedValue) {
+      reset()
+      return
+    }
+
+    const numeric = Number(trimmedValue)
     if (Number.isFinite(numeric)) setCurrent(numeric)
     reset()
   }

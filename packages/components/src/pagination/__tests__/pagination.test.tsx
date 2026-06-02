@@ -86,4 +86,35 @@ describe('Pagination', () => {
     expect(onChange).toHaveBeenLastCalledWith(5, 10)
     expect(container.querySelectorAll('.ads-pagination').length).toBe(1)
   })
+
+  it('does not double commit quick jumper when Enter is followed by blur', () => {
+    const onChange = vi.fn()
+    render(() => <Pagination total={100} showQuickJumper onChange={onChange} />)
+
+    const jumpInput = screen.getByLabelText('Quick jump to page')
+    fireEvent.input(jumpInput, { target: { value: '5' } })
+    fireEvent.keyDown(jumpInput, { key: 'Enter' })
+    fireEvent.blur(jumpInput)
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenLastCalledWith(5, 10)
+    expect(screen.getByRole('button', { name: 'Page 5' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('does not reset simple mode when blank input blurs after Enter', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <Pagination simple total={50} defaultCurrent={1} pageSize={10} onChange={onChange} />
+    ))
+
+    const input = screen.getByLabelText('Page')
+    fireEvent.input(input, { target: { value: '4' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    fireEvent.input(input, { target: { value: ' ' } })
+    fireEvent.blur(input)
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenLastCalledWith(4, 10)
+    expect(input).toHaveValue('4')
+  })
 })
