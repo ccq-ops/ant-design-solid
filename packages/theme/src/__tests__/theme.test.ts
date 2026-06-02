@@ -102,4 +102,29 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Badge', token).colorBg).toBe(token.colorError)
     expect(getComponentToken('Badge', token).colorText).toBe('#ffffff')
   })
+
+  it('derives interaction component token defaults and applies overrides', () => {
+    const token = mergeTheme({
+      components: {
+        Tabs: { inkBarColor: '#722ed1', horizontalItemPadding: 18 },
+        Tooltip: { maxWidth: 320, bg: '#111111' },
+        Dropdown: { minWidth: 180, itemHoverBg: '#f0f5ff' },
+      },
+    })
+
+    expect(getComponentToken('Tabs', token).inkBarColor).toBe('#722ed1')
+    expect(getComponentToken('Tabs', token).itemSelectedColor).toBe(token.colorPrimary)
+    expect(getComponentToken('Tabs', token).horizontalItemPadding).toBe(18)
+    expect(getComponentToken('Tabs', token).cardBorderColor).toBe(token.colorBorderSecondary)
+
+    expect(getComponentToken('Tooltip', token).maxWidth).toBe(320)
+    expect(getComponentToken('Tooltip', token).bg).toBe('#111111')
+    expect(getComponentToken('Tooltip', token).color).toBe('#ffffff')
+    expect(getComponentToken('Tooltip', token).borderRadius).toBe(token.borderRadius)
+
+    expect(getComponentToken('Dropdown', token).minWidth).toBe(180)
+    expect(getComponentToken('Dropdown', token).itemHoverBg).toBe('#f0f5ff')
+    expect(getComponentToken('Dropdown', token).bg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Dropdown', token).itemDisabledColor).toBe(token.colorTextDisabled)
+  })
 })

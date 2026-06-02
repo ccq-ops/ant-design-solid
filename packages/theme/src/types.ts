@@ -183,6 +183,41 @@ export interface BadgeComponentToken {
   statusSize: number
 }
 
+export interface TabsComponentToken {
+  itemColor: string
+  itemSelectedColor: string
+  itemHoverColor: string
+  itemDisabledColor: string
+  inkBarColor: string
+  cardBg: string
+  cardBorderColor: string
+  horizontalItemPadding: number
+  horizontalItemPaddingSm: number
+  horizontalItemPaddingLg: number
+}
+
+export interface TooltipComponentToken {
+  bg: string
+  color: string
+  borderRadius: number
+  paddingBlock: number
+  paddingInline: number
+  boxShadow: string
+  maxWidth: number
+}
+
+export interface DropdownComponentToken {
+  bg: string
+  boxShadow: string
+  borderRadius: number
+  itemColor: string
+  itemHoverBg: string
+  itemDisabledColor: string
+  itemPaddingBlock: number
+  itemPaddingInline: number
+  minWidth: number
+}
+
 export interface ComponentTokenMap {
   Button: ButtonComponentToken
   Input: InputComponentToken
@@ -202,6 +237,9 @@ export interface ComponentTokenMap {
   Table: TableComponentToken
   Tag: TagComponentToken
   Badge: BadgeComponentToken
+  Tabs: TabsComponentToken
+  Tooltip: TooltipComponentToken
+  Dropdown: DropdownComponentToken
 }
 
 export interface ThemeConfig {

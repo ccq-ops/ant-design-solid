@@ -129,6 +129,38 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       colorText: '#ffffff',
       statusSize: 6,
     },
+    Tabs: {
+      itemColor: token.colorText,
+      itemSelectedColor: token.colorPrimary,
+      itemHoverColor: token.colorPrimaryHover,
+      itemDisabledColor: token.colorTextDisabled,
+      inkBarColor: token.colorPrimary,
+      cardBg: token.colorFillAlter,
+      cardBorderColor: token.colorBorderSecondary,
+      horizontalItemPadding: token.padding,
+      horizontalItemPaddingSm: token.paddingSM,
+      horizontalItemPaddingLg: token.paddingLG,
+    },
+    Tooltip: {
+      bg: 'rgba(0, 0, 0, 0.85)',
+      color: '#ffffff',
+      borderRadius: token.borderRadius,
+      paddingBlock: token.paddingXS,
+      paddingInline: token.paddingSM,
+      boxShadow: token.boxShadow,
+      maxWidth: 250,
+    },
+    Dropdown: {
+      bg: token.colorBgElevated,
+      boxShadow: token.boxShadow,
+      borderRadius: token.borderRadius,
+      itemColor: token.colorText,
+      itemHoverBg: token.colorFillAlter,
+      itemDisabledColor: token.colorTextDisabled,
+      itemPaddingBlock: token.paddingXS,
+      itemPaddingInline: token.paddingSM,
+      minWidth: 120,
+    },
   }
   const overrides = overrideStore.get(token)?.[componentName] ?? {}
   return { ...defaults[componentName], ...overrides } as ComponentTokenMap[K]
