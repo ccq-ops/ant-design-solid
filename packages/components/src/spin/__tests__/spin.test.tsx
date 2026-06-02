@@ -55,6 +55,23 @@ describe('Spin', () => {
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
+  it('does not restart omitted-spinning delay when children change', async () => {
+    vi.useFakeTimers()
+    let setContent: (value: string) => void = () => undefined
+    render(() => {
+      const [content, updateContent] = createSignal('First')
+      setContent = updateContent
+      return <Spin delay={100}>{content()}</Spin>
+    })
+
+    expect(screen.queryByRole('status')).toBeNull()
+    await vi.advanceTimersByTimeAsync(50)
+    setContent('Second')
+    await vi.advanceTimersByTimeAsync(50)
+
+    expect(screen.getByRole('status')).toBeInTheDocument()
+  })
+
   it('clears pending delay timers when spinning stops', async () => {
     vi.useFakeTimers()
     let setSpinning: (value: boolean) => void = () => undefined

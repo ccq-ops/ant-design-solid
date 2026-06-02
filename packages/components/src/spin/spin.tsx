@@ -35,7 +35,8 @@ export function Spin(props: SpinProps) {
   const prefixCls = () => `${config.prefixCls()}-spin`
   const [, hashId] = useSpinStyle(prefixCls())
   const child = resolveChildren(() => local.children)
-  const spinning = () => local.spinning ?? true
+  const hasSpinningProp = Object.prototype.hasOwnProperty.call(props, 'spinning')
+  const spinning = createMemo(() => (hasSpinningProp ? local.spinning !== false : true))
   const size = () => local.size ?? 'default'
   const [delayedSpinning, setDelayedSpinning] = createSignal(
     !isDelayValid(local.delay) && spinning(),
