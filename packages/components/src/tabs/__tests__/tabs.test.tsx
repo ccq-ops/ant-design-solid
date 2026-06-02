@@ -93,6 +93,61 @@ describe('Tabs', () => {
     expect(result.getByText('Pane two')).toBeInTheDocument()
   })
 
+  it('uses defaultActiveKey when it matches a non-disabled item', () => {
+    const result = render(() => <Tabs items={items} defaultActiveKey="two" />)
+
+    expect(result.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true')
+    expect(getPane(result.getByText('Pane one'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(getPane(result.getByText('Pane two'))).not.toHaveClass('ads-tabs-tabpane-hidden')
+  })
+
+  it('falls back to first non-disabled item when defaultActiveKey is disabled', () => {
+    const result = render(() => <Tabs items={items} defaultActiveKey="disabled" />)
+
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+    expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
+    expect(getPane(result.getByText('Disabled pane'))).toHaveClass('ads-tabs-tabpane-hidden')
+  })
+
+  it('falls back to first non-disabled item when defaultActiveKey is unknown', () => {
+    const result = render(() => <Tabs items={items} defaultActiveKey="unknown" />)
+
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+    expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
+    expect(getPane(result.getByText('Pane two'))).toHaveClass('ads-tabs-tabpane-hidden')
+  })
+
+  it('falls back to first item when all items are disabled', () => {
+    const allDisabledItems = [
+      { key: 'first', label: 'First', disabled: true, children: <div>First pane</div> },
+      { key: 'second', label: 'Second', disabled: true, children: <div>Second pane</div> },
+    ]
+    const result = render(() => <Tabs items={allDisabledItems} />)
+
+    expect(result.getByRole('tab', { name: 'First' })).toHaveAttribute('aria-selected', 'true')
+    expect(result.getByRole('tab', { name: 'First' })).toHaveAttribute('aria-disabled', 'true')
+    expect(getPane(result.getByText('First pane'))).not.toHaveClass('ads-tabs-tabpane-hidden')
+    expect(getPane(result.getByText('Second pane'))).toHaveClass('ads-tabs-tabpane-hidden')
+  })
+
+  it('renders no tab and no pane for empty items', () => {
+    const result = render(() => <Tabs items={[]} />)
+
+    expect(result.queryAllByRole('tab')).toHaveLength(0)
+    expect(result.queryAllByRole('tabpanel')).toHaveLength(0)
+  })
+
+  it('does not call onChange when clicking the already-active enabled tab', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Tabs items={items} onChange={onChange} />)
+
+    fireEvent.click(result.getByRole('tab', { name: 'One' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+    expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
+  })
+
   it('bottom/card/large/custom prefix classes apply', () => {
     const result = render(() => (
       <ConfigProvider prefixCls="custom">

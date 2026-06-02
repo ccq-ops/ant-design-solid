@@ -35,7 +35,7 @@ export function Tabs(props: TabsProps) {
   const size = () => local.size ?? config.componentSize()
   const tabPosition = () => local.tabPosition ?? 'top'
   const handleTabClick = (item: TabsItem) => {
-    if (item.disabled) return
+    if (item.disabled || item.key === mergedActiveKey()) return
     local.onChange?.(item.key)
     if (local.activeKey === undefined) {
       setInnerActiveKey(item.key)
