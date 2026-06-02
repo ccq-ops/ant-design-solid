@@ -113,8 +113,20 @@ function AvatarGroup(props: AvatarGroupProps) {
     return Math.max(0, items().length - local.maxCount)
   }
 
+  const groupSize = () => local.size ?? 'default'
+  const groupShape = () => local.shape ?? 'circle'
+
   return (
-    <div {...rest} class={classNames(`${prefixCls()}-group`, hashId(), local.class)}>
+    <div
+      {...rest}
+      class={classNames(
+        `${prefixCls()}-group`,
+        `${prefixCls()}-group-${groupShape()}`,
+        sizeClass(`${prefixCls()}-group`, groupSize()),
+        hashId(),
+        local.class,
+      )}
+    >
       <AvatarGroupContext.Provider value={{ size: local.size, shape: local.shape }}>
         <For each={visibleItems()}>{(item) => item}</For>
         <Show when={overflowCount() > 0}>
