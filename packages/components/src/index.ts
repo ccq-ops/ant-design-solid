@@ -23,6 +23,7 @@ export * from './drawer'
 
 export * from './popconfirm'
 export * from './table'
+export * from './statistic'
 export * from './tag'
 export * from './badge'
 export * from './tabs'
