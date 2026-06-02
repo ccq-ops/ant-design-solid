@@ -1,4 +1,5 @@
-import { cleanup, render, screen } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
+import { For, createSignal } from 'solid-js'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Descriptions } from '../index'
 
@@ -76,6 +77,37 @@ describe('Descriptions', () => {
     expect(descriptions).toHaveStyle({ margin: '4px' })
     expect(firstItem).toHaveStyle({ color: 'rgb(255, 0, 0)' })
     expect(addressContent).toHaveAttribute('colspan', '2')
+  })
+
+  it('keeps children item order in sync with dynamic source order', () => {
+    function DynamicDescriptions() {
+      const first = { id: 'a', label: 'First', value: 'Alpha' }
+      const second = { id: 'b', label: 'Second', value: 'Beta' }
+      const [items, setItems] = createSignal([first, second])
+
+      return (
+        <>
+          <button type="button" onClick={() => setItems([second, first])}>
+            Reverse
+          </button>
+          <Descriptions>
+            <For each={items()}>
+              {(item) => <Descriptions.Item label={item.label}>{item.value}</Descriptions.Item>}
+            </For>
+          </Descriptions>
+        </>
+      )
+    }
+
+    const { container } = render(() => <DynamicDescriptions />)
+    const labelOrder = () =>
+      Array.from(container.querySelectorAll('.ads-descriptions-item-label')).map(
+        (node) => node.textContent,
+      )
+
+    expect(labelOrder()).toEqual(['First', 'Second'])
+    fireEvent.click(screen.getByRole('button', { name: 'Reverse' }))
+    expect(labelOrder()).toEqual(['Second', 'First'])
   })
 
   it('renders nothing when Item is used standalone', () => {
