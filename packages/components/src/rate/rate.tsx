@@ -1,5 +1,4 @@
 import { For, createSignal, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useRateStyle } from './rate.style'

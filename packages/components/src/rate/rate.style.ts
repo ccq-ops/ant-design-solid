@@ -24,7 +24,7 @@ export function useRateStyle(prefixCls: string) {
       },
       [`.${prefixCls}-disabled`]: {
         cursor: 'not-allowed',
-        opacity: 0.65,
+        opacity: '0.65',
       },
       [`.${prefixCls}-item`]: {
         position: 'relative',
