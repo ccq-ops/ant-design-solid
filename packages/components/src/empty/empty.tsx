@@ -52,7 +52,8 @@ export function Empty(props: EmptyProps) {
   const [, hashId] = useEmptyStyle(prefixCls())
   const description = () => local.description ?? 'No Data'
   const image = () => local.image ?? <DefaultEmptyImage />
-  const hasFooter = () => local.children !== undefined && local.children !== null && local.children !== false
+  const hasFooter = () =>
+    local.children !== undefined && local.children !== null && local.children !== false
 
   return (
     <div {...rest} class={classNames(prefixCls(), hashId(), local.class)}>
