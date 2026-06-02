@@ -29,10 +29,26 @@ export function useTagStyle(prefixCls: string) {
         background: 'color-mix(in srgb, var(--ads-tag-custom-color) 10%, transparent)',
         borderColor: 'color-mix(in srgb, var(--ads-tag-custom-color) 35%, transparent)',
       },
-      [`.${prefixCls}-success`]: { color: t.colorSuccess, background: '#f6ffed', borderColor: '#b7eb8f' },
-      [`.${prefixCls}-warning`]: { color: t.colorWarning, background: '#fffbe6', borderColor: '#ffe58f' },
-      [`.${prefixCls}-error`]: { color: t.colorError, background: '#fff2f0', borderColor: '#ffccc7' },
-      [`.${prefixCls}-processing`]: { color: t.colorInfo, background: '#e6f4ff', borderColor: '#91caff' },
+      [`.${prefixCls}-success`]: {
+        color: t.colorSuccess,
+        background: '#f6ffed',
+        borderColor: '#b7eb8f',
+      },
+      [`.${prefixCls}-warning`]: {
+        color: t.colorWarning,
+        background: '#fffbe6',
+        borderColor: '#ffe58f',
+      },
+      [`.${prefixCls}-error`]: {
+        color: t.colorError,
+        background: '#fff2f0',
+        borderColor: '#ffccc7',
+      },
+      [`.${prefixCls}-processing`]: {
+        color: t.colorInfo,
+        background: '#e6f4ff',
+        borderColor: '#91caff',
+      },
       [`.${prefixCls}-close`]: {
         display: 'inline-flex',
         'align-items': 'center',

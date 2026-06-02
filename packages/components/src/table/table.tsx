@@ -66,7 +66,9 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                       column.class,
                     )}
                     classList={column.classList}
-                    style={{ width: typeof column.width === 'number' ? `${column.width}px` : column.width }}
+                    style={{
+                      width: typeof column.width === 'number' ? `${column.width}px` : column.width,
+                    }}
                     data-column-key={getColumnKey(column, index())}
                   >
                     {column.title}
@@ -104,7 +106,9 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                             )}
                             classList={column.classList}
                           >
-                            {column.render ? column.render(value(), record, index()) : (value() as JSX.Element)}
+                            {column.render
+                              ? column.render(value(), record, index())
+                              : (value() as JSX.Element)}
                           </td>
                         )
                       }}

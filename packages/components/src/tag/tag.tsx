@@ -25,8 +25,9 @@ export function Tag(props: TagProps) {
   const mergedStyle = (): JSX.CSSProperties | string | undefined => {
     if (!isCustomColor()) return local.style
     const customStyle = { '--ads-tag-custom-color': local.color } as JSX.CSSProperties
-    if (typeof local.style === 'string') return `${local.style}; --ads-tag-custom-color: ${local.color}`
-    return { ...customStyle, ...(local.style ?? {}) }
+    if (typeof local.style === 'string')
+      return `${local.style}; --ads-tag-custom-color: ${local.color}`
+    return { ...customStyle, ...local.style }
   }
 
   return (

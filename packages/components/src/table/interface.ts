@@ -12,8 +12,10 @@ export interface TableColumn<T extends object = object> {
   classList?: Record<string, boolean | undefined>
 }
 
-export interface TableProps<T extends object = object>
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface TableProps<T extends object = object> extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'children'
+> {
   columns?: TableColumn<T>[]
   dataSource?: T[]
   rowKey?: keyof T | ((record: T, index: number) => string | number)

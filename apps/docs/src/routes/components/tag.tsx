@@ -14,7 +14,10 @@ export default function TagPage() {
           <Tag color="#722ed1">Custom</Tag>
         </Space>
       </DemoBlock>
-      <DemoBlock title="Closable" code={`<Tag closable onClose={() => console.log('closed')}>Closable</Tag>`}>
+      <DemoBlock
+        title="Closable"
+        code={`<Tag closable onClose={() => console.log('closed')}>Closable</Tag>`}
+      >
         <Tag closable onClose={() => console.log('closed')}>
           Closable
         </Tag>

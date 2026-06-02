@@ -20,7 +20,8 @@ export function Badge(props: BadgeProps) {
   const [, hashId] = useBadgeStyle(prefixCls())
   const overflowCount = () => local.overflowCount ?? 99
   const countText = () => {
-    if (typeof local.count === 'number' && local.count > overflowCount()) return `${overflowCount()}+`
+    if (typeof local.count === 'number' && local.count > overflowCount())
+      return `${overflowCount()}+`
     return local.count
   }
   const shouldShowCount = () => {
@@ -58,7 +59,9 @@ export function Badge(props: BadgeProps) {
       }
     >
       <span {...rest} class={classNames(`${prefixCls()}-status`, hashId(), local.class)}>
-        <span class={classNames(`${prefixCls()}-status-dot`, `${prefixCls()}-status-${local.status}`)} />
+        <span
+          class={classNames(`${prefixCls()}-status-dot`, `${prefixCls()}-status-${local.status}`)}
+        />
         <Show when={local.text}>
           <span class={`${prefixCls()}-status-text`}>{local.text}</span>
         </Show>

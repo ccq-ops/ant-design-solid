@@ -24,13 +24,14 @@ export function useBadgeStyle(prefixCls: string) {
         'border-radius': badge.overflowIndicatorHeight / 2,
         'box-shadow': `0 0 0 1px ${t.colorBgContainer}`,
       },
-      [`.${prefixCls}-with-children .${prefixCls}-count, .${prefixCls}-with-children .${prefixCls}-dot`]: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        transform: 'translate(50%, -50%)',
-        'transform-origin': '100% 0%',
-      },
+      [`.${prefixCls}-with-children .${prefixCls}-count, .${prefixCls}-with-children .${prefixCls}-dot`]:
+        {
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          transform: 'translate(50%, -50%)',
+          'transform-origin': '100% 0%',
+        },
       [`.${prefixCls}-dot`]: {
         display: 'inline-block',
         width: badge.dotSize,
@@ -54,7 +55,11 @@ export function useBadgeStyle(prefixCls: string) {
       [`.${prefixCls}-status-default`]: { background: t.colorTextDisabled },
       [`.${prefixCls}-status-error`]: { background: t.colorError },
       [`.${prefixCls}-status-warning`]: { background: t.colorWarning },
-      [`.${prefixCls}-status-text`]: { color: t.colorText, 'font-size': t.fontSize, 'line-height': t.lineHeight },
+      [`.${prefixCls}-status-text`]: {
+        color: t.colorText,
+        'font-size': t.fontSize,
+        'line-height': t.lineHeight,
+      },
       '@keyframes ads-badge-pulse': {
         '0%': { opacity: 1 },
         '50%': { opacity: 0.45 },

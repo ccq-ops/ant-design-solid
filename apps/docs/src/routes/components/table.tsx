@@ -20,7 +20,11 @@ const columns = [
     title: 'Status',
     dataIndex: 'status',
     render: (value: unknown) =>
-      value === 'active' ? <Tag color="success">Active</Tag> : <Badge status="default" text="Idle" />,
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
   },
 ]
 
@@ -31,10 +35,16 @@ export default function TablePage() {
       <DemoBlock title="Basic" code={`<Table columns={columns} dataSource={data} />`}>
         <Table columns={columns} dataSource={data} />
       </DemoBlock>
-      <DemoBlock title="Bordered small" code={`<Table bordered size="small" columns={columns} dataSource={data} />`}>
+      <DemoBlock
+        title="Bordered small"
+        code={`<Table bordered size="small" columns={columns} dataSource={data} />`}
+      >
         <Table bordered size="small" columns={columns} dataSource={data} />
       </DemoBlock>
-      <DemoBlock title="Empty and loading" code={`<Table loading columns={columns} dataSource={[]} emptyText="No users" />`}>
+      <DemoBlock
+        title="Empty and loading"
+        code={`<Table loading columns={columns} dataSource={[]} emptyText="No users" />`}
+      >
         <Table loading columns={columns} dataSource={[]} emptyText="No users" />
       </DemoBlock>
     </>

@@ -55,6 +55,7 @@
 ## Task 1: Add Theme Tokens
 
 **Files:**
+
 - Modify: `packages/theme/src/types.ts`
 - Modify: `packages/theme/src/components.ts`
 - Modify: `packages/theme/src/__tests__/theme.test.ts`
@@ -143,9 +144,9 @@ export interface BadgeComponentToken {
 Extend `ComponentTokenMap` with:
 
 ```ts
-  Table: TableComponentToken
-  Tag: TagComponentToken
-  Badge: BadgeComponentToken
+Table: TableComponentToken
+Tag: TagComponentToken
+Badge: BadgeComponentToken
 ```
 
 - [ ] **Step 4: Add default token derivation**
@@ -208,6 +209,7 @@ git commit -m "feat(theme): add data display component tokens"
 ## Task 2: Implement Tag
 
 **Files:**
+
 - Create: `packages/components/src/tag/interface.ts`
 - Create: `packages/components/src/tag/tag.style.ts`
 - Create: `packages/components/src/tag/tag.tsx`
@@ -332,10 +334,26 @@ export function useTagStyle(prefixCls: string) {
         background: 'color-mix(in srgb, var(--ads-tag-custom-color) 10%, transparent)',
         borderColor: 'color-mix(in srgb, var(--ads-tag-custom-color) 35%, transparent)',
       },
-      [`.${prefixCls}-success`]: { color: t.colorSuccess, background: '#f6ffed', borderColor: '#b7eb8f' },
-      [`.${prefixCls}-warning`]: { color: t.colorWarning, background: '#fffbe6', borderColor: '#ffe58f' },
-      [`.${prefixCls}-error`]: { color: t.colorError, background: '#fff2f0', borderColor: '#ffccc7' },
-      [`.${prefixCls}-processing`]: { color: t.colorInfo, background: '#e6f4ff', borderColor: '#91caff' },
+      [`.${prefixCls}-success`]: {
+        color: t.colorSuccess,
+        background: '#f6ffed',
+        borderColor: '#b7eb8f',
+      },
+      [`.${prefixCls}-warning`]: {
+        color: t.colorWarning,
+        background: '#fffbe6',
+        borderColor: '#ffe58f',
+      },
+      [`.${prefixCls}-error`]: {
+        color: t.colorError,
+        background: '#fff2f0',
+        borderColor: '#ffccc7',
+      },
+      [`.${prefixCls}-processing`]: {
+        color: t.colorInfo,
+        background: '#e6f4ff',
+        borderColor: '#91caff',
+      },
       [`.${prefixCls}-close`]: {
         display: 'inline-flex',
         'align-items': 'center',
@@ -385,7 +403,8 @@ export function Tag(props: TagProps) {
   const mergedStyle = (): JSX.CSSProperties | string | undefined => {
     if (!isCustomColor()) return local.style
     const customStyle = { '--ads-tag-custom-color': local.color } as JSX.CSSProperties
-    if (typeof local.style === 'string') return `${local.style}; --ads-tag-custom-color: ${local.color}`
+    if (typeof local.style === 'string')
+      return `${local.style}; --ads-tag-custom-color: ${local.color}`
     return { ...customStyle, ...(local.style ?? {}) }
   }
 
@@ -447,6 +466,7 @@ git commit -m "feat(components): add tag"
 ## Task 3: Implement Badge
 
 **Files:**
+
 - Create: `packages/components/src/badge/interface.ts`
 - Create: `packages/components/src/badge/badge.style.ts`
 - Create: `packages/components/src/badge/badge.tsx`
@@ -577,13 +597,14 @@ export function useBadgeStyle(prefixCls: string) {
         'border-radius': badge.overflowIndicatorHeight / 2,
         'box-shadow': `0 0 0 1px ${t.colorBgContainer}`,
       },
-      [`.${prefixCls}-with-children .${prefixCls}-count, .${prefixCls}-with-children .${prefixCls}-dot`]: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        transform: 'translate(50%, -50%)',
-        'transform-origin': '100% 0%',
-      },
+      [`.${prefixCls}-with-children .${prefixCls}-count, .${prefixCls}-with-children .${prefixCls}-dot`]:
+        {
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          transform: 'translate(50%, -50%)',
+          'transform-origin': '100% 0%',
+        },
       [`.${prefixCls}-dot`]: {
         display: 'inline-block',
         width: badge.dotSize,
@@ -600,11 +621,18 @@ export function useBadgeStyle(prefixCls: string) {
         'border-radius': '50%',
       },
       [`.${prefixCls}-status-success`]: { background: t.colorSuccess },
-      [`.${prefixCls}-status-processing`]: { background: t.colorInfo, animation: 'ads-badge-pulse 1.2s infinite ease-in-out' },
+      [`.${prefixCls}-status-processing`]: {
+        background: t.colorInfo,
+        animation: 'ads-badge-pulse 1.2s infinite ease-in-out',
+      },
       [`.${prefixCls}-status-default`]: { background: t.colorTextDisabled },
       [`.${prefixCls}-status-error`]: { background: t.colorError },
       [`.${prefixCls}-status-warning`]: { background: t.colorWarning },
-      [`.${prefixCls}-status-text`]: { color: t.colorText, 'font-size': t.fontSize, 'line-height': t.lineHeight },
+      [`.${prefixCls}-status-text`]: {
+        color: t.colorText,
+        'font-size': t.fontSize,
+        'line-height': t.lineHeight,
+      },
       '@keyframes ads-badge-pulse': {
         '0%': { opacity: 1 },
         '50%': { opacity: 0.45 },
@@ -642,7 +670,8 @@ export function Badge(props: BadgeProps) {
   const [, hashId] = useBadgeStyle(prefixCls())
   const overflowCount = () => local.overflowCount ?? 99
   const countText = () => {
-    if (typeof local.count === 'number' && local.count > overflowCount()) return `${overflowCount()}+`
+    if (typeof local.count === 'number' && local.count > overflowCount())
+      return `${overflowCount()}+`
     return local.count
   }
   const shouldShowCount = () => {
@@ -680,7 +709,9 @@ export function Badge(props: BadgeProps) {
       }
     >
       <span {...rest} class={classNames(`${prefixCls()}-status`, hashId(), local.class)}>
-        <span class={classNames(`${prefixCls()}-status-dot`, `${prefixCls()}-status-${local.status}`)} />
+        <span
+          class={classNames(`${prefixCls()}-status-dot`, `${prefixCls()}-status-${local.status}`)}
+        />
         <Show when={local.text}>
           <span class={`${prefixCls()}-status-text`}>{local.text}</span>
         </Show>
@@ -719,6 +750,7 @@ git commit -m "feat(components): add badge"
 ## Task 4: Implement Table
 
 **Files:**
+
 - Create: `packages/components/src/table/interface.ts`
 - Create: `packages/components/src/table/table.style.ts`
 - Create: `packages/components/src/table/table.tsx`
@@ -763,7 +795,13 @@ describe('Table', () => {
   it('uses render for custom cells', () => {
     const result = render(() => (
       <Table
-        columns={[{ title: 'Status', dataIndex: 'status', render: (value) => <strong>{String(value)}</strong> }]}
+        columns={[
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            render: (value) => <strong>{String(value)}</strong>,
+          },
+        ]}
         dataSource={data}
       />
     ))
@@ -775,8 +813,12 @@ describe('Table', () => {
     expect(byString.container.querySelector('tbody tr')?.getAttribute('data-row-key')).toBe('Ada')
     byString.unmount()
 
-    const byFunction = render(() => <Table columns={columns} dataSource={data} rowKey={(record) => record.status} />)
-    expect(byFunction.container.querySelector('tbody tr')?.getAttribute('data-row-key')).toBe('active')
+    const byFunction = render(() => (
+      <Table columns={columns} dataSource={data} rowKey={(record) => record.status} />
+    ))
+    expect(byFunction.container.querySelector('tbody tr')?.getAttribute('data-row-key')).toBe(
+      'active',
+    )
   })
 
   it('supports showHeader false', () => {
@@ -790,7 +832,9 @@ describe('Table', () => {
   })
 
   it('applies prefix, bordered, size, and loading classes', () => {
-    const result = render(() => <Table columns={columns} dataSource={data} bordered size="small" loading />)
+    const result = render(() => (
+      <Table columns={columns} dataSource={data} bordered size="small" loading />
+    ))
     const root = result.container.firstElementChild as HTMLElement
     expect(root.className).toContain('ads-table-wrapper')
     expect(root.className).toContain('ads-table-bordered')
@@ -800,7 +844,9 @@ describe('Table', () => {
 
   it('invokes row event handlers from onRow', () => {
     const onClick = vi.fn()
-    const result = render(() => <Table columns={columns} dataSource={data} onRow={() => ({ onClick })} />)
+    const result = render(() => (
+      <Table columns={columns} dataSource={data} onRow={() => ({ onClick })} />
+    ))
     fireEvent.click(result.getByText('Ada').closest('tr')!)
     expect(onClick).toHaveBeenCalledTimes(1)
   })
@@ -845,8 +891,9 @@ export interface TableColumn<T extends Record<string, unknown> = Record<string, 
   classList?: Record<string, boolean | undefined>
 }
 
-export interface TableProps<T extends Record<string, unknown> = Record<string, unknown>>
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface TableProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children'> {
   columns?: TableColumn<T>[]
   dataSource?: T[]
   rowKey?: keyof T | ((record: T, index: number) => string | number)
@@ -945,7 +992,10 @@ import { useTableStyle } from './table.style'
 import type { JSX } from 'solid-js'
 import type { TableColumn, TableProps } from './interface'
 
-function getValue<T extends Record<string, unknown>>(record: T, dataIndex: keyof T | string | undefined) {
+function getValue<T extends Record<string, unknown>>(
+  record: T,
+  dataIndex: keyof T | string | undefined,
+) {
   if (!dataIndex) return undefined
   return record[dataIndex as keyof T]
 }
@@ -954,14 +1004,20 @@ function getColumnKey<T extends Record<string, unknown>>(column: TableColumn<T>,
   return column.key ?? String(column.dataIndex ?? index)
 }
 
-function getRowKey<T extends Record<string, unknown>>(record: T, index: number, rowKey: TableProps<T>['rowKey']) {
+function getRowKey<T extends Record<string, unknown>>(
+  record: T,
+  index: number,
+  rowKey: TableProps<T>['rowKey'],
+) {
   if (typeof rowKey === 'function') return rowKey(record, index)
   if (rowKey) return String(record[rowKey])
   if ('key' in record && record.key != null) return String(record.key)
   return String(index)
 }
 
-export function Table<T extends Record<string, unknown> = Record<string, unknown>>(props: TableProps<T>) {
+export function Table<T extends Record<string, unknown> = Record<string, unknown>>(
+  props: TableProps<T>,
+) {
   const [local, rest] = splitProps(props, [
     'columns',
     'dataSource',
@@ -1006,7 +1062,9 @@ export function Table<T extends Record<string, unknown> = Record<string, unknown
                       column.class,
                     )}
                     classList={column.classList}
-                    style={{ width: typeof column.width === 'number' ? `${column.width}px` : column.width }}
+                    style={{
+                      width: typeof column.width === 'number' ? `${column.width}px` : column.width,
+                    }}
                     data-column-key={getColumnKey(column, index())}
                   >
                     {column.title}
@@ -1044,7 +1102,9 @@ export function Table<T extends Record<string, unknown> = Record<string, unknown
                             )}
                             classList={column.classList}
                           >
-                            {column.render ? column.render(value(), record, index()) : (value() as JSX.Element)}
+                            {column.render
+                              ? column.render(value(), record, index())
+                              : (value() as JSX.Element)}
                           </td>
                         )
                       }}
@@ -1093,6 +1153,7 @@ git commit -m "feat(components): add table"
 ## Task 5: Add Root Exports and Docs
 
 **Files:**
+
 - Modify: `packages/components/src/index.ts`
 - Modify: `apps/docs/src/site/nav.ts`
 - Create: `apps/docs/src/routes/components/table.tsx`
@@ -1148,7 +1209,11 @@ const columns = [
     title: 'Status',
     dataIndex: 'status',
     render: (value: unknown) =>
-      value === 'active' ? <Tag color="success">Active</Tag> : <Badge status="default" text="Idle" />,
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
   },
 ]
 
@@ -1159,10 +1224,16 @@ export default function TablePage() {
       <DemoBlock title="Basic" code={`<Table columns={columns} dataSource={data} />`}>
         <Table columns={columns} dataSource={data} />
       </DemoBlock>
-      <DemoBlock title="Bordered small" code={`<Table bordered size="small" columns={columns} dataSource={data} />`}>
+      <DemoBlock
+        title="Bordered small"
+        code={`<Table bordered size="small" columns={columns} dataSource={data} />`}
+      >
         <Table bordered size="small" columns={columns} dataSource={data} />
       </DemoBlock>
-      <DemoBlock title="Empty and loading" code={`<Table loading columns={columns} dataSource={[]} emptyText="No users" />`}>
+      <DemoBlock
+        title="Empty and loading"
+        code={`<Table loading columns={columns} dataSource={[]} emptyText="No users" />`}
+      >
         <Table loading columns={columns} dataSource={[]} emptyText="No users" />
       </DemoBlock>
     </>
@@ -1191,7 +1262,10 @@ export default function TagPage() {
           <Tag color="#722ed1">Custom</Tag>
         </Space>
       </DemoBlock>
-      <DemoBlock title="Closable" code={`<Tag closable onClose={() => console.log('closed')}>Closable</Tag>`}>
+      <DemoBlock
+        title="Closable"
+        code={`<Tag closable onClose={() => console.log('closed')}>Closable</Tag>`}
+      >
         <Tag closable onClose={() => console.log('closed')}>
           Closable
         </Tag>
@@ -1272,6 +1346,7 @@ git commit -m "docs: add data display component pages"
 ## Task 6: Full Verification and Cleanup
 
 **Files:**
+
 - Check all files created or modified by previous tasks.
 
 - [ ] **Step 1: Check file naming rule**

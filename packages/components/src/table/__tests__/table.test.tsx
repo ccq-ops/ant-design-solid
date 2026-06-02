@@ -31,7 +31,13 @@ describe('Table', () => {
   it('uses render for custom cells', () => {
     const result = render(() => (
       <Table
-        columns={[{ title: 'Status', dataIndex: 'status', render: (value) => <strong>{String(value)}</strong> }]}
+        columns={[
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            render: (value) => <strong>{String(value)}</strong>,
+          },
+        ]}
         dataSource={data}
       />
     ))
@@ -43,8 +49,12 @@ describe('Table', () => {
     expect(byString.container.querySelector('tbody tr')?.getAttribute('data-row-key')).toBe('Ada')
     byString.unmount()
 
-    const byFunction = render(() => <Table columns={columns} dataSource={data} rowKey={(record) => record.status} />)
-    expect(byFunction.container.querySelector('tbody tr')?.getAttribute('data-row-key')).toBe('active')
+    const byFunction = render(() => (
+      <Table columns={columns} dataSource={data} rowKey={(record) => record.status} />
+    ))
+    expect(byFunction.container.querySelector('tbody tr')?.getAttribute('data-row-key')).toBe(
+      'active',
+    )
   })
 
   it('supports showHeader false', () => {
@@ -58,7 +68,9 @@ describe('Table', () => {
   })
 
   it('applies prefix, bordered, size, and loading classes', () => {
-    const result = render(() => <Table columns={columns} dataSource={data} bordered size="small" loading />)
+    const result = render(() => (
+      <Table columns={columns} dataSource={data} bordered size="small" loading />
+    ))
     const root = result.container.firstElementChild as HTMLElement
     expect(root.className).toContain('ads-table-wrapper')
     expect(root.className).toContain('ads-table-bordered')
@@ -68,7 +80,9 @@ describe('Table', () => {
 
   it('invokes row event handlers from onRow', () => {
     const onClick = vi.fn()
-    const result = render(() => <Table columns={columns} dataSource={data} onRow={() => ({ onClick })} />)
+    const result = render(() => (
+      <Table columns={columns} dataSource={data} onRow={() => ({ onClick })} />
+    ))
     fireEvent.click(result.getByText('Ada').closest('tr')!)
     expect(onClick).toHaveBeenCalledTimes(1)
   })

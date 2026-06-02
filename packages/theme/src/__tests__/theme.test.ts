@@ -102,5 +102,4 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Badge', token).colorBg).toBe(token.colorError)
     expect(getComponentToken('Badge', token).colorText).toBe('#ffffff')
   })
-
 })
