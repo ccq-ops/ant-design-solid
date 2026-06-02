@@ -1,9 +1,18 @@
-import { For, Show, children, createMemo, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createContext,
+  createMemo,
+  createSignal,
+  onCleanup,
+  splitProps,
+  useContext,
+} from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type { DescriptionsItemProps, DescriptionsItemType, DescriptionsProps } from './interface'
 import { useDescriptionsStyle } from './descriptions.style'
-import type { JSX } from 'solid-js'
+import type { Accessor, JSX } from 'solid-js'
 
 function isPresent(value: unknown): boolean {
   return value !== undefined && value !== null && value !== false
@@ -19,27 +28,27 @@ function clampSpan(span: number | undefined, column: number): number {
   return Math.min(Math.max(1, Math.floor(span ?? 1)), column)
 }
 
-const DESCRIPTION_ITEM_MARK = Symbol('ant-design-solid-descriptions-item')
+interface DescriptionsItemContextValue {
+  register: (item: Accessor<DescriptionsItemType>) => () => void
+}
 
-type DescriptionItemNode = DescriptionsItemType & { [DESCRIPTION_ITEM_MARK]: true }
+const DescriptionsItemContext = createContext<DescriptionsItemContextValue>()
 
 export function DescriptionsItem(props: DescriptionsItemProps) {
-  return { ...props, [DESCRIPTION_ITEM_MARK]: true } as unknown as JSX.Element
-}
+  const context = useContext(DescriptionsItemContext)
+  if (!context) return null
 
-function isDescriptionItemNode(node: unknown): node is DescriptionItemNode {
-  return Boolean(node && typeof node === 'object' && DESCRIPTION_ITEM_MARK in node)
-}
-
-function getChildrenItems(childNodes: unknown[]): DescriptionsItemType[] {
-  return childNodes.filter(isDescriptionItemNode).map((child) => ({
-    label: child.label,
-    children: child.children,
-    span: child.span,
-    class: child.class,
-    className: child.className,
-    style: child.style,
+  const unregister = context.register(() => ({
+    label: props.label,
+    children: props.children,
+    span: props.span,
+    class: props.class,
+    className: props.className,
+    style: props.style,
   }))
+  onCleanup(unregister)
+
+  return null
 }
 
 function chunkItems(items: DescriptionsItemType[], column: number): DescriptionsItemType[][] {
@@ -84,12 +93,18 @@ export function DescriptionsRoot(props: DescriptionsProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-descriptions`
   const [, hashId] = useDescriptionsStyle(prefixCls())
-  const resolvedChildren = children(() => local.children)
+  const [childItems, setChildItems] = createSignal<Accessor<DescriptionsItemType>[]>([])
   const column = () => normalizeColumn(local.column)
   const layout = () => local.layout ?? 'horizontal'
   const size = () => local.size ?? 'default'
+  const itemContext: DescriptionsItemContextValue = {
+    register: (item) => {
+      setChildItems((items) => [...items, item])
+      return () => setChildItems((items) => items.filter((candidate) => candidate !== item))
+    },
+  }
   const normalizedItems = createMemo(() =>
-    local.items ? local.items : getChildrenItems(resolvedChildren.toArray()),
+    local.items ? local.items : childItems().map((item) => item()),
   )
   const rows = createMemo(() => chunkItems(normalizedItems(), column()))
   const hasHeader = () => isPresent(local.title) || isPresent(local.extra)
@@ -143,6 +158,11 @@ export function DescriptionsRoot(props: DescriptionsProps) {
             <div class={`${prefixCls()}-extra`}>{local.extra}</div>
           </Show>
         </div>
+      </Show>
+      <Show when={!local.items}>
+        <DescriptionsItemContext.Provider value={itemContext}>
+          {local.children}
+        </DescriptionsItemContext.Provider>
       </Show>
       <div class={`${prefixCls()}-view`}>
         <table class={`${prefixCls()}-table`}>

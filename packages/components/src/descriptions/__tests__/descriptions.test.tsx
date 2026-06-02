@@ -78,6 +78,17 @@ describe('Descriptions', () => {
     expect(addressContent).toHaveAttribute('colspan', '2')
   })
 
+  it('renders nothing when Item is used standalone', () => {
+    const { container } = render(() => (
+      <Descriptions.Item label="Standalone">Hidden</Descriptions.Item>
+    ))
+
+    expect(container).toBeEmptyDOMElement()
+    expect(container).not.toHaveTextContent('Standalone')
+    expect(container).not.toHaveTextContent('Hidden')
+    expect(container).not.toHaveTextContent('[object Object]')
+  })
+
   it('prefers items over children when both are supplied', () => {
     render(() => (
       <Descriptions items={[{ label: 'Item Label', children: 'Item Content' }]}>
