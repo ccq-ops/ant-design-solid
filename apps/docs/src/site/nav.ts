@@ -10,6 +10,7 @@ export const navItems = [
   { path: '/components/radio', label: 'Radio' },
   { path: '/components/switch', label: 'Switch' },
   { path: '/components/rate', label: 'Rate' },
+  { path: '/components/slider', label: 'Slider' },
   { path: '/components/table', label: 'Table' },
   { path: '/components/pagination', label: 'Pagination' },
   { path: '/components/steps', label: 'Steps' },
