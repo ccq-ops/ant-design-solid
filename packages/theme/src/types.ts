@@ -149,6 +149,40 @@ export interface PopconfirmComponentToken {
   boxShadow: string
 }
 
+export interface TableComponentToken {
+  headerBg: string
+  headerColor: string
+  rowHoverBg: string
+  borderColor: string
+  cellPadding: number
+  cellPaddingSm: number
+  cellPaddingLg: number
+  borderRadius: number
+  emptyColor: string
+}
+
+export interface TagComponentToken {
+  defaultBg: string
+  defaultColor: string
+  borderColor: string
+  borderRadius: number
+  paddingInline: number
+  fontSize: number
+  lineHeight: number
+  closeIconColor: string
+}
+
+export interface BadgeComponentToken {
+  overflowIndicatorHeight: number
+  overflowIndicatorHeightSm: number
+  dotSize: number
+  textFontSize: number
+  textFontSizeSm: number
+  colorBg: string
+  colorText: string
+  statusSize: number
+}
+
 export interface ComponentTokenMap {
   Button: ButtonComponentToken
   Input: InputComponentToken
@@ -165,6 +199,9 @@ export interface ComponentTokenMap {
   Notification: NotificationComponentToken
   Modal: ModalComponentToken
   Popconfirm: PopconfirmComponentToken
+  Table: TableComponentToken
+  Tag: TagComponentToken
+  Badge: BadgeComponentToken
 }
 
 export interface ThemeConfig {

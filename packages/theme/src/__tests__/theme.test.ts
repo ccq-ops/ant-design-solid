@@ -77,4 +77,30 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Popconfirm', token).width).toBe(240)
     expect(getComponentToken('Popconfirm', token).bg).toBe(token.colorBgElevated)
   })
+
+  it('derives data display component token defaults and applies overrides', () => {
+    const token = mergeTheme({
+      components: {
+        Table: { headerBg: '#fafafa', cellPadding: 20 },
+        Tag: { borderRadius: 12, closeIconColor: '#111111' },
+        Badge: { overflowIndicatorHeight: 24, dotSize: 8 },
+      },
+    })
+
+    expect(getComponentToken('Table', token).headerBg).toBe('#fafafa')
+    expect(getComponentToken('Table', token).headerColor).toBe(token.colorText)
+    expect(getComponentToken('Table', token).cellPadding).toBe(20)
+    expect(getComponentToken('Table', token).borderColor).toBe(token.colorBorderSecondary)
+
+    expect(getComponentToken('Tag', token).borderRadius).toBe(12)
+    expect(getComponentToken('Tag', token).defaultBg).toBe(token.colorFillAlter)
+    expect(getComponentToken('Tag', token).defaultColor).toBe(token.colorText)
+    expect(getComponentToken('Tag', token).closeIconColor).toBe('#111111')
+
+    expect(getComponentToken('Badge', token).overflowIndicatorHeight).toBe(24)
+    expect(getComponentToken('Badge', token).dotSize).toBe(8)
+    expect(getComponentToken('Badge', token).colorBg).toBe(token.colorError)
+    expect(getComponentToken('Badge', token).colorText).toBe('#ffffff')
+  })
+
 })
