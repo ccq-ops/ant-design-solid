@@ -30,6 +30,7 @@ export const navItems = [
   { path: '/components/progress', label: 'Progress' },
   { path: '/components/skeleton', label: 'Skeleton' },
   { path: '/components/modal', label: 'Modal' },
+  { path: '/components/drawer', label: 'Drawer' },
   { path: '/components/popconfirm', label: 'Popconfirm' },
   { path: '/components/button', label: 'Button' },
   { path: '/components/divider', label: 'Divider' },

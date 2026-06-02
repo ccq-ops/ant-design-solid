@@ -19,6 +19,7 @@ export * from './progress'
 export * from './skeleton'
 
 export * from './modal'
+export * from './drawer'
 
 export * from './popconfirm'
 export * from './table'
