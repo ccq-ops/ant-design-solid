@@ -22,6 +22,7 @@ export const navItems = [
   { path: '/components/popconfirm', label: 'Popconfirm' },
   { path: '/components/button', label: 'Button' },
   { path: '/components/divider', label: 'Divider' },
+  { path: '/components/card', label: 'Card' },
   { path: '/components/space', label: 'Space' },
   { path: '/components/typography', label: 'Typography' },
   { path: '/components/grid', label: 'Grid' },
