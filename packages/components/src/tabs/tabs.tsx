@@ -1,4 +1,4 @@
-import { For, Show, createMemo, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useTabsStyle } from './tabs.style'
@@ -9,6 +9,10 @@ function getDefaultActiveKey(items: TabsItem[], defaultActiveKey?: string) {
     return defaultActiveKey
   }
   return items.find((item) => !item.disabled)?.key ?? items[0]?.key ?? ''
+}
+
+function keyToId(key: string) {
+  return key.replace(/[^a-zA-Z0-9_-]/g, '-')
 }
 
 export function Tabs(props: TabsProps) {
@@ -34,11 +38,52 @@ export function Tabs(props: TabsProps) {
   const type = () => local.type ?? 'line'
   const size = () => local.size ?? config.componentSize()
   const tabPosition = () => local.tabPosition ?? 'top'
+  const tabId = (key: string) => `${prefixCls()}-tab-${keyToId(key)}`
+  const panelId = (key: string) => `${prefixCls()}-panel-${keyToId(key)}`
+
+  createEffect(() => {
+    if (local.activeKey !== undefined) return
+    const activeKey = innerActiveKey()
+    const activeItem = items().find((item) => item.key === activeKey && !item.disabled)
+    if (!activeItem) setInnerActiveKey(getDefaultActiveKey(items(), local.defaultActiveKey))
+  })
+
   const handleTabClick = (item: TabsItem) => {
     if (item.disabled || item.key === mergedActiveKey()) return
     local.onChange?.(item.key)
     if (local.activeKey === undefined) {
       setInnerActiveKey(item.key)
+    }
+  }
+  const enabledItems = () => items().filter((item) => !item.disabled)
+  const focusTab = (item: TabsItem) => {
+    const element = document.getElementById(tabId(item.key))
+    element?.focus()
+    handleTabClick(item)
+  }
+  const handleKeyDown = (event: KeyboardEvent, item: TabsItem) => {
+    const candidates = enabledItems()
+    if (!candidates.length) return
+    const currentIndex = Math.max(
+      candidates.findIndex((candidate) => candidate.key === item.key),
+      candidates.findIndex((candidate) => candidate.key === mergedActiveKey()),
+      0,
+    )
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      event.preventDefault()
+      focusTab(candidates[(currentIndex + 1) % candidates.length])
+    }
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      event.preventDefault()
+      focusTab(candidates[(currentIndex - 1 + candidates.length) % candidates.length])
+    }
+    if (event.key === 'Home') {
+      event.preventDefault()
+      focusTab(candidates[0])
+    }
+    if (event.key === 'End') {
+      event.preventDefault()
+      focusTab(candidates[candidates.length - 1])
     }
   }
   const nav = () => (
@@ -48,6 +93,7 @@ export function Tabs(props: TabsProps) {
           const active = () => item.key === mergedActiveKey()
           return (
             <button
+              id={tabId(item.key)}
               type="button"
               role="tab"
               class={classNames(
@@ -55,9 +101,12 @@ export function Tabs(props: TabsProps) {
                 active() && `${prefixCls()}-tab-active`,
                 item.disabled && `${prefixCls()}-tab-disabled`,
               )}
+              tabIndex={active() && !item.disabled ? 0 : -1}
               aria-selected={active() ? 'true' : 'false'}
               aria-disabled={item.disabled ? 'true' : undefined}
+              aria-controls={panelId(item.key)}
               onClick={() => handleTabClick(item)}
+              onKeyDown={(event) => handleKeyDown(event, item)}
             >
               {item.label}
             </button>
@@ -70,7 +119,11 @@ export function Tabs(props: TabsProps) {
     const active = () => item.key === mergedActiveKey()
     return (
       <div
+        id={panelId(item.key)}
         role="tabpanel"
+        aria-labelledby={tabId(item.key)}
+        hidden={!active()}
+        aria-hidden={active() ? undefined : 'true'}
         class={classNames(`${prefixCls()}-tabpane`, !active() && `${prefixCls()}-tabpane-hidden`)}
       >
         {item.children}

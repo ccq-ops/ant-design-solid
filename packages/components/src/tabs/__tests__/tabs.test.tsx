@@ -148,6 +148,49 @@ describe('Tabs', () => {
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
   })
 
+
+  it('links tabs and panels with aria attributes', () => {
+    const result = render(() => <Tabs items={items} />)
+    const tab = result.getByRole('tab', { name: 'One' })
+    const pane = getPane(result.getByText('Pane one'))
+
+    expect(tab.id).toBeTruthy()
+    expect(pane.id).toBeTruthy()
+    expect(tab).toHaveAttribute('aria-controls', pane.id)
+    expect(pane).toHaveAttribute('aria-labelledby', tab.id)
+    expect(getPane(result.getByText('Pane two'))).toHaveAttribute('hidden')
+    expect(getPane(result.getByText('Pane two'))).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('supports keyboard navigation and skips disabled tabs', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Tabs items={items} onChange={onChange} />)
+
+    fireEvent.keyDown(result.getByRole('tab', { name: 'One' }), { key: 'ArrowRight' })
+    expect(onChange).toHaveBeenLastCalledWith('two')
+    expect(result.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true')
+
+    fireEvent.keyDown(result.getByRole('tab', { name: 'Two' }), { key: 'ArrowRight' })
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+
+    fireEvent.keyDown(result.getByRole('tab', { name: 'One' }), { key: 'End' })
+    expect(result.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true')
+
+    fireEvent.keyDown(result.getByRole('tab', { name: 'Two' }), { key: 'Home' })
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('recovers uncontrolled active key when items change', () => {
+    const [dynamicItems, setDynamicItems] = createSignal<typeof items>([])
+    const result = render(() => <Tabs items={dynamicItems()} />)
+
+    expect(result.queryAllByRole('tab')).toHaveLength(0)
+    setDynamicItems(items)
+
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+    expect(result.getByText('Pane one')).toBeInTheDocument()
+  })
+
   it('bottom/card/large/custom prefix classes apply', () => {
     const result = render(() => (
       <ConfigProvider prefixCls="custom">
