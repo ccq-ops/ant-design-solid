@@ -1,6 +1,9 @@
 import type { JSX } from 'solid-js'
 
-export interface StatisticProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title' | 'prefix'> {
+export interface StatisticProps extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'title' | 'prefix'
+> {
   title?: JSX.Element
   value?: string | number | null
   precision?: number

@@ -45,6 +45,7 @@ Do not modify `apps/docs/src/site/routes.ts`; it uses `import.meta.glob` and wil
 ### Task 1: Add Statistic
 
 **Files:**
+
 - Create: `packages/components/src/statistic/interface.ts`
 - Create: `packages/components/src/statistic/statistic.tsx`
 - Create: `packages/components/src/statistic/statistic.style.ts`
@@ -65,7 +66,9 @@ import { Statistic } from '../index'
 
 describe('Statistic', () => {
   it('renders title and value with default classes', () => {
-    const result = render(() => <Statistic title="Active users" value={112893} data-testid="stat" />)
+    const result = render(() => (
+      <Statistic title="Active users" value={112893} data-testid="stat" />
+    ))
     const stat = result.getByTestId('stat')
 
     expect(stat.className).toContain('ads-statistic')
@@ -147,49 +150,52 @@ import { useToken } from '../config-provider'
 
 export function useStatisticStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Statistic', prefixCls] }, () => {
-    const t = token()
-    return {
-      [`.${prefixCls}`]: {
-        'box-sizing': 'border-box',
-        margin: 0,
-        padding: 0,
-        color: t.colorText,
-        'font-size': `${t.fontSize}px`,
-        'font-family': t.fontFamily,
-        'line-height': t.lineHeight,
-      },
-      [`.${prefixCls}-title`]: {
-        'margin-bottom': `${t.marginXXS}px`,
-        color: t.colorTextSecondary,
-        'font-size': `${t.fontSize}px`,
-      },
-      [`.${prefixCls}-content`]: {
-        display: 'inline-flex',
-        'align-items': 'baseline',
-        color: t.colorText,
-        'font-size': `${t.fontSizeHeading3}px`,
-        'line-height': 1.2,
-      },
-      [`.${prefixCls}-content-prefix`]: {
-        'margin-inline-end': `${t.marginXXS}px`,
-      },
-      [`.${prefixCls}-content-suffix`]: {
-        'margin-inline-start': `${t.marginXXS}px`,
-        'font-size': `${t.fontSize}px`,
-      },
-      [`.${prefixCls}-content-value`]: {
-        display: 'inline-block',
-      },
-      [`.${prefixCls}-loading`]: {
-        width: 96,
-        height: t.fontSizeHeading3,
-        background: `linear-gradient(90deg, ${t.colorFillSecondary} 25%, ${t.colorFill} 37%, ${t.colorFillSecondary} 63%)`,
-        'background-size': '400% 100%',
-        'border-radius': `${t.borderRadiusSM}px`,
-      },
-    }
-  })
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Statistic', prefixCls] },
+    () => {
+      const t = token()
+      return {
+        [`.${prefixCls}`]: {
+          'box-sizing': 'border-box',
+          margin: 0,
+          padding: 0,
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+          'line-height': t.lineHeight,
+        },
+        [`.${prefixCls}-title`]: {
+          'margin-bottom': `${t.marginXXS}px`,
+          color: t.colorTextSecondary,
+          'font-size': `${t.fontSize}px`,
+        },
+        [`.${prefixCls}-content`]: {
+          display: 'inline-flex',
+          'align-items': 'baseline',
+          color: t.colorText,
+          'font-size': `${t.fontSizeHeading3}px`,
+          'line-height': 1.2,
+        },
+        [`.${prefixCls}-content-prefix`]: {
+          'margin-inline-end': `${t.marginXXS}px`,
+        },
+        [`.${prefixCls}-content-suffix`]: {
+          'margin-inline-start': `${t.marginXXS}px`,
+          'font-size': `${t.fontSize}px`,
+        },
+        [`.${prefixCls}-content-value`]: {
+          display: 'inline-block',
+        },
+        [`.${prefixCls}-loading`]: {
+          width: 96,
+          height: t.fontSizeHeading3,
+          background: `linear-gradient(90deg, ${t.colorFillSecondary} 25%, ${t.colorFill} 37%, ${t.colorFillSecondary} 63%)`,
+          'background-size': '400% 100%',
+          'border-radius': `${t.borderRadiusSM}px`,
+        },
+      }
+    },
+  )
 }
 ```
 
@@ -245,11 +251,17 @@ export function Statistic(props: StatisticProps) {
         fallback={<div class={`${prefixCls()}-loading`} aria-hidden="true" />}
       >
         <div class={`${prefixCls()}-content`} style={local.valueStyle}>
-          <Show when={local.prefix !== undefined && local.prefix !== null && local.prefix !== false}>
+          <Show
+            when={local.prefix !== undefined && local.prefix !== null && local.prefix !== false}
+          >
             <span class={`${prefixCls()}-content-prefix`}>{local.prefix}</span>
           </Show>
-          <span class={`${prefixCls()}-content-value`}>{formatValue(local.value, local.precision)}</span>
-          <Show when={local.suffix !== undefined && local.suffix !== null && local.suffix !== false}>
+          <span class={`${prefixCls()}-content-value`}>
+            {formatValue(local.value, local.precision)}
+          </span>
+          <Show
+            when={local.suffix !== undefined && local.suffix !== null && local.suffix !== false}
+          >
             <span class={`${prefixCls()}-content-suffix`}>{local.suffix}</span>
           </Show>
         </div>
@@ -300,7 +312,10 @@ export default function StatisticPage() {
       <DemoBlock title="Loading" code={`<Statistic title="Feedback" value={128} loading />`}>
         <Statistic title="Feedback" value={128} loading />
       </DemoBlock>
-      <DemoBlock title="In card" code={`<Card><Space size="large"><Statistic title="Visits" value={8846} /><Statistic title="Conversion" value={12.8} precision={1} suffix="%" /></Space></Card>`}>
+      <DemoBlock
+        title="In card"
+        code={`<Card><Space size="large"><Statistic title="Visits" value={8846} /><Statistic title="Conversion" value={12.8} precision={1} suffix="%" /></Space></Card>`}
+      >
         <Card>
           <Space size="large">
             <Statistic title="Visits" value={8846} />
@@ -346,6 +361,7 @@ git commit -m "feat(components): add statistic"
 ### Task 2: Add Descriptions
 
 **Files:**
+
 - Create: `packages/components/src/descriptions/interface.ts`
 - Create: `packages/components/src/descriptions/descriptions.tsx`
 - Create: `packages/components/src/descriptions/descriptions.style.ts`
@@ -492,74 +508,80 @@ import { useToken } from '../config-provider'
 
 export function useDescriptionsStyle(prefixCls: string) {
   const token = useToken()
-  return useStyleRegister({ theme: 'default', token: token(), path: ['Descriptions', prefixCls] }, () => {
-    const t = token()
-    return {
-      [`.${prefixCls}`]: {
-        'box-sizing': 'border-box',
-        margin: 0,
-        padding: 0,
-        color: t.colorText,
-        'font-size': `${t.fontSize}px`,
-        'font-family': t.fontFamily,
-        'line-height': t.lineHeight,
-      },
-      [`.${prefixCls}-header`]: {
-        display: 'flex',
-        'align-items': 'center',
-        'margin-bottom': `${t.margin}px`,
-      },
-      [`.${prefixCls}-title`]: {
-        flex: 1,
-        color: t.colorText,
-        'font-weight': 600,
-        'font-size': `${t.fontSizeLG}px`,
-      },
-      [`.${prefixCls}-extra`]: {
-        color: t.colorText,
-      },
-      [`.${prefixCls}-view`]: {
-        width: '100%',
-        'border-collapse': 'collapse',
-        tableLayout: 'fixed',
-      },
-      [`.${prefixCls}-row > th, .${prefixCls}-row > td`]: {
-        padding: `${t.paddingSM}px ${t.padding}px`,
-        'vertical-align': 'top',
-      },
-      [`.${prefixCls}-item-label`]: {
-        color: t.colorTextSecondary,
-        'font-weight': 400,
-        'text-align': 'start',
-        '&::after': {
-          content: '":"',
-          'margin-inline-end': `${t.marginXS}px`,
+  return useStyleRegister(
+    { theme: 'default', token: token(), path: ['Descriptions', prefixCls] },
+    () => {
+      const t = token()
+      return {
+        [`.${prefixCls}`]: {
+          'box-sizing': 'border-box',
+          margin: 0,
+          padding: 0,
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+          'line-height': t.lineHeight,
         },
-      },
-      [`.${prefixCls}-item-content`]: {
-        color: t.colorText,
-      },
-      [`.${prefixCls}-bordered .${prefixCls}-view`]: {
-        border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
-      },
-      [`.${prefixCls}-bordered .${prefixCls}-row > th, .${prefixCls}-bordered .${prefixCls}-row > td`]: {
-        border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
-      },
-      [`.${prefixCls}-bordered .${prefixCls}-item-label`]: {
-        background: t.colorFillAlter,
-      },
-      [`.${prefixCls}-vertical .${prefixCls}-item-label::after`]: {
-        content: '""',
-        margin: 0,
-      },
-      [`.${prefixCls}-middle .${prefixCls}-row > th, .${prefixCls}-middle .${prefixCls}-row > td`]: {
-        padding: `${t.paddingXS}px ${t.paddingSM}px`,
-      },
-      [`.${prefixCls}-small .${prefixCls}-row > th, .${prefixCls}-small .${prefixCls}-row > td`]: {
-        padding: `${t.paddingXXS}px ${t.paddingXS}px`,
-      },
-    }
-  })
+        [`.${prefixCls}-header`]: {
+          display: 'flex',
+          'align-items': 'center',
+          'margin-bottom': `${t.margin}px`,
+        },
+        [`.${prefixCls}-title`]: {
+          flex: 1,
+          color: t.colorText,
+          'font-weight': 600,
+          'font-size': `${t.fontSizeLG}px`,
+        },
+        [`.${prefixCls}-extra`]: {
+          color: t.colorText,
+        },
+        [`.${prefixCls}-view`]: {
+          width: '100%',
+          'border-collapse': 'collapse',
+          tableLayout: 'fixed',
+        },
+        [`.${prefixCls}-row > th, .${prefixCls}-row > td`]: {
+          padding: `${t.paddingSM}px ${t.padding}px`,
+          'vertical-align': 'top',
+        },
+        [`.${prefixCls}-item-label`]: {
+          color: t.colorTextSecondary,
+          'font-weight': 400,
+          'text-align': 'start',
+          '&::after': {
+            content: '":"',
+            'margin-inline-end': `${t.marginXS}px`,
+          },
+        },
+        [`.${prefixCls}-item-content`]: {
+          color: t.colorText,
+        },
+        [`.${prefixCls}-bordered .${prefixCls}-view`]: {
+          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        },
+        [`.${prefixCls}-bordered .${prefixCls}-row > th, .${prefixCls}-bordered .${prefixCls}-row > td`]:
+          {
+            border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          },
+        [`.${prefixCls}-bordered .${prefixCls}-item-label`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-item-label::after`]: {
+          content: '""',
+          margin: 0,
+        },
+        [`.${prefixCls}-middle .${prefixCls}-row > th, .${prefixCls}-middle .${prefixCls}-row > td`]:
+          {
+            padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          },
+        [`.${prefixCls}-small .${prefixCls}-row > th, .${prefixCls}-small .${prefixCls}-row > td`]:
+          {
+            padding: `${t.paddingXXS}px ${t.paddingXS}px`,
+          },
+      }
+    },
+  )
 }
 ```
 
@@ -711,7 +733,11 @@ export function DescriptionsRoot(props: DescriptionsProps) {
                     <For each={row}>
                       {(item) => (
                         <th
-                          class={classNames(`${prefixCls()}-item-label`, item.class, item.className)}
+                          class={classNames(
+                            `${prefixCls()}-item-label`,
+                            item.class,
+                            item.className,
+                          )}
                           style={item.style}
                           colSpan={clampSpan(item.span, column())}
                         >
@@ -801,7 +827,10 @@ export default function DescriptionsPage() {
           ]}
         />
       </DemoBlock>
-      <DemoBlock title="Vertical" code={`<Descriptions layout="vertical" bordered items={items} />`}>
+      <DemoBlock
+        title="Vertical"
+        code={`<Descriptions layout="vertical" bordered items={items} />`}
+      >
         <Descriptions
           layout="vertical"
           bordered
@@ -812,7 +841,10 @@ export default function DescriptionsPage() {
           ]}
         />
       </DemoBlock>
-      <DemoBlock title="Children" code={`<Descriptions><Descriptions.Item label="Project">Solid</Descriptions.Item></Descriptions>`}>
+      <DemoBlock
+        title="Children"
+        code={`<Descriptions><Descriptions.Item label="Project">Solid</Descriptions.Item></Descriptions>`}
+      >
         <Descriptions title="Project Info" column={2}>
           <Descriptions.Item label="Project">Solid Components</Descriptions.Item>
           <Descriptions.Item label="Status">Active</Descriptions.Item>
@@ -856,6 +888,7 @@ git commit -m "feat(components): add descriptions"
 ### Task 3: Add List
 
 **Files:**
+
 - Create: `packages/components/src/list/interface.ts`
 - Create: `packages/components/src/list/list.tsx`
 - Create: `packages/components/src/list/list.style.ts`
@@ -1051,12 +1084,14 @@ export function useListStyle(prefixCls: string) {
       [`.${prefixCls}-split .${prefixCls}-item:not(:last-child)`]: {
         'border-block-end': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
       },
-      [`.${prefixCls}-small .${prefixCls}-item, .${prefixCls}-small .${prefixCls}-header, .${prefixCls}-small .${prefixCls}-footer`]: {
-        padding: `${t.paddingXS}px ${t.paddingSM}px`,
-      },
-      [`.${prefixCls}-large .${prefixCls}-item, .${prefixCls}-large .${prefixCls}-header, .${prefixCls}-large .${prefixCls}-footer`]: {
-        padding: `${t.padding}px ${t.paddingLG}px`,
-      },
+      [`.${prefixCls}-small .${prefixCls}-item, .${prefixCls}-small .${prefixCls}-header, .${prefixCls}-small .${prefixCls}-footer`]:
+        {
+          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+        },
+      [`.${prefixCls}-large .${prefixCls}-item, .${prefixCls}-large .${prefixCls}-header, .${prefixCls}-large .${prefixCls}-footer`]:
+        {
+          padding: `${t.padding}px ${t.paddingLG}px`,
+        },
       [`.${prefixCls}-item-main`]: {
         flex: 1,
         'min-width': 0,
@@ -1207,11 +1242,11 @@ export function ListRoot<T = unknown>(props: ListProps<T>) {
       <Show when={isPresent(local.header)}>
         <div class={`${prefixCls()}-header`}>{local.header}</div>
       </Show>
-      <Show
-        when={!local.loading}
-        fallback={<div class={`${prefixCls()}-loading`}>Loading...</div>}
-      >
-        <Show when={!isEmpty()} fallback={<div class={`${prefixCls()}-empty`}>{local.emptyText ?? 'No Data'}</div>}>
+      <Show when={!local.loading} fallback={<div class={`${prefixCls()}-loading`}>Loading...</div>}>
+        <Show
+          when={!isEmpty()}
+          fallback={<div class={`${prefixCls()}-empty`}>{local.emptyText ?? 'No Data'}</div>}
+        >
           <ul class={`${prefixCls()}-items`}>
             <Show when={hasData()} fallback={renderedChildren()}>
               <For each={dataItems()}>{(item, index) => local.renderItem?.(item, index())}</For>
@@ -1256,16 +1291,26 @@ Create `apps/docs/src/routes/components/list.tsx`:
 import { Avatar, Button, List, Space } from '@ant-design-solid/core'
 import { DemoBlock } from '../../site/demo-block'
 
-const data = ['Racing car sprays burning fuel into crowd.', 'Japanese princess to wed commoner.', 'Australian walks 100km after outback crash.']
+const data = [
+  'Racing car sprays burning fuel into crowd.',
+  'Japanese princess to wed commoner.',
+  'Australian walks 100km after outback crash.',
+]
 
 export default function ListPage() {
   return (
     <>
       <h1>List</h1>
-      <DemoBlock title="Basic" code={`<List dataSource={data} renderItem={(item) => <List.Item>{item}</List.Item>} />`}>
+      <DemoBlock
+        title="Basic"
+        code={`<List dataSource={data} renderItem={(item) => <List.Item>{item}</List.Item>} />`}
+      >
         <List dataSource={data} renderItem={(item) => <List.Item>{item}</List.Item>} />
       </DemoBlock>
-      <DemoBlock title="Bordered" code={`<List bordered header="Header" footer="Footer" dataSource={data} renderItem={(item) => <List.Item>{item}</List.Item>} />`}>
+      <DemoBlock
+        title="Bordered"
+        code={`<List bordered header="Header" footer="Footer" dataSource={data} renderItem={(item) => <List.Item>{item}</List.Item>} />`}
+      >
         <List
           bordered
           header="Header"
@@ -1274,7 +1319,10 @@ export default function ListPage() {
           renderItem={(item) => <List.Item>{item}</List.Item>}
         />
       </DemoBlock>
-      <DemoBlock title="Meta" code={`<List.Item><List.Item.Meta avatar={<Avatar>A</Avatar>} title="Title" description="Description" /></List.Item>`}>
+      <DemoBlock
+        title="Meta"
+        code={`<List.Item><List.Item.Meta avatar={<Avatar>A</Avatar>} title="Title" description="Description" /></List.Item>`}
+      >
         <List bordered>
           <List.Item actions={[<Button size="small">Edit</Button>]} extra={<Space>Extra</Space>}>
             <List.Item.Meta
@@ -1285,7 +1333,10 @@ export default function ListPage() {
           </List.Item>
         </List>
       </DemoBlock>
-      <DemoBlock title="Loading and empty" code={`<List loading />\n<List emptyText="Nothing here" />`}>
+      <DemoBlock
+        title="Loading and empty"
+        code={`<List loading />\n<List emptyText="Nothing here" />`}
+      >
         <Space direction="vertical" style={{ width: '100%' }}>
           <List bordered loading />
           <List bordered emptyText="Nothing here" />
@@ -1329,6 +1380,7 @@ git commit -m "feat(components): add list"
 ### Task 4: Final verification and cleanup
 
 **Files:**
+
 - Modify if needed: files changed by Tasks 1-3 to satisfy formatting, lint, typecheck, tests, or build.
 
 - [ ] **Step 1: Run lint**
