@@ -17,7 +17,7 @@ export function useStepsStyle(prefixCls: string) {
         color: t.colorText,
         'font-size': `${t.fontSize}px`,
         'font-family': t.fontFamily,
-        'line-height': t.lineHeight,
+        'line-height': String(t.lineHeight),
       },
       [`.${prefixCls}-list`]: {
         display: 'flex',
@@ -115,7 +115,7 @@ export function useStepsStyle(prefixCls: string) {
         margin: `${t.marginXS / 2}px 0 0`,
         color: t.colorTextSecondary,
         'font-size': `${t.fontSize}px`,
-        'line-height': t.lineHeight,
+        'line-height': String(t.lineHeight),
       },
       [`.${prefixCls}-small .${prefixCls}-item-description`]: {
         'font-size': `${t.fontSize - 2}px`,
