@@ -1,7 +1,7 @@
 import { Alert, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function AlertPage() {
+export default function AlertPage() {
   return (
     <>
       <h1>Alert</h1>

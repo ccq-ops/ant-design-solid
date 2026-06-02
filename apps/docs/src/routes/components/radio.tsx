@@ -1,5 +1,5 @@
 import { Form, Radio, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
 const options = [
   { label: 'A', value: 'a' },
@@ -7,7 +7,7 @@ const options = [
   { label: 'Disabled', value: 'disabled', disabled: true },
 ]
 
-export function RadioPage() {
+export default function RadioPage() {
   return (
     <>
       <h1>Radio</h1>

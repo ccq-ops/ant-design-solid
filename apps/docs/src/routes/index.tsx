@@ -1,5 +1,5 @@
 import { Button, Space } from '@ant-design-solid/core'
-export function Home() {
+export default function Home() {
   return (
     <section class="hero">
       <h1>Ant Design Solid</h1>

@@ -13,7 +13,7 @@
   "dependencies": {
     "@ant-design-solid/core": "workspace:*",
     "@ant-design-solid/cssinjs": "workspace:*",
+    "@solidjs/router": "^0.16.1",
     "solid-js": "latest"
-  },
-  "devDependencies": {}
+  }
 }

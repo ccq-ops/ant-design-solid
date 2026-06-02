@@ -1,7 +1,7 @@
 import { Input, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function InputPage() {
+export default function InputPage() {
   return (
     <>
       <h1>Input</h1>

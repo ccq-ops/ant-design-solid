@@ -1,7 +1,7 @@
 import { Button, Space, message } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function MessagePage() {
+export default function MessagePage() {
   return (
     <>
       <h1>Message</h1>

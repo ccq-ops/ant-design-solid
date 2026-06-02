@@ -1,6 +1,6 @@
 import { Col, Row } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
-export function GridPage() {
+import { DemoBlock } from '../../site/demo-block'
+export default function GridPage() {
   return (
     <>
       <h1>Grid</h1>

@@ -1,6 +1,6 @@
 import { Button, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
-export function SpacePage() {
+import { DemoBlock } from '../../site/demo-block'
+export default function SpacePage() {
   return (
     <>
       <h1>Space</h1>

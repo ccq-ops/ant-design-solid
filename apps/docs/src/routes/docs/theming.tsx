@@ -1,6 +1,6 @@
 import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
-export function Theming() {
+import { DemoBlock } from '../../site/demo-block'
+export default function Theming() {
   return (
     <>
       <h1>Theming</h1>

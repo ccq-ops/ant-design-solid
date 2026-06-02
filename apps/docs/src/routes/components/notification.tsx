@@ -1,7 +1,7 @@
 import { Button, Space, notification } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function NotificationPage() {
+export default function NotificationPage() {
   return (
     <>
       <h1>Notification</h1>

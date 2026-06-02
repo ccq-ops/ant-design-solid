@@ -1,7 +1,7 @@
 import { Form, Space, Switch } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function SwitchPage() {
+export default function SwitchPage() {
   return (
     <>
       <h1>Switch</h1>

@@ -1,7 +1,7 @@
 import { Button, Form, Input, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function FormPage() {
+export default function FormPage() {
   return (
     <>
       <h1>Form</h1>

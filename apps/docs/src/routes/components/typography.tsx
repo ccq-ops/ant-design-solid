@@ -1,6 +1,6 @@
 import { Typography } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
-export function TypographyPage() {
+import { DemoBlock } from '../../site/demo-block'
+export default function TypographyPage() {
   return (
     <>
       <h1>Typography</h1>

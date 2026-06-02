@@ -1,7 +1,7 @@
 import { Button, Popconfirm, message } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function PopconfirmPage() {
+export default function PopconfirmPage() {
   return (
     <>
       <h1>Popconfirm</h1>

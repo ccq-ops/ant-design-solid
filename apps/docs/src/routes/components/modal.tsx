@@ -1,8 +1,8 @@
 import { Button, Modal, Space } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
-export function ModalPage() {
+export default function ModalPage() {
   const [open, setOpen] = createSignal(false)
   return (
     <>

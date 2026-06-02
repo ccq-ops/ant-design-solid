@@ -1,5 +1,5 @@
 import { Form, Select, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
+import { DemoBlock } from '../../site/demo-block'
 
 const options = [
   { label: 'Apple', value: 'apple' },
@@ -7,7 +7,7 @@ const options = [
   { label: 'Disabled', value: 'disabled', disabled: true },
 ]
 
-export function SelectPage() {
+export default function SelectPage() {
   return (
     <>
       <h1>Select</h1>

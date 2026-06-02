@@ -1,6 +1,6 @@
 import { Button, ConfigProvider } from '@ant-design-solid/core'
-import { DemoBlock } from '../site/demo-block'
-export function ConfigProviderPage() {
+import { DemoBlock } from '../../site/demo-block'
+export default function ConfigProviderPage() {
   return (
     <>
       <h1>ConfigProvider</h1>
