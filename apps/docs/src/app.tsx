@@ -14,6 +14,11 @@ import { SelectPage } from './pages/select-page'
 import { CheckboxPage } from './pages/checkbox-page'
 import { RadioPage } from './pages/radio-page'
 import { SwitchPage } from './pages/switch-page'
+import { AlertPage } from './pages/alert-page'
+import { MessagePage } from './pages/message-page'
+import { NotificationPage } from './pages/notification-page'
+import { ModalPage } from './pages/modal-page'
+import { PopconfirmPage } from './pages/popconfirm-page'
 
 const routes: Record<string, () => JSX.Element> = {
   '/': Home,
@@ -26,6 +31,11 @@ const routes: Record<string, () => JSX.Element> = {
   '/components/checkbox': CheckboxPage,
   '/components/radio': RadioPage,
   '/components/switch': SwitchPage,
+  '/components/alert': AlertPage,
+  '/components/message': MessagePage,
+  '/components/notification': NotificationPage,
+  '/components/modal': ModalPage,
+  '/components/popconfirm': PopconfirmPage,
   '/components/space': SpacePage,
   '/components/typography': TypographyPage,
   '/components/grid': GridPage,

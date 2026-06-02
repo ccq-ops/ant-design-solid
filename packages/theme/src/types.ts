@@ -109,6 +109,46 @@ export interface SwitchComponentToken {
   handleSize: number
 }
 
+export interface AlertComponentToken {
+  padding: number
+  borderRadius: number
+  withDescriptionPadding: number
+  iconSize: number
+}
+
+export interface MessageComponentToken {
+  noticePadding: number
+  noticeBorderRadius: number
+  contentBg: string
+  contentShadow: string
+}
+
+export interface NotificationComponentToken {
+  width: number
+  padding: number
+  borderRadius: number
+  bg: string
+  boxShadow: string
+}
+
+export interface ModalComponentToken {
+  contentBg: string
+  headerBg: string
+  titleColor: string
+  titleFontSize: number
+  borderRadius: number
+  boxShadow: string
+  maskBg: string
+}
+
+export interface PopconfirmComponentToken {
+  width: number
+  padding: number
+  borderRadius: number
+  bg: string
+  boxShadow: string
+}
+
 export interface ComponentTokenMap {
   Button: ButtonComponentToken
   Input: InputComponentToken
@@ -120,6 +160,11 @@ export interface ComponentTokenMap {
   Checkbox: CheckboxComponentToken
   Radio: RadioComponentToken
   Switch: SwitchComponentToken
+  Alert: AlertComponentToken
+  Message: MessageComponentToken
+  Notification: NotificationComponentToken
+  Modal: ModalComponentToken
+  Popconfirm: PopconfirmComponentToken
 }
 
 export interface ThemeConfig {

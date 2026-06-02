@@ -9,3 +9,12 @@ export * from './checkbox'
 export * from './radio'
 export * from './switch'
 export * from './select'
+
+export * from './alert'
+export * from './message'
+
+export * from './notification'
+
+export * from './modal'
+
+export * from './popconfirm'
