@@ -17,6 +17,7 @@ export const navItems = [
   { path: '/components/table', label: 'Table' },
   { path: '/components/statistic', label: 'Statistic' },
   { path: '/components/descriptions', label: 'Descriptions' },
+  { path: '/components/list', label: 'List' },
   { path: '/components/pagination', label: 'Pagination' },
   { path: '/components/steps', label: 'Steps' },
   { path: '/components/tag', label: 'Tag' },
