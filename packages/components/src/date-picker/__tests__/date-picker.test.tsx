@@ -99,6 +99,43 @@ describe('DatePicker', () => {
     expect(screen.queryByText(/^\d{4}-\d{2}$/)).not.toBeInTheDocument()
   })
 
+  it('does not open or emit open changes when disabled trigger is clicked', () => {
+    const onOpenChange = vi.fn()
+    render(() => <DatePicker disabled onOpenChange={onOpenChange} />)
+
+    fireEvent.click(screen.getByRole('combobox'))
+
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(screen.queryByText(/^\d{4}-\d{2}$/)).not.toBeInTheDocument()
+  })
+
+  it('marks the selected date cell as pressed', () => {
+    render(() => <DatePicker defaultOpen defaultValue="2026-06-01" />)
+
+    expect(screen.getByRole('button', { name: '2026-06-01' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  it('parses ISO-like defaultValue strings and displays the formatted local date', () => {
+    render(() => <DatePicker defaultValue="2026-06-01T12:00:00" />)
+
+    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-01')
+  })
+
+  it('parses ISO-like controlled value strings and displays the formatted local date', () => {
+    render(() => <DatePicker value="2026-06-01T12:00:00" />)
+
+    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-01')
+  })
+
+  it('displays a custom placeholder when no value is selected', () => {
+    render(() => <DatePicker placeholder="Pick a day" />)
+
+    expect(screen.getByRole('combobox')).toHaveTextContent('Pick a day')
+  })
+
   it('formats Date values with local date getters', () => {
     render(() => <DatePicker defaultValue={new Date(2026, 0, 5)} format="YYYY/MM/DD" />)
 
