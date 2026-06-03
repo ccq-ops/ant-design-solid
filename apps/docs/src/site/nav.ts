@@ -14,6 +14,7 @@ export const navItems = [
   { path: '/components/time-picker', label: 'TimePicker' },
   { path: '/components/date-picker', label: 'DatePicker' },
   { path: '/components/calendar', label: 'Calendar' },
+  { path: '/components/color-picker', label: 'ColorPicker' },
   { path: '/components/carousel', label: 'Carousel' },
   { path: '/components/upload', label: 'Upload' },
   { path: '/components/transfer', label: 'Transfer' },
