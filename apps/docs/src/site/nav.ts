@@ -9,6 +9,7 @@ export const navItems = [
   { path: '/components/select', label: 'Select' },
   { path: '/components/cascader', label: 'Cascader' },
   { path: '/components/auto-complete', label: 'AutoComplete' },
+  { path: '/components/segmented', label: 'Segmented' },
   { path: '/components/tree-select', label: 'TreeSelect' },
   { path: '/components/time-picker', label: 'TimePicker' },
   { path: '/components/date-picker', label: 'DatePicker' },
@@ -30,6 +31,7 @@ export const navItems = [
   { path: '/components/tag', label: 'Tag' },
   { path: '/components/badge', label: 'Badge' },
   { path: '/components/image', label: 'Image' },
+  { path: '/components/qrcode', label: 'QRCode' },
   { path: '/components/tabs', label: 'Tabs' },
   { path: '/components/tooltip', label: 'Tooltip' },
   { path: '/components/dropdown', label: 'Dropdown' },
@@ -57,4 +59,5 @@ export const navItems = [
   { path: '/components/space', label: 'Space' },
   { path: '/components/typography', label: 'Typography' },
   { path: '/components/grid', label: 'Grid' },
+  { path: '/components/flex', label: 'Flex' },
 ]
