@@ -1,6 +1,7 @@
 export * from './config-provider'
 export * from './button'
 export * from './input'
+export * from './input-number'
 export * from './space'
 export * from './typography'
 export * from './grid'

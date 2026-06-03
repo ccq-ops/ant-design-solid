@@ -4,6 +4,7 @@ export const navItems = [
   { path: '/docs/theming', label: 'Theming' },
   { path: '/components/config-provider', label: 'ConfigProvider' },
   { path: '/components/input', label: 'Input' },
+  { path: '/components/input-number', label: 'InputNumber' },
   { path: '/components/form', label: 'Form' },
   { path: '/components/select', label: 'Select' },
   { path: '/components/time-picker', label: 'TimePicker' },
