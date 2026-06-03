@@ -683,3 +683,136 @@ describe('ColorPicker panel interactions', () => {
     expect(panel.getByText('rgb(0, 128, 0)')).toBeInTheDocument()
   })
 })
+
+describe('ColorPicker presets, clear, and hover trigger', () => {
+  it('selects a preset color and completes the change', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        presets={[{ label: 'Recommended', colors: ['#52c41a'] }]}
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+
+    fireEvent.click(panel.getByRole('button', { name: 'Select preset color #52c41a' }))
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange.mock.calls[0][0]?.toRgbString()).toBe('rgb(82, 196, 26)')
+    expect(onChange.mock.calls[0][1]).toBe('#52c41a')
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete.mock.calls[0][0]?.toRgbString()).toBe('rgb(82, 196, 26)')
+    expect(panel.getByText('rgb(82, 196, 26)')).toBeInTheDocument()
+  })
+
+  it('clears the color when allowClear is enabled', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        allowClear
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+
+    fireEvent.click(panel.getByRole('button', { name: 'Clear color' }))
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith(undefined, '')
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete).toHaveBeenCalledWith(undefined)
+    expect(panel.getByText('No color')).toBeInTheDocument()
+  })
+
+  it('renders showText functions with the current color and updates after preset selection', () => {
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        showText={(color) => <strong>Current: {color?.toHexString() ?? 'empty'}</strong>}
+        presets={[{ colors: ['#52c41a'] }]}
+      />
+    ))
+
+    expect(screen.getByText('Current: #1677ff')).toBeInTheDocument()
+
+    fireEvent.click(latestPanel().getByRole('button', { name: 'Select preset color #52c41a' }))
+
+    expect(screen.getByText('Current: #52c41a')).toBeInTheDocument()
+  })
+
+  it('opens on hover and closes on mouse leave without click toggling when trigger is hover', () => {
+    const onOpenChange = vi.fn()
+    const dialogCount = () => screen.queryAllByRole('dialog', { name: 'Color Picker Panel' }).length
+    const result = render(() => <ColorPicker trigger="hover" onOpenChange={onOpenChange} />)
+    const trigger = result.getByRole('button', { name: /color picker/i })
+    const initialDialogCount = dialogCount()
+
+    fireEvent.click(trigger)
+
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(dialogCount()).toBe(initialDialogCount)
+
+    fireEvent.mouseEnter(trigger)
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+    expect(dialogCount()).toBe(initialDialogCount + 1)
+
+    fireEvent.click(trigger)
+
+    expect(dialogCount()).toBe(initialDialogCount + 1)
+
+    fireEvent.mouseLeave(trigger)
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+    expect(dialogCount()).toBe(initialDialogCount)
+  })
+
+  it('prevents disabled presets, clear, and hover opening while allowing disabled close behavior', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    const onOpenChange = vi.fn()
+    const result = render(() => (
+      <ColorPicker
+        disabled
+        defaultOpen
+        defaultValue="#1677ff"
+        trigger="hover"
+        allowClear
+        presets={[{ colors: ['#52c41a'] }]}
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+        onOpenChange={onOpenChange}
+      />
+    ))
+    const panel = latestPanel()
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    fireEvent.click(panel.getByRole('button', { name: 'Select preset color #52c41a' }))
+    fireEvent.click(panel.getByRole('button', { name: 'Clear color' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onChangeComplete).not.toHaveBeenCalled()
+    expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.mouseEnter(trigger)
+
+    expect(onOpenChange).toHaveBeenCalledTimes(1)
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+})

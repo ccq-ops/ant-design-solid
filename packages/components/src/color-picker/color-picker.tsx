@@ -1,4 +1,4 @@
-import { Show, createRenderEffect, createSignal, onCleanup, splitProps } from 'solid-js'
+import { For, Show, createRenderEffect, createSignal, onCleanup, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -230,6 +230,29 @@ export function ColorPicker(props: ColorPickerProps) {
   function completeInputCommit(nextColor: Color): void {
     local.onChangeComplete?.(nextColor)
     syncDraftToSource()
+  }
+
+  function clearColor(): void {
+    if (disabled()) return
+
+    if (!valueControlled()) setInnerColor(undefined)
+    local.onChange?.(undefined, '')
+    local.onChangeComplete?.(undefined)
+    syncDraftToSource()
+  }
+
+  function selectPreset(value: string): void {
+    if (disabled()) return
+
+    const nextColor = parseColor(value)
+
+    if (!nextColor) return
+
+    completeInputCommit(emitColor(nextColor.toHsb()))
+  }
+
+  function presetList() {
+    return local.presets ?? []
   }
 
   function commitParsedInput(value: string): void {
@@ -615,6 +638,50 @@ export function ColorPicker(props: ColorPickerProps) {
           </select>
           {formatInputs()}
         </div>
+        <Show when={presetList().length > 0}>
+          <div class={`${prefixCls()}-presets`}>
+            <For each={presetList()}>
+              {(preset) => (
+                <div class={`${prefixCls()}-preset`}>
+                  <Show when={preset.label}>
+                    <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
+                  </Show>
+                  <div class={`${prefixCls()}-preset-colors`}>
+                    <For each={preset.colors}>
+                      {(presetColor) => (
+                        <button
+                          type="button"
+                          class={`${prefixCls()}-preset-color`}
+                          aria-label={`Select preset color ${presetColor}`}
+                          title={presetColor}
+                          disabled={disabled()}
+                          onClick={() => selectPreset(presetColor)}
+                        >
+                          <span
+                            class={`${prefixCls()}-preset-color-inner`}
+                            style={{ background: colorToCss(parseColor(presetColor)) }}
+                          />
+                        </button>
+                      )}
+                    </For>
+                  </div>
+                </div>
+              )}
+            </For>
+          </div>
+        </Show>
+        <Show when={local.allowClear}>
+          <div class={`${prefixCls()}-actions`}>
+            <button
+              type="button"
+              class={`${prefixCls()}-clear`}
+              disabled={disabled()}
+              onClick={clearColor}
+            >
+              Clear color
+            </button>
+          </div>
+        </Show>
         <div class={`${prefixCls()}-preview`}>
           <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
             <span
@@ -659,6 +726,12 @@ export function ColorPicker(props: ColorPickerProps) {
           ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
           if (event.defaultPrevented || local.trigger === 'hover') return
           setOpen(!open())
+        }}
+        onMouseEnter={() => {
+          if (local.trigger === 'hover') setOpen(true)
+        }}
+        onMouseLeave={() => {
+          if (local.trigger === 'hover') setOpen(false)
         }}
       >
         <span class={`${prefixCls()}-color-block`} aria-hidden="true">

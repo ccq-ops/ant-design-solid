@@ -176,6 +176,72 @@ export function useColorPickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
         },
+        [`.${prefixCls}-presets`]: {
+          display: 'flex',
+          'flex-direction': 'column',
+          gap: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-preset`]: {
+          display: 'flex',
+          'flex-direction': 'column',
+          gap: `${t.marginXS / 2}px`,
+        },
+        [`.${prefixCls}-preset-label`]: {
+          color: t.colorTextSecondary,
+          'font-size': `${t.fontSize}px`,
+          'line-height': 1.4,
+        },
+        [`.${prefixCls}-preset-colors`]: {
+          display: 'flex',
+          'flex-wrap': 'wrap',
+          gap: `${t.marginXS / 2}px`,
+        },
+        [`.${prefixCls}-preset-color`]: {
+          width: '20px',
+          height: '20px',
+          padding: '2px',
+          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-radius': `${t.borderRadius / 2}px`,
+          background:
+            'linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%)',
+          'background-size': '8px 8px',
+          'background-position': '0 0, 0 4px, 4px -4px, -4px 0px',
+          cursor: 'pointer',
+          '&:disabled': {
+            cursor: 'not-allowed',
+            opacity: 0.5,
+          },
+        },
+        [`.${prefixCls}-preset-color-inner`]: {
+          display: 'block',
+          width: '100%',
+          height: '100%',
+          'border-radius': `${Math.max(1, t.borderRadius / 2 - 1)}px`,
+        },
+        [`.${prefixCls}-actions`]: {
+          display: 'flex',
+          'justify-content': 'flex-end',
+        },
+        [`.${prefixCls}-clear`]: {
+          height: `${t.controlHeightSM}px`,
+          padding: `0 ${t.paddingXS}px`,
+          border: `${t.lineWidth}px solid ${t.colorBorder}`,
+          'border-radius': `${t.borderRadius}px`,
+          background: t.colorBgContainer,
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+          cursor: 'pointer',
+          '&:hover': {
+            color: t.colorPrimaryHover,
+            'border-color': t.colorPrimaryHover,
+          },
+          '&:disabled': {
+            color: t.colorTextDisabled,
+            background: t.colorFillAlter,
+            cursor: 'not-allowed',
+          },
+        },
         [`.${prefixCls}-preview`]: {
           display: 'flex',
           'align-items': 'center',
