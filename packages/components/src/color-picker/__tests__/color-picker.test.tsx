@@ -523,6 +523,35 @@ describe('ColorPicker panel interactions', () => {
     expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
   })
 
+  it('disables format inputs and prevents text commits when disabled open', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        disabled
+        defaultOpen
+        defaultValue="#1677ff"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const formatSelect = panel.getByRole('combobox', { name: 'Color format' })
+    const hexInput = panel.getByLabelText('Hex')
+
+    expect(formatSelect).toBeDisabled()
+    expect(hexInput).toBeDisabled()
+
+    fireEvent.input(hexInput, { target: { value: '#52c41a' } })
+    fireEvent.keyDown(hexInput, { key: 'Enter' })
+    fireEvent.blur(hexInput)
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onChangeComplete).not.toHaveBeenCalled()
+    expect(hexInput).toHaveValue('#1677ff')
+    expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
+  })
+
   it('commits a hex input value when Enter is pressed', () => {
     const onChange = vi.fn()
     render(() => <ColorPicker defaultOpen defaultValue="#1677ff" onChange={onChange} />)

@@ -192,6 +192,33 @@ export function ColorPicker(props: ColorPickerProps) {
     setHexDraft(mergedColor()?.toHexString() ?? '')
   }
 
+  function sourceValueForInput(label: string | null): string {
+    const rgb = rgbSourceDraft()
+    const hsb = hsbSourceDraft()
+
+    switch (label) {
+      case 'Red':
+        return rgb.red
+      case 'Green':
+        return rgb.green
+      case 'Blue':
+        return rgb.blue
+      case 'H':
+        return hsb.hue
+      case 'S':
+        return hsb.saturation
+      case 'B':
+        return hsb.brightness
+      default:
+        return mergedColor()?.toHexString() ?? ''
+    }
+  }
+
+  function resetDisabledInput(element: HTMLInputElement): void {
+    syncDraftToSource()
+    element.value = sourceValueForInput(element.getAttribute('aria-label'))
+  }
+
   function parseInputNumber(value: string): number | undefined {
     if (value.trim() === '') return undefined
 
@@ -206,6 +233,11 @@ export function ColorPicker(props: ColorPickerProps) {
   }
 
   function commitParsedInput(value: string): void {
+    if (disabled()) {
+      syncDraftToSource()
+      return
+    }
+
     const nextColor = parseColor(value)
 
     if (!nextColor) {
@@ -217,6 +249,11 @@ export function ColorPicker(props: ColorPickerProps) {
   }
 
   function commitRgbInputs(red: string, green: string, blue: string): void {
+    if (disabled()) {
+      syncDraftToSource()
+      return
+    }
+
     const r = parseInputNumber(red)
     const g = parseInputNumber(green)
     const b = parseInputNumber(blue)
@@ -232,6 +269,11 @@ export function ColorPicker(props: ColorPickerProps) {
   }
 
   function commitHsbInputs(hue: string, saturation: string, brightness: string): void {
+    if (disabled()) {
+      syncDraftToSource()
+      return
+    }
+
     const h = parseInputNumber(hue)
     const s = parseInputNumber(saturation)
     const b = parseInputNumber(brightness)
@@ -251,6 +293,11 @@ export function ColorPicker(props: ColorPickerProps) {
     if (event.key !== 'Enter') return
 
     event.preventDefault()
+    if (disabled()) {
+      resetDisabledInput(event.currentTarget)
+      return
+    }
+
     commit()
     suppressBlurTarget = event.currentTarget
   }
@@ -259,6 +306,11 @@ export function ColorPicker(props: ColorPickerProps) {
     event: FocusEvent & { currentTarget: HTMLInputElement },
     commit: () => void,
   ): void {
+    if (disabled()) {
+      resetDisabledInput(event.currentTarget)
+      return
+    }
+
     if (suppressBlurTarget === event.currentTarget) {
       suppressBlurTarget = undefined
       return
@@ -275,13 +327,18 @@ export function ColorPicker(props: ColorPickerProps) {
       const commit = () => commitRgbInputs(rgbDraft().red, rgbDraft().green, rgbDraft().blue)
 
       return (
-        <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-rgb`}>
+        <fieldset class={`${prefixCls()}-inputs ${prefixCls()}-inputs-rgb`} disabled={disabled()}>
           <input
             aria-label="Red"
             class={`${prefixCls()}-input`}
             value={draft.red}
+            disabled={disabled()}
             onInput={(event) => {
               suppressBlurTarget = undefined
+              if (disabled()) {
+                resetDisabledInput(event.currentTarget)
+                return
+              }
               setRgbDraft((current) => ({ ...current, red: event.currentTarget.value }))
             }}
             onBlur={(event) => handleInputBlur(event, commit)}
@@ -291,8 +348,13 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-label="Green"
             class={`${prefixCls()}-input`}
             value={draft.green}
+            disabled={disabled()}
             onInput={(event) => {
               suppressBlurTarget = undefined
+              if (disabled()) {
+                resetDisabledInput(event.currentTarget)
+                return
+              }
               setRgbDraft((current) => ({ ...current, green: event.currentTarget.value }))
             }}
             onBlur={(event) => handleInputBlur(event, commit)}
@@ -302,14 +364,19 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-label="Blue"
             class={`${prefixCls()}-input`}
             value={draft.blue}
+            disabled={disabled()}
             onInput={(event) => {
               suppressBlurTarget = undefined
+              if (disabled()) {
+                resetDisabledInput(event.currentTarget)
+                return
+              }
               setRgbDraft((current) => ({ ...current, blue: event.currentTarget.value }))
             }}
             onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
-        </div>
+        </fieldset>
       )
     }
 
@@ -319,14 +386,19 @@ export function ColorPicker(props: ColorPickerProps) {
         commitHsbInputs(hsbDraft().hue, hsbDraft().saturation, hsbDraft().brightness)
 
       return (
-        <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hsb`}>
+        <fieldset class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hsb`} disabled={disabled()}>
           <input
             aria-label="H"
             title="Hue"
             class={`${prefixCls()}-input`}
             value={draft.hue}
+            disabled={disabled()}
             onInput={(event) => {
               suppressBlurTarget = undefined
+              if (disabled()) {
+                resetDisabledInput(event.currentTarget)
+                return
+              }
               setHsbDraft((current) => ({ ...current, hue: event.currentTarget.value }))
             }}
             onBlur={(event) => handleInputBlur(event, commit)}
@@ -337,8 +409,13 @@ export function ColorPicker(props: ColorPickerProps) {
             title="Saturation"
             class={`${prefixCls()}-input`}
             value={draft.saturation}
+            disabled={disabled()}
             onInput={(event) => {
               suppressBlurTarget = undefined
+              if (disabled()) {
+                resetDisabledInput(event.currentTarget)
+                return
+              }
               setHsbDraft((current) => ({ ...current, saturation: event.currentTarget.value }))
             }}
             onBlur={(event) => handleInputBlur(event, commit)}
@@ -349,33 +426,43 @@ export function ColorPicker(props: ColorPickerProps) {
             title="Brightness"
             class={`${prefixCls()}-input`}
             value={draft.brightness}
+            disabled={disabled()}
             onInput={(event) => {
               suppressBlurTarget = undefined
+              if (disabled()) {
+                resetDisabledInput(event.currentTarget)
+                return
+              }
               setHsbDraft((current) => ({ ...current, brightness: event.currentTarget.value }))
             }}
             onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
-        </div>
+        </fieldset>
       )
     }
 
     const commit = () => commitParsedInput(hexDraft())
 
     return (
-      <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hex`}>
+      <fieldset class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hex`} disabled={disabled()}>
         <input
           aria-label="Hex"
           class={`${prefixCls()}-input`}
           value={hexDraft()}
+          disabled={disabled()}
           onInput={(event) => {
             suppressBlurTarget = undefined
+            if (disabled()) {
+              resetDisabledInput(event.currentTarget)
+              return
+            }
             setHexDraft(event.currentTarget.value)
           }}
           onBlur={(event) => handleInputBlur(event, commit)}
           onKeyDown={(event) => handleInputKeyDown(event, commit)}
         />
-      </div>
+      </fieldset>
     )
   }
 
@@ -516,9 +603,9 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-label="Color format"
             class={`${prefixCls()}-format-select`}
             value={format()}
-            disabled={formatControlled()}
+            disabled={disabled() || formatControlled()}
             onChange={(event) => {
-              if (!formatControlled())
+              if (!disabled() && !formatControlled())
                 setInnerFormat(event.currentTarget.value as ColorPickerFormat)
             }}
           >
