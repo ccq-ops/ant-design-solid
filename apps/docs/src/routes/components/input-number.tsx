@@ -9,6 +9,7 @@ export default function InputNumberPage() {
     <>
       <h1>InputNumber</h1>
       <p>Enter numeric values with optional controls, bounds, precision, and formatting.</p>
+      <p>Its onChange callback receives the normalized numeric value, not a DOM change event.</p>
 
       <DemoBlock title="Basic" code={`<InputNumber defaultValue={3} />`}>
         <InputNumber defaultValue={3} />

@@ -6,6 +6,8 @@ import { classNames } from '../shared/class-names'
 import type { InputNumberProps } from './interface'
 import { useInputNumberStyle } from './input-number.style'
 
+const MAX_PRECISION = 20
+
 function isFiniteNumber(value: number | undefined): value is number {
   return typeof value === 'number' && Number.isFinite(value)
 }
@@ -17,9 +19,15 @@ function clamp(value: number, min: number | undefined, max: number | undefined):
   return next
 }
 
+function normalizePrecision(precision: number | undefined): number | undefined {
+  if (precision === undefined || !Number.isSafeInteger(precision) || precision < 0) return undefined
+  return Math.min(precision, MAX_PRECISION)
+}
+
 function roundByPrecision(value: number, precision: number | undefined): number {
-  if (precision === undefined || precision < 0) return value
-  const factor = 10 ** precision
+  const normalizedPrecision = normalizePrecision(precision)
+  if (normalizedPrecision === undefined) return value
+  const factor = 10 ** normalizedPrecision
   return Math.round(value * factor) / factor
 }
 
@@ -56,26 +64,41 @@ export function InputNumber(props: InputNumberProps) {
   const prefixCls = () => `${config.prefixCls()}-input-number`
   const [, hashId] = useInputNumberStyle(prefixCls())
   const [innerValue, setInnerValue] = createSignal<number | undefined>(local.defaultValue)
+  const [draftValue, setDraftValue] = createSignal<number | undefined>()
   const [displayValue, setDisplayValue] = createSignal('')
   const [focused, setFocused] = createSignal(false)
-  const step = () => local.step ?? 1
   const controls = () => local.controls !== false
   const disabled = () => Boolean(local.disabled)
   const size = () => local.size ?? config.componentSize()
   const isValueControlled = () => 'value' in props
-  const isFormValueControlled = () =>
-    formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange'
+  const isFormOwned = () => formItem?.valuePropName() === 'value'
+  const isFormBlurTrigger = () => isFormOwned() && formItem?.trigger() === 'onBlur'
+  const isSourceControlled = () => isValueControlled() || isFormOwned()
+  const step = () => {
+    const parsed = Number(local.step)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
+  }
 
-  const mergedValue = createMemo<number | undefined>(() => {
-    if (isFormValueControlled()) return formItem?.value() as number | undefined
+  const sourceValue = createMemo<number | undefined>(() => {
+    if (isFormOwned()) return formItem?.value() as number | undefined
     if (isValueControlled()) return local.value
     return innerValue()
+  })
+
+  const mergedValue = createMemo<number | undefined>(() => {
+    if (isFormBlurTrigger()) return draftValue() ?? sourceValue()
+    return sourceValue()
   })
 
   function formatValue(value: number | undefined): string {
     if (local.formatter) return local.formatter(value)
     return value === undefined ? '' : String(value)
   }
+
+  createEffect(() => {
+    sourceValue()
+    if (isFormBlurTrigger()) setDraftValue(undefined)
+  })
 
   createEffect(() => {
     if (!focused()) setDisplayValue(formatValue(mergedValue()))
@@ -90,18 +113,27 @@ export function InputNumber(props: InputNumberProps) {
     return roundByPrecision(clamp(value, local.min, local.max), local.precision)
   }
 
-  function updateValue(nextValue: number | undefined): void {
+  function syncDisplayToSource(): void {
+    setDisplayValue(formatValue(mergedValue()))
+  }
+
+  function commitValue(nextValue: number | undefined, trigger: 'onChange' | 'onBlur'): void {
     const normalized = normalize(nextValue)
-    if (!isValueControlled() && !isFormValueControlled()) setInnerValue(normalized)
-    setDisplayValue(formatValue(isValueControlled() ? mergedValue() : normalized))
+    if (isFormBlurTrigger()) setDraftValue(normalized)
+    else if (!isSourceControlled()) setInnerValue(normalized)
     local.onChange?.(normalized)
-    if (isFormValueControlled()) formItem?.setFieldValueFromControl(normalized)
+    if (
+      formItem?.valuePropName() === 'value' &&
+      (formItem.trigger() === 'onChange' || formItem.trigger() === trigger)
+    )
+      formItem.setFieldValueFromControl(normalized)
+    syncDisplayToSource()
   }
 
   function stepValue(direction: 1 | -1): void {
     if (disabled()) return
     const base = mergedValue() ?? 0
-    updateValue(base + step() * direction)
+    commitValue(base + step() * direction, 'onChange')
   }
 
   return (
@@ -140,13 +172,14 @@ export function InputNumber(props: InputNumberProps) {
         }}
         onBlur={(event) => {
           setFocused(false)
-          updateValue(parseDisplay(event.currentTarget.value))
+          commitValue(parseDisplay(event.currentTarget.value), 'onBlur')
           ;(local.onBlur as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
         }}
         onKeyDown={(event) => {
           ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(
             event,
           )
+          if (event.defaultPrevented) return
           if (event.key === 'ArrowUp') {
             event.preventDefault()
             stepValue(1)
