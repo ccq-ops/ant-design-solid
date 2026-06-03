@@ -60,6 +60,51 @@ export function useColorPickerStyle(prefixCls: string) {
         [`.${prefixCls}-text`]: {
           'line-height': 1,
         },
+        [`.${prefixCls}-popup`]: {
+          position: 'fixed',
+          'z-index': 1050,
+          'box-sizing': 'border-box',
+          minWidth: '180px',
+          padding: `${t.paddingSM}px`,
+          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-radius': `${t.borderRadius}px`,
+          background: t.colorBgElevated,
+          'box-shadow': t.boxShadow,
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+        },
+        [`.${prefixCls}-panel`]: {
+          display: 'flex',
+          'flex-direction': 'column',
+          gap: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-preview`]: {
+          display: 'flex',
+          'align-items': 'center',
+          gap: `${t.marginSM}px`,
+        },
+        [`.${prefixCls}-preview-color`]: {
+          width: '28px',
+          height: '28px',
+          padding: '2px',
+          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-radius': `${t.borderRadius}px`,
+          background:
+            'linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%)',
+          'background-size': '8px 8px',
+          'background-position': '0 0, 0 4px, 4px -4px, -4px 0px',
+        },
+        [`.${prefixCls}-preview-color-inner`]: {
+          display: 'block',
+          width: '100%',
+          height: '100%',
+          'border-radius': `${Math.max(1, t.borderRadius - 2)}px`,
+        },
+        [`.${prefixCls}-preview-text`]: {
+          'white-space': 'nowrap',
+          color: t.colorText,
+        },
       }
     },
   )

@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Color, clamp, colorToCss, normalizeHsb, normalizeRgb, parseColor } from '../color'
@@ -197,5 +197,94 @@ describe('ColorPicker trigger', () => {
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
     expect(result.queryByRole('dialog')).toBeNull()
+  })
+})
+
+describe('ColorPicker popup', () => {
+  it('opens from trigger and closes from trigger, Escape, and outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => <ColorPicker defaultValue="#1677ff" onOpenChange={onOpenChange} />)
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    fireEvent.click(trigger)
+
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    expect(popup).toHaveClass('ads-color-picker-popup')
+    expect(popup).toHaveTextContent('rgb(22, 119, 255)')
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+
+    fireEvent.pointerDown(popup)
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+
+    fireEvent.click(trigger)
+    fireEvent.pointerDown(document.body)
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+
+    fireEvent.click(trigger)
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+    fireEvent.click(trigger)
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('keeps controlled open state until the owner changes it', () => {
+    const [open, setOpen] = createSignal(false)
+    const onOpenChange = vi.fn((nextOpen: boolean) => setOpen(nextOpen))
+    const result = render(() => <ColorPicker open={open()} onOpenChange={onOpenChange} />)
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    fireEvent.click(trigger)
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    setOpen(false)
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('treats controlled open undefined as closed and only requests changes', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => (
+      <ColorPicker defaultOpen open={undefined} onOpenChange={onOpenChange} />
+    ))
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+
+    fireEvent.click(trigger)
+
+    expect(onOpenChange).toHaveBeenCalledWith(true)
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('allows panelRender to wrap the preview panel', () => {
+    const panelRender = vi.fn((panel, extra) => (
+      <section data-testid="panel-wrapper">
+        <h2>Wrapped panel</h2>
+        {extra.components.picker}
+        {panel}
+      </section>
+    ))
+
+    const result = render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue={null}
+        popupClass="custom-popup"
+        panelRender={panelRender}
+      />
+    ))
+
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    expect(popup).toHaveClass('custom-popup')
+    expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('Wrapped panel')
+    expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('No color')
+    expect(panelRender).toHaveBeenCalledTimes(1)
+    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.picker')
   })
 })
