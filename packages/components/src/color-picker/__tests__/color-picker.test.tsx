@@ -108,3 +108,44 @@ describe('Color utilities', () => {
     expect(colorToCss(undefined)).toBe('transparent')
   })
 })
+
+import { fireEvent, render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
+import { vi } from 'vitest'
+import { ColorPicker } from '../index'
+
+describe('ColorPicker trigger', () => {
+  it('renders a trigger with default value and showText', () => {
+    const result = render(() => <ColorPicker defaultValue="#1677ff" showText />)
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(result.getByText('#1677ff')).toBeInTheDocument()
+    expect(result.container.querySelector('.ads-color-picker-color-block-inner')).toHaveStyle(
+      'background: rgb(22, 119, 255)',
+    )
+  })
+
+  it('supports controlled value display', () => {
+    const [value, setValue] = createSignal('#1677ff')
+    const result = render(() => <ColorPicker value={value()} showText />)
+
+    expect(result.getByText('#1677ff')).toBeInTheDocument()
+
+    setValue('#52c41a')
+
+    expect(result.getByText('#52c41a')).toBeInTheDocument()
+  })
+
+  it('does not open when disabled', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => <ColorPicker disabled onOpenChange={onOpenChange} />)
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    fireEvent.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-disabled', 'true')
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(result.queryByRole('dialog')).toBeNull()
+  })
+})
