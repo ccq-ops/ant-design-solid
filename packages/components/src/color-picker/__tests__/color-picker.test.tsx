@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@solidjs/testing-library'
 import { Show, createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Color, clamp, colorToCss, normalizeHsb, normalizeRgb, parseColor } from '../color'
 import { ColorPicker } from '../index'
 
@@ -9,6 +9,10 @@ function latestPanel() {
 
   return within(panels.at(-1) as HTMLElement)
 }
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 function mockRect(element: Element, rect: Partial<DOMRect>): void {
   element.getBoundingClientRect = vi.fn(() => ({
@@ -749,7 +753,8 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
     expect(screen.getByText('Current: #52c41a')).toBeInTheDocument()
   })
 
-  it('opens on hover and closes on mouse leave without click toggling when trigger is hover', () => {
+  it('keeps a hover popup open while moving from trigger into the portaled popup', () => {
+    vi.useFakeTimers()
     const onOpenChange = vi.fn()
     const dialogCount = () => screen.queryAllByRole('dialog', { name: 'Color Picker Panel' }).length
     const result = render(() => <ColorPicker trigger="hover" onOpenChange={onOpenChange} />)
@@ -766,14 +771,123 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
     expect(onOpenChange).toHaveBeenLastCalledWith(true)
     expect(dialogCount()).toBe(initialDialogCount + 1)
 
+    const popup = screen
+      .getAllByRole('dialog', { name: 'Color Picker Panel' })
+      .at(-1) as HTMLElement
+
     fireEvent.click(trigger)
 
     expect(dialogCount()).toBe(initialDialogCount + 1)
 
-    fireEvent.mouseLeave(trigger)
+    fireEvent.mouseLeave(trigger, { relatedTarget: popup })
+    fireEvent.mouseEnter(popup, { relatedTarget: trigger })
+    vi.advanceTimersByTime(200)
+
+    expect(dialogCount()).toBe(initialDialogCount + 1)
+
+    fireEvent.mouseLeave(popup, { relatedTarget: document.body })
+    vi.advanceTimersByTime(200)
 
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
     expect(dialogCount()).toBe(initialDialogCount)
+  })
+
+  it('supports keyboard adjustments for hue, alpha, saturation, and brightness sliders', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="hsba(0, 50%, 50%, 0.5)"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const saturation = panel.getByRole('slider', { name: 'Saturation and brightness' })
+    const hue = panel.getByRole('slider', { name: 'Hue' })
+    const alpha = panel.getByRole('slider', { name: 'Alpha' })
+
+    fireEvent.keyDown(hue, { key: 'ArrowRight' })
+    fireEvent.keyDown(hue, { key: 'ArrowLeft' })
+    fireEvent.keyDown(alpha, { key: 'ArrowRight' })
+    fireEvent.keyDown(alpha, { key: 'ArrowLeft' })
+    fireEvent.keyDown(saturation, { key: 'ArrowRight' })
+    fireEvent.keyDown(saturation, { key: 'ArrowUp' })
+
+    expect(onChange.mock.calls.map((call) => call[0]?.toHsb())).toEqual([
+      { h: 1, s: 50, b: 50, a: 0.5 },
+      { h: 0, s: 50, b: 50, a: 0.5 },
+      { h: 0, s: 50, b: 50, a: 0.51 },
+      { h: 0, s: 50, b: 50, a: 0.5 },
+      { h: 0, s: 52, b: 50, a: 0.5 },
+      { h: 0, s: 51, b: 51, a: 0.5 },
+    ])
+    expect(onChangeComplete).toHaveBeenCalledTimes(6)
+    expect(onChangeComplete.mock.calls.at(-1)?.[0]?.toHsb()).toEqual({
+      h: 0,
+      s: 51,
+      b: 51,
+      a: 0.5,
+    })
+  })
+
+  it('uses larger keyboard steps with Shift and supports Home and End on alpha and saturation', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <ColorPicker defaultOpen defaultValue="hsba(0, 50%, 50%, 0.5)" onChange={onChange} />
+    ))
+    const panel = latestPanel()
+
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Hue' }), { key: 'End' })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Hue' }), { key: 'Home' })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Hue' }), {
+      key: 'ArrowRight',
+      shiftKey: true,
+    })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Alpha' }), { key: 'End' })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Alpha' }), { key: 'Home' })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Saturation and brightness' }), {
+      key: 'End',
+    })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Saturation and brightness' }), {
+      key: 'Home',
+    })
+
+    expect(onChange.mock.calls.map((call) => call[0]?.toHsb())).toEqual([
+      { h: 0, s: 50, b: 50, a: 0.5 },
+      { h: 0, s: 50, b: 50, a: 0.5 },
+      { h: 9, s: 50, b: 50, a: 0.5 },
+      { h: 9, s: 50, b: 50, a: 1 },
+      { h: 9, s: 50, b: 50, a: 0 },
+      { h: 10, s: 100, b: 100, a: 0 },
+      { h: 0, s: 0, b: 0, a: 0 },
+    ])
+  })
+
+  it('does not change sliders from keyboard when disabled', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        disabled
+        defaultOpen
+        defaultValue="hsba(0, 50%, 50%, 0.5)"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Hue' }), { key: 'ArrowRight' })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Alpha' }), { key: 'ArrowRight' })
+    fireEvent.keyDown(panel.getByRole('slider', { name: 'Saturation and brightness' }), {
+      key: 'ArrowRight',
+    })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onChangeComplete).not.toHaveBeenCalled()
+    expect(panel.getByText('rgba(128, 64, 64, 0.5)')).toBeInTheDocument()
   })
 
   it('prevents disabled presets, clear, and hover opening while allowing disabled close behavior', () => {

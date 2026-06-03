@@ -88,6 +88,7 @@ export function ColorPicker(props: ColorPickerProps) {
   let popupRef: HTMLDivElement | undefined
   let activeDragCleanup: (() => void) | undefined
   let suppressBlurTarget: HTMLInputElement | undefined
+  let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
@@ -108,6 +109,34 @@ export function ColorPicker(props: ColorPickerProps) {
     if (nextOpen) updatePosition()
     if (!openControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
+  }
+
+  function clearHoverCloseTimer(): void {
+    if (!hoverCloseTimer) return
+
+    clearTimeout(hoverCloseTimer)
+    hoverCloseTimer = undefined
+  }
+
+  function scheduleHoverClose(): void {
+    clearHoverCloseTimer()
+    hoverCloseTimer = setTimeout(() => {
+      hoverCloseTimer = undefined
+      setOpen(false)
+    }, 100)
+  }
+
+  function handleHoverEnter(): void {
+    if (local.trigger !== 'hover') return
+
+    clearHoverCloseTimer()
+    setOpen(true)
+  }
+
+  function handleHoverLeave(): void {
+    if (local.trigger !== 'hover') return
+
+    scheduleHoverClose()
   }
 
   function containsTarget(target: EventTarget | null): boolean {
@@ -134,6 +163,7 @@ export function ColorPicker(props: ColorPickerProps) {
   onCleanup(() => {
     removeKeydown()
     removePointerDown()
+    clearHoverCloseTimer()
     activeDragCleanup?.()
     activeDragCleanup = undefined
   })
@@ -550,6 +580,103 @@ export function ColorPicker(props: ColorPickerProps) {
     document.addEventListener('pointercancel', handlePointerCancel)
   }
 
+  function completeKeyboardChange(nextHsb: HsbColor): void {
+    const nextColor = emitColor(nextHsb)
+
+    local.onChangeComplete?.(nextColor)
+  }
+
+  function handleHueKeyDown(event: KeyboardEvent): void {
+    if (disabled()) return
+
+    const step = event.shiftKey ? 10 : 1
+    let nextHue: number | undefined
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        nextHue = clamp(mergedHsb().h + step, 0, 360)
+        break
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        nextHue = clamp(mergedHsb().h - step, 0, 360)
+        break
+      case 'Home':
+        nextHue = 0
+        break
+      case 'End':
+        nextHue = 360
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    completeKeyboardChange(hsbWith({ h: nextHue }))
+  }
+
+  function handleAlphaKeyDown(event: KeyboardEvent): void {
+    if (disabled()) return
+
+    const step = event.shiftKey ? 0.1 : 0.01
+    let nextAlpha: number | undefined
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        nextAlpha = clamp(mergedHsb().a + step, 0, 1)
+        break
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        nextAlpha = clamp(mergedHsb().a - step, 0, 1)
+        break
+      case 'Home':
+        nextAlpha = 0
+        break
+      case 'End':
+        nextAlpha = 1
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    completeKeyboardChange(hsbWith({ a: Number(nextAlpha.toFixed(2)) }))
+  }
+
+  function handleSaturationKeyDown(event: KeyboardEvent): void {
+    if (disabled()) return
+
+    const step = event.shiftKey ? 10 : 1
+    let nextHsb: Partial<HsbColor> | undefined
+
+    switch (event.key) {
+      case 'ArrowRight':
+        nextHsb = { s: clamp(mergedHsb().s + step, 0, 100) }
+        break
+      case 'ArrowLeft':
+        nextHsb = { s: clamp(mergedHsb().s - step, 0, 100) }
+        break
+      case 'ArrowUp':
+        nextHsb = { b: clamp(mergedHsb().b + step, 0, 100) }
+        break
+      case 'ArrowDown':
+        nextHsb = { b: clamp(mergedHsb().b - step, 0, 100) }
+        break
+      case 'Home':
+        nextHsb = { s: 0, b: 0 }
+        break
+      case 'End':
+        nextHsb = { s: 100, b: 100 }
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    completeKeyboardChange(hsbWith(nextHsb))
+  }
+
   function renderPanel(): JSX.Element {
     const hsb = mergedHsb
     const alphaBackground = () =>
@@ -573,6 +700,7 @@ export function ColorPicker(props: ColorPickerProps) {
 
             startPointerDrag(event, (pointerEvent) => updateSaturation(element, pointerEvent))
           }}
+          onKeyDown={handleSaturationKeyDown}
         >
           <div class={`${prefixCls()}-saturation-white`} />
           <div class={`${prefixCls()}-saturation-black`} />
@@ -595,6 +723,7 @@ export function ColorPicker(props: ColorPickerProps) {
 
             startPointerDrag(event, (pointerEvent) => updateSlider(element, pointerEvent, 'h'))
           }}
+          onKeyDown={handleHueKeyDown}
         >
           <span
             class={`${prefixCls()}-slider-handler`}
@@ -617,6 +746,7 @@ export function ColorPicker(props: ColorPickerProps) {
 
               startPointerDrag(event, (pointerEvent) => updateSlider(element, pointerEvent, 'a'))
             }}
+            onKeyDown={handleAlphaKeyDown}
           >
             <span class={`${prefixCls()}-slider-handler`} style={{ left: `${hsb().a * 100}%` }} />
           </div>
@@ -727,12 +857,8 @@ export function ColorPicker(props: ColorPickerProps) {
           if (event.defaultPrevented || local.trigger === 'hover') return
           setOpen(!open())
         }}
-        onMouseEnter={() => {
-          if (local.trigger === 'hover') setOpen(true)
-        }}
-        onMouseLeave={() => {
-          if (local.trigger === 'hover') setOpen(false)
-        }}
+        onMouseEnter={handleHoverEnter}
+        onMouseLeave={handleHoverLeave}
       >
         <span class={`${prefixCls()}-color-block`} aria-hidden="true">
           <span
@@ -759,6 +885,8 @@ export function ColorPicker(props: ColorPickerProps) {
               local.popupClass,
             )}
             style={{ ...position(), ...local.popupStyle }}
+            onMouseEnter={handleHoverEnter}
+            onMouseLeave={handleHoverLeave}
           >
             {renderedPanel()}
           </div>
