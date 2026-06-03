@@ -106,6 +106,55 @@ describe('Cascader', () => {
     expect(result.getByRole('menu')).toBeTruthy()
   })
 
+  it('renders controlled open selected path columns and active branch on initial render', () => {
+    const result = render(() => (
+      <Cascader open value={['zhejiang', 'hangzhou', 'west-lake']} options={options} />
+    ))
+
+    expect(result.getByRole('menuitem', { name: 'Hangzhou' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+    expect(result.getByRole('menuitem', { name: 'West Lake' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+    expect(result.getByRole('menuitem', { name: 'Hangzhou' })).toHaveClass(
+      'ads-cascader-menu-item-active',
+    )
+    expect(result.getByRole('menuitem', { name: 'West Lake' })).toHaveClass(
+      'ads-cascader-menu-item-active',
+    )
+  })
+
+  it('syncs expanded columns when controlled value changes while open', () => {
+    const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
+    const onChange = vi.fn((nextValue: Array<string | number | boolean>) =>
+      setValue(nextValue as string[]),
+    )
+    const result = render(() => (
+      <Cascader open value={value()} options={options} onChange={onChange} />
+    ))
+    const combobox = result.getByRole('combobox')
+
+    expect(result.getByRole('menuitem', { name: 'West Lake' })).toBeTruthy()
+
+    setValue(['jiangsu', 'nanjing'])
+
+    expect(result.getByRole('menuitem', { name: 'Nanjing' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
+    expect(result.queryByRole('menuitem', { name: 'West Lake' })).toBeNull()
+
+    fireEvent.keyDown(combobox, { key: 'Enter' })
+
+    expect(onChange).toHaveBeenCalledWith(
+      ['jiangsu', 'nanjing'],
+      [options[1], options[1].children?.[0]],
+    )
+  })
+
   it('commits intermediate nodes with changeOnSelect', () => {
     const onChange = vi.fn()
     const result = render(() => <Cascader changeOnSelect options={options} onChange={onChange} />)

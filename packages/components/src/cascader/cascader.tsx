@@ -28,6 +28,10 @@ function valuePathFromOptions(options: CascaderOption[]): OptionValue[] {
   return options.map((option) => option.value)
 }
 
+function valuesEqual(a: OptionValue[], b: OptionValue[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index])
+}
+
 function buildColumns(
   options: CascaderOption[],
   activeValuePath: OptionValue[],
@@ -74,6 +78,7 @@ export function Cascader(props: CascaderProps) {
   const [activeValuePath, setActiveValuePath] = createSignal<OptionValue[]>(
     local.defaultValue ?? [],
   )
+  const [lastSyncedValuePath, setLastSyncedValuePath] = createSignal<OptionValue[]>()
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -101,9 +106,30 @@ export function Cascader(props: CascaderProps) {
   })
   const columns = createMemo(() => buildColumns(options(), activeValuePath()))
 
+  createEffect(() => {
+    const currentOpen = open()
+    const currentValue = value()
+    options()
+
+    if (!currentOpen) {
+      setLastSyncedValuePath(undefined)
+      return
+    }
+
+    const lastSynced = lastSyncedValuePath()
+    if (lastSynced === undefined || !valuesEqual(lastSynced, currentValue)) {
+      setActiveValuePath(currentValue)
+      setLastSyncedValuePath([...currentValue])
+    }
+  })
+
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
-    if (nextOpen) setActiveValuePath(value())
+    if (nextOpen) {
+      const currentValue = value()
+      setActiveValuePath(currentValue)
+      setLastSyncedValuePath([...currentValue])
+    }
     if (!isOpenControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
@@ -151,6 +177,7 @@ export function Cascader(props: CascaderProps) {
     event.stopPropagation()
     changeValue([], [])
     setActiveValuePath([])
+    setLastSyncedValuePath([])
   }
 
   function isSelected(option: CascaderOption, depth: number): boolean {
