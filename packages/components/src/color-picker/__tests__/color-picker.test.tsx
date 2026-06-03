@@ -565,4 +565,92 @@ describe('ColorPicker panel interactions', () => {
     expect(panel.getByLabelText('S')).toHaveValue('91')
     expect(panel.getByLabelText('B')).toHaveValue('100')
   })
+
+  it('reverts invalid hex input on Enter without emitting changes', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const hexInput = panel.getByLabelText('Hex')
+
+    fireEvent.input(hexInput, { target: { value: 'not-a-color' } })
+    fireEvent.keyDown(hexInput, { key: 'Enter' })
+
+    expect(hexInput).toHaveValue('#1677ff')
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onChangeComplete).not.toHaveBeenCalled()
+    expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
+  })
+
+  it('resyncs hex input when a controlled owner rejects the committed value', () => {
+    const onChange = vi.fn()
+    render(() => <ColorPicker defaultOpen value="#1677ff" onChange={onChange} />)
+    const panel = latestPanel()
+    const hexInput = panel.getByLabelText('Hex')
+
+    fireEvent.input(hexInput, { target: { value: '#52c41a' } })
+    fireEvent.keyDown(hexInput, { key: 'Enter' })
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange.mock.calls[0][0]?.toRgbString()).toBe('rgb(82, 196, 26)')
+    expect(hexInput).toHaveValue('#1677ff')
+    expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
+  })
+
+  it('does not double emit when Enter commit is followed by blur', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const hexInput = panel.getByLabelText('Hex')
+
+    fireEvent.input(hexInput, { target: { value: '#52c41a' } })
+    fireEvent.keyDown(hexInput, { key: 'Enter' })
+    fireEvent.blur(hexInput)
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete.mock.calls[0][0]?.toRgbString()).toBe('rgb(82, 196, 26)')
+  })
+
+  it('commits hsb channel inputs and completes the change', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#000000"
+        defaultFormat="hsb"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+
+    fireEvent.input(panel.getByLabelText('H'), { target: { value: '120' } })
+    fireEvent.input(panel.getByLabelText('S'), { target: { value: '100' } })
+    fireEvent.input(panel.getByLabelText('B'), { target: { value: '50' } })
+    fireEvent.blur(panel.getByLabelText('B'))
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange.mock.calls[0][0]?.toRgbString()).toBe('rgb(0, 128, 0)')
+    expect(onChange.mock.calls[0][1]).toBe('#008000')
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete.mock.calls[0][0]?.toRgbString()).toBe('rgb(0, 128, 0)')
+    expect(panel.getByText('rgb(0, 128, 0)')).toBeInTheDocument()
+  })
 })

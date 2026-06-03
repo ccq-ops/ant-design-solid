@@ -21,6 +21,18 @@ function renderText(showText: ColorPickerProps['showText'], color: Color | undef
   return undefined
 }
 
+interface RgbInputDraft {
+  red: string
+  green: string
+  blue: string
+}
+
+interface HsbInputDraft {
+  hue: string
+  saturation: string
+  brightness: string
+}
+
 export function ColorPicker(props: ColorPickerProps) {
   const [local, rest] = splitProps(props, [
     'value',
@@ -59,6 +71,15 @@ export function ColorPicker(props: ColorPickerProps) {
   const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(
     local.defaultFormat ?? 'hex',
   )
+  const [hexDraft, setHexDraft] = createSignal(
+    parseColor(local.value)?.toHexString() ?? initialColor?.toHexString() ?? '',
+  )
+  const [rgbDraft, setRgbDraft] = createSignal<RgbInputDraft>({ red: '0', green: '0', blue: '0' })
+  const [hsbDraft, setHsbDraft] = createSignal<HsbInputDraft>({
+    hue: '0',
+    saturation: '0',
+    brightness: '100',
+  })
   const [position, setPosition] = createSignal<OverlayPosition>(emptyPosition())
   const valueControlled = () => 'value' in props
   const openControlled = () => 'open' in props
@@ -66,6 +87,7 @@ export function ColorPicker(props: ColorPickerProps) {
   let triggerRef: HTMLButtonElement | undefined
   let popupRef: HTMLDivElement | undefined
   let activeDragCleanup: (() => void) | undefined
+  let suppressBlurTarget: HTMLInputElement | undefined
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
@@ -105,6 +127,10 @@ export function ColorPicker(props: ColorPickerProps) {
     if (open()) updatePosition()
   })
 
+  createRenderEffect(() => {
+    syncDraftToSource(format())
+  })
+
   onCleanup(() => {
     removeKeydown()
     removePointerDown()
@@ -132,6 +158,40 @@ export function ColorPicker(props: ColorPickerProps) {
     return { ...mergedHsb(), ...nextHsb }
   }
 
+  function rgbSourceDraft(): RgbInputDraft {
+    const rgb = mergedColor()?.toRgb() ?? { r: 0, g: 0, b: 0 }
+
+    return {
+      red: String(rgb.r),
+      green: String(rgb.g),
+      blue: String(rgb.b),
+    }
+  }
+
+  function hsbSourceDraft(): HsbInputDraft {
+    const hsb = mergedHsb()
+
+    return {
+      hue: String(hsb.h),
+      saturation: String(hsb.s),
+      brightness: String(hsb.b),
+    }
+  }
+
+  function syncDraftToSource(nextFormat = format()): void {
+    if (nextFormat === 'rgb') {
+      setRgbDraft(rgbSourceDraft())
+      return
+    }
+
+    if (nextFormat === 'hsb') {
+      setHsbDraft(hsbSourceDraft())
+      return
+    }
+
+    setHexDraft(mergedColor()?.toHexString() ?? '')
+  }
+
   function parseInputNumber(value: string): number | undefined {
     if (value.trim() === '') return undefined
 
@@ -140,12 +200,20 @@ export function ColorPicker(props: ColorPickerProps) {
     return Number.isFinite(numberValue) ? numberValue : undefined
   }
 
+  function completeInputCommit(nextColor: Color): void {
+    local.onChangeComplete?.(nextColor)
+    syncDraftToSource()
+  }
+
   function commitParsedInput(value: string): void {
     const nextColor = parseColor(value)
 
-    if (!nextColor) return
+    if (!nextColor) {
+      syncDraftToSource()
+      return
+    }
 
-    emitColor(nextColor.toHsb())
+    completeInputCommit(emitColor(nextColor.toHsb()))
   }
 
   function commitRgbInputs(red: string, green: string, blue: string): void {
@@ -153,9 +221,14 @@ export function ColorPicker(props: ColorPickerProps) {
     const g = parseInputNumber(green)
     const b = parseInputNumber(blue)
 
-    if (r === undefined || g === undefined || b === undefined) return
+    if (r === undefined || g === undefined || b === undefined) {
+      syncDraftToSource()
+      return
+    }
 
-    emitColor(Color.fromRgb({ r, g, b, a: mergedColor()?.toRgb().a ?? 1 }).toHsb())
+    completeInputCommit(
+      emitColor(Color.fromRgb({ r, g, b, a: mergedColor()?.toRgb().a ?? 1 }).toHsb()),
+    )
   }
 
   function commitHsbInputs(hue: string, saturation: string, brightness: string): void {
@@ -163,60 +236,77 @@ export function ColorPicker(props: ColorPickerProps) {
     const s = parseInputNumber(saturation)
     const b = parseInputNumber(brightness)
 
-    if (h === undefined || s === undefined || b === undefined) return
+    if (h === undefined || s === undefined || b === undefined) {
+      syncDraftToSource()
+      return
+    }
 
-    emitColor(Color.fromHsb({ h, s, b, a: mergedHsb().a }).toHsb())
+    completeInputCommit(emitColor(Color.fromHsb({ h, s, b, a: mergedHsb().a }).toHsb()))
   }
 
-  function handleInputKeyDown(event: KeyboardEvent, commit: () => void): void {
+  function handleInputKeyDown(
+    event: KeyboardEvent & { currentTarget: HTMLInputElement },
+    commit: () => void,
+  ): void {
     if (event.key !== 'Enter') return
+
+    event.preventDefault()
+    commit()
+    suppressBlurTarget = event.currentTarget
+  }
+
+  function handleInputBlur(
+    event: FocusEvent & { currentTarget: HTMLInputElement },
+    commit: () => void,
+  ): void {
+    if (suppressBlurTarget === event.currentTarget) {
+      suppressBlurTarget = undefined
+      return
+    }
 
     commit()
   }
 
   function formatInputs(): JSX.Element {
     const currentFormat = format()
-    const color = mergedColor()
-    const rgb = color?.toRgb() ?? { r: 0, g: 0, b: 0, a: 1 }
-    const hsb = mergedHsb()
 
     if (currentFormat === 'rgb') {
-      let redRef: HTMLInputElement | undefined
-      let greenRef: HTMLInputElement | undefined
-      let blueRef: HTMLInputElement | undefined
-      const commit = () =>
-        commitRgbInputs(redRef?.value ?? '', greenRef?.value ?? '', blueRef?.value ?? '')
+      const draft = rgbDraft()
+      const commit = () => commitRgbInputs(rgbDraft().red, rgbDraft().green, rgbDraft().blue)
 
       return (
         <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-rgb`}>
           <input
-            ref={(element) => {
-              redRef = element
-            }}
             aria-label="Red"
             class={`${prefixCls()}-input`}
-            value={String(rgb.r)}
-            onBlur={commit}
+            value={draft.red}
+            onInput={(event) => {
+              suppressBlurTarget = undefined
+              setRgbDraft((current) => ({ ...current, red: event.currentTarget.value }))
+            }}
+            onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
           <input
-            ref={(element) => {
-              greenRef = element
-            }}
             aria-label="Green"
             class={`${prefixCls()}-input`}
-            value={String(rgb.g)}
-            onBlur={commit}
+            value={draft.green}
+            onInput={(event) => {
+              suppressBlurTarget = undefined
+              setRgbDraft((current) => ({ ...current, green: event.currentTarget.value }))
+            }}
+            onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
           <input
-            ref={(element) => {
-              blueRef = element
-            }}
             aria-label="Blue"
             class={`${prefixCls()}-input`}
-            value={String(rgb.b)}
-            onBlur={commit}
+            value={draft.blue}
+            onInput={(event) => {
+              suppressBlurTarget = undefined
+              setRgbDraft((current) => ({ ...current, blue: event.currentTarget.value }))
+            }}
+            onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
         </div>
@@ -224,61 +314,65 @@ export function ColorPicker(props: ColorPickerProps) {
     }
 
     if (currentFormat === 'hsb') {
-      let hueRef: HTMLInputElement | undefined
-      let saturationRef: HTMLInputElement | undefined
-      let brightnessRef: HTMLInputElement | undefined
+      const draft = hsbDraft()
       const commit = () =>
-        commitHsbInputs(hueRef?.value ?? '', saturationRef?.value ?? '', brightnessRef?.value ?? '')
+        commitHsbInputs(hsbDraft().hue, hsbDraft().saturation, hsbDraft().brightness)
 
       return (
         <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hsb`}>
           <input
-            ref={(element) => {
-              hueRef = element
-            }}
             aria-label="H"
+            title="Hue"
             class={`${prefixCls()}-input`}
-            value={String(hsb.h)}
-            onBlur={commit}
+            value={draft.hue}
+            onInput={(event) => {
+              suppressBlurTarget = undefined
+              setHsbDraft((current) => ({ ...current, hue: event.currentTarget.value }))
+            }}
+            onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
           <input
-            ref={(element) => {
-              saturationRef = element
-            }}
             aria-label="S"
+            title="Saturation"
             class={`${prefixCls()}-input`}
-            value={String(hsb.s)}
-            onBlur={commit}
+            value={draft.saturation}
+            onInput={(event) => {
+              suppressBlurTarget = undefined
+              setHsbDraft((current) => ({ ...current, saturation: event.currentTarget.value }))
+            }}
+            onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
           <input
-            ref={(element) => {
-              brightnessRef = element
-            }}
             aria-label="B"
+            title="Brightness"
             class={`${prefixCls()}-input`}
-            value={String(hsb.b)}
-            onBlur={commit}
+            value={draft.brightness}
+            onInput={(event) => {
+              suppressBlurTarget = undefined
+              setHsbDraft((current) => ({ ...current, brightness: event.currentTarget.value }))
+            }}
+            onBlur={(event) => handleInputBlur(event, commit)}
             onKeyDown={(event) => handleInputKeyDown(event, commit)}
           />
         </div>
       )
     }
 
-    let hexRef: HTMLInputElement | undefined
-    const commit = () => commitParsedInput(hexRef?.value ?? '')
+    const commit = () => commitParsedInput(hexDraft())
 
     return (
       <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hex`}>
         <input
-          ref={(element) => {
-            hexRef = element
-          }}
           aria-label="Hex"
           class={`${prefixCls()}-input`}
-          value={color?.toHexString() ?? ''}
-          onBlur={commit}
+          value={hexDraft()}
+          onInput={(event) => {
+            suppressBlurTarget = undefined
+            setHexDraft(event.currentTarget.value)
+          }}
+          onBlur={(event) => handleInputBlur(event, commit)}
           onKeyDown={(event) => handleInputKeyDown(event, commit)}
         />
       </div>
