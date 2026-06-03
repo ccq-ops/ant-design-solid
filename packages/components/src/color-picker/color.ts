@@ -12,9 +12,13 @@ export interface HsbColor {
   a?: number
 }
 
-export type ColorPickerValue = string | RgbColor | HsbColor | Color
+export type ColorPickerValue = string | RgbColor | HsbColor | Color | null | undefined
 
 export function clamp(value: number, min = 0, max = 1): number {
+  if (Number.isNaN(value)) {
+    return min
+  }
+
   return Math.min(Math.max(value, min), max)
 }
 
@@ -22,21 +26,26 @@ const round = (value: number): number => Math.round(value)
 
 const formatAlpha = (alpha: number): string => Number(alpha.toFixed(3)).toString()
 
+const normalizeAlpha = (alpha?: number): number =>
+  alpha === undefined || Number.isNaN(alpha) ? 1 : clamp(alpha, 0, 1)
+
 export function normalizeRgb(color: RgbColor): Required<RgbColor> {
   return {
     r: round(clamp(color.r, 0, 255)),
     g: round(clamp(color.g, 0, 255)),
     b: round(clamp(color.b, 0, 255)),
-    a: clamp(color.a ?? 1, 0, 1),
+    a: normalizeAlpha(color.a),
   }
 }
 
 export function normalizeHsb(color: HsbColor): Required<HsbColor> {
+  const hue = Number.isFinite(color.h) ? color.h : 0
+
   return {
-    h: round(((color.h % 360) + 360) % 360),
+    h: round(((hue % 360) + 360) % 360),
     s: round(clamp(color.s, 0, 100)),
     b: round(clamp(color.b, 0, 100)),
-    a: clamp(color.a ?? 1, 0, 1),
+    a: normalizeAlpha(color.a),
   }
 }
 
@@ -176,7 +185,7 @@ export function colorFromHsb(color: HsbColor): Color {
 export function colorToCss(color: ColorPickerValue): string {
   const parsed = color instanceof Color ? color : parseColor(color)
 
-  return parsed?.toRgbString() ?? ''
+  return parsed?.toRgbString() ?? 'transparent'
 }
 
 function parseHexColor(value: string): Color | undefined {
@@ -200,7 +209,7 @@ function parseHexColor(value: string): Color | undefined {
 }
 
 function parseRgbColor(value: string): Color | undefined {
-  const match = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)$/i)
+  const match = value.match(/^rgba?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i)
 
   if (!match) {
     return undefined
@@ -215,7 +224,7 @@ function parseRgbColor(value: string): Color | undefined {
 }
 
 function parseHsbColor(value: string): Color | undefined {
-  const match = value.match(/^hsba?\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%(?:\s*,\s*([\d.]+))?\s*\)$/i)
+  const match = value.match(/^hsba?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)(?:%)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i)
 
   if (!match) {
     return undefined
@@ -230,6 +239,10 @@ function parseHsbColor(value: string): Color | undefined {
 }
 
 export function parseColor(value: ColorPickerValue): Color | undefined {
+  if (value == null) {
+    return undefined
+  }
+
   if (value instanceof Color) {
     return value
   }
