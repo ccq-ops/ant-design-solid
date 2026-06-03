@@ -198,6 +198,48 @@ describe('Cascader', () => {
     expect(result.queryByRole('menu')).toBeNull()
   })
 
+  it('selects the first enabled option in the current column with Enter', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Cascader
+        defaultOpen
+        options={[
+          { label: 'Disabled first', value: 'disabled-first', disabled: true },
+          {
+            label: 'Enabled parent',
+            value: 'enabled-parent',
+            children: [{ label: 'Enabled child', value: 'enabled-child' }],
+          },
+        ]}
+        onChange={onChange}
+      />
+    ))
+    const combobox = result.getByRole('combobox')
+
+    expect(combobox).toHaveAttribute('aria-expanded', 'true')
+
+    fireEvent.keyDown(combobox, { key: 'Enter' })
+
+    expect(result.getByRole('menuitem', { name: 'Enabled child' })).toBeTruthy()
+    expect(onChange).not.toHaveBeenCalled()
+
+    fireEvent.keyDown(combobox, { key: 'Enter' })
+
+    expect(combobox).toHaveTextContent('Enabled parent / Enabled child')
+    expect(combobox).toHaveAttribute('aria-expanded', 'false')
+    expect(onChange).toHaveBeenCalledWith(
+      ['enabled-parent', 'enabled-child'],
+      [
+        {
+          label: 'Enabled parent',
+          value: 'enabled-parent',
+          children: [{ label: 'Enabled child', value: 'enabled-child' }],
+        },
+        { label: 'Enabled child', value: 'enabled-child' },
+      ],
+    )
+  })
+
   it('supports custom prefix classes from props and ConfigProvider', () => {
     const withProp = render(() => <Cascader prefixCls="custom-cascader" options={options} />)
     expect(withProp.container.querySelector('.custom-cascader')).toBeTruthy()
