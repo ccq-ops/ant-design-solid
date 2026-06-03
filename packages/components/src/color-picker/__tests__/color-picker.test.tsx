@@ -262,6 +262,41 @@ describe('ColorPicker popup', () => {
     expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
   })
 
+  it('allows a disabled uncontrolled popup to close with Escape and outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => <ColorPicker disabled defaultOpen onOpenChange={onOpenChange} />)
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+
+    render(() => <ColorPicker disabled defaultOpen onOpenChange={onOpenChange} />)
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
+  it('requests closing a disabled controlled open popup', () => {
+    const [open, setOpen] = createSignal(true)
+    const onOpenChange = vi.fn((nextOpen: boolean) => setOpen(nextOpen))
+    render(() => <ColorPicker disabled open={open()} onOpenChange={onOpenChange} />)
+
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
   it('allows panelRender to wrap the preview panel', () => {
     const panelRender = vi.fn((panel, extra) => (
       <section data-testid="panel-wrapper">
@@ -271,7 +306,7 @@ describe('ColorPicker popup', () => {
       </section>
     ))
 
-    const result = render(() => (
+    render(() => (
       <ColorPicker
         defaultOpen
         defaultValue={null}

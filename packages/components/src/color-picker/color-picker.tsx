@@ -1,4 +1,4 @@
-import { Show, createMemo, createRenderEffect, createSignal, onCleanup, splitProps } from 'solid-js'
+import { Show, createRenderEffect, createSignal, onCleanup, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -69,7 +69,7 @@ export function ColorPicker(props: ColorPickerProps) {
   }
 
   function setOpen(nextOpen: boolean): void {
-    if (disabled()) return
+    if (disabled() && nextOpen) return
     if (nextOpen) updatePosition()
     if (!openControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
@@ -97,23 +97,26 @@ export function ColorPicker(props: ColorPickerProps) {
     removePointerDown()
   })
 
-  const panel = createMemo(() => (
-    <div class={`${prefixCls()}-panel`}>
-      <div class={`${prefixCls()}-preview`}>
-        <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
-          <span
-            class={`${prefixCls()}-preview-color-inner`}
-            style={{ background: colorToCss(mergedColor()) }}
-          />
-        </span>
-        <span class={`${prefixCls()}-preview-text`}>
-          {mergedColor()?.toRgbString() ?? 'No color'}
-        </span>
+  function renderPanel(): JSX.Element {
+    return (
+      <div class={`${prefixCls()}-panel`}>
+        <div class={`${prefixCls()}-preview`}>
+          <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
+            <span
+              class={`${prefixCls()}-preview-color-inner`}
+              style={{ background: colorToCss(mergedColor()) }}
+            />
+          </span>
+          <span class={`${prefixCls()}-preview-text`}>
+            {mergedColor()?.toRgbString() ?? 'No color'}
+          </span>
+        </div>
       </div>
-    </div>
-  ))
+    )
+  }
+
   const renderedPanel = () =>
-    local.panelRender?.(panel(), { components: { picker: panel() } }) ?? panel()
+    local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
 
   return (
     <>
