@@ -14,12 +14,21 @@ export interface HsbColor {
 
 export type ColorPickerValue = string | RgbColor | HsbColor | Color | null | undefined
 
-export function clamp(value: number, min = 0, max = 1): number {
-  if (Number.isNaN(value)) {
-    return min
-  }
+const toFiniteNumber = (value: number, fallback: number): number => {
+  const numberValue = Number(value)
 
-  return Math.min(Math.max(value, min), max)
+  return Number.isFinite(numberValue) ? numberValue : fallback
+}
+
+export function clamp(value: number, min = 0, max = 1): number {
+  const safeMin = toFiniteNumber(min, 0)
+  const safeMax = toFiniteNumber(max, safeMin)
+  const lowerBound = Math.min(safeMin, safeMax)
+  const upperBound = Math.max(safeMin, safeMax)
+  const numberValue = Number(value)
+  const safeValue = Number.isNaN(numberValue) ? lowerBound : numberValue
+
+  return Math.min(Math.max(safeValue, lowerBound), upperBound)
 }
 
 const round = (value: number): number => Math.round(value)
@@ -27,7 +36,7 @@ const round = (value: number): number => Math.round(value)
 const formatAlpha = (alpha: number): string => Number(alpha.toFixed(3)).toString()
 
 const normalizeAlpha = (alpha?: number): number =>
-  alpha === undefined || Number.isNaN(alpha) ? 1 : clamp(alpha, 0, 1)
+  alpha === undefined || Number.isNaN(Number(alpha)) ? 1 : clamp(alpha, 0, 1)
 
 export function normalizeRgb(color: RgbColor): Required<RgbColor> {
   return {
@@ -39,7 +48,7 @@ export function normalizeRgb(color: RgbColor): Required<RgbColor> {
 }
 
 export function normalizeHsb(color: HsbColor): Required<HsbColor> {
-  const hue = Number.isFinite(color.h) ? color.h : 0
+  const hue = toFiniteNumber(color.h, 0)
 
   return {
     h: round(((hue % 360) + 360) % 360),

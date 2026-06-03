@@ -78,6 +78,30 @@ describe('Color utilities', () => {
     })
   })
 
+  it('normalizes non-number runtime object input to finite color channels', () => {
+    expect(clamp('bad' as unknown as number, 0, 255)).toBe(0)
+    expect(clamp(undefined as unknown as number, 0, 255)).toBe(0)
+    expect(clamp({} as unknown as number, 0, 255)).toBe(0)
+    expect(Color.fromRgb({ r: undefined as unknown as number, g: 0, b: 0, a: 1 }).toRgbString()).toBe('rgb(0, 0, 0)')
+    expect(normalizeRgb({ r: 'bad' as unknown as number, g: 0, b: 0, a: 1 })).toEqual({
+      r: 0,
+      g: 0,
+      b: 0,
+      a: 1,
+    })
+    expect(normalizeHsb({
+      h: 'bad' as unknown as number,
+      s: 'bad' as unknown as number,
+      b: 'bad' as unknown as number,
+      a: 'bad' as unknown as number,
+    })).toEqual({
+      h: 0,
+      s: 0,
+      b: 0,
+      a: 1,
+    })
+  })
+
   it('treats empty color values as missing colors', () => {
     expect(parseColor(undefined)).toBeUndefined()
     expect(parseColor(null)).toBeUndefined()
