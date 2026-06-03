@@ -29,6 +29,7 @@ export const navItems = [
   { path: '/components/menu', label: 'Menu' },
   { path: '/components/layout', label: 'Layout' },
   { path: '/components/affix', label: 'Affix' },
+  { path: '/components/anchor', label: 'Anchor' },
   { path: '/components/breadcrumb', label: 'Breadcrumb' },
   { path: '/components/alert', label: 'Alert' },
   { path: '/components/message', label: 'Message' },
