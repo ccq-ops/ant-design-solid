@@ -32,6 +32,7 @@ Modify:
 ### Task 1: Color Model and Conversion Utilities
 
 **Files:**
+
 - Create: `packages/components/src/color-picker/color.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
 
@@ -352,6 +353,7 @@ git commit -m "feat: add color picker color utilities"
 ### Task 2: Public Interface and Basic Trigger
 
 **Files:**
+
 - Create: `packages/components/src/color-picker/interface.ts`
 - Create: `packages/components/src/color-picker/color-picker.tsx`
 - Create: `packages/components/src/color-picker/color-picker.style.ts`
@@ -438,8 +440,10 @@ export interface ColorPickerPanelRenderExtra {
   components: Record<string, JSX.Element>
 }
 
-export interface ColorPickerProps
-  extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'defaultValue' | 'onChange'> {
+export interface ColorPickerProps extends Omit<
+  JSX.ButtonHTMLAttributes<HTMLButtonElement>,
+  'value' | 'defaultValue' | 'onChange'
+> {
   value?: ColorPickerValue
   defaultValue?: ColorPickerValue
   onChange?: (value: Color | undefined, hex: string) => void
@@ -629,7 +633,9 @@ export function ColorPicker(props: ColorPickerProps) {
           style={{ background: colorToCss(mergedColor()) }}
         />
       </span>
-      {local.showText && <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>}
+      {local.showText && (
+        <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
+      )}
     </button>
   )
 }
@@ -675,6 +681,7 @@ git commit -m "feat: add color picker trigger"
 ### Task 3: Popup Panel, Open State, and Closing Behavior
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.style.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -789,125 +796,127 @@ import { InternalPortal, canUseDom } from '../shared/portal'
 Inside `ColorPicker`, add refs and position state:
 
 ```tsx
-  const [position, setPosition] = createSignal<OverlayPosition>({ top: '0px', left: '0px' })
-  let triggerRef: HTMLButtonElement | undefined
-  let popupRef: HTMLDivElement | undefined
+const [position, setPosition] = createSignal<OverlayPosition>({ top: '0px', left: '0px' })
+let triggerRef: HTMLButtonElement | undefined
+let popupRef: HTMLDivElement | undefined
 
-  const placement = () => local.placement ?? 'bottomLeft'
+const placement = () => local.placement ?? 'bottomLeft'
 ```
 
 Add these functions before `return`:
 
 ```tsx
-  function updatePosition(): void {
-    if (!canUseDom() || !triggerRef) return
-    setPosition(getDropdownPosition(triggerRef.getBoundingClientRect(), placement(), 4))
-  }
+function updatePosition(): void {
+  if (!canUseDom() || !triggerRef) return
+  setPosition(getDropdownPosition(triggerRef.getBoundingClientRect(), placement(), 4))
+}
 
-  function setOpen(nextOpen: boolean): void {
-    if (disabled()) return
-    if (nextOpen) updatePosition()
-    if (local.open === undefined) setInnerOpen(nextOpen)
-    local.onOpenChange?.(nextOpen)
-  }
+function setOpen(nextOpen: boolean): void {
+  if (disabled()) return
+  if (nextOpen) updatePosition()
+  if (local.open === undefined) setInnerOpen(nextOpen)
+  local.onOpenChange?.(nextOpen)
+}
 
-  function containsTarget(target: EventTarget | null): boolean {
-    return Boolean(
-      target instanceof Node && (triggerRef?.contains(target) || popupRef?.contains(target)),
-    )
-  }
-
-  const removeKeydown = addDocumentKeydown((event) => {
-    if (event.key === 'Escape' && open()) setOpen(false)
-  })
-  const removePointerDown = addDocumentPointerDown((event) => {
-    if (open() && !containsTarget(event.target)) setOpen(false)
-  })
-
-  onCleanup(() => {
-    removeKeydown()
-    removePointerDown()
-  })
-
-  const panel = () => (
-    <div class={`${prefixCls()}-panel`}>
-      <div class={`${prefixCls()}-preview`}>
-        <span class={`${prefixCls()}-color-block`} aria-hidden="true">
-          <span
-            class={`${prefixCls()}-color-block-inner`}
-            style={{ background: colorToCss(mergedColor()) }}
-          />
-        </span>
-        <span>{mergedColor()?.toRgbString() ?? 'No color'}</span>
-      </div>
-    </div>
+function containsTarget(target: EventTarget | null): boolean {
+  return Boolean(
+    target instanceof Node && (triggerRef?.contains(target) || popupRef?.contains(target)),
   )
+}
 
-  const renderedPanel = () => {
-    const content = panel()
-    return local.panelRender ? local.panelRender(content, { components: { picker: content } }) : content
-  }
+const removeKeydown = addDocumentKeydown((event) => {
+  if (event.key === 'Escape' && open()) setOpen(false)
+})
+const removePointerDown = addDocumentPointerDown((event) => {
+  if (open() && !containsTarget(event.target)) setOpen(false)
+})
+
+onCleanup(() => {
+  removeKeydown()
+  removePointerDown()
+})
+
+const panel = () => (
+  <div class={`${prefixCls()}-panel`}>
+    <div class={`${prefixCls()}-preview`}>
+      <span class={`${prefixCls()}-color-block`} aria-hidden="true">
+        <span
+          class={`${prefixCls()}-color-block-inner`}
+          style={{ background: colorToCss(mergedColor()) }}
+        />
+      </span>
+      <span>{mergedColor()?.toRgbString() ?? 'No color'}</span>
+    </div>
+  </div>
+)
+
+const renderedPanel = () => {
+  const content = panel()
+  return local.panelRender
+    ? local.panelRender(content, { components: { picker: content } })
+    : content
+}
 ```
 
 Replace the single `<button>` return with a fragment containing the button and portal. Ensure the button gets a ref:
 
 ```tsx
-  return (
-    <>
-      <button
-        {...rest}
-        ref={(element) => {
-          triggerRef = element
-        }}
-        type="button"
-        class={classNames(
-          prefixCls(),
-          size() === 'small' && `${prefixCls()}-sm`,
-          size() === 'large' && `${prefixCls()}-lg`,
-          disabled() && `${prefixCls()}-disabled`,
-          hashId(),
-          local.class,
-        )}
-        style={local.style}
-        disabled={disabled()}
-        aria-label="Color Picker"
-        aria-haspopup="dialog"
-        aria-expanded={open() ? 'true' : 'false'}
-        aria-disabled={disabled() ? 'true' : undefined}
-        onClick={(event) => {
-          ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
-          if (event.defaultPrevented || local.trigger === 'hover') return
-          setOpen(!open())
-        }}
-      >
-        <span class={`${prefixCls()}-color-block`} aria-hidden="true">
-          <span
-            class={`${prefixCls()}-color-block-inner`}
-            style={{ background: colorToCss(mergedColor()) }}
-          />
-        </span>
-        {local.showText && (
-          <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
-        )}
-      </button>
-      <Show when={open()}>
-        <InternalPortal>
-          <div
-            ref={(element) => {
-              popupRef = element
-            }}
-            role="dialog"
-            aria-label="Color Picker Panel"
-            class={classNames(`${prefixCls()}-popup`, hashId(), local.popupClass)}
-            style={{ ...position(), ...local.popupStyle }}
-            on:click={(event) => event.stopPropagation()}
-          >
-            {renderedPanel()}
-          </div>
-        </InternalPortal>
-      </Show>
-    </>
-  )
+return (
+  <>
+    <button
+      {...rest}
+      ref={(element) => {
+        triggerRef = element
+      }}
+      type="button"
+      class={classNames(
+        prefixCls(),
+        size() === 'small' && `${prefixCls()}-sm`,
+        size() === 'large' && `${prefixCls()}-lg`,
+        disabled() && `${prefixCls()}-disabled`,
+        hashId(),
+        local.class,
+      )}
+      style={local.style}
+      disabled={disabled()}
+      aria-label="Color Picker"
+      aria-haspopup="dialog"
+      aria-expanded={open() ? 'true' : 'false'}
+      aria-disabled={disabled() ? 'true' : undefined}
+      onClick={(event) => {
+        ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
+        if (event.defaultPrevented || local.trigger === 'hover') return
+        setOpen(!open())
+      }}
+    >
+      <span class={`${prefixCls()}-color-block`} aria-hidden="true">
+        <span
+          class={`${prefixCls()}-color-block-inner`}
+          style={{ background: colorToCss(mergedColor()) }}
+        />
+      </span>
+      {local.showText && (
+        <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
+      )}
+    </button>
+    <Show when={open()}>
+      <InternalPortal>
+        <div
+          ref={(element) => {
+            popupRef = element
+          }}
+          role="dialog"
+          aria-label="Color Picker Panel"
+          class={classNames(`${prefixCls()}-popup`, hashId(), local.popupClass)}
+          style={{ ...position(), ...local.popupStyle }}
+          on:click={(event) => event.stopPropagation()}
+        >
+          {renderedPanel()}
+        </div>
+      </InternalPortal>
+    </Show>
+  </>
+)
 ```
 
 Remove the earlier duplicate `setOpen` function from Task 2 when adding the version above.
@@ -934,6 +943,7 @@ git commit -m "feat: add color picker popup"
 ### Task 4: Saturation, Hue, Alpha Interactions and Value Changes
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.style.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -967,7 +977,12 @@ describe('ColorPicker picking interactions', () => {
     const onChange = vi.fn()
     const onChangeComplete = vi.fn()
     const result = render(() => (
-      <ColorPicker defaultOpen defaultValue="#ff0000" onChange={onChange} onChangeComplete={onChangeComplete} />
+      <ColorPicker
+        defaultOpen
+        defaultValue="#ff0000"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
     ))
     const saturation = result.getByLabelText('Saturation and brightness')
     mockRect(saturation, { left: 0, top: 0, width: 100, height: 100 })
@@ -982,7 +997,9 @@ describe('ColorPicker picking interactions', () => {
 
   it('changes hue and alpha from sliders', () => {
     const onChange = vi.fn()
-    const result = render(() => <ColorPicker defaultOpen defaultValue="#ff0000" onChange={onChange} />)
+    const result = render(() => (
+      <ColorPicker defaultOpen defaultValue="#ff0000" onChange={onChange} />
+    ))
     const hue = result.getByLabelText('Hue')
     const alpha = result.getByLabelText('Alpha')
     mockRect(hue, { left: 0, width: 360 })
@@ -1087,9 +1104,9 @@ import type { HsbColor } from './color'
 Change the value state line from `const [innerColor] = ...` to:
 
 ```tsx
-  const [innerColor, setInnerColor] = createSignal(parseColor(local.defaultValue))
-  const mergedColor = createMemo(() => parseColor(local.value) ?? innerColor())
-  const mergedHsb = () => mergedColor()?.toHsb() ?? { h: 0, s: 100, b: 100, a: 1 }
+const [innerColor, setInnerColor] = createSignal(parseColor(local.defaultValue))
+const mergedColor = createMemo(() => parseColor(local.value) ?? innerColor())
+const mergedHsb = () => mergedColor()?.toHsb() ?? { h: 0, s: 100, b: 100, a: 1 }
 ```
 
 Remove the old `const mergedColor = () => ...` line.
@@ -1097,141 +1114,141 @@ Remove the old `const mergedColor = () => ...` line.
 Add helpers before `panel`:
 
 ```tsx
-  function emitColor(nextColor: Color | undefined, complete = false): void {
-    if (local.value === undefined) setInnerColor(nextColor)
-    local.onChange?.(nextColor, nextColor?.toHexString() ?? '')
-    if (complete) local.onChangeComplete?.(nextColor)
+function emitColor(nextColor: Color | undefined, complete = false): void {
+  if (local.value === undefined) setInnerColor(nextColor)
+  local.onChange?.(nextColor, nextColor?.toHexString() ?? '')
+  if (complete) local.onChangeComplete?.(nextColor)
+}
+
+function updateHsb(nextHsb: HsbColor, complete = false): void {
+  emitColor(colorFromHsb(nextHsb), complete)
+}
+
+function hsbWith(partial: Partial<HsbColor>): HsbColor {
+  return { ...mergedHsb(), ...partial }
+}
+
+function updateSaturation(event: PointerEvent, element: HTMLElement, complete = false): void {
+  const rect = element.getBoundingClientRect()
+  const s = clamp(((event.clientX - rect.left) / (rect.width || 1)) * 100, 0, 100)
+  const b = clamp((1 - (event.clientY - rect.top) / (rect.height || 1)) * 100, 0, 100)
+  updateHsb(hsbWith({ s, b }), complete)
+}
+
+function updateSlider(
+  event: PointerEvent,
+  element: HTMLElement,
+  type: 'hue' | 'alpha',
+  complete = false,
+): void {
+  const rect = element.getBoundingClientRect()
+  const ratio = clamp((event.clientX - rect.left) / (rect.width || 1), 0, 1)
+  updateHsb(type === 'hue' ? hsbWith({ h: ratio * 360 }) : hsbWith({ a: ratio }), complete)
+}
+
+function startPointerDrag(
+  event: PointerEvent,
+  element: HTMLElement,
+  move: (event: PointerEvent, complete?: boolean) => void,
+): void {
+  if (disabled()) return
+  event.preventDefault()
+  const pointerId = event.pointerId
+  move(event)
+
+  const handleMove = (moveEvent: PointerEvent) => {
+    if (moveEvent.pointerId === pointerId) move(moveEvent)
+  }
+  const handleEnd = (endEvent: PointerEvent) => {
+    if (endEvent.pointerId !== pointerId) return
+    move(endEvent, true)
+    document.removeEventListener('pointermove', handleMove)
+    document.removeEventListener('pointerup', handleEnd)
+    document.removeEventListener('pointercancel', handleEnd)
   }
 
-  function updateHsb(nextHsb: HsbColor, complete = false): void {
-    emitColor(colorFromHsb(nextHsb), complete)
-  }
-
-  function hsbWith(partial: Partial<HsbColor>): HsbColor {
-    return { ...mergedHsb(), ...partial }
-  }
-
-  function updateSaturation(event: PointerEvent, element: HTMLElement, complete = false): void {
-    const rect = element.getBoundingClientRect()
-    const s = clamp(((event.clientX - rect.left) / (rect.width || 1)) * 100, 0, 100)
-    const b = clamp((1 - (event.clientY - rect.top) / (rect.height || 1)) * 100, 0, 100)
-    updateHsb(hsbWith({ s, b }), complete)
-  }
-
-  function updateSlider(
-    event: PointerEvent,
-    element: HTMLElement,
-    type: 'hue' | 'alpha',
-    complete = false,
-  ): void {
-    const rect = element.getBoundingClientRect()
-    const ratio = clamp((event.clientX - rect.left) / (rect.width || 1), 0, 1)
-    updateHsb(type === 'hue' ? hsbWith({ h: ratio * 360 }) : hsbWith({ a: ratio }), complete)
-  }
-
-  function startPointerDrag(
-    event: PointerEvent,
-    element: HTMLElement,
-    move: (event: PointerEvent, complete?: boolean) => void,
-  ): void {
-    if (disabled()) return
-    event.preventDefault()
-    const pointerId = event.pointerId
-    move(event)
-
-    const handleMove = (moveEvent: PointerEvent) => {
-      if (moveEvent.pointerId === pointerId) move(moveEvent)
-    }
-    const handleEnd = (endEvent: PointerEvent) => {
-      if (endEvent.pointerId !== pointerId) return
-      move(endEvent, true)
-      document.removeEventListener('pointermove', handleMove)
-      document.removeEventListener('pointerup', handleEnd)
-      document.removeEventListener('pointercancel', handleEnd)
-    }
-
-    element.setPointerCapture?.(pointerId)
-    document.addEventListener('pointermove', handleMove)
-    document.addEventListener('pointerup', handleEnd)
-    document.addEventListener('pointercancel', handleEnd)
-  }
+  element.setPointerCapture?.(pointerId)
+  document.addEventListener('pointermove', handleMove)
+  document.addEventListener('pointerup', handleEnd)
+  document.addEventListener('pointercancel', handleEnd)
+}
 ```
 
 Replace `panel` with:
 
 ```tsx
-  const panel = () => {
-    const hsb = mergedHsb()
-    const hueColor = colorFromHsb({ h: hsb.h, s: 100, b: 100, a: 1 }).toHexString()
-    const currentColor = mergedColor()
-    return (
-      <div class={`${prefixCls()}-panel`}>
+const panel = () => {
+  const hsb = mergedHsb()
+  const hueColor = colorFromHsb({ h: hsb.h, s: 100, b: 100, a: 1 }).toHexString()
+  const currentColor = mergedColor()
+  return (
+    <div class={`${prefixCls()}-panel`}>
+      <div
+        class={`${prefixCls()}-saturation`}
+        aria-label="Saturation and brightness"
+        role="slider"
+        aria-valuetext={`${Math.round(hsb.s)}%, ${Math.round(hsb.b)}%`}
+        style={{ background: hueColor }}
+        onPointerDown={(event) =>
+          startPointerDrag(event, event.currentTarget, (nextEvent, complete) =>
+            updateSaturation(nextEvent, event.currentTarget, complete),
+          )
+        }
+      >
+        <div class={`${prefixCls()}-saturation-white`} />
+        <div class={`${prefixCls()}-saturation-black`} />
+        <span
+          class={`${prefixCls()}-handler`}
+          style={{ left: `${hsb.s}%`, top: `${100 - hsb.b}%` }}
+        />
+      </div>
+      <div
+        class={classNames(`${prefixCls()}-slider`, `${prefixCls()}-hue`)}
+        aria-label="Hue"
+        role="slider"
+        aria-valuemin="0"
+        aria-valuemax="360"
+        aria-valuenow={Math.round(hsb.h)}
+        onPointerDown={(event) =>
+          startPointerDrag(event, event.currentTarget, (nextEvent, complete) =>
+            updateSlider(nextEvent, event.currentTarget, 'hue', complete),
+          )
+        }
+      >
+        <span class={`${prefixCls()}-slider-handler`} style={{ left: `${(hsb.h / 360) * 100}%` }} />
+      </div>
+      <Show when={!local.disabledAlpha}>
         <div
-          class={`${prefixCls()}-saturation`}
-          aria-label="Saturation and brightness"
-          role="slider"
-          aria-valuetext={`${Math.round(hsb.s)}%, ${Math.round(hsb.b)}%`}
-          style={{ background: hueColor }}
-          onPointerDown={(event) =>
-            startPointerDrag(event, event.currentTarget, (nextEvent, complete) =>
-              updateSaturation(nextEvent, event.currentTarget, complete),
-            )
-          }
-        >
-          <div class={`${prefixCls()}-saturation-white`} />
-          <div class={`${prefixCls()}-saturation-black`} />
-          <span
-            class={`${prefixCls()}-handler`}
-            style={{ left: `${hsb.s}%`, top: `${100 - hsb.b}%` }}
-          />
-        </div>
-        <div
-          class={classNames(`${prefixCls()}-slider`, `${prefixCls()}-hue`)}
-          aria-label="Hue"
+          class={classNames(`${prefixCls()}-slider`, `${prefixCls()}-alpha`)}
+          aria-label="Alpha"
           role="slider"
           aria-valuemin="0"
-          aria-valuemax="360"
-          aria-valuenow={Math.round(hsb.h)}
+          aria-valuemax="1"
+          aria-valuenow={hsb.a}
+          style={{
+            background: `linear-gradient(90deg, transparent, ${currentColor?.toHexString() ?? '#000000'})`,
+          }}
           onPointerDown={(event) =>
             startPointerDrag(event, event.currentTarget, (nextEvent, complete) =>
-              updateSlider(nextEvent, event.currentTarget, 'hue', complete),
+              updateSlider(nextEvent, event.currentTarget, 'alpha', complete),
             )
           }
         >
-          <span class={`${prefixCls()}-slider-handler`} style={{ left: `${(hsb.h / 360) * 100}%` }} />
+          <span class={`${prefixCls()}-slider-handler`} style={{ left: `${hsb.a * 100}%` }} />
         </div>
-        <Show when={!local.disabledAlpha}>
-          <div
-            class={classNames(`${prefixCls()}-slider`, `${prefixCls()}-alpha`)}
-            aria-label="Alpha"
-            role="slider"
-            aria-valuemin="0"
-            aria-valuemax="1"
-            aria-valuenow={hsb.a}
-            style={{
-              background: `linear-gradient(90deg, transparent, ${currentColor?.toHexString() ?? '#000000'})`,
-            }}
-            onPointerDown={(event) =>
-              startPointerDrag(event, event.currentTarget, (nextEvent, complete) =>
-                updateSlider(nextEvent, event.currentTarget, 'alpha', complete),
-              )
-            }
-          >
-            <span class={`${prefixCls()}-slider-handler`} style={{ left: `${hsb.a * 100}%` }} />
-          </div>
-        </Show>
-        <div class={`${prefixCls()}-preview`}>
-          <span class={`${prefixCls()}-color-block`} aria-hidden="true">
-            <span
-              class={`${prefixCls()}-color-block-inner`}
-              style={{ background: colorToCss(currentColor) }}
-            />
-          </span>
-          <span>{currentColor?.toRgbString() ?? 'No color'}</span>
-        </div>
+      </Show>
+      <div class={`${prefixCls()}-preview`}>
+        <span class={`${prefixCls()}-color-block`} aria-hidden="true">
+          <span
+            class={`${prefixCls()}-color-block-inner`}
+            style={{ background: colorToCss(currentColor) }}
+          />
+        </span>
+        <span>{currentColor?.toRgbString() ?? 'No color'}</span>
       </div>
-    )
-  }
+    </div>
+  )
+}
 ```
 
 - [ ] **Step 5: Run focused test to verify GREEN**
@@ -1256,6 +1273,7 @@ git commit -m "feat: add color picker panel interactions"
 ### Task 5: Format Selector and HEX/RGB/HSB Inputs
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.style.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -1268,7 +1286,9 @@ Append:
 describe('ColorPicker format inputs', () => {
   it('commits hex input changes on Enter', () => {
     const onChange = vi.fn()
-    const result = render(() => <ColorPicker defaultOpen defaultValue="#1677ff" onChange={onChange} />)
+    const result = render(() => (
+      <ColorPicker defaultOpen defaultValue="#1677ff" onChange={onChange} />
+    ))
     const input = result.getByLabelText('HEX') as HTMLInputElement
 
     fireEvent.input(input, { target: { value: '#52c41a' } })
@@ -1360,7 +1380,7 @@ Add selectors:
 At the top of `useColorPickerStyle`, before `return useStyleRegister`, add:
 
 ```ts
-  const localColumns = (count: string) => `repeat(${count}, minmax(0, 1fr))`
+const localColumns = (count: string) => `repeat(${count}, minmax(0, 1fr))`
 ```
 
 - [ ] **Step 4: Implement format state and inputs**
@@ -1375,110 +1395,116 @@ import type { ColorPickerFormat } from './interface'
 Add state after `innerOpen`:
 
 ```tsx
-  const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(local.defaultFormat ?? 'hex')
-  const format = () => local.format ?? innerFormat()
+const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(local.defaultFormat ?? 'hex')
+const format = () => local.format ?? innerFormat()
 ```
 
 Add helper functions before `panel`:
 
 ```tsx
-  function commitParsedInput(value: string): void {
-    const next = parseColor(value)
-    if (next) emitColor(next, true)
-  }
+function commitParsedInput(value: string): void {
+  const next = parseColor(value)
+  if (next) emitColor(next, true)
+}
 
-  function commitRgbInputs(container: HTMLElement): void {
-    const r = Number((container.querySelector('[aria-label="R"]') as HTMLInputElement | null)?.value)
-    const g = Number((container.querySelector('[aria-label="G"]') as HTMLInputElement | null)?.value)
-    const b = Number((container.querySelector('[aria-label="B"]') as HTMLInputElement | null)?.value)
-    const aInput = (container.querySelector('[aria-label="A"]') as HTMLInputElement | null)?.value
-    if ([r, g, b].some((value) => !Number.isFinite(value))) return
-    emitColor(Color.fromRgb({ r, g, b, a: Number.isFinite(Number(aInput)) ? Number(aInput) : 1 }), true)
-  }
+function commitRgbInputs(container: HTMLElement): void {
+  const r = Number((container.querySelector('[aria-label="R"]') as HTMLInputElement | null)?.value)
+  const g = Number((container.querySelector('[aria-label="G"]') as HTMLInputElement | null)?.value)
+  const b = Number((container.querySelector('[aria-label="B"]') as HTMLInputElement | null)?.value)
+  const aInput = (container.querySelector('[aria-label="A"]') as HTMLInputElement | null)?.value
+  if ([r, g, b].some((value) => !Number.isFinite(value))) return
+  emitColor(
+    Color.fromRgb({ r, g, b, a: Number.isFinite(Number(aInput)) ? Number(aInput) : 1 }),
+    true,
+  )
+}
 
-  function commitHsbInputs(container: HTMLElement): void {
-    const h = Number((container.querySelector('[aria-label="H"]') as HTMLInputElement | null)?.value)
-    const s = Number((container.querySelector('[aria-label="S"]') as HTMLInputElement | null)?.value)
-    const b = Number((container.querySelector('[aria-label="B"]') as HTMLInputElement | null)?.value)
-    const aInput = (container.querySelector('[aria-label="A"]') as HTMLInputElement | null)?.value
-    if ([h, s, b].some((value) => !Number.isFinite(value))) return
-    emitColor(Color.fromHsb({ h, s, b, a: Number.isFinite(Number(aInput)) ? Number(aInput) : 1 }), true)
-  }
+function commitHsbInputs(container: HTMLElement): void {
+  const h = Number((container.querySelector('[aria-label="H"]') as HTMLInputElement | null)?.value)
+  const s = Number((container.querySelector('[aria-label="S"]') as HTMLInputElement | null)?.value)
+  const b = Number((container.querySelector('[aria-label="B"]') as HTMLInputElement | null)?.value)
+  const aInput = (container.querySelector('[aria-label="A"]') as HTMLInputElement | null)?.value
+  if ([h, s, b].some((value) => !Number.isFinite(value))) return
+  emitColor(
+    Color.fromHsb({ h, s, b, a: Number.isFinite(Number(aInput)) ? Number(aInput) : 1 }),
+    true,
+  )
+}
 
-  function handleInputKeyDown(event: KeyboardEvent, commit: () => void): void {
-    if (event.key !== 'Enter') return
-    event.preventDefault()
-    commit()
-  }
+function handleInputKeyDown(event: KeyboardEvent, commit: () => void): void {
+  if (event.key !== 'Enter') return
+  event.preventDefault()
+  commit()
+}
 
-  function formatInputs(): JSX.Element {
-    const current = mergedColor() ?? Color.fromHsb(mergedHsb())
-    const rgb = current.toRgb()
-    const hsb = current.toHsb()
+function formatInputs(): JSX.Element {
+  const current = mergedColor() ?? Color.fromHsb(mergedHsb())
+  const rgb = current.toRgb()
+  const hsb = current.toHsb()
 
-    if (format() === 'rgb') {
-      return (
-        <div
-          class={classNames(`${prefixCls()}-inputs`, `${prefixCls()}-inputs-rgb`)}
-          onBlur={(event) => commitRgbInputs(event.currentTarget)}
-          onKeyDown={(event) => handleInputKeyDown(event, () => commitRgbInputs(event.currentTarget))}
-        >
-          <input aria-label="R" class={`${prefixCls()}-input`} value={rgb.r} />
-          <input aria-label="G" class={`${prefixCls()}-input`} value={rgb.g} />
-          <input aria-label="B" class={`${prefixCls()}-input`} value={rgb.b} />
-          <input aria-label="A" class={`${prefixCls()}-input`} value={rgb.a} />
-        </div>
-      )
-    }
-
-    if (format() === 'hsb') {
-      return (
-        <div
-          class={classNames(`${prefixCls()}-inputs`, `${prefixCls()}-inputs-hsb`)}
-          onBlur={(event) => commitHsbInputs(event.currentTarget)}
-          onKeyDown={(event) => handleInputKeyDown(event, () => commitHsbInputs(event.currentTarget))}
-        >
-          <input aria-label="H" class={`${prefixCls()}-input`} value={hsb.h} />
-          <input aria-label="S" class={`${prefixCls()}-input`} value={hsb.s} />
-          <input aria-label="B" class={`${prefixCls()}-input`} value={hsb.b} />
-          <input aria-label="A" class={`${prefixCls()}-input`} value={hsb.a} />
-        </div>
-      )
-    }
-
+  if (format() === 'rgb') {
     return (
-      <div class={classNames(`${prefixCls()}-inputs`, `${prefixCls()}-inputs-hex`)}>
-        <input
-          aria-label="HEX"
-          class={`${prefixCls()}-input`}
-          value={current.toHexString()}
-          onBlur={(event) => commitParsedInput(event.currentTarget.value)}
-          onKeyDown={(event) =>
-            handleInputKeyDown(event, () => commitParsedInput(event.currentTarget.value))
-          }
-        />
+      <div
+        class={classNames(`${prefixCls()}-inputs`, `${prefixCls()}-inputs-rgb`)}
+        onBlur={(event) => commitRgbInputs(event.currentTarget)}
+        onKeyDown={(event) => handleInputKeyDown(event, () => commitRgbInputs(event.currentTarget))}
+      >
+        <input aria-label="R" class={`${prefixCls()}-input`} value={rgb.r} />
+        <input aria-label="G" class={`${prefixCls()}-input`} value={rgb.g} />
+        <input aria-label="B" class={`${prefixCls()}-input`} value={rgb.b} />
+        <input aria-label="A" class={`${prefixCls()}-input`} value={rgb.a} />
       </div>
     )
   }
+
+  if (format() === 'hsb') {
+    return (
+      <div
+        class={classNames(`${prefixCls()}-inputs`, `${prefixCls()}-inputs-hsb`)}
+        onBlur={(event) => commitHsbInputs(event.currentTarget)}
+        onKeyDown={(event) => handleInputKeyDown(event, () => commitHsbInputs(event.currentTarget))}
+      >
+        <input aria-label="H" class={`${prefixCls()}-input`} value={hsb.h} />
+        <input aria-label="S" class={`${prefixCls()}-input`} value={hsb.s} />
+        <input aria-label="B" class={`${prefixCls()}-input`} value={hsb.b} />
+        <input aria-label="A" class={`${prefixCls()}-input`} value={hsb.a} />
+      </div>
+    )
+  }
+
+  return (
+    <div class={classNames(`${prefixCls()}-inputs`, `${prefixCls()}-inputs-hex`)}>
+      <input
+        aria-label="HEX"
+        class={`${prefixCls()}-input`}
+        value={current.toHexString()}
+        onBlur={(event) => commitParsedInput(event.currentTarget.value)}
+        onKeyDown={(event) =>
+          handleInputKeyDown(event, () => commitParsedInput(event.currentTarget.value))
+        }
+      />
+    </div>
+  )
+}
 ```
 
 Inside `panel`, add this block before the preview block:
 
 ```tsx
-        <div class={`${prefixCls()}-format`}>
-          <select
-            aria-label="Color format"
-            class={`${prefixCls()}-format-select`}
-            value={format()}
-            disabled={local.format !== undefined}
-            onChange={(event) => setInnerFormat(event.currentTarget.value as ColorPickerFormat)}
-          >
-            <option value="hex">HEX</option>
-            <option value="rgb">RGB</option>
-            <option value="hsb">HSB</option>
-          </select>
-          {formatInputs()}
-        </div>
+<div class={`${prefixCls()}-format`}>
+  <select
+    aria-label="Color format"
+    class={`${prefixCls()}-format-select`}
+    value={format()}
+    disabled={local.format !== undefined}
+    onChange={(event) => setInnerFormat(event.currentTarget.value as ColorPickerFormat)}
+  >
+    <option value="hex">HEX</option>
+    <option value="rgb">RGB</option>
+    <option value="hsb">HSB</option>
+  </select>
+  {formatInputs()}
+</div>
 ```
 
 - [ ] **Step 5: Run focused test to verify GREEN**
@@ -1503,6 +1529,7 @@ git commit -m "feat: add color picker format inputs"
 ### Task 6: Presets, Clear, Show Text Function, and Hover Trigger
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.style.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -1535,7 +1562,13 @@ describe('ColorPicker presets and clear', () => {
     const onChange = vi.fn()
     const onChangeComplete = vi.fn()
     const result = render(() => (
-      <ColorPicker defaultOpen allowClear defaultValue="#1677ff" onChange={onChange} onChangeComplete={onChangeComplete} />
+      <ColorPicker
+        defaultOpen
+        allowClear
+        defaultValue="#1677ff"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
     ))
 
     fireEvent.click(result.getByRole('button', { name: 'Clear color' }))
@@ -1630,57 +1663,57 @@ import { For, Show, createMemo, createSignal, onCleanup, splitProps } from 'soli
 Add functions before `panel`:
 
 ```tsx
-  function clearColor(): void {
-    emitColor(undefined, true)
-  }
+function clearColor(): void {
+  emitColor(undefined, true)
+}
 
-  function selectPreset(value: string): void {
-    const next = parseColor(value)
-    if (next) emitColor(next, true)
-  }
+function selectPreset(value: string): void {
+  const next = parseColor(value)
+  if (next) emitColor(next, true)
+}
 
-  function presetList(): JSX.Element {
-    return (
-      <Show when={local.presets?.length}>
-        <div class={`${prefixCls()}-presets`}>
-          <For each={local.presets}>
-            {(preset) => (
-              <div>
-                <Show when={preset.label}>
-                  <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
-                </Show>
-                <div class={`${prefixCls()}-preset-colors`}>
-                  <For each={preset.colors}>
-                    {(presetColor) => (
-                      <button
-                        type="button"
-                        aria-label={presetColor}
-                        class={`${prefixCls()}-preset-color`}
-                        style={{ background: colorToCss(parseColor(presetColor)) }}
-                        onClick={() => selectPreset(presetColor)}
-                      />
-                    )}
-                  </For>
-                </div>
+function presetList(): JSX.Element {
+  return (
+    <Show when={local.presets?.length}>
+      <div class={`${prefixCls()}-presets`}>
+        <For each={local.presets}>
+          {(preset) => (
+            <div>
+              <Show when={preset.label}>
+                <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
+              </Show>
+              <div class={`${prefixCls()}-preset-colors`}>
+                <For each={preset.colors}>
+                  {(presetColor) => (
+                    <button
+                      type="button"
+                      aria-label={presetColor}
+                      class={`${prefixCls()}-preset-color`}
+                      style={{ background: colorToCss(parseColor(presetColor)) }}
+                      onClick={() => selectPreset(presetColor)}
+                    />
+                  )}
+                </For>
               </div>
-            )}
-          </For>
-        </div>
-      </Show>
-    )
-  }
+            </div>
+          )}
+        </For>
+      </div>
+    </Show>
+  )
+}
 ```
 
 Inside `panel`, insert `{presetList()}` after the format block and before preview. Insert actions before the closing panel div:
 
 ```tsx
-        <Show when={local.allowClear}>
-          <div class={`${prefixCls()}-actions`}>
-            <button type="button" class={`${prefixCls()}-clear`} onClick={clearColor}>
-              Clear color
-            </button>
-          </div>
-        </Show>
+<Show when={local.allowClear}>
+  <div class={`${prefixCls()}-actions`}>
+    <button type="button" class={`${prefixCls()}-clear`} onClick={clearColor}>
+      Clear color
+    </button>
+  </div>
+</Show>
 ```
 
 Add button handlers on the trigger:
@@ -1718,6 +1751,7 @@ git commit -m "feat: add color picker presets and clear"
 ### Task 7: Docs Page and Navigation
 
 **Files:**
+
 - Create: `apps/docs/src/routes/components/color-picker.tsx`
 - Modify: `apps/docs/src/site/nav.ts`
 
@@ -1752,10 +1786,16 @@ export default function ColorPickerPage() {
           <span>Current value: {value()}</span>
         </Space>
       </DemoBlock>
-      <DemoBlock title="Formats" code={`<ColorPicker defaultOpen defaultFormat="rgb" defaultValue="rgba(22, 119, 255, 0.7)" />`}>
+      <DemoBlock
+        title="Formats"
+        code={`<ColorPicker defaultOpen defaultFormat="rgb" defaultValue="rgba(22, 119, 255, 0.7)" />`}
+      >
         <ColorPicker defaultFormat="rgb" defaultValue="rgba(22, 119, 255, 0.7)" />
       </DemoBlock>
-      <DemoBlock title="Disabled alpha" code={`<ColorPicker disabledAlpha defaultValue="#52c41a" />`}>
+      <DemoBlock
+        title="Disabled alpha"
+        code={`<ColorPicker disabledAlpha defaultValue="#52c41a" />`}
+      >
         <ColorPicker disabledAlpha defaultValue="#52c41a" />
       </DemoBlock>
       <DemoBlock
@@ -1769,7 +1809,10 @@ export default function ColorPickerPage() {
       <DemoBlock title="Show text" code={`<ColorPicker defaultValue="#722ed1" showText />`}>
         <ColorPicker defaultValue="#722ed1" showText />
       </DemoBlock>
-      <DemoBlock title="Allow clear" code={`<ColorPicker allowClear defaultValue="#1677ff" showText />`}>
+      <DemoBlock
+        title="Allow clear"
+        code={`<ColorPicker allowClear defaultValue="#1677ff" showText />`}
+      >
         <ColorPicker allowClear defaultValue="#1677ff" showText />
       </DemoBlock>
       <DemoBlock
@@ -1821,6 +1864,7 @@ git commit -m "docs: add color picker examples"
 ### Task 8: Formatting, Type Fixes, and Full Verification
 
 **Files:**
+
 - Modify as required by formatter/typecheck/lint output.
 
 - [ ] **Step 1: Run formatter**

@@ -131,8 +131,7 @@ export function hsbToRgb(color: HsbColor): Required<RgbColor> {
   })
 }
 
-const isRgbColor = (value: RgbColor | HsbColor): value is RgbColor =>
-  'r' in value && 'g' in value
+const isRgbColor = (value: RgbColor | HsbColor): value is RgbColor => 'r' in value && 'g' in value
 
 export class Color {
   private readonly rgb: Required<RgbColor>
@@ -151,7 +150,7 @@ export class Color {
 
   toHex(): string {
     const { r, g, b } = this.rgb
-    return [r, g, b].map(value => value.toString(16).padStart(2, '0')).join('')
+    return [r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')
   }
 
   toHexString(): string {
@@ -205,9 +204,13 @@ function parseHexColor(value: string): Color | undefined {
   }
 
   const hex = match[1]
-  const normalized = hex.length === 3
-    ? hex.split('').map(char => `${char}${char}`).join('')
-    : hex
+  const normalized =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((char) => `${char}${char}`)
+          .join('')
+      : hex
 
   return Color.fromRgb({
     r: Number.parseInt(normalized.slice(0, 2), 16),
@@ -218,7 +221,9 @@ function parseHexColor(value: string): Color | undefined {
 }
 
 function parseRgbColor(value: string): Color | undefined {
-  const match = value.match(/^rgba?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i)
+  const match = value.match(
+    /^rgba?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i,
+  )
 
   if (!match) {
     return undefined
@@ -233,7 +238,9 @@ function parseRgbColor(value: string): Color | undefined {
 }
 
 function parseHsbColor(value: string): Color | undefined {
-  const match = value.match(/^hsba?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)(?:%)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i)
+  const match = value.match(
+    /^hsba?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)(?:%)(?:\s*,\s*(\d+(?:\.\d+)?))?\s*\)$/i,
+  )
 
   if (!match) {
     return undefined

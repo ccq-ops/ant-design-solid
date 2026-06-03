@@ -79,7 +79,10 @@ interface ColorPickerProps {
   allowClear?: boolean
   showText?: boolean | ((color: Color | undefined) => JSX.Element)
   presets?: ColorPickerPreset[]
-  panelRender?: (panel: JSX.Element, extra: { components: Record<string, JSX.Element> }) => JSX.Element
+  panelRender?: (
+    panel: JSX.Element,
+    extra: { components: Record<string, JSX.Element> },
+  ) => JSX.Element
 
   class?: string
   style?: JSX.CSSProperties
