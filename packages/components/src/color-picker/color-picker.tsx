@@ -9,6 +9,7 @@ import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
 import type { HsbColor } from './color'
 import { useColorPickerStyle } from './color-picker.style'
 import type { ColorPickerProps } from './interface'
+import type { ColorPickerFormat } from './interface'
 
 function emptyPosition(): OverlayPosition {
   return { top: '0px', left: '0px' }
@@ -55,9 +56,13 @@ export function ColorPicker(props: ColorPickerProps) {
     initialColor?.toHsb() ?? { h: 0, s: 0, b: 100, a: 1 },
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(
+    local.defaultFormat ?? 'hex',
+  )
   const [position, setPosition] = createSignal<OverlayPosition>(emptyPosition())
   const valueControlled = () => 'value' in props
   const openControlled = () => 'open' in props
+  const formatControlled = () => 'format' in props
   let triggerRef: HTMLButtonElement | undefined
   let popupRef: HTMLDivElement | undefined
   let activeDragCleanup: (() => void) | undefined
@@ -68,6 +73,7 @@ export function ColorPicker(props: ColorPickerProps) {
   const mergedHsb = () =>
     (valueControlled() ? mergedColor()?.toHsb() : innerHsb()) ?? { h: 0, s: 0, b: 100, a: 1 }
   const open = () => (openControlled() ? Boolean(local.open) : innerOpen())
+  const format = () => local.format ?? innerFormat()
   const placement = () => local.placement ?? 'bottomLeft'
 
   function updatePosition(element = triggerRef): void {
@@ -124,6 +130,159 @@ export function ColorPicker(props: ColorPickerProps) {
 
   function hsbWith(nextHsb: Partial<HsbColor>): HsbColor {
     return { ...mergedHsb(), ...nextHsb }
+  }
+
+  function parseInputNumber(value: string): number | undefined {
+    if (value.trim() === '') return undefined
+
+    const numberValue = Number(value)
+
+    return Number.isFinite(numberValue) ? numberValue : undefined
+  }
+
+  function commitParsedInput(value: string): void {
+    const nextColor = parseColor(value)
+
+    if (!nextColor) return
+
+    emitColor(nextColor.toHsb())
+  }
+
+  function commitRgbInputs(red: string, green: string, blue: string): void {
+    const r = parseInputNumber(red)
+    const g = parseInputNumber(green)
+    const b = parseInputNumber(blue)
+
+    if (r === undefined || g === undefined || b === undefined) return
+
+    emitColor(Color.fromRgb({ r, g, b, a: mergedColor()?.toRgb().a ?? 1 }).toHsb())
+  }
+
+  function commitHsbInputs(hue: string, saturation: string, brightness: string): void {
+    const h = parseInputNumber(hue)
+    const s = parseInputNumber(saturation)
+    const b = parseInputNumber(brightness)
+
+    if (h === undefined || s === undefined || b === undefined) return
+
+    emitColor(Color.fromHsb({ h, s, b, a: mergedHsb().a }).toHsb())
+  }
+
+  function handleInputKeyDown(event: KeyboardEvent, commit: () => void): void {
+    if (event.key !== 'Enter') return
+
+    commit()
+  }
+
+  function formatInputs(): JSX.Element {
+    const currentFormat = format()
+    const color = mergedColor()
+    const rgb = color?.toRgb() ?? { r: 0, g: 0, b: 0, a: 1 }
+    const hsb = mergedHsb()
+
+    if (currentFormat === 'rgb') {
+      let redRef: HTMLInputElement | undefined
+      let greenRef: HTMLInputElement | undefined
+      let blueRef: HTMLInputElement | undefined
+      const commit = () =>
+        commitRgbInputs(redRef?.value ?? '', greenRef?.value ?? '', blueRef?.value ?? '')
+
+      return (
+        <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-rgb`}>
+          <input
+            ref={(element) => {
+              redRef = element
+            }}
+            aria-label="Red"
+            class={`${prefixCls()}-input`}
+            value={String(rgb.r)}
+            onBlur={commit}
+            onKeyDown={(event) => handleInputKeyDown(event, commit)}
+          />
+          <input
+            ref={(element) => {
+              greenRef = element
+            }}
+            aria-label="Green"
+            class={`${prefixCls()}-input`}
+            value={String(rgb.g)}
+            onBlur={commit}
+            onKeyDown={(event) => handleInputKeyDown(event, commit)}
+          />
+          <input
+            ref={(element) => {
+              blueRef = element
+            }}
+            aria-label="Blue"
+            class={`${prefixCls()}-input`}
+            value={String(rgb.b)}
+            onBlur={commit}
+            onKeyDown={(event) => handleInputKeyDown(event, commit)}
+          />
+        </div>
+      )
+    }
+
+    if (currentFormat === 'hsb') {
+      let hueRef: HTMLInputElement | undefined
+      let saturationRef: HTMLInputElement | undefined
+      let brightnessRef: HTMLInputElement | undefined
+      const commit = () =>
+        commitHsbInputs(hueRef?.value ?? '', saturationRef?.value ?? '', brightnessRef?.value ?? '')
+
+      return (
+        <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hsb`}>
+          <input
+            ref={(element) => {
+              hueRef = element
+            }}
+            aria-label="H"
+            class={`${prefixCls()}-input`}
+            value={String(hsb.h)}
+            onBlur={commit}
+            onKeyDown={(event) => handleInputKeyDown(event, commit)}
+          />
+          <input
+            ref={(element) => {
+              saturationRef = element
+            }}
+            aria-label="S"
+            class={`${prefixCls()}-input`}
+            value={String(hsb.s)}
+            onBlur={commit}
+            onKeyDown={(event) => handleInputKeyDown(event, commit)}
+          />
+          <input
+            ref={(element) => {
+              brightnessRef = element
+            }}
+            aria-label="B"
+            class={`${prefixCls()}-input`}
+            value={String(hsb.b)}
+            onBlur={commit}
+            onKeyDown={(event) => handleInputKeyDown(event, commit)}
+          />
+        </div>
+      )
+    }
+
+    let hexRef: HTMLInputElement | undefined
+    const commit = () => commitParsedInput(hexRef?.value ?? '')
+
+    return (
+      <div class={`${prefixCls()}-inputs ${prefixCls()}-inputs-hex`}>
+        <input
+          ref={(element) => {
+            hexRef = element
+          }}
+          aria-label="Hex"
+          class={`${prefixCls()}-input`}
+          value={color?.toHexString() ?? ''}
+          onBlur={commit}
+          onKeyDown={(event) => handleInputKeyDown(event, commit)}
+        />
+      </div>
+    )
   }
 
   function updateSaturation(
@@ -258,6 +417,23 @@ export function ColorPicker(props: ColorPickerProps) {
             <span class={`${prefixCls()}-slider-handler`} style={{ left: `${hsb().a * 100}%` }} />
           </div>
         </Show>
+        <div class={`${prefixCls()}-format-row`}>
+          <select
+            aria-label="Color format"
+            class={`${prefixCls()}-format-select`}
+            value={format()}
+            disabled={formatControlled()}
+            onChange={(event) => {
+              if (!formatControlled())
+                setInnerFormat(event.currentTarget.value as ColorPickerFormat)
+            }}
+          >
+            <option value="hex">HEX</option>
+            <option value="rgb">RGB</option>
+            <option value="hsb">HSB</option>
+          </select>
+          {formatInputs()}
+        </div>
         <div class={`${prefixCls()}-preview`}>
           <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
             <span

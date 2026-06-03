@@ -135,6 +135,47 @@ export function useColorPickerStyle(prefixCls: string) {
           transform: 'translate(-50%, -50%)',
           'pointer-events': 'none',
         },
+        [`.${prefixCls}-format-row`]: {
+          display: 'flex',
+          'align-items': 'center',
+          gap: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-format-select`]: {
+          height: `${t.controlHeightSM}px`,
+          padding: `0 ${t.paddingXS}px`,
+          border: `${t.lineWidth}px solid ${t.colorBorder}`,
+          'border-radius': `${t.borderRadius}px`,
+          background: t.colorBgContainer,
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+        },
+        [`.${prefixCls}-inputs`]: {
+          display: 'grid',
+          flex: 1,
+          gap: `${t.marginXS / 2}px`,
+        },
+        [`.${prefixCls}-inputs-hex`]: {
+          'grid-template-columns': '1fr',
+        },
+        [`.${prefixCls}-inputs-rgb`]: {
+          'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
+        },
+        [`.${prefixCls}-inputs-hsb`]: {
+          'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
+        },
+        [`.${prefixCls}-input`]: {
+          'box-sizing': 'border-box',
+          width: '100%',
+          height: `${t.controlHeightSM}px`,
+          padding: `0 ${t.paddingXS / 2}px`,
+          border: `${t.lineWidth}px solid ${t.colorBorder}`,
+          'border-radius': `${t.borderRadius}px`,
+          background: t.colorBgContainer,
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+        },
         [`.${prefixCls}-preview`]: {
           display: 'flex',
           'align-items': 'center',

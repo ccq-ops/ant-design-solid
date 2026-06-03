@@ -522,4 +522,47 @@ describe('ColorPicker panel interactions', () => {
     expect(panel.getByRole('slider', { name: 'Alpha' })).toHaveAttribute('aria-disabled', 'true')
     expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
   })
+
+  it('commits a hex input value when Enter is pressed', () => {
+    const onChange = vi.fn()
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" onChange={onChange} />)
+    const panel = latestPanel()
+    const hexInput = panel.getByLabelText('Hex')
+
+    fireEvent.input(hexInput, { target: { value: '#52c41a' } })
+    fireEvent.keyDown(hexInput, { key: 'Enter' })
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange.mock.calls[0][0]?.toRgbString()).toBe('rgb(82, 196, 26)')
+    expect(onChange.mock.calls[0][1]).toBe('#52c41a')
+    expect(panel.getByText('rgb(82, 196, 26)')).toBeInTheDocument()
+  })
+
+  it('commits defaultFormat rgb channel inputs on blur', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <ColorPicker defaultOpen defaultValue="#000000" defaultFormat="rgb" onChange={onChange} />
+    ))
+    const panel = latestPanel()
+
+    fireEvent.input(panel.getByLabelText('Red'), { target: { value: '82' } })
+    fireEvent.input(panel.getByLabelText('Green'), { target: { value: '196' } })
+    fireEvent.input(panel.getByLabelText('Blue'), { target: { value: '26' } })
+    fireEvent.blur(panel.getByLabelText('Blue'))
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange.mock.calls[0][0]?.toRgb()).toEqual({ r: 82, g: 196, b: 26, a: 1 })
+    expect(onChange.mock.calls[0][1]).toBe('#52c41a')
+    expect(panel.getByText('rgb(82, 196, 26)')).toBeInTheDocument()
+  })
+
+  it("shows hsb fields for controlled format='hsb'", () => {
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" format="hsb" />)
+    const panel = latestPanel()
+
+    expect(panel.getByRole('combobox', { name: 'Color format' })).toBeDisabled()
+    expect(panel.getByLabelText('H')).toHaveValue('215')
+    expect(panel.getByLabelText('S')).toHaveValue('91')
+    expect(panel.getByLabelText('B')).toHaveValue('100')
+  })
 })
