@@ -7,6 +7,7 @@ export const navItems = [
   { path: '/components/input-number', label: 'InputNumber' },
   { path: '/components/form', label: 'Form' },
   { path: '/components/select', label: 'Select' },
+  { path: '/components/cascader', label: 'Cascader' },
   { path: '/components/time-picker', label: 'TimePicker' },
   { path: '/components/date-picker', label: 'DatePicker' },
   { path: '/components/upload', label: 'Upload' },
