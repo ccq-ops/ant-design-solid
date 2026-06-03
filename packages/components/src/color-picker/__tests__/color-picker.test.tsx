@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
+import { describe, expect, it, vi } from 'vitest'
 import { Color, clamp, colorToCss, normalizeHsb, normalizeRgb, parseColor } from '../color'
+import { ColorPicker } from '../index'
 
 describe('Color utilities', () => {
   it('parses hex colors and exposes conversion helpers', () => {
@@ -52,13 +55,27 @@ describe('Color utilities', () => {
     expect(clamp(Number.NaN, 0, 255)).toBe(0)
     expect(clamp(Number.POSITIVE_INFINITY, 0, 255)).toBe(255)
     expect(clamp(Number.NEGATIVE_INFINITY, 0, 255)).toBe(0)
-    expect(normalizeRgb({ r: Number.NaN, g: Number.POSITIVE_INFINITY, b: Number.NEGATIVE_INFINITY, a: Number.NaN })).toEqual({
+    expect(
+      normalizeRgb({
+        r: Number.NaN,
+        g: Number.POSITIVE_INFINITY,
+        b: Number.NEGATIVE_INFINITY,
+        a: Number.NaN,
+      }),
+    ).toEqual({
       r: 0,
       g: 255,
       b: 0,
       a: 1,
     })
-    expect(normalizeHsb({ h: Number.NaN, s: Number.POSITIVE_INFINITY, b: Number.NEGATIVE_INFINITY, a: Number.NaN })).toEqual({
+    expect(
+      normalizeHsb({
+        h: Number.NaN,
+        s: Number.POSITIVE_INFINITY,
+        b: Number.NEGATIVE_INFINITY,
+        a: Number.NaN,
+      }),
+    ).toEqual({
       h: 0,
       s: 100,
       b: 0,
@@ -82,19 +99,23 @@ describe('Color utilities', () => {
     expect(clamp('bad' as unknown as number, 0, 255)).toBe(0)
     expect(clamp(undefined as unknown as number, 0, 255)).toBe(0)
     expect(clamp({} as unknown as number, 0, 255)).toBe(0)
-    expect(Color.fromRgb({ r: undefined as unknown as number, g: 0, b: 0, a: 1 }).toRgbString()).toBe('rgb(0, 0, 0)')
+    expect(
+      Color.fromRgb({ r: undefined as unknown as number, g: 0, b: 0, a: 1 }).toRgbString(),
+    ).toBe('rgb(0, 0, 0)')
     expect(normalizeRgb({ r: 'bad' as unknown as number, g: 0, b: 0, a: 1 })).toEqual({
       r: 0,
       g: 0,
       b: 0,
       a: 1,
     })
-    expect(normalizeHsb({
-      h: 'bad' as unknown as number,
-      s: 'bad' as unknown as number,
-      b: 'bad' as unknown as number,
-      a: 'bad' as unknown as number,
-    })).toEqual({
+    expect(
+      normalizeHsb({
+        h: 'bad' as unknown as number,
+        s: 'bad' as unknown as number,
+        b: 'bad' as unknown as number,
+        a: 'bad' as unknown as number,
+      }),
+    ).toEqual({
       h: 0,
       s: 0,
       b: 0,
@@ -108,11 +129,6 @@ describe('Color utilities', () => {
     expect(colorToCss(undefined)).toBe('transparent')
   })
 })
-
-import { fireEvent, render } from '@solidjs/testing-library'
-import { createSignal } from 'solid-js'
-import { vi } from 'vitest'
-import { ColorPicker } from '../index'
 
 describe('ColorPicker trigger', () => {
   it('renders a trigger with default value and showText', () => {
@@ -137,6 +153,39 @@ describe('ColorPicker trigger', () => {
     expect(result.getByText('#52c41a')).toBeInTheDocument()
   })
 
+  it('treats value undefined as a controlled empty color over defaultValue', () => {
+    const result = render(() => <ColorPicker defaultValue="#1677ff" value={undefined} showText />)
+
+    expect(result.queryByText('#1677ff')).toBeNull()
+    expect(result.container.querySelector('.ads-color-picker-color-block-inner')).toHaveStyle(
+      'background: transparent',
+    )
+  })
+
+  it('treats value null as a controlled empty color over defaultValue', () => {
+    const result = render(() => <ColorPicker defaultValue="#1677ff" value={null} showText />)
+
+    expect(result.queryByText('#1677ff')).toBeNull()
+    expect(result.container.querySelector('.ads-color-picker-color-block-inner')).toHaveStyle(
+      'background: transparent',
+    )
+  })
+
+  it('treats open undefined as controlled closed over defaultOpen', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => (
+      <ColorPicker defaultOpen open={undefined} onOpenChange={onOpenChange} />
+    ))
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.click(trigger)
+
+    expect(onOpenChange).toHaveBeenCalledWith(true)
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
   it('does not open when disabled', () => {
     const onOpenChange = vi.fn()
     const result = render(() => <ColorPicker disabled onOpenChange={onOpenChange} />)
@@ -146,6 +195,7 @@ describe('ColorPicker trigger', () => {
 
     expect(trigger).toHaveAttribute('aria-disabled', 'true')
     expect(onOpenChange).not.toHaveBeenCalled()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
     expect(result.queryByRole('dialog')).toBeNull()
   })
 })

@@ -15,8 +15,10 @@ export interface ColorPickerPanelRenderExtra {
   components: Record<string, JSX.Element>
 }
 
-export interface ColorPickerProps
-  extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'defaultValue' | 'onChange'> {
+export interface ColorPickerProps extends Omit<
+  JSX.ButtonHTMLAttributes<HTMLButtonElement>,
+  'value' | 'defaultValue' | 'onChange'
+> {
   value?: ColorPickerValue
   defaultValue?: ColorPickerValue
   onChange?: (value: Color | undefined, hex: string) => void

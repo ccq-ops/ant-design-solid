@@ -44,15 +44,17 @@ export function ColorPicker(props: ColorPickerProps) {
   const [, hashId] = useColorPickerStyle(prefixCls())
   const [innerColor] = createSignal(parseColor(local.defaultValue))
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const valueControlled = () => 'value' in props
+  const openControlled = () => 'open' in props
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
-  const mergedColor = () => parseColor(local.value) ?? innerColor()
-  const open = () => Boolean(local.open ?? innerOpen())
+  const mergedColor = () => (valueControlled() ? parseColor(local.value) : innerColor())
+  const open = () => (openControlled() ? Boolean(local.open) : innerOpen())
 
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
-    if (local.open === undefined) setInnerOpen(nextOpen)
+    if (!openControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
 
@@ -86,7 +88,9 @@ export function ColorPicker(props: ColorPickerProps) {
           style={{ background: colorToCss(mergedColor()) }}
         />
       </span>
-      {local.showText && <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>}
+      {local.showText && (
+        <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
+      )}
     </button>
   )
 }
