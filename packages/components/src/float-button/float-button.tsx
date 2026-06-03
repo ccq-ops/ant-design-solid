@@ -148,7 +148,7 @@ function FloatButtonGroup(props: FloatButtonGroupProps) {
 }
 
 function BackTop(props: FloatButtonBackTopProps) {
-  const [local, rest] = splitProps(props, [
+  const [local] = splitProps(props, [
     'visibilityHeight',
     'target',
     'duration',

@@ -126,7 +126,9 @@ export function Affix(props: AffixProps) {
   return (
     <div
       {...rest}
-      ref={placeholderRef}
+      ref={(element) => {
+        placeholderRef = element
+      }}
       class={classNames(`${prefixCls()}-wrapper`, hashId(), local.class)}
       classList={local.classList}
       style={mergeStyle(placeholderStyle(), local.style)}

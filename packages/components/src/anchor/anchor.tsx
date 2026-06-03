@@ -123,7 +123,6 @@ export function Anchor(props: AnchorProps) {
   })
 
   createRenderEffect(() => {
-    local.items
     updateActiveLink()
   })
 
