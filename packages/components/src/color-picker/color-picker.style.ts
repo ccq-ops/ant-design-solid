@@ -79,6 +79,62 @@ export function useColorPickerStyle(prefixCls: string) {
           'flex-direction': 'column',
           gap: `${t.marginXS}px`,
         },
+
+        [`.${prefixCls}-saturation`]: {
+          position: 'relative',
+          width: '220px',
+          height: '160px',
+          overflow: 'hidden',
+          'border-radius': `${t.borderRadius}px`,
+          cursor: 'crosshair',
+          'touch-action': 'none',
+        },
+        [`.${prefixCls}-saturation-white`]: {
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to right, #fff, rgba(255, 255, 255, 0))',
+        },
+        [`.${prefixCls}-saturation-black`]: {
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, #000, rgba(0, 0, 0, 0))',
+        },
+        [`.${prefixCls}-handler`]: {
+          position: 'absolute',
+          width: '12px',
+          height: '12px',
+          border: '2px solid #fff',
+          'border-radius': '50%',
+          'box-shadow': '0 0 0 1px rgba(0, 0, 0, 0.35)',
+          transform: 'translate(-50%, -50%)',
+          'pointer-events': 'none',
+        },
+        [`.${prefixCls}-slider`]: {
+          position: 'relative',
+          width: '220px',
+          height: '12px',
+          'border-radius': '999px',
+          cursor: 'pointer',
+          'touch-action': 'none',
+        },
+        [`.${prefixCls}-hue`]: {
+          background:
+            'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)',
+        },
+        [`.${prefixCls}-alpha`]: {
+          backgroundColor: '#fff',
+        },
+        [`.${prefixCls}-slider-handler`]: {
+          position: 'absolute',
+          top: '50%',
+          width: '12px',
+          height: '12px',
+          border: '2px solid #fff',
+          'border-radius': '50%',
+          'box-shadow': '0 0 0 1px rgba(0, 0, 0, 0.35)',
+          transform: 'translate(-50%, -50%)',
+          'pointer-events': 'none',
+        },
         [`.${prefixCls}-preview`]: {
           display: 'flex',
           'align-items': 'center',

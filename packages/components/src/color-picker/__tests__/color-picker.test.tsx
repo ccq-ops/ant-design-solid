@@ -1,8 +1,28 @@
-import { fireEvent, render, screen } from '@solidjs/testing-library'
+import { fireEvent, render, screen, within } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Color, clamp, colorToCss, normalizeHsb, normalizeRgb, parseColor } from '../color'
 import { ColorPicker } from '../index'
+
+function latestPanel() {
+  const panels = screen.getAllByRole('dialog', { name: 'Color Picker Panel' })
+
+  return within(panels.at(-1) as HTMLElement)
+}
+
+function mockRect(element: Element, rect: Partial<DOMRect>): void {
+  element.getBoundingClientRect = vi.fn(() => ({
+    x: rect.x ?? rect.left ?? 0,
+    y: rect.y ?? rect.top ?? 0,
+    left: rect.left ?? rect.x ?? 0,
+    top: rect.top ?? rect.y ?? 0,
+    right: rect.right ?? (rect.left ?? rect.x ?? 0) + (rect.width ?? 0),
+    bottom: rect.bottom ?? (rect.top ?? rect.y ?? 0) + (rect.height ?? 0),
+    width: rect.width ?? 0,
+    height: rect.height ?? 0,
+    toJSON: () => undefined,
+  }))
+}
 
 describe('Color utilities', () => {
   it('parses hex colors and exposes conversion helpers', () => {
@@ -321,5 +341,102 @@ describe('ColorPicker popup', () => {
     expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('No color')
     expect(panelRender).toHaveBeenCalledTimes(1)
     expect(panelRender.mock.calls[0][1]).toHaveProperty('components.picker')
+  })
+})
+
+describe('ColorPicker panel interactions', () => {
+  it('updates saturation and brightness during pointer drag and completes on release', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="hsb(0, 0%, 100%)"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const saturation = panel.getByRole('slider', { name: 'Saturation and brightness' })
+    mockRect(saturation, { left: 10, top: 20, width: 100, height: 100 })
+
+    fireEvent.pointerDown(saturation, { clientX: 60, clientY: 45 })
+    fireEvent.pointerMove(document, { clientX: 110, clientY: 120 })
+
+    expect(onChange).toHaveBeenCalledTimes(2)
+    expect(onChange.mock.calls[0][0]?.toHsb()).toEqual({ h: 0, s: 50, b: 75, a: 1 })
+    expect(onChange.mock.calls[0][1]).toBe('#bf6060')
+    expect(onChange.mock.calls[1][0]?.toRgbString()).toBe('rgb(0, 0, 0)')
+    expect(panel.getByText('rgb(0, 0, 0)')).toBeInTheDocument()
+
+    fireEvent.pointerUp(document)
+
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete.mock.calls[0][0]?.toRgbString()).toBe('rgb(0, 0, 0)')
+  })
+
+  it('updates hue and alpha sliders from pointer interactions', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="hsba(0, 100%, 100%, 1)"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const hue = panel.getByRole('slider', { name: 'Hue' })
+    const alpha = panel.getByRole('slider', { name: 'Alpha' })
+    mockRect(hue, { left: 10, top: 0, width: 360, height: 12 })
+    mockRect(alpha, { left: 20, top: 0, width: 100, height: 12 })
+
+    fireEvent.pointerDown(hue, { clientX: 130, clientY: 6 })
+    fireEvent.pointerUp(document)
+    fireEvent.pointerDown(alpha, { clientX: 45, clientY: 6 })
+    fireEvent.pointerMove(document, { clientX: 70, clientY: 6 })
+    fireEvent.pointerUp(document)
+
+    expect(onChange.mock.calls[0][0]?.toHsb()).toEqual({ h: 120, s: 100, b: 100, a: 1 })
+    expect(onChange.mock.calls[0][1]).toBe('#00ff00')
+    expect(onChange.mock.calls[1][0]?.toHsb()).toEqual({ h: 120, s: 100, b: 100, a: 0.25 })
+    expect(onChange.mock.calls[2][0]?.toHsb()).toEqual({ h: 120, s: 100, b: 100, a: 0.5 })
+    expect(onChangeComplete).toHaveBeenCalledTimes(2)
+    expect(onChangeComplete.mock.calls[1][0]?.toRgbString()).toBe('rgba(0, 255, 0, 0.5)')
+  })
+
+  it('hides alpha slider when disabledAlpha is set', () => {
+    render(() => <ColorPicker defaultOpen defaultValue="rgba(22, 119, 255, 0.5)" disabledAlpha />)
+
+    const panel = latestPanel()
+
+    expect(panel.getByRole('slider', { name: 'Hue' })).toBeInTheDocument()
+    expect(panel.queryByRole('slider', { name: 'Alpha' })).toBeNull()
+  })
+
+  it('prevents pointer changes when disabled', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        disabled
+        defaultOpen
+        defaultValue="#1677ff"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const hue = panel.getByRole('slider', { name: 'Hue' })
+    mockRect(hue, { left: 0, top: 0, width: 360, height: 12 })
+
+    fireEvent.pointerDown(hue, { clientX: 120, clientY: 6 })
+    fireEvent.pointerMove(document, { clientX: 180, clientY: 6 })
+    fireEvent.pointerUp(document)
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onChangeComplete).not.toHaveBeenCalled()
+    expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
   })
 })

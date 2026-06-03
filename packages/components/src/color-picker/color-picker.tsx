@@ -5,8 +5,8 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
 import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
-import { colorToCss, parseColor } from './color'
-import type { Color } from './color'
+import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
+import type { HsbColor } from './color'
 import { useColorPickerStyle } from './color-picker.style'
 import type { ColorPickerProps } from './interface'
 
@@ -49,7 +49,11 @@ export function ColorPicker(props: ColorPickerProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-color-picker`
   const [, hashId] = useColorPickerStyle(prefixCls())
-  const [innerColor] = createSignal(parseColor(local.defaultValue))
+  const initialColor = parseColor(local.defaultValue)
+  const [innerColor, setInnerColor] = createSignal(initialColor)
+  const [innerHsb, setInnerHsb] = createSignal(
+    initialColor?.toHsb() ?? { h: 0, s: 0, b: 100, a: 1 },
+  )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [position, setPosition] = createSignal<OverlayPosition>(emptyPosition())
   const valueControlled = () => 'value' in props
@@ -60,6 +64,8 @@ export function ColorPicker(props: ColorPickerProps) {
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
   const mergedColor = () => (valueControlled() ? parseColor(local.value) : innerColor())
+  const mergedHsb = () =>
+    (valueControlled() ? mergedColor()?.toHsb() : innerHsb()) ?? { h: 0, s: 0, b: 100, a: 1 }
   const open = () => (openControlled() ? Boolean(local.open) : innerOpen())
   const placement = () => local.placement ?? 'bottomLeft'
 
@@ -97,9 +103,141 @@ export function ColorPicker(props: ColorPickerProps) {
     removePointerDown()
   })
 
+  function emitColor(nextHsb: HsbColor): Color {
+    const nextColor = Color.fromHsb(normalizeHsb(nextHsb))
+
+    if (!valueControlled()) {
+      setInnerColor(nextColor)
+      setInnerHsb(normalizeHsb(nextHsb))
+    }
+    local.onChange?.(nextColor, nextColor.toHexString())
+
+    return nextColor
+  }
+
+  function updateHsb(nextHsb: HsbColor): Color {
+    return emitColor(nextHsb)
+  }
+
+  function hsbWith(nextHsb: Partial<HsbColor>): HsbColor {
+    return { ...mergedHsb(), ...nextHsb }
+  }
+
+  function updateSaturation(
+    element: HTMLElement,
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>,
+  ): Color {
+    const rect = element.getBoundingClientRect()
+    const width = rect.width || 1
+    const height = rect.height || 1
+    const saturation = clamp(((event.clientX - rect.left) / width) * 100, 0, 100)
+    const brightness = clamp(100 - ((event.clientY - rect.top) / height) * 100, 0, 100)
+
+    return updateHsb(hsbWith({ s: saturation, b: brightness }))
+  }
+
+  function updateSlider(
+    element: HTMLElement,
+    event: Pick<PointerEvent, 'clientX'>,
+    channel: 'h' | 'a',
+  ): Color {
+    const rect = element.getBoundingClientRect()
+    const width = rect.width || 1
+    const percent = clamp((event.clientX - rect.left) / width, 0, 1)
+    const nextValue = channel === 'h' ? percent * 360 : percent
+
+    return updateHsb(hsbWith({ [channel]: nextValue }))
+  }
+
+  function startPointerDrag(
+    event: PointerEvent,
+    update: (event: Pick<PointerEvent, 'clientX' | 'clientY'>) => Color,
+  ): void {
+    if (disabled()) return
+
+    event.preventDefault()
+    let latestColor = update(event)
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      latestColor = update(moveEvent)
+    }
+    const handlePointerUp = () => {
+      document.removeEventListener('pointermove', handlePointerMove)
+      document.removeEventListener('pointerup', handlePointerUp)
+      local.onChangeComplete?.(latestColor)
+    }
+
+    document.addEventListener('pointermove', handlePointerMove)
+    document.addEventListener('pointerup', handlePointerUp)
+  }
+
   function renderPanel(): JSX.Element {
+    const hsb = mergedHsb
+    const alphaBackground = () =>
+      `linear-gradient(to right, rgba(255, 255, 255, 0), ${Color.fromHsb({ ...hsb(), a: 1 }).toRgbString()})`
+
     return (
       <div class={`${prefixCls()}-panel`}>
+        <div
+          role="slider"
+          aria-label="Saturation and brightness"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow={Math.round(hsb().s)}
+          aria-valuetext={`${Math.round(hsb().s)}% saturation, ${Math.round(hsb().b)}% brightness`}
+          tabIndex={disabled() ? undefined : 0}
+          class={`${prefixCls()}-saturation`}
+          style={{ background: Color.fromHsb({ h: hsb().h, s: 100, b: 100, a: 1 }).toRgbString() }}
+          onPointerDown={(event) => {
+            const element = event.currentTarget
+
+            startPointerDrag(event, (pointerEvent) => updateSaturation(element, pointerEvent))
+          }}
+        >
+          <div class={`${prefixCls()}-saturation-white`} />
+          <div class={`${prefixCls()}-saturation-black`} />
+          <span
+            class={`${prefixCls()}-handler`}
+            style={{ left: `${hsb().s}%`, top: `${100 - hsb().b}%` }}
+          />
+        </div>
+        <div
+          role="slider"
+          aria-label="Hue"
+          aria-valuemin="0"
+          aria-valuemax="360"
+          aria-valuenow={Math.round(hsb().h)}
+          tabIndex={disabled() ? undefined : 0}
+          class={`${prefixCls()}-slider ${prefixCls()}-hue`}
+          onPointerDown={(event) => {
+            const element = event.currentTarget
+
+            startPointerDrag(event, (pointerEvent) => updateSlider(element, pointerEvent, 'h'))
+          }}
+        >
+          <span
+            class={`${prefixCls()}-slider-handler`}
+            style={{ left: `${(hsb().h / 360) * 100}%` }}
+          />
+        </div>
+        <Show when={!local.disabledAlpha}>
+          <div
+            role="slider"
+            aria-label="Alpha"
+            aria-valuemin="0"
+            aria-valuemax="1"
+            aria-valuenow={Number(hsb().a.toFixed(2))}
+            tabIndex={disabled() ? undefined : 0}
+            class={`${prefixCls()}-slider ${prefixCls()}-alpha`}
+            style={{ background: alphaBackground() }}
+            onPointerDown={(event) => {
+              const element = event.currentTarget
+
+              startPointerDrag(event, (pointerEvent) => updateSlider(element, pointerEvent, 'a'))
+            }}
+          >
+            <span class={`${prefixCls()}-slider-handler`} style={{ left: `${hsb().a * 100}%` }} />
+          </div>
+        </Show>
         <div class={`${prefixCls()}-preview`}>
           <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
             <span
