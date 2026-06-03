@@ -43,7 +43,10 @@ export interface CalendarHeaderRenderConfig {
   onModeChange: (mode: CalendarMode) => void
 }
 
-export interface CalendarProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onSelect'> {
+export interface CalendarProps extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'onSelect'
+> {
   value?: CalendarValue
   defaultValue?: CalendarValue
   mode?: CalendarMode

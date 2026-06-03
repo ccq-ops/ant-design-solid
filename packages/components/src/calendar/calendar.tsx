@@ -26,10 +26,10 @@ function firstOfMonth(value: Date): Date {
 function sameDate(a: Date | undefined, b: Date | undefined): boolean {
   return Boolean(
     a &&
-      b &&
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate(),
+    b &&
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate(),
   )
 }
 
@@ -166,7 +166,10 @@ export function Calendar(props: CalendarProps) {
   function selectDate(date: Date): void {
     if (local.disabledDate?.(date)) return
     changeValue(date)
-    if (date.getMonth() !== panelDate().getMonth() || date.getFullYear() !== panelDate().getFullYear()) {
+    if (
+      date.getMonth() !== panelDate().getMonth() ||
+      date.getFullYear() !== panelDate().getFullYear()
+    ) {
       changePanelDate(date)
     }
   }
@@ -282,8 +285,8 @@ export function Calendar(props: CalendarProps) {
                     const selectedValue = selectedDate()
                     return Boolean(
                       selectedValue &&
-                        selectedValue.getFullYear() === monthDate.getFullYear() &&
-                        selectedValue.getMonth() === monthDate.getMonth(),
+                      selectedValue.getFullYear() === monthDate.getFullYear() &&
+                      selectedValue.getMonth() === monthDate.getMonth(),
                     )
                   }
                   return (

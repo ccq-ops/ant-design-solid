@@ -23,9 +23,7 @@ describe('Calendar', () => {
   it('selects an uncontrolled date and calls onSelect and onChange', () => {
     const onSelect = vi.fn()
     const onChange = vi.fn()
-    render(() => (
-      <Calendar defaultValue="2026-06-15" onSelect={onSelect} onChange={onChange} />
-    ))
+    render(() => <Calendar defaultValue="2026-06-15" onSelect={onSelect} onChange={onChange} />)
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
 
@@ -40,9 +38,7 @@ describe('Calendar', () => {
   it('does not call onChange when selecting the same date', () => {
     const onSelect = vi.fn()
     const onChange = vi.fn()
-    render(() => (
-      <Calendar defaultValue="2026-06-15" onSelect={onSelect} onChange={onChange} />
-    ))
+    render(() => <Calendar defaultValue="2026-06-15" onSelect={onSelect} onChange={onChange} />)
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
 
