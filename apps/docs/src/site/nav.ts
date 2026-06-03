@@ -13,6 +13,7 @@ export const navItems = [
   { path: '/components/tree-select', label: 'TreeSelect' },
   { path: '/components/time-picker', label: 'TimePicker' },
   { path: '/components/date-picker', label: 'DatePicker' },
+  { path: '/components/calendar', label: 'Calendar' },
   { path: '/components/upload', label: 'Upload' },
   { path: '/components/transfer', label: 'Transfer' },
   { path: '/components/checkbox', label: 'Checkbox' },
