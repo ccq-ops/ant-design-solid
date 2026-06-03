@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@solidjs/testing-library'
-import { createSignal } from 'solid-js'
+import { Show, createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Color, clamp, colorToCss, normalizeHsb, normalizeRgb, parseColor } from '../color'
 import { ColorPicker } from '../index'
@@ -406,6 +406,83 @@ describe('ColorPicker panel interactions', () => {
     expect(onChangeComplete.mock.calls[1][0]?.toRgbString()).toBe('rgba(0, 255, 0, 0.5)')
   })
 
+  it('completes and removes drag listeners when pointer is cancelled', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="hsba(0, 100%, 100%, 1)"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const alpha = panel.getByRole('slider', { name: 'Alpha' })
+    mockRect(alpha, { left: 0, top: 0, width: 100, height: 12 })
+
+    fireEvent.pointerDown(alpha, { clientX: 20, clientY: 6 })
+    fireEvent.pointerCancel(document, { clientX: 60, clientY: 6 })
+    fireEvent.pointerMove(document, { clientX: 90, clientY: 6 })
+
+    expect(onChange).toHaveBeenCalledTimes(2)
+    expect(onChange.mock.calls[1][0]?.toHsb()).toEqual({ h: 0, s: 100, b: 100, a: 0.6 })
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete.mock.calls[0][0]?.toHsb()).toEqual({ h: 0, s: 100, b: 100, a: 0.6 })
+  })
+
+  it('removes active drag listeners on unmount', () => {
+    const onChange = vi.fn()
+    const [mounted, setMounted] = createSignal(true)
+    render(() => (
+      <Show when={mounted()}>
+        <ColorPicker defaultOpen defaultValue="hsb(0, 100%, 100%)" onChange={onChange} />
+      </Show>
+    ))
+    const panel = latestPanel()
+    const hue = panel.getByRole('slider', { name: 'Hue' })
+    mockRect(hue, { left: 0, top: 0, width: 360, height: 12 })
+
+    fireEvent.pointerDown(hue, { clientX: 120, clientY: 6 })
+    expect(onChange).toHaveBeenCalledTimes(1)
+
+    setMounted(false)
+    fireEvent.pointerMove(document, { clientX: 180, clientY: 6 })
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('replaces an active drag when a second pointer drag starts', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="hsb(0, 100%, 100%)"
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const panel = latestPanel()
+    const hue = panel.getByRole('slider', { name: 'Hue' })
+    const alpha = panel.getByRole('slider', { name: 'Alpha' })
+    mockRect(hue, { left: 0, top: 0, width: 360, height: 12 })
+    mockRect(alpha, { left: 0, top: 0, width: 100, height: 12 })
+
+    fireEvent.pointerDown(hue, { clientX: 120, clientY: 6 })
+    fireEvent.pointerDown(alpha, { clientX: 50, clientY: 6 })
+    fireEvent.pointerMove(document, { clientX: 75, clientY: 6 })
+    fireEvent.pointerUp(document)
+
+    expect(onChange.mock.calls.map((call) => call[0]?.toHsb())).toEqual([
+      { h: 120, s: 100, b: 100, a: 1 },
+      { h: 120, s: 100, b: 100, a: 0.5 },
+      { h: 120, s: 100, b: 100, a: 0.75 },
+    ])
+    expect(onChangeComplete).toHaveBeenCalledTimes(1)
+    expect(onChangeComplete.mock.calls[0][0]?.toHsb()).toEqual({ h: 120, s: 100, b: 100, a: 0.75 })
+  })
+
   it('hides alpha slider when disabledAlpha is set', () => {
     render(() => <ColorPicker defaultOpen defaultValue="rgba(22, 119, 255, 0.5)" disabledAlpha />)
 
@@ -437,6 +514,12 @@ describe('ColorPicker panel interactions', () => {
 
     expect(onChange).not.toHaveBeenCalled()
     expect(onChangeComplete).not.toHaveBeenCalled()
+    expect(panel.getByRole('slider', { name: 'Saturation and brightness' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    )
+    expect(hue).toHaveAttribute('aria-disabled', 'true')
+    expect(panel.getByRole('slider', { name: 'Alpha' })).toHaveAttribute('aria-disabled', 'true')
     expect(panel.getByText('rgb(22, 119, 255)')).toBeInTheDocument()
   })
 })

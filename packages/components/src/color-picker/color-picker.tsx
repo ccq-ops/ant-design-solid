@@ -60,6 +60,7 @@ export function ColorPicker(props: ColorPickerProps) {
   const openControlled = () => 'open' in props
   let triggerRef: HTMLButtonElement | undefined
   let popupRef: HTMLDivElement | undefined
+  let activeDragCleanup: (() => void) | undefined
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
@@ -101,6 +102,8 @@ export function ColorPicker(props: ColorPickerProps) {
   onCleanup(() => {
     removeKeydown()
     removePointerDown()
+    activeDragCleanup?.()
+    activeDragCleanup = undefined
   })
 
   function emitColor(nextHsb: HsbColor): Color {
@@ -155,19 +158,33 @@ export function ColorPicker(props: ColorPickerProps) {
   ): void {
     if (disabled()) return
 
+    activeDragCleanup?.()
+    activeDragCleanup = undefined
     event.preventDefault()
     let latestColor = update(event)
+
+    const cleanupDrag = (complete = false) => {
+      document.removeEventListener('pointermove', handlePointerMove)
+      document.removeEventListener('pointerup', handlePointerUp)
+      document.removeEventListener('pointercancel', handlePointerCancel)
+      if (activeDragCleanup === cleanupDrag) activeDragCleanup = undefined
+      if (complete) local.onChangeComplete?.(latestColor)
+    }
     const handlePointerMove = (moveEvent: PointerEvent) => {
       latestColor = update(moveEvent)
     }
     const handlePointerUp = () => {
-      document.removeEventListener('pointermove', handlePointerMove)
-      document.removeEventListener('pointerup', handlePointerUp)
-      local.onChangeComplete?.(latestColor)
+      cleanupDrag(true)
+    }
+    const handlePointerCancel = (cancelEvent: PointerEvent) => {
+      latestColor = update(cancelEvent)
+      cleanupDrag(true)
     }
 
+    activeDragCleanup = cleanupDrag
     document.addEventListener('pointermove', handlePointerMove)
     document.addEventListener('pointerup', handlePointerUp)
+    document.addEventListener('pointercancel', handlePointerCancel)
   }
 
   function renderPanel(): JSX.Element {
@@ -185,6 +202,7 @@ export function ColorPicker(props: ColorPickerProps) {
           aria-valuenow={Math.round(hsb().s)}
           aria-valuetext={`${Math.round(hsb().s)}% saturation, ${Math.round(hsb().b)}% brightness`}
           tabIndex={disabled() ? undefined : 0}
+          aria-disabled={disabled() ? 'true' : undefined}
           class={`${prefixCls()}-saturation`}
           style={{ background: Color.fromHsb({ h: hsb().h, s: 100, b: 100, a: 1 }).toRgbString() }}
           onPointerDown={(event) => {
@@ -207,6 +225,7 @@ export function ColorPicker(props: ColorPickerProps) {
           aria-valuemax="360"
           aria-valuenow={Math.round(hsb().h)}
           tabIndex={disabled() ? undefined : 0}
+          aria-disabled={disabled() ? 'true' : undefined}
           class={`${prefixCls()}-slider ${prefixCls()}-hue`}
           onPointerDown={(event) => {
             const element = event.currentTarget
@@ -227,6 +246,7 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-valuemax="1"
             aria-valuenow={Number(hsb().a.toFixed(2))}
             tabIndex={disabled() ? undefined : 0}
+            aria-disabled={disabled() ? 'true' : undefined}
             class={`${prefixCls()}-slider ${prefixCls()}-alpha`}
             style={{ background: alphaBackground() }}
             onPointerDown={(event) => {
