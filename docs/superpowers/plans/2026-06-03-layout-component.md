@@ -26,6 +26,7 @@
 ### Task 1: Test public Layout behavior
 
 **Files:**
+
 - Create: `packages/components/src/layout/__tests__/layout.test.tsx`
 
 - [ ] Write tests that assert:
@@ -40,6 +41,7 @@
 ### Task 2: Implement Layout module
 
 **Files:**
+
 - Create: `packages/components/src/layout/interface.ts`
 - Create: `packages/components/src/layout/layout.style.ts`
 - Create: `packages/components/src/layout/layout.tsx`
@@ -56,6 +58,7 @@
 ### Task 3: Add docs route
 
 **Files:**
+
 - Create: `apps/docs/src/routes/components/layout.tsx`
 - Modify: `apps/docs/src/site/nav.ts`
 

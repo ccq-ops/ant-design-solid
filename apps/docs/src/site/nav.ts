@@ -27,6 +27,7 @@ export const navItems = [
   { path: '/components/tooltip', label: 'Tooltip' },
   { path: '/components/dropdown', label: 'Dropdown' },
   { path: '/components/menu', label: 'Menu' },
+  { path: '/components/layout', label: 'Layout' },
   { path: '/components/breadcrumb', label: 'Breadcrumb' },
   { path: '/components/alert', label: 'Alert' },
   { path: '/components/message', label: 'Message' },
