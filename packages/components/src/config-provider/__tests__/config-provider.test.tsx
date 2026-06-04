@@ -1,4 +1,5 @@
 import { render } from '@solidjs/testing-library'
+import { darkAlgorithm, defaultAlgorithm } from '@ant-design-solid/theme'
 import { describe, expect, it } from 'vitest'
 import { ConfigProvider, useConfig, useToken } from '../index'
 
@@ -36,5 +37,47 @@ describe('ConfigProvider', () => {
     expect(probe.dataset.size).toBe('large')
     expect(probe.dataset.primary).toBe('#722ed1')
     expect(probe.dataset.radius).toBe('8')
+  })
+  it('inherits parent theme algorithm when child only overrides tokens', () => {
+    let inheritedBg = ''
+    let inheritedPrimary = ''
+
+    function AlgorithmProbe() {
+      const { token } = useConfig()
+      inheritedBg = token().colorBgContainer
+      inheritedPrimary = token().colorPrimary
+      return <div />
+    }
+
+    render(() => (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
+          <AlgorithmProbe />
+        </ConfigProvider>
+      </ConfigProvider>
+    ))
+
+    expect(inheritedBg).toBe('#141414')
+    expect(inheritedPrimary).toBe('#722ed1')
+  })
+
+  it('allows child theme algorithm to override parent algorithm', () => {
+    let childBg = ''
+
+    function AlgorithmProbe() {
+      const { token } = useConfig()
+      childBg = token().colorBgContainer
+      return <div />
+    }
+
+    render(() => (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <ConfigProvider theme={{ algorithm: defaultAlgorithm }}>
+          <AlgorithmProbe />
+        </ConfigProvider>
+      </ConfigProvider>
+    ))
+
+    expect(childBg).toBe('#ffffff')
   })
 })
