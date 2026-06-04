@@ -103,10 +103,10 @@ export function createSiteRoutesFromModules(modules: Record<string, RouteImporte
 }
 
 const routeModules = import.meta.glob<RouteModule>([
-  './pages/**/*.tsx',
-  '!./pages/**/*.test.tsx',
-  '!./pages/**/*.spec.tsx',
-  '!./pages/**/__tests__/**/*.tsx',
+  '../pages/**/*.tsx',
+  '!../pages/**/*.test.tsx',
+  '!../pages/**/*.spec.tsx',
+  '!../pages/**/__tests__/**/*.tsx',
 ])
 const siteRoutes = createSiteRoutesFromModules(routeModules)
 

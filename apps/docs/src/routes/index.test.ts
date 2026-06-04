@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createSiteRoutesFromModules, routePathFromFilePath } from './index'
+import { createSiteRoutesFromModules, routePathFromFilePath, routes, topNavItems } from './index'
 
 function Page() {
   return null
@@ -76,5 +76,14 @@ describe('createSiteRoutesFromModules', () => {
     expect(siteRoutes.sideNavGroups).toEqual({
       components: [{ path: '/components/button', label: 'Button' }],
     })
+  })
+})
+
+describe('docs route module discovery', () => {
+  it('discovers page modules from the nested routes directory', () => {
+    expect(routes.length).toBeGreaterThan(0)
+    expect(routes.map((route) => route.path)).toContain('/')
+    expect(routes.map((route) => route.path)).toContain('/components/button')
+    expect(topNavItems.map((item) => item.group)).toContain('components')
   })
 })
