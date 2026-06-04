@@ -65,7 +65,7 @@ export function useTreeSelectStyle(prefixCls: string) {
           border: `${t.lineWidth}px solid ${t.colorBorder}`,
           'border-radius': `${t.borderRadius}px`,
           background: t.colorBgContainer,
-          'box-shadow': '0 6px 16px rgba(0, 0, 0, 0.08)',
+          'box-shadow': t.boxShadow,
         },
         [`.${prefixCls}-tree`]: { margin: '0', padding: '0', 'list-style': 'none' },
         [`.${prefixCls}-tree-node`]: {

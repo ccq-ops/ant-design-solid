@@ -31,23 +31,23 @@ export function useTagStyle(prefixCls: string) {
       },
       [`.${prefixCls}-success`]: {
         color: t.colorSuccess,
-        background: '#f6ffed',
-        borderColor: '#b7eb8f',
+        background: tag.successBg,
+        borderColor: tag.successBorderColor,
       },
       [`.${prefixCls}-warning`]: {
         color: t.colorWarning,
-        background: '#fffbe6',
-        borderColor: '#ffe58f',
+        background: tag.warningBg,
+        borderColor: tag.warningBorderColor,
       },
       [`.${prefixCls}-error`]: {
         color: t.colorError,
-        background: '#fff2f0',
-        borderColor: '#ffccc7',
+        background: tag.errorBg,
+        borderColor: tag.errorBorderColor,
       },
       [`.${prefixCls}-processing`]: {
         color: t.colorInfo,
-        background: '#e6f4ff',
-        borderColor: '#91caff',
+        background: tag.processingBg,
+        borderColor: tag.processingBorderColor,
       },
       [`.${prefixCls}-close`]: {
         display: 'inline-flex',

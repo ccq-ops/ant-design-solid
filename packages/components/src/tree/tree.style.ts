@@ -1,10 +1,12 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useTreeStyle(prefixCls: string) {
   const token = useToken()
   return useStyleRegister({ theme: 'default', token: token(), path: ['Tree', prefixCls] }, () => {
     const t = token()
+    const tree = getComponentToken('Tree', t)
     return {
       [`.${prefixCls}`]: {
         margin: '0',
@@ -27,7 +29,7 @@ export function useTreeStyle(prefixCls: string) {
       },
       [`.${prefixCls}-block-node .${prefixCls}-node`]: { width: '100%' },
       [`.${prefixCls}-node:hover`]: { background: t.colorFillAlter },
-      [`.${prefixCls}-node-selected`]: { background: '#e6f4ff', color: t.colorPrimary },
+      [`.${prefixCls}-node-selected`]: { background: tree.nodeSelectedBg, color: t.colorPrimary },
       [`.${prefixCls}-node-disabled`]: { color: t.colorTextDisabled, cursor: 'not-allowed' },
       [`.${prefixCls}-node-disabled:hover`]: { background: 'transparent' },
       [`.${prefixCls}-switcher`]: {
