@@ -60,6 +60,27 @@ describe('Icon', () => {
     expect(svg.getAttribute('style')).toContain('transform: rotate(90deg)')
   })
 
+  it('injects spin keyframes once when spin is used', () => {
+    document.head.querySelectorAll('style[data-ant-design-solid-icon]').forEach((style) => {
+      style.remove()
+    })
+
+    const first = render(() => <Icon icon={SearchOutlinedSvg} data-testid="first-icon" spin />)
+    const second = render(() => <Icon icon={SearchOutlinedSvg} data-testid="second-icon" spin />)
+
+    expect(first.getByTestId('first-icon')).toHaveStyle({
+      animation: 'ant-design-solid-icon-spin 1s infinite linear',
+    })
+    expect(second.getByTestId('second-icon')).toHaveStyle({
+      animation: 'ant-design-solid-icon-spin 1s infinite linear',
+    })
+
+    const styles = document.head.querySelectorAll('style[data-ant-design-solid-icon]')
+
+    expect(styles).toHaveLength(1)
+    expect(styles[0]?.textContent).toContain('@keyframes ant-design-solid-icon-spin')
+  })
+
   it('renders two-tone icons with tuple colors', () => {
     const result = render(() => (
       <Icon icon={AccountBookTwoTone} data-testid="icon" twoToneColor={['#111111', '#eeeeee']} />

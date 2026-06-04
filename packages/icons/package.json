@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly && node scripts/fix-declaration-extensions.mjs",
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly && node scripts/fix-declaration-extensions.mjs",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint src",

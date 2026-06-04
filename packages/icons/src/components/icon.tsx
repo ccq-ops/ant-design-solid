@@ -17,6 +17,29 @@ export interface InternalIconProps extends IconProps {
 
 const defaultPrimaryColor = '#1677ff'
 const defaultSecondaryColor = '#e6f4ff'
+const spinStyleAttribute = 'data-ant-design-solid-icon'
+const spinStyleSelector = `style[${spinStyleAttribute}]`
+const spinKeyframes = `@keyframes ant-design-solid-icon-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}`
+
+function ensureSpinKeyframesStyle() {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  if (document.head.querySelector(spinStyleSelector)) {
+    return
+  }
+
+  const style = document.createElement('style')
+
+  style.setAttribute(spinStyleAttribute, '')
+  style.textContent = spinKeyframes
+  document.head.append(style)
+}
 
 function normalizeTwoToneColor(twoToneColor?: TwoToneColor) {
   if (Array.isArray(twoToneColor)) {
@@ -46,6 +69,7 @@ function mergeStyle(
   const iconStyle: JSX.CSSProperties = {}
 
   if (spin) {
+    ensureSpinKeyframesStyle()
     iconStyle.animation = 'ant-design-solid-icon-spin 1s infinite linear'
   }
 
