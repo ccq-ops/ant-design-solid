@@ -42,6 +42,7 @@ Use Tailwind CSS v4's Vite setup: install `tailwindcss` and `@tailwindcss/vite`,
 ### Task 1: Add Tests for Tailwind-Migrated Docs UI
 
 **Files:**
+
 - Modify: `apps/docs/src/site/layout.test.tsx`
 - Create: `apps/docs/src/site/demo-block.test.tsx`
 - Create: `apps/docs/src/routes/index.test.tsx`
@@ -170,6 +171,7 @@ git commit -m "test(docs): cover tailwind docs shell styling"
 ### Task 2: Install Tailwind and Configure Vite
 
 **Files:**
+
 - Modify: `apps/docs/package.json`
 - Modify: `pnpm-lock.yaml`
 - Modify: `apps/docs/vite.config.ts`
@@ -259,6 +261,7 @@ git commit -m "build(docs): add tailwind css"
 ### Task 3: Migrate Layout to Tailwind Utilities
 
 **Files:**
+
 - Modify: `apps/docs/src/site/layout.tsx`
 - Test: `apps/docs/src/site/layout.test.tsx`
 
@@ -271,7 +274,8 @@ import { A } from '@solidjs/router'
 import { For, type JSX } from 'solid-js'
 import { navItems } from './routes'
 
-const sidebarLinkClass = 'rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600'
+const sidebarLinkClass =
+  'rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600'
 const sidebarActiveLinkClass = 'bg-blue-50 text-blue-600 font-medium'
 
 export function Layout(props: { children?: JSX.Element }) {
@@ -345,6 +349,7 @@ git commit -m "refactor(docs): migrate layout styling to tailwind"
 ### Task 4: Migrate DemoBlock to Tailwind Utilities
 
 **Files:**
+
 - Modify: `apps/docs/src/site/demo-block.tsx`
 - Test: `apps/docs/src/site/demo-block.test.tsx`
 
@@ -357,7 +362,10 @@ import type { JSX } from 'solid-js'
 
 export function DemoBlock(props: { title: string; code: string; children: JSX.Element }) {
   return (
-    <section class="my-6 overflow-hidden rounded-xl border border-gray-200" aria-label={props.title}>
+    <section
+      class="my-6 overflow-hidden rounded-xl border border-gray-200"
+      aria-label={props.title}
+    >
       <h3 class="m-0 border-b border-gray-200 px-5 py-4 text-lg font-semibold">{props.title}</h3>
       <div class="p-6">{props.children}</div>
       <pre class="m-0 overflow-auto bg-gray-50 px-5 py-4 text-sm">
@@ -390,6 +398,7 @@ git commit -m "refactor(docs): migrate demo block styling to tailwind"
 ### Task 5: Migrate Home Hero to Tailwind Utilities
 
 **Files:**
+
 - Modify: `apps/docs/src/routes/index.tsx`
 - Test: `apps/docs/src/routes/index.test.tsx`
 
@@ -439,6 +448,7 @@ git commit -m "refactor(docs): migrate home hero styling to tailwind"
 ### Task 6: Full Verification and Cleanup
 
 **Files:**
+
 - Inspect: `apps/docs/src/app.css`
 - Inspect: `apps/docs/src/site/layout.tsx`
 - Inspect: `apps/docs/src/site/demo-block.tsx`

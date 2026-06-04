@@ -2,7 +2,8 @@ import { A } from '@solidjs/router'
 import { For, type JSX } from 'solid-js'
 import { navItems } from './routes'
 
-const sidebarLinkClass = 'rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600'
+const sidebarLinkClass =
+  'rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600'
 const sidebarActiveLinkClass = 'bg-blue-50 text-blue-600 font-medium'
 
 export function Layout(props: { children?: JSX.Element }) {
