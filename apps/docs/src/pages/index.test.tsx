@@ -1,8 +1,18 @@
-import { render } from '@solidjs/testing-library'
+import { fireEvent, render } from '@solidjs/testing-library'
 import { ConfigProvider } from '@ant-design-solid/core'
 import { StyleProvider } from '@ant-design-solid/cssinjs'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Home from './index'
+
+const navigate = vi.hoisted(() => vi.fn())
+
+vi.mock('@solidjs/router', () => ({
+  useNavigate: () => navigate,
+}))
+
+beforeEach(() => {
+  navigate.mockClear()
+})
 
 function renderHome() {
   return render(() => (
@@ -27,5 +37,21 @@ describe('Home', () => {
     expect(result.getByText(/An Ant Design-inspired component system/)).toHaveClass('text-lg')
     expect(result.getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
     expect(result.getByRole('button', { name: 'View Components' })).toBeInTheDocument()
+  })
+
+  it('navigates to getting started when clicking Get Started', () => {
+    const result = renderHome()
+
+    fireEvent.click(result.getByRole('button', { name: 'Get Started' }))
+
+    expect(navigate).toHaveBeenCalledWith('/docs/getting-started')
+  })
+
+  it('navigates to the first component page when clicking View Components', () => {
+    const result = renderHome()
+
+    fireEvent.click(result.getByRole('button', { name: 'View Components' }))
+
+    expect(navigate).toHaveBeenCalledWith('/components/affix')
   })
 })
