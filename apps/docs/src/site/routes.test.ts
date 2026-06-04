@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createRoutesFromModules, routePathFromFilePath } from './routes'
-import { navItems } from './nav'
+import { createSiteRoutesFromModules, routePathFromFilePath } from './routes'
 
 function Page() {
   return null
@@ -20,32 +19,24 @@ describe('routePathFromFilePath', () => {
   })
 })
 
-describe('createRoutesFromModules', () => {
-  it('creates sorted lazy route definitions from route modules', () => {
-    const routes = createRoutesFromModules({
+describe('createSiteRoutesFromModules', () => {
+  it('creates sorted lazy route definitions and navigation items from route modules', () => {
+    const siteRoutes = createSiteRoutesFromModules({
       './routes/components/button.tsx': () => Promise.resolve({ default: Page }),
       './routes/index.tsx': () => Promise.resolve({ default: Page }),
       './routes/docs/getting-started.tsx': () => Promise.resolve({ default: Page }),
     })
 
-    expect(routes.map((route) => route.path)).toEqual([
+    expect(siteRoutes.routes.map((route) => route.path)).toEqual([
       '/',
       '/components/button',
       '/docs/getting-started',
     ])
-    expect(routes.every((route) => typeof route.component === 'function')).toBe(true)
-  })
-})
-
-describe('component navigation', () => {
-  it('includes example pages for recently added components', () => {
-    expect(navItems).toEqual(
-      expect.arrayContaining([
-        { path: '/components/mentions', label: 'Mentions' },
-        { path: '/components/popover', label: 'Popover' },
-        { path: '/components/splitter', label: 'Splitter' },
-        { path: '/components/tour', label: 'Tour' },
-      ]),
-    )
+    expect(siteRoutes.routes.every((route) => typeof route.component === 'function')).toBe(true)
+    expect(siteRoutes.navItems).toEqual([
+      { path: '/', label: 'Home' },
+      { path: '/components/button', label: 'Button' },
+      { path: '/docs/getting-started', label: 'Getting Started' },
+    ])
   })
 })

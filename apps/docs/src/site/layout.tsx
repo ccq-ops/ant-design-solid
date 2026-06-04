@@ -1,6 +1,6 @@
 import { A } from '@solidjs/router'
 import { For, type JSX } from 'solid-js'
-import { navItems } from './nav'
+import { navItems } from './routes'
 
 export function Layout(props: { children?: JSX.Element }) {
   return (
