@@ -4,6 +4,8 @@ import solid from 'vite-plugin-solid'
 const external = (id: string) =>
   id === 'solid-js' || id === 'solid-js/web' || id.startsWith('@ant-design/icons-svg/')
 
+// @ant-design/icons-svg has no package exports for these externals, so Node ESM
+// package consumers need explicit .js extensions in the emitted specifiers.
 function addIconsSvgExtension(code: string) {
   return code.replace(/(@ant-design\/icons-svg\/es\/asn\/[^'"]+)(?=['"])/g, (specifier) =>
     specifier.endsWith('.js') ? specifier : `${specifier}.js`,

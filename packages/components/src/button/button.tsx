@@ -1,5 +1,5 @@
 import { Show, splitProps } from 'solid-js'
-import { LoadingIcon } from '@ant-design-solid/icons'
+import { LoadingOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useButtonStyle } from './button.style'
@@ -46,7 +46,7 @@ export function Button(props: ButtonProps) {
     >
       <Show when={local.loading}>
         <span class={`${prefixCls()}-icon`}>
-          <LoadingIcon />
+          <LoadingOutlined />
         </span>
       </Show>
       {local.children}

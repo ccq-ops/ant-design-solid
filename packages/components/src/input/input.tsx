@@ -1,5 +1,5 @@
 import { createSignal, Show, splitProps } from 'solid-js'
-import { CloseCircleIcon } from '@ant-design-solid/icons'
+import { CloseCircleFilled } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form/context'
 import { classNames } from '../shared/class-names'
@@ -102,7 +102,7 @@ export function Input(props: InputProps) {
           class={`${prefixCls()}-clear`}
           onClick={clearValue}
         >
-          <CloseCircleIcon />
+          <CloseCircleFilled />
         </button>
       </Show>
       <Show when={local.suffix}>
