@@ -170,6 +170,16 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       itemPaddingInline: token.paddingSM,
       minWidth: 120,
     },
+    Tour: {
+      width: 320,
+      padding: token.padding,
+      borderRadius: token.borderRadius,
+      bg: token.colorBgElevated,
+      boxShadow: token.boxShadow,
+      maskBg: 'rgba(0, 0, 0, 0.45)',
+      targetBorderRadius: token.borderRadius,
+      zIndex: 1070,
+    },
   }
   const overrides = overrideStore.get(token)?.[componentName] ?? {}
   return { ...defaults[componentName], ...overrides } as ComponentTokenMap[K]

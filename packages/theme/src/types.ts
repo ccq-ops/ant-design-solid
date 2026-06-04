@@ -228,6 +228,17 @@ export interface DropdownComponentToken {
   minWidth: number
 }
 
+export interface TourComponentToken {
+  width: number
+  padding: number
+  borderRadius: number
+  bg: string
+  boxShadow: string
+  maskBg: string
+  targetBorderRadius: number
+  zIndex: number
+}
+
 export interface ComponentTokenMap {
   Button: ButtonComponentToken
   Input: InputComponentToken
@@ -251,6 +262,7 @@ export interface ComponentTokenMap {
   Tooltip: TooltipComponentToken
   Popover: PopoverComponentToken
   Dropdown: DropdownComponentToken
+  Tour: TourComponentToken
 }
 
 export interface ThemeConfig {
