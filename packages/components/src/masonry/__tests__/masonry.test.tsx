@@ -61,4 +61,79 @@ describe('Masonry', () => {
     expect(root.style.getPropertyValue('--ads-masonry-gutter')).toBe('8px')
     expect(root.style.color).toBe('red')
   })
+
+  it('renders four columns by default and distributes item mode content round-robin before measurement', () => {
+    const result = render(() => (
+      <Masonry
+        items={[
+          { key: 'a', title: 'A' },
+          { key: 'b', title: 'B' },
+          { key: 'c', title: 'C' },
+          { key: 'd', title: 'D' },
+          { key: 'e', title: 'E' },
+        ]}
+        itemRender={(item) => <span>{item.title}</span>}
+      />
+    ))
+
+    const columns = result.container.querySelectorAll('.ads-masonry-column')
+    expect(columns).toHaveLength(4)
+    expect(columns[0]).toHaveTextContent('A')
+    expect(columns[0]).toHaveTextContent('E')
+    expect(columns[1]).toHaveTextContent('B')
+    expect(columns[2]).toHaveTextContent('C')
+    expect(columns[3]).toHaveTextContent('D')
+  })
+
+  it('applies item classNames and styles', () => {
+    const result = render(() => (
+      <Masonry
+        columns={2}
+        items={[{ key: 'a', title: 'A' }]}
+        itemRender={(item) => <span>{item.title}</span>}
+        classNames={{ item: 'custom-item' }}
+        styles={{ item: { color: 'red' } }}
+      />
+    ))
+
+    const item = result.container.querySelector<HTMLElement>('.ads-masonry-item')!
+    expect(item).toHaveClass('custom-item')
+    expect(item).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+  })
+
+  it('renders children when items are omitted', () => {
+    const result = render(() => (
+      <Masonry columns={2}>
+        <div>First child</div>
+        <div>Second child</div>
+      </Masonry>
+    ))
+
+    expect(result.container.querySelectorAll('.ads-masonry-item')).toHaveLength(2)
+    expect(result.container).toHaveTextContent('First child')
+    expect(result.container).toHaveTextContent('Second child')
+  })
+
+  it('calls onLayoutChange with column and item layout information', () => {
+    let layoutColumns = 0
+    let layoutItemCount = 0
+
+    render(() => (
+      <Masonry
+        columns={2}
+        items={[
+          { key: 'a', title: 'A' },
+          { key: 'b', title: 'B' },
+        ]}
+        itemRender={(item) => <span>{item.title}</span>}
+        onLayoutChange={(info) => {
+          layoutColumns = info.columns
+          layoutItemCount = info.items.length
+        }}
+      />
+    ))
+
+    expect(layoutColumns).toBe(2)
+    expect(layoutItemCount).toBe(2)
+  })
 })
