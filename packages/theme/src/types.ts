@@ -47,6 +47,8 @@ export interface AliasToken extends SeedToken {
 
 export type GlobalToken = AliasToken
 
+export type ThemeAlgorithm = (seed: SeedToken) => AliasToken
+
 export interface ButtonComponentToken {
   borderRadius: number
   fontWeight: number
@@ -266,6 +268,7 @@ export interface ComponentTokenMap {
 }
 
 export interface ThemeConfig {
+  algorithm?: ThemeAlgorithm | ThemeAlgorithm[]
   token?: Partial<SeedToken>
   components?: { [K in keyof ComponentTokenMap]?: Partial<ComponentTokenMap[K]> }
 }
