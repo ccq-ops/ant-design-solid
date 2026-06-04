@@ -1,6 +1,7 @@
 import AccountBookTwoTone from '@ant-design/icons-svg/es/asn/AccountBookTwoTone'
 import SearchOutlinedSvg from '@ant-design/icons-svg/es/asn/SearchOutlined'
 import { render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Icon } from './icon'
 
@@ -67,6 +68,34 @@ describe('Icon', () => {
 
     expect(svg.innerHTML).toContain('#111111')
     expect(svg.innerHTML).toContain('#eeeeee')
+  })
+
+  it('reacts to two-tone color and accessibility prop updates', () => {
+    const [twoToneColor, setTwoToneColor] = createSignal<[string, string]>(['#111111', '#eeeeee'])
+    const [label, setLabel] = createSignal<string | undefined>()
+    const result = render(() => (
+      <Icon
+        icon={AccountBookTwoTone}
+        aria-label={label()}
+        data-testid="icon"
+        twoToneColor={twoToneColor()}
+      />
+    ))
+    const svg = result.getByTestId('icon')
+
+    expect(svg.innerHTML).toContain('#111111')
+    expect(svg.innerHTML).toContain('#eeeeee')
+    expect(svg).toHaveAttribute('aria-hidden', 'true')
+
+    setTwoToneColor(['#222222', '#dddddd'])
+    setLabel('Account book')
+
+    expect(svg.innerHTML).toContain('#222222')
+    expect(svg.innerHTML).toContain('#dddddd')
+    expect(svg.innerHTML).not.toContain('#111111')
+    expect(svg.innerHTML).not.toContain('#eeeeee')
+    expect(svg).toHaveAttribute('aria-label', 'Account book')
+    expect(svg).not.toHaveAttribute('aria-hidden')
   })
 
   it('renders two-tone icons with default colors', () => {

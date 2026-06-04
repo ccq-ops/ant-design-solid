@@ -1,6 +1,6 @@
 import type { AbstractNode, IconDefinition } from '@ant-design/icons-svg/lib/types'
 import type { JSX } from 'solid-js'
-import { splitProps } from 'solid-js'
+import { createMemo, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 export type TwoToneColor = string | [primaryColor: string, secondaryColor: string]
@@ -77,29 +77,36 @@ export function Icon(props: InternalIconProps) {
     'class',
     'style',
   ])
-  const [primaryColor, secondaryColor] = normalizeTwoToneColor(local.twoToneColor)
-  const iconNode =
-    typeof local.icon.icon === 'function'
+  const twoToneColors = createMemo(() => normalizeTwoToneColor(local.twoToneColor))
+  const iconNode = createMemo(() => {
+    const [primaryColor, secondaryColor] = twoToneColors()
+
+    return typeof local.icon.icon === 'function'
       ? local.icon.icon(primaryColor, secondaryColor)
       : local.icon.icon
-  const ariaHidden =
-    props['aria-hidden'] ??
-    (props['aria-label'] === undefined && props['aria-labelledby'] === undefined ? true : undefined)
+  })
+  const ariaHidden = createMemo(
+    () =>
+      svgProps['aria-hidden'] ??
+      (svgProps['aria-label'] === undefined && svgProps['aria-labelledby'] === undefined
+        ? true
+        : undefined),
+  )
 
   return (
     <Dynamic
-      component={iconNode.tag}
-      {...iconNode.attrs}
+      component={iconNode().tag}
+      {...iconNode().attrs}
       width="1em"
       height="1em"
       fill="currentColor"
       focusable="false"
       {...svgProps}
-      aria-hidden={ariaHidden}
+      aria-hidden={ariaHidden()}
       class={mergeClass(local.class, local.spin)}
       style={mergeStyle(local.style, local.spin, local.rotate)}
     >
-      {iconNode.children?.map(renderAbstractNode)}
+      {iconNode().children?.map(renderAbstractNode)}
     </Dynamic>
   )
 }
