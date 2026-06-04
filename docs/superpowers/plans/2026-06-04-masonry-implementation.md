@@ -25,6 +25,7 @@
 ## Task 1: Public Types and Responsive Resolver
 
 **Files:**
+
 - Create: `packages/components/src/masonry/interface.ts`
 - Create: `packages/components/src/masonry/responsive.ts`
 - Create: `packages/components/src/masonry/__tests__/masonry.test.tsx`
@@ -59,7 +60,11 @@ describe('Masonry', () => {
       <Masonry
         columns={{ xs: 1, md: 3, xl: 5 }}
         gutter={{ xs: 4, md: 12, xl: 24 }}
-        items={[{ key: 'a', title: 'A' }, { key: 'b', title: 'B' }, { key: 'c', title: 'C' }]}
+        items={[
+          { key: 'a', title: 'A' },
+          { key: 'b', title: 'B' },
+          { key: 'c', title: 'C' },
+        ]}
         itemRender={(item) => <div>{item.title}</div>}
       />
     ))
@@ -148,7 +153,9 @@ export const MASONRY_BREAKPOINTS: Record<MasonryBreakpoint, number> = {
 
 const orderedBreakpoints = Object.entries(MASONRY_BREAKPOINTS) as [MasonryBreakpoint, number][]
 
-function isResponsiveObject<T>(value: MasonryResponsiveValue<T> | undefined): value is Partial<Record<MasonryBreakpoint, T>> {
+function isResponsiveObject<T>(
+  value: MasonryResponsiveValue<T> | undefined,
+): value is Partial<Record<MasonryBreakpoint, T>> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
 }
 
@@ -227,14 +234,19 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
     onCleanup(() => window.removeEventListener('resize', handleResize))
   }
 
-  const columnCount = () => Math.max(1, Math.floor(resolveResponsiveValue(local.columns, DEFAULT_COLUMNS, viewportWidth())))
-  const gutter = () => formatMasonryGap(resolveResponsiveValue(local.gutter, DEFAULT_GUTTER, viewportWidth()))
+  const columnCount = () =>
+    Math.max(1, Math.floor(resolveResponsiveValue(local.columns, DEFAULT_COLUMNS, viewportWidth())))
+  const gutter = () =>
+    formatMasonryGap(resolveResponsiveValue(local.gutter, DEFAULT_GUTTER, viewportWidth()))
 
   return (
     <div
       class={classNames(prefixCls(), local.class)}
       classList={local.classList}
-      style={{ '--ads-masonry-gutter': gutter(), ...(typeof local.style === 'object' ? local.style : {}) }}
+      style={{
+        '--ads-masonry-gutter': gutter(),
+        ...(typeof local.style === 'object' ? local.style : {}),
+      }}
     >
       {Array.from({ length: columnCount() }, (_, columnIndex) => (
         <div class={`${prefixCls()}-column`}>
@@ -268,6 +280,7 @@ git commit -m "feat: add masonry responsive foundation"
 ## Task 2: Full Rendering, Slots, and Layout Callback
 
 **Files:**
+
 - Modify: `packages/components/src/masonry/masonry.tsx`
 - Modify: `packages/components/src/masonry/__tests__/masonry.test.tsx`
 
@@ -276,77 +289,80 @@ git commit -m "feat: add masonry responsive foundation"
 Append these tests inside the existing `describe('Masonry', () => { ... })` block:
 
 ```tsx
-  it('renders four columns by default and distributes item mode content round-robin before measurement', () => {
-    const result = render(() => (
-      <Masonry
-        items={[
-          { key: 'a', title: 'A' },
-          { key: 'b', title: 'B' },
-          { key: 'c', title: 'C' },
-          { key: 'd', title: 'D' },
-          { key: 'e', title: 'E' },
-        ]}
-        itemRender={(item) => <span>{item.title}</span>}
-      />
-    ))
+it('renders four columns by default and distributes item mode content round-robin before measurement', () => {
+  const result = render(() => (
+    <Masonry
+      items={[
+        { key: 'a', title: 'A' },
+        { key: 'b', title: 'B' },
+        { key: 'c', title: 'C' },
+        { key: 'd', title: 'D' },
+        { key: 'e', title: 'E' },
+      ]}
+      itemRender={(item) => <span>{item.title}</span>}
+    />
+  ))
 
-    const columns = result.container.querySelectorAll('.ads-masonry-column')
-    expect(columns).toHaveLength(4)
-    expect(columns[0]).toHaveTextContent('A')
-    expect(columns[0]).toHaveTextContent('E')
-    expect(columns[1]).toHaveTextContent('B')
-    expect(columns[2]).toHaveTextContent('C')
-    expect(columns[3]).toHaveTextContent('D')
-  })
+  const columns = result.container.querySelectorAll('.ads-masonry-column')
+  expect(columns).toHaveLength(4)
+  expect(columns[0]).toHaveTextContent('A')
+  expect(columns[0]).toHaveTextContent('E')
+  expect(columns[1]).toHaveTextContent('B')
+  expect(columns[2]).toHaveTextContent('C')
+  expect(columns[3]).toHaveTextContent('D')
+})
 
-  it('applies item classNames and styles', () => {
-    const result = render(() => (
-      <Masonry
-        columns={2}
-        items={[{ key: 'a', title: 'A' }]}
-        itemRender={(item) => <span>{item.title}</span>}
-        classNames={{ item: 'custom-item' }}
-        styles={{ item: { color: 'red' } }}
-      />
-    ))
+it('applies item classNames and styles', () => {
+  const result = render(() => (
+    <Masonry
+      columns={2}
+      items={[{ key: 'a', title: 'A' }]}
+      itemRender={(item) => <span>{item.title}</span>}
+      classNames={{ item: 'custom-item' }}
+      styles={{ item: { color: 'red' } }}
+    />
+  ))
 
-    const item = result.container.querySelector<HTMLElement>('.ads-masonry-item')!
-    expect(item).toHaveClass('custom-item')
-    expect(item).toHaveStyle({ color: 'red' })
-  })
+  const item = result.container.querySelector<HTMLElement>('.ads-masonry-item')!
+  expect(item).toHaveClass('custom-item')
+  expect(item).toHaveStyle({ color: 'red' })
+})
 
-  it('renders children when items are omitted', () => {
-    const result = render(() => (
-      <Masonry columns={2}>
-        <div>First child</div>
-        <div>Second child</div>
-      </Masonry>
-    ))
+it('renders children when items are omitted', () => {
+  const result = render(() => (
+    <Masonry columns={2}>
+      <div>First child</div>
+      <div>Second child</div>
+    </Masonry>
+  ))
 
-    expect(result.container.querySelectorAll('.ads-masonry-item')).toHaveLength(2)
-    expect(result.container).toHaveTextContent('First child')
-    expect(result.container).toHaveTextContent('Second child')
-  })
+  expect(result.container.querySelectorAll('.ads-masonry-item')).toHaveLength(2)
+  expect(result.container).toHaveTextContent('First child')
+  expect(result.container).toHaveTextContent('Second child')
+})
 
-  it('calls onLayoutChange with column and item layout information', () => {
-    let layoutColumns = 0
-    let layoutItemCount = 0
+it('calls onLayoutChange with column and item layout information', () => {
+  let layoutColumns = 0
+  let layoutItemCount = 0
 
-    render(() => (
-      <Masonry
-        columns={2}
-        items={[{ key: 'a', title: 'A' }, { key: 'b', title: 'B' }]}
-        itemRender={(item) => <span>{item.title}</span>}
-        onLayoutChange={(info) => {
-          layoutColumns = info.columns
-          layoutItemCount = info.items.length
-        }}
-      />
-    ))
+  render(() => (
+    <Masonry
+      columns={2}
+      items={[
+        { key: 'a', title: 'A' },
+        { key: 'b', title: 'B' },
+      ]}
+      itemRender={(item) => <span>{item.title}</span>}
+      onLayoutChange={(info) => {
+        layoutColumns = info.columns
+        layoutItemCount = info.items.length
+      }}
+    />
+  ))
 
-    expect(layoutColumns).toBe(2)
-    expect(layoutItemCount).toBe(2)
-  })
+  expect(layoutColumns).toBe(2)
+  expect(layoutItemCount).toBe(2)
+})
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -364,7 +380,15 @@ Expected: FAIL because item wrappers, children mode, and callback behavior are i
 Replace `packages/components/src/masonry/masonry.tsx` with:
 
 ```tsx
-import { children, createEffect, createMemo, createSignal, on, onCleanup, splitProps } from 'solid-js'
+import {
+  children,
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type { MasonryItem, MasonryItemKey, MasonryLayoutItem, MasonryProps } from './interface'
@@ -386,7 +410,10 @@ function getWindowWidth() {
   return typeof window === 'undefined' ? 1024 : window.innerWidth
 }
 
-function mergeStyle(base: JSX.CSSProperties, style: MasonryProps['style']): JSX.CSSProperties | string {
+function mergeStyle(
+  base: JSX.CSSProperties,
+  style: MasonryProps['style'],
+): JSX.CSSProperties | string {
   if (typeof style === 'string') {
     const declarations = Object.entries(base)
       .map(([key, value]) => `${key}: ${value}`)
@@ -396,7 +423,10 @@ function mergeStyle(base: JSX.CSSProperties, style: MasonryProps['style']): JSX.
   return { ...base, ...style }
 }
 
-function distributeRoundRobin<T>(items: NormalizedItem<T>[], columnCount: number): NormalizedItem<T>[][] {
+function distributeRoundRobin<T>(
+  items: NormalizedItem<T>[],
+  columnCount: number,
+): NormalizedItem<T>[][] {
   const columns = Array.from({ length: columnCount }, () => [] as NormalizedItem<T>[])
   items.forEach((item, index) => columns[index % columnCount].push(item))
   return columns
@@ -631,6 +661,7 @@ git commit -m "feat: implement masonry layout"
 ## Task 3: Public Export and Docs Page
 
 **Files:**
+
 - Modify: `packages/components/src/index.ts`
 - Create: `apps/docs/src/routes/components/masonry.tsx`
 - Modify: `apps/docs/src/site/nav.ts`
@@ -827,6 +858,7 @@ git commit -m "docs: add masonry examples"
 ## Task 4: Final Verification and Formatting
 
 **Files:**
+
 - Modify only files reported by format/lint/typecheck if needed.
 
 - [ ] **Step 1: Run lint**
