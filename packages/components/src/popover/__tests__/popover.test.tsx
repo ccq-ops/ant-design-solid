@@ -87,7 +87,9 @@ describe('Popover', () => {
       </Popover>
     ))
 
-    expect(document.body.querySelector('.ads-popover-bottom')).toHaveTextContent('Controlled content')
+    expect(document.body.querySelector('.ads-popover-bottom')).toHaveTextContent(
+      'Controlled content',
+    )
 
     setOpen(false)
     expect(document.body.querySelector('[role="tooltip"]')).toBeFalsy()
