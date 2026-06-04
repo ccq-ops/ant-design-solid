@@ -50,10 +50,25 @@ function distributeRoundRobin<T>(items: NormalizedItem<T>[], columnCount: number
   return columns
 }
 
+function getNumericGutter(value: string) {
+  const match = value.match(/^(-?\d+(?:\.\d+)?)px$/)
+  return match ? Number(match[1]) : 0
+}
+
+function getNextColumnHeight(
+  currentHeight: number,
+  itemCount: number,
+  itemHeight: number,
+  gutterSize: number,
+) {
+  return currentHeight + (itemCount > 0 ? gutterSize : 0) + itemHeight
+}
+
 function distributeByHeight<T>(
   items: NormalizedItem<T>[],
   columnCount: number,
   heights: Map<MasonryItemKey, number>,
+  gutterSize: number,
 ) {
   const hasPositiveHeight = items.some((item) => (heights.get(item.key) ?? 0) > 0)
   if (!hasPositiveHeight) return distributeRoundRobin(items, columnCount)
@@ -67,8 +82,14 @@ function distributeByHeight<T>(
     for (let columnIndex = 1; columnIndex < columnHeights.length; columnIndex += 1) {
       if (columnHeights[columnIndex] < columnHeights[targetColumn]) targetColumn = columnIndex
     }
+    const itemHeight = height ?? 0
+    columnHeights[targetColumn] = getNextColumnHeight(
+      columnHeights[targetColumn],
+      columns[targetColumn].length,
+      itemHeight,
+      gutterSize,
+    )
     columns[targetColumn].push(item)
-    columnHeights[targetColumn] += height ?? 0
   })
 
   return columns
@@ -97,6 +118,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
   const [viewportWidth, setViewportWidth] = createSignal(getWindowWidth())
   const [measuredHeights, setMeasuredHeights] = createSignal(new Map<MasonryItemKey, number>())
   const observers = new Map<MasonryItemKey, ResizeObserver>()
+  const itemElements = new Map<MasonryItemKey, HTMLElement>()
   const renderedNodes = new Map<
     MasonryItemKey,
     { item: T; itemRender: MasonryProps<T>['itemRender']; node: JSX.Element }
@@ -111,6 +133,8 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
   onCleanup(() => {
     observers.forEach((observer) => observer.disconnect())
     observers.clear()
+    itemElements.clear()
+    renderedNodes.clear()
   })
 
   const columnCount = () =>
@@ -140,7 +164,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
     const count = columnCount()
     const heights = measuredHeights()
     if (heights.size === 0) return distributeRoundRobin(items, count)
-    return distributeByHeight(items, count, heights)
+    return distributeByHeight(items, count, heights, getNumericGutter(gutter()))
   })
 
   const updateHeight = (key: MasonryItemKey, element: HTMLElement) => {
@@ -153,10 +177,47 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
     })
   }
 
+  const cleanupRemovedItems = (activeKeys: Set<MasonryItemKey>) => {
+    observers.forEach((observer, key) => {
+      if (!activeKeys.has(key)) {
+        observer.disconnect()
+        observers.delete(key)
+      }
+    })
+    itemElements.forEach((_, key) => {
+      if (!activeKeys.has(key)) itemElements.delete(key)
+    })
+    renderedNodes.forEach((_, key) => {
+      if (!activeKeys.has(key)) renderedNodes.delete(key)
+    })
+    setMeasuredHeights((previous) => {
+      let changed = false
+      const next = new Map(previous)
+      next.forEach((_, key) => {
+        if (!activeKeys.has(key)) {
+          next.delete(key)
+          changed = true
+        }
+      })
+      return changed ? next : previous
+    })
+  }
+
+  createEffect(() => {
+    cleanupRemovedItems(new Set(normalizedItems().map((item) => item.key)))
+  })
+
   const registerItem = (key: MasonryItemKey, element: HTMLElement) => {
+    const previousElement = itemElements.get(key)
     updateHeight(key, element)
 
-    if (typeof ResizeObserver === 'undefined' || observers.has(key)) return
+    if (previousElement === element && observers.has(key)) return
+
+    observers.get(key)?.disconnect()
+    observers.delete(key)
+    itemElements.set(key, element)
+
+    if (typeof ResizeObserver === 'undefined') return
 
     const observer = new ResizeObserver(() => updateHeight(key, element))
     observer.observe(element)
@@ -184,7 +245,12 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
           let total = 0
           column.forEach((item) => {
             const height = heights.get(item.key) ?? 0
-            total += height
+            total = getNextColumnHeight(
+              total,
+              column.indexOf(item),
+              height,
+              getNumericGutter(gutter()),
+            )
             layoutItems.push({
               key: item.key,
               item: item.item,
