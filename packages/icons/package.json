@@ -21,6 +21,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint src"
   },
+  "dependencies": {
+    "@ant-design/icons-svg": "^4.4.2"
+  },
   "peerDependencies": {
     "solid-js": ">=1.9.0"
   }
