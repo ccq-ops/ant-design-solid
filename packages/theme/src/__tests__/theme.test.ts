@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  darkAlgorithm,
   defaultAlgorithm,
   defaultSeedToken,
   getComponentToken,
@@ -18,6 +19,24 @@ describe('@ant-design-solid/theme', () => {
     expect(token.controlHeight).toBe(32)
   })
 
+  it('derives dark alias tokens from seed tokens', () => {
+    const token = darkAlgorithm({ ...defaultSeedToken, colorPrimary: '#1677ff' })
+
+    expect(token.colorPrimary).toBe('#1677ff')
+    expect(token.colorPrimaryHover).toBe('#4096ff')
+    expect(token.colorPrimaryActive).toBe('#0958d9')
+    expect(token.colorBgBase).toBe('#141414')
+    expect(token.colorTextBase).toBe('#ffffff')
+    expect(token.colorBgContainer).toBe('#141414')
+    expect(token.colorBgElevated).toBe('#1f1f1f')
+    expect(token.colorText).toBe('rgba(255, 255, 255, 0.88)')
+    expect(token.colorTextSecondary).toBe('rgba(255, 255, 255, 0.65)')
+    expect(token.colorTextDisabled).toBe('rgba(255, 255, 255, 0.25)')
+    expect(token.colorBorder).toBe('#424242')
+    expect(token.colorBorderSecondary).toBe('#303030')
+    expect(token.colorFillAlter).toBe('rgba(255, 255, 255, 0.04)')
+  })
+
   it('merges global and component token overrides', () => {
     const config: ThemeConfig = {
       token: { colorPrimary: '#722ed1', borderRadius: 8 },
@@ -30,6 +49,21 @@ describe('@ant-design-solid/theme', () => {
     expect(merged.colorPrimary).toBe('#722ed1')
     expect(merged.borderRadius).toBe(8)
     expect(button.borderRadius).toBe(10)
+  })
+
+  it('applies theme algorithms and keeps token overrides', () => {
+    const merged = mergeTheme({
+      algorithm: darkAlgorithm,
+      token: { colorPrimary: '#722ed1', borderRadius: 8 },
+    })
+
+    expect(merged.colorPrimary).toBe('#722ed1')
+    expect(merged.colorPrimaryHover).toBe('#9254de')
+    expect(merged.colorPrimaryActive).toBe('#531dab')
+    expect(merged.borderRadius).toBe(8)
+    expect(merged.colorBgContainer).toBe('#141414')
+    expect(merged.colorBgElevated).toBe('#1f1f1f')
+    expect(merged.colorText).toBe('rgba(255, 255, 255, 0.88)')
   })
 
   it('derives form component token defaults and applies overrides', () => {
@@ -140,5 +174,15 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Dropdown', token).itemDisabledColor).toBe(token.colorTextDisabled)
     expect(getComponentToken('Dropdown', token).itemPaddingBlock).toBe(token.paddingXS)
     expect(getComponentToken('Dropdown', token).itemPaddingInline).toBe(token.paddingSM)
+  })
+  it('derives dark-compatible component token defaults', () => {
+    const token = mergeTheme({ algorithm: darkAlgorithm })
+
+    expect(getComponentToken('Select', token).optionSelectedBg).toBe('rgba(22, 119, 255, 0.2)')
+    expect(getComponentToken('Alert', token).successBg).toBe('rgba(82, 196, 26, 0.12)')
+    expect(getComponentToken('Alert', token).successBorderColor).toBe('rgba(82, 196, 26, 0.35)')
+    expect(getComponentToken('Tag', token).successBg).toBe('rgba(82, 196, 26, 0.12)')
+    expect(getComponentToken('Tag', token).successBorderColor).toBe('rgba(82, 196, 26, 0.35)')
+    expect(getComponentToken('Tree', token).nodeSelectedBg).toBe('rgba(22, 119, 255, 0.2)')
   })
 })
