@@ -18,6 +18,7 @@ export function useToken() {
 }
 export function mergeThemeConfig(parent: ThemeConfig, child: ThemeConfig): ThemeConfig {
   return {
+    algorithm: child.algorithm ?? parent.algorithm,
     token: { ...parent.token, ...child.token },
     components: { ...parent.components, ...child.components },
   }
