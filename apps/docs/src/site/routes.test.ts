@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createRoutesFromModules, routePathFromFilePath } from './routes'
+import { navItems } from './nav'
 
 function Page() {
   return null
@@ -33,5 +34,18 @@ describe('createRoutesFromModules', () => {
       '/docs/getting-started',
     ])
     expect(routes.every((route) => typeof route.component === 'function')).toBe(true)
+  })
+})
+
+describe('component navigation', () => {
+  it('includes example pages for recently added components', () => {
+    expect(navItems).toEqual(
+      expect.arrayContaining([
+        { path: '/components/mentions', label: 'Mentions' },
+        { path: '/components/popover', label: 'Popover' },
+        { path: '/components/splitter', label: 'Splitter' },
+        { path: '/components/tour', label: 'Tour' },
+      ]),
+    )
   })
 })

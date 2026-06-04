@@ -71,7 +71,10 @@ describe('Tree', () => {
       />
     ))
 
-    expect(result.getByRole('treeitem', { name: /Europe/ })).toHaveAttribute('aria-selected', 'true')
+    expect(result.getByRole('treeitem', { name: /Europe/ })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
     fireEvent.click(result.getByRole('button', { name: 'expand Asia' }))
     expect(result.getByRole('treeitem', { name: /China/ })).toBeTruthy()
   })
