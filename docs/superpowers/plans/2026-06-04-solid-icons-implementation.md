@@ -36,6 +36,7 @@ All new TypeScript filenames must be kebab-case per `AGENTS.md`.
 ### Task 1: Add dependency and failing low-level renderer tests
 
 **Files:**
+
 - Modify: `packages/icons/package.json`
 - Create: `packages/icons/src/components/icon.test.tsx`
 
@@ -117,7 +118,9 @@ describe('Icon', () => {
   })
 
   it('applies spin and rotate styles', () => {
-    const result = render(() => <Icon icon={SearchOutlinedSvg} data-testid="icon" rotate={90} spin />)
+    const result = render(() => (
+      <Icon icon={SearchOutlinedSvg} data-testid="icon" rotate={90} spin />
+    ))
     const svg = result.getByTestId('icon')
 
     expect(svg.classList.contains('ant-design-solid-icon-spin')).toBe(true)
@@ -167,6 +170,7 @@ git commit -m "test: add icon renderer expectations"
 ### Task 2: Implement the shared Icon renderer
 
 **Files:**
+
 - Create: `packages/icons/src/components/icon.tsx`
 - Test: `packages/icons/src/components/icon.test.tsx`
 
@@ -232,7 +236,9 @@ function mergeStyle(
 
   if (typeof baseStyle === 'string') {
     const suffix = Object.entries(generatedStyle)
-      .map(([key, value]) => `${key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)}: ${value}`)
+      .map(
+        ([key, value]) => `${key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)}: ${value}`,
+      )
       .join('; ')
     return `${baseStyle}; ${suffix}`
   }
@@ -243,7 +249,9 @@ function mergeStyle(
 export function Icon(props: InternalIconProps) {
   const [primaryColor, secondaryColor] = resolveTwoToneColor(props.twoToneColor)
   const iconNode =
-    typeof props.icon.icon === 'function' ? props.icon.icon(primaryColor, secondaryColor) : props.icon.icon
+    typeof props.icon.icon === 'function'
+      ? props.icon.icon(primaryColor, secondaryColor)
+      : props.icon.icon
   const rootAttrs = iconNode.attrs
   const ariaHidden = props['aria-label'] || props['aria-labelledby'] ? undefined : 'true'
 
@@ -298,6 +306,7 @@ git commit -m "feat: add solid icon renderer"
 ### Task 3: Add generated icon export tests
 
 **Files:**
+
 - Create: `packages/icons/src/icons/search-outlined.test.tsx`
 
 - [ ] **Step 1: Write failing generated icon tests**
@@ -364,6 +373,7 @@ git commit -m "test: add generated icon export expectations"
 ### Task 4: Add icon generator and generate full icon set
 
 **Files:**
+
 - Create: `packages/icons/scripts/generate-icons.mjs`
 - Replace: `packages/icons/src/index.tsx`
 - Create: `packages/icons/src/icons/*.tsx`
@@ -482,6 +492,7 @@ git commit -m "feat: generate solid ant design icons"
 ### Task 5: Build configuration and package type fixes
 
 **Files:**
+
 - Modify: `packages/icons/vite.config.ts`
 - Modify if required: `packages/icons/tsconfig.json`
 - Test: package typecheck/build commands
@@ -555,6 +566,7 @@ If `packages/icons/src/icons-svg.d.ts`, `packages/icons/tsconfig.json`, or `pack
 ### Task 6: Full repository verification and final cleanup
 
 **Files:**
+
 - Any files changed by formatting.
 
 - [ ] **Step 1: Run lint**
