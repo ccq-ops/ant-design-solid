@@ -16,6 +16,7 @@ export const navItems = [
   { path: '/components/calendar', label: 'Calendar' },
   { path: '/components/color-picker', label: 'ColorPicker' },
   { path: '/components/carousel', label: 'Carousel' },
+  { path: '/components/border-beam', label: 'BorderBeam' },
   { path: '/components/upload', label: 'Upload' },
   { path: '/components/transfer', label: 'Transfer' },
   { path: '/components/checkbox', label: 'Checkbox' },
