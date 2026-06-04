@@ -13,6 +13,7 @@ export * from './switch'
 export * from './select'
 export * from './cascader'
 export * from './auto-complete'
+export * from './mentions'
 export * from './segmented'
 export * from './tree-select'
 
