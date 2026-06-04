@@ -27,7 +27,10 @@ function isPageRouteFile(filePath: string) {
 }
 
 export function routePathFromFilePath(filePath: string) {
-  const withoutPrefix = filePath.replace(/^\.\.\/pages\//, '').replace(/^\.\/pages\//, '')
+  const withoutPrefix = filePath
+    .replace(/^\/src\/pages\//, '')
+    .replace(/^\.\.\/pages\//, '')
+    .replace(/^\.\/pages\//, '')
   const withoutExtension = withoutPrefix.replace(/\.tsx$/, '')
   const segments = withoutExtension.split('/')
 
@@ -103,10 +106,10 @@ export function createSiteRoutesFromModules(modules: Record<string, RouteImporte
 }
 
 const routeModules = import.meta.glob<RouteModule>([
-  '../pages/**/*.tsx',
-  '!../pages/**/*.test.tsx',
-  '!../pages/**/*.spec.tsx',
-  '!../pages/**/__tests__/**/*.tsx',
+  '/src/pages/**/*.tsx',
+  '!/src/pages/**/*.test.tsx',
+  '!/src/pages/**/*.spec.tsx',
+  '!/src/pages/**/__tests__/**/*.tsx',
 ])
 const siteRoutes = createSiteRoutesFromModules(routeModules)
 
