@@ -15,6 +15,10 @@ export type SiteRoutes = {
   navItems: NavItem[]
 }
 
+function isPageRouteFile(filePath: string) {
+  return !/(^|\/)__tests__\//.test(filePath) && !/\.(?:test|spec)\.tsx$/.test(filePath)
+}
+
 export function routePathFromFilePath(filePath: string) {
   const withoutPrefix = filePath.replace(/^\.\.\/routes\//, '').replace(/^\.\/routes\//, '')
   const withoutExtension = withoutPrefix.replace(/\.tsx$/, '')
@@ -44,6 +48,7 @@ function labelFromRoutePath(path: string) {
 
 export function createSiteRoutesFromModules(modules: Record<string, RouteImporter>): SiteRoutes {
   return Object.entries(modules)
+    .filter(([filePath]) => isPageRouteFile(filePath))
     .sort(([a], [b]) => routePathFromFilePath(a).localeCompare(routePathFromFilePath(b)))
     .reduce<SiteRoutes>(
       (siteRoutes, [filePath, importer]) => {
@@ -64,7 +69,12 @@ export function createSiteRoutesFromModules(modules: Record<string, RouteImporte
     )
 }
 
-const routeModules = import.meta.glob<RouteModule>('../routes/**/*.tsx')
+const routeModules = import.meta.glob<RouteModule>([
+  '../routes/**/*.tsx',
+  '!../routes/**/*.test.tsx',
+  '!../routes/**/*.spec.tsx',
+  '!../routes/**/__tests__/**/*.tsx',
+])
 const siteRoutes = createSiteRoutesFromModules(routeModules)
 
 export const routes = siteRoutes.routes

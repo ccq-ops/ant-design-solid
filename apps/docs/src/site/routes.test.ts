@@ -39,4 +39,23 @@ describe('createSiteRoutesFromModules', () => {
       { path: '/docs/getting-started', label: 'Getting Started' },
     ])
   })
+
+  it('ignores test files when creating docs pages', () => {
+    const siteRoutes = createSiteRoutesFromModules({
+      './routes/__tests__/index.tsx': () => Promise.resolve({ default: Page }),
+      './routes/components/__tests__/button.tsx': () => Promise.resolve({ default: Page }),
+      './routes/components/button.spec.tsx': () => Promise.resolve({ default: Page }),
+      './routes/components/button.test.tsx': () => Promise.resolve({ default: Page }),
+      './routes/components/button.tsx': () => Promise.resolve({ default: Page }),
+      './routes/index.spec.tsx': () => Promise.resolve({ default: Page }),
+      './routes/index.test.tsx': () => Promise.resolve({ default: Page }),
+      './routes/index.tsx': () => Promise.resolve({ default: Page }),
+    })
+
+    expect(siteRoutes.routes.map((route) => route.path)).toEqual(['/', '/components/button'])
+    expect(siteRoutes.navItems).toEqual([
+      { path: '/', label: 'Home' },
+      { path: '/components/button', label: 'Button' },
+    ])
+  })
 })
