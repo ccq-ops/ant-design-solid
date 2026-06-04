@@ -49,7 +49,9 @@ describe('Icon', () => {
   })
 
   it('applies spin and rotate styles', () => {
-    const result = render(() => <Icon icon={SearchOutlinedSvg} data-testid="icon" rotate={90} spin />)
+    const result = render(() => (
+      <Icon icon={SearchOutlinedSvg} data-testid="icon" rotate={90} spin />
+    ))
     const svg = result.getByTestId('icon')
 
     expect(svg.classList.contains('ant-design-solid-icon-spin')).toBe(true)
