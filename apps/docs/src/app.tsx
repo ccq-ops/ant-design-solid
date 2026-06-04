@@ -1,6 +1,6 @@
 import { Router } from '@solidjs/router'
-import { Layout } from './site/layout'
-import { routes } from './site/routes'
+import { Layout } from './components/layout'
+import { routes } from './routes'
 
 export function App() {
   return <Router root={Layout}>{routes}</Router>
