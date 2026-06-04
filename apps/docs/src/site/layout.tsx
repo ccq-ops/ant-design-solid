@@ -29,10 +29,16 @@ export function Layout(props: { children?: JSX.Element }) {
         </nav>
       </header>
       <div class="grid min-h-[calc(100vh-4rem)] grid-cols-[260px_minmax(0,1fr)]">
-        <aside class="flex flex-col gap-2 border-r border-gray-200 p-6">
+        <aside class="sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r border-gray-200 p-6">
           <For each={navItems}>
             {(item) => (
-              <A href={item.path} class={sidebarLinkClass} activeClass={sidebarActiveLinkClass} end>
+              <A
+                href={item.path}
+                class={sidebarLinkClass}
+                activeClass={sidebarActiveLinkClass}
+                end
+                noScroll
+              >
                 {item.label}
               </A>
             )}

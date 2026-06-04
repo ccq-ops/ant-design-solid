@@ -16,6 +16,7 @@ vi.mock('@solidjs/router', async () => {
     class?: string
     end?: boolean
     href: string
+    noScroll?: boolean
   }) {
     const isActive = () =>
       props.end ? currentPath() === props.href : currentPath().startsWith(props.href)
@@ -27,8 +28,10 @@ vi.mock('@solidjs/router', async () => {
         aria-current={isActive() ? 'page' : undefined}
         class={className()}
         href={props.href}
+        noScroll={props.noScroll}
         onClick={(event) => {
           event.preventDefault()
+          if (!props.noScroll) window.scrollTo(0, 0)
           setCurrentPath(props.href)
         }}
       >
@@ -53,6 +56,27 @@ function renderLayout() {
 }
 
 describe('Layout', () => {
+  it('keeps the sidebar fixed below the header with its own scroll area', () => {
+    const result = renderLayout()
+    const sidebar = result.container.querySelector('aside')
+
+    expect(sidebar).toHaveClass('sticky')
+    expect(sidebar).toHaveClass('top-16')
+    expect(sidebar).toHaveClass('h-[calc(100vh-4rem)]')
+    expect(sidebar).toHaveClass('overflow-y-auto')
+  })
+
+  it('keeps the current scroll position when clicking sidebar menu links', async () => {
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const result = renderLayout()
+    const menuLink = result.getByRole('link', { name: 'Menu' })
+
+    fireEvent.click(menuLink)
+    await Promise.resolve()
+
+    expect(scrollTo).not.toHaveBeenCalled()
+  })
+
   it('marks the clicked sidebar menu item as selected with Tailwind utilities', async () => {
     const result = renderLayout()
     const menuLink = result.getByRole('link', { name: 'Menu' })
