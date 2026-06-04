@@ -196,6 +196,16 @@ export interface TabsComponentToken {
   horizontalItemPaddingLg: number
 }
 
+export interface PopoverComponentToken {
+  bg: string
+  borderRadius: number
+  boxShadow: string
+  minWidth: number
+  maxWidth: number
+  paddingBlock: number
+  paddingInline: number
+}
+
 export interface TooltipComponentToken {
   bg: string
   color: string
@@ -239,6 +249,7 @@ export interface ComponentTokenMap {
   Badge: BadgeComponentToken
   Tabs: TabsComponentToken
   Tooltip: TooltipComponentToken
+  Popover: PopoverComponentToken
   Dropdown: DropdownComponentToken
 }
 

@@ -141,6 +141,15 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       horizontalItemPaddingSm: token.paddingSM,
       horizontalItemPaddingLg: token.paddingLG,
     },
+    Popover: {
+      bg: token.colorBgElevated,
+      borderRadius: token.borderRadius,
+      boxShadow: token.boxShadow,
+      minWidth: 177,
+      maxWidth: 276,
+      paddingBlock: token.paddingSM,
+      paddingInline: token.padding,
+    },
     Tooltip: {
       bg: 'rgba(0, 0, 0, 0.85)',
       color: '#ffffff',
