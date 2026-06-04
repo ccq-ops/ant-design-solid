@@ -36,7 +36,7 @@ export default function SkeletonPage() {
         title="Loaded content"
         code={`<Skeleton loading={loaded()} active><Card title="Loaded">Content is ready.</Card></Skeleton>`}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" class="w-full">
           <button type="button" onClick={() => setLoaded((value) => !value)}>
             Toggle loaded
           </button>

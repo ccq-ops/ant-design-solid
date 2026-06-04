@@ -10,10 +10,10 @@ export default function GridPage() {
       >
         <Row gutter={[16, 24]}>
           <Col span={12}>
-            <div style={{ background: '#e6f4ff', padding: '16px' }}>A</div>
+            <div class="bg-blue-50 p-4">A</div>
           </Col>
           <Col span={12}>
-            <div style={{ background: '#bae0ff', padding: '16px' }}>B</div>
+            <div class="bg-blue-200 p-4">B</div>
           </Col>
         </Row>
       </DemoBlock>

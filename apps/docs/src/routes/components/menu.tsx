@@ -40,7 +40,7 @@ export default function MenuPage() {
             { key: 'projects', label: 'Projects' },
           ]}
           defaultSelectedKeys={['mail']}
-          style={{ width: '240px' }}
+          class="w-60"
         />
       </DemoBlock>
 
@@ -53,7 +53,7 @@ export default function MenuPage() {
           defaultSelectedKeys={['profile']}
           defaultOpenKeys={['settings']}
           items={items}
-          style={{ width: '280px' }}
+          class="w-70"
         />
       </DemoBlock>
 
@@ -65,7 +65,7 @@ export default function MenuPage() {
         title="Groups and dividers"
         code={`<Menu items={[{ type: 'group', label: 'Workspace', children: [{ key: 'team', label: 'Team' }] }]} />`}
       >
-        <Menu items={items} defaultSelectedKeys={['team']} style={{ width: '280px' }} />
+        <Menu items={items} defaultSelectedKeys={['team']} class="w-70" />
       </DemoBlock>
 
       <DemoBlock
@@ -83,7 +83,7 @@ export default function MenuPage() {
               children: [{ key: 'child', label: 'Child' }],
             },
           ]}
-          style={{ width: '280px' }}
+          class="w-70"
         />
       </DemoBlock>
 
@@ -115,7 +115,7 @@ export default function MenuPage() {
                 children: [{ key: 'profile', label: 'Profile' }],
               },
             ]}
-            style={{ width: '220px' }}
+            class="w-55"
           />
         </Space>
       </DemoBlock>

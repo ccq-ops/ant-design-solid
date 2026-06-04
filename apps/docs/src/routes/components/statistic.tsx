@@ -27,10 +27,10 @@ export default function StatisticPage() {
         code={`<Card><Statistic title="Feedback" value={93} suffix="%" valueStyle={{ color: '#3f8600' }} /></Card>`}
       >
         <Space wrap align="start">
-          <Card style={{ width: '240px' }}>
+          <Card class="w-60">
             <Statistic title="Feedback" value={93} suffix="%" valueStyle={{ color: '#3f8600' }} />
           </Card>
-          <Card style={{ width: '240px' }}>
+          <Card class="w-60">
             <Statistic title="Views" value={8846} prefix="👁" />
           </Card>
         </Space>

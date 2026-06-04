@@ -19,7 +19,7 @@ export default function ProgressPage() {
         title="Status"
         code={`<Space direction="vertical"><Progress percent={100} /><Progress percent={70} status="exception" /><Progress percent={50} status="active" /></Space>`}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" class="w-full">
           <Progress percent={100} />
           <Progress percent={70} status="exception" />
           <Progress percent={50} status="active" />

@@ -15,7 +15,7 @@ export default function SelectPage() {
         title="Basic"
         code={`<Select placeholder="Select fruit" options={[{ label: 'Apple', value: 'apple' }]} />`}
       >
-        <Space direction="vertical" style={{ width: '240px' }}>
+        <Space direction="vertical" class="w-60">
           <Select placeholder="Select fruit" allowClear options={options} />
           <Select disabled placeholder="Disabled" options={options} />
         </Space>

@@ -12,7 +12,7 @@ export default function TransferPage() {
   const [targetKeys, setTargetKeys] = createSignal<string[]>(['2'])
 
   return (
-    <div class="doc-page">
+    <>
       <h1>Transfer</h1>
       <p>Move items between source and target lists.</p>
 
@@ -45,6 +45,6 @@ export default function TransferPage() {
           onChange={(next) => setTargetKeys(next)}
         />
       </DemoBlock>
-    </div>
+    </>
   )
 }

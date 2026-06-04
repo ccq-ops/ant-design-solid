@@ -5,7 +5,7 @@ const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { val
 
 export default function AutoCompletePage() {
   return (
-    <div class="doc-page">
+    <>
       <h1>AutoComplete</h1>
       <p>Text input with selectable suggestions.</p>
 
@@ -41,6 +41,6 @@ export default function AutoCompletePage() {
           </Form.Item>
         </Form>
       </DemoBlock>
-    </div>
+    </>
   )
 }

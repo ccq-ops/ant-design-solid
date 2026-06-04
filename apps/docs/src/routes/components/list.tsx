@@ -73,7 +73,7 @@ export default function ListPage() {
         title="Loading and empty"
         code={`<List loading dataSource={items} renderItem={(item) => <List.Item>{item}</List.Item>} />\n<List dataSource={[]} emptyText="Nothing found" />`}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" class="w-full">
           <List
             loading
             dataSource={tasks}

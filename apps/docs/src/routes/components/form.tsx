@@ -10,7 +10,7 @@ export default function FormPage() {
         code={`<Form onFinish={console.log}><Form.Item name="username" rules={[{ required: true }]}><Input placeholder="Username" /></Form.Item><Button htmlType="submit">Submit</Button></Form>`}
       >
         <Form onFinish={(values) => console.log(values)}>
-          <Space direction="vertical" style={{ width: '320px' }}>
+          <Space direction="vertical" class="w-80">
             <Form.Item
               name="username"
               rules={[{ required: true, message: 'Username is required' }]}

@@ -34,7 +34,7 @@ export default function CollapsePage() {
         title="Ghost and borderless"
         code={`<Collapse ghost items={items} />\n<Collapse bordered={false} items={items} />`}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" class="w-full">
           <Collapse ghost defaultActiveKey="1" items={basicItems.slice(0, 2)} />
           <Collapse bordered={false} defaultActiveKey="2" items={basicItems.slice(0, 2)} />
         </Space>

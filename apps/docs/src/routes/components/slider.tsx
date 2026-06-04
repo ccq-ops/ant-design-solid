@@ -15,7 +15,7 @@ export default function SliderPage() {
         title="Controlled"
         code={`const [value, setValue] = createSignal(30)\n<Slider value={value()} onChange={(next) => typeof next === 'number' && setValue(next)} />`}
       >
-        <Space direction="vertical" style={{ width: '320px' }}>
+        <Space direction="vertical" class="w-80">
           <Slider
             value={value()}
             onChange={(next) => {
@@ -44,12 +44,12 @@ export default function SliderPage() {
         />
       </DemoBlock>
       <DemoBlock title="Vertical" code={`<Slider vertical defaultValue={40} />`}>
-        <div style={{ height: '180px' }}>
+        <div class="h-[180px]">
           <Slider vertical defaultValue={40} />
         </div>
       </DemoBlock>
       <DemoBlock title="Disabled" code={`<Slider disabled defaultValue={30} />`}>
-        <Space direction="vertical" style={{ width: '320px' }}>
+        <Space direction="vertical" class="w-80">
           <Slider disabled defaultValue={30} />
           <Slider disabled range defaultValue={[20, 60]} />
         </Space>

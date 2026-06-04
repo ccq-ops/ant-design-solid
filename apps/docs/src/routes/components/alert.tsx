@@ -6,7 +6,7 @@ export default function AlertPage() {
     <>
       <h1>Alert</h1>
       <DemoBlock title="Basic" code={`<Alert message="Success" type="success" showIcon />`}>
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" class="w-full">
           <Alert message="Success" type="success" showIcon />
           <Alert message="Info" type="info" showIcon />
           <Alert message="Warning" type="warning" showIcon />

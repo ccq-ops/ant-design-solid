@@ -18,7 +18,7 @@ export default function TreeSelectPage() {
   const [value, setValue] = createSignal<string | number | boolean | undefined>('europe')
 
   return (
-    <div class="doc-page">
+    <>
       <h1>TreeSelect</h1>
       <p>Select a value from hierarchical tree data.</p>
 
@@ -54,6 +54,6 @@ export default function TreeSelectPage() {
       >
         <TreeSelect value={value()} onChange={(next) => setValue(next)} treeData={treeData} />
       </DemoBlock>
-    </div>
+    </>
   )
 }

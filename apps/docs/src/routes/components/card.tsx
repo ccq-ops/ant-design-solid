@@ -6,7 +6,7 @@ export default function CardPage() {
     <>
       <h1>Card</h1>
       <DemoBlock title="Basic" code={`<Card>Card content</Card>`}>
-        <Card style={{ width: '320px' }}>
+        <Card class="w-80">
           <p>Card content</p>
           <p>Card content</p>
           <p>Card content</p>
@@ -16,7 +16,7 @@ export default function CardPage() {
         title="Title and extra"
         code={`<Card title="Card title" extra={<a href="#">More</a>}>Content</Card>`}
       >
-        <Card title="Card title" extra={<a href="#more">More</a>} style={{ width: '360px' }}>
+        <Card title="Card title" extra={<a href="#more">More</a>} class="w-90">
           <p>Content with a header and an extra action.</p>
         </Card>
       </DemoBlock>
@@ -27,17 +27,7 @@ export default function CardPage() {
         <Card
           title="Project"
           cover={
-            <div
-              style={{
-                height: '120px',
-                display: 'flex',
-                'align-items': 'center',
-                'justify-content': 'center',
-                background: 'linear-gradient(135deg, #e6f4ff, #f6ffed)',
-                color: '#1677ff',
-                'font-weight': 600,
-              }}
-            >
+            <div class="flex h-[120px] items-center justify-center bg-gradient-to-br from-blue-50 to-green-50 font-semibold text-blue-600">
               Cover
             </div>
           }
@@ -46,7 +36,7 @@ export default function CardPage() {
             <a href="#share">Share</a>,
             <a href="#more-actions">More</a>,
           ]}
-          style={{ width: '360px' }}
+          class="w-90"
         >
           <p>Cards can include a visual cover and a footer action bar.</p>
         </Card>
@@ -56,13 +46,13 @@ export default function CardPage() {
         code={`<Card hoverable size="small">Small hoverable</Card>\n<Card bordered={false}>Borderless</Card>`}
       >
         <Space wrap align="start">
-          <Card hoverable size="small" title="Small" style={{ width: '240px' }}>
+          <Card hoverable size="small" title="Small" class="w-60">
             Small cards reduce header and body padding.
           </Card>
-          <Card bordered={false} title="Borderless" style={{ width: '240px' }}>
+          <Card bordered={false} title="Borderless" class="w-60">
             Borderless cards sit directly on the surrounding surface.
           </Card>
-          <Card hoverable title="Hoverable" style={{ width: '240px' }}>
+          <Card hoverable title="Hoverable" class="w-60">
             Hoverable cards receive an elevated treatment on hover.
           </Card>
         </Space>

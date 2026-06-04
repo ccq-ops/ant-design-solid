@@ -29,7 +29,7 @@ export default function AffixPage() {
         title="In content"
         code={`<Affix offsetTop={80}><Card>Sticky tools</Card></Affix>`}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
+        <Space direction="vertical" class="w-full">
           <Affix offsetTop={80}>
             <Card size="small">Sticky tools stay visible while scrolling.</Card>
           </Affix>

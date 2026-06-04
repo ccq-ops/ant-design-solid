@@ -25,11 +25,7 @@ export default function FlexPage() {
         </Flex>
       </DemoBlock>
       <DemoBlock title="Alignment" code={`<Flex justify="space-between" align="center">...</Flex>`}>
-        <Flex
-          justify="space-between"
-          align="center"
-          style={{ width: '100%', padding: '12px', background: '#f5f5f5' }}
-        >
+        <Flex justify="space-between" align="center" class="w-full bg-gray-100 p-3">
           <span>Left</span>
           <Button type="primary">Right</Button>
         </Flex>

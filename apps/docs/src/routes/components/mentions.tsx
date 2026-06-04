@@ -37,7 +37,7 @@ export default function MentionsPage() {
         title="Multiple prefixes"
         code={`<Mentions prefix={["@", "#"]} options={topicOptions} />`}
       >
-        <Space direction="vertical" style={{ width: '320px' }}>
+        <Space direction="vertical" class="w-80">
           <Mentions
             prefix={['@', '#']}
             placeholder="Type @ or # to open suggestions"

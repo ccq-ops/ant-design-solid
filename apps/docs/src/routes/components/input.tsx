@@ -6,7 +6,7 @@ export default function InputPage() {
     <>
       <h1>Input</h1>
       <DemoBlock title="Basic" code={`<Input placeholder="请输入" allowClear />`}>
-        <Space direction="vertical" style={{ width: '320px' }}>
+        <Space direction="vertical" class="w-80">
           <Input placeholder="请输入" allowClear />
           <Input status="error" prefix="￥" suffix="RMB" defaultValue="100" allowClear />
         </Space>
