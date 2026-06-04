@@ -13,13 +13,19 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./icons/*": {
+      "types": "./dist/icons/*.d.ts",
+      "import": "./dist/icons/*.js",
+      "require": "./dist/icons/*.cjs"
     }
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "oxlint src"
+    "lint": "oxlint src",
+    "generate:icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@ant-design/icons-svg": "^4.4.2"
