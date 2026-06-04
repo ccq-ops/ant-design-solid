@@ -11,7 +11,9 @@ export const MASONRY_BREAKPOINTS: Record<MasonryBreakpoint, number> = {
 
 const orderedBreakpoints = Object.entries(MASONRY_BREAKPOINTS) as [MasonryBreakpoint, number][]
 
-function isResponsiveObject<T>(value: MasonryResponsiveValue<T> | undefined): value is Partial<Record<MasonryBreakpoint, T>> {
+function isResponsiveObject<T>(
+  value: MasonryResponsiveValue<T> | undefined,
+): value is Partial<Record<MasonryBreakpoint, T>> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
 }
 
