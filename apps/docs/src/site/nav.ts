@@ -28,6 +28,7 @@ export const navItems = [
   { path: '/components/statistic', label: 'Statistic' },
   { path: '/components/descriptions', label: 'Descriptions' },
   { path: '/components/list', label: 'List' },
+  { path: '/components/masonry', label: 'Masonry' },
   { path: '/components/timeline', label: 'Timeline' },
   { path: '/components/collapse', label: 'Collapse' },
   { path: '/components/pagination', label: 'Pagination' },
