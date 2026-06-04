@@ -1,14 +1,14 @@
 import { render } from 'solid-js/web'
-import { ConfigProvider } from '@ant-design-solid/core'
 import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { App } from './app'
+import { DocsThemeProvider } from './components/theme-context'
 import './app.css'
 render(
   () => (
     <StyleProvider>
-      <ConfigProvider>
+      <DocsThemeProvider>
         <App />
-      </ConfigProvider>
+      </DocsThemeProvider>
     </StyleProvider>
   ),
   document.getElementById('root')!,

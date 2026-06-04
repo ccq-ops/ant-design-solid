@@ -1,6 +1,7 @@
 import { A, useLocation } from '@solidjs/router'
 import { For, Show, createMemo, type JSX } from 'solid-js'
 import { sideNavGroups, topNavItems } from '../routes'
+import { useDocsTheme } from './theme-context'
 
 const sidebarLinkClass =
   'rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600'
@@ -12,6 +13,7 @@ function groupFromPath(pathname: string) {
 
 export function Layout(props: { children?: JSX.Element }) {
   const location = useLocation()
+  const docsTheme = useDocsTheme()
   const sidebarItems = createMemo(() => {
     const group = groupFromPath(location.pathname)
 
@@ -39,6 +41,16 @@ export function Layout(props: { children?: JSX.Element }) {
           >
             GitHub
           </a>
+          <button
+            type="button"
+            class="rounded-full border border-gray-200 px-3 py-1 text-sm transition-colors hover:border-blue-600 hover:text-blue-600"
+            aria-label={
+              docsTheme.mode() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'
+            }
+            onClick={docsTheme.toggleTheme}
+          >
+            {docsTheme.mode() === 'light' ? 'Dark mode' : 'Light mode'}
+          </button>
         </nav>
       </header>
       <div

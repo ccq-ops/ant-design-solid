@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createSiteRoutesFromModules, routePathFromFilePath } from './routes'
+import { createSiteRoutesFromModules, routePathFromFilePath } from './index'
 
 function Page() {
   return null

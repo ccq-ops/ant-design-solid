@@ -71,8 +71,17 @@ vi.mock('../routes', () => ({
   },
 }))
 
+const mode = vi.hoisted(() => vi.fn(() => 'light'))
+const toggleTheme = vi.hoisted(() => vi.fn())
+
+vi.mock('./theme-context', () => ({
+  useDocsTheme: () => ({ mode, toggleTheme }),
+}))
+
 beforeEach(() => {
   resetPath()
+  mode.mockReturnValue('light')
+  toggleTheme.mockClear()
 })
 
 function renderLayout() {
@@ -84,6 +93,25 @@ function renderLayout() {
 }
 
 describe('Layout', () => {
+  it('renders a theme toggle in the top navigation', () => {
+    const result = renderLayout()
+    const toggle = result.getByRole('button', { name: 'Switch to dark theme' })
+
+    expect(toggle).toHaveTextContent('Dark mode')
+
+    fireEvent.click(toggle)
+
+    expect(toggleTheme).toHaveBeenCalledTimes(1)
+  })
+
+  it('updates the theme toggle label in dark mode', () => {
+    mode.mockReturnValue('dark')
+    const result = renderLayout()
+    const toggle = result.getByRole('button', { name: 'Switch to light theme' })
+
+    expect(toggle).toHaveTextContent('Light mode')
+  })
+
   it('renders top navigation from convention-derived page groups', () => {
     const result = renderLayout()
 

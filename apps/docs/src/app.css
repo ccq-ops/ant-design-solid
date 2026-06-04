@@ -11,3 +11,64 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+:root {
+  color-scheme: light;
+  --docs-bg: #ffffff;
+  --docs-surface: rgba(255, 255, 255, 0.9);
+  --docs-surface-solid: #ffffff;
+  --docs-surface-subtle: #f8fafc;
+  --docs-text: #1f1f1f;
+  --docs-text-secondary: rgba(0, 0, 0, 0.65);
+  --docs-border: #e5e7eb;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --docs-bg: #0f1115;
+  --docs-surface: rgba(20, 20, 20, 0.9);
+  --docs-surface-solid: #141414;
+  --docs-surface-subtle: #1f1f1f;
+  --docs-text: rgba(255, 255, 255, 0.92);
+  --docs-text-secondary: rgba(255, 255, 255, 0.68);
+  --docs-border: #303030;
+}
+
+body {
+  color: var(--docs-text);
+  background: var(--docs-bg);
+}
+
+:root[data-theme='dark'] .bg-white,
+:root[data-theme='dark'] .bg-white\/90 {
+  background-color: var(--docs-surface) !important;
+}
+
+:root[data-theme='dark'] .bg-slate-50 {
+  background-color: var(--docs-surface-subtle) !important;
+}
+
+:root[data-theme='dark'] .text-black\/65,
+:root[data-theme='dark'] .text-gray-500,
+:root[data-theme='dark'] .text-gray-700 {
+  color: var(--docs-text-secondary) !important;
+}
+
+:root[data-theme='dark'] .text-gray-400 {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+:root[data-theme='dark'] .border-gray-200 {
+  border-color: var(--docs-border) !important;
+}
+
+:root[data-theme='dark'] .hover\:bg-gray-200:hover,
+:root[data-theme='dark'] .hover\:bg-blue-50:hover,
+:root[data-theme='dark'] .bg-blue-50 {
+  background-color: rgba(64, 150, 255, 0.16) !important;
+}
+
+:root[data-theme='dark'] pre.shiki,
+:root[data-theme='dark'] pre.shiki span {
+  background-color: var(--docs-surface-subtle) !important;
+}
