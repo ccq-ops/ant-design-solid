@@ -2,6 +2,14 @@ import type { AliasToken, ComponentTokenMap, ThemeConfig } from './types'
 
 const overrideStore = new WeakMap<AliasToken, ThemeConfig['components']>()
 
+function isDarkToken(token: AliasToken) {
+  return token.colorBgContainer !== '#ffffff'
+}
+
+function selectedBg(token: AliasToken) {
+  return isDarkToken(token) ? 'rgba(22, 119, 255, 0.2)' : '#e6f4ff'
+}
+
 export function attachComponentOverrides(
   token: AliasToken,
   components: ThemeConfig['components'] = {},
@@ -45,7 +53,7 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
     Select: {
       optionHeight: token.controlHeight,
       optionPadding: token.paddingSM,
-      optionSelectedBg: '#e6f4ff',
+      optionSelectedBg: selectedBg(token),
       optionActiveBg: token.colorFillAlter,
       clearIconColor: token.colorTextDisabled,
     },
@@ -68,6 +76,14 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       borderRadius: token.borderRadius,
       withDescriptionPadding: token.padding,
       iconSize: 16,
+      successBg: isDarkToken(token) ? 'rgba(82, 196, 26, 0.12)' : '#f6ffed',
+      successBorderColor: isDarkToken(token) ? 'rgba(82, 196, 26, 0.35)' : '#b7eb8f',
+      infoBg: isDarkToken(token) ? 'rgba(22, 119, 255, 0.12)' : '#e6f4ff',
+      infoBorderColor: isDarkToken(token) ? 'rgba(22, 119, 255, 0.35)' : '#91caff',
+      warningBg: isDarkToken(token) ? 'rgba(250, 173, 20, 0.12)' : '#fffbe6',
+      warningBorderColor: isDarkToken(token) ? 'rgba(250, 173, 20, 0.35)' : '#ffe58f',
+      errorBg: isDarkToken(token) ? 'rgba(255, 77, 79, 0.12)' : '#fff2f0',
+      errorBorderColor: isDarkToken(token) ? 'rgba(255, 77, 79, 0.35)' : '#ffccc7',
     },
     Message: {
       noticePadding: token.paddingSM,
@@ -118,6 +134,14 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       fontSize: token.fontSize,
       lineHeight: token.lineHeight,
       closeIconColor: token.colorTextSecondary,
+      successBg: isDarkToken(token) ? 'rgba(82, 196, 26, 0.12)' : '#f6ffed',
+      successBorderColor: isDarkToken(token) ? 'rgba(82, 196, 26, 0.35)' : '#b7eb8f',
+      warningBg: isDarkToken(token) ? 'rgba(250, 173, 20, 0.12)' : '#fffbe6',
+      warningBorderColor: isDarkToken(token) ? 'rgba(250, 173, 20, 0.35)' : '#ffe58f',
+      errorBg: isDarkToken(token) ? 'rgba(255, 77, 79, 0.12)' : '#fff2f0',
+      errorBorderColor: isDarkToken(token) ? 'rgba(255, 77, 79, 0.35)' : '#ffccc7',
+      processingBg: isDarkToken(token) ? 'rgba(22, 119, 255, 0.12)' : '#e6f4ff',
+      processingBorderColor: isDarkToken(token) ? 'rgba(22, 119, 255, 0.35)' : '#91caff',
     },
     Badge: {
       overflowIndicatorHeight: 20,
@@ -158,6 +182,9 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       paddingInline: token.paddingSM,
       boxShadow: token.boxShadow,
       maxWidth: 250,
+    },
+    Tree: {
+      nodeSelectedBg: selectedBg(token),
     },
     Dropdown: {
       bg: token.colorBgElevated,

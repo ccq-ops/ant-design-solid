@@ -116,6 +116,14 @@ export interface AlertComponentToken {
   borderRadius: number
   withDescriptionPadding: number
   iconSize: number
+  successBg: string
+  successBorderColor: string
+  infoBg: string
+  infoBorderColor: string
+  warningBg: string
+  warningBorderColor: string
+  errorBg: string
+  errorBorderColor: string
 }
 
 export interface MessageComponentToken {
@@ -172,6 +180,14 @@ export interface TagComponentToken {
   fontSize: number
   lineHeight: number
   closeIconColor: string
+  successBg: string
+  successBorderColor: string
+  warningBg: string
+  warningBorderColor: string
+  errorBg: string
+  errorBorderColor: string
+  processingBg: string
+  processingBorderColor: string
 }
 
 export interface BadgeComponentToken {
@@ -230,6 +246,10 @@ export interface DropdownComponentToken {
   minWidth: number
 }
 
+export interface TreeComponentToken {
+  nodeSelectedBg: string
+}
+
 export interface TourComponentToken {
   width: number
   padding: number
@@ -264,6 +284,7 @@ export interface ComponentTokenMap {
   Tooltip: TooltipComponentToken
   Popover: PopoverComponentToken
   Dropdown: DropdownComponentToken
+  Tree: TreeComponentToken
   Tour: TourComponentToken
 }
 
