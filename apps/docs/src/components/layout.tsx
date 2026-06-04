@@ -17,6 +17,7 @@ export function Layout(props: { children?: JSX.Element }) {
 
     return group ? (sideNavGroups[group] ?? []) : []
   })
+  const showSidebar = createMemo(() => location.pathname !== '/')
 
   return (
     <div class="min-h-screen">
@@ -40,24 +41,32 @@ export function Layout(props: { children?: JSX.Element }) {
           </a>
         </nav>
       </header>
-      <div class="grid min-h-[calc(100vh-4rem)] grid-cols-[260px_minmax(0,1fr)]">
-        <aside class="sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r border-gray-200 p-6">
-          <Show when={sidebarItems().length > 0}>
-            <For each={sidebarItems()}>
-              {(item) => (
-                <A
-                  href={item.path}
-                  class={sidebarLinkClass}
-                  activeClass={sidebarActiveLinkClass}
-                  end
-                  noScroll
-                >
-                  {item.label}
-                </A>
-              )}
-            </For>
-          </Show>
-        </aside>
+      <div
+        class={
+          showSidebar()
+            ? 'grid min-h-[calc(100vh-4rem)] grid-cols-[260px_minmax(0,1fr)]'
+            : 'min-h-[calc(100vh-4rem)]'
+        }
+      >
+        <Show when={showSidebar()}>
+          <aside class="sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r border-gray-200 p-6">
+            <Show when={sidebarItems().length > 0}>
+              <For each={sidebarItems()}>
+                {(item) => (
+                  <A
+                    href={item.path}
+                    class={sidebarLinkClass}
+                    activeClass={sidebarActiveLinkClass}
+                    end
+                    noScroll
+                  >
+                    {item.label}
+                  </A>
+                )}
+              </For>
+            </Show>
+          </aside>
+        </Show>
         <main class="max-w-[1100px] px-14 py-10">{props.children}</main>
       </div>
     </div>

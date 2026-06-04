@@ -97,7 +97,15 @@ describe('Layout', () => {
     )
   })
 
+  it('does not render the sidebar on the home page', () => {
+    const result = renderLayout()
+
+    expect(result.container.querySelector('aside')).toBeNull()
+    expect(result.getByRole('main')).toHaveClass('max-w-[1100px]')
+  })
+
   it('keeps the sidebar fixed below the header with its own scroll area', () => {
+    setPath('/components/alert')
     const result = renderLayout()
     const sidebar = result.container.querySelector('aside')
 
