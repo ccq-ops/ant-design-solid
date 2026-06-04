@@ -1,7 +1,7 @@
 import { createContext, createEffect, createMemo, createSignal, useContext } from 'solid-js'
 import { ConfigProvider } from '@ant-design-solid/core'
 import type { Accessor, JSX } from 'solid-js'
-import type { ThemeConfig } from '@ant-design-solid/theme'
+import { darkAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
 
 export type DocsThemeMode = 'light' | 'dark'
 
@@ -29,11 +29,7 @@ function themeConfigForMode(mode: DocsThemeMode): ThemeConfig {
   if (mode === 'light') return {}
 
   return {
-    token: {
-      colorBgBase: '#141414',
-      colorTextBase: '#ffffff',
-      colorPrimary: '#4096ff',
-    },
+    algorithm: darkAlgorithm,
   }
 }
 

@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { useToken } from '@ant-design-solid/core'
+import { useConfig, useToken } from '@ant-design-solid/core'
 import { DocsThemeProvider, useDocsTheme } from './theme-context'
 
 function ThemeProbe() {
@@ -13,6 +13,8 @@ function ThemeProbe() {
       data-mode={docsTheme.mode()}
       data-background={token().colorBgBase}
       data-text={token().colorTextBase}
+      data-container={token().colorBgContainer}
+      data-elevated={token().colorBgElevated}
       onClick={docsTheme.toggleTheme}
     >
       Toggle
@@ -54,6 +56,8 @@ describe('DocsThemeProvider', () => {
     expect(toggle).toHaveAttribute('data-mode', 'dark')
     expect(toggle).toHaveAttribute('data-background', '#141414')
     expect(toggle).toHaveAttribute('data-text', '#ffffff')
+    expect(toggle).toHaveAttribute('data-container', '#141414')
+    expect(toggle).toHaveAttribute('data-elevated', '#1f1f1f')
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
     expect(localStorage.getItem('ant-design-solid-docs-theme')).toBe('dark')
   })
@@ -70,5 +74,26 @@ describe('DocsThemeProvider', () => {
 
     expect(toggle).toHaveAttribute('data-mode', 'dark')
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
+  })
+  it('uses the dark theme algorithm in dark mode', () => {
+    localStorage.setItem('ant-design-solid-docs-theme', 'dark')
+    let bg = ''
+    let elevated = ''
+
+    function Probe() {
+      const { token } = useConfig()
+      bg = token().colorBgContainer
+      elevated = token().colorBgElevated
+      return <div />
+    }
+
+    render(() => (
+      <DocsThemeProvider>
+        <Probe />
+      </DocsThemeProvider>
+    ))
+
+    expect(bg).toBe('#141414')
+    expect(elevated).toBe('#1f1f1f')
   })
 })
