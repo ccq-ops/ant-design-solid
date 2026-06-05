@@ -11,26 +11,80 @@ const dataSource = [
 ]
 
 const transferRows: ApiTableRow[] = [
-  { property: 'dataSource', description: 'Items that can be moved between lists.', type: 'TransferItem[]' },
-  { property: 'targetKeys', description: 'Controlled keys currently in the target list.', type: 'string[]' },
-  { property: 'defaultTargetKeys', description: 'Initial keys in the target list for uncontrolled usage.', type: 'string[]' },
-  { property: 'selectedKeys', description: 'Controlled selected item keys across both lists.', type: 'string[]' },
-  { property: 'defaultSelectedKeys', description: 'Initial selected item keys for uncontrolled usage.', type: 'string[]' },
-  { property: 'disabled', description: 'Disables selection and transfer operations.', type: 'boolean', defaultValue: 'false' },
-  { property: 'showSearch', description: 'Shows search inputs for filtering both lists.', type: 'boolean', defaultValue: 'false' },
-  { property: 'titles', description: 'Source and target list titles.', type: '[JSX.Element, JSX.Element]' },
-  { property: 'operations', description: 'Labels for move-to-target and move-to-source buttons.', type: '[JSX.Element, JSX.Element]' },
-  { property: 'filterOption', description: 'Custom item filter used by search.', type: '(inputValue: string, item: TransferItem) => boolean' },
+  {
+    property: 'dataSource',
+    description: 'Items that can be moved between lists.',
+    type: 'TransferItem[]',
+  },
+  {
+    property: 'targetKeys',
+    description: 'Controlled keys currently in the target list.',
+    type: 'string[]',
+  },
+  {
+    property: 'defaultTargetKeys',
+    description: 'Initial keys in the target list for uncontrolled usage.',
+    type: 'string[]',
+  },
+  {
+    property: 'selectedKeys',
+    description: 'Controlled selected item keys across both lists.',
+    type: 'string[]',
+  },
+  {
+    property: 'defaultSelectedKeys',
+    description: 'Initial selected item keys for uncontrolled usage.',
+    type: 'string[]',
+  },
+  {
+    property: 'disabled',
+    description: 'Disables selection and transfer operations.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showSearch',
+    description: 'Shows search inputs for filtering both lists.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'titles',
+    description: 'Source and target list titles.',
+    type: '[JSX.Element, JSX.Element]',
+  },
+  {
+    property: 'operations',
+    description: 'Labels for move-to-target and move-to-source buttons.',
+    type: '[JSX.Element, JSX.Element]',
+  },
+  {
+    property: 'filterOption',
+    description: 'Custom item filter used by search.',
+    type: '(inputValue: string, item: TransferItem) => boolean',
+  },
   { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
-  { property: 'onChange', description: 'Called after items move between lists.', type: '(targetKeys, direction, moveKeys) => void' },
-  { property: 'onSelectChange', description: 'Called when source or target selected keys change.', type: '(sourceSelectedKeys, targetSelectedKeys) => void' },
+  {
+    property: 'onChange',
+    description: 'Called after items move between lists.',
+    type: '(targetKeys, direction, moveKeys) => void',
+  },
+  {
+    property: 'onSelectChange',
+    description: 'Called when source or target selected keys change.',
+    type: '(sourceSelectedKeys, targetSelectedKeys) => void',
+  },
 ]
 
 const transferItemRows: ApiTableRow[] = [
   { property: 'key', description: 'Stable item key.', type: 'string' },
   { property: 'title', description: 'Item title content.', type: 'JSX.Element' },
   { property: 'description', description: 'Optional item description.', type: 'JSX.Element' },
-  { property: 'disabled', description: 'Disables selecting and moving this item.', type: 'boolean' },
+  {
+    property: 'disabled',
+    description: 'Disables selecting and moving this item.',
+    type: 'boolean',
+  },
 ]
 
 export default function TransferPage() {

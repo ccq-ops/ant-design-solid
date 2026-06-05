@@ -6,19 +6,54 @@ import type { ApiTableRow } from '../../components/api-table'
 
 const inputNumberRows: ApiTableRow[] = [
   { property: 'value', description: 'Controlled numeric value.', type: 'number' },
-  { property: 'defaultValue', description: 'Initial numeric value for uncontrolled usage.', type: 'number' },
+  {
+    property: 'defaultValue',
+    description: 'Initial numeric value for uncontrolled usage.',
+    type: 'number',
+  },
   { property: 'min', description: 'Minimum allowed value.', type: 'number' },
   { property: 'max', description: 'Maximum allowed value.', type: 'number' },
-  { property: 'step', description: 'Increment used by controls and keyboard stepping.', type: 'number', defaultValue: '1' },
+  {
+    property: 'step',
+    description: 'Increment used by controls and keyboard stepping.',
+    type: 'number',
+    defaultValue: '1',
+  },
   { property: 'precision', description: 'Number of decimal places to keep.', type: 'number' },
   { property: 'placeholder', description: 'Input placeholder text.', type: 'string' },
-  { property: 'disabled', description: 'Disables input and controls.', type: 'boolean', defaultValue: 'false' },
-  { property: 'size', description: 'Input size from the theme component size scale.', type: 'ComponentSize' },
+  {
+    property: 'disabled',
+    description: 'Disables input and controls.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'size',
+    description: 'Input size from the theme component size scale.',
+    type: 'ComponentSize',
+  },
   { property: 'status', description: 'Validation visual status.', type: "'error' | 'warning'" },
-  { property: 'controls', description: 'Shows increment and decrement controls.', type: 'boolean', defaultValue: 'true' },
-  { property: 'formatter', description: 'Formats the value for display.', type: '(value: number | undefined) => string' },
-  { property: 'parser', description: 'Parses displayed text back into a numeric value.', type: '(displayValue: string) => number | undefined' },
-  { property: 'onChange', description: 'Called with the normalized numeric value.', type: '(value: number | undefined) => void' },
+  {
+    property: 'controls',
+    description: 'Shows increment and decrement controls.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'formatter',
+    description: 'Formats the value for display.',
+    type: '(value: number | undefined) => string',
+  },
+  {
+    property: 'parser',
+    description: 'Parses displayed text back into a numeric value.',
+    type: '(displayValue: string) => number | undefined',
+  },
+  {
+    property: 'onChange',
+    description: 'Called with the normalized numeric value.',
+    type: '(value: number | undefined) => void',
+  },
 ]
 
 export default function InputNumberPage() {

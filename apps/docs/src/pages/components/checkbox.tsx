@@ -40,7 +40,11 @@ const checkboxRows: ApiTableRow[] = [
 ]
 
 const checkboxGroupRows: ApiTableRow[] = [
-  { property: 'value', description: 'Controlled checked values.', type: '(string | number | boolean)[]' },
+  {
+    property: 'value',
+    description: 'Controlled checked values.',
+    type: '(string | number | boolean)[]',
+  },
   {
     property: 'defaultValue',
     description: 'Initial checked values for uncontrolled usage.',
@@ -94,7 +98,10 @@ export default function CheckboxPage() {
 <Checkbox checked={checked()} onChange={(event) => setChecked(event.currentTarget.checked)}>Controlled</Checkbox>`}
       >
         <Space>
-          <Checkbox checked={checked()} onChange={(event) => setChecked(event.currentTarget.checked)}>
+          <Checkbox
+            checked={checked()}
+            onChange={(event) => setChecked(event.currentTarget.checked)}
+          >
             Controlled
           </Checkbox>
           <span>{checked() ? 'Checked' : 'Unchecked'}</span>

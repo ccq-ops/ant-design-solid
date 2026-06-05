@@ -28,6 +28,7 @@
 ### Task 1: Checkbox and Radio
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/checkbox.tsx`
 - Modify: `apps/docs/src/pages/components/radio.tsx`
 
@@ -75,6 +76,7 @@ git commit -m "docs: expand checkbox radio documentation"
 ### Task 2: AutoComplete, Cascader, InputNumber
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/auto-complete.tsx`
 - Modify: `apps/docs/src/pages/components/cascader.tsx`
 - Modify: `apps/docs/src/pages/components/input-number.tsx`
@@ -118,6 +120,7 @@ git commit -m "docs: add autocomplete cascader input number api"
 ### Task 3: Mentions, Segmented, Slider
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/mentions.tsx`
 - Modify: `apps/docs/src/pages/components/segmented.tsx`
 - Modify: `apps/docs/src/pages/components/slider.tsx`
@@ -165,6 +168,7 @@ git commit -m "docs: expand mentions segmented slider documentation"
 ### Task 4: Rate and Transfer
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/rate.tsx`
 - Modify: `apps/docs/src/pages/components/transfer.tsx`
 
@@ -206,6 +210,7 @@ git commit -m "docs: add rate transfer api"
 ### Task 5: Full verification
 
 **Files:**
+
 - No planned file changes unless verification exposes issues.
 
 - [ ] **Step 1: Run lint**

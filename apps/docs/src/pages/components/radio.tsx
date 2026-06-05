@@ -35,7 +35,11 @@ const radioRows: ApiTableRow[] = [
 ]
 
 const radioGroupRows: ApiTableRow[] = [
-  { property: 'value', description: 'Controlled selected value.', type: 'string | number | boolean' },
+  {
+    property: 'value',
+    description: 'Controlled selected value.',
+    type: 'string | number | boolean',
+  },
   {
     property: 'defaultValue',
     description: 'Initial selected value for uncontrolled usage.',
