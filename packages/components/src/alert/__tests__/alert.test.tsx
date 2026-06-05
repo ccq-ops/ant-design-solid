@@ -1,4 +1,7 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { fireEvent, render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Alert } from '../index'
@@ -12,6 +15,36 @@ describe('Alert', () => {
     expect(result.getByText('Everything is safe')).toBeTruthy()
     expect(result.container.querySelector('.ads-alert-success')).toBeTruthy()
     expect(result.container.querySelector('.ads-alert-with-description')).toBeTruthy()
+  })
+
+  it('centers icon and content for icon-only alerts', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Alert showIcon message="Centered" />
+      </StyleProvider>
+    ))
+
+    expect(extractStyle(cache)).toContain('align-items:center;')
+  })
+
+  it('updates styles when ConfigProvider theme changes to dark', async () => {
+    const cache = createCache()
+    const [dark, setDark] = createSignal(false)
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider theme={dark() ? { algorithm: darkAlgorithm } : {}}>
+          <Alert showIcon type="success" message="Theme aware" />
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    expect(extractStyle(cache)).toContain('background:#f6ffed;')
+
+    setDark(true)
+    await Promise.resolve()
+
+    expect(extractStyle(cache)).toContain('background:rgba(82, 196, 26, 0.12);')
   })
 
   it('renders action and icon from the icons package when requested', () => {

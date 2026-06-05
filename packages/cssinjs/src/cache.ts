@@ -4,7 +4,8 @@ export function createCache(): StyleCache {
   const styles = new Map<string, string>()
   return {
     register(key, css) {
-      if (styles.has(key)) return false
+      const existingCss = styles.get(key)
+      if (existingCss === css) return false
       styles.set(key, css)
       return true
     },

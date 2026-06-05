@@ -6,7 +6,11 @@ import type { StyleObject, StyleRegisterInfo, WrapSSR } from './types'
 
 function injectStyle(styleId: string, css: string): void {
   if (typeof document === 'undefined') return
-  if (document.head.querySelector(`style[data-ant-design-solid="${styleId}"]`)) return
+  const existingStyle = document.head.querySelector(`style[data-ant-design-solid="${styleId}"]`)
+  if (existingStyle) {
+    existingStyle.textContent = css
+    return
+  }
   const style = document.createElement('style')
   style.setAttribute('data-ant-design-solid', styleId)
   style.textContent = css

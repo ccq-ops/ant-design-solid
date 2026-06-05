@@ -11,6 +11,7 @@ export function useAlertStyle(prefixCls: string) {
       [`.${prefixCls}`]: {
         'box-sizing': 'border-box',
         display: 'flex',
+        'align-items': 'center',
         gap: t.marginSM,
         width: '100%',
         padding: at.padding,
