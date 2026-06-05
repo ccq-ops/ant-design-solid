@@ -1,6 +1,72 @@
 import { createSignal } from 'solid-js'
 import { TreeSelect } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const treeSelectRows: ApiTableRow[] = [
+  { property: 'treeData', description: 'Hierarchical option nodes.', type: 'TreeSelectNode[]' },
+  { property: 'value', description: 'Controlled selected value.', type: 'OptionValue' },
+  {
+    property: 'defaultValue',
+    description: 'Initial selected value for uncontrolled usage.',
+    type: 'OptionValue',
+  },
+  { property: 'open', description: 'Controlled dropdown open state.', type: 'boolean' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial dropdown open state.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'placeholder', description: 'Placeholder content.', type: 'JSX.Element' },
+  {
+    property: 'disabled',
+    description: 'Disables the selector.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'allowClear',
+    description: 'Shows a clear button when a value is selected.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'defaultExpandedKeys',
+    description: 'Initially expanded tree node values.',
+    type: 'OptionValue[]',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  { property: 'zIndex', description: 'Custom dropdown z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns dropdown portal container.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when selection changes.',
+    type: '(value: OptionValue | undefined, node: TreeSelectNode | undefined) => void',
+  },
+  {
+    property: 'onOpenChange',
+    description: 'Called when dropdown open state changes.',
+    type: '(open: boolean) => void',
+  },
+]
+
+const treeSelectNodeRows: ApiTableRow[] = [
+  { property: 'title', description: 'Node display title.', type: 'JSX.Element' },
+  { property: 'value', description: 'Node option value.', type: 'OptionValue' },
+  {
+    property: 'disabled',
+    description: 'Disables this node.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'children', description: 'Child tree select nodes.', type: 'TreeSelectNode[]' },
+]
 
 const treeData = [
   {
@@ -54,6 +120,12 @@ export default function TreeSelectPage() {
       >
         <TreeSelect value={value()} onChange={(next) => setValue(next)} treeData={treeData} />
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>TreeSelect</h3>
+      <ApiTable rows={treeSelectRows} aria-label="TreeSelect API" />
+      <h3>TreeSelectNode</h3>
+      <ApiTable rows={treeSelectNodeRows} aria-label="TreeSelect Node API" />
     </>
   )
 }

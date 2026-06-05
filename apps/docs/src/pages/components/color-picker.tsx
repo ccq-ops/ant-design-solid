@@ -1,6 +1,111 @@
 import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const colorPickerRows: ApiTableRow[] = [
+  { property: 'value', description: 'Controlled color value.', type: 'ColorPickerValue' },
+  {
+    property: 'defaultValue',
+    description: 'Initial color value for uncontrolled usage.',
+    type: 'ColorPickerValue',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when the color changes with Color object and hex string.',
+    type: '(value: Color | undefined, hex: string) => void',
+  },
+  {
+    property: 'onChangeComplete',
+    description: 'Called after a committed color change.',
+    type: '(value: Color | undefined) => void',
+  },
+  { property: 'open', description: 'Controlled popup open state.', type: 'boolean' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial popup open state.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'onOpenChange',
+    description: 'Called when popup open state changes.',
+    type: '(open: boolean) => void',
+  },
+  {
+    property: 'disabled',
+    description: 'Disables the picker.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'size',
+    description: 'Picker size.',
+    type: "'small' | 'middle' | 'large'",
+    defaultValue: 'ConfigProvider size',
+  },
+  {
+    property: 'placement',
+    description: 'Popup placement.',
+    type: 'DropdownPlacement',
+    defaultValue: "'bottomLeft'",
+  },
+  {
+    property: 'trigger',
+    description: 'Interaction that opens the popup.',
+    type: "'click' | 'hover'",
+    defaultValue: "'click'",
+  },
+  {
+    property: 'format',
+    description: 'Controlled color input format.',
+    type: "'hex' | 'rgb' | 'hsb'",
+    defaultValue: "'hex'",
+  },
+  {
+    property: 'defaultFormat',
+    description: 'Initial color input format.',
+    type: "'hex' | 'rgb' | 'hsb'",
+    defaultValue: "'hex'",
+  },
+  {
+    property: 'disabledAlpha',
+    description: 'Disables alpha editing.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'allowClear',
+    description: 'Shows a clear button.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showText',
+    description: 'Shows selected color text or custom text renderer.',
+    type: 'boolean | ((color: Color | undefined) => JSX.Element)',
+  },
+  { property: 'presets', description: 'Preset color groups.', type: 'ColorPickerPreset[]' },
+  {
+    property: 'panelRender',
+    description: 'Custom panel renderer.',
+    type: '(panel: JSX.Element, extra: ColorPickerPanelRenderExtra) => JSX.Element',
+  },
+  { property: 'popupClass', description: 'Additional popup class.', type: 'string' },
+  { property: 'popupStyle', description: 'Popup inline style.', type: 'JSX.CSSProperties' },
+  { property: 'zIndex', description: 'Custom popup z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns popup portal container.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+]
+
+const colorPickerPresetRows: ApiTableRow[] = [
+  { property: 'label', description: 'Preset group label.', type: 'JSX.Element' },
+  { property: 'colors', description: 'Preset color values.', type: 'string[]' },
+]
 
 export default function ColorPickerPage() {
   const [value, setValue] = createSignal('#1677ff')
@@ -106,19 +211,10 @@ export default function ColorPickerPage() {
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          Use <code>value</code>, <code>defaultValue</code>, and <code>onChange</code> to manage the
-          selected color.
-        </li>
-        <li>
-          Use <code>format</code> or <code>defaultFormat</code> to choose HEX, RGB, or HSB inputs.
-        </li>
-        <li>
-          Use <code>presets</code>, <code>allowClear</code>, <code>showText</code>, and{' '}
-          <code>panelRender</code> to customize the picker.
-        </li>
-      </ul>
+      <h3>ColorPicker</h3>
+      <ApiTable rows={colorPickerRows} aria-label="ColorPicker API" />
+      <h3>ColorPickerPreset</h3>
+      <ApiTable rows={colorPickerPresetRows} aria-label="ColorPicker Preset API" />
     </>
   )
 }

@@ -1,6 +1,70 @@
 import { createSignal } from 'solid-js'
 import { DatePicker, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const datePickerRows: ApiTableRow[] = [
+  { property: 'value', description: 'Controlled selected date.', type: 'Date | string' },
+  {
+    property: 'defaultValue',
+    description: 'Initial selected date for uncontrolled usage.',
+    type: 'Date | string',
+  },
+  {
+    property: 'format',
+    description: 'Display and emitted date string format.',
+    type: 'string',
+    defaultValue: "'YYYY-MM-DD'",
+  },
+  {
+    property: 'placeholder',
+    description: 'Placeholder text when no date is selected.',
+    type: 'string',
+    defaultValue: "'Select date'",
+  },
+  {
+    property: 'disabled',
+    description: 'Disables the picker.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'allowClear',
+    description: 'Shows a clear button when a value is selected.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'open', description: 'Controlled popup open state.', type: 'boolean' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial popup open state.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'disabledDate',
+    description: 'Disables date cells.',
+    type: '(date: Date) => boolean',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when selection changes.',
+    type: '(value: Date | undefined, dateString: string) => void',
+  },
+  {
+    property: 'onOpenChange',
+    description: 'Called when popup open state changes.',
+    type: '(open: boolean) => void',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  { property: 'zIndex', description: 'Custom popup z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns popup portal container.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+]
 
 export default function DatePickerPage() {
   const [value, setValue] = createSignal<Date | string | undefined>('2026-06-15')
@@ -47,19 +111,11 @@ const [open, setOpen] = createSignal(false)
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          Use <code>value</code> and <code>onChange</code> for controlled date selection.
-        </li>
-        <li>
-          <code>format</code> supports common <code>YYYY</code>, <code>MM</code>, and{' '}
-          <code>DD</code> tokens for display and emitted strings.
-        </li>
-        <li>
-          <code>disabledDate</code> receives each local date and prevents selection when it returns{' '}
-          <code>true</code>.
-        </li>
-      </ul>
+      <p>
+        <code>format</code> supports common <code>YYYY</code>, <code>MM</code>, and <code>DD</code>
+        tokens for display and emitted strings.
+      </p>
+      <ApiTable rows={datePickerRows} aria-label="DatePicker API" />
     </>
   )
 }
