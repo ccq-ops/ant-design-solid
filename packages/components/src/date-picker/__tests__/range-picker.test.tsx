@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import dayjs, { type Dayjs } from 'dayjs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { RangePicker } from '..'
 import * as DatePickerIndex from '..'
 import * as DatePickerModule from '../date-picker'
 
@@ -159,6 +160,32 @@ describe('RangePicker', () => {
     expect(screen.getByRole('button', { name: '2026-06-12' })).toHaveClass(
       'ads-date-picker-cell-in-range',
     )
+  })
+
+  it('keeps an internal draft while selecting a controlled range', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <RangePicker
+        value={[null, null]}
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
+
+    const [dates, dateStrings] = onChange.mock.calls.at(-1)!
+    expect(dates[0].format('YYYY-MM-DD')).toBe('2026-06-10')
+    expect(dates[1].format('YYYY-MM-DD')).toBe('2026-06-15')
+    expect(dateStrings).toEqual(['2026-06-10', '2026-06-15'])
+  })
+
+  it('does not forward showTime to the root DOM element', () => {
+    const result = render(() => <RangePicker showTime />)
+
+    expect(result.container.firstElementChild).not.toHaveAttribute('showTime')
   })
 
   it('renders a custom separator and disables the configured end input', () => {

@@ -80,6 +80,7 @@ export function RangePicker(props: RangePickerProps) {
     'open',
     'defaultOpen',
     'disabledDate',
+    'showTime',
     'minDate',
     'maxDate',
     'locale',
@@ -130,6 +131,7 @@ export function RangePicker(props: RangePickerProps) {
   const [activeRange, setActiveRange] = createSignal<RangeSide>('start')
   const [selecting, setSelecting] = createSignal(false)
   const [hoverValue, setHoverValue] = createSignal<dayjs.Dayjs | null>(null)
+  const [draftRange, setDraftRange] = createSignal<RangeTuple>([null, null])
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
@@ -237,6 +239,7 @@ export function RangePicker(props: RangePickerProps) {
     const nextDate = pickerSelectionStart(date, picker())
     if (!selecting() || activeRange() === 'start') {
       const nextRange: RangeTuple = [nextDate, null]
+      setDraftRange(nextRange)
       if (!isValueControlled()) setInnerValue(nextRange)
       setInputValues(rangeStrings(nextRange, local.format, picker()))
       emitCalendarChange(nextRange, 'start')
@@ -247,12 +250,14 @@ export function RangePicker(props: RangePickerProps) {
       return
     }
 
-    const draft: RangeTuple = [selectedRange()[0], nextDate]
+    const currentDraft = draftRange()
+    const draft: RangeTuple = [currentDraft[0] ?? selectedRange()[0], nextDate]
     const nextRange = local.order === false ? draft : sortRange(draft)
     commitValue(nextRange)
     emitCalendarChange(nextRange, 'end')
     setSelecting(false)
     setHoverValue(null)
+    setDraftRange([null, null])
     setActiveRange('start')
     setOpen(false)
   }
