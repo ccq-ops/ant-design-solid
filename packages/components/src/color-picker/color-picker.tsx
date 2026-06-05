@@ -835,7 +835,7 @@ export function ColorPicker(props: ColorPickerProps) {
     local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
 
   return (
-    <>
+    <ZIndexContext.Provider value={contextZIndex}>
       <button
         {...rest}
         ref={(element) => {
@@ -876,7 +876,6 @@ export function ColorPicker(props: ColorPickerProps) {
       </button>
       <Show when={open()}>
         <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
-          <ZIndexContext.Provider value={contextZIndex}>
           <div
             ref={(element) => {
               popupRef = element
@@ -895,9 +894,8 @@ export function ColorPicker(props: ColorPickerProps) {
           >
             {renderedPanel()}
           </div>
-          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
-    </>
+    </ZIndexContext.Provider>
   )
 }

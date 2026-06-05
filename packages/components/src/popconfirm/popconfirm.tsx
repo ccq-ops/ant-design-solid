@@ -65,7 +65,7 @@ export function Popconfirm(props: PopconfirmProps) {
   }
 
   return (
-    <>
+    <ZIndexContext.Provider value={contextZIndex}>
       <span
         ref={setTrigger}
         onClick={(event) => {
@@ -78,7 +78,6 @@ export function Popconfirm(props: PopconfirmProps) {
       </span>
       <Show when={mergedOpen()}>
         <InternalPortal mount={() => props.getPopupContainer?.(trigger()) ?? config.getPopupContainer?.(trigger())}>
-          <ZIndexContext.Provider value={contextZIndex}>
           <div
             class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
             style={{ ...position(), 'z-index': zIndex }}
@@ -98,9 +97,8 @@ export function Popconfirm(props: PopconfirmProps) {
               </Button>
             </div>
           </div>
-          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
-    </>
+    </ZIndexContext.Provider>
   )
 }

@@ -133,7 +133,7 @@ export function Popover(props: PopoverProps) {
   }
 
   return (
-    <>
+    <ZIndexContext.Provider value={contextZIndex}>
       <span
         {...rest}
         ref={(element) => {
@@ -152,7 +152,6 @@ export function Popover(props: PopoverProps) {
       </span>
       <Show when={open()}>
         <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
-          <ZIndexContext.Provider value={contextZIndex}>
           <div
             ref={(element) => {
               overlayRef = element
@@ -175,9 +174,8 @@ export function Popover(props: PopoverProps) {
               </Show>
             </div>
           </div>
-          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
-    </>
+    </ZIndexContext.Provider>
   )
 }

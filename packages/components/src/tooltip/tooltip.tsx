@@ -122,7 +122,7 @@ export function Tooltip(props: TooltipProps) {
   }
 
   return (
-    <>
+    <ZIndexContext.Provider value={contextZIndex}>
       <span
         {...rest}
         ref={(element) => {
@@ -141,7 +141,6 @@ export function Tooltip(props: TooltipProps) {
       </span>
       <Show when={open()}>
         <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
-          <ZIndexContext.Provider value={contextZIndex}>
           <div
             role="tooltip"
             class={classNames(
@@ -154,9 +153,8 @@ export function Tooltip(props: TooltipProps) {
           >
             {local.title}
           </div>
-          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
-    </>
+    </ZIndexContext.Provider>
   )
 }

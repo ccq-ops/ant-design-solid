@@ -56,8 +56,9 @@ export function useZIndex(
     ? containerBaseZIndexOffset[componentType]
     : consumerBaseZIndexOffset[componentType]
   const zIndex = (parentZIndex ?? baseZIndex) + offset
+  const effectiveZIndex = parentZIndex === undefined && !isContainerType(componentType) ? 0 : zIndex
 
-  return [zIndex, zIndex]
+  return [effectiveZIndex, zIndex]
 }
 
 export function allocateZIndex() {

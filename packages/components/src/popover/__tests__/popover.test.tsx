@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
+import { Select } from '../../select'
 import { Popover } from '../index'
 
 describe('Popover', () => {
@@ -154,4 +155,22 @@ it('uses explicit zIndex and custom popup container', () => {
   expect(overlay).toHaveTextContent('Layer')
   expect(overlay.style.zIndex).toBe('1235')
   expect(result.container.querySelector('.ads-popover')).toBeFalsy()
+})
+
+
+it('renders a nested select dropdown above the popover overlay', () => {
+  render(() => (
+    <Popover
+      open
+      content={<Select open zIndex={1300} options={[{ value: 'one', label: 'One' }]} />}
+    >
+      <button>trigger</button>
+    </Popover>
+  ))
+
+  const popover = document.body.querySelector<HTMLElement>('.ads-popover')!
+  const dropdown = Array.from(document.body.querySelectorAll<HTMLElement>('.ads-select-dropdown')).find((element) => element.textContent?.includes('One'))!
+
+  expect(dropdown).toHaveTextContent('One')
+  expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(popover.style.zIndex))
 })

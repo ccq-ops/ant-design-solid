@@ -1,5 +1,6 @@
 import { For, Show, createEffect, createMemo, createRenderEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -115,14 +116,18 @@ export function TimePicker(props: TimePickerProps) {
   })
 
   function updateDropdownPosition(): void {
-    if (!canUseDom() || !selectorRef) return
+    if (isServer) return
+    if (!canUseDom() || !selectorRef) {
+      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      return
+    }
     const rect = selectorRef.getBoundingClientRect()
     setDropdownPosition({
       position: 'fixed',
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       width: `${rect.width}px`,
-      'z-index': dropdownZIndex,
+      'z-index': `${dropdownZIndex}`,
     })
   }
 
