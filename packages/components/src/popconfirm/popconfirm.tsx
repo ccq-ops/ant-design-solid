@@ -1,7 +1,8 @@
-import { Show, createSignal } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { PopconfirmProps } from './interface'
@@ -47,6 +48,16 @@ export function Popconfirm(props: PopconfirmProps) {
     }
   }
   const [position, setPosition] = createSignal(getPosition())
+
+  function updatePosition(): void {
+    setPosition(getPosition())
+  }
+
+  createEffect(() => {
+    if (!mergedOpen()) return
+    const removeListeners = addPositionUpdateListeners(updatePosition)
+    onCleanup(removeListeners)
+  })
 
   const confirm = async (event?: MouseEvent) => {
     event?.stopPropagation()

@@ -1,8 +1,20 @@
-import { For, Show, createRenderEffect, createSignal, onCleanup, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createEffect,
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
+import {
+  addDocumentKeydown,
+  addDocumentPointerDown,
+  addPositionUpdateListeners,
+} from '../shared/overlay'
 import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
@@ -162,6 +174,12 @@ export function ColorPicker(props: ColorPickerProps) {
 
   createRenderEffect(() => {
     syncDraftToSource(format())
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removeListeners = addPositionUpdateListeners(updatePosition)
+    onCleanup(removeListeners)
   })
 
   onCleanup(() => {

@@ -5,12 +5,14 @@ import {
   createMemo,
   createRenderEffect,
   createSignal,
+  onCleanup,
   splitProps,
 } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { TimePickerFormat, TimePickerProps } from './interface'
@@ -148,6 +150,12 @@ export function TimePicker(props: TimePickerProps) {
 
   createRenderEffect(() => {
     if (open()) updateDropdownPosition()
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
+    onCleanup(removeListeners)
   })
 
   function changeValue(nextValue: string | undefined): void {

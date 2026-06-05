@@ -1,9 +1,18 @@
-import { For, Show, createEffect, createRenderEffect, createSignal, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createEffect,
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
+import { addPositionUpdateListeners } from '../shared/overlay'
 import { normalizeOptions, type LabeledOption, type OptionValue } from '../shared/options'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
@@ -87,6 +96,12 @@ export function Select(props: SelectProps) {
 
   createRenderEffect(() => {
     if (open()) updateDropdownPosition()
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
+    onCleanup(removeListeners)
   })
 
   function changeValue(

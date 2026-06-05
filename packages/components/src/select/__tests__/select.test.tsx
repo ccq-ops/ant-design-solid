@@ -216,7 +216,9 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
 
   fireEvent.click(selector)
 
-  const dropdown = document.body.querySelector<HTMLElement>('.ads-select-dropdown')!
+  const dropdown = Array.from(
+    document.body.querySelectorAll<HTMLElement>('.ads-select-dropdown'),
+  ).find((element) => element.textContent?.includes('One'))!
   expect(dropdown).toBeTruthy()
   expect(result.container.querySelector('.ads-select-dropdown')).toBeFalsy()
   expect(dropdown.style.position).toBe('fixed')
@@ -224,5 +226,61 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
   expect(dropdown.style.left).toBe('20px')
   expect(dropdown.style.width).toBe('200px')
   expect(dropdown.style.zIndex).toBe('1301')
+  rectSpy.mockRestore()
+})
+
+it('updates portal dropdown position when the page scrolls', () => {
+  const result = render(() => <Select options={[{ value: 'one', label: 'One' }]} />)
+  const selector = result.container.querySelector('.ads-select-selector') as HTMLElement
+  const rectSpy = vi
+    .spyOn(selector, 'getBoundingClientRect')
+    .mockReturnValueOnce({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+    .mockReturnValueOnce({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+    .mockReturnValue({
+      top: 30,
+      bottom: 62,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 30,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+  fireEvent.click(selector)
+
+  expect(
+    Array.from(document.body.querySelectorAll<HTMLElement>('.ads-select-dropdown')).find(
+      (element) => element.textContent?.includes('One'),
+    )!.style.top,
+  ).toBe('46px')
+
+  window.dispatchEvent(new Event('scroll'))
+  expect(rectSpy).toHaveBeenCalledTimes(3)
+  const updatedDropdown = Array.from(
+    document.body.querySelectorAll<HTMLElement>('.ads-select-dropdown'),
+  ).find((element) => element.textContent?.includes('One') && element.style.top === '66px')!
+  expect(updatedDropdown).toBeTruthy()
   rectSpy.mockRestore()
 })

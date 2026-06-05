@@ -1,7 +1,11 @@
-import { For, Show, createSignal, onCleanup, splitProps } from 'solid-js'
+import { For, Show, createEffect, createSignal, onCleanup, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
+import {
+  addDocumentKeydown,
+  addDocumentPointerDown,
+  addPositionUpdateListeners,
+} from '../shared/overlay'
 import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
@@ -67,6 +71,12 @@ export function Dropdown(props: DropdownProps) {
   const removePointerDown = addDocumentPointerDown((event) => {
     if (trigger() === 'click' && mergedOpen() && !containsTarget(event.target)) setOpen(false)
   })
+  createEffect(() => {
+    if (!mergedOpen()) return
+    const removeListeners = addPositionUpdateListeners(updatePosition)
+    onCleanup(removeListeners)
+  })
+
   onCleanup(() => {
     removeKeydown()
     removePointerDown()

@@ -15,6 +15,16 @@ export function addDocumentPointerDown(handler: (event: PointerEvent) => void) {
   return () => document.removeEventListener('pointerdown', handler)
 }
 
+export function addPositionUpdateListeners(handler: () => void) {
+  if (!canUseDom()) return () => {}
+  window.addEventListener('scroll', handler, true)
+  window.addEventListener('resize', handler)
+  return () => {
+    window.removeEventListener('scroll', handler, true)
+    window.removeEventListener('resize', handler)
+  }
+}
+
 export function lockBodyScroll() {
   if (!canUseDom()) return
   if (scrollLockCount === 0) {
