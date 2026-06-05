@@ -28,46 +28,6 @@ function optionText(option: AutoCompleteOption): string {
 
 function defaultFilter(inputValue: string, option: AutoCompleteOption): boolean {
   const search = inputValue.toLowerCase()
-  const dropdownNode = () => (
-    <div
-      role="listbox"
-      ref={(element) => {
-        dropdownRef = element
-      }}
-      class={`${prefixCls()}-dropdown`}
-      style={dropdownPosition()}
-      onScroll={(event) => local.onPopupScroll?.(event)}
-    >
-      <Show
-        when={filteredOptions().length > 0}
-        fallback={<div class={`${prefixCls()}-empty`}>{local.notFoundContent}</div>}
-      >
-        <For each={filteredOptions()}>
-          {(option) => (
-            <div
-              role="option"
-              aria-disabled={Boolean(option.disabled)}
-              aria-selected={option.value === activeValue()}
-              class={classNames(
-                `${prefixCls()}-item`,
-                option.disabled && `${prefixCls()}-item-disabled`,
-                option.value === activeValue() && `${prefixCls()}-item-active`,
-              )}
-              onClick={() => selectOption(option)}
-            >
-              {option.label ?? option.value}
-            </div>
-          )}
-        </For>
-      </Show>
-    </div>
-  )
-
-  const renderedDropdownNode = () => {
-    const node = dropdownNode()
-    return local.popupRender ? local.popupRender(node) : node
-  }
-
   return (
     option.value.toLowerCase().includes(search) || optionText(option).toLowerCase().includes(search)
   )
