@@ -1,8 +1,10 @@
 import { Button, Space } from '@ant-design-solid/core'
 import { DownloadOutlined, PoweroffOutlined, SearchOutlined } from '@ant-design-solid/icons'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
 
-const apiRows = [
+const apiRows: ApiTableRow[] = [
   {
     property: 'autoInsertSpace',
     description: 'Automatically inserts a space between two Chinese characters.',
@@ -289,34 +291,7 @@ export default function ButtonPage() {
         Button accepts native button attributes. When <code>href</code> is provided, it renders as
         an anchor-like button and <code>target</code> is applied to the link.
       </p>
-      <div class="overflow-auto">
-        <table class="w-full border-collapse text-left text-sm">
-          <thead>
-            <tr>
-              <th class="border border-gray-200 bg-slate-50 px-3 py-2">Property</th>
-              <th class="border border-gray-200 bg-slate-50 px-3 py-2">Description</th>
-              <th class="border border-gray-200 bg-slate-50 px-3 py-2">Type</th>
-              <th class="border border-gray-200 bg-slate-50 px-3 py-2">Default</th>
-            </tr>
-          </thead>
-          <tbody>
-            {apiRows.map((row) => (
-              <tr>
-                <td class="border border-gray-200 px-3 py-2 align-top">
-                  <code>{row.property}</code>
-                </td>
-                <td class="border border-gray-200 px-3 py-2 align-top">{row.description}</td>
-                <td class="border border-gray-200 px-3 py-2 align-top">
-                  <code>{row.type}</code>
-                </td>
-                <td class="border border-gray-200 px-3 py-2 align-top">
-                  <code>{row.defaultValue}</code>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ApiTable rows={apiRows} aria-label="Button API" />
 
       <h3>PresetColor</h3>
       <p>

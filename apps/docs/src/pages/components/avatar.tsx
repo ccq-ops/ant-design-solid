@@ -1,5 +1,63 @@
 import { Avatar, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const avatarRows: ApiTableRow[] = [
+  {
+    property: 'size',
+    description: 'Avatar size or custom pixel size.',
+    type: "'small' | 'default' | 'large' | number",
+    defaultValue: "'default'",
+  },
+  {
+    property: 'shape',
+    description: 'Avatar shape.',
+    type: "'circle' | 'square'",
+    defaultValue: "'circle'",
+  },
+  {
+    property: 'src',
+    description: 'Image URL. Falls back to icon or children after load failure.',
+    type: 'string',
+  },
+  { property: 'alt', description: 'Alternate text for the image avatar.', type: 'string' },
+  {
+    property: 'icon',
+    description: 'Icon content shown when no valid image is available.',
+    type: 'JSX.Element',
+  },
+  { property: 'gap', description: 'Reserved text gap configuration.', type: 'number' },
+  {
+    property: 'children',
+    description: 'Text or custom content shown inside the avatar.',
+    type: 'JSX.Element',
+  },
+]
+
+const avatarGroupRows: ApiTableRow[] = [
+  {
+    property: 'maxCount',
+    description: 'Maximum number of avatars to show before rendering an overflow avatar.',
+    type: 'number',
+  },
+  {
+    property: 'maxStyle',
+    description: 'Inline style applied to the overflow avatar.',
+    type: 'JSX.CSSProperties',
+  },
+  {
+    property: 'size',
+    description: 'Shared size applied to avatars in the group.',
+    type: "'small' | 'default' | 'large' | number",
+  },
+  {
+    property: 'shape',
+    description: 'Shared shape applied to avatars in the group.',
+    type: "'circle' | 'square'",
+  },
+  { property: 'children', description: 'Avatar items rendered in the group.', type: 'JSX.Element' },
+]
 
 function UserIcon() {
   return <span aria-hidden="true">👤</span>
@@ -59,6 +117,12 @@ export default function AvatarPage() {
           <Avatar>E</Avatar>
         </Avatar.Group>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Avatar</h3>
+      <ApiTable rows={avatarRows} aria-label="Avatar API" />
+      <h3>Avatar.Group</h3>
+      <ApiTable rows={avatarGroupRows} aria-label="Avatar Group API" />
     </>
   )
 }

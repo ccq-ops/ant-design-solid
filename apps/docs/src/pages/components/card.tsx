@@ -1,5 +1,41 @@
 import { Button, Card, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const cardRows: ApiTableRow[] = [
+  { property: 'title', description: 'Card title rendered in the header.', type: 'JSX.Element' },
+  {
+    property: 'extra',
+    description: 'Extra content rendered on the right side of the header.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'cover',
+    description: 'Cover content rendered before the card body.',
+    type: 'JSX.Element',
+  },
+  { property: 'actions', description: 'Footer action items.', type: 'JSX.Element[]' },
+  {
+    property: 'bordered',
+    description: 'Whether to render a card border.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'hoverable',
+    description: 'Enables hover elevation styling.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'size',
+    description: 'Card size.',
+    type: "'default' | 'small'",
+    defaultValue: "'default'",
+  },
+  { property: 'children', description: 'Card body content.', type: 'JSX.Element' },
+]
 
 export default function CardPage() {
   return (
@@ -65,6 +101,9 @@ export default function CardPage() {
           Action slots accept any JSX element, including buttons.
         </Card>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={cardRows} aria-label="Card API" />
     </>
   )
 }
