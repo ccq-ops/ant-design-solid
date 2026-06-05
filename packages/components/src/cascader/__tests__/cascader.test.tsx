@@ -567,6 +567,25 @@ describe('Cascader', () => {
     )
   })
 
+
+  it('supports size status variant and prefix visual props', () => {
+    const result = render(() => (
+      <Cascader
+        size="large"
+        status="error"
+        variant="filled"
+        prefix={<span data-testid="prefix">Area</span>}
+        options={options}
+      />
+    ))
+
+    const root = result.container.querySelector('.ads-cascader')!
+    expect(root).toHaveClass('ads-cascader-large')
+    expect(root).toHaveClass('ads-cascader-status-error')
+    expect(root).toHaveClass('ads-cascader-filled')
+    expect(result.getByTestId('prefix')).toBeTruthy()
+  })
+
   it('supports custom prefix classes from props and ConfigProvider', () => {
     const withProp = render(() => <Cascader prefixCls="custom-cascader" options={options} />)
     expect(withProp.container.querySelector('.custom-cascader')).toBeTruthy()
