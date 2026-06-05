@@ -15,7 +15,6 @@ export function useDropdownStyle(prefixCls: string) {
         },
         [`.${prefixCls}`]: {
           position: 'fixed',
-          'z-index': 1050,
           'min-width': dt.minWidth,
           background: dt.bg,
           'box-shadow': dt.boxShadow,

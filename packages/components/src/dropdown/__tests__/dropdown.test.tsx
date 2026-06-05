@@ -123,3 +123,22 @@ describe('Dropdown', () => {
     expect(open()).toBe(false)
   })
 })
+
+it('uses explicit zIndex and custom popup container', () => {
+  const popupContainer = document.createElement('div')
+  document.body.appendChild(popupContainer)
+  render(() => (
+    <Dropdown
+      open
+      zIndex={1240}
+      getPopupContainer={() => popupContainer}
+      menu={{ items: [{ key: 'one', label: 'One' }] }}
+    >
+      <button>trigger</button>
+    </Dropdown>
+  ))
+
+  const overlay = popupContainer.querySelector<HTMLElement>('.ads-dropdown')!
+  expect(overlay).toHaveTextContent('One')
+  expect(overlay.style.zIndex).toBe('1240')
+})

@@ -4,6 +4,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
 import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import type { DropdownMenuItem, DropdownProps } from './interface'
 import { useDropdownStyle } from './dropdown.style'
 
@@ -22,6 +23,8 @@ export function Dropdown(props: DropdownProps) {
     'onOpenChange',
     'overlayClass',
     'overlayStyle',
+    'zIndex',
+    'getPopupContainer',
     'class',
     'style',
     'onClick',
@@ -31,6 +34,7 @@ export function Dropdown(props: DropdownProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-dropdown`
   const [, hashId] = useDropdownStyle(prefixCls())
+  const [zIndex] = useZIndex('Dropdown', local.zIndex)
   const [triggerElement, setTriggerElement] = createSignal<HTMLSpanElement>()
   const [overlayElement, setOverlayElement] = createSignal<HTMLDivElement>()
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
@@ -98,7 +102,7 @@ export function Dropdown(props: DropdownProps) {
         {local.children}
       </span>
       <Show when={mergedOpen()}>
-        <InternalPortal>
+        <InternalPortal mount={() => local.getPopupContainer?.(triggerElement()) ?? config.getPopupContainer?.(triggerElement())}>
           <div
             ref={setOverlayElement}
             class={classNames(
@@ -107,7 +111,7 @@ export function Dropdown(props: DropdownProps) {
               hashId(),
               local.overlayClass,
             )}
-            style={{ ...position(), ...local.overlayStyle }}
+            style={{ ...position(), 'z-index': zIndex, ...local.overlayStyle }}
             on:click={(event) => event.stopPropagation()}
           >
             <ul role="menu" class={`${prefixCls()}-menu`}>

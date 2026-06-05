@@ -30,4 +30,6 @@ export interface DropdownProps extends JSX.HTMLAttributes<HTMLSpanElement> {
   onOpenChange?: (open: boolean) => void
   overlayClass?: string
   overlayStyle?: JSX.CSSProperties
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
 }
