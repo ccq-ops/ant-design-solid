@@ -4,6 +4,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
 import { getTooltipPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { PopoverProps } from './interface'
 import { usePopoverStyle } from './popover.style'
 
@@ -28,6 +29,8 @@ export function Popover(props: PopoverProps) {
     'mouseLeaveDelay',
     'overlayClass',
     'overlayStyle',
+    'zIndex',
+    'getPopupContainer',
     'children',
     'class',
     'classList',
@@ -41,6 +44,7 @@ export function Popover(props: PopoverProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-popover`
   const [, hashId] = usePopoverStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('Popover', local.zIndex)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [position, setPosition] = createSignal<OverlayPosition>({ top: '0px', left: '0px' })
   let triggerRef: HTMLSpanElement | undefined
@@ -147,7 +151,8 @@ export function Popover(props: PopoverProps) {
         {local.children}
       </span>
       <Show when={open()}>
-        <InternalPortal>
+        <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
+          <ZIndexContext.Provider value={contextZIndex}>
           <div
             ref={(element) => {
               overlayRef = element
@@ -159,7 +164,7 @@ export function Popover(props: PopoverProps) {
               hashId(),
               local.overlayClass,
             )}
-            style={{ ...position(), ...local.overlayStyle }}
+            style={{ ...position(), 'z-index': zIndex, ...local.overlayStyle }}
           >
             <div class={`${prefixCls()}-inner`}>
               <Show when={local.title}>
@@ -170,6 +175,7 @@ export function Popover(props: PopoverProps) {
               </Show>
             </div>
           </div>
+          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
     </>

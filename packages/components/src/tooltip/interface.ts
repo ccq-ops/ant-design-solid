@@ -14,4 +14,6 @@ export interface TooltipProps extends Omit<JSX.HTMLAttributes<HTMLSpanElement>, 
   mouseLeaveDelay?: number
   overlayClass?: string
   overlayStyle?: JSX.CSSProperties
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
 }

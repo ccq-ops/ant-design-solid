@@ -4,6 +4,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
 import { getTooltipPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { TooltipProps } from './interface'
 import { useTooltipStyle } from './tooltip.style'
 
@@ -23,6 +24,8 @@ export function Tooltip(props: TooltipProps) {
     'mouseLeaveDelay',
     'overlayClass',
     'overlayStyle',
+    'zIndex',
+    'getPopupContainer',
     'children',
     'class',
     'classList',
@@ -36,6 +39,7 @@ export function Tooltip(props: TooltipProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-tooltip`
   const [, hashId] = useTooltipStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('Tooltip', local.zIndex)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [position, setPosition] = createSignal<OverlayPosition>({ top: '0px', left: '0px' })
   let triggerRef: HTMLSpanElement | undefined
@@ -136,7 +140,8 @@ export function Tooltip(props: TooltipProps) {
         {local.children}
       </span>
       <Show when={open()}>
-        <InternalPortal>
+        <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
+          <ZIndexContext.Provider value={contextZIndex}>
           <div
             role="tooltip"
             class={classNames(
@@ -145,10 +150,11 @@ export function Tooltip(props: TooltipProps) {
               hashId(),
               local.overlayClass,
             )}
-            style={{ ...position(), ...local.overlayStyle }}
+            style={{ ...position(), 'z-index': zIndex, ...local.overlayStyle }}
           >
             {local.title}
           </div>
+          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
     </>

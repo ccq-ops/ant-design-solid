@@ -3,6 +3,7 @@ import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { InternalPortal, canUseDom } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { PopconfirmProps } from './interface'
 import { usePopconfirmStyle } from './popconfirm.style'
 
@@ -14,6 +15,7 @@ export function Popconfirm(props: PopconfirmProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-popconfirm`
   const [, hashId] = usePopconfirmStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('Popconfirm', props.zIndex)
   const mergedOpen = () => props.open ?? innerOpen()
   const placement = () => props.placement ?? 'top'
 
@@ -75,10 +77,11 @@ export function Popconfirm(props: PopconfirmProps) {
         {props.children}
       </span>
       <Show when={mergedOpen()}>
-        <InternalPortal>
+        <InternalPortal mount={() => props.getPopupContainer?.(trigger()) ?? config.getPopupContainer?.(trigger())}>
+          <ZIndexContext.Provider value={contextZIndex}>
           <div
             class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
-            style={position()}
+            style={{ ...position(), 'z-index': zIndex }}
             role="dialog"
             on:click={(event) => event.stopPropagation()}
           >
@@ -95,6 +98,7 @@ export function Popconfirm(props: PopconfirmProps) {
               </Button>
             </div>
           </div>
+          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
     </>

@@ -39,4 +39,6 @@ export interface ColorPickerProps extends Omit<
   panelRender?: (panel: JSX.Element, extra: ColorPickerPanelRenderExtra) => JSX.Element
   popupClass?: string
   popupStyle?: JSX.CSSProperties
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
 }

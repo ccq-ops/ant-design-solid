@@ -140,3 +140,18 @@ describe('Popover', () => {
     expect(overlay.style.width).toBe('240px')
   })
 })
+
+it('uses explicit zIndex and custom popup container', () => {
+  const popupContainer = document.createElement('div')
+  document.body.appendChild(popupContainer)
+  const result = render(() => (
+    <Popover content="Layer" open zIndex={1235} getPopupContainer={() => popupContainer}>
+      <button>trigger</button>
+    </Popover>
+  ))
+
+  const overlay = popupContainer.querySelector<HTMLElement>('.ads-popover')!
+  expect(overlay).toHaveTextContent('Layer')
+  expect(overlay.style.zIndex).toBe('1235')
+  expect(result.container.querySelector('.ads-popover')).toBeFalsy()
+})

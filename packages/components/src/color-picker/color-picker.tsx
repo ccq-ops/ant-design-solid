@@ -5,6 +5,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
 import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
 import type { HsbColor } from './color'
 import { useColorPickerStyle } from './color-picker.style'
@@ -55,6 +56,8 @@ export function ColorPicker(props: ColorPickerProps) {
     'panelRender',
     'popupClass',
     'popupStyle',
+    'zIndex',
+    'getPopupContainer',
     'class',
     'style',
     'onClick',
@@ -62,6 +65,7 @@ export function ColorPicker(props: ColorPickerProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-color-picker`
   const [, hashId] = useColorPickerStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('ColorPicker', local.zIndex)
   const initialColor = parseColor(local.defaultValue)
   const [innerColor, setInnerColor] = createSignal(initialColor)
   const [innerHsb, setInnerHsb] = createSignal(
@@ -871,7 +875,8 @@ export function ColorPicker(props: ColorPickerProps) {
         )}
       </button>
       <Show when={open()}>
-        <InternalPortal>
+        <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
+          <ZIndexContext.Provider value={contextZIndex}>
           <div
             ref={(element) => {
               popupRef = element
@@ -884,12 +889,13 @@ export function ColorPicker(props: ColorPickerProps) {
               hashId(),
               local.popupClass,
             )}
-            style={{ ...position(), ...local.popupStyle }}
+            style={{ ...position(), 'z-index': zIndex, ...local.popupStyle }}
             onMouseEnter={handleHoverEnter}
             onMouseLeave={handleHoverLeave}
           >
             {renderedPanel()}
           </div>
+          </ZIndexContext.Provider>
         </InternalPortal>
       </Show>
     </>

@@ -15,7 +15,6 @@ export function useTooltipStyle(prefixCls: string) {
         },
         [`.${prefixCls}`]: {
           position: 'fixed',
-          'z-index': 1070,
           'max-width': tooltipToken.maxWidth,
           padding: `${tooltipToken.paddingBlock}px ${tooltipToken.paddingInline}px`,
           color: tooltipToken.color,

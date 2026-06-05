@@ -18,7 +18,6 @@ export function usePopconfirmStyle(prefixCls: string) {
           background: pt.bg,
           'border-radius': pt.borderRadius,
           'box-shadow': pt.boxShadow,
-          'z-index': 1030,
         },
         [`.${prefixCls}-title`]: { 'font-weight': 600 },
         [`.${prefixCls}-description`]: { color: t.colorTextSecondary, 'margin-top': t.marginXS },

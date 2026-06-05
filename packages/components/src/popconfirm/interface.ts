@@ -14,5 +14,7 @@ export interface PopconfirmProps {
   onConfirm?: () => void | Promise<void>
   onCancel?: () => void
   onOpenChange?: (open: boolean) => void
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   children: JSX.Element
 }

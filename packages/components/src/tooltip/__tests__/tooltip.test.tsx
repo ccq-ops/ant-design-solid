@@ -119,3 +119,18 @@ describe('Tooltip', () => {
     expect(document.body.querySelector('.ads-tooltip')).toBeFalsy()
   })
 })
+
+it('uses explicit zIndex and custom popup container', () => {
+  const popupContainer = document.createElement('div')
+  document.body.appendChild(popupContainer)
+  const result = render(() => (
+    <Tooltip title="Layer" open zIndex={1234} getPopupContainer={() => popupContainer}>
+      <button>trigger</button>
+    </Tooltip>
+  ))
+
+  const overlay = popupContainer.querySelector<HTMLElement>('.ads-tooltip')!
+  expect(overlay).toHaveTextContent('Layer')
+  expect(overlay.style.zIndex).toBe('1234')
+  expect(result.container.querySelector('.ads-tooltip')).toBeFalsy()
+})

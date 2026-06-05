@@ -930,3 +930,13 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })
 })
+
+it('uses explicit zIndex and custom popup container', () => {
+  const popupContainer = document.createElement('div')
+  document.body.appendChild(popupContainer)
+  render(() => <ColorPicker open zIndex={1237} getPopupContainer={() => popupContainer} />)
+
+  const popup = popupContainer.querySelector<HTMLElement>('.ads-color-picker-popup')!
+  expect(popup).toBeTruthy()
+  expect(popup.style.zIndex).toBe('1237')
+})

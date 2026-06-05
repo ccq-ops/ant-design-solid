@@ -15,7 +15,6 @@ export function usePopoverStyle(prefixCls: string) {
         },
         [`.${prefixCls}`]: {
           position: 'fixed',
-          'z-index': 1030,
           'min-width': popoverToken.minWidth,
           'max-width': popoverToken.maxWidth,
           color: t.colorText,

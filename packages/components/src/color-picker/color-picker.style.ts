@@ -62,7 +62,6 @@ export function useColorPickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-popup`]: {
           position: 'fixed',
-          'z-index': 1050,
           'box-sizing': 'border-box',
           minWidth: '180px',
           padding: `${t.paddingSM}px`,

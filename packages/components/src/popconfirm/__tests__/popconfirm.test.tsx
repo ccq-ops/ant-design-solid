@@ -216,3 +216,17 @@ describe('Popconfirm', () => {
     rectSpy.mockRestore()
   })
 })
+
+it('uses explicit zIndex and custom popup container', () => {
+  const popupContainer = document.createElement('div')
+  document.body.appendChild(popupContainer)
+  render(() => (
+    <Popconfirm title="Delete?" open zIndex={1236} getPopupContainer={() => popupContainer}>
+      <button>trigger</button>
+    </Popconfirm>
+  ))
+
+  const overlay = popupContainer.querySelector<HTMLElement>('.ads-popconfirm')!
+  expect(overlay).toHaveTextContent('Delete?')
+  expect(overlay.style.zIndex).toBe('1236')
+})
