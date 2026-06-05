@@ -322,6 +322,35 @@ describe('Cascader', () => {
     expect(child.getByText('Parent / Child B')).toBeTruthy()
   })
 
+
+  it('clears multiple search after selection by default and preserves it when disabled', () => {
+    const keep = render(() => (
+      <Cascader multiple showSearch={{ autoClearSearchValue: false }} options={options} />
+    ))
+
+    fireEvent.click(keep.getByRole('combobox'))
+    fireEvent.input(screen.getByRole('textbox'), { target: { value: 'west' } })
+    fireEvent.click(screen.getByRole('option', { name: 'Zhejiang / Hangzhou / West Lake' }))
+    expect(screen.getByRole('textbox')).toHaveValue('west')
+    cleanup()
+
+    const clear = render(() => <Cascader multiple showSearch options={options} />)
+    fireEvent.click(clear.getByRole('combobox'))
+    fireEvent.input(screen.getByRole('textbox'), { target: { value: 'west' } })
+    fireEvent.click(screen.getByRole('option', { name: 'Zhejiang / Hangzhou / West Lake' }))
+    expect(screen.getByRole('textbox')).toHaveValue('')
+  })
+
+  it('supports multiple changeOnSelect for intermediate paths', () => {
+    const onChange = vi.fn()
+    render(() => <Cascader multiple changeOnSelect options={options} onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Zhejiang' }))
+
+    expect(onChange).toHaveBeenLastCalledWith([['zhejiang']], [[options[0]]])
+  })
+
   it('supports controlled value mode', () => {
     const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
     const result = render(() => (
