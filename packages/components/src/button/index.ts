@@ -1,2 +1,13 @@
 export { Button } from './button'
-export type { ButtonHTMLType, ButtonProps, ButtonType } from './interface'
+export type {
+  ButtonColor,
+  ButtonHTMLType,
+  ButtonIconPosition,
+  ButtonLoading,
+  ButtonLoadingConfig,
+  ButtonPresetColor,
+  ButtonProps,
+  ButtonShape,
+  ButtonType,
+  ButtonVariant,
+} from './interface'
