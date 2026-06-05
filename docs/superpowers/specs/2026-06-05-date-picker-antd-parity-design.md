@@ -2,359 +2,409 @@
 
 ## Goal
 
-Rebuild `packages/components/src/date-picker` so it uses `dayjs` as its value and date manipulation library, and supports the current public antd DatePicker API surface except `classNames` and `styles`, which are intentionally out of scope.
+Rebuild `packages/components/src/date-picker` so it strictly targets the current public antd DatePicker API surface while using `dayjs` as the date/time value library. The delivered component must expose single DatePicker, picker variants, and RangePicker with antd-compatible prop names, callback shapes, and core behavior.
 
-The resulting component should expose:
+## Scope
 
-- `DatePicker`
-- `DatePicker.RangePicker`
-- optional named `RangePicker` export
-- `picker="date" | "week" | "month" | "quarter" | "year"`
-- single, range, multiple, and show-time selection flows
+This work covers the DatePicker family:
 
-## Explicit Non-Goals
+- `<DatePicker />`
+- `<DatePicker picker="week" />`
+- `<DatePicker picker="month" />`
+- `<DatePicker picker="quarter" />`
+- `<DatePicker picker="year" />`
+- `<DatePicker.RangePicker />`
+- named `RangePicker` export
 
-- Do not implement `classNames`.
-- Do not implement `styles`.
-- Do not preserve `Date | string` as the primary value type. New public values use `Dayjs | null` or arrays of `Dayjs | null`.
-- Do not wrap React antd or React rc-picker components at runtime.
-- Do not implement perfect pixel parity with antd. The target is API and behavior parity within this Solid component library's styling system.
+The implementation will replace the current minimal `Date | string` picker with a `dayjs`-based implementation. New public examples and tests will use `Dayjs | null` and `[Dayjs | null, Dayjs | null] | null` values.
 
-## Public API Scope
+Deprecated antd props remain accepted when practical and map to the current API:
 
-### Common API
+- `bordered` maps to `variant` behavior.
+- `dropdownClassName` and `popupClassName` map to popup root classes.
+- `popupStyle` maps to popup root styles.
+- `dateRender` maps to `cellRender` compatibility.
+- `onSelect` is called for single date cell selection in addition to the modern flow.
+- `showTime.defaultValue` maps to `showTime.defaultOpenValue`.
 
-Implement these antd-compatible common props:
+## Non-goals
 
-- `allowClear?: boolean | { clearIcon?: JSX.Element }`
-- `bordered?: boolean` as deprecated compatibility mapped to `variant`
-- `className?: string` as an alias merged with Solid `class`
-- `dateRender?: DateRender` as deprecated compatibility mapped to `cellRender`
-- `cellRender?: CellRender`
-- `components?: Partial<Record<PanelName | 'input', ComponentLike>>`
-- `defaultOpen?: boolean`
-- `disabled?: boolean`
-- `disabledDate?: (currentDate: Dayjs, info: { from?: Dayjs; type: PickerType }) => boolean`
-- `dropdownClassName?: string` deprecated popup class compatibility
-- `format?: FormatType`
-- `order?: boolean`
-- `popupClassName?: string` deprecated popup class compatibility
-- `popupStyle?: JSX.CSSProperties` deprecated popup style compatibility
-- `preserveInvalidOnBlur?: boolean`
-- `getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement`
-- `inputReadOnly?: boolean`
-- `locale?: DatePickerLocale`
-- `minDate?: Dayjs`
-- `maxDate?: Dayjs`
-- `mode?: PanelMode`
-- `needConfirm?: boolean`
-- `nextIcon?: JSX.Element`
-- `open?: boolean`
-- `panelRender?: (panelNode: JSX.Element) => JSX.Element`
-- `picker?: PickerType`
-- `placeholder?: string | [string, string]`
-- `placement?: 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'`
-- `prefix?: JSX.Element`
-- `presets?: Preset[]`
-- `prevIcon?: JSX.Element`
-- `previewValue?: false | 'hover'`
-- `size?: ComponentSize`
-- `status?: 'error' | 'warning'`
-- `suffixIcon?: JSX.Element`
-- `superNextIcon?: JSX.Element`
-- `superPrevIcon?: JSX.Element`
-- `variant?: 'outlined' | 'borderless' | 'filled' | 'underlined'`
-- `onOpenChange?: (open: boolean) => void`
-- `onPanelChange?: (value: Dayjs | [Dayjs | null, Dayjs | null] | null, mode: PanelMode) => void`
-- deprecated `onSelect?: (value: Dayjs) => void`
+- The component will not wrap React antd or React rc-picker at runtime.
+- The component will not preserve `Date | string` as the primary value API. Any legacy parsing support is only transitional and not documented as the preferred API.
+- The component will not implement unrelated ConfigProvider component-level global configuration beyond existing project conventions unless DatePicker needs it for already-supported global settings such as `prefixCls`, `componentSize`, and `getPopupContainer`.
 
-Do not add `classNames` or `styles` to the public interface.
+## Dependencies
 
-### DatePicker API
+Add `dayjs` as a runtime dependency of `@ant-design-solid/core`.
 
-Implement:
-
-- `value?: Dayjs | null` for normal single selection
-- `defaultValue?: Dayjs | null`
-- `value?: Dayjs[]` and `defaultValue?: Dayjs[]` when `multiple` is true
-- `defaultPickerValue?: Dayjs`
-- `pickerValue?: Dayjs`
-- `disabledTime?: (date: Dayjs) => DisabledTimeConfig`
-- `multiple?: boolean`
-- `renderExtraFooter?: (mode: PanelMode) => JSX.Element`
-- `showNow?: boolean`
-- `showTime?: boolean | ShowTimeOptions`
-- deprecated `showTime.defaultValue` compatibility mapped to `showTime.defaultOpenValue`
-- `showTime.defaultOpenValue?: Dayjs`
-- `showWeek?: boolean`
-- `tagRender?: (props: TagRenderProps) => JSX.Element`
-- `onChange?: (date: Dayjs | Dayjs[] | null, dateString: string | string[]) => void`
-- `onOk?: (date?: Dayjs | Dayjs[] | null) => void`
-- `onPanelChange?: (value: Dayjs | null, mode: PanelMode) => void`
-
-### RangePicker API
-
-Implement:
-
-- `allowEmpty?: [boolean, boolean]`
-- `value?: [Dayjs | null, Dayjs | null] | null`
-- `defaultValue?: [Dayjs | null, Dayjs | null] | null`
-- `defaultPickerValue?: Dayjs | [Dayjs, Dayjs]`
-- `pickerValue?: Dayjs | [Dayjs, Dayjs]`
-- `disabled?: boolean | [boolean, boolean]`
-- `disabledTime?: (date: Dayjs, partial: 'start' | 'end', info: { from?: Dayjs }) => DisabledTimeConfig`
-- `format?: FormatType`
-- `id?: { start?: string; end?: string }`
-- `presets?: RangePreset[]`
-- `renderExtraFooter?: (mode: PanelMode) => JSX.Element`
-- `separator?: JSX.Element`
-- `showTime?: boolean | RangeShowTimeOptions`
-- deprecated `showTime.defaultValue` compatibility mapped to `showTime.defaultOpenValue`
-- `showTime.defaultOpenValue?: [Dayjs, Dayjs]`
-- `onCalendarChange?: (dates: [Dayjs | null, Dayjs | null], dateStrings: [string, string], info: { range: 'start' | 'end' }) => void`
-- `onChange?: (dates: [Dayjs | null, Dayjs | null] | null, dateStrings: [string, string] | null) => void`
-- `onFocus?: (event: FocusEvent, info: { range: 'start' | 'end' }) => void`
-- `onBlur?: (event: FocusEvent, info: { range: 'start' | 'end' }) => void`
+The implementation may use dayjs plugins needed for parity, including week, locale, custom parse format, quarter, advanced format, and localized format. Plugins must be registered from a focused date utility module instead of scattered across component files.
 
 ## Architecture
 
-### Module layout
+Use a Solid-native implementation with small focused modules. The outer DatePicker exports an antd-like API, while internal modules handle value normalization, formatting, panel state, input state, range selection, and rendering.
 
-Use small kebab-case modules under `packages/components/src/date-picker`:
+Expected file layout:
 
-- `interface.ts`: public types and component signatures.
-- `date-picker.tsx`: single picker composition and `DatePicker.RangePicker` assignment.
-- `range-picker.tsx`: range composition.
-- `picker-input.tsx`: input, clear button, prefix/suffix, focus/blur handling.
-- `picker-popup.tsx`: portal, placement, z-index, outside click handling.
-- `picker-panel.tsx`: shared panel shell, header, footer, confirm buttons.
-- `date-panel.tsx`: date grid, week display, hover preview, range classes.
-- `month-panel.tsx`: month and quarter cell panels.
-- `year-panel.tsx`: year and decade cell panels.
-- `time-panel.tsx`: embedded time selector for `showTime`.
-- `presets-panel.tsx`: single and range presets.
-- `multiple-tags.tsx`: multiple value tag display and `tagRender`.
-- `date-utils.ts`: dayjs comparisons, bounds checks, add/snap helpers.
-- `format-utils.ts`: antd `FormatType` display and parsing.
-- `locale.ts`: default locale and merge helper.
-- `semantic.ts`: internal semantic slot names only for class construction, not public `classNames`/`styles`.
-- `date-picker.style.ts`: component styles.
+```text
+packages/components/src/date-picker/
+  index.ts
+  interface.ts
+  date-picker.tsx
+  range-picker.tsx
+  picker-input.tsx
+  picker-panel.tsx
+  date-panel.tsx
+  month-panel.tsx
+  year-panel.tsx
+  decade-panel.tsx
+  time-panel.tsx
+  presets-panel.tsx
+  multiple-tags.tsx
+  date-utils.ts
+  format-utils.ts
+  locale.ts
+  semantic.ts
+  date-picker.style.ts
+  __tests__/
+    date-picker.test.tsx
+    range-picker.test.tsx
+    picker-variants.test.tsx
+    show-time.test.tsx
+    multiple.test.tsx
+    custom-render.test.tsx
+```
 
-### Value model
+All new TypeScript file names must be lowercase kebab-case, matching repository AGENTS.md instructions.
 
-All internal values are `dayjs.Dayjs` or `null`:
+## Public API
 
-- Single: `Dayjs | null`
-- Multiple: `Dayjs[]`
-- Range: `[Dayjs | null, Dayjs | null] | null`
+### Shared types
 
-Selection compares at picker granularity:
+The public type layer uses `Dayjs` from `dayjs`.
 
-- date: `day`
-- week: `week`
-- month: `month`
-- quarter: `quarter`
-- year: `year`
-
-Range ordering honors `order !== false`. Multiple ordering also honors `order !== false`.
-
-### Formatting and input parsing
-
-Implement `FormatType`:
+Core aliases:
 
 ```ts
-type FormatType =
+export type PickerType = 'date' | 'week' | 'month' | 'quarter' | 'year'
+export type PickerMode = 'time' | 'date' | 'month' | 'year' | 'decade'
+export type DatePickerValue = Dayjs | null
+export type RangePickerValue = [Dayjs | null, Dayjs | null] | null
+```
+
+Format support:
+
+```ts
+export type DatePickerFormat =
   | string
   | ((value: Dayjs) => string)
   | Array<string | ((value: Dayjs) => string)>
-  | { format: string; type?: 'mask' }
+  | {
+      format: string
+      type?: 'mask'
+    }
 ```
 
-Rules:
+### DatePicker exports
 
-- Display uses the first available formatter.
-- Parsing tries string formatters in order, then dayjs fallback.
-- Function formatters are display-only because they are not parseable.
-- Mask objects use their `format` for display and parse.
-- Invalid blur clears input unless `preserveInvalidOnBlur` is true.
-
-### Panel behavior
-
-Panel mode uses:
-
-```ts
-type PanelMode = 'time' | 'date' | 'month' | 'year' | 'decade'
-type PickerType = 'date' | 'week' | 'month' | 'quarter' | 'year'
-```
-
-Default panel mode is derived from `picker`, with internal transitions:
-
-- date picker can navigate decade -> year -> month -> date.
-- month picker selects from month panel.
-- quarter picker selects from quarter cells in month panel.
-- year picker selects from year panel.
-- week picker selects a week row from date panel.
-
-`pickerValue` controls panel date. `defaultPickerValue` seeds panel date and resets when opened. `onPanelChange` fires when panel date or panel mode changes.
-
-`minDate` and `maxDate` restrict both selection and panel navigation.
-
-### Single selection
-
-For normal single DatePicker:
-
-- Selecting a cell commits immediately unless `showTime` or `needConfirm` requires pending confirmation.
-- With `showTime`, date selection updates pending value and the time panel adjusts time; OK commits and calls `onOk` and `onChange`.
-- `showNow` provides a quick current datetime action when time is shown.
-- `disabledDate` and `disabledTime` prevent invalid selection.
-
-### Multiple selection
-
-When `multiple` is true:
-
-- Value is `Dayjs[]`.
-- Selecting an existing value removes it; selecting a new cell adds it.
-- `multiple` is incompatible with `showTime`; if both are supplied, ignore `showTime` and warn in development only if the repo already has a warning helper. If no warning helper exists, silently prioritize `multiple`.
-- Tags render inside the selector; `tagRender` customizes tags.
-- `needConfirm` controls whether additions/removals are pending until OK.
-
-### Range selection
-
-RangePicker tracks:
-
-- active input: `start` or `end`
-- selected range
-- pending range while selecting
-- hover date for preview
-- separate panel dates when needed
-
-Behavior:
-
-- First click sets active boundary.
-- Second click completes range.
-- `allowEmpty` allows clearing one side.
-- `disabled` can disable both or individual inputs.
-- `onCalendarChange` fires during partial selection.
-- `onChange` fires when the final normalized range changes, or with `null` when cleared.
-- `separator` renders between inputs.
-- `showTime` adds time selection for each boundary and OK confirmation.
-
-### Custom rendering
-
-- `cellRender` wraps each cell with an `originNode` and metadata.
-- Deprecated `dateRender` maps to date cell rendering when `cellRender` is absent.
-- `renderExtraFooter` appears in panel footer.
-- `panelRender` receives the complete panel node and returns replacement JSX.
-- `components` can replace high-level panels or input where practical. Unsupported component keys are ignored rather than breaking rendering.
-
-### Visual API
-
-Implement class-based visual props:
-
-- `size`: default from `ConfigProvider.componentSize()`.
-- `status`: root status class.
-- `variant`: root variant class.
-- deprecated `bordered={false}` maps to `variant="borderless"` when `variant` is absent.
-- `prefix`, `suffixIcon`, clear icon, navigation icons.
-- `placement` affects popup class and positioning.
-- deprecated popup class/style props are applied to popup root.
-
-### Focus and blur methods
-
-Expose imperative methods compatible with antd expectations as much as Solid allows. The public component function cannot receive React refs, so implement focus/blur through a Solid-compatible `ref` pattern documented in examples:
+`DatePicker` is callable as a Solid component and has a static `RangePicker` member:
 
 ```tsx
-let pickerRef: DatePickerRef | undefined
-;<DatePicker ref={pickerRef} />
-pickerRef?.focus()
-pickerRef?.blur()
+<DatePicker />
+<DatePicker picker="month" />
+<DatePicker.RangePicker />
 ```
 
-If the existing component conventions do not support object refs, provide the methods through function refs on the root input element and document that limitation.
+`RangePicker` is also exported as a named component.
 
-### Accessibility and keyboard
+### Common DatePicker and RangePicker props
 
-Minimum keyboard behavior:
+The implementation will support these antd public props:
 
-- Enter opens popup or confirms focused cell.
-- Escape closes popup.
-- Arrow keys navigate focused date cells when popup is open.
-- Tab leaves inputs normally.
-- Inputs expose combobox semantics and `aria-expanded`.
-- Disabled cells use `aria-disabled`.
-- Selected cells use `aria-selected` or `aria-pressed`.
+- `allowClear`
+- `className` and Solid `class`
+- `classNames`
+- `styles`
+- `dateRender`
+- `cellRender`
+- `components`
+- `defaultOpen`
+- `disabled`
+- `disabledDate`
+- `dropdownClassName`
+- `format`
+- `order`
+- `popupClassName`
+- `preserveInvalidOnBlur`
+- `getPopupContainer`
+- `inputReadOnly`
+- `locale`
+- `minDate`
+- `maxDate`
+- `mode`
+- `needConfirm`
+- `nextIcon`
+- `open`
+- `panelRender`
+- `picker`
+- `placeholder`
+- `placement`
+- `popupStyle`
+- `prefix`
+- `presets`
+- `prevIcon`
+- `previewValue`
+- `size`
+- `status`
+- `style`
+- `styles`
+- `suffixIcon`
+- `superNextIcon`
+- `superPrevIcon`
+- `variant`
+- `onOpenChange`
+- `onPanelChange`
+- `onSelect`
 
-## Testing Strategy
+### DatePicker-specific props
 
-Use TDD. Add failing tests before production changes.
+The single picker will support:
 
-Test files:
+- `value`
+- `defaultValue`
+- `defaultPickerValue`
+- `pickerValue`
+- `disabledTime`
+- `multiple`
+- `renderExtraFooter`
+- `showNow`
+- `showTime`
+- `showTime.defaultOpenValue`
+- `showTime.defaultValue` compatibility
+- `showWeek`
+- `tagRender`
+- `onChange`
+- `onOk`
+- `onPanelChange`
 
-- `date-picker.test.tsx`: single picker baseline, dayjs value, open, clear, disabled, input parsing.
-- `picker-variants.test.tsx`: week, month, quarter, year, panel navigation.
-- `range-picker.test.tsx`: range selection, allowEmpty, separator, onCalendarChange, disabled sides.
-- `show-time.test.tsx`: showTime, disabledTime, showNow, onOk.
-- `multiple.test.tsx`: add/remove multiple values, ordering, needConfirm, tagRender.
-- `custom-render.test.tsx`: cellRender, dateRender, renderExtraFooter, panelRender, icons, presets.
-- `date-picker-style-api.test.tsx`: size, status, variant, className, popup class/style, placement, prefix/suffix/clearIcon.
+### Variant picker behavior
 
-Verification commands:
+`picker` changes selection granularity and default format:
+
+- `date`: `YYYY-MM-DD`
+- `week`: `YYYY-wo`
+- `month`: `YYYY-MM`
+- `quarter`: `YYYY-\QQ`
+- `year`: `YYYY`
+
+Week picker shows week information by default. Month, quarter, and year pickers select their corresponding unit. Multiple selection is supported for all single picker types where antd supports it.
+
+### RangePicker props
+
+RangePicker will support:
+
+- `allowEmpty`
+- `value`
+- `defaultValue`
+- `defaultPickerValue`
+- `pickerValue`
+- `disabled` as `[boolean, boolean]` or a single boolean compatibility form when useful
+- `disabledTime`
+- `format`
+- `id`
+- `presets`
+- `renderExtraFooter`
+- `separator`
+- `showTime`
+- `showTime.defaultOpenValue`
+- `showTime.defaultValue` compatibility
+- `onCalendarChange`
+- `onChange`
+- `onFocus`
+- `onBlur`
+
+RangePicker shares common APIs for panel rendering, cells, locale, popup behavior, status, variant, semantic class/style customization, and min/max date constraints.
+
+## Value and state model
+
+The component maintains separate state for:
+
+- committed value
+- pending value when `needConfirm` is active
+- input text
+- active range side for RangePicker
+- open state
+- view date / picker value
+- panel mode
+- hover preview value
+- range hover value
+
+Controlled props always win over internal state. Uncontrolled state initializes from default props.
+
+`onChange` fires with `Dayjs | null` for single selection and `[Dayjs | null, Dayjs | null] | null` for ranges. Date strings match the selected format. Clearing emits `null` and an empty date string or empty string tuple.
+
+`needConfirm` delays committed value changes until the OK action. `onCalendarChange` still reports intermediate range state.
+
+## Formatting and parsing
+
+Formatting uses dayjs. The first provided format controls display. Input parsing attempts every string format in the format list. Function formats are display-only and cannot parse input. Mask format uses the string `format` field for display and parsing.
+
+Invalid input behavior:
+
+- When `preserveInvalidOnBlur` is false, invalid input is cleared or reset to the previous committed value on blur.
+- When `preserveInvalidOnBlur` is true, invalid text remains visible but does not emit `onChange`.
+
+## Panels
+
+Panel modules render focused responsibilities:
+
+- Date panel: dates, weeks, disabled date, today, range states.
+- Month panel: month grid.
+- Year panel: year grid.
+- Decade panel: decade navigation.
+- Time panel: hour/minute/second selectors for `showTime`.
+- Presets panel: quick selections for single and range values.
+
+Panel navigation respects `minDate` and `maxDate`, including limiting panel switching beyond the supported range.
+
+`disabledDate` receives `(currentDate, info)` where `info.type` is the picker type and `info.from` is provided for range-related checks when available.
+
+## Rendering customization
+
+`cellRender` receives the current dayjs value and an info object with the original node, today, range side when applicable, panel type, locale, and time subtype when applicable.
+
+`dateRender` remains supported by adapting date cells to the legacy callback.
+
+`panelRender` wraps the generated panel node.
+
+`components` allows replacing supported panel and input slots. Unsupported custom component keys are ignored rather than throwing.
+
+`renderExtraFooter` renders at the bottom of the popup panel.
+
+## Input, focus, and keyboard
+
+Render input-like controls instead of the current non-input-only combobox. The component exposes `focus()` and `blur()` methods via Solid ref usage where practical for this project.
+
+Keyboard support includes:
+
+- Escape closes the popup.
+- Enter confirms typed values or `needConfirm` values.
+- Tab/blur performs invalid input handling.
+- Arrow-key date grid navigation is included for the active panel when focus is inside the panel.
+
+`inputReadOnly` sets the underlying input readonly attribute.
+
+## Popup and placement
+
+Reuse existing project helpers for portal, overlay listeners, and z-index. Support placements:
+
+- `bottomLeft`
+- `bottomRight`
+- `topLeft`
+- `topRight`
+
+`getPopupContainer` follows prop first, then ConfigProvider.
+
+`zIndex` remains supported as a project extension and maps to popup z-index.
+
+## Styling and semantic DOM
+
+Extend `date-picker.style.ts` to cover the expanded structure:
+
+- root
+- input wrapper
+- input
+- prefix
+- suffix
+- clear
+- dropdown
+- panel
+- header
+- navigation buttons
+- date/month/year/decade cells
+- selected/today/disabled/hover states
+- range start/end/in-range states
+- time panel
+- presets
+- footer
+- multiple tags
+- sizes
+- statuses
+- variants
+- placements
+
+`classNames` and `styles` customize semantic slots. Solid `class` and antd `className` both apply to the root. Deprecated popup class/style props map to the popup root slot.
+
+## Locale
+
+Provide an internal default English locale. Accept component-level locale objects for DatePicker text such as placeholders, today, now, ok, time labels, and week labels. Dayjs locale must still be configured by consumers when they need localized date formatting; component locale controls UI text.
+
+## Tests
+
+Use TDD. Each new behavior starts with a failing test and then the minimal implementation.
+
+Required test files:
+
+- `date-picker.test.tsx`: single picker, dayjs value, formatting, open state, clear, input, min/max, icons, size/status/variant.
+- `picker-variants.test.tsx`: week/month/quarter/year, panel mode changes, showWeek, pickerValue/defaultPickerValue.
+- `range-picker.test.tsx`: range selection, allowEmpty, order, disabled endpoints, onCalendarChange, separator, range focus/blur.
+- `show-time.test.tsx`: showTime, showNow, disabledTime, onOk, defaultOpenValue.
+- `multiple.test.tsx`: multiple selection, tagRender, needConfirm, order.
+- `custom-render.test.tsx`: cellRender, dateRender, panelRender, renderExtraFooter, presets, classNames, styles, custom components.
+
+Verification commands after implementation:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
 ```
 
 ## Documentation
 
-Update `apps/docs/src/pages/components/date-picker.tsx` to show:
+Update `apps/docs/src/pages/components/date-picker.tsx` with:
 
-- basic dayjs usage
-- controlled value
+- dayjs examples
 - picker variants
 - RangePicker
 - showTime
 - multiple
 - presets
-- custom cell/footer/panel
-- size/status/variant
-- disabled date/time
+- custom rendering
+- API tables for DatePicker and RangePicker
 
-Document that `classNames` and `styles` are intentionally unsupported for now.
+The docs should state that values use `dayjs`.
 
-## Risks and Mitigations
+## Risks and mitigations
 
-### Large API surface
+### Risk: feature scope is large
 
-Risk: implementing every behavior in one file would become unmaintainable.
+Mitigation: split implementation into small modules and write tests per capability. Avoid one giant component file.
 
-Mitigation: split by focused modules listed above and test each behavior separately.
+### Risk: exact antd parity is nuanced
 
-### antd behavior edge cases
+Mitigation: use antd prop names, callback shapes, and documented behavior as the source of truth. Build tests for documented behavior rather than internal rc-picker details.
 
-Risk: exact rc-picker parity has many edge cases.
+### Risk: input parsing is complex
 
-Mitigation: align public behavior covered by tests and document limitations only where Solid runtime differences require them.
+Mitigation: support documented format shapes with deterministic parsing. Treat function formats as display-only and document that behavior in local docs if needed.
 
-### Solid ref differences
+### Risk: Solid ref methods differ from React refs
 
-Risk: antd imperative ref methods are React-centric.
+Mitigation: expose focus/blur in the idiomatic way used by this project while testing that consumers can call focus and blur through a component ref.
 
-Mitigation: expose the closest Solid-compatible ref behavior and add tests for focus/blur where possible.
+## Acceptance criteria
 
-### TimePicker reuse mismatch
-
-Risk: existing `TimePicker` is string-based and standalone.
-
-Mitigation: implement an embedded dayjs `time-panel.tsx`, sharing only concepts and styling where appropriate.
-
-## Self-Review
-
-- Placeholder scan: no TBD/TODO placeholders remain.
-- Scope check: `classNames` and `styles` are explicitly excluded; all other requested antd DatePicker areas are included.
-- Consistency check: all public value types use `Dayjs` and all file names are kebab-case.
-- Ambiguity check: deprecated antd props are compatibility props; unsupported `components` keys are ignored rather than throwing.
+- `@ant-design-solid/core` depends on dayjs.
+- DatePicker public values and callbacks use dayjs-compatible types.
+- Single DatePicker supports common antd APIs and DatePicker-specific APIs listed in this document.
+- DatePicker supports date, week, month, quarter, and year picker modes.
+- DatePicker supports multiple selection where antd documents it.
+- DatePicker supports showTime and disabledTime.
+- RangePicker exists as `DatePicker.RangePicker` and named `RangePicker`.
+- RangePicker supports documented range APIs listed in this document.
+- Custom rendering, presets, footer, semantic classes/styles, statuses, variants, sizes, icons, popup placement, and clear behavior are tested.
+- Existing DatePicker tests are migrated or replaced with dayjs tests.
+- Docs page demonstrates the new dayjs API and major capabilities.
+- Lint, format check, typecheck, tests, and build pass.
