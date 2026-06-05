@@ -30,9 +30,10 @@ import type { DatePickerProps, DatePickerValue } from './interface'
 import { mergeDatePickerLocale } from './locale'
 import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
+import { RangePicker } from './range-picker'
 import { semanticClass, semanticStyle } from './semantic'
 
-export function DatePicker(props: DatePickerProps) {
+function DatePickerBase(props: DatePickerProps) {
   const ariaLabel = () => props['aria-label'] as string | undefined
   const [local, rest] = splitProps(props, [
     'value',
@@ -65,6 +66,8 @@ export function DatePicker(props: DatePickerProps) {
     'placement',
     'onChange',
     'onOpenChange',
+    'onFocus',
+    'onBlur',
     'onKeyDown',
     'onOk',
     'onPanelChange',
@@ -367,8 +370,14 @@ export function DatePicker(props: DatePickerProps) {
             inputRef = element
           }}
           onInput={(event) => setInputValue(event.currentTarget.value)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => parseInput(false)}
+          onFocus={(event) => {
+            setOpen(true)
+            ;(local.onFocus as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
+          }}
+          onBlur={(event) => {
+            parseInput(false)
+            ;(local.onBlur as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
+          }}
           onKeyDown={(event) => {
             ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(
               event,
@@ -413,3 +422,6 @@ export function DatePicker(props: DatePickerProps) {
     </div>
   )
 }
+
+export const DatePicker = Object.assign(DatePickerBase, { RangePicker })
+export { RangePicker }

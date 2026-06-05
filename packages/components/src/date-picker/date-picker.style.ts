@@ -16,6 +16,22 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
         },
+
+        [`.${prefixCls}-range`]: {
+          width: '260px',
+        },
+        [`.${prefixCls}-range .${prefixCls}-selector`]: {
+          'justify-content': 'flex-start',
+        },
+        [`.${prefixCls}-range-input`]: {
+          'text-align': 'center',
+        },
+        [`.${prefixCls}-range-separator`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          color: t.colorTextSecondary,
+          'white-space': 'nowrap',
+        },
         [`.${prefixCls}-selector`]: {
           display: 'inline-flex',
           'align-items': 'center',
@@ -177,6 +193,18 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-weight': '600',
         },
         [`.${prefixCls}-cell-selected:hover`]: {
+          background: t.colorPrimary,
+        },
+
+        [`.${prefixCls}-cell-in-range`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-cell-range-start, .${prefixCls}-cell-range-end`]: {
+          color: t.colorBgContainer,
+          background: t.colorPrimary,
+          'font-weight': '600',
+        },
+        [`.${prefixCls}-cell-range-start:hover, .${prefixCls}-cell-range-end:hover`]: {
           background: t.colorPrimary,
         },
         [`.${prefixCls}-cell-today`]: {

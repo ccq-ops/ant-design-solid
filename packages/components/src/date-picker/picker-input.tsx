@@ -10,6 +10,7 @@ export interface PickerInputProps {
   readOnly?: boolean
   allowClear?: boolean
   clearIcon?: JSX.Element
+  clearAriaLabel?: string
   prefix?: JSX.Element
   suffixIcon?: JSX.Element
   id?: string
@@ -55,7 +56,7 @@ export function PickerInput(props: PickerInputProps) {
       <Show when={props.allowClear && !props.disabled && props.value !== ''}>
         <button
           type="button"
-          aria-label="Clear date"
+          aria-label={props.clearAriaLabel ?? 'Clear date'}
           class={props.clearClass ?? `${props.prefixCls}-clear`}
           style={props.clearStyle}
           onClick={props.onClear}

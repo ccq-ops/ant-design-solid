@@ -32,6 +32,9 @@ export interface DatePanelProps {
   viewDate: dayjs.Dayjs
   picker?: PickerType
   selectedValue?: dayjs.Dayjs | null
+  rangeValue?: [dayjs.Dayjs | null, dayjs.Dayjs | null]
+  activeRange?: 'start' | 'end'
+  hoverValue?: dayjs.Dayjs | null
   disabledDate?: (current: dayjs.Dayjs, info: { type: PickerType }) => boolean
   showWeek?: boolean
   cellRender?: (current: dayjs.Dayjs, info: CellRenderInfo) => JSX.Element
@@ -103,6 +106,15 @@ export function DatePanel(props: DatePanelProps) {
     const dateString = () => date.format('YYYY-MM-DD')
     const cellDisabled = () => Boolean(props.disabledDate?.(date, { type: picker() }))
     const selected = () => samePickerValue(props.selectedValue, date, picker())
+    const rangeStart = () => samePickerValue(props.rangeValue?.[0], date, picker())
+    const rangeEnd = () => samePickerValue(props.rangeValue?.[1], date, picker())
+    const inRange = () => {
+      const [start, end] = props.rangeValue ?? [null, null]
+      if (!start || !end) return false
+      const normalizedStart = start.isBefore(end, 'day') ? start : end
+      const normalizedEnd = start.isBefore(end, 'day') ? end : start
+      return date.isAfter(normalizedStart, 'day') && date.isBefore(normalizedEnd, 'day')
+    }
     const originNode = () => date.date()
     return (
       <button
@@ -117,6 +129,9 @@ export function DatePanel(props: DatePanelProps) {
           `${props.prefixCls}-cell`,
           samePickerValue(today(), date, 'date') && `${props.prefixCls}-cell-today`,
           selected() && `${props.prefixCls}-cell-selected`,
+          rangeStart() && `${props.prefixCls}-cell-range-start`,
+          rangeEnd() && `${props.prefixCls}-cell-range-end`,
+          inRange() && `${props.prefixCls}-cell-in-range`,
           cellDisabled() && `${props.prefixCls}-cell-disabled`,
         )}
         style={semanticStyle('cell', props.styles)}

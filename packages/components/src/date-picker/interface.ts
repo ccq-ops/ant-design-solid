@@ -106,7 +106,7 @@ export type DatePickerSemanticSlot =
 
 export interface CommonPickerProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onInput' | 'onBlur' | 'onKeyDown' | 'prefix'
+  'onChange' | 'onInput' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'prefix'
 > {
   id?: string
   name?: string
@@ -150,6 +150,8 @@ export interface CommonPickerProps extends Omit<
   getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onOpenChange?: (open: boolean) => void
   onPanelChange?: (value: Dayjs, mode: PickerMode) => void
+  onFocus?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>
+  onBlur?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>
   onKeyDown?: JSX.EventHandlerUnion<HTMLInputElement, KeyboardEvent>
 }
 
@@ -166,13 +168,23 @@ export interface DatePickerProps extends CommonPickerProps {
 
 export interface RangePickerProps extends Omit<
   CommonPickerProps,
-  'placeholder' | 'showTime' | 'defaultPickerValue' | 'pickerValue' | 'onPanelChange'
+  | 'placeholder'
+  | 'showTime'
+  | 'defaultPickerValue'
+  | 'pickerValue'
+  | 'onPanelChange'
+  | 'disabled'
+  | 'id'
+  | 'onFocus'
+  | 'onBlur'
 > {
   value?: RangePickerValue
   defaultValue?: RangePickerValue
   defaultPickerValue?: Dayjs | [Dayjs, Dayjs]
   pickerValue?: Dayjs | [Dayjs, Dayjs]
+  id?: string | [string, string]
   placeholder?: [string, string]
+  disabled?: boolean | [boolean, boolean]
   allowEmpty?: [boolean, boolean]
   showTime?: boolean | RangeShowTimeOptions
   presets?: PresetValue[]
@@ -185,6 +197,8 @@ export interface RangePickerProps extends Omit<
   ) => void
   onOk?: (dates: RangePickerValue) => void
   onPanelChange?: (value: Dayjs | [Dayjs, Dayjs], mode: PickerMode) => void
+  onFocus?: (event: FocusEvent, info: { range: RangeSide }) => void
+  onBlur?: (event: FocusEvent, info: { range: RangeSide }) => void
 }
 
 export interface DatePickerRef {

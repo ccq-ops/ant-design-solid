@@ -25,6 +25,13 @@ export function normalizeDateValue(value: DatePickerValue | undefined): Dayjs | 
   return isDayjsValue(value) ? value : null
 }
 
+export function normalizeRangeValue(
+  value: RangePickerValue | undefined,
+): [Dayjs | null, Dayjs | null] {
+  if (!Array.isArray(value)) return [null, null]
+  return [normalizeDateValue(value[0]), normalizeDateValue(value[1])]
+}
+
 export function defaultFormatForPicker(picker: PickerType = 'date'): string {
   switch (picker) {
     case 'week':
