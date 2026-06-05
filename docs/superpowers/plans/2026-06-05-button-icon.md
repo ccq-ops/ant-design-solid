@@ -20,6 +20,7 @@
 ### Task 1: Add failing Button icon behavior tests
 
 **Files:**
+
 - Modify: `packages/components/src/button/__tests__/button.test.tsx`
 
 - [ ] **Step 1: Import SearchOutlined**
@@ -35,46 +36,46 @@ import { SearchOutlined } from '@ant-design-solid/icons'
 Append these tests inside the existing `describe('Button', () => { ... })` block:
 
 ```tsx
-  it('renders an icon from the icons package before children by default', () => {
-    const result = render(() => <Button icon={<SearchOutlined />}>Search</Button>)
-    const button = result.getByRole('button')
-    const iconWrapper = button.querySelector('.ads-btn-icon')
+it('renders an icon from the icons package before children by default', () => {
+  const result = render(() => <Button icon={<SearchOutlined />}>Search</Button>)
+  const button = result.getByRole('button')
+  const iconWrapper = button.querySelector('.ads-btn-icon')
 
-    expect(iconWrapper).not.toBeNull()
-    expect(iconWrapper?.className).toContain('ads-btn-icon-start')
-    expect(iconWrapper?.querySelector('svg')).not.toBeNull()
-    expect(button.firstElementChild).toBe(iconWrapper)
-    expect(button).toHaveTextContent('Search')
-  })
+  expect(iconWrapper).not.toBeNull()
+  expect(iconWrapper?.className).toContain('ads-btn-icon-start')
+  expect(iconWrapper?.querySelector('svg')).not.toBeNull()
+  expect(button.firstElementChild).toBe(iconWrapper)
+  expect(button).toHaveTextContent('Search')
+})
 
-  it('renders the icon after children when iconPosition is end', () => {
-    const result = render(() => (
-      <Button icon={<SearchOutlined />} iconPosition="end">
-        Search
-      </Button>
-    ))
-    const button = result.getByRole('button')
-    const iconWrapper = button.querySelector('.ads-btn-icon')
+it('renders the icon after children when iconPosition is end', () => {
+  const result = render(() => (
+    <Button icon={<SearchOutlined />} iconPosition="end">
+      Search
+    </Button>
+  ))
+  const button = result.getByRole('button')
+  const iconWrapper = button.querySelector('.ads-btn-icon')
 
-    expect(iconWrapper).not.toBeNull()
-    expect(iconWrapper?.className).toContain('ads-btn-icon-end')
-    expect(button.lastElementChild).toBe(iconWrapper)
-  })
+  expect(iconWrapper).not.toBeNull()
+  expect(iconWrapper?.className).toContain('ads-btn-icon-end')
+  expect(button.lastElementChild).toBe(iconWrapper)
+})
 
-  it('uses the loading icon instead of a custom icon while loading', () => {
-    const result = render(() => (
-      <Button icon={<SearchOutlined data-testid="search-icon" />} loading>
-        Search
-      </Button>
-    ))
-    const button = result.getByRole('button')
-    const iconWrapper = button.querySelector('.ads-btn-icon')
+it('uses the loading icon instead of a custom icon while loading', () => {
+  const result = render(() => (
+    <Button icon={<SearchOutlined data-testid="search-icon" />} loading>
+      Search
+    </Button>
+  ))
+  const button = result.getByRole('button')
+  const iconWrapper = button.querySelector('.ads-btn-icon')
 
-    expect(iconWrapper).not.toBeNull()
-    expect(iconWrapper?.querySelector('svg')).not.toBeNull()
-    expect(result.queryByTestId('search-icon')).toBeNull()
-    expect(button.className).toContain('ads-btn-loading')
-  })
+  expect(iconWrapper).not.toBeNull()
+  expect(iconWrapper?.querySelector('svg')).not.toBeNull()
+  expect(result.queryByTestId('search-icon')).toBeNull()
+  expect(button.className).toContain('ads-btn-loading')
+})
 ```
 
 - [ ] **Step 3: Run the Button test and verify RED**
@@ -90,6 +91,7 @@ Expected: FAIL because `icon` and `iconPosition` are not implemented, so `.ads-b
 ### Task 2: Implement Button icon props and rendering
 
 **Files:**
+
 - Modify: `packages/components/src/button/interface.ts`
 - Modify: `packages/components/src/button/button.tsx`
 
@@ -122,17 +124,17 @@ In `packages/components/src/button/button.tsx`, include these names in `splitPro
 Add these helpers after `disabled`:
 
 ```tsx
-  const iconPosition = () => local.iconPosition ?? 'start'
-  const iconNode = () => (local.loading ? <LoadingOutlined /> : local.icon)
-  const renderIcon = () => (
-    <Show when={iconNode()}>
-      {(icon) => (
-        <span class={classNames(`${prefixCls()}-icon`, `${prefixCls()}-icon-${iconPosition()}`)}>
-          {icon()}
-        </span>
-      )}
-    </Show>
-  )
+const iconPosition = () => local.iconPosition ?? 'start'
+const iconNode = () => (local.loading ? <LoadingOutlined /> : local.icon)
+const renderIcon = () => (
+  <Show when={iconNode()}>
+    {(icon) => (
+      <span class={classNames(`${prefixCls()}-icon`, `${prefixCls()}-icon-${iconPosition()}`)}>
+        {icon()}
+      </span>
+    )}
+  </Show>
+)
 ```
 
 - [ ] **Step 4: Replace the existing loading-only icon render**
@@ -140,20 +142,24 @@ Add these helpers after `disabled`:
 Replace:
 
 ```tsx
-      <Show when={local.loading}>
-        <span class={`${prefixCls()}-icon`}>
-          <LoadingOutlined />
-        </span>
-      </Show>
-      {local.children}
+;<Show when={local.loading}>
+  <span class={`${prefixCls()}-icon`}>
+    <LoadingOutlined />
+  </span>
+</Show>
+{
+  local.children
+}
 ```
 
 With:
 
 ```tsx
-      <Show when={iconPosition() === 'start'}>{renderIcon()}</Show>
-      {local.children}
-      <Show when={iconPosition() === 'end'}>{renderIcon()}</Show>
+;<Show when={iconPosition() === 'start'}>{renderIcon()}</Show>
+{
+  local.children
+}
+;<Show when={iconPosition() === 'end'}>{renderIcon()}</Show>
 ```
 
 - [ ] **Step 5: Run the Button test and verify GREEN for behavior**
@@ -169,6 +175,7 @@ Expected: PASS for the Button test file.
 ### Task 3: Add directional icon spacing styles
 
 **Files:**
+
 - Modify: `packages/components/src/button/button.style.ts`
 
 - [ ] **Step 1: Update icon style selectors**
@@ -200,6 +207,7 @@ Expected: PASS for the Button test file.
 ### Task 4: Full verification
 
 **Files:**
+
 - No code changes.
 
 - [ ] **Step 1: Run repository verification commands requested by AGENTS.md**

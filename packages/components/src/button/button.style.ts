@@ -51,7 +51,9 @@ export function useButtonStyle(prefixCls: string) {
       [`.${prefixCls}-dangerous`]: { color: t.colorError, borderColor: t.colorError },
       [`.${prefixCls}-block`]: { width: '100%' },
       [`.${prefixCls}-loading`]: { cursor: 'default' },
-      [`.${prefixCls}-icon`]: { display: 'inline-flex', 'margin-inline-end': 8 },
+      [`.${prefixCls}-icon`]: { display: 'inline-flex' },
+      [`.${prefixCls}-icon-start`]: { 'margin-inline-end': 8 },
+      [`.${prefixCls}-icon-end`]: { 'margin-inline-start': 8 },
     }
   })
 }

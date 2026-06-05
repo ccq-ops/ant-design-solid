@@ -17,12 +17,25 @@ export function Button(props: ButtonProps) {
     'children',
     'disabled',
     'onClick',
+    'icon',
+    'iconPosition',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-btn`
   const [, hashId] = useButtonStyle(prefixCls())
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled || local.loading)
+  const iconPosition = () => local.iconPosition ?? 'start'
+  const iconNode = () => (local.loading ? <LoadingOutlined /> : local.icon)
+  const renderIcon = () => (
+    <Show when={iconNode()}>
+      {(icon) => (
+        <span class={classNames(`${prefixCls()}-icon`, `${prefixCls()}-icon-${iconPosition()}`)}>
+          {icon()}
+        </span>
+      )}
+    </Show>
+  )
   return (
     <button
       {...rest}
@@ -44,12 +57,9 @@ export function Button(props: ButtonProps) {
         ;(local.onClick as JSX.EventHandler<HTMLButtonElement, MouseEvent> | undefined)?.(event)
       }}
     >
-      <Show when={local.loading}>
-        <span class={`${prefixCls()}-icon`}>
-          <LoadingOutlined />
-        </span>
-      </Show>
+      <Show when={iconPosition() === 'start'}>{renderIcon()}</Show>
       {local.children}
+      <Show when={iconPosition() === 'end'}>{renderIcon()}</Show>
     </button>
   )
 }
