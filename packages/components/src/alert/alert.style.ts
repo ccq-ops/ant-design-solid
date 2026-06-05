@@ -22,6 +22,9 @@ export function useAlertStyle(prefixCls: string) {
         border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
       },
       [`.${prefixCls}-with-description`]: { padding: at.withDescriptionPadding },
+      [`.${prefixCls}-banner`]: {
+        'border-radius': 0,
+      },
       [`.${prefixCls}-success`]: {
         background: at.successBg,
         borderColor: at.successBorderColor,

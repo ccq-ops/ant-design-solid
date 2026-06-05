@@ -84,6 +84,55 @@ describe('Alert', () => {
     expect(afterClose).toHaveBeenCalledTimes(1)
   })
 
+  it('renders title in preference to legacy message', () => {
+    const result = render(() => <Alert title="New title" message="Legacy message" />)
+
+    expect(result.getByText('New title')).toBeTruthy()
+    expect(result.queryByText('Legacy message')).toBeNull()
+  })
+
+  it('supports closable object callbacks custom icon and aria attributes', () => {
+    const onClose = vi.fn()
+    const afterClose = vi.fn()
+    const result = render(() => (
+      <Alert
+        message="Object closable"
+        closable={{
+          'aria-label': 'dismiss alert',
+          closeIcon: <span>Dismiss</span>,
+          onClose,
+          afterClose,
+        }}
+      />
+    ))
+
+    const closeButton = result.getByRole('button', { name: 'dismiss alert' })
+    expect(closeButton.textContent).toBe('Dismiss')
+
+    fireEvent.click(closeButton)
+
+    expect(result.queryByText('Object closable')).toBeNull()
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(afterClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders a custom icon when showIcon is enabled', () => {
+    const result = render(() => (
+      <Alert showIcon message="Custom icon" icon={<span data-testid="custom-icon">!</span>} />
+    ))
+
+    expect(result.getByTestId('custom-icon')).toBeTruthy()
+  })
+
+  it('uses banner defaults for type and icon visibility', () => {
+    const result = render(() => <Alert banner message="Banner warning" />)
+    const alert = result.getByRole('alert')
+
+    expect(alert.className).toContain('ads-alert-banner')
+    expect(alert.className).toContain('ads-alert-warning')
+    expect(result.container.querySelector('.ads-alert-icon')).toBeTruthy()
+  })
+
   it('forwards rest attributes to the alert root', () => {
     const result = render(() => (
       <Alert

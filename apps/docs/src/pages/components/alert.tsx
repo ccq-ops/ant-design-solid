@@ -19,6 +19,18 @@ export default function AlertPage() {
       >
         <Alert closable message="Closable" description="More detail" />
       </DemoBlock>
+      <DemoBlock
+        title="Banner and custom icon"
+        code={`<Alert banner title="Warning banner" icon={<span>!</span>} />`}
+      >
+        <Alert banner title="Warning banner" icon={<span>!</span>} />
+      </DemoBlock>
+      <DemoBlock
+        title="Closable config"
+        code={`<Alert title="Configurable close" closable={{ closeIcon: <span>Dismiss</span> }} />`}
+      >
+        <Alert title="Configurable close" closable={{ closeIcon: <span>Dismiss</span> }} />
+      </DemoBlock>
     </>
   )
 }
