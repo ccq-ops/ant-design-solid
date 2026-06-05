@@ -3,8 +3,48 @@ import type { CSSObject, CSSValue, StyleObject } from './types'
 function toKebabCase(property: string): string {
   return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
 }
-function formatValue(value: CSSValue): string {
-  return typeof value === 'number' ? (value === 0 ? '0' : `${value}px`) : String(value)
+
+const unitlessProperties = new Set([
+  'animation-iteration-count',
+  'aspect-ratio',
+  'border-image-outset',
+  'border-image-slice',
+  'border-image-width',
+  'box-flex',
+  'box-flex-group',
+  'box-ordinal-group',
+  'column-count',
+  'columns',
+  'flex',
+  'flex-grow',
+  'flex-negative',
+  'flex-order',
+  'flex-positive',
+  'flex-shrink',
+  'font-weight',
+  'grid-area',
+  'grid-column',
+  'grid-column-end',
+  'grid-column-start',
+  'grid-row',
+  'grid-row-end',
+  'grid-row-start',
+  'line-clamp',
+  'line-height',
+  'opacity',
+  'order',
+  'orphans',
+  'scale',
+  'tab-size',
+  'widows',
+  'z-index',
+  'zoom',
+])
+
+function formatValue(property: string, value: CSSValue): string {
+  if (typeof value !== 'number') return String(value)
+  if (value === 0 || unitlessProperties.has(toKebabCase(property))) return String(value)
+  return `${value}px`
 }
 function isAtRule(selector: string): boolean {
   return selector.startsWith('@')
@@ -15,7 +55,7 @@ function serializeDeclarations(object: CSSObject): string {
     .map((key) => {
       const value = object[key]
       if (value === undefined || value === null || typeof value === 'object') return ''
-      return `${toKebabCase(key)}:${formatValue(value)};`
+      return `${toKebabCase(key)}:${formatValue(key, value)};`
     })
     .filter(Boolean)
     .join('')
@@ -31,7 +71,7 @@ function serializeAtRule(selector: string, object: CSSObject): string {
           ? serializeAtRule(key, value as CSSObject)
           : `${key}{${serializeDeclarations(value as CSSObject)}}`
       }
-      return `${toKebabCase(key)}:${formatValue(value)};`
+      return `${toKebabCase(key)}:${formatValue(key, value)};`
     })
     .filter(Boolean)
     .join('')
@@ -55,7 +95,7 @@ function serializeRule(selector: string, object: CSSObject): string {
         nested.push(serializeRule(nestedSelector, value as CSSObject))
       }
     } else {
-      declarations.push(`${toKebabCase(key)}:${formatValue(value)};`)
+      declarations.push(`${toKebabCase(key)}:${formatValue(key, value)};`)
     }
   }
   const current = declarations.length > 0 ? `${selector}{${declarations.join('')}}` : ''

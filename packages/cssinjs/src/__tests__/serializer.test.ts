@@ -17,4 +17,27 @@ describe('serializeCSS', () => {
 
     expect(css).toBe('@keyframes adsSpinRotate{to{transform:rotate(360deg);}}')
   })
+
+  it('keeps unitless CSS properties unitless when serializing numeric values', () => {
+    const css = serializeCSS({
+      '.ads-card': {
+        flex: 1,
+        'font-weight': 600,
+        'line-height': 1.5714285714285714,
+        opacity: 0.88,
+        'z-index': 2,
+      },
+    })
+
+    expect(css).toContain('flex:1;')
+    expect(css).toContain('font-weight:600;')
+    expect(css).toContain('line-height:1.5714285714285714;')
+    expect(css).toContain('opacity:0.88;')
+    expect(css).toContain('z-index:2;')
+    expect(css).not.toContain('flex:1px;')
+    expect(css).not.toContain('font-weight:600px;')
+    expect(css).not.toContain('line-height:1.5714285714285714px;')
+    expect(css).not.toContain('opacity:0.88px;')
+    expect(css).not.toContain('z-index:2px;')
+  })
 })
