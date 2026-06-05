@@ -154,6 +154,34 @@ describe('Cascader', () => {
     expect(screen.getByRole('option', { name: 'Jiangsu / Nanjing' })).toBeTruthy()
   })
 
+
+  it('calls loadData for non-leaf lazy options and shows loading icon while pending', async () => {
+    let resolveLoad!: () => void
+    const loadData = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveLoad = resolve
+        }),
+    )
+    const lazyOptions: CascaderOption[] = [{ label: 'Lazy', value: 'lazy', isLeaf: false }]
+
+    render(() => (
+      <Cascader options={lazyOptions} loadData={loadData} loadingIcon={<span>Loading...</span>} />
+    ))
+
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('menuitem', { name: /Lazy/ }))
+
+    expect(loadData).toHaveBeenCalledWith([lazyOptions[0]])
+    expect(screen.getByText('Loading...')).toBeTruthy()
+
+    resolveLoad()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(screen.queryByText('Loading...')).toBeNull()
+  })
+
   it('supports controlled value mode', () => {
     const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
     const result = render(() => (
