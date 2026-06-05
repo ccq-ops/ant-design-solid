@@ -182,6 +182,64 @@ describe('Cascader', () => {
     expect(screen.queryByText('Loading...')).toBeNull()
   })
 
+
+  it('supports multiple leaf selection and deselection', () => {
+    const onChange = vi.fn()
+    render(() => <Cascader multiple options={options} onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Zhejiang' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hangzhou' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'West Lake' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(
+      [['zhejiang', 'hangzhou', 'west-lake']],
+      [[options[0], options[0].children?.[0], options[0].children?.[0].children?.[0]]],
+    )
+    expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true')
+
+    fireEvent.click(screen.getByRole('menuitem', { name: 'West Lake' }))
+    expect(onChange).toHaveBeenLastCalledWith([], [])
+  })
+
+  it('cascades parent selection to selectable leaf descendants and marks parent checked', () => {
+    const onChange = vi.fn()
+    render(() => <Cascader multiple options={options} onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Zhejiang' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(
+      [['zhejiang', 'hangzhou', 'west-lake']],
+      [[options[0], options[0].children?.[0], options[0].children?.[0].children?.[0]]],
+    )
+    expect(screen.getByRole('menuitem', { name: 'Zhejiang' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+  })
+
+  it('marks parent indeterminate when only some descendants are selected', () => {
+    const branchOptions: CascaderOption[] = [
+      {
+        label: 'Parent',
+        value: 'parent',
+        children: [
+          { label: 'Child A', value: 'a' },
+          { label: 'Child B', value: 'b' },
+        ],
+      },
+    ]
+    render(() => <Cascader multiple value={[['parent', 'a']]} options={branchOptions} />)
+
+    fireEvent.click(screen.getByRole('combobox'))
+
+    expect(screen.getByRole('menuitem', { name: 'Parent' })).toHaveAttribute(
+      'data-indeterminate',
+      'true',
+    )
+  })
+
   it('supports controlled value mode', () => {
     const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
     const result = render(() => (
