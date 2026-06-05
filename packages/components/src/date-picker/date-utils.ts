@@ -67,6 +67,8 @@ export function samePickerValue(
   picker: PickerType = 'date',
 ): boolean {
   if (!left || !right) return left == null && right == null
+  if (picker === 'quarter')
+    return left.year() === right.year() && left.quarter() === right.quarter()
   return left.isSame(right, pickerUnit(picker))
 }
 
@@ -100,4 +102,33 @@ export function rangeToNullable(value: [Dayjs | null, Dayjs | null] | undefined)
 
 export function monthStart(value: Dayjs): Dayjs {
   return value.startOf('month')
+}
+
+export function pickerViewStart(value: Dayjs, picker: PickerType = 'date'): Dayjs {
+  switch (picker) {
+    case 'year':
+      return value.startOf('year')
+    case 'month':
+    case 'quarter':
+    case 'week':
+    case 'date':
+    default:
+      return value.startOf('month')
+  }
+}
+
+export function pickerSelectionStart(value: Dayjs, picker: PickerType = 'date'): Dayjs {
+  switch (picker) {
+    case 'week':
+      return value.startOf('week')
+    case 'month':
+      return value.startOf('month')
+    case 'quarter':
+      return value.startOf('quarter')
+    case 'year':
+      return value.startOf('year')
+    case 'date':
+    default:
+      return value
+  }
 }

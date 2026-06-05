@@ -83,6 +83,12 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'line-height': '1',
         },
+        [`.${prefixCls}-variant-cell`]: {
+          height: '48px',
+        },
+        [`.${prefixCls}-week-cell`]: {
+          color: t.colorTextSecondary,
+        },
         [`.${prefixCls}-clear:hover`]: {
           color: t.colorText,
         },
@@ -125,6 +131,9 @@ export function useDatePickerStyle(prefixCls: string) {
           'grid-template-columns': 'repeat(7, 1fr)',
           'margin-bottom': `${t.marginXS}px`,
         },
+        [`.${prefixCls}-weekdays-with-week`]: {
+          'grid-template-columns': '52px repeat(7, 1fr)',
+        },
         [`.${prefixCls}-weekday`]: {
           color: t.colorTextSecondary,
           'font-size': `${t.fontSize}px`,
@@ -135,6 +144,18 @@ export function useDatePickerStyle(prefixCls: string) {
           display: 'grid',
           'grid-template-columns': 'repeat(7, 1fr)',
           gap: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-week-grid`]: {
+          'grid-template-columns': '52px repeat(7, 1fr)',
+        },
+        [`.${prefixCls}-variant-grid`]: {
+          display: 'grid',
+          'grid-template-columns': 'repeat(3, 1fr)',
+          gap: `${t.marginSM}px`,
+          padding: `${t.paddingXS}px 0`,
+        },
+        [`.${prefixCls}-quarter-grid`]: {
+          'grid-template-columns': 'repeat(2, 1fr)',
         },
         [`.${prefixCls}-cell`]: {
           width: '100%',

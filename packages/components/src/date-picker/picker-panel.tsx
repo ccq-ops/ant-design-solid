@@ -3,6 +3,8 @@ import type { JSX } from 'solid-js'
 import type { DatePickerPlacement, DatePickerSemanticSlot, PickerMode } from './interface'
 import { semanticClass } from './semantic'
 import type { dayjs } from './date-utils'
+import { yearGridStart } from './year-panel'
+import { decadeRange } from './decade-panel'
 
 export function placementToClassName(placement: DatePickerPlacement = 'bottomLeft'): string {
   switch (placement) {
@@ -38,6 +40,58 @@ export interface PickerPanelProps {
   children?: JSX.Element
 }
 
+function panelLabel(viewDate: dayjs.Dayjs, mode: PickerMode = 'date'): string {
+  switch (mode) {
+    case 'year': {
+      const start = yearGridStart(viewDate)
+      return `${start}-${start + 11}`
+    }
+    case 'month':
+    case 'quarter':
+      return viewDate.format('YYYY')
+    case 'decade': {
+      const range = decadeRange(viewDate)
+      return `${range.start}-${range.end}`
+    }
+    case 'week':
+    case 'date':
+    default:
+      return viewDate.format('YYYY-MM')
+  }
+}
+
+function previousLabel(mode: PickerMode = 'date'): string {
+  switch (mode) {
+    case 'year':
+      return 'Previous years'
+    case 'month':
+    case 'quarter':
+      return 'Previous year'
+    case 'decade':
+      return 'Previous decade'
+    case 'week':
+    case 'date':
+    default:
+      return 'Previous month'
+  }
+}
+
+function nextLabel(mode: PickerMode = 'date'): string {
+  switch (mode) {
+    case 'year':
+      return 'Next years'
+    case 'month':
+    case 'quarter':
+      return 'Next year'
+    case 'decade':
+      return 'Next decade'
+    case 'week':
+    case 'date':
+    default:
+      return 'Next month'
+  }
+}
+
 export function PickerPanel(props: PickerPanelProps) {
   const panel = () => (
     <div
@@ -54,16 +108,16 @@ export function PickerPanel(props: PickerPanelProps) {
       <div class={`${props.prefixCls}-header`}>
         <button
           type="button"
-          aria-label="Previous month"
+          aria-label={previousLabel(props.mode)}
           class={`${props.prefixCls}-month-button`}
           onClick={props.onPrevious}
         >
           {props.previousIcon ?? '‹'}
         </button>
-        <div class={`${props.prefixCls}-month-label`}>{props.viewDate.format('YYYY-MM')}</div>
+        <div class={`${props.prefixCls}-month-label`}>{panelLabel(props.viewDate, props.mode)}</div>
         <button
           type="button"
-          aria-label="Next month"
+          aria-label={nextLabel(props.mode)}
           class={`${props.prefixCls}-month-button`}
           onClick={props.onNext}
         >

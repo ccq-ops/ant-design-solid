@@ -121,6 +121,8 @@ export interface CommonPickerProps extends Omit<
   preserveInvalidOnBlur?: boolean
   open?: boolean
   defaultOpen?: boolean
+  pickerValue?: Dayjs
+  defaultPickerValue?: Dayjs
   placement?: DatePickerPlacement
   size?: ComponentSize
   status?: DatePickerStatus
@@ -154,7 +156,6 @@ export interface CommonPickerProps extends Omit<
 export interface DatePickerProps extends CommonPickerProps {
   value?: DatePickerValue
   defaultValue?: DatePickerValue
-  defaultPickerValue?: DatePickerValue
   multiple?: boolean
   order?: boolean
   presets?: PresetValue[]
@@ -163,7 +164,10 @@ export interface DatePickerProps extends CommonPickerProps {
   onOk?: (date: DatePickerValue) => void
 }
 
-export interface RangePickerProps extends Omit<CommonPickerProps, 'placeholder' | 'showTime'> {
+export interface RangePickerProps extends Omit<
+  CommonPickerProps,
+  'placeholder' | 'showTime' | 'defaultPickerValue'
+> {
   value?: RangePickerValue
   defaultValue?: RangePickerValue
   defaultPickerValue?: [Dayjs, Dayjs]

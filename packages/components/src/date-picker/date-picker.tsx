@@ -13,8 +13,17 @@ import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
-import { dayjs, isOutOfBounds, monthStart, normalizeDateValue, samePickerValue } from './date-utils'
+import {
+  dayjs,
+  isOutOfBounds,
+  normalizeDateValue,
+  pickerSelectionStart,
+  pickerViewStart,
+  samePickerValue,
+} from './date-utils'
 import { DatePanel } from './date-panel'
+import { MonthPanel } from './month-panel'
+import { YearPanel } from './year-panel'
 import { useDatePickerStyle } from './date-picker.style'
 import { formatDayjs, parseDayjs } from './format-utils'
 import type { DatePickerProps, DatePickerValue } from './interface'
@@ -29,6 +38,7 @@ export function DatePicker(props: DatePickerProps) {
     'value',
     'defaultValue',
     'defaultPickerValue',
+    'pickerValue',
     'format',
     'picker',
     'placeholder',
@@ -57,6 +67,7 @@ export function DatePicker(props: DatePickerProps) {
     'onOpenChange',
     'onKeyDown',
     'onOk',
+    'onPanelChange',
     'zIndex',
     'getPopupContainer',
     'id',
@@ -78,13 +89,14 @@ export function DatePicker(props: DatePickerProps) {
   const locale = createMemo(() => mergeDatePickerLocale(local.locale))
   const defaultSelectedDate = normalizeDateValue(local.defaultValue)
   const defaultPickerDate = normalizeDateValue(local.defaultPickerValue)
+  const controlledPickerDate = () => normalizeDateValue(local.pickerValue)
   const initialViewDate = defaultPickerDate ?? defaultSelectedDate ?? dayjs()
   const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
   const [inputValue, setInputValue] = createSignal(
     formatDayjs(defaultSelectedDate, local.format, picker()),
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
-  const [viewMonth, setViewMonth] = createSignal(monthStart(initialViewDate))
+  const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
   const [pendingValue, setPendingValue] = createSignal<DatePickerValue>(null)
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
@@ -93,18 +105,20 @@ export function DatePicker(props: DatePickerProps) {
 
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
+  const isPickerValueControlled = () => 'pickerValue' in props
   const disabled = () => Boolean(local.disabled)
   const selectedDate = createMemo(() =>
     isValueControlled() ? normalizeDateValue(local.value) : innerValue(),
   )
   const displayValue = createMemo(() => formatDayjs(selectedDate(), local.format, picker()))
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
+  const panelViewDate = () => controlledPickerDate() ?? viewMonth()
   const placeholder = () => local.placeholder ?? locale().lang?.placeholder ?? 'Select date'
 
   createEffect(() => setInputValue(displayValue()))
   createEffect(() => {
     const selected = selectedDate()
-    if (selected) setViewMonth(monthStart(selected))
+    if (selected && !isPickerValueControlled()) setViewMonth(pickerViewStart(selected, picker()))
   })
 
   function updateDropdownPosition(): void {
@@ -211,13 +225,92 @@ export function DatePicker(props: DatePickerProps) {
     } else {
       changeValue(parsed)
     }
-    setViewMonth(monthStart(parsed))
+    if (!isPickerValueControlled()) setViewMonth(pickerViewStart(parsed, picker()))
     if (closePopup) setOpen(false)
   }
 
   function clearValue(event: MouseEvent): void {
     event.stopPropagation()
     changeValue(null)
+  }
+
+  function changePanelView(nextViewDate: dayjs.Dayjs): void {
+    const next = pickerViewStart(nextViewDate, picker())
+    if (!isPickerValueControlled()) setViewMonth(next)
+    local.onPanelChange?.(next, picker())
+  }
+
+  function previousPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    const amount = currentPicker === 'year' ? 12 : 1
+    changePanelView(panelViewDate().subtract(amount, unit))
+  }
+
+  function nextPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    const amount = currentPicker === 'year' ? 12 : 1
+    changePanelView(panelViewDate().add(amount, unit))
+  }
+
+  function selectPickerValue(date: dayjs.Dayjs): void {
+    selectDate(pickerSelectionStart(date, picker()))
+  }
+
+  const panelNode = () => {
+    if (picker() === 'month' || picker() === 'quarter') {
+      return (
+        <MonthPanel
+          prefixCls={prefixCls()}
+          viewDate={panelViewDate()}
+          picker={picker() as 'month' | 'quarter'}
+          selectedValue={pendingValue() ?? selectedDate()}
+          disabledDate={isDateDisabled}
+          cellRender={local.cellRender}
+          locale={locale()}
+          classNames={local.classNames}
+          styles={local.styles}
+          onSelect={selectPickerValue}
+        />
+      )
+    }
+    if (picker() === 'year') {
+      return (
+        <YearPanel
+          prefixCls={prefixCls()}
+          viewDate={panelViewDate()}
+          selectedValue={pendingValue() ?? selectedDate()}
+          disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
+          cellRender={local.cellRender}
+          locale={locale()}
+          classNames={local.classNames}
+          styles={local.styles}
+          onSelect={selectPickerValue}
+        />
+      )
+    }
+    return (
+      <DatePanel
+        prefixCls={prefixCls()}
+        viewDate={panelViewDate()}
+        picker={picker()}
+        selectedValue={pendingValue() ?? selectedDate()}
+        disabledDate={isDateDisabled}
+        cellRender={local.cellRender}
+        dateRender={local.dateRender}
+        locale={locale()}
+        classNames={local.classNames}
+        styles={local.styles}
+        onSelect={selectPickerValue}
+      />
+    )
   }
 
   return (
@@ -300,7 +393,7 @@ export function DatePicker(props: DatePickerProps) {
               dropdownRef = element
             }}
             prefixCls={prefixCls()}
-            viewDate={viewMonth()}
+            viewDate={panelViewDate()}
             placement={local.placement}
             class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
             classNames={local.classNames}
@@ -310,22 +403,10 @@ export function DatePicker(props: DatePickerProps) {
             panelRender={local.panelRender}
             needConfirm={local.needConfirm}
             onOk={confirmPendingValue}
-            onPrevious={() => setViewMonth(viewMonth().subtract(1, 'month'))}
-            onNext={() => setViewMonth(viewMonth().add(1, 'month'))}
+            onPrevious={previousPanel}
+            onNext={nextPanel}
           >
-            <DatePanel
-              prefixCls={prefixCls()}
-              viewDate={viewMonth()}
-              picker={picker()}
-              selectedValue={pendingValue() ?? selectedDate()}
-              disabledDate={isDateDisabled}
-              cellRender={local.cellRender}
-              dateRender={local.dateRender}
-              locale={locale()}
-              classNames={local.classNames}
-              styles={local.styles}
-              onSelect={selectDate}
-            />
+            {panelNode()}
           </PickerPanel>
         </InternalPortal>
       </Show>
