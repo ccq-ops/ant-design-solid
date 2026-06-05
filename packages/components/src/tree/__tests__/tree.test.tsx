@@ -25,6 +25,7 @@ describe('Tree', () => {
     expect(result.getByRole('tree')).toBeTruthy()
     expect(result.getByRole('treeitem', { name: /Asia/ })).toBeTruthy()
     expect(result.queryByRole('treeitem', { name: /China/ })).toBeNull()
+    expect(result.getByRole('button', { name: 'expand Asia' }).querySelector('svg')).toBeTruthy()
 
     fireEvent.click(result.getByRole('button', { name: 'expand Asia' }))
 

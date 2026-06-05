@@ -29,6 +29,9 @@ describe('Transfer', () => {
 
     fireEvent.click(result.getByRole('option', { name: /Alpha/ }))
     expect(onSelectChange).toHaveBeenCalledWith(['1'], [])
+    expect(
+      result.getByRole('button', { name: 'move selected right' }).querySelector('svg'),
+    ).toBeTruthy()
 
     fireEvent.click(result.getByRole('button', { name: 'move selected right' }))
 

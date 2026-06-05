@@ -1,3 +1,4 @@
+import { CaretDownOutlined, CaretRightOutlined } from '@ant-design-solid/icons'
 import { For, Show, createMemo, createSignal, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -155,7 +156,7 @@ export function Tree(props: TreeProps) {
                   )}
                   onClick={(event) => toggleExpand(event, node)}
                 >
-                  {expanded() ? '▾' : '▸'}
+                  {expanded() ? <CaretDownOutlined /> : <CaretRightOutlined />}
                 </button>
               </Show>
               <Show when={nodeCheckable()}>

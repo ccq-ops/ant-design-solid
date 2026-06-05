@@ -1,4 +1,4 @@
-import { CloseCircleFilled } from '@ant-design-solid/icons'
+import { CaretDownOutlined, CaretRightOutlined, CloseCircleFilled } from '@ant-design-solid/icons'
 import {
   For,
   Show,
@@ -282,7 +282,11 @@ export function TreeSelect(props: TreeSelectProps) {
                         class={`${prefixCls()}-expand`}
                         onClick={(event) => toggleExpand(event, node)}
                       >
-                        {includesValue(expandedKeys(), node.value) ? '▾' : '▸'}
+                        {includesValue(expandedKeys(), node.value) ? (
+                          <CaretDownOutlined />
+                        ) : (
+                          <CaretRightOutlined />
+                        )}
                       </button>
                     </Show>
                     <span>{node.title}</span>

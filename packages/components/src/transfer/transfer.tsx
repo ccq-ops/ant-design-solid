@@ -1,3 +1,4 @@
+import { LeftOutlined, RightOutlined } from '@ant-design-solid/icons'
 import { For, createMemo, createSignal, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -189,7 +190,7 @@ export function Transfer(props: TransferProps) {
           disabled={disabled() || !sourceSelectedKeys().length}
           onClick={() => move('right')}
         >
-          {local.operations?.[0] ?? '>'}
+          {local.operations?.[0] ?? <RightOutlined />}
         </button>
         <button
           type="button"
@@ -198,7 +199,7 @@ export function Transfer(props: TransferProps) {
           disabled={disabled() || !targetSelectedKeys().length}
           onClick={() => move('left')}
         >
-          {local.operations?.[1] ?? '<'}
+          {local.operations?.[1] ?? <LeftOutlined />}
         </button>
       </div>
       {renderPanel('right')}

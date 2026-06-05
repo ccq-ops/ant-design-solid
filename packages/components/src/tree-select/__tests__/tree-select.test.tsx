@@ -63,6 +63,7 @@ describe('TreeSelect', () => {
 
     fireEvent.click(combobox)
     fireEvent.click(screen.getByRole('button', { name: 'expand Asia' }))
+    expect(screen.getByRole('button', { name: 'collapse Asia' }).querySelector('svg')).toBeTruthy()
     fireEvent.click(screen.getByRole('treeitem', { name: 'China' }))
 
     expect(combobox).toHaveTextContent('China')

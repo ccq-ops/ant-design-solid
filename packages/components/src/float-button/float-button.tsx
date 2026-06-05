@@ -1,3 +1,4 @@
+import { ArrowUpOutlined } from '@ant-design-solid/icons'
 import {
   Show,
   createContext,
@@ -188,7 +189,7 @@ function BackTop(props: FloatButtonBackTopProps) {
       <BaseFloatButton
         class={classNames(`${prefixCls()}-back-top`, local.class)}
         classList={local.classList}
-        icon={local.children ?? '↑'}
+        icon={local.children ?? <ArrowUpOutlined />}
         description={local.children ? undefined : 'Top'}
         aria-label={local['aria-label'] ?? 'Back to top'}
         onClick={handleClick}

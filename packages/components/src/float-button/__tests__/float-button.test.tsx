@@ -67,6 +67,7 @@ describe('FloatButton', () => {
 
     const button = result.getByRole('button', { name: 'Back to top' })
     expect(button).toHaveClass('ads-float-button-back-top')
+    expect(button.querySelector('.ads-float-button-icon svg')).toBeTruthy()
 
     fireEvent.click(button)
     expect(onClick).toHaveBeenCalledTimes(1)
