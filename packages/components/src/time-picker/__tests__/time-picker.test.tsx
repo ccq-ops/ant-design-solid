@@ -147,9 +147,17 @@ describe('TimePicker', () => {
 it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
   const result = render(() => <TimePicker zIndex={1303} />)
   const selector = result.container.querySelector('.ads-time-picker-selector') as HTMLElement
-  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue(
-    { top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) } as DOMRect,
-  )
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 42,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 32,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
 
   fireEvent.click(selector)
 

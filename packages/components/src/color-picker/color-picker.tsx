@@ -875,7 +875,11 @@ export function ColorPicker(props: ColorPickerProps) {
         )}
       </button>
       <Show when={open()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)
+          }
+        >
           <div
             ref={(element) => {
               popupRef = element

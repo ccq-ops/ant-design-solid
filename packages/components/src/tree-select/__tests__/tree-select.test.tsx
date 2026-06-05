@@ -56,9 +56,7 @@ describe('TreeSelect', () => {
   })
 
   it('supports defaultExpandedKeys', () => {
-    const result = render(() => (
-      <TreeSelect defaultOpen defaultExpandedKeys={['asia']} treeData={treeData} />
-    ))
+    render(() => <TreeSelect defaultOpen defaultExpandedKeys={['asia']} treeData={treeData} />)
 
     expect(screen.getByRole('treeitem', { name: 'China' })).toBeTruthy()
   })
@@ -157,9 +155,17 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
     <TreeSelect zIndex={1302} treeData={[{ value: 'one', title: 'One' }]} />
   ))
   const selector = result.container.querySelector('.ads-tree-select-selector') as HTMLElement
-  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue(
-    { top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) } as DOMRect,
-  )
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 42,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 32,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
 
   fireEvent.click(selector)
 

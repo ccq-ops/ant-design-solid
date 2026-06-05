@@ -151,7 +151,11 @@ export function Popover(props: PopoverProps) {
         {local.children}
       </span>
       <Show when={open()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)
+          }
+        >
           <div
             ref={(element) => {
               overlayRef = element

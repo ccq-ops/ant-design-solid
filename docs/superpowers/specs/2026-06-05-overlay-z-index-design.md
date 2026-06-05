@@ -54,7 +54,7 @@ Replace the global increment-only allocator with an Ant Design style model:
 `useZIndex(componentType, customZIndex?)` returns:
 
 ```ts
-[zIndexForStyle, contextZIndex]
+;[zIndexForStyle, contextZIndex]
 ```
 
 Rules:

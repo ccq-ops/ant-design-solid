@@ -172,7 +172,11 @@ export function Select(props: SelectProps) {
         </Show>
       </div>
       <Show when={open()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
+          }
+        >
           <div role="listbox" class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
             <For each={options()}>
               {(option) => (

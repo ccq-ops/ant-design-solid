@@ -102,7 +102,12 @@ export function Dropdown(props: DropdownProps) {
         {local.children}
       </span>
       <Show when={mergedOpen()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(triggerElement()) ?? config.getPopupContainer?.(triggerElement())}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(triggerElement()) ??
+            config.getPopupContainer?.(triggerElement())
+          }
+        >
           <div
             ref={setOverlayElement}
             class={classNames(

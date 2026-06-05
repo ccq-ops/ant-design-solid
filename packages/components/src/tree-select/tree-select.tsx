@@ -1,4 +1,12 @@
-import { For, Show, createEffect, createMemo, createRenderEffect, createSignal, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createSignal,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
@@ -211,7 +219,11 @@ export function TreeSelect(props: TreeSelectProps) {
         </Show>
       </div>
       <Show when={open()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
+          }
+        >
           <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
             <ul role="tree" class={`${prefixCls()}-tree`}>
               <For each={visibleNodes()}>

@@ -202,9 +202,17 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
     <Select zIndex={1301} options={[{ value: 'one', label: 'One' }]} style={{ width: '200px' }} />
   ))
   const selector = result.container.querySelector('.ads-select-selector') as HTMLElement
-  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue(
-    { top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) } as DOMRect,
-  )
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 42,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 32,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
 
   fireEvent.click(selector)
 

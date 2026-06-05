@@ -140,7 +140,11 @@ export function Tooltip(props: TooltipProps) {
         {local.children}
       </span>
       <Show when={open()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)
+          }
+        >
           <div
             role="tooltip"
             class={classNames(

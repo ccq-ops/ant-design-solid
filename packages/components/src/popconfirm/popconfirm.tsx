@@ -77,7 +77,11 @@ export function Popconfirm(props: PopconfirmProps) {
         {props.children}
       </span>
       <Show when={mergedOpen()}>
-        <InternalPortal mount={() => props.getPopupContainer?.(trigger()) ?? config.getPopupContainer?.(trigger())}>
+        <InternalPortal
+          mount={() =>
+            props.getPopupContainer?.(trigger()) ?? config.getPopupContainer?.(trigger())
+          }
+        >
           <div
             class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
             style={{ ...position(), 'z-index': zIndex }}

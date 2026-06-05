@@ -157,7 +157,6 @@ it('uses explicit zIndex and custom popup container', () => {
   expect(result.container.querySelector('.ads-popover')).toBeFalsy()
 })
 
-
 it('renders a nested select dropdown above the popover overlay', () => {
   render(() => (
     <Popover
@@ -169,7 +168,9 @@ it('renders a nested select dropdown above the popover overlay', () => {
   ))
 
   const popover = document.body.querySelector<HTMLElement>('.ads-popover')!
-  const dropdown = Array.from(document.body.querySelectorAll<HTMLElement>('.ads-select-dropdown')).find((element) => element.textContent?.includes('One'))!
+  const dropdown = Array.from(
+    document.body.querySelectorAll<HTMLElement>('.ads-select-dropdown'),
+  ).find((element) => element.textContent?.includes('One'))!
 
   expect(dropdown).toHaveTextContent('One')
   expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(popover.style.zIndex))

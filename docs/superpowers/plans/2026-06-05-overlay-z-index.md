@@ -33,6 +33,7 @@
 ### Task 1: Shared z-index and popup container primitives
 
 **Files:**
+
 - Modify: `packages/components/src/shared/z-index.ts`
 - Modify: `packages/components/src/shared/portal.tsx`
 - Modify: `packages/components/src/config-provider/interface.ts`
@@ -282,6 +283,7 @@ git commit -m "feat: add popup container and z-index primitives"
 ### Task 2: Container overlays use contextual z-index
 
 **Files:**
+
 - Modify: `packages/components/src/tooltip/interface.ts`
 - Modify: `packages/components/src/tooltip/tooltip.tsx`
 - Modify: `packages/components/src/tooltip/tooltip.style.ts`
@@ -416,12 +418,7 @@ it('uses explicit zIndex and custom popup container', () => {
   const popupContainer = document.createElement('div')
   document.body.appendChild(popupContainer)
   render(() => (
-    <Popconfirm
-      title="Delete?"
-      open
-      zIndex={1236}
-      getPopupContainer={() => popupContainer}
-    >
+    <Popconfirm title="Delete?" open zIndex={1236} getPopupContainer={() => popupContainer}>
       <button>trigger</button>
     </Popconfirm>
   ))
@@ -464,9 +461,7 @@ Append to `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
 it('uses explicit zIndex and custom popup container', () => {
   const popupContainer = document.createElement('div')
   document.body.appendChild(popupContainer)
-  render(() => (
-    <ColorPicker open zIndex={1237} getPopupContainer={() => popupContainer} />
-  ))
+  render(() => <ColorPicker open zIndex={1237} getPopupContainer={() => popupContainer} />)
 
   const popup = popupContainer.querySelector<HTMLElement>('.ads-color-picker-popup')!
   expect(popup).toBeTruthy()
@@ -510,6 +505,7 @@ git commit -m "feat: apply contextual z-index to container overlays"
 ### Task 3: Dropdown uses consumer z-index and popup containers
 
 **Files:**
+
 - Modify: `packages/components/src/dropdown/interface.ts`
 - Modify: `packages/components/src/dropdown/dropdown.tsx`
 - Modify: `packages/components/src/dropdown/dropdown.style.ts`
@@ -576,6 +572,7 @@ git commit -m "feat: apply contextual z-index to dropdown"
 ### Task 4: Select-like dropdowns portal to body with fixed positioning
 
 **Files:**
+
 - Modify: `packages/components/src/select/interface.ts`
 - Modify: `packages/components/src/select/select.tsx`
 - Modify: `packages/components/src/select/select.style.ts`
@@ -605,7 +602,17 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
   ))
   const selector = result.container.querySelector('.ads-select-selector') as HTMLElement
   selector.getBoundingClientRect = () =>
-    ({ top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) }) as DOMRect
+    ({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    }) as DOMRect
 
   fireEvent.click(selector)
 
@@ -674,7 +681,9 @@ function updateDropdownPosition(): void {
 
 ```tsx
 <Show when={open()}>
-  <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+  <InternalPortal
+    mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}
+  >
     <div role="listbox" class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
       ...existing options...
     </div>
@@ -705,7 +714,17 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
   ))
   const selector = result.container.querySelector('.ads-tree-select-selector') as HTMLElement
   selector.getBoundingClientRect = () =>
-    ({ top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) }) as DOMRect
+    ({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    }) as DOMRect
 
   fireEvent.click(selector)
 
@@ -752,7 +771,17 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
   const result = render(() => <TimePicker open zIndex={1303} />)
   const selector = result.container.querySelector('.ads-time-picker-selector') as HTMLElement
   selector.getBoundingClientRect = () =>
-    ({ top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) }) as DOMRect
+    ({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    }) as DOMRect
 
   fireEvent.click(selector)
 
@@ -802,6 +831,7 @@ git commit -m "feat: portal select-like dropdowns"
 ### Task 5: Nested overlay integration
 
 **Files:**
+
 - Test: `packages/components/src/popover/__tests__/popover.test.tsx`
 - Possibly modify: `packages/components/src/shared/z-index.ts`
 
@@ -812,15 +842,7 @@ Append to `packages/components/src/popover/__tests__/popover.test.tsx`:
 ```tsx
 it('renders a nested select dropdown above the popover overlay', () => {
   render(() => (
-    <Popover
-      open
-      content={
-        <Select
-          open
-          options={[{ value: 'one', label: 'One' }]}
-        />
-      }
-    >
+    <Popover open content={<Select open options={[{ value: 'one', label: 'One' }]} />}>
       <button>trigger</button>
     </Popover>
   ))
@@ -884,6 +906,7 @@ git commit -m "test: cover nested overlay z-index ordering"
 ### Task 6: Full verification and cleanup
 
 **Files:**
+
 - Review all changed files under `packages/components/src` and `docs/superpowers/plans/2026-06-05-overlay-z-index.md`.
 
 - [ ] **Step 1: Run filename rule check**
@@ -944,4 +967,3 @@ If any fixes were made during verification:
 git add <fixed-files>
 git commit -m "fix: finalize overlay z-index integration"
 ```
-
