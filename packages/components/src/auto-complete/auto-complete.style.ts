@@ -94,6 +94,7 @@ export function useAutoCompleteStyle(prefixCls: string) {
           cursor: 'pointer',
         },
         [`.${prefixCls}-item:hover`]: { background: t.colorFillAlter },
+        [`.${prefixCls}-item-active`]: { background: t.colorFillAlter },
         [`.${prefixCls}-item-disabled`]: { color: t.colorTextDisabled, cursor: 'not-allowed' },
         [`.${prefixCls}-item-disabled:hover`]: { background: 'transparent' },
         [`.${prefixCls}-empty`]: {

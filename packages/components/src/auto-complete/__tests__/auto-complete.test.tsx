@@ -222,6 +222,67 @@ describe('AutoComplete', () => {
     expect(onPopupScroll).toHaveBeenCalledTimes(1)
   })
 
+  it('navigates enabled options with arrow keys and selects the active option with enter', () => {
+    const onSelect = vi.fn()
+    const result = render(() => (
+      <AutoComplete options={options} filterOption={false} onSelect={onSelect} />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.focus(combobox)
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+    fireEvent.keyDown(combobox, { key: 'Enter' })
+
+    expect(combobox.value).toBe('beta')
+    expect(onSelect).toHaveBeenCalledWith('beta', { label: 'Beta', value: 'beta' })
+  })
+
+  it('supports backfill while navigating with the keyboard', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <AutoComplete options={options} filterOption={false} backfill onChange={onChange} />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.focus(combobox)
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+
+    expect(combobox.value).toBe('beta')
+    expect(onChange).toHaveBeenLastCalledWith('beta')
+  })
+
+  it('does not select the first option on enter when defaultActiveFirstOption is false', () => {
+    const onSelect = vi.fn()
+    const result = render(() => (
+      <AutoComplete
+        options={options}
+        filterOption={false}
+        defaultActiveFirstOption={false}
+        onSelect={onSelect}
+      />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.focus(combobox)
+    fireEvent.keyDown(combobox, { key: 'Enter' })
+
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(combobox.value).toBe('')
+  })
+
+  it('calls onInputKeyDown before internal keyboard handling', () => {
+    const onInputKeyDown = vi.fn()
+    const result = render(() => (
+      <AutoComplete options={options} filterOption={false} onInputKeyDown={onInputKeyDown} />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.focus(combobox)
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+
+    expect(onInputKeyDown).toHaveBeenCalledTimes(1)
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <AutoComplete prefixCls="custom-auto" options={options} />)
     expect(withProp.container.querySelector('.custom-auto')).toBeTruthy()

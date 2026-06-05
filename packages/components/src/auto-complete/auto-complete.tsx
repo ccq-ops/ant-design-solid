@@ -47,9 +47,11 @@ function defaultFilter(inputValue: string, option: AutoCompleteOption): boolean 
             <div
               role="option"
               aria-disabled={Boolean(option.disabled)}
+              aria-selected={option.value === activeValue()}
               class={classNames(
                 `${prefixCls()}-item`,
                 option.disabled && `${prefixCls()}-item-disabled`,
+                option.value === activeValue() && `${prefixCls()}-item-active`,
               )}
               onClick={() => selectOption(option)}
             >
@@ -112,6 +114,7 @@ export function AutoComplete(props: AutoCompleteProps) {
   const [innerValue, setInnerValue] = createSignal(local.defaultValue ?? '')
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [inputFocused, setInputFocused] = createSignal(Boolean(local.defaultOpen))
+  const [activeValue, setActiveValue] = createSignal<string | undefined>()
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
   let dropdownRef: HTMLDivElement | undefined
@@ -150,6 +153,49 @@ export function AutoComplete(props: AutoCompleteProps) {
   const hasNotFoundContent = () =>
     local.notFoundContent !== undefined && local.notFoundContent !== null
   const hasPopupContent = () => filteredOptions().length > 0 || hasNotFoundContent()
+  const defaultActiveFirstOption = () => local.defaultActiveFirstOption ?? true
+  let activeOptionCache: AutoCompleteOption | undefined
+  const activeOption = () => {
+    activeOptionCache = enabledOptions().find((option) => option.value === activeValue())
+    return activeOptionCache
+  }
+  const getActiveOption = () => activeOptionCache ?? activeOption()
+  let ignoreNextDefaultActive = false
+
+  function setDefaultActiveOption(): void {
+    if (!defaultActiveFirstOption()) {
+      activeOptionCache = undefined
+      setActiveValue(undefined)
+      return
+    }
+    const option = enabledOptions()[0]
+    activeOptionCache = option
+    setActiveValue(option?.value)
+  }
+
+  function moveActiveOption(offset: 1 | -1): void {
+    const options = enabledOptions()
+    if (options.length === 0) {
+      activeOptionCache = undefined
+      setActiveValue(undefined)
+      return
+    }
+    const currentValue = activeOptionCache?.value ?? activeValue()
+    const currentIndex = options.findIndex((option) => option.value === currentValue)
+    const nextIndex =
+      currentIndex === -1
+        ? offset === 1
+          ? 0
+          : options.length - 1
+        : (currentIndex + offset + options.length) % options.length
+    const nextOption = options[nextIndex]
+    activeOptionCache = nextOption
+    setActiveValue(nextOption.value)
+    if (local.backfill) {
+      ignoreNextDefaultActive = true
+      changeValue(nextOption.value)
+    }
+  }
 
   function updateDropdownPosition(): void {
     if (isServer) return
@@ -185,7 +231,13 @@ export function AutoComplete(props: AutoCompleteProps) {
   function setOpen(nextOpen: boolean): void {
     if (disabled() && nextOpen) return
     const normalizedOpen = nextOpen && hasPopupContent()
-    if (normalizedOpen) updateDropdownPosition()
+    if (normalizedOpen) {
+      updateDropdownPosition()
+      setDefaultActiveOption()
+    } else {
+      activeOptionCache = undefined
+      setActiveValue(undefined)
+    }
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
   }
@@ -208,6 +260,17 @@ export function AutoComplete(props: AutoCompleteProps) {
     onCleanup(removePointerDown)
   })
 
+  createEffect(() => {
+    if (!open()) return
+    if (inputFocused() && mergedFilterOption() === false) return
+    if (ignoreNextDefaultActive) {
+      ignoreNextDefaultActive = false
+      return
+    }
+    if (activeOption()) return
+    setDefaultActiveOption()
+  })
+
   function changeValue(nextValue: string): void {
     if (
       !isValueControlled() &&
@@ -224,7 +287,6 @@ export function AutoComplete(props: AutoCompleteProps) {
     changeValue(option.value)
     local.onSelect?.(option.value, option)
     setOpen(false)
-    local.onClear?.()
   }
 
   function handleInput(event: InputEvent & { currentTarget: HTMLInputElement; target: Element }) {
@@ -260,9 +322,11 @@ export function AutoComplete(props: AutoCompleteProps) {
             <div
               role="option"
               aria-disabled={Boolean(option.disabled)}
+              aria-selected={option.value === activeValue()}
               class={classNames(
                 `${prefixCls()}-item`,
                 option.disabled && `${prefixCls()}-item-disabled`,
+                option.value === activeValue() && `${prefixCls()}-item-active`,
               )}
               onClick={() => selectOption(option)}
             >
@@ -321,10 +385,28 @@ export function AutoComplete(props: AutoCompleteProps) {
             ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(
               event,
             )
-            if (event.key === 'Escape') setOpen(false)
+            local.onInputKeyDown?.(event)
+            if (event.key === 'Escape') {
+              setOpen(false)
+              return
+            }
+            if (event.key === 'ArrowDown') {
+              event.preventDefault()
+              const wasOpen = open()
+              if (!wasOpen) setOpen(true)
+              moveActiveOption(1)
+              return
+            }
+            if (event.key === 'ArrowUp') {
+              event.preventDefault()
+              const wasOpen = open()
+              if (!wasOpen) setOpen(true)
+              moveActiveOption(-1)
+              return
+            }
             if (event.key === 'Enter' && open()) {
-              const first = enabledOptions()[0]
-              if (first) selectOption(first)
+              const option = getActiveOption()
+              if (option) selectOption(option)
             }
           }}
         />
