@@ -1,4 +1,5 @@
 import { For, Show, createEffect, createSignal, onCleanup, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import {
@@ -6,14 +7,14 @@ import {
   addDocumentPointerDown,
   addPositionUpdateListeners,
 } from '../shared/overlay'
-import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
+import { getDropdownPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { DropdownMenuItem, DropdownProps } from './interface'
 import { useDropdownStyle } from './dropdown.style'
 
-function emptyPosition(): OverlayPosition {
-  return { top: '0px', left: '0px' }
+function emptyPosition(): JSX.CSSProperties {
+  return { position: 'fixed', top: '0px', left: '0px' }
 }
 
 export function Dropdown(props: DropdownProps) {
@@ -42,14 +43,18 @@ export function Dropdown(props: DropdownProps) {
   const [triggerElement, setTriggerElement] = createSignal<HTMLSpanElement>()
   const [overlayElement, setOverlayElement] = createSignal<HTMLDivElement>()
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
-  const [position, setPosition] = createSignal<OverlayPosition>(emptyPosition())
+  const [position, setPosition] = createSignal<JSX.CSSProperties>(emptyPosition())
   const trigger = () => local.trigger ?? 'click'
   const placement = () => local.placement ?? 'bottomLeft'
   const mergedOpen = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
 
-  function updatePosition(element = triggerElement()) {
-    if (!canUseDom() || !element) return
-    setPosition(getDropdownPosition(element.getBoundingClientRect(), placement(), 4))
+  function updatePosition(element?: HTMLSpanElement | Event) {
+    const target = element instanceof HTMLElement ? element : triggerElement()
+    if (!canUseDom() || !target) return
+    setPosition({
+      position: 'fixed',
+      ...getDropdownPosition(target.getBoundingClientRect(), placement(), 4),
+    })
   }
 
   function setOpen(nextOpen: boolean) {
@@ -73,6 +78,7 @@ export function Dropdown(props: DropdownProps) {
   })
   createEffect(() => {
     if (!mergedOpen()) return
+    updatePosition()
     const removeListeners = addPositionUpdateListeners(updatePosition)
     onCleanup(removeListeners)
   })
