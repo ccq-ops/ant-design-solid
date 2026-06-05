@@ -192,6 +192,36 @@ describe('AutoComplete', () => {
     expect(legacyFilter).not.toHaveBeenCalled()
   })
 
+  it('renders notFoundContent when no filtered options match', () => {
+    const result = render(() => (
+      <AutoComplete options={options} notFoundContent={<span>No matches</span>} />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.input(combobox, { target: { value: 'zzz' } })
+
+    expect(screen.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByText('No matches')).toBeTruthy()
+  })
+
+  it('wraps dropdown with popupRender and calls onPopupScroll', () => {
+    const onPopupScroll = vi.fn()
+    const result = render(() => (
+      <AutoComplete
+        options={options}
+        popupRender={(originNode) => <section data-testid="popup-wrapper">{originNode}</section>}
+        onPopupScroll={onPopupScroll}
+      />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.input(combobox, { target: { value: 'a' } })
+
+    expect(screen.getByTestId('popup-wrapper')).toBeTruthy()
+    fireEvent.scroll(screen.getByRole('listbox'))
+    expect(onPopupScroll).toHaveBeenCalledTimes(1)
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <AutoComplete prefixCls="custom-auto" options={options} />)
     expect(withProp.container.querySelector('.custom-auto')).toBeTruthy()
@@ -255,5 +285,34 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
   expect(dropdown.style.left).toBe('20px')
   expect(dropdown.style.width).toBe('200px')
   expect(dropdown.style.zIndex).toBe('1310')
+  rectSpy.mockRestore()
+})
+
+
+it('supports popupMatchSelectWidth options', () => {
+  const result = render(() => (
+    <AutoComplete
+      popupMatchSelectWidth={250}
+      zIndex={1310}
+      options={[{ value: 'one', label: 'One' }]}
+    />
+  ))
+  const selector = result.container.querySelector('.ads-auto-complete-selector') as HTMLElement
+  const input = result.getByRole('combobox') as HTMLInputElement
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 42,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 32,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
+
+  fireEvent.input(input, { target: { value: 'o' } })
+
+  expect((screen.getByRole('listbox') as HTMLElement).style.width).toBe('250px')
   rectSpy.mockRestore()
 })

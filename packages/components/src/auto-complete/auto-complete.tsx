@@ -28,6 +28,44 @@ function optionText(option: AutoCompleteOption): string {
 
 function defaultFilter(inputValue: string, option: AutoCompleteOption): boolean {
   const search = inputValue.toLowerCase()
+  const dropdownNode = () => (
+    <div
+      role="listbox"
+      ref={(element) => {
+        dropdownRef = element
+      }}
+      class={`${prefixCls()}-dropdown`}
+      style={dropdownPosition()}
+      onScroll={(event) => local.onPopupScroll?.(event)}
+    >
+      <Show
+        when={filteredOptions().length > 0}
+        fallback={<div class={`${prefixCls()}-empty`}>{local.notFoundContent}</div>}
+      >
+        <For each={filteredOptions()}>
+          {(option) => (
+            <div
+              role="option"
+              aria-disabled={Boolean(option.disabled)}
+              class={classNames(
+                `${prefixCls()}-item`,
+                option.disabled && `${prefixCls()}-item-disabled`,
+              )}
+              onClick={() => selectOption(option)}
+            >
+              {option.label ?? option.value}
+            </div>
+          )}
+        </For>
+      </Show>
+    </div>
+  )
+
+  const renderedDropdownNode = () => {
+    const node = dropdownNode()
+    return local.popupRender ? local.popupRender(node) : node
+  }
+
   return (
     option.value.toLowerCase().includes(search) || optionText(option).toLowerCase().includes(search)
   )
@@ -109,6 +147,9 @@ export function AutoComplete(props: AutoCompleteProps) {
     return options.filter((option) => defaultFilter(value(), option))
   })
   const enabledOptions = () => filteredOptions().filter((option) => !option.disabled)
+  const hasNotFoundContent = () =>
+    local.notFoundContent !== undefined && local.notFoundContent !== null
+  const hasPopupContent = () => filteredOptions().length > 0 || hasNotFoundContent()
 
   function updateDropdownPosition(): void {
     if (isServer) return
@@ -117,11 +158,18 @@ export function AutoComplete(props: AutoCompleteProps) {
       return
     }
     const rect = selectorRef.getBoundingClientRect()
+    const matchWidth = local.popupMatchSelectWidth ?? true
+    const width =
+      typeof matchWidth === 'number'
+        ? `${Math.max(rect.width, matchWidth)}px`
+        : matchWidth === false
+          ? undefined
+          : `${rect.width}px`
     setDropdownPosition({
       position: 'fixed',
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
-      width: `${rect.width}px`,
+      ...(width ? { width } : {}),
       'z-index': `${dropdownZIndex}`,
     })
   }
@@ -136,7 +184,7 @@ export function AutoComplete(props: AutoCompleteProps) {
 
   function setOpen(nextOpen: boolean): void {
     if (disabled() && nextOpen) return
-    const normalizedOpen = nextOpen && filteredOptions().length > 0
+    const normalizedOpen = nextOpen && hasPopupContent()
     if (normalizedOpen) updateDropdownPosition()
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
@@ -191,6 +239,44 @@ export function AutoComplete(props: AutoCompleteProps) {
     changeValue('')
     setOpen(false)
     local.onClear?.()
+  }
+
+  const dropdownNode = () => (
+    <div
+      role="listbox"
+      ref={(element) => {
+        dropdownRef = element
+      }}
+      class={`${prefixCls()}-dropdown`}
+      style={dropdownPosition()}
+      onScroll={(event) => local.onPopupScroll?.(event)}
+    >
+      <Show
+        when={filteredOptions().length > 0}
+        fallback={<div class={`${prefixCls()}-empty`}>{local.notFoundContent}</div>}
+      >
+        <For each={filteredOptions()}>
+          {(option) => (
+            <div
+              role="option"
+              aria-disabled={Boolean(option.disabled)}
+              class={classNames(
+                `${prefixCls()}-item`,
+                option.disabled && `${prefixCls()}-item-disabled`,
+              )}
+              onClick={() => selectOption(option)}
+            >
+              {option.label ?? option.value}
+            </div>
+          )}
+        </For>
+      </Show>
+    </div>
+  )
+
+  const renderedDropdownNode = () => {
+    const node = dropdownNode()
+    return local.popupRender ? local.popupRender(node) : node
   }
 
   return (
@@ -259,30 +345,7 @@ export function AutoComplete(props: AutoCompleteProps) {
             local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
           }
         >
-          <div
-            role="listbox"
-            ref={(element) => {
-              dropdownRef = element
-            }}
-            class={`${prefixCls()}-dropdown`}
-            style={dropdownPosition()}
-          >
-            <For each={filteredOptions()}>
-              {(option) => (
-                <div
-                  role="option"
-                  aria-disabled={Boolean(option.disabled)}
-                  class={classNames(
-                    `${prefixCls()}-item`,
-                    option.disabled && `${prefixCls()}-item-disabled`,
-                  )}
-                  onClick={() => selectOption(option)}
-                >
-                  {option.label ?? option.value}
-                </div>
-              )}
-            </For>
-          </div>
+          {renderedDropdownNode()}
         </InternalPortal>
       </Show>
     </div>
