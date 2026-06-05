@@ -1,5 +1,15 @@
 import { Affix, Button, Card, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const affixRows: ApiTableRow[] = [
+  { property: 'offsetTop', description: 'Distance from the top of the target before affixing.', type: 'number' },
+  { property: 'offsetBottom', description: 'Distance from the bottom of the target before affixing.', type: 'number' },
+  { property: 'target', description: 'Scroll container used to calculate affix state.', type: '() => Window | HTMLElement | undefined | null' },
+  { property: 'onChange', description: 'Called when affixed state changes.', type: '(affixed: boolean) => void' },
+  { property: 'children', description: 'Content to pin.', type: 'JSX.Element' },
+]
 
 export default function AffixPage() {
   return (
@@ -36,6 +46,9 @@ export default function AffixPage() {
           <p>Scroll the page to see the affix state change.</p>
         </Space>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={affixRows} aria-label="Affix API" />
     </>
   )
 }

@@ -1,5 +1,26 @@
 import { Breadcrumb, Space, message } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const breadcrumbRows: ApiTableRow[] = [
+  { property: 'items', description: 'Breadcrumb items rendered from data.', type: 'BreadcrumbItemType[]' },
+  { property: 'separator', description: 'Default separator between items.', type: 'JSX.Element', defaultValue: "'/'" },
+  { property: 'children', description: 'Manual breadcrumb item composition.', type: 'JSX.Element' },
+]
+
+const breadcrumbItemRows: ApiTableRow[] = [
+  { property: 'title', description: 'Item label for data-driven breadcrumbs.', type: 'JSX.Element' },
+  { property: 'href', description: 'Renders the item as a link when provided.', type: 'string' },
+  { property: 'onClick', description: 'Click handler for interactive breadcrumb items.', type: 'JSX.EventHandlerUnion<HTMLElement, MouseEvent>' },
+  { property: 'separator', description: 'Custom separator after this item.', type: 'JSX.Element' },
+]
+
+const breadcrumbItemPropRows: ApiTableRow[] = [
+  { property: 'href', description: 'Renders this manual item as a link.', type: 'string' },
+  { property: 'onClick', description: 'Click handler for this manual item.', type: 'JSX.EventHandlerUnion<HTMLElement, MouseEvent>' },
+  { property: 'children', description: 'Item label content.', type: 'JSX.Element' },
+]
 
 export default function BreadcrumbPage() {
   return (
@@ -57,6 +78,14 @@ export default function BreadcrumbPage() {
           </Breadcrumb>
         </Space>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Breadcrumb</h3>
+      <ApiTable rows={breadcrumbRows} aria-label="Breadcrumb API" />
+      <h3>Breadcrumb item data</h3>
+      <ApiTable rows={breadcrumbItemRows} aria-label="Breadcrumb Item Data API" />
+      <h3>Breadcrumb.Item</h3>
+      <ApiTable rows={breadcrumbItemPropRows} aria-label="Breadcrumb Item API" />
     </>
   )
 }
