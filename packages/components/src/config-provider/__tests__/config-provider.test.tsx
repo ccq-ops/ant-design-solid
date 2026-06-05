@@ -81,3 +81,28 @@ describe('ConfigProvider', () => {
     expect(childBg).toBe('#ffffff')
   })
 })
+
+it('inherits and overrides getPopupContainer', () => {
+  const outerContainer = document.createElement('div')
+  const innerContainer = document.createElement('div')
+  let outerResolved: HTMLElement | undefined
+  let innerResolved: HTMLElement | undefined
+
+  function Reader(props: { onRead: (element: HTMLElement | undefined) => void }) {
+    const config = useConfig()
+    props.onRead(config.getPopupContainer?.(document.body))
+    return null
+  }
+
+  render(() => (
+    <ConfigProvider getPopupContainer={() => outerContainer}>
+      <Reader onRead={(element) => (outerResolved = element)} />
+      <ConfigProvider getPopupContainer={() => innerContainer}>
+        <Reader onRead={(element) => (innerResolved = element)} />
+      </ConfigProvider>
+    </ConfigProvider>
+  ))
+
+  expect(outerResolved).toBe(outerContainer)
+  expect(innerResolved).toBe(innerContainer)
+})

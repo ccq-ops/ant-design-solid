@@ -30,6 +30,7 @@ export function createConfigValue(
     componentSize?: ComponentSize
     direction?: 'ltr' | 'rtl'
     theme?: ThemeConfig
+    getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   },
 ): ConfigContextValue {
   const theme = createMemo(() => mergeThemeConfig(parent.theme(), props.theme ?? {}))
@@ -39,5 +40,6 @@ export function createConfigValue(
     direction: createMemo(() => props.direction ?? parent.direction()),
     theme,
     token: createMemo(() => mergeTheme(theme())),
+    getPopupContainer: props.getPopupContainer ?? parent.getPopupContainer,
   }
 }

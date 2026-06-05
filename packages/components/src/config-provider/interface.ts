@@ -5,6 +5,7 @@ export interface ConfigProviderProps {
   componentSize?: ComponentSize
   direction?: 'ltr' | 'rtl'
   theme?: ThemeConfig
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   children?: JSX.Element
 }
 export interface ConfigContextValue {
@@ -13,4 +14,5 @@ export interface ConfigContextValue {
   direction: Accessor<'ltr' | 'rtl'>
   theme: Accessor<ThemeConfig>
   token: Accessor<AliasToken>
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
 }
