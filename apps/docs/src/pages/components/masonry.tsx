@@ -1,6 +1,63 @@
 import { createSignal } from 'solid-js'
 import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const masonryRows: ApiTableRow[] = [
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  { property: 'class', description: 'Additional root class.', type: 'string' },
+  {
+    property: 'classList',
+    description: 'Conditional root classes.',
+    type: 'Record<string, boolean | undefined>',
+  },
+  { property: 'style', description: 'Inline root style.', type: 'JSX.CSSProperties | string' },
+  {
+    property: 'columns',
+    description: 'Column count or responsive breakpoint map.',
+    type: 'number | Partial<Record<MasonryBreakpoint, number>>',
+    defaultValue: '4',
+  },
+  {
+    property: 'gutter',
+    description: 'Gap size or responsive breakpoint map.',
+    type: 'number | string | Partial<Record<MasonryBreakpoint, number | string>>',
+    defaultValue: '16',
+  },
+  { property: 'items', description: 'Data items to render.', type: 'T[]' },
+  {
+    property: 'itemRender',
+    description: 'Render function for each data item.',
+    type: '(item: T, index: number) => JSX.Element',
+  },
+  {
+    property: 'children',
+    description: 'Manual masonry children used when items are not provided.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'fresh',
+    description: 'Refreshes measured layout when item heights update.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'classNames',
+    description: 'Semantic class names for masonry parts.',
+    type: '{ item?: string }',
+  },
+  {
+    property: 'styles',
+    description: 'Semantic inline styles for masonry parts.',
+    type: '{ item?: JSX.CSSProperties | string }',
+  },
+  {
+    property: 'onLayoutChange',
+    description: 'Called with columns, column heights, and item placement after layout changes.',
+    type: '(info: MasonryLayoutInfo<T>) => void',
+  },
+]
 
 const baseItems = [
   { key: 1, title: 'Mountain', height: 120, color: '#e6f4ff' },
@@ -117,23 +174,7 @@ export default function MasonryPage() {
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          <code>columns</code> sets the number of columns, or a responsive breakpoint map.
-        </li>
-        <li>
-          <code>gutter</code> sets spacing between columns and items.
-        </li>
-        <li>
-          <code>items</code> and <code>itemRender</code> render data-driven content.
-        </li>
-        <li>
-          <code>fresh</code> refreshes layout when item heights update.
-        </li>
-        <li>
-          <code>onLayoutChange</code> receives column count, column heights, and item placement.
-        </li>
-      </ul>
+      <ApiTable rows={masonryRows} aria-label="Masonry API" />
     </>
   )
 }

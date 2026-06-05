@@ -1,5 +1,37 @@
 import { BorderBeam, Card, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const borderBeamRows: ApiTableRow[] = [
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  {
+    property: 'class',
+    description: 'Additional class applied to the generated beam element.',
+    type: 'string',
+  },
+  {
+    property: 'classList',
+    description: 'Conditional classes applied to the generated beam element.',
+    type: 'Record<string, boolean | undefined>',
+  },
+  {
+    property: 'style',
+    description: 'Inline style merged into the generated beam element.',
+    type: 'JSX.CSSProperties | string',
+  },
+  { property: 'children', description: 'Single host element to decorate.', type: 'JSX.Element' },
+  {
+    property: 'color',
+    description: 'CSS color string or gradient stop array for the beam.',
+    type: 'BorderBeamColor',
+  },
+  {
+    property: 'outset',
+    description: 'Distance the beam extends outside the host border.',
+    type: 'number | string',
+  },
+]
 
 const panelStyle = {
   position: 'relative',
@@ -92,18 +124,11 @@ export default function BorderBeamPage() {
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          <code>color</code> accepts a CSS color string or gradient stop array.
-        </li>
-        <li>
-          <code>outset</code> controls how far the beam extends outside the host element.
-        </li>
-        <li>
-          The child must resolve to a single <code>HTMLElement</code>; text and SVG children are
-          rendered without the beam.
-        </li>
-      </ul>
+      <p>
+        The child must resolve to a single <code>HTMLElement</code>; text and SVG children are
+        rendered without the beam.
+      </p>
+      <ApiTable rows={borderBeamRows} aria-label="BorderBeam API" />
     </>
   )
 }

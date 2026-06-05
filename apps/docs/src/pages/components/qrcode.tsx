@@ -1,5 +1,49 @@
 import { QRCode, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const qrcodeRows: ApiTableRow[] = [
+  { property: 'value', description: 'Content encoded into the visual QR matrix.', type: 'string' },
+  { property: 'size', description: 'QR code size in pixels.', type: 'number', defaultValue: '160' },
+  {
+    property: 'color',
+    description: 'Module color.',
+    type: 'string',
+    defaultValue: 'token.colorText',
+  },
+  {
+    property: 'bgColor',
+    description: 'Background color.',
+    type: 'string',
+    defaultValue: 'token.colorBgContainer',
+  },
+  {
+    property: 'bordered',
+    description: 'Whether to render a border.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'icon', description: 'Image URL rendered in the center.', type: 'string' },
+  {
+    property: 'iconSize',
+    description: 'Center icon size in pixels.',
+    type: 'number',
+    defaultValue: 'size / 4',
+  },
+  {
+    property: 'status',
+    description: 'QR code status overlay.',
+    type: "'active' | 'expired' | 'loading'",
+    defaultValue: "'active'",
+  },
+  {
+    property: 'statusRender',
+    description: 'Custom status overlay renderer.',
+    type: '(info: { status: QRCodeStatus }) => JSX.Element',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+]
 
 export default function QRCodePage() {
   return (
@@ -26,6 +70,9 @@ export default function QRCodePage() {
       <DemoBlock title="Borderless" code={`<QRCode value="borderless" bordered={false} />`}>
         <QRCode value="borderless" bordered={false} />
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={qrcodeRows} aria-label="QRCode API" />
     </>
   )
 }
