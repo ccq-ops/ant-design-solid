@@ -1,3 +1,4 @@
+import { createCache, StyleProvider } from '@ant-design-solid/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -102,6 +103,24 @@ describe('Mentions', () => {
 
     expect(textarea.value).toBe('hi @bob ')
     expect(screen.queryByRole('listbox')).toBeNull()
+  })
+
+  it('positions the clear button inside the textarea wrapper', () => {
+    document.head.innerHTML = ''
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <Mentions allowClear defaultValue="Hello @alice " options={options} />
+      </StyleProvider>
+    ))
+
+    expect(result.getByRole('button', { name: 'clear mentions' })).toBeTruthy()
+
+    const styles = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+    expect(styles).toContain('.ads-mentions-clear')
+    expect(styles).toContain('position:absolute;')
   })
 
   it('supports multiple prefixes, disabled options, clear, and keyboard handling', () => {

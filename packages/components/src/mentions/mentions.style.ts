@@ -46,6 +46,7 @@ export function useMentionsStyle(prefixCls: string) {
           cursor: 'not-allowed',
         },
         [`.${prefixCls}-clear`]: {
+          position: 'absolute',
           top: `${t.paddingXS}px`,
           right: `${t.paddingSM}px`,
           border: '0',
