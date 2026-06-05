@@ -79,7 +79,7 @@ export function Layout(props: { children?: JSX.Element }) {
             </Show>
           </aside>
         </Show>
-        <main class="max-w-[1100px] px-14 py-10">{props.children}</main>
+        <main class="mx-auto w-full max-w-[1100px] px-14 py-10">{props.children}</main>
       </div>
     </div>
   )

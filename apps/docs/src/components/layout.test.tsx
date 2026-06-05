@@ -125,11 +125,14 @@ describe('Layout', () => {
     )
   })
 
-  it('does not render the sidebar on the home page', () => {
+  it('centers the home page content when the sidebar is hidden', () => {
     const result = renderLayout()
+    const main = result.getByRole('main')
 
     expect(result.container.querySelector('aside')).toBeNull()
-    expect(result.getByRole('main')).toHaveClass('max-w-[1100px]')
+    expect(main).toHaveClass('max-w-[1100px]')
+    expect(main).toHaveClass('mx-auto')
+    expect(main).toHaveClass('w-full')
   })
 
   it('keeps the sidebar fixed below the header with its own scroll area', () => {
