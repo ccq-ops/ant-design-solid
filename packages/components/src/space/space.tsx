@@ -12,6 +12,13 @@ function resolveGap(size: SpaceSize | undefined, token: GlobalToken): [number, n
   if (size === 'large') return [ct.gapLarge, ct.gapLarge]
   return [ct.gapMiddle, ct.gapMiddle]
 }
+
+function isRenderableItem(item: unknown) {
+  if (item === null || item === undefined || item === false) return false
+  if (item instanceof Text && item.data === '') return false
+  return true
+}
+
 export function Space(props: SpaceProps) {
   const [local, rest] = splitProps(props, [
     'size',
@@ -27,8 +34,7 @@ export function Space(props: SpaceProps) {
   const prefixCls = () => `${config.prefixCls()}-space`
   const [, hashId] = useSpaceStyle(prefixCls())
   const resolved = children(() => local.children)
-  const items = () =>
-    resolved.toArray().filter((item) => item !== null && item !== undefined && item !== false)
+  const items = () => resolved.toArray().filter(isRenderableItem)
   const gap = () => resolveGap(local.size, token())
   return (
     <div
