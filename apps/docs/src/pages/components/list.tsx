@@ -1,5 +1,90 @@
 import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const listRows: ApiTableRow[] = [
+  {
+    property: 'dataSource',
+    description: 'Array of data items rendered by renderItem.',
+    type: 'T[]',
+  },
+  {
+    property: 'renderItem',
+    description: 'Render function for each data item.',
+    type: '(item: T, index: number) => JSX.Element',
+  },
+  {
+    property: 'header',
+    description: 'Header content rendered above the list items.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'footer',
+    description: 'Footer content rendered below the list items.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'bordered',
+    description: 'Whether to render the list border.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'split',
+    description: 'Whether to render separators between items.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'size',
+    description: 'List size.',
+    type: "'default' | 'large' | 'small'",
+    defaultValue: "'default'",
+  },
+  {
+    property: 'loading',
+    description: 'Shows loading placeholder instead of items.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'emptyText',
+    description: 'Empty state content when there are no items.',
+    type: 'JSX.Element',
+    defaultValue: "'No Data'",
+  },
+  {
+    property: 'children',
+    description: 'Manual list items used when dataSource is not provided.',
+    type: 'JSX.Element',
+  },
+]
+
+const listItemRows: ApiTableRow[] = [
+  {
+    property: 'actions',
+    description: 'Action items rendered after the main content.',
+    type: 'JSX.Element[]',
+  },
+  {
+    property: 'extra',
+    description: 'Extra content rendered at the end of the item.',
+    type: 'JSX.Element',
+  },
+  { property: 'children', description: 'Main list item content.', type: 'JSX.Element' },
+]
+
+const listItemMetaRows: ApiTableRow[] = [
+  {
+    property: 'avatar',
+    description: 'Avatar content rendered before metadata.',
+    type: 'JSX.Element',
+  },
+  { property: 'title', description: 'Metadata title.', type: 'JSX.Element' },
+  { property: 'description', description: 'Metadata description.', type: 'JSX.Element' },
+  { property: 'children', description: 'Additional metadata content.', type: 'JSX.Element' },
+]
 
 const tasks = ['Create component API', 'Write tests', 'Document examples']
 
@@ -83,6 +168,14 @@ export default function ListPage() {
           <List dataSource={[]} emptyText="Nothing found" bordered />
         </Space>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>List</h3>
+      <ApiTable rows={listRows} aria-label="List API" />
+      <h3>List.Item</h3>
+      <ApiTable rows={listItemRows} aria-label="List Item API" />
+      <h3>List.Item.Meta</h3>
+      <ApiTable rows={listItemMetaRows} aria-label="List Item Meta API" />
     </>
   )
 }

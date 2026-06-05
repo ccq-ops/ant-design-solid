@@ -1,5 +1,30 @@
 import { Card, Space, Statistic } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const statisticRows: ApiTableRow[] = [
+  { property: 'title', description: 'Statistic title.', type: 'JSX.Element' },
+  {
+    property: 'value',
+    description: 'Value content. Numeric values can be formatted with precision.',
+    type: 'string | number | null',
+  },
+  { property: 'precision', description: 'Decimal precision for numeric values.', type: 'number' },
+  { property: 'prefix', description: 'Content rendered before the value.', type: 'JSX.Element' },
+  { property: 'suffix', description: 'Content rendered after the value.', type: 'JSX.Element' },
+  {
+    property: 'loading',
+    description: 'Shows a loading placeholder instead of the value.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'valueStyle',
+    description: 'Inline style applied to the value element.',
+    type: 'JSX.CSSProperties | string',
+  },
+]
 
 export default function StatisticPage() {
   return (
@@ -35,6 +60,9 @@ export default function StatisticPage() {
           </Card>
         </Space>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={statisticRows} aria-label="Statistic API" />
     </>
   )
 }
