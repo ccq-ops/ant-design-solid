@@ -43,6 +43,7 @@
 ## Task 1: Add dayjs and core public types
 
 **Files:**
+
 - Modify: `packages/components/package.json`
 - Modify: `pnpm-lock.yaml`
 - Replace: `packages/components/src/date-picker/interface.ts`
@@ -109,7 +110,9 @@ describe('DatePicker dayjs core', () => {
     expect(screen.getByRole('textbox')).toHaveValue('day:05')
     cleanup()
 
-    render(() => <DatePicker defaultValue={value} format={{ format: 'YYYY MM DD', type: 'mask' }} />)
+    render(() => (
+      <DatePicker defaultValue={value} format={{ format: 'YYYY MM DD', type: 'mask' }} />
+    ))
     expect(screen.getByRole('textbox')).toHaveValue('2026 06 05')
   })
 
@@ -220,7 +223,10 @@ export interface DatePickerLocale {
 export interface DisabledTimeConfig {
   disabledHours?: () => number[]
   disabledMinutes?: (selectedHour: number | undefined) => number[]
-  disabledSeconds?: (selectedHour: number | undefined, selectedMinute: number | undefined) => number[]
+  disabledSeconds?: (
+    selectedHour: number | undefined,
+    selectedMinute: number | undefined,
+  ) => number[]
 }
 
 export interface ShowTimeOptions extends DisabledTimeConfig {
@@ -271,8 +277,10 @@ export type DatePickerSemanticSlot =
   | 'presets'
   | 'timePanel'
 
-export interface CommonPickerProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange' | 'onFocus' | 'onBlur'> {
+export interface CommonPickerProps extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'onFocus' | 'onBlur'
+> {
   className?: string
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
   styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
@@ -336,7 +344,10 @@ export interface DatePickerProps extends CommonPickerProps {
   onOk?: (date?: Dayjs | Dayjs[] | null) => void
 }
 
-export interface RangePickerProps extends Omit<CommonPickerProps, 'presets' | 'disabled' | 'onPanelChange'> {
+export interface RangePickerProps extends Omit<
+  CommonPickerProps,
+  'presets' | 'disabled' | 'onPanelChange'
+> {
   value?: RangePickerValue
   defaultValue?: RangePickerValue
   defaultPickerValue?: Dayjs | [Dayjs, Dayjs]
@@ -411,7 +422,9 @@ export function defaultFormatForPicker(picker: PickerType | undefined): string {
   }
 }
 
-export function pickerUnit(picker: PickerType | undefined): 'day' | 'week' | 'month' | 'quarter' | 'year' {
+export function pickerUnit(
+  picker: PickerType | undefined,
+): 'day' | 'week' | 'month' | 'quarter' | 'year' {
   switch (picker) {
     case 'week':
       return 'week'
@@ -426,24 +439,44 @@ export function pickerUnit(picker: PickerType | undefined): 'day' | 'week' | 'mo
   }
 }
 
-export function samePickerValue(a: Dayjs | null | undefined, b: Dayjs | null | undefined, picker: PickerType | undefined): boolean {
+export function samePickerValue(
+  a: Dayjs | null | undefined,
+  b: Dayjs | null | undefined,
+  picker: PickerType | undefined,
+): boolean {
   if (!a || !b) return false
   return a.isSame(b, pickerUnit(picker))
 }
 
-export function isBeforeMin(value: Dayjs, minDate: Dayjs | undefined, picker: PickerType | undefined): boolean {
+export function isBeforeMin(
+  value: Dayjs,
+  minDate: Dayjs | undefined,
+  picker: PickerType | undefined,
+): boolean {
   return Boolean(minDate && value.isBefore(minDate, pickerUnit(picker)))
 }
 
-export function isAfterMax(value: Dayjs, maxDate: Dayjs | undefined, picker: PickerType | undefined): boolean {
+export function isAfterMax(
+  value: Dayjs,
+  maxDate: Dayjs | undefined,
+  picker: PickerType | undefined,
+): boolean {
   return Boolean(maxDate && value.isAfter(maxDate, pickerUnit(picker)))
 }
 
-export function isOutOfBounds(value: Dayjs, minDate: Dayjs | undefined, maxDate: Dayjs | undefined, picker: PickerType | undefined): boolean {
+export function isOutOfBounds(
+  value: Dayjs,
+  minDate: Dayjs | undefined,
+  maxDate: Dayjs | undefined,
+  picker: PickerType | undefined,
+): boolean {
   return isBeforeMin(value, minDate, picker) || isAfterMax(value, maxDate, picker)
 }
 
-export function sortRange(range: [Dayjs | null, Dayjs | null], order: boolean | undefined): [Dayjs | null, Dayjs | null] {
+export function sortRange(
+  range: [Dayjs | null, Dayjs | null],
+  order: boolean | undefined,
+): [Dayjs | null, Dayjs | null] {
   const [start, end] = range
   if (order === false || !start || !end || !end.isBefore(start)) return range
   return [end, start]
@@ -465,27 +498,43 @@ import type { Dayjs } from 'dayjs'
 import { dayjs, defaultFormatForPicker } from './date-utils'
 import type { DatePickerFormat, PickerType } from './interface'
 
-function formatEntries(format: DatePickerFormat | undefined, picker: PickerType | undefined): Array<string | ((value: Dayjs) => string)> {
+function formatEntries(
+  format: DatePickerFormat | undefined,
+  picker: PickerType | undefined,
+): Array<string | ((value: Dayjs) => string)> {
   if (!format) return [defaultFormatForPicker(picker)]
   if (Array.isArray(format)) return format
   if (typeof format === 'object') return [format.format]
   return [format]
 }
 
-export function displayFormat(format: DatePickerFormat | undefined, picker: PickerType | undefined): string | ((value: Dayjs) => string) {
+export function displayFormat(
+  format: DatePickerFormat | undefined,
+  picker: PickerType | undefined,
+): string | ((value: Dayjs) => string) {
   return formatEntries(format, picker)[0] ?? defaultFormatForPicker(picker)
 }
 
-export function formatDayjs(value: Dayjs | null | undefined, format: DatePickerFormat | undefined, picker: PickerType | undefined): string {
+export function formatDayjs(
+  value: Dayjs | null | undefined,
+  format: DatePickerFormat | undefined,
+  picker: PickerType | undefined,
+): string {
   if (!value) return ''
   const first = displayFormat(format, picker)
   return typeof first === 'function' ? first(value) : value.format(first)
 }
 
-export function parseDayjs(text: string, format: DatePickerFormat | undefined, picker: PickerType | undefined): Dayjs | null {
+export function parseDayjs(
+  text: string,
+  format: DatePickerFormat | undefined,
+  picker: PickerType | undefined,
+): Dayjs | null {
   const trimmed = text.trim()
   if (!trimmed) return null
-  const stringFormats = formatEntries(format, picker).filter((item): item is string => typeof item === 'string')
+  const stringFormats = formatEntries(format, picker).filter(
+    (item): item is string => typeof item === 'string',
+  )
   for (const item of stringFormats) {
     const parsed = dayjs(trimmed, item, true)
     if (parsed.isValid()) return parsed
@@ -559,7 +608,16 @@ Replace `packages/components/src/date-picker/date-picker.tsx` with a minimal imp
 
 ```tsx
 import { CloseCircleFilled } from '@ant-design-solid/icons'
-import { For, Show, createEffect, createMemo, createRenderEffect, createSignal, onCleanup, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
@@ -585,21 +643,46 @@ function monthDates(value: dayjs.Dayjs): Array<dayjs.Dayjs | undefined> {
 
 export function DatePickerBase(props: DatePickerProps) {
   const [local, rest] = splitProps(props, [
-    'value', 'defaultValue', 'format', 'placeholder', 'disabled', 'allowClear', 'open', 'defaultOpen',
-    'disabledDate', 'prefixCls', 'class', 'className', 'style', 'onChange', 'onOpenChange', 'onKeyDown',
-    'zIndex', 'getPopupContainer', 'picker', 'locale', 'minDate', 'maxDate', 'inputReadOnly', 'preserveInvalidOnBlur',
+    'value',
+    'defaultValue',
+    'format',
+    'placeholder',
+    'disabled',
+    'allowClear',
+    'open',
+    'defaultOpen',
+    'disabledDate',
+    'prefixCls',
+    'class',
+    'className',
+    'style',
+    'onChange',
+    'onOpenChange',
+    'onKeyDown',
+    'zIndex',
+    'getPopupContainer',
+    'picker',
+    'locale',
+    'minDate',
+    'maxDate',
+    'inputReadOnly',
+    'preserveInvalidOnBlur',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
   const mergedLocale = () => mergeDatePickerLocale(local.locale)
-  const defaultSelectedDate = Array.isArray(local.defaultValue) ? null : normalizeDateValue(local.defaultValue)
+  const defaultSelectedDate = Array.isArray(local.defaultValue)
+    ? null
+    : normalizeDateValue(local.defaultValue)
   const initialViewDate = defaultSelectedDate ?? dayjs()
   const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(monthStart(initialViewDate))
-  const [inputText, setInputText] = createSignal(formatDayjs(defaultSelectedDate, local.format, local.picker))
+  const [inputText, setInputText] = createSignal(
+    formatDayjs(defaultSelectedDate, local.format, local.picker),
+  )
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
   let inputRef: HTMLInputElement | undefined
@@ -628,11 +711,20 @@ export function DatePickerBase(props: DatePickerProps) {
       return
     }
     const rect = selectorRef.getBoundingClientRect()
-    setDropdownPosition({ position: 'fixed', top: `${rect.bottom + 4}px`, left: `${rect.left}px`, 'z-index': `${dropdownZIndex}` })
+    setDropdownPosition({
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      'z-index': `${dropdownZIndex}`,
+    })
   }
 
   function containsPopupTarget(target: EventTarget | null): boolean {
-    return Boolean(target instanceof Node && ((selectorRef && selectorRef.contains(target)) || (dropdownRef && dropdownRef.contains(target))))
+    return Boolean(
+      target instanceof Node &&
+      ((selectorRef && selectorRef.contains(target)) ||
+        (dropdownRef && dropdownRef.contains(target))),
+    )
   }
 
   function setOpen(nextOpen: boolean): void {
@@ -642,7 +734,9 @@ export function DatePickerBase(props: DatePickerProps) {
     local.onOpenChange?.(nextOpen)
   }
 
-  createRenderEffect(() => { if (open()) updateDropdownPosition() })
+  createRenderEffect(() => {
+    if (open()) updateDropdownPosition()
+  })
   createEffect(() => {
     if (!open()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
@@ -650,12 +744,17 @@ export function DatePickerBase(props: DatePickerProps) {
   })
   createEffect(() => {
     if (!open()) return
-    const removePointerDown = addDocumentPointerDown((event) => { if (!containsPopupTarget(event.target)) setOpen(false) })
+    const removePointerDown = addDocumentPointerDown((event) => {
+      if (!containsPopupTarget(event.target)) setOpen(false)
+    })
     onCleanup(removePointerDown)
   })
 
   function isDateDisabled(date: dayjs.Dayjs): boolean {
-    return isOutOfBounds(date, local.minDate, local.maxDate, local.picker) || Boolean(local.disabledDate?.(date, { type: local.picker ?? 'date' }))
+    return (
+      isOutOfBounds(date, local.minDate, local.maxDate, local.picker) ||
+      Boolean(local.disabledDate?.(date, { type: local.picker ?? 'date' }))
+    )
   }
 
   function changeValue(nextDate: dayjs.Dayjs | null): void {
@@ -673,7 +772,8 @@ export function DatePickerBase(props: DatePickerProps) {
   function commitInput(): void {
     const parsed = parseDayjs(inputText(), local.format, local.picker)
     if (parsed && !isDateDisabled(parsed)) changeValue(parsed)
-    else if (!local.preserveInvalidOnBlur) setInputText(formatDayjs(selectedDate(), local.format, local.picker))
+    else if (!local.preserveInvalidOnBlur)
+      setInputText(formatDayjs(selectedDate(), local.format, local.picker))
   }
 
   function clearValue(event: MouseEvent): void {
@@ -681,11 +781,32 @@ export function DatePickerBase(props: DatePickerProps) {
     changeValue(null)
   }
 
-  const placeholder = () => typeof local.placeholder === 'string' ? local.placeholder : (mergedLocale().lang?.placeholder ?? 'Select date')
+  const placeholder = () =>
+    typeof local.placeholder === 'string'
+      ? local.placeholder
+      : (mergedLocale().lang?.placeholder ?? 'Select date')
 
   return (
-    <div {...rest} class={classNames(prefixCls(), disabled() && `${prefixCls()}-disabled`, open() && `${prefixCls()}-open`, hashId(), local.className, local.class)} style={local.style}>
-      <div ref={selectorRef} class={`${prefixCls()}-selector`} onClick={() => { inputRef?.focus(); setOpen(true) }}>
+    <div
+      {...rest}
+      class={classNames(
+        prefixCls(),
+        disabled() && `${prefixCls()}-disabled`,
+        open() && `${prefixCls()}-open`,
+        hashId(),
+        local.className,
+        local.class,
+      )}
+      style={local.style}
+    >
+      <div
+        ref={selectorRef}
+        class={`${prefixCls()}-selector`}
+        onClick={() => {
+          inputRef?.focus()
+          setOpen(true)
+        }}
+      >
         <input
           role="textbox"
           ref={inputRef}
@@ -697,32 +818,85 @@ export function DatePickerBase(props: DatePickerProps) {
           onInput={(event) => setInputText(event.currentTarget.value)}
           onBlur={commitInput}
           onKeyDown={(event) => {
-            ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(event)
+            ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(
+              event,
+            )
             if (event.key === 'Escape') setOpen(false)
             if (event.key === 'Enter') commitInput()
           }}
         />
         <Show when={local.allowClear && !disabled() && selectedDate()}>
-          <button type="button" aria-label="Clear date" class={`${prefixCls()}-clear`} onClick={clearValue}><CloseCircleFilled /></button>
+          <button
+            type="button"
+            aria-label="Clear date"
+            class={`${prefixCls()}-clear`}
+            onClick={clearValue}
+          >
+            <CloseCircleFilled />
+          </button>
         </Show>
       </div>
       <Show when={open()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
+          }
+        >
           <div ref={dropdownRef} class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
             <div class={`${prefixCls()}-header`}>
-              <button type="button" aria-label="Previous month" class={`${prefixCls()}-month-button`} onClick={() => setViewMonth(viewMonth().subtract(1, 'month'))}>‹</button>
+              <button
+                type="button"
+                aria-label="Previous month"
+                class={`${prefixCls()}-month-button`}
+                onClick={() => setViewMonth(viewMonth().subtract(1, 'month'))}
+              >
+                ‹
+              </button>
               <div class={`${prefixCls()}-month-label`}>{viewMonth().format('YYYY-MM')}</div>
-              <button type="button" aria-label="Next month" class={`${prefixCls()}-month-button`} onClick={() => setViewMonth(viewMonth().add(1, 'month'))}>›</button>
+              <button
+                type="button"
+                aria-label="Next month"
+                class={`${prefixCls()}-month-button`}
+                onClick={() => setViewMonth(viewMonth().add(1, 'month'))}
+              >
+                ›
+              </button>
             </div>
-            <div class={`${prefixCls()}-weekdays`}><For each={WEEKDAYS}>{(weekday) => <div class={`${prefixCls()}-weekday`}>{weekday}</div>}</For></div>
+            <div class={`${prefixCls()}-weekdays`}>
+              <For each={WEEKDAYS}>
+                {(weekday) => <div class={`${prefixCls()}-weekday`}>{weekday}</div>}
+              </For>
+            </div>
             <div class={`${prefixCls()}-grid`}>
-              <For each={dates()}>{(date) => <Show when={date} fallback={<div class={`${prefixCls()}-empty-cell`} />}>{(currentDate) => {
-                const cellDate = currentDate()
-                const dateString = () => cellDate.format('YYYY-MM-DD')
-                const cellDisabled = () => isDateDisabled(cellDate)
-                const selected = () => samePickerValue(selectedDate(), cellDate, local.picker)
-                return <button type="button" aria-label={dateString()} aria-pressed={selected()} aria-disabled={cellDisabled()} class={classNames(`${prefixCls()}-cell`, cellDate.isSame(dayjs(), 'day') && `${prefixCls()}-cell-today`, selected() && `${prefixCls()}-cell-selected`, cellDisabled() && `${prefixCls()}-cell-disabled`)} onClick={() => selectDate(cellDate)}>{cellDate.date()}</button>
-              }}</Show>}</For>
+              <For each={dates()}>
+                {(date) => (
+                  <Show when={date} fallback={<div class={`${prefixCls()}-empty-cell`} />}>
+                    {(currentDate) => {
+                      const cellDate = currentDate()
+                      const dateString = () => cellDate.format('YYYY-MM-DD')
+                      const cellDisabled = () => isDateDisabled(cellDate)
+                      const selected = () => samePickerValue(selectedDate(), cellDate, local.picker)
+                      return (
+                        <button
+                          type="button"
+                          aria-label={dateString()}
+                          aria-pressed={selected()}
+                          aria-disabled={cellDisabled()}
+                          class={classNames(
+                            `${prefixCls()}-cell`,
+                            cellDate.isSame(dayjs(), 'day') && `${prefixCls()}-cell-today`,
+                            selected() && `${prefixCls()}-cell-selected`,
+                            cellDisabled() && `${prefixCls()}-cell-disabled`,
+                          )}
+                          onClick={() => selectDate(cellDate)}
+                        >
+                          {cellDate.date()}
+                        </button>
+                      )
+                    }}
+                  </Show>
+                )}
+              </For>
             </div>
           </div>
         </InternalPortal>
@@ -774,6 +948,7 @@ git commit -m "feat(date-picker): adopt dayjs value model"
 ## Task 2: Extract reusable input, popup shell, and date panel modules
 
 **Files:**
+
 - Create: `packages/components/src/date-picker/picker-input.tsx`
 - Create: `packages/components/src/date-picker/picker-panel.tsx`
 - Create: `packages/components/src/date-picker/date-panel.tsx`
@@ -786,54 +961,72 @@ git commit -m "feat(date-picker): adopt dayjs value model"
 Append to `date-picker.test.tsx` inside the `describe` block:
 
 ```tsx
-  it('respects controlled open state and emits open changes without rendering popup', () => {
-    const onOpenChange = vi.fn()
-    render(() => <DatePicker open={false} onOpenChange={onOpenChange} />)
+it('respects controlled open state and emits open changes without rendering popup', () => {
+  const onOpenChange = vi.fn()
+  render(() => <DatePicker open={false} onOpenChange={onOpenChange} />)
 
-    fireEvent.click(screen.getByRole('textbox'))
+  fireEvent.click(screen.getByRole('textbox'))
 
-    expect(onOpenChange).toHaveBeenLastCalledWith(true)
-    expect(screen.queryByText(/2026-\d{2}/)).not.toBeInTheDocument()
-  })
+  expect(onOpenChange).toHaveBeenLastCalledWith(true)
+  expect(screen.queryByText(/2026-\d{2}/)).not.toBeInTheDocument()
+})
 
-  it('passes disabledDate info and enforces minDate and maxDate', () => {
-    const disabledDate = vi.fn((date, info) => info.type === 'date' && date.date() === 10)
-    const onChange = vi.fn()
-    render(() => (
-      <DatePicker
-        defaultOpen
-        defaultPickerValue={dayjs('2026-06-01')}
-        minDate={dayjs('2026-06-05')}
-        maxDate={dayjs('2026-06-20')}
-        disabledDate={disabledDate}
-        onChange={onChange}
-      />
-    ))
+it('passes disabledDate info and enforces minDate and maxDate', () => {
+  const disabledDate = vi.fn((date, info) => info.type === 'date' && date.date() === 10)
+  const onChange = vi.fn()
+  render(() => (
+    <DatePicker
+      defaultOpen
+      defaultPickerValue={dayjs('2026-06-01')}
+      minDate={dayjs('2026-06-05')}
+      maxDate={dayjs('2026-06-20')}
+      disabledDate={disabledDate}
+      onChange={onChange}
+    />
+  ))
 
-    expect(screen.getByRole('button', { name: '2026-06-04' })).toHaveAttribute('aria-disabled', 'true')
-    expect(screen.getByRole('button', { name: '2026-06-10' })).toHaveAttribute('aria-disabled', 'true')
-    expect(screen.getByRole('button', { name: '2026-06-21' })).toHaveAttribute('aria-disabled', 'true')
-    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
-    expect(onChange).not.toHaveBeenCalled()
-    expect(disabledDate).toHaveBeenCalledWith(expect.anything(), { type: 'date' })
-  })
+  expect(screen.getByRole('button', { name: '2026-06-04' })).toHaveAttribute(
+    'aria-disabled',
+    'true',
+  )
+  expect(screen.getByRole('button', { name: '2026-06-10' })).toHaveAttribute(
+    'aria-disabled',
+    'true',
+  )
+  expect(screen.getByRole('button', { name: '2026-06-21' })).toHaveAttribute(
+    'aria-disabled',
+    'true',
+  )
+  fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+  expect(onChange).not.toHaveBeenCalled()
+  expect(disabledDate).toHaveBeenCalledWith(expect.anything(), { type: 'date' })
+})
 
-  it('preserves invalid input on blur when requested', () => {
-    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} preserveInvalidOnBlur />)
+it('preserves invalid input on blur when requested', () => {
+  render(() => <DatePicker defaultValue={dayjs('2026-06-01')} preserveInvalidOnBlur />)
 
-    const input = screen.getByRole('textbox')
-    fireEvent.input(input, { target: { value: 'not-a-date' } })
-    fireEvent.blur(input)
+  const input = screen.getByRole('textbox')
+  fireEvent.input(input, { target: { value: 'not-a-date' } })
+  fireEvent.blur(input)
 
-    expect(input).toHaveValue('not-a-date')
-  })
+  expect(input).toHaveValue('not-a-date')
+})
 
-  it('applies className alias and popup placement class', () => {
-    const result = render(() => <DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} className="external" placement="topRight" />)
+it('applies className alias and popup placement class', () => {
+  const result = render(() => (
+    <DatePicker
+      defaultOpen
+      defaultPickerValue={dayjs('2026-06-01')}
+      className="external"
+      placement="topRight"
+    />
+  ))
 
-    expect(result.container.firstElementChild).toHaveClass('external')
-    expect(document.body.querySelector('.ads-date-picker-dropdown')).toHaveClass('ads-date-picker-dropdown-top-right')
-  })
+  expect(result.container.firstElementChild).toHaveClass('external')
+  expect(document.body.querySelector('.ads-date-picker-dropdown')).toHaveClass(
+    'ads-date-picker-dropdown-top-right',
+  )
+})
 ```
 
 - [ ] **Step 2: Run tests to verify RED**
@@ -896,6 +1089,7 @@ git commit -m "refactor(date-picker): split input and date panel"
 ## Task 3: Implement picker variants and panel control
 
 **Files:**
+
 - Create: `packages/components/src/date-picker/month-panel.tsx`
 - Create: `packages/components/src/date-picker/year-panel.tsx`
 - Create: `packages/components/src/date-picker/decade-panel.tsx`
@@ -923,7 +1117,14 @@ describe('DatePicker picker variants', () => {
 
   it('selects a month with picker="month"', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker picker="month" defaultOpen defaultPickerValue={dayjs('2026-01-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        picker="month"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06' }))
 
@@ -935,7 +1136,14 @@ describe('DatePicker picker variants', () => {
 
   it('selects a quarter with picker="quarter"', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker picker="quarter" defaultOpen defaultPickerValue={dayjs('2026-01-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        picker="quarter"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-Q3' }))
 
@@ -946,7 +1154,14 @@ describe('DatePicker picker variants', () => {
 
   it('selects a year with picker="year"', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker picker="year" defaultOpen defaultPickerValue={dayjs('2026-01-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        picker="year"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2028' }))
 
@@ -957,7 +1172,14 @@ describe('DatePicker picker variants', () => {
 
   it('selects a week with picker="week" and shows week labels', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker picker="week" defaultOpen defaultPickerValue={dayjs('2026-06-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        picker="week"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
 
     expect(screen.getByText('Week')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: '2026-week-24' }))
@@ -969,7 +1191,9 @@ describe('DatePicker picker variants', () => {
 
   it('supports controlled pickerValue and onPanelChange', () => {
     const onPanelChange = vi.fn()
-    render(() => <DatePicker defaultOpen pickerValue={dayjs('2026-06-01')} onPanelChange={onPanelChange} />)
+    render(() => (
+      <DatePicker defaultOpen pickerValue={dayjs('2026-06-01')} onPanelChange={onPanelChange} />
+    ))
 
     expect(screen.getByText('2026-06')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Next month' }))
@@ -1034,6 +1258,7 @@ git commit -m "feat(date-picker): add picker variants"
 ## Task 4: Implement RangePicker
 
 **Files:**
+
 - Create: `packages/components/src/date-picker/range-picker.tsx`
 - Modify: `packages/components/src/date-picker/date-picker.tsx`
 - Modify: `packages/components/src/date-picker/index.ts`
@@ -1066,10 +1291,21 @@ describe('RangePicker', () => {
   it('selects an ordered date range and emits strings', () => {
     const onCalendarChange = vi.fn()
     const onChange = vi.fn()
-    render(() => <RangePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} onCalendarChange={onCalendarChange} onChange={onChange} />)
+    render(() => (
+      <RangePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onCalendarChange={onCalendarChange}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
-    expect(onCalendarChange).toHaveBeenLastCalledWith([expect.anything(), null], ['2026-06-20', ''], { range: 'start' })
+    expect(onCalendarChange).toHaveBeenLastCalledWith(
+      [expect.anything(), null],
+      ['2026-06-20', ''],
+      { range: 'start' },
+    )
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
 
@@ -1083,7 +1319,14 @@ describe('RangePicker', () => {
 
   it('keeps reverse order when order is false', () => {
     const onChange = vi.fn()
-    render(() => <RangePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} order={false} onChange={onChange} />)
+    render(() => (
+      <RangePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        order={false}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
@@ -1095,7 +1338,14 @@ describe('RangePicker', () => {
 
   it('supports allowEmpty and clearing one side', () => {
     const onChange = vi.fn()
-    render(() => <RangePicker allowClear allowEmpty={[true, false]} defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} onChange={onChange} />)
+    render(() => (
+      <RangePicker
+        allowClear
+        allowEmpty={[true, false]}
+        defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: 'Clear start date' }))
 
@@ -1198,6 +1448,7 @@ git commit -m "feat(date-picker): add range picker"
 ## Task 5: Implement showTime, disabledTime, showNow, and onOk
 
 **Files:**
+
 - Create: `packages/components/src/date-picker/time-panel.tsx`
 - Modify: `packages/components/src/date-picker/date-picker.tsx`
 - Modify: `packages/components/src/date-picker/range-picker.tsx`
@@ -1224,7 +1475,15 @@ describe('DatePicker showTime', () => {
   it('selects date and time after OK', () => {
     const onChange = vi.fn()
     const onOk = vi.fn()
-    render(() => <DatePicker showTime defaultOpen defaultPickerValue={dayjs('2026-06-01')} onChange={onChange} onOk={onOk} />)
+    render(() => (
+      <DatePicker
+        showTime
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+        onOk={onOk}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
     fireEvent.click(screen.getByRole('button', { name: 'Hour 09' }))
@@ -1240,7 +1499,14 @@ describe('DatePicker showTime', () => {
   })
 
   it('disables time options from disabledTime', () => {
-    render(() => <DatePicker showTime defaultOpen defaultPickerValue={dayjs('2026-06-01')} disabledTime={() => ({ disabledHours: () => [9] })} />)
+    render(() => (
+      <DatePicker
+        showTime
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        disabledTime={() => ({ disabledHours: () => [9] })}
+      />
+    ))
 
     expect(screen.getByRole('button', { name: 'Hour 09' })).toHaveAttribute('aria-disabled', 'true')
   })
@@ -1257,14 +1523,24 @@ describe('DatePicker showTime', () => {
 
   it('supports RangePicker showTime with OK', () => {
     const onChange = vi.fn()
-    render(() => <RangePicker showTime defaultOpen defaultPickerValue={dayjs('2026-06-01')} onChange={onChange} />)
+    render(() => (
+      <RangePicker
+        showTime
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
     fireEvent.click(screen.getByRole('button', { name: 'Hour 08' }))
     fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
-    expect(onChange).toHaveBeenCalledWith([expect.anything(), expect.anything()], ['2026-06-10 08:00:00', '2026-06-15 08:00:00'])
+    expect(onChange).toHaveBeenCalledWith(
+      [expect.anything(), expect.anything()],
+      ['2026-06-10 08:00:00', '2026-06-15 08:00:00'],
+    )
   })
 })
 ```
@@ -1328,6 +1604,7 @@ git commit -m "feat(date-picker): support show time"
 ## Task 6: Implement multiple selection and needConfirm
 
 **Files:**
+
 - Create: `packages/components/src/date-picker/multiple-tags.tsx`
 - Modify: `packages/components/src/date-picker/date-picker.tsx`
 - Modify: `packages/components/src/date-picker/picker-input.tsx`
@@ -1353,7 +1630,14 @@ describe('DatePicker multiple', () => {
 
   it('adds and removes multiple date values', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker multiple defaultOpen defaultPickerValue={dayjs('2026-06-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        multiple
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
     fireEvent.click(screen.getByRole('button', { name: '2026-06-12' }))
@@ -1380,7 +1664,15 @@ describe('DatePicker multiple', () => {
 
   it('keeps multiple values unordered when order is false', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker multiple order={false} defaultOpen defaultPickerValue={dayjs('2026-06-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        multiple
+        order={false}
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
@@ -1390,7 +1682,15 @@ describe('DatePicker multiple', () => {
 
   it('delays multiple onChange until OK when needConfirm is true', () => {
     const onChange = vi.fn()
-    render(() => <DatePicker multiple needConfirm defaultOpen defaultPickerValue={dayjs('2026-06-01')} onChange={onChange} />)
+    render(() => (
+      <DatePicker
+        multiple
+        needConfirm
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
     expect(onChange).not.toHaveBeenCalled()
@@ -1451,6 +1751,7 @@ git commit -m "feat(date-picker): support multiple selection"
 ## Task 7: Implement presets, custom rendering, semantic styles, icons, variants, and focus refs
 
 **Files:**
+
 - Create: `packages/components/src/date-picker/presets-panel.tsx`
 - Modify: `packages/components/src/date-picker/picker-panel.tsx`
 - Modify: `packages/components/src/date-picker/date-panel.tsx`
@@ -1484,7 +1785,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
       <DatePicker
         defaultOpen
         defaultPickerValue={dayjs('2026-06-01')}
-        cellRender={(current, info) => <span data-testid={`cell-${current.date()}`}>{info.originNode}</span>}
+        cellRender={(current, info) => (
+          <span data-testid={`cell-${current.date()}`}>{info.originNode}</span>
+        )}
         renderExtraFooter={() => <div>extra footer</div>}
         panelRender={(panel) => <section aria-label="wrapped panel">{panel}</section>}
       />
@@ -1495,19 +1798,37 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(screen.getByLabelText('wrapped panel')).toBeInTheDocument()
 
     cleanup()
-    render(() => <DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} dateRender={(current) => <strong>{current.date()}</strong>} />)
+    render(() => (
+      <DatePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        dateRender={(current) => <strong>{current.date()}</strong>}
+      />
+    ))
     expect(screen.getByText('15').tagName).toBe('STRONG')
   })
 
   it('supports presets for single and range pickers', () => {
     const singleChange = vi.fn()
-    render(() => <DatePicker defaultOpen presets={[{ label: 'Today preset', value: dayjs('2026-06-01') }]} onChange={singleChange} />)
+    render(() => (
+      <DatePicker
+        defaultOpen
+        presets={[{ label: 'Today preset', value: dayjs('2026-06-01') }]}
+        onChange={singleChange}
+      />
+    ))
     fireEvent.click(screen.getByRole('button', { name: 'Today preset' }))
     expect(singleChange.mock.calls.at(-1)![1]).toBe('2026-06-01')
 
     cleanup()
     const rangeChange = vi.fn()
-    render(() => <RangePicker defaultOpen presets={[{ label: 'June preset', value: [dayjs('2026-06-01'), dayjs('2026-06-30')] }]} onChange={rangeChange} />)
+    render(() => (
+      <RangePicker
+        defaultOpen
+        presets={[{ label: 'June preset', value: [dayjs('2026-06-01'), dayjs('2026-06-30')] }]}
+        onChange={rangeChange}
+      />
+    ))
     fireEvent.click(screen.getByRole('button', { name: 'June preset' }))
     expect(rangeChange.mock.calls.at(-1)![1]).toEqual(['2026-06-01', '2026-06-30'])
   })
@@ -1632,6 +1953,7 @@ git commit -m "feat(date-picker): add customization APIs"
 ## Task 8: Complete docs and full verification
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/date-picker.tsx`
 - Modify: `packages/components/src/date-picker/date-picker.tsx` if verification finds DatePicker composition regressions
 - Modify: `packages/components/src/date-picker/range-picker.tsx` if verification finds RangePicker composition regressions
