@@ -162,20 +162,31 @@ export interface CommonPickerProps extends Omit<
   onKeyDown?: JSX.EventHandlerUnion<HTMLInputElement, KeyboardEvent>
 }
 
-export interface DatePickerProps extends CommonPickerProps {
-  value?: DatePickerValue | DatePickerMultipleValue
-  defaultValue?: DatePickerValue | DatePickerMultipleValue
-  multiple?: boolean
+export interface DatePickerSingleProps extends CommonPickerProps {
+  value?: DatePickerValue
+  defaultValue?: DatePickerValue
+  multiple?: false
   order?: boolean
   presets?: PresetValue[]
   needConfirm?: boolean
   tagRender?: (props: TagRenderProps) => JSX.Element
-  onChange?: (
-    date: DatePickerValue | DatePickerMultipleValue,
-    dateString: string | string[],
-  ) => void
-  onOk?: (date: DatePickerValue | DatePickerMultipleValue) => void
+  onChange?: (date: DatePickerValue, dateString: string) => void
+  onOk?: (date?: DatePickerValue) => void
 }
+
+export interface DatePickerMultipleProps extends CommonPickerProps {
+  value?: DatePickerMultipleValue
+  defaultValue?: DatePickerMultipleValue
+  multiple: true
+  order?: boolean
+  presets?: PresetValue[]
+  needConfirm?: boolean
+  tagRender?: (props: TagRenderProps) => JSX.Element
+  onChange?: (date: DatePickerMultipleValue, dateString: string[]) => void
+  onOk?: (date?: DatePickerMultipleValue) => void
+}
+
+export type DatePickerProps = DatePickerSingleProps | DatePickerMultipleProps
 
 export interface RangePickerProps extends Omit<
   CommonPickerProps,

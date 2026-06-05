@@ -3,7 +3,7 @@ import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import type { dayjs } from './date-utils'
 import { MultipleTags } from './multiple-tags'
-import type { DatePickerFormat, TagRenderProps } from './interface'
+import type { DatePickerFormat, PickerType, TagRenderProps } from './interface'
 
 export interface PickerInputProps {
   prefixCls: string
@@ -11,6 +11,7 @@ export interface PickerInputProps {
   multiple?: boolean
   multipleValues?: dayjs.Dayjs[]
   multipleFormat?: DatePickerFormat
+  multiplePicker?: PickerType
   tagRender?: (props: TagRenderProps) => JSX.Element
   placeholder?: string
   disabled?: boolean
@@ -49,6 +50,7 @@ export function PickerInput(props: PickerInputProps) {
           values={props.multipleValues ?? []}
           disabled={props.disabled}
           format={props.multipleFormat}
+          picker={props.multiplePicker}
           tagRender={props.tagRender}
           onRemove={props.onRemoveTag}
         />

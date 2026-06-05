@@ -2,20 +2,21 @@ import { For } from 'solid-js'
 import type { JSX } from 'solid-js'
 import type { dayjs } from './date-utils'
 import { formatDayjs } from './format-utils'
-import type { DatePickerFormat, TagRenderProps } from './interface'
+import type { DatePickerFormat, PickerType, TagRenderProps } from './interface'
 
 export interface MultipleTagsProps {
   prefixCls: string
   values: dayjs.Dayjs[]
   disabled?: boolean
   format?: DatePickerFormat
+  picker?: PickerType
   tagRender?: (props: TagRenderProps) => JSX.Element
   onRemove?: (value: dayjs.Dayjs) => void
 }
 
 export function MultipleTags(props: MultipleTagsProps) {
   function label(value: dayjs.Dayjs): string {
-    return formatDayjs(value, props.format, 'date')
+    return formatDayjs(value, props.format, props.picker)
   }
 
   function closeValue(value: dayjs.Dayjs): void {

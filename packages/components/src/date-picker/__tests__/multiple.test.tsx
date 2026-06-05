@@ -54,6 +54,12 @@ describe('DatePicker multiple selection', () => {
     expect(screen.getByRole('button', { name: 'tag:2026-06-10' })).toBeInTheDocument()
   })
 
+  it('formats multiple tags with the active picker type', () => {
+    render(() => <DatePicker multiple picker="month" defaultValue={[dayjs('2026-06-01')]} />)
+
+    expect(screen.getByRole('button', { name: 'Remove 2026-06' })).toBeInTheDocument()
+  })
+
   it('keeps insertion order when order is false', () => {
     const onChange = vi.fn()
     render(() => (

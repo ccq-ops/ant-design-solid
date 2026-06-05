@@ -26,7 +26,12 @@ import { MonthPanel } from './month-panel'
 import { YearPanel } from './year-panel'
 import { useDatePickerStyle } from './date-picker.style'
 import { formatDayjs, parseDayjs } from './format-utils'
-import type { DatePickerProps, DatePickerValue } from './interface'
+import type {
+  DatePickerMultipleProps,
+  DatePickerProps,
+  DatePickerSingleProps,
+  DatePickerValue,
+} from './interface'
 import { mergeDatePickerLocale } from './locale'
 import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
@@ -208,7 +213,7 @@ function DatePickerBase(props: DatePickerProps) {
     if (!isValueControlled()) setInnerValue(nextDate)
     const nextString = formatDayjs(nextDate, effectiveFormat(), picker())
     if (!isValueControlled()) setInputValue(nextString)
-    local.onChange?.(nextDate, nextString)
+    ;(local.onChange as DatePickerSingleProps['onChange'] | undefined)?.(nextDate, nextString)
   }
 
   function formatMultipleValue(values: dayjs.Dayjs[]): string[] {
@@ -223,7 +228,10 @@ function DatePickerBase(props: DatePickerProps) {
   function changeMultipleValue(nextDates: dayjs.Dayjs[]): void {
     const normalized = normalizeMultipleValues(nextDates)
     if (!isValueControlled()) setInnerMultipleValue(normalized)
-    local.onChange?.(normalized, formatMultipleValue(normalized))
+    ;(local.onChange as DatePickerMultipleProps['onChange'] | undefined)?.(
+      normalized,
+      formatMultipleValue(normalized),
+    )
   }
 
   function toggleMultipleDate(date: dayjs.Dayjs, source = activeMultipleValue()): dayjs.Dayjs[] {
@@ -271,7 +279,7 @@ function DatePickerBase(props: DatePickerProps) {
         changeMultipleValue(pending)
         setPendingMultipleValue(null)
       }
-      local.onOk?.(committed)
+      ;(local.onOk as DatePickerMultipleProps['onOk'] | undefined)?.(committed)
       setOpen(false)
       return
     }
@@ -281,7 +289,7 @@ function DatePickerBase(props: DatePickerProps) {
       changeValue(pending)
       setPendingValue(null)
     }
-    local.onOk?.(committed)
+    ;(local.onOk as DatePickerSingleProps['onOk'] | undefined)?.(committed)
     setOpen(false)
   }
 
@@ -468,6 +476,7 @@ function DatePickerBase(props: DatePickerProps) {
           multiple={multiple()}
           multipleValues={activeMultipleValue()}
           multipleFormat={effectiveFormat()}
+          multiplePicker={picker()}
           tagRender={local.tagRender}
           placeholder={placeholder()}
           disabled={disabled()}
