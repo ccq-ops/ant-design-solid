@@ -1,10 +1,17 @@
 import { CloseCircleFilled } from '@ant-design-solid/icons'
 import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import type { dayjs } from './date-utils'
+import { MultipleTags } from './multiple-tags'
+import type { DatePickerFormat, TagRenderProps } from './interface'
 
 export interface PickerInputProps {
   prefixCls: string
   value: string
+  multiple?: boolean
+  multipleValues?: dayjs.Dayjs[]
+  multipleFormat?: DatePickerFormat
+  tagRender?: (props: TagRenderProps) => JSX.Element
   placeholder?: string
   disabled?: boolean
   readOnly?: boolean
@@ -27,6 +34,7 @@ export interface PickerInputProps {
   onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent>
   onKeyDown?: JSX.EventHandler<HTMLInputElement, KeyboardEvent>
   onClear?: (event: MouseEvent) => void
+  onRemoveTag?: (value: dayjs.Dayjs) => void
 }
 
 export function PickerInput(props: PickerInputProps) {
@@ -34,6 +42,16 @@ export function PickerInput(props: PickerInputProps) {
     <>
       <Show when={props.prefix}>
         <span class={`${props.prefixCls}-prefix`}>{props.prefix}</span>
+      </Show>
+      <Show when={props.multiple}>
+        <MultipleTags
+          prefixCls={props.prefixCls}
+          values={props.multipleValues ?? []}
+          disabled={props.disabled}
+          format={props.multipleFormat}
+          tagRender={props.tagRender}
+          onRemove={props.onRemoveTag}
+        />
       </Show>
       <input
         id={props.id}
@@ -53,7 +71,13 @@ export function PickerInput(props: PickerInputProps) {
         onBlur={props.onBlur}
         onKeyDown={props.onKeyDown}
       />
-      <Show when={props.allowClear && !props.disabled && props.value !== ''}>
+      <Show
+        when={
+          props.allowClear &&
+          !props.disabled &&
+          (props.value !== '' || Boolean(props.multiple && props.multipleValues?.length))
+        }
+      >
         <button
           type="button"
           aria-label={props.clearAriaLabel ?? 'Clear date'}

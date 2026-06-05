@@ -163,14 +163,18 @@ export interface CommonPickerProps extends Omit<
 }
 
 export interface DatePickerProps extends CommonPickerProps {
-  value?: DatePickerValue
-  defaultValue?: DatePickerValue
+  value?: DatePickerValue | DatePickerMultipleValue
+  defaultValue?: DatePickerValue | DatePickerMultipleValue
   multiple?: boolean
   order?: boolean
   presets?: PresetValue[]
   needConfirm?: boolean
-  onChange?: (date: DatePickerValue, dateString: string) => void
-  onOk?: (date: DatePickerValue) => void
+  tagRender?: (props: TagRenderProps) => JSX.Element
+  onChange?: (
+    date: DatePickerValue | DatePickerMultipleValue,
+    dateString: string | string[],
+  ) => void
+  onOk?: (date: DatePickerValue | DatePickerMultipleValue) => void
 }
 
 export interface RangePickerProps extends Omit<

@@ -31,7 +31,7 @@ export interface DatePanelProps {
   prefixCls: string
   viewDate: dayjs.Dayjs
   picker?: PickerType
-  selectedValue?: dayjs.Dayjs | null
+  selectedValue?: dayjs.Dayjs | dayjs.Dayjs[] | null
   rangeValue?: [dayjs.Dayjs | null, dayjs.Dayjs | null]
   activeRange?: 'start' | 'end'
   hoverValue?: dayjs.Dayjs | null
@@ -76,7 +76,10 @@ export function DatePanel(props: DatePanelProps) {
     const weekStart = () => firstDate.startOf('week')
     const weekLabel = () => `${weekStart().format('YYYY')}-week-${weekStart().week()}`
     const weekDisabled = () => Boolean(props.disabledDate?.(weekStart(), { type: 'week' }))
-    const weekSelected = () => samePickerValue(props.selectedValue, weekStart(), 'week')
+    const weekSelected = () =>
+      Array.isArray(props.selectedValue)
+        ? props.selectedValue.some((value) => samePickerValue(value, weekStart(), 'week'))
+        : samePickerValue(props.selectedValue, weekStart(), 'week')
     return (
       <button
         type="button"
@@ -106,7 +109,10 @@ export function DatePanel(props: DatePanelProps) {
     if (!date) return <div class={`${props.prefixCls}-empty-cell`} />
     const dateString = () => date.format('YYYY-MM-DD')
     const cellDisabled = () => Boolean(props.disabledDate?.(date, { type: picker() }))
-    const selected = () => samePickerValue(props.selectedValue, date, picker())
+    const selected = () =>
+      Array.isArray(props.selectedValue)
+        ? props.selectedValue.some((value) => samePickerValue(value, date, picker()))
+        : samePickerValue(props.selectedValue, date, picker())
     const rangeStart = () => samePickerValue(props.rangeValue?.[0], date, picker())
     const rangeEnd = () => samePickerValue(props.rangeValue?.[1], date, picker())
     const displayRange = (): [dayjs.Dayjs | null, dayjs.Dayjs | null] => {

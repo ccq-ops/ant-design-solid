@@ -87,27 +87,38 @@ function DatePickerBase(props: DatePickerProps) {
     'renderExtraFooter',
     'panelRender',
     'needConfirm',
+    'multiple',
+    'order',
+    'tagRender',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
   const picker = () => local.picker ?? 'date'
-  const showTimeEnabled = () => Boolean(local.showTime)
+  const multiple = () => Boolean(local.multiple)
+  const showTimeEnabled = () => !multiple() && Boolean(local.showTime)
   const effectiveFormat = () =>
     local.format ?? (showTimeEnabled() ? 'YYYY-MM-DD HH:mm:ss' : undefined)
   const locale = createMemo(() => mergeDatePickerLocale(local.locale))
-  const defaultSelectedDate = normalizeDateValue(local.defaultValue)
+  const defaultSelectedDate = Array.isArray(local.defaultValue)
+    ? null
+    : normalizeDateValue(local.defaultValue)
+  const defaultSelectedDates = Array.isArray(local.defaultValue) ? local.defaultValue : []
   const defaultPickerDate = normalizeDateValue(local.defaultPickerValue)
   const controlledPickerDate = () => normalizeDateValue(local.pickerValue)
-  const initialViewDate = defaultPickerDate ?? defaultSelectedDate ?? dayjs()
+  const initialViewDate =
+    defaultPickerDate ?? defaultSelectedDate ?? defaultSelectedDates[0] ?? dayjs()
   const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
+  const [innerMultipleValue, setInnerMultipleValue] =
+    createSignal<dayjs.Dayjs[]>(defaultSelectedDates)
   const [inputValue, setInputValue] = createSignal(
     formatDayjs(defaultSelectedDate, effectiveFormat(), picker()),
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
   const [pendingValue, setPendingValue] = createSignal<DatePickerValue>(null)
+  const [pendingMultipleValue, setPendingMultipleValue] = createSignal<dayjs.Dayjs[] | null>(null)
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
   let inputRef: HTMLInputElement | undefined
@@ -118,16 +129,24 @@ function DatePickerBase(props: DatePickerProps) {
   const isPickerValueControlled = () => 'pickerValue' in props
   const disabled = () => Boolean(local.disabled)
   const selectedDate = createMemo(() =>
-    isValueControlled() ? normalizeDateValue(local.value) : innerValue(),
+    isValueControlled() && !Array.isArray(local.value)
+      ? normalizeDateValue(local.value)
+      : innerValue(),
   )
-  const displayValue = createMemo(() => formatDayjs(selectedDate(), effectiveFormat(), picker()))
+  const selectedDates = createMemo(() =>
+    isValueControlled() && Array.isArray(local.value) ? local.value : innerMultipleValue(),
+  )
+  const activeMultipleValue = createMemo(() => pendingMultipleValue() ?? selectedDates())
+  const displayValue = createMemo(() =>
+    multiple() ? '' : formatDayjs(selectedDate(), effectiveFormat(), picker()),
+  )
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
   const panelViewDate = () => controlledPickerDate() ?? viewMonth()
   const placeholder = () => local.placeholder ?? locale().lang?.placeholder ?? 'Select date'
 
   createEffect(() => setInputValue(displayValue()))
   createEffect(() => {
-    const selected = selectedDate()
+    const selected = multiple() ? selectedDates()[0] : selectedDate()
     if (selected && !isPickerValueControlled()) setViewMonth(pickerViewStart(selected, picker()))
   })
 
@@ -192,8 +211,50 @@ function DatePickerBase(props: DatePickerProps) {
     local.onChange?.(nextDate, nextString)
   }
 
+  function formatMultipleValue(values: dayjs.Dayjs[]): string[] {
+    return values.map((value) => formatDayjs(value, effectiveFormat(), picker()))
+  }
+
+  function normalizeMultipleValues(values: dayjs.Dayjs[]): dayjs.Dayjs[] {
+    if (local.order === false) return values
+    return [...values].sort((a, b) => a.valueOf() - b.valueOf())
+  }
+
+  function changeMultipleValue(nextDates: dayjs.Dayjs[]): void {
+    const normalized = normalizeMultipleValues(nextDates)
+    if (!isValueControlled()) setInnerMultipleValue(normalized)
+    local.onChange?.(normalized, formatMultipleValue(normalized))
+  }
+
+  function toggleMultipleDate(date: dayjs.Dayjs, source = activeMultipleValue()): dayjs.Dayjs[] {
+    const exists = source.some((value) => samePickerValue(value, date, picker()))
+    const next = exists
+      ? source.filter((value) => !samePickerValue(value, date, picker()))
+      : [...source, date]
+    return normalizeMultipleValues(next)
+  }
+
+  function removeMultipleDate(date: dayjs.Dayjs): void {
+    const source = activeMultipleValue()
+    const next = source.filter((value) => !samePickerValue(value, date, picker()))
+    if (local.needConfirm) {
+      setPendingMultipleValue(next)
+      return
+    }
+    changeMultipleValue(next)
+  }
+
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
+    if (multiple()) {
+      const next = toggleMultipleDate(date)
+      if (local.needConfirm) {
+        setPendingMultipleValue(next)
+        return
+      }
+      changeMultipleValue(next)
+      return
+    }
     if (local.needConfirm || showTimeEnabled()) {
       setPendingValue(applyTimeSeed(date))
       return
@@ -203,6 +264,17 @@ function DatePickerBase(props: DatePickerProps) {
   }
 
   function confirmPendingValue(): void {
+    if (multiple()) {
+      const pending = pendingMultipleValue()
+      const committed = pending ?? selectedDates()
+      if (pending) {
+        changeMultipleValue(pending)
+        setPendingMultipleValue(null)
+      }
+      local.onOk?.(committed)
+      setOpen(false)
+      return
+    }
     const pending = pendingValue()
     const committed = pending ?? selectedDate()
     if (pending) {
@@ -241,6 +313,11 @@ function DatePickerBase(props: DatePickerProps) {
 
   function clearValue(event: MouseEvent): void {
     event.stopPropagation()
+    if (multiple()) {
+      if (local.needConfirm) setPendingMultipleValue([])
+      else changeMultipleValue([])
+      return
+    }
     changeValue(null)
   }
 
@@ -308,7 +385,7 @@ function DatePickerBase(props: DatePickerProps) {
           prefixCls={prefixCls()}
           viewDate={panelViewDate()}
           picker={picker() as 'month' | 'quarter'}
-          selectedValue={pendingValue() ?? selectedDate()}
+          selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
           disabledDate={isDateDisabled}
           cellRender={local.cellRender}
           locale={locale()}
@@ -323,7 +400,7 @@ function DatePickerBase(props: DatePickerProps) {
         <YearPanel
           prefixCls={prefixCls()}
           viewDate={panelViewDate()}
-          selectedValue={pendingValue() ?? selectedDate()}
+          selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
           disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
           cellRender={local.cellRender}
           locale={locale()}
@@ -338,7 +415,7 @@ function DatePickerBase(props: DatePickerProps) {
         prefixCls={prefixCls()}
         viewDate={panelViewDate()}
         picker={picker()}
-        selectedValue={pendingValue() ?? selectedDate()}
+        selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
         disabledDate={isDateDisabled}
         cellRender={local.cellRender}
         dateRender={local.dateRender}
@@ -362,6 +439,7 @@ function DatePickerBase(props: DatePickerProps) {
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
+        multiple() && `${prefixCls()}-multiple`,
         hashId(),
         local.class,
         local.className,
@@ -387,6 +465,10 @@ function DatePickerBase(props: DatePickerProps) {
           name={local.name}
           prefixCls={prefixCls()}
           value={inputValue()}
+          multiple={multiple()}
+          multipleValues={activeMultipleValue()}
+          multipleFormat={effectiveFormat()}
+          tagRender={local.tagRender}
           placeholder={placeholder()}
           disabled={disabled()}
           readOnly={local.inputReadOnly}
@@ -423,6 +505,7 @@ function DatePickerBase(props: DatePickerProps) {
             if (event.key === 'Escape') setOpen(false)
           }}
           onClear={clearValue}
+          onRemoveTag={removeMultipleDate}
         />
       </div>
       <Show when={open()}>

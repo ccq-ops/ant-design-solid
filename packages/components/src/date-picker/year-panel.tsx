@@ -7,7 +7,7 @@ import { semanticClass, semanticStyle } from './semantic'
 export interface YearPanelProps {
   prefixCls: string
   viewDate: dayjs.Dayjs
-  selectedValue?: dayjs.Dayjs | null
+  selectedValue?: dayjs.Dayjs | dayjs.Dayjs[] | null
   disabledDate?: (current: dayjs.Dayjs, info: { type: 'year' }) => boolean
   cellRender?: (current: dayjs.Dayjs, info: CellRenderInfo) => JSX.Element
   locale?: DatePickerLocale
@@ -45,7 +45,10 @@ export function YearPanel(props: YearPanelProps) {
         {(cellDate) => {
           const label = () => cellDate.format('YYYY')
           const cellDisabled = () => Boolean(props.disabledDate?.(cellDate, { type: 'year' }))
-          const selected = () => samePickerValue(props.selectedValue, cellDate, 'year')
+          const selected = () =>
+            Array.isArray(props.selectedValue)
+              ? props.selectedValue.some((value) => samePickerValue(value, cellDate, 'year'))
+              : samePickerValue(props.selectedValue, cellDate, 'year')
           return (
             <button
               type="button"

@@ -13,7 +13,7 @@ export interface MonthPanelProps {
   prefixCls: string
   viewDate: dayjs.Dayjs
   picker?: Extract<PickerType, 'month' | 'quarter'>
-  selectedValue?: dayjs.Dayjs | null
+  selectedValue?: dayjs.Dayjs | dayjs.Dayjs[] | null
   disabledDate?: (current: dayjs.Dayjs, info: { type: PickerType }) => boolean
   cellRender?: (current: dayjs.Dayjs, info: CellRenderInfo) => JSX.Element
   locale?: DatePickerLocale
@@ -59,7 +59,10 @@ export function MonthPanel(props: MonthPanelProps) {
         {(cellDate) => {
           const label = () => cellLabel(cellDate)
           const cellDisabled = () => Boolean(props.disabledDate?.(cellDate, { type: picker() }))
-          const selected = () => samePickerValue(props.selectedValue, cellDate, picker())
+          const selected = () =>
+            Array.isArray(props.selectedValue)
+              ? props.selectedValue.some((value) => samePickerValue(value, cellDate, picker()))
+              : samePickerValue(props.selectedValue, cellDate, picker())
           return (
             <button
               type="button"

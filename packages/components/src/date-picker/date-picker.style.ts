@@ -55,6 +55,38 @@ export function useDatePickerStyle(prefixCls: string) {
           background: t.colorFillAlter,
           cursor: 'not-allowed',
         },
+        [`.${prefixCls}-multiple .${prefixCls}-selector`]: {
+          height: 'auto',
+          'min-height': `${t.controlHeight}px`,
+          'justify-content': 'flex-start',
+          'flex-wrap': 'wrap',
+          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+        },
+        [`.${prefixCls}-multiple .${prefixCls}-input`]: {
+          flex: '0 1 24px',
+          width: '24px',
+        },
+        [`.${prefixCls}-multiple-tags`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'flex-wrap': 'wrap',
+          gap: `${t.marginXS}px`,
+          'max-width': '100%',
+        },
+        [`.${prefixCls}-multiple-tag`]: {
+          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-radius': `${t.borderRadius}px`,
+          padding: `0 ${t.paddingXS}px`,
+          background: t.colorFillAlter,
+          color: t.colorText,
+          cursor: 'pointer',
+          'font-size': `${t.fontSize}px`,
+          'line-height': '20px',
+        },
+        [`.${prefixCls}-multiple-tag:hover`]: {
+          borderColor: t.colorBorder,
+          background: t.colorFillAlter,
+        },
         [`.${prefixCls}-input`]: {
           flex: '1 1 auto',
           minWidth: '0',
