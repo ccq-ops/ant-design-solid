@@ -1,5 +1,70 @@
 import { Collapse, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const collapseRows: ApiTableRow[] = [
+  { property: 'items', description: 'Collapse panel items.', type: 'CollapseItem[]' },
+  {
+    property: 'activeKey',
+    description: 'Controlled active panel key or keys.',
+    type: 'string | string[]',
+  },
+  {
+    property: 'defaultActiveKey',
+    description: 'Initial active panel key or keys.',
+    type: 'string | string[]',
+  },
+  {
+    property: 'accordion',
+    description: 'Allows only one panel to be open at a time.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'bordered',
+    description: 'Whether to render borders.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'ghost', description: 'Uses ghost styling.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'collapsible',
+    description: 'Controls which part of panels toggles expansion.',
+    type: "'header' | 'icon' | 'disabled'",
+  },
+  {
+    property: 'expandIconPosition',
+    description: 'Expand icon placement.',
+    type: "'start' | 'end'",
+    defaultValue: "'start'",
+  },
+  {
+    property: 'onChange',
+    description: 'Called with active key or keys after expansion changes.',
+    type: '(activeKey: CollapseActiveKey | undefined) => void',
+  },
+]
+
+const collapseItemRows: ApiTableRow[] = [
+  { property: 'key', description: 'Unique panel key.', type: 'string' },
+  { property: 'label', description: 'Panel header content.', type: 'JSX.Element' },
+  { property: 'children', description: 'Panel body content.', type: 'JSX.Element' },
+  { property: 'extra', description: 'Extra header content.', type: 'JSX.Element' },
+  {
+    property: 'disabled',
+    description: 'Disables the panel.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'collapsible',
+    description: 'Panel-level collapsible behavior.',
+    type: "'header' | 'icon' | 'disabled'",
+  },
+  { property: 'class', description: 'Additional panel class.', type: 'string' },
+  { property: 'style', description: 'Panel inline style.', type: 'JSX.CSSProperties' },
+]
 
 const text = `A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.`
 
@@ -59,6 +124,12 @@ export default function CollapsePage() {
       >
         <Collapse expandIconPosition="end" defaultActiveKey="1" items={basicItems} />
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Collapse</h3>
+      <ApiTable rows={collapseRows} aria-label="Collapse API" />
+      <h3>CollapseItem</h3>
+      <ApiTable rows={collapseItemRows} aria-label="Collapse Item API" />
     </>
   )
 }

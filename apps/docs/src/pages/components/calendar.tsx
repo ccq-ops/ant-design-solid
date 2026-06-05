@@ -1,7 +1,82 @@
 import { createSignal } from 'solid-js'
 import { Calendar, Space } from '@ant-design-solid/core'
 import type { CalendarMode } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const calendarRows: ApiTableRow[] = [
+  { property: 'value', description: 'Controlled selected date.', type: 'Date | string' },
+  {
+    property: 'defaultValue',
+    description: 'Initial selected date for uncontrolled usage.',
+    type: 'Date | string',
+  },
+  {
+    property: 'mode',
+    description: 'Controlled panel mode.',
+    type: "'month' | 'year'",
+    defaultValue: "'month'",
+  },
+  {
+    property: 'defaultMode',
+    description: 'Initial panel mode for uncontrolled usage.',
+    type: "'month' | 'year'",
+    defaultValue: "'month'",
+  },
+  {
+    property: 'fullscreen',
+    description: 'Whether to render full-size calendar layout.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'disabledDate',
+    description: 'Disables date or month cells.',
+    type: '(date: Date) => boolean',
+  },
+  {
+    property: 'dateCellRender',
+    description: 'Additional content renderer for date cells.',
+    type: '(date: Date) => JSX.Element',
+  },
+  {
+    property: 'dateFullCellRender',
+    description: 'Full custom renderer for date cells.',
+    type: '(date: Date) => JSX.Element',
+  },
+  {
+    property: 'monthCellRender',
+    description: 'Additional content renderer for month cells in year mode.',
+    type: '(date: Date) => JSX.Element',
+  },
+  {
+    property: 'monthFullCellRender',
+    description: 'Full custom renderer for month cells in year mode.',
+    type: '(date: Date) => JSX.Element',
+  },
+  {
+    property: 'headerRender',
+    description: 'Custom header renderer with panel controls.',
+    type: '(config: CalendarHeaderRenderConfig) => JSX.Element',
+  },
+  {
+    property: 'onSelect',
+    description: 'Called whenever a selectable date or month is selected.',
+    type: '(date: Date) => void',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when selected value changes.',
+    type: '(date: Date) => void',
+  },
+  {
+    property: 'onPanelChange',
+    description: 'Called when panel date or mode changes.',
+    type: '(date: Date, mode: CalendarMode) => void',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+]
 
 function sameDay(a: Date, b: Date) {
   return (
@@ -104,22 +179,7 @@ const [mode, setMode] = createSignal<CalendarMode>('month')
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          Use <code>value</code> and <code>onChange</code> for controlled date selection.
-        </li>
-        <li>
-          Use <code>mode</code> and <code>onPanelChange</code> for controlled month/year panels.
-        </li>
-        <li>
-          Use <code>dateCellRender</code> or <code>dateFullCellRender</code> to customize date
-          cells.
-        </li>
-        <li>
-          Use <code>monthCellRender</code> or <code>monthFullCellRender</code> to customize year
-          panel month cells.
-        </li>
-      </ul>
+      <ApiTable rows={calendarRows} aria-label="Calendar API" />
     </>
   )
 }

@@ -1,5 +1,56 @@
 import { Descriptions } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const descriptionsRows: ApiTableRow[] = [
+  { property: 'title', description: 'Header title content.', type: 'JSX.Element' },
+  { property: 'extra', description: 'Header extra content.', type: 'JSX.Element' },
+  {
+    property: 'bordered',
+    description: 'Whether to render bordered table cells.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'column',
+    description: 'Number of description columns.',
+    type: 'number',
+    defaultValue: '3',
+  },
+  {
+    property: 'size',
+    description: 'Descriptions size.',
+    type: "'default' | 'middle' | 'small'",
+    defaultValue: "'default'",
+  },
+  {
+    property: 'layout',
+    description: 'Label/content layout.',
+    type: "'horizontal' | 'vertical'",
+    defaultValue: "'horizontal'",
+  },
+  { property: 'items', description: 'Description item data.', type: 'DescriptionsItemType[]' },
+  {
+    property: 'children',
+    description: 'Descriptions.Item children used when items are not provided.',
+    type: 'JSX.Element',
+  },
+]
+
+const descriptionsItemRows: ApiTableRow[] = [
+  { property: 'label', description: 'Item label content.', type: 'JSX.Element' },
+  { property: 'children', description: 'Item value content.', type: 'JSX.Element' },
+  {
+    property: 'span',
+    description: 'Number of columns occupied by the item.',
+    type: 'number',
+    defaultValue: '1',
+  },
+  { property: 'class', description: 'Additional item class.', type: 'string' },
+  { property: 'className', description: 'Additional item class alias.', type: 'string' },
+  { property: 'style', description: 'Item inline style.', type: 'JSX.CSSProperties | string' },
+]
 
 const basicItems = [
   { label: 'UserName', children: 'Zhou Maomao' },
@@ -57,6 +108,12 @@ export default function DescriptionsPage() {
           </Descriptions.Item>
         </Descriptions>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Descriptions</h3>
+      <ApiTable rows={descriptionsRows} aria-label="Descriptions API" />
+      <h3>Descriptions.Item</h3>
+      <ApiTable rows={descriptionsItemRows} aria-label="Descriptions Item API" />
     </>
   )
 }
