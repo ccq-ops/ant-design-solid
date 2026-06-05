@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
@@ -55,6 +56,23 @@ describe('Switch', () => {
     fireEvent.click(loadingButton)
     expect(loadingButton).toHaveAttribute('aria-checked', 'true')
     expect(loadingChange).not.toHaveBeenCalled()
+  })
+
+  it('registers track and movable handle styles', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Switch checkedChildren="On" unCheckedChildren="Off" />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('.ads-switch::after')
+    expect(css).toContain('width:18px;')
+    expect(css).toContain('height:18px;')
+    expect(css).toContain('transform:translateX(22px);')
+    expect(css).toContain('.ads-switch-checked .ads-switch-inner')
   })
 
   it('renders checkedChildren, unCheckedChildren, and size class', () => {
