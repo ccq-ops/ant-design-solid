@@ -58,7 +58,7 @@ export function useCascaderStyle(prefixCls: string) {
         [`.${prefixCls}-selection-overflow`]: {
           display: 'inline-flex',
           'align-items': 'center',
-          gap: `${t.marginXXS}px`,
+          gap: `${t.marginXS}px`,
           flex: '1',
           'min-width': '0',
           'flex-wrap': 'wrap',
@@ -66,10 +66,10 @@ export function useCascaderStyle(prefixCls: string) {
         [`.${prefixCls}-tag`]: {
           display: 'inline-flex',
           'align-items': 'center',
-          gap: `${t.marginXXS}px`,
-          padding: `0 ${t.paddingXXS}px`,
+          gap: `${t.marginXS}px`,
+          padding: `0 ${t.paddingXS}px`,
           background: t.colorFillAlter,
-          'border-radius': `${t.borderRadiusSM}px`,
+          'border-radius': `${t.borderRadius}px`,
         },
         [`.${prefixCls}-tag-close`]: {
           border: '0',
@@ -106,7 +106,7 @@ export function useCascaderStyle(prefixCls: string) {
           width: '14px',
           height: '14px',
           border: `${t.lineWidth}px solid ${t.colorBorder}`,
-          'border-radius': `${t.borderRadiusSM}px`,
+          'border-radius': `${t.borderRadius}px`,
           'font-size': '10px',
         },
         [`.${prefixCls}-loading-icon`]: { color: t.colorTextDisabled },

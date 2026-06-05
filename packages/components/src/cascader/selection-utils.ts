@@ -7,16 +7,22 @@ import {
   valuePathFromOptions,
 } from './path-utils'
 
-export function isMultipleValue(value: OptionValue[] | OptionValue[][] | undefined): value is OptionValue[][] {
+export function isMultipleValue(
+  value: OptionValue[] | OptionValue[][] | undefined,
+): value is OptionValue[][] {
   return Array.isArray(value?.[0])
 }
 
-export function normalizeMultipleValue(value: OptionValue[] | OptionValue[][] | undefined): OptionValue[][] {
+export function normalizeMultipleValue(
+  value: OptionValue[] | OptionValue[][] | undefined,
+): OptionValue[][] {
   if (!value) return []
   return isMultipleValue(value) ? value : []
 }
 
-export function normalizeSingleValue(value: OptionValue[] | OptionValue[][] | undefined): OptionValue[] {
+export function normalizeSingleValue(
+  value: OptionValue[] | OptionValue[][] | undefined,
+): OptionValue[] {
   if (!value || isMultipleValue(value)) return []
   return value
 }
@@ -36,9 +42,10 @@ export function togglePathInMultipleValue(
   const target = optionPath[optionPath.length - 1]
   if (!target || target.disabled) return current
 
-  const targetPaths = target.children?.length && !changeOnSelect
-    ? collectSelectableLeafPaths(target).map((path) => [...optionPath.slice(0, -1), ...path])
-    : [optionPath]
+  const targetPaths =
+    target.children?.length && !changeOnSelect
+      ? collectSelectableLeafPaths(target).map((path) => [...optionPath.slice(0, -1), ...path])
+      : [optionPath]
 
   const currentMap = new Map(current.map((path) => [pathKey(path), path]))
   const targetKeys = targetPaths.map((path) => pathKey(valuePathFromOptions(path)))

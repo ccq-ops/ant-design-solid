@@ -47,7 +47,8 @@ export function CascaderSelector(props: CascaderSelectorProps) {
   const defaultRemoveIcon = () => props.removeIcon ?? '×'
   const omittedPlaceholder = () => {
     if (!props.omittedTags.length) return undefined
-    if (typeof props.maxTagPlaceholder === 'function') return props.maxTagPlaceholder(props.omittedTags)
+    if (typeof props.maxTagPlaceholder === 'function')
+      return props.maxTagPlaceholder(props.omittedTags)
     return props.maxTagPlaceholder ?? `+ ${props.omittedTags.length} ...`
   }
 
@@ -71,7 +72,9 @@ export function CascaderSelector(props: CascaderSelectorProps) {
         fallback={
           <span
             class={
-              props.selected ? `${props.prefixCls}-selection-item` : `${props.prefixCls}-placeholder`
+              props.selected
+                ? `${props.prefixCls}-selection-item`
+                : `${props.prefixCls}-placeholder`
             }
           >
             {props.displayValue}

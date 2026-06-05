@@ -35,7 +35,7 @@ export interface CascaderSelectedPath {
 
 export interface CascaderProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onInput'
+  'onChange' | 'onInput' | 'prefix'
 > {
   options?: CascaderOption[]
   value?: OptionValue[] | OptionValue[][]

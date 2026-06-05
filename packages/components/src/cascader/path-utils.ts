@@ -90,7 +90,8 @@ export function collectSelectableLeafPaths(option: CascaderOption): CascaderOpti
 
 export function isAncestorValuePath(ancestor: OptionValue[], descendant: OptionValue[]): boolean {
   return (
-    ancestor.length < descendant.length && ancestor.every((value, index) => value === descendant[index])
+    ancestor.length < descendant.length &&
+    ancestor.every((value, index) => value === descendant[index])
   )
 }
 
@@ -99,14 +100,20 @@ export function createPathEntity(path: CascaderOption[], label: JSX.Element): Ca
   return { value, options: path, key: pathKey(value), label }
 }
 
-function allSelectableLeavesSelected(parentPath: CascaderOption[], selectedKeys: Set<string>): boolean {
+function allSelectableLeavesSelected(
+  parentPath: CascaderOption[],
+  selectedKeys: Set<string>,
+): boolean {
   const parent = parentPath[parentPath.length - 1]
   if (!parent) return false
   const leafPaths = collectSelectableLeafPaths(parent).map((leafPath) => [
     ...parentPath.slice(0, -1),
     ...leafPath,
   ])
-  return leafPaths.length > 0 && leafPaths.every((path) => selectedKeys.has(pathKey(valuePathFromOptions(path))))
+  return (
+    leafPaths.length > 0 &&
+    leafPaths.every((path) => selectedKeys.has(pathKey(valuePathFromOptions(path))))
+  )
 }
 
 export function filterDisplayedPaths(

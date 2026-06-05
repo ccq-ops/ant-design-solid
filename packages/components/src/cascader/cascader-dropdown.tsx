@@ -24,7 +24,11 @@ export interface CascaderDropdownProps {
 
 export function CascaderDropdown(props: CascaderDropdownProps) {
   return (
-    <div ref={props.dropdownRef} class={`${props.prefixCls}-dropdown`} style={props.dropdownPosition}>
+    <div
+      ref={props.dropdownRef}
+      class={`${props.prefixCls}-dropdown`}
+      style={props.dropdownPosition}
+    >
       <Show
         when={props.searchActive}
         fallback={
@@ -36,15 +40,21 @@ export function CascaderDropdown(props: CascaderDropdownProps) {
                     <li
                       role="menuitem"
                       aria-selected={props.isSelected(option, columnIndex())}
-                      aria-checked={props.multiple ? props.isChecked(option, columnIndex()) : undefined}
+                      aria-checked={
+                        props.multiple ? props.isChecked(option, columnIndex()) : undefined
+                      }
                       aria-disabled={Boolean(option.disabled)}
                       data-indeterminate={
-                        props.multiple && props.isIndeterminate(option, columnIndex()) ? 'true' : undefined
+                        props.multiple && props.isIndeterminate(option, columnIndex())
+                          ? 'true'
+                          : undefined
                       }
                       class={classNames(
                         `${props.prefixCls}-menu-item`,
-                        props.isSelected(option, columnIndex()) && `${props.prefixCls}-menu-item-selected`,
-                        props.isActive(option, columnIndex()) && `${props.prefixCls}-menu-item-active`,
+                        props.isSelected(option, columnIndex()) &&
+                          `${props.prefixCls}-menu-item-selected`,
+                        props.isActive(option, columnIndex()) &&
+                          `${props.prefixCls}-menu-item-active`,
                         option.disabled && `${props.prefixCls}-menu-item-disabled`,
                       )}
                       onClick={() => props.onOptionActivate(option, columnIndex())}
@@ -60,13 +70,19 @@ export function CascaderDropdown(props: CascaderDropdownProps) {
                         </span>
                       </Show>
                       <span>{option.label}</span>
-                      <Show when={props.isLoading(option, columnIndex())} fallback={
-                        <Show when={option.children?.length || option.isLeaf === false}>
-                          <span aria-hidden="true" class={`${props.prefixCls}-menu-item-expand-icon`}>
-                            ›
-                          </span>
-                        </Show>
-                      }>
+                      <Show
+                        when={props.isLoading(option, columnIndex())}
+                        fallback={
+                          <Show when={option.children?.length || option.isLeaf === false}>
+                            <span
+                              aria-hidden="true"
+                              class={`${props.prefixCls}-menu-item-expand-icon`}
+                            >
+                              ›
+                            </span>
+                          </Show>
+                        }
+                      >
                         <span class={`${props.prefixCls}-loading-icon`}>
                           {props.loadingIcon ?? '…'}
                         </span>

@@ -54,7 +54,10 @@ function clearIcon(allowClear: CascaderProps['allowClear']): JSX.Element | undef
   return typeof allowClear === 'object' ? allowClear.clearIcon : undefined
 }
 
-function toDisplayPath(path: CascaderOption[], displayRender?: CascaderProps['displayRender']): CascaderDisplayPath {
+function toDisplayPath(
+  path: CascaderOption[],
+  displayRender?: CascaderProps['displayRender'],
+): CascaderDisplayPath {
   const labels = path.map((option) => option.label)
   const value = valuePathFromOptions(path)
   const text = pathLabel(path)
@@ -136,7 +139,9 @@ const CascaderBase = (props: CascaderProps) => {
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange') {
       if (local.multiple)
-        setInnerMultipleValue(normalizeMultipleValue(formItem.value() as OptionValue[][] | undefined))
+        setInnerMultipleValue(
+          normalizeMultipleValue(formItem.value() as OptionValue[][] | undefined),
+        )
       else setInnerSingleValue(normalizeSingleValue(formItem.value() as OptionValue[] | undefined))
     }
   })
@@ -148,7 +153,8 @@ const CascaderBase = (props: CascaderProps) => {
   const isOpenControlled = () => 'open' in props
   const normalizedSearch = createMemo(() => normalizeShowSearch(local.showSearch))
   const searchEnabled = () => normalizedSearch().enabled
-  const isSearchControlled = () => 'searchValue' in props || normalizedSearch().searchValue !== undefined
+  const isSearchControlled = () =>
+    'searchValue' in props || normalizedSearch().searchValue !== undefined
   const searchValue = () => {
     if ('searchValue' in props) return local.searchValue ?? ''
     return normalizedSearch().searchValue ?? innerSearchValue()
@@ -179,7 +185,9 @@ const CascaderBase = (props: CascaderProps) => {
   const displayedMultiplePaths = createMemo(() => {
     const selectedPaths = multipleSelectedOptions()
     const strategy = local.showCheckedStrategy
-    const paths = strategy ? filterDisplayedPaths(selectedPaths, strategy, options()) : selectedPaths
+    const paths = strategy
+      ? filterDisplayedPaths(selectedPaths, strategy, options())
+      : selectedPaths
     return paths.map((path) => toDisplayPath(path, local.displayRender))
   })
   const visibleTags = createMemo(() => {
@@ -193,7 +201,9 @@ const CascaderBase = (props: CascaderProps) => {
     return []
   })
   const columns = createMemo(() => buildColumns(options(), activeValuePath()))
-  const searchResults = createMemo(() => getSearchResults(options(), searchValue(), normalizedSearch()))
+  const searchResults = createMemo(() =>
+    getSearchResults(options(), searchValue(), normalizedSearch()),
+  )
 
   createEffect(() => {
     const currentOpen = open()
@@ -231,8 +241,8 @@ const CascaderBase = (props: CascaderProps) => {
   function containsPopupTarget(target: EventTarget | null): boolean {
     return Boolean(
       target instanceof Node &&
-        ((selectorRef && selectorRef.contains(target)) ||
-          (dropdownRef && dropdownRef.contains(target))),
+      ((selectorRef && selectorRef.contains(target)) ||
+        (dropdownRef && dropdownRef.contains(target))),
     )
   }
 
@@ -338,7 +348,14 @@ const CascaderBase = (props: CascaderProps) => {
     if (commitSelection && maybeLoadPath(nextSelectedOptions)) return
 
     if (multiple()) {
-      if (commitSelection) changeMultipleValue(togglePathInMultipleValue(multipleValue(), nextSelectedOptions, Boolean(local.changeOnSelect)))
+      if (commitSelection)
+        changeMultipleValue(
+          togglePathInMultipleValue(
+            multipleValue(),
+            nextSelectedOptions,
+            Boolean(local.changeOnSelect),
+          ),
+        )
       return
     }
 
@@ -349,7 +366,8 @@ const CascaderBase = (props: CascaderProps) => {
   function handleSearchSelect(path: CascaderOption[]): void {
     if (multiple()) {
       changeMultipleValue(togglePathInMultipleValue(multipleValue(), path, true))
-      const shouldClear = local.autoClearSearchValue ?? normalizedSearch().autoClearSearchValue ?? true
+      const shouldClear =
+        local.autoClearSearchValue ?? normalizedSearch().autoClearSearchValue ?? true
       if (shouldClear) updateSearchValue('')
       return
     }
@@ -457,7 +475,8 @@ const CascaderBase = (props: CascaderProps) => {
           ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(event)
           if (event.defaultPrevented) return
           if (event.key === 'Escape') setOpen(false)
-          if (event.key === 'Enter' && open() && !searchActive()) selectFirstEnabledInCurrentColumn()
+          if (event.key === 'Enter' && open() && !searchActive())
+            selectFirstEnabledInCurrentColumn()
         }}
       />
       <Show when={open()}>

@@ -9,11 +9,15 @@ const cascaderRows: ApiTableRow[] = [
     description: 'Nested option tree rendered by the cascader.',
     type: 'CascaderOption[]',
   },
-  { property: 'value', description: 'Controlled selected path values.', type: 'OptionValue[]' },
+  {
+    property: 'value',
+    description: 'Controlled selected path values.',
+    type: 'OptionValue[] | OptionValue[][]',
+  },
   {
     property: 'defaultValue',
     description: 'Initial selected path values for uncontrolled usage.',
-    type: 'OptionValue[]',
+    type: 'OptionValue[] | OptionValue[][]',
   },
   { property: 'open', description: 'Controlled popup open state.', type: 'boolean' },
   {
@@ -63,6 +67,87 @@ const cascaderRows: ApiTableRow[] = [
     description: 'Returns the element used to mount the popup portal.',
     type: '(triggerNode?: HTMLElement) => HTMLElement',
   },
+
+  {
+    property: 'showSearch',
+    description:
+      'Enables path search or configures filtering, sorting, rendering, and search control.',
+    type: 'boolean | CascaderShowSearch',
+    defaultValue: 'false',
+  },
+  { property: 'searchValue', description: 'Controlled search text.', type: 'string' },
+  {
+    property: 'onSearch',
+    description: 'Called when search input changes.',
+    type: '(search: string) => void',
+  },
+  {
+    property: 'loadData',
+    description: 'Loads child options lazily for options with isLeaf set to false.',
+    type: '(selectedOptions: CascaderOption[]) => void | Promise<void>',
+  },
+  {
+    property: 'loadingIcon',
+    description: 'Custom loading indicator for lazy options.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'multiple',
+    description: 'Enables multiple path selection.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showCheckedStrategy',
+    description: 'Controls whether parent or child paths are shown in multiple mode.',
+    type: 'Cascader.SHOW_PARENT | Cascader.SHOW_CHILD',
+    defaultValue: 'Cascader.SHOW_PARENT',
+  },
+  {
+    property: 'tagRender',
+    description: 'Custom multiple tag renderer.',
+    type: '(label: JSX.Element, onClose: () => void, value: OptionValue[]) => JSX.Element',
+  },
+  {
+    property: 'removeIcon',
+    description: 'Custom remove icon for multiple tags.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'maxTagCount',
+    description: 'Maximum number of visible tags.',
+    type: "number | 'responsive'",
+  },
+  {
+    property: 'maxTagPlaceholder',
+    description: 'Placeholder rendered for omitted tags.',
+    type: 'JSX.Element | ((omittedValues: CascaderSelectedPath[]) => JSX.Element)',
+  },
+  { property: 'maxTagTextLength', description: 'Maximum tag label text length.', type: 'number' },
+  {
+    property: 'autoClearSearchValue',
+    description: 'Clears search text after selecting in multiple search mode.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'size',
+    description: 'Selector size.',
+    type: "'large' | 'middle' | 'small'",
+    defaultValue: "'middle'",
+  },
+  { property: 'status', description: 'Validation status style.', type: "'error' | 'warning'" },
+  {
+    property: 'variant',
+    description: 'Selector visual variant.',
+    type: "'outlined' | 'borderless' | 'filled' | 'underlined'",
+    defaultValue: "'outlined'",
+  },
+  {
+    property: 'prefix',
+    description: 'Custom prefix content inside the selector.',
+    type: 'JSX.Element',
+  },
   {
     property: 'onChange',
     description: 'Called with selected values and selected option path.',
@@ -84,6 +169,12 @@ const cascaderOptionRows: ApiTableRow[] = [
     description: 'Child options rendered in the next column.',
     type: 'CascaderOption[]',
   },
+  {
+    property: 'isLeaf',
+    description: 'Marks a lazy option as leaf or non-leaf when children are not loaded yet.',
+    type: 'boolean',
+  },
+  { property: 'loading', description: 'Marks this option as loading.', type: 'boolean' },
 ]
 
 const options = [
@@ -160,6 +251,35 @@ export default function CascaderPage() {
           options={options}
           displayRender={(labels) => <strong>{labels.at(-1)}</strong>}
         />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Search"
+        code={`<Cascader showSearch placeholder="Search area" options={options} />`}
+      >
+        <Cascader showSearch placeholder="Search area" options={options} />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Lazy loading"
+        code={`<Cascader options={[{ label: 'Lazy node', value: 'lazy', isLeaf: false }]} loadData={() => Promise.resolve()} loadingIcon="Loading" />`}
+      >
+        <Cascader
+          options={[{ label: 'Lazy node', value: 'lazy', isLeaf: false }]}
+          loadData={() => Promise.resolve()}
+          loadingIcon="Loading"
+        />
+      </DemoBlock>
+
+      <DemoBlock title="Multiple" code={`<Cascader multiple maxTagCount={1} options={options} />`}>
+        <Cascader multiple maxTagCount={1} options={options} />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Visual props"
+        code={`<Cascader size="large" status="error" variant="filled" prefix="Area" options={options} />`}
+      >
+        <Cascader size="large" status="error" variant="filled" prefix="Area" options={options} />
       </DemoBlock>
 
       <DemoBlock

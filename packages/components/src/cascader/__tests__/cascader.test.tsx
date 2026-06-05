@@ -91,7 +91,6 @@ describe('Cascader', () => {
     )
   })
 
-
   it('filters paths with showSearch and selects a search result', () => {
     const onChange = vi.fn()
     const result = render(() => <Cascader showSearch options={options} onChange={onChange} />)
@@ -154,7 +153,6 @@ describe('Cascader', () => {
     expect(screen.getByRole('option', { name: 'Jiangsu / Nanjing' })).toBeTruthy()
   })
 
-
   it('calls loadData for non-leaf lazy options and shows loading icon while pending', async () => {
     let resolveLoad!: () => void
     const loadData = vi.fn(
@@ -181,7 +179,6 @@ describe('Cascader', () => {
 
     expect(screen.queryByText('Loading...')).toBeNull()
   })
-
 
   it('supports multiple leaf selection and deselection', () => {
     const onChange = vi.fn()
@@ -240,7 +237,6 @@ describe('Cascader', () => {
     )
   })
 
-
   it('renders multiple tags with tagRender and removeIcon', () => {
     const onChange = vi.fn()
     render(() => (
@@ -261,10 +257,15 @@ describe('Cascader', () => {
       />
     ))
 
-    expect(screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' })).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' }),
+    ).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' }))
 
-    expect(onChange).toHaveBeenCalledWith([['jiangsu', 'nanjing']], [[options[1], options[1].children?.[0]]])
+    expect(onChange).toHaveBeenCalledWith(
+      [['jiangsu', 'nanjing']],
+      [[options[1], options[1].children?.[0]]],
+    )
   })
 
   it('supports maxTagCount maxTagPlaceholder and maxTagTextLength', () => {
@@ -298,7 +299,10 @@ describe('Cascader', () => {
         ],
       },
     ]
-    const value = [['parent', 'a'], ['parent', 'b']]
+    const value = [
+      ['parent', 'a'],
+      ['parent', 'b'],
+    ]
     const parent = render(() => (
       <Cascader
         multiple
@@ -321,7 +325,6 @@ describe('Cascader', () => {
     expect(child.getByText('Parent / Child A')).toBeTruthy()
     expect(child.getByText('Parent / Child B')).toBeTruthy()
   })
-
 
   it('clears multiple search after selection by default and preserves it when disabled', () => {
     const keep = render(() => (
@@ -407,8 +410,9 @@ describe('Cascader', () => {
 
   it('syncs expanded columns when controlled value changes while open', () => {
     const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
-    const onChange = vi.fn((nextValue: Array<string | number | boolean>) =>
-      setValue(nextValue as string[]),
+    const onChange = vi.fn(
+      (nextValue: Array<string | number | boolean> | Array<Array<string | number | boolean>>) =>
+        setValue(nextValue as string[]),
     )
     const result = render(() => (
       <Cascader open value={value()} options={options} onChange={onChange} />
@@ -566,7 +570,6 @@ describe('Cascader', () => {
       ],
     )
   })
-
 
   it('supports size status variant and prefix visual props', () => {
     const result = render(() => (
