@@ -46,6 +46,33 @@ export function useDatePickerStyle(prefixCls: string) {
           cursor: 'pointer',
           'box-sizing': 'border-box',
         },
+        [`.${prefixCls}-sm .${prefixCls}-selector`]: {
+          height: `${t.controlHeightSM}px`,
+          padding: `0 ${t.paddingXS}px`,
+        },
+        [`.${prefixCls}-lg .${prefixCls}-selector`]: {
+          height: `${t.controlHeightLG}px`,
+          'font-size': `${t.fontSize + 2}px`,
+        },
+        [`.${prefixCls}-status-error .${prefixCls}-selector`]: {
+          'border-color': t.colorError,
+        },
+        [`.${prefixCls}-status-warning .${prefixCls}-selector`]: {
+          'border-color': t.colorWarning,
+        },
+        [`.${prefixCls}-borderless .${prefixCls}-selector`]: {
+          borderColor: 'transparent',
+          'box-shadow': 'none',
+        },
+        [`.${prefixCls}-filled .${prefixCls}-selector`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-underlined .${prefixCls}-selector`]: {
+          'border-top-color': 'transparent',
+          'border-left-color': 'transparent',
+          'border-right-color': 'transparent',
+          'border-radius': '0',
+        },
         [`.${prefixCls}-open .${prefixCls}-selector`]: {
           'border-color': t.colorPrimary,
           'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
@@ -149,6 +176,26 @@ export function useDatePickerStyle(prefixCls: string) {
           background: t.colorBgContainer,
           'box-shadow': t.boxShadow,
           'box-sizing': 'border-box',
+        },
+        [`.${prefixCls}-presets`]: {
+          display: 'flex',
+          'flex-wrap': 'wrap',
+          gap: `${t.marginXS}px`,
+          'margin-bottom': `${t.marginSM}px`,
+          'padding-bottom': `${t.paddingXS}px`,
+          borderBottom: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        },
+        [`.${prefixCls}-preset`]: {
+          border: '0',
+          'border-radius': `${t.borderRadius}px`,
+          padding: `0 ${t.paddingXS}px`,
+          height: `${t.controlHeightSM}px`,
+          background: 'transparent',
+          color: t.colorPrimary,
+          cursor: 'pointer',
+        },
+        [`.${prefixCls}-preset:hover`]: {
+          background: t.colorFillAlter,
         },
         [`.${prefixCls}-header`]: {
           display: 'flex',

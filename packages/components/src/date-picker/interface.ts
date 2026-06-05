@@ -111,7 +111,7 @@ export type DatePickerSemanticSlot =
 
 export interface CommonPickerProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onInput' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'prefix'
+  'onChange' | 'onInput' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'prefix' | 'ref'
 > {
   id?: string
   name?: string
@@ -146,6 +146,10 @@ export interface CommonPickerProps extends Omit<
   suffixIcon?: JSX.Element
   prefix?: JSX.Element
   separator?: JSX.Element
+  prevIcon?: JSX.Element
+  nextIcon?: JSX.Element
+  previousIcon?: JSX.Element
+  bordered?: boolean
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
   styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
   prefixCls?: string
@@ -160,6 +164,7 @@ export interface CommonPickerProps extends Omit<
   onFocus?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>
   onBlur?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>
   onKeyDown?: JSX.EventHandlerUnion<HTMLInputElement, KeyboardEvent>
+  ref?: DatePickerRef | { current?: DatePickerRef } | ((ref: DatePickerRef) => void)
 }
 
 export interface DatePickerSingleProps extends CommonPickerProps {

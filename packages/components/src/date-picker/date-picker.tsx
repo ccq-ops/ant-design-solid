@@ -29,6 +29,7 @@ import { formatDayjs, parseDayjs } from './format-utils'
 import type {
   DatePickerMultipleProps,
   DatePickerProps,
+  DatePickerRef,
   DatePickerSingleProps,
   DatePickerValue,
 } from './interface'
@@ -37,7 +38,7 @@ import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
 import { TimePanel } from './time-panel'
 import { RangePicker } from './range-picker'
-import { semanticClass, semanticStyle } from './semantic'
+import { rootVariantClass, semanticClass, semanticStyle } from './semantic'
 
 function DatePickerBase(props: DatePickerProps) {
   const ariaLabel = () => props['aria-label'] as string | undefined
@@ -87,6 +88,14 @@ function DatePickerBase(props: DatePickerProps) {
     'prefix',
     'suffixIcon',
     'separator',
+    'status',
+    'variant',
+    'size',
+    'bordered',
+    'prevIcon',
+    'nextIcon',
+    'previousIcon',
+    'presets',
     'cellRender',
     'dateRender',
     'renderExtraFooter',
@@ -95,6 +104,7 @@ function DatePickerBase(props: DatePickerProps) {
     'multiple',
     'order',
     'tagRender',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
@@ -129,6 +139,21 @@ function DatePickerBase(props: DatePickerProps) {
   let inputRef: HTMLInputElement | undefined
   let dropdownRef: HTMLDivElement | undefined
 
+  const pickerRef: DatePickerRef = {
+    focus: () => inputRef?.focus(),
+    blur: () => inputRef?.blur(),
+    get nativeElement() {
+      return selectorRef
+    },
+  }
+  if (local.ref) {
+    if (typeof local.ref === 'function') local.ref(pickerRef)
+    else {
+      Object.assign(local.ref as object, pickerRef)
+      if ('current' in local.ref) local.ref.current = pickerRef
+    }
+  }
+
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
   const isPickerValueControlled = () => 'pickerValue' in props
@@ -158,7 +183,10 @@ function DatePickerBase(props: DatePickerProps) {
   function updateDropdownPosition(): void {
     if (isServer) return
     if (!canUseDom() || !selectorRef) {
-      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      setDropdownPosition({
+        'z-index': `${dropdownZIndex}`,
+        ...semanticStyle('popup', local.styles),
+      })
       return
     }
     const rect = selectorRef.getBoundingClientRect()
@@ -167,6 +195,7 @@ function DatePickerBase(props: DatePickerProps) {
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       'z-index': `${dropdownZIndex}`,
+      ...semanticStyle('popup', local.styles),
       ...local.popupStyle,
     })
   }
@@ -448,6 +477,7 @@ function DatePickerBase(props: DatePickerProps) {
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         multiple() && `${prefixCls()}-multiple`,
+        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size, local.bordered),
         hashId(),
         local.class,
         local.className,
@@ -532,15 +562,25 @@ function DatePickerBase(props: DatePickerProps) {
             placement={local.placement}
             class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
             classNames={local.classNames}
+            styles={local.styles}
             style={dropdownPosition()}
             mode={picker()}
+            presets={local.presets}
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
             needConfirm={local.needConfirm}
             showTime={showTimeEnabled()}
+            previousIcon={local.prevIcon ?? local.previousIcon}
+            nextIcon={local.nextIcon}
             showNow={Boolean(local.showNow)}
             onNow={selectNow}
             onOk={confirmPendingValue}
+            onPresetSelect={(value) => {
+              if (Array.isArray(value) || !value) return
+              changeValue(value)
+              if (!isPickerValueControlled()) setViewMonth(pickerViewStart(value, picker()))
+              setOpen(false)
+            }}
             onPrevious={previousPanel}
             onNext={nextPanel}
           >

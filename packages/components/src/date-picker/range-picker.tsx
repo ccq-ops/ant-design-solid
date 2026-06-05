@@ -25,12 +25,18 @@ import {
 import { DatePanel } from './date-panel'
 import { useDatePickerStyle } from './date-picker.style'
 import { formatDayjs } from './format-utils'
-import type { PickerMode, RangePickerProps, RangePickerValue, RangeSide } from './interface'
+import type {
+  DatePickerRef,
+  PickerMode,
+  RangePickerProps,
+  RangePickerValue,
+  RangeSide,
+} from './interface'
 import { mergeDatePickerLocale } from './locale'
 import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
 import { TimePanel } from './time-panel'
-import { semanticClass, semanticStyle } from './semantic'
+import { rootVariantClass, semanticClass, semanticStyle } from './semantic'
 
 type RangeTuple = [dayjs.Dayjs | null, dayjs.Dayjs | null]
 type RangeMetaHandler = (event: FocusEvent, info: { range: RangeSide }) => void
@@ -109,6 +115,14 @@ export function RangePicker(props: RangePickerProps) {
     'prefix',
     'suffixIcon',
     'separator',
+    'status',
+    'variant',
+    'size',
+    'bordered',
+    'prevIcon',
+    'nextIcon',
+    'previousIcon',
+    'presets',
     'cellRender',
     'dateRender',
     'renderExtraFooter',
@@ -117,6 +131,7 @@ export function RangePicker(props: RangePickerProps) {
     'onFocus',
     'onBlur',
     'onOk',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
@@ -148,6 +163,24 @@ export function RangePicker(props: RangePickerProps) {
   let startInputRef: HTMLInputElement | undefined
   let endInputRef: HTMLInputElement | undefined
 
+  const pickerRef: DatePickerRef = {
+    focus: () => (activeRange() === 'end' ? endInputRef : startInputRef)?.focus(),
+    blur: () => {
+      startInputRef?.blur()
+      endInputRef?.blur()
+    },
+    get nativeElement() {
+      return selectorRef
+    },
+  }
+  if (local.ref) {
+    if (typeof local.ref === 'function') local.ref(pickerRef)
+    else {
+      Object.assign(local.ref as object, pickerRef)
+      if ('current' in local.ref) local.ref.current = pickerRef
+    }
+  }
+
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
   const isPickerValueControlled = () => 'pickerValue' in props
@@ -177,7 +210,10 @@ export function RangePicker(props: RangePickerProps) {
   function updateDropdownPosition(): void {
     if (isServer) return
     if (!canUseDom() || !selectorRef) {
-      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      setDropdownPosition({
+        'z-index': `${dropdownZIndex}`,
+        ...semanticStyle('popup', local.styles),
+      })
       return
     }
     const rect = selectorRef.getBoundingClientRect()
@@ -186,6 +222,7 @@ export function RangePicker(props: RangePickerProps) {
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       'z-index': `${dropdownZIndex}`,
+      ...semanticStyle('popup', local.styles),
       ...local.popupStyle,
     })
   }
@@ -392,6 +429,7 @@ export function RangePicker(props: RangePickerProps) {
         `${prefixCls()}-range`,
         allDisabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
+        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size, local.bordered),
         hashId(),
         local.class,
         local.className,
@@ -502,14 +540,26 @@ export function RangePicker(props: RangePickerProps) {
             placement={local.placement}
             class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
             classNames={local.classNames}
+            styles={local.styles}
             style={dropdownPosition()}
             mode={picker()}
+            presets={local.presets}
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
             showTime={showTimeEnabled()}
+            previousIcon={local.prevIcon ?? local.previousIcon}
+            nextIcon={local.nextIcon}
             showNow={Boolean(local.showNow)}
             onNow={selectNow}
             onOk={confirmPendingValue}
+            onPresetSelect={(value) => {
+              if (!Array.isArray(value)) return
+              commitValue([value[0], value[1]])
+              if (value[0] && !isPickerValueControlled()) {
+                setViewMonth(pickerViewStart(value[0], picker()))
+              }
+              setOpen(false)
+            }}
             onPrevious={previousPanel}
             onNext={nextPanel}
           >

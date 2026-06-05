@@ -1,7 +1,8 @@
 import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import type { DatePickerPlacement, DatePickerSemanticSlot, PickerMode } from './interface'
-import { semanticClass } from './semantic'
+import { PresetsPanel, type ResolvedPresetValue } from './presets-panel'
+import { semanticClass, semanticStyle } from './semantic'
 import type { dayjs } from './date-utils'
 import { yearGridStart } from './year-panel'
 import { decadeRange } from './decade-panel'
@@ -26,9 +27,11 @@ export interface PickerPanelProps {
   placement?: DatePickerPlacement
   class?: string
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
+  styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
   style?: JSX.CSSProperties
   previousIcon?: JSX.Element
   nextIcon?: JSX.Element
+  presets?: import('./interface').PresetValue[]
   panelRender?: (panel: JSX.Element) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
   mode?: PickerMode
@@ -39,6 +42,7 @@ export interface PickerPanelProps {
   onPrevious?: () => void
   onNext?: () => void
   onOk?: () => void
+  onPresetSelect?: (value: ResolvedPresetValue) => void
   ref?: (element: HTMLDivElement) => void
   children?: JSX.Element
 }
@@ -127,9 +131,19 @@ export function PickerPanel(props: PickerPanelProps) {
           {props.nextIcon ?? '›'}
         </button>
       </div>
+      <PresetsPanel
+        prefixCls={props.prefixCls}
+        presets={props.presets}
+        classNames={props.classNames}
+        styles={props.styles}
+        onSelect={props.onPresetSelect}
+      />
       {props.children}
       <Show when={props.renderExtraFooter || props.needConfirm || props.showTime}>
-        <div class={`${props.prefixCls}-footer`}>
+        <div
+          class={semanticClass('footer', props.classNames, `${props.prefixCls}-footer`)}
+          style={semanticStyle('footer', props.styles)}
+        >
           <div class={`${props.prefixCls}-footer-extra`}>
             {props.renderExtraFooter?.(props.mode ?? 'date')}
             <Show when={props.showTime && props.showNow}>
