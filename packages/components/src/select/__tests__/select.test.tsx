@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
@@ -21,12 +21,12 @@ describe('Select', () => {
 
     expect(combobox).toHaveTextContent('Pick one')
     expect(combobox).toHaveAttribute('aria-expanded', 'false')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.click(combobox)
 
     expect(combobox).toHaveAttribute('aria-expanded', 'true')
-    expect(result.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('listbox')).toBeTruthy()
     expect(onOpenChange).toHaveBeenCalledWith(true)
 
     fireEvent.click(combobox)
@@ -41,7 +41,7 @@ describe('Select', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('option', { name: 'Beta' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
 
     expect(combobox).toHaveTextContent('Beta')
     expect(combobox).toHaveAttribute('aria-expanded', 'false')
@@ -67,9 +67,9 @@ describe('Select', () => {
 
     fireEvent.click(combobox)
     expect(onOpenChange).toHaveBeenCalledWith(true)
-    expect(result.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('listbox')).toBeTruthy()
 
-    fireEvent.click(result.getByRole('option', { name: 'Beta' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
 
     expect(combobox).toHaveTextContent('Beta')
     expect(combobox).toHaveAttribute('aria-expanded', 'false')
@@ -109,7 +109,7 @@ describe('Select', () => {
 
     fireEvent.click(combobox)
 
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(result.queryByRole('button', { name: 'clear selection' })).toBeNull()
   })
@@ -127,7 +127,7 @@ describe('Select', () => {
     fireEvent.click(combobox)
     fireEvent.keyDown(combobox, { key: 'Escape' })
 
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.click(combobox)
     fireEvent.keyDown(combobox, { key: 'Enter' })
@@ -162,7 +162,7 @@ describe('Select', () => {
     expect(combobox).toHaveTextContent('Alpha')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('option', { name: 'Beta' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
 
     expect(combobox).toHaveTextContent('Beta')
     expect(form.getFieldValue('choice')).toBe('a')
@@ -186,7 +186,7 @@ describe('Select', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('option', { name: 'Beta' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
 
     expect(form.getFieldValue('choice')).toBe('b')
     expect(combobox).toHaveTextContent('Beta')
@@ -195,4 +195,26 @@ describe('Select', () => {
 
     expect(onFinish).toHaveBeenCalledWith({ choice: 'b' })
   })
+})
+
+it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+  const result = render(() => (
+    <Select zIndex={1301} options={[{ value: 'one', label: 'One' }]} style={{ width: '200px' }} />
+  ))
+  const selector = result.container.querySelector('.ads-select-selector') as HTMLElement
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue(
+    { top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) } as DOMRect,
+  )
+
+  fireEvent.click(selector)
+
+  const dropdown = document.body.querySelector<HTMLElement>('.ads-select-dropdown')!
+  expect(dropdown).toBeTruthy()
+  expect(result.container.querySelector('.ads-select-dropdown')).toBeFalsy()
+  expect(dropdown.style.position).toBe('fixed')
+  expect(dropdown.style.top).toBe('46px')
+  expect(dropdown.style.left).toBe('20px')
+  expect(dropdown.style.width).toBe('200px')
+  expect(dropdown.style.zIndex).toBe('1301')
+  rectSpy.mockRestore()
 })

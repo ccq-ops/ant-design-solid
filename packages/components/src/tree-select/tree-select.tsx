@@ -1,9 +1,11 @@
-import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createRenderEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
 import type { OptionValue } from '../shared/options'
+import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import type { TreeSelectNode, TreeSelectProps } from './interface'
 import { useTreeSelectStyle } from './tree-select.style'
 
@@ -64,16 +66,21 @@ export function TreeSelect(props: TreeSelectProps) {
     'onChange',
     'onOpenChange',
     'onKeyDown',
+    'zIndex',
+    'getPopupContainer',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-tree-select`
   const [, hashId] = useTreeSelectStyle(prefixCls())
+  const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
   const [innerValue, setInnerValue] = createSignal<OptionValue | undefined>(local.defaultValue)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [expandedKeys, setExpandedKeys] = createSignal<OptionValue[]>(
     local.defaultExpandedKeys ?? [],
   )
+  const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
+  let selectorRef: HTMLDivElement | undefined
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -94,11 +101,28 @@ export function TreeSelect(props: TreeSelectProps) {
   const selectedNode = createMemo(() => findNode(treeData(), value()))
   const visibleNodes = createMemo(() => flattenVisible(treeData(), expandedKeys()))
 
+  function updateDropdownPosition(): void {
+    if (!canUseDom() || !selectorRef) return
+    const rect = selectorRef.getBoundingClientRect()
+    setDropdownPosition({
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      'z-index': dropdownZIndex,
+    })
+  }
+
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
+    if (nextOpen) updateDropdownPosition()
     if (!isOpenControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
+
+  createRenderEffect(() => {
+    if (open()) updateDropdownPosition()
+  })
 
   function changeValue(nextValue: OptionValue | undefined, node: TreeSelectNode | undefined): void {
     if (
@@ -154,6 +178,9 @@ export function TreeSelect(props: TreeSelectProps) {
         tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
+        ref={(element) => {
+          selectorRef = element
+        }}
         class={`${prefixCls()}-selector`}
         onClick={() => setOpen(!open())}
         onKeyDown={(event) => {
@@ -179,41 +206,43 @@ export function TreeSelect(props: TreeSelectProps) {
         </Show>
       </div>
       <Show when={open()}>
-        <div class={`${prefixCls()}-dropdown`}>
-          <ul role="tree" class={`${prefixCls()}-tree`}>
-            <For each={visibleNodes()}>
-              {({ node, depth }) => (
-                <li
-                  role="treeitem"
-                  aria-disabled={Boolean(node.disabled)}
-                  aria-selected={value() === node.value}
-                  class={classNames(
-                    `${prefixCls()}-tree-node`,
-                    value() === node.value && `${prefixCls()}-tree-node-selected`,
-                    node.disabled && `${prefixCls()}-tree-node-disabled`,
-                  )}
-                  style={{ 'padding-left': `${8 + depth * 20}px` }}
-                  onClick={() => selectNode(node)}
-                >
-                  <Show
-                    when={node.children?.length}
-                    fallback={<span class={`${prefixCls()}-indent`} style={{ width: '16px' }} />}
+        <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+          <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+            <ul role="tree" class={`${prefixCls()}-tree`}>
+              <For each={visibleNodes()}>
+                {({ node, depth }) => (
+                  <li
+                    role="treeitem"
+                    aria-disabled={Boolean(node.disabled)}
+                    aria-selected={value() === node.value}
+                    class={classNames(
+                      `${prefixCls()}-tree-node`,
+                      value() === node.value && `${prefixCls()}-tree-node-selected`,
+                      node.disabled && `${prefixCls()}-tree-node-disabled`,
+                    )}
+                    style={{ 'padding-left': `${8 + depth * 20}px` }}
+                    onClick={() => selectNode(node)}
                   >
-                    <button
-                      type="button"
-                      aria-label={`${includesValue(expandedKeys(), node.value) ? 'collapse' : 'expand'} ${node.title}`}
-                      class={`${prefixCls()}-expand`}
-                      onClick={(event) => toggleExpand(event, node)}
+                    <Show
+                      when={node.children?.length}
+                      fallback={<span class={`${prefixCls()}-indent`} style={{ width: '16px' }} />}
                     >
-                      {includesValue(expandedKeys(), node.value) ? '▾' : '▸'}
-                    </button>
-                  </Show>
-                  <span>{node.title}</span>
-                </li>
-              )}
-            </For>
-          </ul>
-        </div>
+                      <button
+                        type="button"
+                        aria-label={`${includesValue(expandedKeys(), node.value) ? 'collapse' : 'expand'} ${node.title}`}
+                        class={`${prefixCls()}-expand`}
+                        onClick={(event) => toggleExpand(event, node)}
+                      >
+                        {includesValue(expandedKeys(), node.value) ? '▾' : '▸'}
+                      </button>
+                    </Show>
+                    <span>{node.title}</span>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </div>
+        </InternalPortal>
       </Show>
     </div>
   )

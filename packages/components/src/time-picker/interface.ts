@@ -22,4 +22,6 @@ export interface TimePickerProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>
   onChange?: (value: string | undefined) => void
   onOpenChange?: (open: boolean) => void
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
 }

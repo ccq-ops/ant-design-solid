@@ -3,7 +3,10 @@ import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TimePicker } from '../time-picker'
 
-afterEach(() => cleanup())
+afterEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
 
 describe('TimePicker', () => {
   it('selects an uncontrolled time and calls onChange', () => {
@@ -139,4 +142,24 @@ describe('TimePicker', () => {
 
     expect(screen.getByRole('combobox')).toHaveTextContent('23:59:59')
   })
+})
+
+it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+  const result = render(() => <TimePicker zIndex={1303} />)
+  const selector = result.container.querySelector('.ads-time-picker-selector') as HTMLElement
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue(
+    { top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) } as DOMRect,
+  )
+
+  fireEvent.click(selector)
+
+  const dropdown = document.body.querySelector<HTMLElement>('.ads-time-picker-dropdown')!
+  expect(dropdown).toBeTruthy()
+  expect(result.container.querySelector('.ads-time-picker-dropdown')).toBeFalsy()
+  expect(dropdown.style.position).toBe('fixed')
+  expect(dropdown.style.top).toBe('46px')
+  expect(dropdown.style.left).toBe('20px')
+  expect(dropdown.style.width).toBe('200px')
+  expect(dropdown.style.zIndex).toBe('1303')
+  rectSpy.mockRestore()
 })

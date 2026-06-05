@@ -19,6 +19,8 @@ export interface TreeSelectProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>
   allowClear?: boolean
   defaultExpandedKeys?: OptionValue[]
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onChange?: (value: OptionValue | undefined, node: TreeSelectNode | undefined) => void
   onOpenChange?: (open: boolean) => void
 }

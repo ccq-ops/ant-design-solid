@@ -1,7 +1,9 @@
-import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createRenderEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import type { TimePickerFormat, TimePickerProps } from './interface'
 import { useTimePickerStyle } from './time-picker.style'
 
@@ -81,10 +83,13 @@ export function TimePicker(props: TimePickerProps) {
     'onChange',
     'onOpenChange',
     'onKeyDown',
+    'zIndex',
+    'getPopupContainer',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-time-picker`
   const [, hashId] = useTimePickerStyle(prefixCls())
+  const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
   const [innerValue, setInnerValue] = createSignal<string | undefined>(
     parseTime(local.defaultValue)
       ? formatTime(parseTime(local.defaultValue) as TimeParts, local.format ?? DEFAULT_FORMAT)
@@ -92,6 +97,8 @@ export function TimePicker(props: TimePickerProps) {
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [draftParts, setDraftParts] = createSignal<Partial<TimeParts>>({})
+  const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
+  let selectorRef: HTMLDivElement | undefined
 
   const isValueControlled = () => 'value' in props
   const format = () => local.format ?? DEFAULT_FORMAT
@@ -107,11 +114,28 @@ export function TimePicker(props: TimePickerProps) {
     setDraftParts(parts ?? {})
   })
 
+  function updateDropdownPosition(): void {
+    if (!canUseDom() || !selectorRef) return
+    const rect = selectorRef.getBoundingClientRect()
+    setDropdownPosition({
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      'z-index': dropdownZIndex,
+    })
+  }
+
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
+    if (nextOpen) updateDropdownPosition()
     if (local.open === undefined) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
+
+  createRenderEffect(() => {
+    if (open()) updateDropdownPosition()
+  })
 
   function changeValue(nextValue: string | undefined): void {
     if (!isValueControlled()) setInnerValue(nextValue)
@@ -219,6 +243,9 @@ export function TimePicker(props: TimePickerProps) {
         tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
+        ref={(element) => {
+          selectorRef = element
+        }}
         class={`${prefixCls()}-selector`}
         onClick={() => setOpen(!open())}
         onKeyDown={(event) => {
@@ -241,13 +268,15 @@ export function TimePicker(props: TimePickerProps) {
         </Show>
       </div>
       <Show when={open()}>
-        <div class={`${prefixCls()}-dropdown`}>
-          <div role="group" aria-label="Time selection" class={`${prefixCls()}-panel`}>
-            {renderColumn('hour', 23)}
-            {renderColumn('minute', 59, minuteStep())}
-            <Show when={format() === 'HH:mm:ss'}>{renderColumn('second', 59, secondStep())}</Show>
+        <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+          <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+            <div role="group" aria-label="Time selection" class={`${prefixCls()}-panel`}>
+              {renderColumn('hour', 23)}
+              {renderColumn('minute', 59, minuteStep())}
+              <Show when={format() === 'HH:mm:ss'}>{renderColumn('second', 59, secondStep())}</Show>
+            </div>
           </div>
-        </div>
+        </InternalPortal>
       </Show>
     </div>
   )

@@ -14,6 +14,8 @@ export interface SelectProps extends Omit<
   disabled?: boolean
   allowClear?: boolean
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onChange?: (value: OptionValue | undefined, option: LabeledOption | undefined) => void
   onOpenChange?: (open: boolean) => void
 }

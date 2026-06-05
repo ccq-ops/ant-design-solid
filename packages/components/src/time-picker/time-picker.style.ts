@@ -58,9 +58,6 @@ export function useTimePickerStyle(prefixCls: string) {
           color: t.colorText,
         },
         [`.${prefixCls}-dropdown`]: {
-          position: 'absolute',
-          'z-index': '1000',
-          top: '100%',
           left: '0',
           minWidth: '100%',
           marginTop: `${t.marginXS}px`,

@@ -40,11 +40,6 @@ export function useSelectStyle(prefixCls: string) {
         cursor: 'pointer',
       },
       [`.${prefixCls}-dropdown`]: {
-        position: 'absolute',
-        'z-index': 1000,
-        top: '100%',
-        left: 0,
-        right: 0,
         marginTop: 4,
         padding: `${t.paddingXS}px 0`,
         border: `${t.lineWidth}px solid ${t.colorBorder}`,

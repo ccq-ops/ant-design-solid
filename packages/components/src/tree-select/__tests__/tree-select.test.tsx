@@ -1,10 +1,15 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { ConfigProvider } from '../../config-provider'
 import { Form, useForm } from '../../form'
 import { TreeSelect } from '../index'
+
+afterEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
 
 const treeData = [
   {
@@ -31,8 +36,8 @@ describe('TreeSelect', () => {
 
     fireEvent.click(combobox)
 
-    expect(result.getByRole('tree')).toBeTruthy()
-    expect(result.getByRole('treeitem', { name: /Asia/ })).toBeTruthy()
+    expect(screen.getByRole('tree')).toBeTruthy()
+    expect(screen.getByRole('treeitem', { name: /Asia/ })).toBeTruthy()
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
@@ -42,11 +47,11 @@ describe('TreeSelect', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('button', { name: 'expand Asia' }))
-    fireEvent.click(result.getByRole('treeitem', { name: 'China' }))
+    fireEvent.click(screen.getByRole('button', { name: 'expand Asia' }))
+    fireEvent.click(screen.getByRole('treeitem', { name: 'China' }))
 
     expect(combobox).toHaveTextContent('China')
-    expect(result.queryByRole('tree')).toBeNull()
+    expect(screen.queryByRole('tree')).toBeNull()
     expect(onChange).toHaveBeenCalledWith('china', { title: 'China', value: 'china' })
   })
 
@@ -55,7 +60,7 @@ describe('TreeSelect', () => {
       <TreeSelect defaultOpen defaultExpandedKeys={['asia']} treeData={treeData} />
     ))
 
-    expect(result.getByRole('treeitem', { name: 'China' })).toBeTruthy()
+    expect(screen.getByRole('treeitem', { name: 'China' })).toBeTruthy()
   })
 
   it('supports controlled value and controlled open', () => {
@@ -78,9 +83,9 @@ describe('TreeSelect', () => {
     fireEvent.click(combobox)
     expect(onOpenChange).toHaveBeenCalledWith(true)
 
-    fireEvent.click(result.getByText('Asia'))
+    fireEvent.click(screen.getByText('Asia'))
     expect(combobox).toHaveTextContent('Asia')
-    expect(result.queryByRole('tree')).toBeNull()
+    expect(screen.queryByRole('tree')).toBeNull()
   })
 
   it('supports disabled nodes, clear, and keyboard handling', () => {
@@ -96,8 +101,8 @@ describe('TreeSelect', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    expect(result.getByRole('treeitem', { name: 'Japan' })).toHaveAttribute('aria-disabled', 'true')
-    fireEvent.click(result.getByRole('treeitem', { name: 'Japan' }))
+    expect(screen.getByRole('treeitem', { name: 'Japan' })).toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(screen.getByRole('treeitem', { name: 'Japan' }))
     expect(onChange).not.toHaveBeenCalled()
 
     fireEvent.keyDown(combobox, { key: 'Enter' })
@@ -108,7 +113,7 @@ describe('TreeSelect', () => {
 
     fireEvent.click(combobox)
     fireEvent.keyDown(combobox, { key: 'Escape' })
-    expect(result.queryByRole('tree')).toBeNull()
+    expect(screen.queryByRole('tree')).toBeNull()
   })
 
   it('supports custom prefixCls from props and ConfigProvider', () => {
@@ -137,7 +142,7 @@ describe('TreeSelect', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('treeitem', { name: 'Europe' }))
+    fireEvent.click(screen.getByRole('treeitem', { name: 'Europe' }))
 
     expect(form.getFieldValue('area')).toBe('europe')
 
@@ -145,4 +150,26 @@ describe('TreeSelect', () => {
 
     expect(onFinish).toHaveBeenCalledWith({ area: 'europe' })
   })
+})
+
+it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+  const result = render(() => (
+    <TreeSelect zIndex={1302} treeData={[{ value: 'one', title: 'One' }]} />
+  ))
+  const selector = result.container.querySelector('.ads-tree-select-selector') as HTMLElement
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue(
+    { top: 10, bottom: 42, left: 20, right: 220, width: 200, height: 32, x: 20, y: 10, toJSON: () => ({}) } as DOMRect,
+  )
+
+  fireEvent.click(selector)
+
+  const dropdown = document.body.querySelector<HTMLElement>('.ads-tree-select-dropdown')!
+  expect(dropdown).toBeTruthy()
+  expect(result.container.querySelector('.ads-tree-select-dropdown')).toBeFalsy()
+  expect(dropdown.style.position).toBe('fixed')
+  expect(dropdown.style.top).toBe('46px')
+  expect(dropdown.style.left).toBe('20px')
+  expect(dropdown.style.width).toBe('200px')
+  expect(dropdown.style.zIndex).toBe('1302')
+  rectSpy.mockRestore()
 })

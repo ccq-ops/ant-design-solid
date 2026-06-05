@@ -1,9 +1,11 @@
-import { For, Show, createEffect, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createRenderEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
 import { normalizeOptions, type LabeledOption, type OptionValue } from '../shared/options'
+import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import { useSelectStyle } from './select.style'
 import type { SelectProps } from './interface'
 
@@ -30,13 +32,18 @@ export function Select(props: SelectProps) {
     'onChange',
     'onOpenChange',
     'onKeyDown',
+    'zIndex',
+    'getPopupContainer',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-select`
   const [, hashId] = useSelectStyle(prefixCls())
+  const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
   const [innerValue, setInnerValue] = createSignal<OptionValue | undefined>(local.defaultValue)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
+  let selectorRef: HTMLDivElement | undefined
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -54,11 +61,28 @@ export function Select(props: SelectProps) {
   const open = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
   const selectedOption = () => findOption(options(), value())
 
+  function updateDropdownPosition(): void {
+    if (!canUseDom() || !selectorRef) return
+    const rect = selectorRef.getBoundingClientRect()
+    setDropdownPosition({
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      'z-index': dropdownZIndex,
+    })
+  }
+
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
+    if (nextOpen) updateDropdownPosition()
     if (local.open === undefined) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
+
+  createRenderEffect(() => {
+    if (open()) updateDropdownPosition()
+  })
 
   function changeValue(
     nextValue: OptionValue | undefined,
@@ -102,6 +126,9 @@ export function Select(props: SelectProps) {
         tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
+        ref={(element) => {
+          selectorRef = element
+        }}
         class={`${prefixCls()}-selector`}
         onClick={() => setOpen(!open())}
         onFocusOut={(event) => {
@@ -140,25 +167,27 @@ export function Select(props: SelectProps) {
         </Show>
       </div>
       <Show when={open()}>
-        <div role="listbox" class={`${prefixCls()}-dropdown`}>
-          <For each={options()}>
-            {(option) => (
-              <div
-                role="option"
-                aria-selected={value() === option.value}
-                aria-disabled={Boolean(option.disabled)}
-                class={classNames(
-                  `${prefixCls()}-item`,
-                  value() === option.value && `${prefixCls()}-item-option-selected`,
-                  option.disabled && `${prefixCls()}-item-option-disabled`,
-                )}
-                onClick={() => selectOption(option)}
-              >
-                {option.label}
-              </div>
-            )}
-          </For>
-        </div>
+        <InternalPortal mount={() => local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)}>
+          <div role="listbox" class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+            <For each={options()}>
+              {(option) => (
+                <div
+                  role="option"
+                  aria-selected={value() === option.value}
+                  aria-disabled={Boolean(option.disabled)}
+                  class={classNames(
+                    `${prefixCls()}-item`,
+                    value() === option.value && `${prefixCls()}-item-option-selected`,
+                    option.disabled && `${prefixCls()}-item-option-disabled`,
+                  )}
+                  onClick={() => selectOption(option)}
+                >
+                  {option.label}
+                </div>
+              )}
+            </For>
+          </div>
+        </InternalPortal>
       </Show>
     </div>
   )
