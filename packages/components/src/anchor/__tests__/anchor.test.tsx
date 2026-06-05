@@ -13,6 +13,12 @@ const items: AnchorItem[] = [
   },
 ]
 
+const itemsWithApi: AnchorItem[] = [
+  { href: '#intro', title: 'Intro', target: '_blank' },
+  { href: '#usage', title: 'Usage', targetOffset: 12 },
+  { href: '#api', title: 'API', replace: true },
+]
+
 function appendTarget(id: string, top: number) {
   const target = document.createElement('section')
   target.id = id
@@ -66,6 +72,54 @@ describe('Anchor', () => {
     expect(scrollTo).toHaveBeenCalledWith({ top: 240, behavior: 'smooth' })
   })
 
+  it('uses offsetTop as the default targetOffset when scrolling', () => {
+    appendTarget('usage', 240)
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const result = render(() => <Anchor affix={false} offsetTop={80} items={items} />)
+
+    fireEvent.click(result.getByRole('link', { name: 'Usage' }))
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 160, behavior: 'smooth' })
+  })
+
+  it('updates browser history with pushState by default and replaceState when requested', () => {
+    appendTarget('intro', 100)
+    appendTarget('api', 200)
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const pushState = vi.spyOn(window.history, 'pushState')
+    const replaceState = vi.spyOn(window.history, 'replaceState')
+    const result = render(() => <Anchor affix={false} items={itemsWithApi} />)
+
+    fireEvent.click(result.getByRole('link', { name: 'Intro' }))
+    fireEvent.click(result.getByRole('link', { name: 'API' }))
+
+    expect(pushState).toHaveBeenCalledWith(null, '', '#intro')
+    expect(replaceState).toHaveBeenCalledWith(null, '', '#api')
+  })
+
+  it('uses component replace when item replace is not specified', () => {
+    appendTarget('intro', 100)
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const pushState = vi.spyOn(window.history, 'pushState')
+    const replaceState = vi.spyOn(window.history, 'replaceState')
+    const result = render(() => <Anchor affix={false} replace items={itemsWithApi} />)
+
+    fireEvent.click(result.getByRole('link', { name: 'Intro' }))
+
+    expect(pushState).not.toHaveBeenCalled()
+    expect(replaceState).toHaveBeenCalledWith(null, '', '#intro')
+  })
+
+  it('uses per-item targetOffset before the component targetOffset', () => {
+    appendTarget('usage', 240)
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const result = render(() => <Anchor affix={false} targetOffset={80} items={itemsWithApi} />)
+
+    fireEvent.click(result.getByRole('link', { name: 'Usage' }))
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 228, behavior: 'smooth' })
+  })
+
   it('updates active link on scroll and calls onChange', () => {
     const onChange = vi.fn()
     appendTarget('intro', -20)
@@ -80,6 +134,35 @@ describe('Anchor', () => {
     expect(result.getByRole('link', { name: 'Usage' })).toHaveAttribute('aria-current', 'true')
     expect(result.getByRole('link', { name: 'Usage' })).toHaveClass('ads-anchor-link-title-active')
     expect(onChange).toHaveBeenCalledWith('#usage')
+  })
+
+  it('allows getCurrentAnchor to customize the active link', () => {
+    const onChange = vi.fn()
+    appendTarget('intro', -20)
+    appendTarget('usage', 12)
+    const result = render(() => (
+      <Anchor
+        affix={false}
+        bounds={0}
+        items={items}
+        getCurrentAnchor={() => '#intro'}
+        onChange={onChange}
+      />
+    ))
+
+    window.dispatchEvent(new Event('scroll'))
+
+    expect(result.getByRole('link', { name: 'Intro' })).toHaveAttribute('aria-current', 'true')
+    expect(onChange).toHaveBeenCalledWith('#intro')
+  })
+
+  it('renders link target and horizontal direction class', () => {
+    const result = render(() => (
+      <Anchor affix={false} direction="horizontal" items={itemsWithApi} />
+    ))
+
+    expect(result.container.querySelector('.ads-anchor-horizontal')).toBeInTheDocument()
+    expect(result.getByRole('link', { name: 'Intro' })).toHaveAttribute('target', '_blank')
   })
 
   it('wraps with Affix by default and skips it when affix is false', () => {

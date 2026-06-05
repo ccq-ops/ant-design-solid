@@ -19,6 +19,14 @@ export function useAnchorStyle(prefixCls: string) {
         padding: 0,
         'list-style': 'none',
       },
+      [`.${prefixCls}-horizontal > .${prefixCls}-list`]: {
+        display: 'flex',
+        'align-items': 'center',
+        gap: `${t.padding}px`,
+      },
+      [`.${prefixCls}-horizontal .${prefixCls}-list .${prefixCls}-list`]: {
+        display: 'none',
+      },
       [`.${prefixCls}-list .${prefixCls}-list`]: {
         'padding-inline-start': `${t.padding}px`,
       },

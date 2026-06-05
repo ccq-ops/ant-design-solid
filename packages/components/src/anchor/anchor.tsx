@@ -82,6 +82,9 @@ export function Anchor(props: AnchorProps) {
     'targetOffset',
     'getContainer',
     'bounds',
+    'getCurrentAnchor',
+    'direction',
+    'replace',
     'onClick',
     'onChange',
     'class',
@@ -92,11 +95,15 @@ export function Anchor(props: AnchorProps) {
   const prefixCls = () => `${config.prefixCls()}-anchor`
   const [, hashId] = useAnchorStyle(prefixCls())
   const [activeLink, setActiveLink] = createSignal('')
+  const direction = () => local.direction ?? 'vertical'
+
+  const getTargetOffset = (item?: AnchorItem) =>
+    item?.targetOffset ?? local.targetOffset ?? local.offsetTop ?? 0
 
   const updateActiveLink = () => {
     const container = getContainer(local.getContainer)
     if (!container) return
-    const threshold = (local.targetOffset ?? 0) + (local.bounds ?? 5)
+    const threshold = getTargetOffset() + (local.bounds ?? 5)
     let nextActive = ''
 
     for (const item of flattenItems(local.items)) {
@@ -104,6 +111,8 @@ export function Anchor(props: AnchorProps) {
       if (!target) continue
       if (getElementViewportTop(target, container) <= threshold) nextActive = item.href
     }
+
+    nextActive = local.getCurrentAnchor?.(nextActive) ?? nextActive
 
     setActiveLink((previous) => {
       if (previous !== nextActive) local.onChange?.(nextActive)
@@ -132,7 +141,10 @@ export function Anchor(props: AnchorProps) {
     const container = getContainer(local.getContainer)
     const target = document.getElementById(targetIdFromHref(item.href))
     if (!container || !target) return
-    const nextTop = getElementTop(target, container) - (local.targetOffset ?? 0)
+    const replace = item.replace ?? local.replace ?? false
+    const updateHistory = replace ? window.history.replaceState : window.history.pushState
+    updateHistory.call(window.history, null, '', item.href)
+    const nextTop = getElementTop(target, container) - getTargetOffset(item)
     scrollContainerTo(container, nextTop)
   }
 
@@ -147,6 +159,7 @@ export function Anchor(props: AnchorProps) {
                 activeLink() === item.href && `${prefixCls()}-link-title-active`,
               )}
               href={item.href}
+              target={item.target}
               aria-current={activeLink() === item.href ? 'true' : undefined}
               onClick={(event) => handleClick(event, item)}
             >
@@ -162,7 +175,7 @@ export function Anchor(props: AnchorProps) {
   const content = () => (
     <nav
       {...rest}
-      class={classNames(prefixCls(), hashId(), local.class)}
+      class={classNames(prefixCls(), `${prefixCls()}-${direction()}`, hashId(), local.class)}
       classList={local.classList}
       style={local.style}
     >
