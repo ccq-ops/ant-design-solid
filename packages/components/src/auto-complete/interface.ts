@@ -6,6 +6,19 @@ export interface AutoCompleteOption {
   disabled?: boolean
 }
 
+export type AutoCompleteSize = 'small' | 'middle' | 'large'
+export type AutoCompleteStatus = 'error' | 'warning'
+export type AutoCompleteVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
+
+export interface AutoCompleteAllowClear {
+  clearIcon?: JSX.Element
+}
+
+export interface AutoCompleteShowSearch {
+  filterOption?: boolean | ((inputValue: string, option: AutoCompleteOption) => boolean)
+  onSearch?: (value: string) => void
+}
+
 export interface AutoCompleteProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
   'onChange' | 'onSelect'
@@ -17,7 +30,16 @@ export interface AutoCompleteProps extends Omit<
   options?: AutoCompleteOption[]
   placeholder?: string
   disabled?: boolean
-  allowClear?: boolean
+  size?: AutoCompleteSize
+  status?: AutoCompleteStatus
+  variant?: AutoCompleteVariant
+  allowClear?: boolean | AutoCompleteAllowClear
+  showSearch?: true | AutoCompleteShowSearch
+  defaultActiveFirstOption?: boolean
+  backfill?: boolean
+  notFoundContent?: JSX.Element
+  popupMatchSelectWidth?: boolean | number
+  popupRender?: (originNode: JSX.Element) => JSX.Element
   filterOption?: boolean | ((inputValue: string, option: AutoCompleteOption) => boolean)
   prefixCls?: string
   zIndex?: number
@@ -25,4 +47,7 @@ export interface AutoCompleteProps extends Omit<
   onChange?: (value: string) => void
   onSelect?: (value: string, option: AutoCompleteOption) => void
   onOpenChange?: (open: boolean) => void
+  onClear?: () => void
+  onInputKeyDown?: (event: KeyboardEvent) => void
+  onPopupScroll?: (event: UIEvent) => void
 }

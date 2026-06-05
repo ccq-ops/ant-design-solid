@@ -32,6 +32,30 @@ export function useAutoCompleteStyle(prefixCls: string) {
           'border-color': t.colorPrimary,
           'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
         },
+        [`.${prefixCls}-small .${prefixCls}-selector`]: {
+          height: `${t.controlHeightSM}px`,
+        },
+        [`.${prefixCls}-large .${prefixCls}-selector`]: {
+          height: `${t.controlHeightLG}px`,
+        },
+        [`.${prefixCls}-status-error .${prefixCls}-selector`]: {
+          'border-color': t.colorError,
+        },
+        [`.${prefixCls}-status-warning .${prefixCls}-selector`]: {
+          'border-color': t.colorWarning,
+        },
+        [`.${prefixCls}-borderless .${prefixCls}-selector`]: {
+          borderColor: 'transparent',
+        },
+        [`.${prefixCls}-filled .${prefixCls}-selector`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-underlined .${prefixCls}-selector`]: {
+          borderTopColor: 'transparent',
+          borderInlineEndColor: 'transparent',
+          borderInlineStartColor: 'transparent',
+          borderRadius: '0',
+        },
         [`.${prefixCls}-disabled .${prefixCls}-selector`]: {
           color: t.colorTextDisabled,
           background: t.colorFillAlter,

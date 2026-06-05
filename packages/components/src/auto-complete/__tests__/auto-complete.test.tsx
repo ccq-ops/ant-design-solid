@@ -122,6 +122,22 @@ describe('AutoComplete', () => {
     expect(onChange).toHaveBeenLastCalledWith('')
   })
 
+  it('applies size status and variant modifier classes', () => {
+    const result = render(() => (
+      <AutoComplete
+        size="large"
+        status="error"
+        variant="filled"
+        options={[{ value: 'alpha', label: 'Alpha' }]}
+      />
+    ))
+
+    const root = result.container.querySelector('.ads-auto-complete') as HTMLElement
+    expect(root).toHaveClass('ads-auto-complete-large')
+    expect(root).toHaveClass('ads-auto-complete-status-error')
+    expect(root).toHaveClass('ads-auto-complete-filled')
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <AutoComplete prefixCls="custom-auto" options={options} />)
     expect(withProp.container.querySelector('.custom-auto')).toBeTruthy()
