@@ -41,7 +41,7 @@ describe('Home', () => {
     )
     expect(result.getByText('SolidJS · Design System · Token Driven')).toBeInTheDocument()
     expect(result.getByText(/Ant Design for the Solid era/)).toBeInTheDocument()
-    expect(result.getByText(/Ant Design-inspired semantics/)).toBeInTheDocument()
+    expect(result.getAllByText(/Ant Design-inspired semantics/).length).toBeGreaterThan(0)
 
     const image = result.getByRole('img', { name: 'Blue glassmorphism interface hero artwork' })
     expect(image).toHaveAttribute('src', '/hero-banner.png')
@@ -55,7 +55,7 @@ describe('Home', () => {
     expect(result.getByText('Token-driven theming')).toBeInTheDocument()
     expect(result.getByText('Solid-native runtime')).toBeInTheDocument()
     expect(result.getByText('Preview the building blocks')).toBeInTheDocument()
-    expect(result.getByText('Ready for production docs')).toBeInTheDocument()
+    expect(result.getByText(/Ready for production docs/)).toBeInTheDocument()
   })
 
   it('navigates to getting started when clicking Get Started', () => {

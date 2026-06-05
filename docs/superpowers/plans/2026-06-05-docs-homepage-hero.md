@@ -29,6 +29,7 @@
 ### Task 1: Add the Hero Banner Asset
 
 **Files:**
+
 - Create: `apps/docs/src/assets/hero-banner.png`
 
 - [ ] **Step 1: Create the assets directory**
@@ -79,6 +80,7 @@ Expected: commit succeeds and includes only `apps/docs/src/assets/hero-banner.pn
 ### Task 2: Update Homepage Tests First
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/index.test.tsx`
 
 - [ ] **Step 1: Replace the homepage test with expectations for the redesigned page**
@@ -124,7 +126,9 @@ describe('Home', () => {
 
     expect(hero).toHaveClass('overflow-hidden')
     expect(hero).toHaveClass('text-center')
-    expect(hero).toHaveClass('bg-[radial-gradient(circle_at_top,_rgba(219,234,254,0.95),_rgba(255,255,255,0.98)_46%,_rgba(245,243,255,0.92))]')
+    expect(hero).toHaveClass(
+      'bg-[radial-gradient(circle_at_top,_rgba(219,234,254,0.95),_rgba(255,255,255,0.98)_46%,_rgba(245,243,255,0.92))]',
+    )
     expect(result.getByText('SolidJS · Design System · Token Driven')).toBeInTheDocument()
     expect(result.getByText(/Ant Design for the Solid era/)).toBeInTheDocument()
     expect(result.getByText(/Ant Design-inspired semantics/)).toBeInTheDocument()
@@ -188,6 +192,7 @@ Expected: commit succeeds and includes only `apps/docs/src/pages/index.test.tsx`
 ### Task 3: Implement the Redesigned Homepage
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/index.tsx`
 
 - [ ] **Step 1: Replace the homepage component**
@@ -355,6 +360,7 @@ Expected: commit succeeds and includes only `apps/docs/src/pages/index.tsx`.
 ### Task 4: Run Formatting, Tests, and Build Verification
 
 **Files:**
+
 - No source changes expected unless verification reveals a real issue in files touched by this plan.
 
 - [ ] **Step 1: Run lint**
