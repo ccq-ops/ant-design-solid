@@ -1,6 +1,21 @@
 import { createSignal } from 'solid-js'
 import { Rate, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const rateRows: ApiTableRow[] = [
+  { property: 'value', description: 'Controlled rating value.', type: 'number' },
+  { property: 'defaultValue', description: 'Initial rating value for uncontrolled usage.', type: 'number' },
+  { property: 'count', description: 'Number of rating items.', type: 'number', defaultValue: '5' },
+  { property: 'allowHalf', description: 'Allows selecting half values.', type: 'boolean', defaultValue: 'false' },
+  { property: 'allowClear', description: 'Allows clearing the rating by clicking the selected value.', type: 'boolean', defaultValue: 'true' },
+  { property: 'disabled', description: 'Disables user interaction.', type: 'boolean', defaultValue: 'false' },
+  { property: 'character', description: 'Custom rating character or render function.', type: 'JSX.Element | ((index: number) => JSX.Element)' },
+  { property: 'tooltips', description: 'Tooltip text for each rating item.', type: 'string[]' },
+  { property: 'onChange', description: 'Called when the rating value changes.', type: '(next: number) => void' },
+  { property: 'onHoverChange', description: 'Called when hover value changes.', type: '(next: number) => void' },
+]
 
 export default function RatePage() {
   const [value, setValue] = createSignal(3)
@@ -35,6 +50,10 @@ export default function RatePage() {
       <DemoBlock title="Disabled" code={`<Rate disabled defaultValue={3} />`}>
         <Rate disabled defaultValue={3} />
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Rate</h3>
+      <ApiTable rows={rateRows} aria-label="Rate API" />
     </>
   )
 }
