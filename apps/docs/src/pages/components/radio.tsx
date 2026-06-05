@@ -1,5 +1,8 @@
+import { createSignal } from 'solid-js'
 import { Form, Radio, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
 
 const options = [
   { label: 'A', value: 'a' },
@@ -7,20 +10,104 @@ const options = [
   { label: 'Disabled', value: 'disabled', disabled: true },
 ]
 
+const radioRows: ApiTableRow[] = [
+  { property: 'checked', description: 'Controlled checked state.', type: 'boolean' },
+  {
+    property: 'defaultChecked',
+    description: 'Initial checked state for uncontrolled usage.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'disabled',
+    description: 'Disables the radio.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'value', description: 'Radio option value.', type: 'string | number | boolean' },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  { property: 'children', description: 'Radio label content.', type: 'JSX.Element' },
+  {
+    property: 'onChange',
+    description: 'Called when the native radio change event fires.',
+    type: 'JSX.EventHandler<HTMLInputElement, Event>',
+  },
+]
+
+const radioGroupRows: ApiTableRow[] = [
+  { property: 'value', description: 'Controlled selected value.', type: 'string | number | boolean' },
+  {
+    property: 'defaultValue',
+    description: 'Initial selected value for uncontrolled usage.',
+    type: 'string | number | boolean',
+  },
+  { property: 'options', description: 'Options rendered as radios.', type: 'OptionInput[]' },
+  {
+    property: 'disabled',
+    description: 'Disables all radios in the group.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'optionType',
+    description: 'Renders options as standard radios or button-style radios.',
+    type: "'default' | 'button'",
+    defaultValue: "'default'",
+  },
+  { property: 'prefixCls', description: 'Custom radio CSS class prefix.', type: 'string' },
+  { property: 'children', description: 'Additional custom radio content.', type: 'JSX.Element' },
+  {
+    property: 'onChange',
+    description: 'Called with the next selected value.',
+    type: '(checkedValue: OptionValue) => void',
+  },
+]
+
 export default function RadioPage() {
+  const [value, setValue] = createSignal<string | number | boolean>('a')
+
   return (
     <>
       <h1>Radio</h1>
-      <DemoBlock title="Basic" code={`<Radio.Group options={options} defaultValue="a" />`}>
+      <p>Radio lets users choose one option from a mutually exclusive set.</p>
+
+      <DemoBlock title="Basic" code={`<Radio defaultChecked>A</Radio>`}>
+        <Space>
+          <Radio defaultChecked>A</Radio>
+          <Radio>B</Radio>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock title="Group" code={`<Radio.Group options={options} defaultValue="a" />`}>
         <Space direction="vertical">
           <Radio.Group options={options} defaultValue="a" />
           <Radio.Group optionType="button" options={options} defaultValue="b" />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock title="Disabled" code={`<Radio disabled>Disabled</Radio>`}>
+        <Space direction="vertical">
+          <Radio disabled>Disabled</Radio>
           <Radio.Group disabled options={options} defaultValue="a" />
         </Space>
       </DemoBlock>
+
       <DemoBlock
-        title="Form integration"
-        code={`<Form.Item name="choice"><Radio.Group options={options} /></Form.Item>`}
+        title="Controlled"
+        code={`const [value, setValue] = createSignal('a')
+<Radio.Group value={value()} onChange={setValue} options={options} />`}
+      >
+        <Space direction="vertical">
+          <Radio.Group value={value()} onChange={setValue} options={options} />
+          <span>Selected: {String(value())}</span>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="In Form"
+        code={`<Form initialValues={{ choice: 'a' }}>
+  <Form.Item name="choice"><Radio.Group options={options} /></Form.Item>
+</Form>`}
       >
         <Form initialValues={{ choice: 'a' }}>
           <Form.Item name="choice">
@@ -28,6 +115,12 @@ export default function RadioPage() {
           </Form.Item>
         </Form>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Radio</h3>
+      <ApiTable rows={radioRows} aria-label="Radio API" />
+      <h3>Radio.Group</h3>
+      <ApiTable rows={radioGroupRows} aria-label="Radio Group API" />
     </>
   )
 }
