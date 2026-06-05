@@ -129,6 +129,7 @@ export function RangePicker(props: RangePickerProps) {
   )
   const [activeRange, setActiveRange] = createSignal<RangeSide>('start')
   const [selecting, setSelecting] = createSignal(false)
+  const [hoverValue, setHoverValue] = createSignal<dayjs.Dayjs | null>(null)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
@@ -240,6 +241,7 @@ export function RangePicker(props: RangePickerProps) {
       setInputValues(rangeStrings(nextRange, local.format, picker()))
       emitCalendarChange(nextRange, 'start')
       setSelecting(true)
+      setHoverValue(null)
       setActiveRange('end')
       endInputRef?.focus()
       return
@@ -250,8 +252,13 @@ export function RangePicker(props: RangePickerProps) {
     commitValue(nextRange)
     emitCalendarChange(nextRange, 'end')
     setSelecting(false)
+    setHoverValue(null)
     setActiveRange('start')
     setOpen(false)
+  }
+
+  function changeHoverValue(date: dayjs.Dayjs | null): void {
+    setHoverValue(selecting() ? date : null)
   }
 
   function clearSide(side: RangeSide, event: MouseEvent): void {
@@ -429,6 +436,7 @@ export function RangePicker(props: RangePickerProps) {
               selectedValue={activeRange() === 'start' ? selectedRange()[0] : selectedRange()[1]}
               rangeValue={selectedRange()}
               activeRange={activeRange()}
+              hoverValue={hoverValue()}
               disabledDate={isDateDisabled}
               cellRender={local.cellRender}
               dateRender={local.dateRender}
@@ -436,6 +444,7 @@ export function RangePicker(props: RangePickerProps) {
               classNames={local.classNames}
               styles={local.styles}
               onSelect={selectDate}
+              onHover={changeHoverValue}
             />
           </PickerPanel>
         </InternalPortal>

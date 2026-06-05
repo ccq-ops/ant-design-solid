@@ -43,6 +43,7 @@ export interface DatePanelProps {
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
   styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
   onSelect?: (date: dayjs.Dayjs) => void
+  onHover?: (date: dayjs.Dayjs | null) => void
 }
 
 export function DatePanel(props: DatePanelProps) {
@@ -108,8 +109,16 @@ export function DatePanel(props: DatePanelProps) {
     const selected = () => samePickerValue(props.selectedValue, date, picker())
     const rangeStart = () => samePickerValue(props.rangeValue?.[0], date, picker())
     const rangeEnd = () => samePickerValue(props.rangeValue?.[1], date, picker())
-    const inRange = () => {
+    const displayRange = (): [dayjs.Dayjs | null, dayjs.Dayjs | null] => {
       const [start, end] = props.rangeValue ?? [null, null]
+      if (start && end) return [start, end]
+      if (!props.hoverValue) return [start, end]
+      if (props.activeRange === 'end' && start) return [start, props.hoverValue]
+      if (props.activeRange === 'start' && end) return [props.hoverValue, end]
+      return [start, end]
+    }
+    const inRange = () => {
+      const [start, end] = displayRange()
       if (!start || !end) return false
       const normalizedStart = start.isBefore(end, 'day') ? start : end
       const normalizedEnd = start.isBefore(end, 'day') ? end : start
@@ -138,6 +147,10 @@ export function DatePanel(props: DatePanelProps) {
         onClick={() => {
           if (!cellDisabled()) props.onSelect?.(date)
         }}
+        onMouseEnter={() => {
+          if (!cellDisabled()) props.onHover?.(date)
+        }}
+        onMouseLeave={() => props.onHover?.(null)}
       >
         {renderCellContent(date, originNode())}
       </button>

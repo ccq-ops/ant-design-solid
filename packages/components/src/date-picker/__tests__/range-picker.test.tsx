@@ -128,6 +128,39 @@ describe('RangePicker', () => {
     expect(onBlur.mock.calls[1][1]).toEqual({ range: 'end' })
   })
 
+  it('marks completed range start, end, and in-range cells', () => {
+    render(() => (
+      <DatePickerModule.RangePicker
+        defaultOpen
+        defaultValue={[dayjs('2026-06-10'), dayjs('2026-06-15')]}
+        defaultPickerValue={dayjs('2026-06-01')}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: '2026-06-10' })).toHaveClass(
+      'ads-date-picker-cell-range-start',
+    )
+    expect(screen.getByRole('button', { name: '2026-06-15' })).toHaveClass(
+      'ads-date-picker-cell-range-end',
+    )
+    expect(screen.getByRole('button', { name: '2026-06-12' })).toHaveClass(
+      'ads-date-picker-cell-in-range',
+    )
+  })
+
+  it('previews the in-range cells while hovering after selecting a start date', () => {
+    render(() => (
+      <DatePickerModule.RangePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+    fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
+
+    expect(screen.getByRole('button', { name: '2026-06-12' })).toHaveClass(
+      'ads-date-picker-cell-in-range',
+    )
+  })
+
   it('renders a custom separator and disables the configured end input', () => {
     render(() => (
       <DatePickerModule.RangePicker separator={<span>to</span>} disabled={[false, true]} />
