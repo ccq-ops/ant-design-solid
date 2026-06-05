@@ -349,7 +349,6 @@ it('renders dropdown in a portal with fixed positioning and explicit zIndex', ()
   rectSpy.mockRestore()
 })
 
-
 it('supports popupMatchSelectWidth options', () => {
   const result = render(() => (
     <AutoComplete

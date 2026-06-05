@@ -87,9 +87,11 @@ export function AutoComplete(props: AutoCompleteProps) {
   const disabled = () => Boolean(local.disabled)
   const allowClear = () => Boolean(local.allowClear)
   const clearIcon = () =>
-    typeof local.allowClear === 'object' && local.allowClear.clearIcon
-      ? local.allowClear.clearIcon
-      : <CloseCircleFilled />
+    typeof local.allowClear === 'object' && local.allowClear.clearIcon ? (
+      local.allowClear.clearIcon
+    ) : (
+      <CloseCircleFilled />
+    )
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
   const value = () => {
@@ -99,7 +101,8 @@ export function AutoComplete(props: AutoCompleteProps) {
     return innerValue()
   }
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
-  const showSearchConfig = () => (typeof local.showSearch === 'object' ? local.showSearch : undefined)
+  const showSearchConfig = () =>
+    typeof local.showSearch === 'object' ? local.showSearch : undefined
   const mergedFilterOption = () => showSearchConfig()?.filterOption ?? local.filterOption
   const filteredOptions = createMemo(() => {
     const options = local.options ?? []
@@ -271,7 +274,7 @@ export function AutoComplete(props: AutoCompleteProps) {
       }}
       class={`${prefixCls()}-dropdown`}
       style={dropdownPosition()}
-      onScroll={(event) => local.onPopupScroll?.(event)}
+      onScroll={(event) => local.onPopupScroll?.(event as unknown as UIEvent)}
     >
       <Show
         when={filteredOptions().length > 0}

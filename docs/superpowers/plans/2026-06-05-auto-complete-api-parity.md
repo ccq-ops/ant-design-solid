@@ -27,6 +27,7 @@
 ### Task 1: Public API types and root modifier classes
 
 **Files:**
+
 - Modify: `packages/components/src/auto-complete/interface.ts`
 - Modify: `packages/components/src/auto-complete/auto-complete.tsx`
 - Modify: `packages/components/src/auto-complete/auto-complete.style.ts`
@@ -37,21 +38,21 @@
 Append this test inside `describe('AutoComplete', () => { ... })`:
 
 ```tsx
-  it('applies size status and variant modifier classes', () => {
-    const result = render(() => (
-      <AutoComplete
-        size="large"
-        status="error"
-        variant="filled"
-        options={[{ value: 'alpha', label: 'Alpha' }]}
-      />
-    ))
+it('applies size status and variant modifier classes', () => {
+  const result = render(() => (
+    <AutoComplete
+      size="large"
+      status="error"
+      variant="filled"
+      options={[{ value: 'alpha', label: 'Alpha' }]}
+    />
+  ))
 
-    const root = result.container.querySelector('.ads-auto-complete') as HTMLElement
-    expect(root).toHaveClass('ads-auto-complete-large')
-    expect(root).toHaveClass('ads-auto-complete-status-error')
-    expect(root).toHaveClass('ads-auto-complete-filled')
-  })
+  const root = result.container.querySelector('.ads-auto-complete') as HTMLElement
+  expect(root).toHaveClass('ads-auto-complete-large')
+  expect(root).toHaveClass('ads-auto-complete-status-error')
+  expect(root).toHaveClass('ads-auto-complete-filled')
+})
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -175,6 +176,7 @@ git commit -m "feat: add auto complete visual api props"
 ### Task 2: Object allowClear and onClear
 
 **Files:**
+
 - Modify: `packages/components/src/auto-complete/auto-complete.tsx`
 - Test: `packages/components/src/auto-complete/__tests__/auto-complete.test.tsx`
 
@@ -183,27 +185,27 @@ git commit -m "feat: add auto complete visual api props"
 Append inside the describe block:
 
 ```tsx
-  it('supports object allowClear with custom icon and onClear callback', () => {
-    const onChange = vi.fn()
-    const onClear = vi.fn()
-    const result = render(() => (
-      <AutoComplete
-        defaultValue="alpha"
-        allowClear={{ clearIcon: <span data-testid="custom-clear">clear</span> }}
-        options={options}
-        onChange={onChange}
-        onClear={onClear}
-      />
-    ))
+it('supports object allowClear with custom icon and onClear callback', () => {
+  const onChange = vi.fn()
+  const onClear = vi.fn()
+  const result = render(() => (
+    <AutoComplete
+      defaultValue="alpha"
+      allowClear={{ clearIcon: <span data-testid="custom-clear">clear</span> }}
+      options={options}
+      onChange={onChange}
+      onClear={onClear}
+    />
+  ))
 
-    expect(result.getByTestId('custom-clear')).toBeTruthy()
+  expect(result.getByTestId('custom-clear')).toBeTruthy()
 
-    fireEvent.click(result.getByRole('button', { name: 'clear autocomplete' }))
+  fireEvent.click(result.getByRole('button', { name: 'clear autocomplete' }))
 
-    expect((result.getByRole('combobox') as HTMLInputElement).value).toBe('')
-    expect(onChange).toHaveBeenLastCalledWith('')
-    expect(onClear).toHaveBeenCalledTimes(1)
-  })
+  expect((result.getByRole('combobox') as HTMLInputElement).value).toBe('')
+  expect(onChange).toHaveBeenLastCalledWith('')
+  expect(onClear).toHaveBeenCalledTimes(1)
+})
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -233,7 +235,7 @@ In `auto-complete.tsx`, add these helpers near `disabled`:
 In `clearValue`, after `setOpen(false)`, add:
 
 ```ts
-    local.onClear?.()
+local.onClear?.()
 ```
 
 Replace:
@@ -251,13 +253,15 @@ with:
 Replace:
 
 ```tsx
-            <CloseCircleFilled />
+<CloseCircleFilled />
 ```
 
 with:
 
 ```tsx
-            {clearIcon()}
+{
+  clearIcon()
+}
 ```
 
 - [ ] **Step 5: Run test to verify it passes**
@@ -284,6 +288,7 @@ git commit -m "feat: support auto complete custom clear"
 ### Task 3: showSearch and filter priority
 
 **Files:**
+
 - Modify: `packages/components/src/auto-complete/auto-complete.tsx`
 - Test: `packages/components/src/auto-complete/__tests__/auto-complete.test.tsx`
 
@@ -292,39 +297,37 @@ git commit -m "feat: support auto complete custom clear"
 Append inside the describe block:
 
 ```tsx
-  it('calls showSearch.onSearch when the user types', () => {
-    const onSearch = vi.fn()
-    const result = render(() => (
-      <AutoComplete options={options} showSearch={{ onSearch }} />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('calls showSearch.onSearch when the user types', () => {
+  const onSearch = vi.fn()
+  const result = render(() => <AutoComplete options={options} showSearch={{ onSearch }} />)
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.input(combobox, { target: { value: 'alp' } })
+  fireEvent.input(combobox, { target: { value: 'alp' } })
 
-    expect(onSearch).toHaveBeenCalledWith('alp')
-  })
+  expect(onSearch).toHaveBeenCalledWith('alp')
+})
 
-  it('uses showSearch.filterOption before legacy filterOption', () => {
-    const legacyFilter = vi.fn(() => false)
-    const searchFilter = vi.fn((inputValue: string, option: { value: string }) =>
-      option.value.includes(inputValue),
-    )
-    const result = render(() => (
-      <AutoComplete
-        options={options}
-        filterOption={legacyFilter}
-        showSearch={{ filterOption: searchFilter }}
-      />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('uses showSearch.filterOption before legacy filterOption', () => {
+  const legacyFilter = vi.fn(() => false)
+  const searchFilter = vi.fn((inputValue: string, option: { value: string }) =>
+    option.value.includes(inputValue),
+  )
+  const result = render(() => (
+    <AutoComplete
+      options={options}
+      filterOption={legacyFilter}
+      showSearch={{ filterOption: searchFilter }}
+    />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.input(combobox, { target: { value: 'alp' } })
+  fireEvent.input(combobox, { target: { value: 'alp' } })
 
-    expect(screen.getByRole('option', { name: 'Alpha' })).toBeTruthy()
-    expect(screen.queryByRole('option', { name: 'Beta' })).toBeNull()
-    expect(searchFilter).toHaveBeenCalled()
-    expect(legacyFilter).not.toHaveBeenCalled()
-  })
+  expect(screen.getByRole('option', { name: 'Alpha' })).toBeTruthy()
+  expect(screen.queryByRole('option', { name: 'Beta' })).toBeNull()
+  expect(searchFilter).toHaveBeenCalled()
+  expect(legacyFilter).not.toHaveBeenCalled()
+})
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -342,20 +345,20 @@ Expected: FAIL because `onSearch` is not called and `showSearch.filterOption` is
 In `auto-complete.tsx`, add near `value`:
 
 ```ts
-  const showSearchConfig = () => (typeof local.showSearch === 'object' ? local.showSearch : undefined)
-  const mergedFilterOption = () => showSearchConfig()?.filterOption ?? local.filterOption
+const showSearchConfig = () => (typeof local.showSearch === 'object' ? local.showSearch : undefined)
+const mergedFilterOption = () => showSearchConfig()?.filterOption ?? local.filterOption
 ```
 
 Update `filteredOptions` so:
 
 ```ts
-    const filter = local.filterOption
+const filter = local.filterOption
 ```
 
 becomes:
 
 ```ts
-    const filter = mergedFilterOption()
+const filter = mergedFilterOption()
 ```
 
 - [ ] **Step 4: Call onSearch during user input**
@@ -363,10 +366,10 @@ becomes:
 In `handleInput`, store the value and call search:
 
 ```ts
-    const nextValue = event.currentTarget.value
-    changeValue(nextValue)
-    showSearchConfig()?.onSearch?.(nextValue)
-    if (!disabled()) setOpen(true)
+const nextValue = event.currentTarget.value
+changeValue(nextValue)
+showSearchConfig()?.onSearch?.(nextValue)
+if (!disabled()) setOpen(true)
 ```
 
 - [ ] **Step 5: Run tests to verify they pass**
@@ -383,6 +386,7 @@ git commit -m "feat: add auto complete show search config"
 ### Task 4: notFoundContent, popupRender, popupMatchSelectWidth, and popup scroll
 
 **Files:**
+
 - Modify: `packages/components/src/auto-complete/auto-complete.tsx`
 - Modify: `packages/components/src/auto-complete/auto-complete.style.ts`
 - Test: `packages/components/src/auto-complete/__tests__/auto-complete.test.tsx`
@@ -392,35 +396,35 @@ git commit -m "feat: add auto complete show search config"
 Append inside the describe block:
 
 ```tsx
-  it('renders notFoundContent when no filtered options match', () => {
-    const result = render(() => (
-      <AutoComplete options={options} notFoundContent={<span>No matches</span>} />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('renders notFoundContent when no filtered options match', () => {
+  const result = render(() => (
+    <AutoComplete options={options} notFoundContent={<span>No matches</span>} />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.input(combobox, { target: { value: 'zzz' } })
+  fireEvent.input(combobox, { target: { value: 'zzz' } })
 
-    expect(screen.getByRole('listbox')).toBeTruthy()
-    expect(screen.getByText('No matches')).toBeTruthy()
-  })
+  expect(screen.getByRole('listbox')).toBeTruthy()
+  expect(screen.getByText('No matches')).toBeTruthy()
+})
 
-  it('wraps dropdown with popupRender and calls onPopupScroll', () => {
-    const onPopupScroll = vi.fn()
-    const result = render(() => (
-      <AutoComplete
-        options={options}
-        popupRender={(originNode) => <section data-testid="popup-wrapper">{originNode}</section>}
-        onPopupScroll={onPopupScroll}
-      />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('wraps dropdown with popupRender and calls onPopupScroll', () => {
+  const onPopupScroll = vi.fn()
+  const result = render(() => (
+    <AutoComplete
+      options={options}
+      popupRender={(originNode) => <section data-testid="popup-wrapper">{originNode}</section>}
+      onPopupScroll={onPopupScroll}
+    />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.input(combobox, { target: { value: 'a' } })
+  fireEvent.input(combobox, { target: { value: 'a' } })
 
-    expect(screen.getByTestId('popup-wrapper')).toBeTruthy()
-    fireEvent.scroll(screen.getByRole('listbox'))
-    expect(onPopupScroll).toHaveBeenCalledTimes(1)
-  })
+  expect(screen.getByTestId('popup-wrapper')).toBeTruthy()
+  fireEvent.scroll(screen.getByRole('listbox'))
+  expect(onPopupScroll).toHaveBeenCalledTimes(1)
+})
 ```
 
 Add this top-level test after the existing portal positioning test:
@@ -470,33 +474,34 @@ Expected: FAIL because these popup APIs are not implemented.
 In `auto-complete.tsx`, add:
 
 ```ts
-  const hasNotFoundContent = () => local.notFoundContent !== undefined && local.notFoundContent !== null
-  const hasPopupContent = () => filteredOptions().length > 0 || hasNotFoundContent()
+const hasNotFoundContent = () =>
+  local.notFoundContent !== undefined && local.notFoundContent !== null
+const hasPopupContent = () => filteredOptions().length > 0 || hasNotFoundContent()
 ```
 
 Update `setOpen`:
 
 ```ts
-    const normalizedOpen = nextOpen && hasPopupContent()
+const normalizedOpen = nextOpen && hasPopupContent()
 ```
 
 Update `updateDropdownPosition` width calculation:
 
 ```ts
-    const matchWidth = local.popupMatchSelectWidth ?? true
-    const width =
-      typeof matchWidth === 'number'
-        ? `${Math.max(rect.width, matchWidth)}px`
-        : matchWidth === false
-          ? undefined
-          : `${rect.width}px`
-    setDropdownPosition({
-      position: 'fixed',
-      top: `${rect.bottom + 4}px`,
-      left: `${rect.left}px`,
-      ...(width ? { width } : {}),
-      'z-index': `${dropdownZIndex}`,
-    })
+const matchWidth = local.popupMatchSelectWidth ?? true
+const width =
+  typeof matchWidth === 'number'
+    ? `${Math.max(rect.width, matchWidth)}px`
+    : matchWidth === false
+      ? undefined
+      : `${rect.width}px`
+setDropdownPosition({
+  position: 'fixed',
+  top: `${rect.bottom + 4}px`,
+  left: `${rect.left}px`,
+  ...(width ? { width } : {}),
+  'z-index': `${dropdownZIndex}`,
+})
 ```
 
 - [ ] **Step 4: Add popup render node**
@@ -504,49 +509,51 @@ Update `updateDropdownPosition` width calculation:
 Before `return`, add:
 
 ```tsx
-  const dropdownNode = () => (
-    <div
-      role="listbox"
-      ref={(element) => {
-        dropdownRef = element
-      }}
-      class={`${prefixCls()}-dropdown`}
-      style={dropdownPosition()}
-      onScroll={(event) => local.onPopupScroll?.(event)}
+const dropdownNode = () => (
+  <div
+    role="listbox"
+    ref={(element) => {
+      dropdownRef = element
+    }}
+    class={`${prefixCls()}-dropdown`}
+    style={dropdownPosition()}
+    onScroll={(event) => local.onPopupScroll?.(event)}
+  >
+    <Show
+      when={filteredOptions().length > 0}
+      fallback={<div class={`${prefixCls()}-empty`}>{local.notFoundContent}</div>}
     >
-      <Show
-        when={filteredOptions().length > 0}
-        fallback={<div class={`${prefixCls()}-empty`}>{local.notFoundContent}</div>}
-      >
-        <For each={filteredOptions()}>
-          {(option) => (
-            <div
-              role="option"
-              aria-disabled={Boolean(option.disabled)}
-              class={classNames(
-                `${prefixCls()}-item`,
-                option.disabled && `${prefixCls()}-item-disabled`,
-              )}
-              onClick={() => selectOption(option)}
-            >
-              {option.label ?? option.value}
-            </div>
-          )}
-        </For>
-      </Show>
-    </div>
-  )
+      <For each={filteredOptions()}>
+        {(option) => (
+          <div
+            role="option"
+            aria-disabled={Boolean(option.disabled)}
+            class={classNames(
+              `${prefixCls()}-item`,
+              option.disabled && `${prefixCls()}-item-disabled`,
+            )}
+            onClick={() => selectOption(option)}
+          >
+            {option.label ?? option.value}
+          </div>
+        )}
+      </For>
+    </Show>
+  </div>
+)
 
-  const renderedDropdownNode = () => {
-    const node = dropdownNode()
-    return local.popupRender ? local.popupRender(node) : node
-  }
+const renderedDropdownNode = () => {
+  const node = dropdownNode()
+  return local.popupRender ? local.popupRender(node) : node
+}
 ```
 
 Then replace the existing hard-coded dropdown `<div role="listbox">...</div>` inside `InternalPortal` with:
 
 ```tsx
-          {renderedDropdownNode()}
+{
+  renderedDropdownNode()
+}
 ```
 
 - [ ] **Step 5: Add empty style**
@@ -584,6 +591,7 @@ git commit -m "feat: add auto complete popup customization"
 ### Task 5: Keyboard active option, navigation, backfill, and onInputKeyDown
 
 **Files:**
+
 - Modify: `packages/components/src/auto-complete/auto-complete.tsx`
 - Modify: `packages/components/src/auto-complete/auto-complete.style.ts`
 - Test: `packages/components/src/auto-complete/__tests__/auto-complete.test.tsx`
@@ -593,66 +601,68 @@ git commit -m "feat: add auto complete popup customization"
 Append inside the describe block:
 
 ```tsx
-  it('navigates enabled options with arrow keys and selects the active option with enter', () => {
-    const onSelect = vi.fn()
-    const result = render(() => <AutoComplete options={options} filterOption={false} onSelect={onSelect} />)
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('navigates enabled options with arrow keys and selects the active option with enter', () => {
+  const onSelect = vi.fn()
+  const result = render(() => (
+    <AutoComplete options={options} filterOption={false} onSelect={onSelect} />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.focus(combobox)
-    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
-    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
-    fireEvent.keyDown(combobox, { key: 'Enter' })
+  fireEvent.focus(combobox)
+  fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+  fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+  fireEvent.keyDown(combobox, { key: 'Enter' })
 
-    expect(combobox.value).toBe('beta')
-    expect(onSelect).toHaveBeenCalledWith('beta', { label: 'Beta', value: 'beta' })
-  })
+  expect(combobox.value).toBe('beta')
+  expect(onSelect).toHaveBeenCalledWith('beta', { label: 'Beta', value: 'beta' })
+})
 
-  it('supports backfill while navigating with the keyboard', () => {
-    const onChange = vi.fn()
-    const result = render(() => (
-      <AutoComplete options={options} filterOption={false} backfill onChange={onChange} />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('supports backfill while navigating with the keyboard', () => {
+  const onChange = vi.fn()
+  const result = render(() => (
+    <AutoComplete options={options} filterOption={false} backfill onChange={onChange} />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.focus(combobox)
-    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
-    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+  fireEvent.focus(combobox)
+  fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+  fireEvent.keyDown(combobox, { key: 'ArrowDown' })
 
-    expect(combobox.value).toBe('beta')
-    expect(onChange).toHaveBeenLastCalledWith('beta')
-  })
+  expect(combobox.value).toBe('beta')
+  expect(onChange).toHaveBeenLastCalledWith('beta')
+})
 
-  it('does not select the first option on enter when defaultActiveFirstOption is false', () => {
-    const onSelect = vi.fn()
-    const result = render(() => (
-      <AutoComplete
-        options={options}
-        filterOption={false}
-        defaultActiveFirstOption={false}
-        onSelect={onSelect}
-      />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('does not select the first option on enter when defaultActiveFirstOption is false', () => {
+  const onSelect = vi.fn()
+  const result = render(() => (
+    <AutoComplete
+      options={options}
+      filterOption={false}
+      defaultActiveFirstOption={false}
+      onSelect={onSelect}
+    />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.focus(combobox)
-    fireEvent.keyDown(combobox, { key: 'Enter' })
+  fireEvent.focus(combobox)
+  fireEvent.keyDown(combobox, { key: 'Enter' })
 
-    expect(onSelect).not.toHaveBeenCalled()
-    expect(combobox.value).toBe('')
-  })
+  expect(onSelect).not.toHaveBeenCalled()
+  expect(combobox.value).toBe('')
+})
 
-  it('calls onInputKeyDown before internal keyboard handling', () => {
-    const onInputKeyDown = vi.fn()
-    const result = render(() => (
-      <AutoComplete options={options} filterOption={false} onInputKeyDown={onInputKeyDown} />
-    ))
-    const combobox = result.getByRole('combobox') as HTMLInputElement
+it('calls onInputKeyDown before internal keyboard handling', () => {
+  const onInputKeyDown = vi.fn()
+  const result = render(() => (
+    <AutoComplete options={options} filterOption={false} onInputKeyDown={onInputKeyDown} />
+  ))
+  const combobox = result.getByRole('combobox') as HTMLInputElement
 
-    fireEvent.focus(combobox)
-    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+  fireEvent.focus(combobox)
+  fireEvent.keyDown(combobox, { key: 'ArrowDown' })
 
-    expect(onInputKeyDown).toHaveBeenCalledTimes(1)
-  })
+  expect(onInputKeyDown).toHaveBeenCalledTimes(1)
+})
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -670,35 +680,40 @@ Expected: FAIL because active option navigation, backfill, and `onInputKeyDown` 
 In `auto-complete.tsx`, add after `inputFocused` state:
 
 ```ts
-  const [activeValue, setActiveValue] = createSignal<string | undefined>()
+const [activeValue, setActiveValue] = createSignal<string | undefined>()
 ```
 
 Add helpers before `setOpen`:
 
 ```ts
-  const defaultActiveFirstOption = () => local.defaultActiveFirstOption ?? true
-  const activeOption = () => enabledOptions().find((option) => option.value === activeValue())
+const defaultActiveFirstOption = () => local.defaultActiveFirstOption ?? true
+const activeOption = () => enabledOptions().find((option) => option.value === activeValue())
 
-  function setDefaultActiveOption(): void {
-    if (!defaultActiveFirstOption()) {
-      setActiveValue(undefined)
-      return
-    }
-    setActiveValue(enabledOptions()[0]?.value)
+function setDefaultActiveOption(): void {
+  if (!defaultActiveFirstOption()) {
+    setActiveValue(undefined)
+    return
   }
+  setActiveValue(enabledOptions()[0]?.value)
+}
 
-  function moveActiveOption(offset: 1 | -1): void {
-    const options = enabledOptions()
-    if (options.length === 0) {
-      setActiveValue(undefined)
-      return
-    }
-    const currentIndex = options.findIndex((option) => option.value === activeValue())
-    const nextIndex = currentIndex === -1 ? (offset === 1 ? 0 : options.length - 1) : (currentIndex + offset + options.length) % options.length
-    const nextOption = options[nextIndex]
-    setActiveValue(nextOption.value)
-    if (local.backfill) changeValue(nextOption.value)
+function moveActiveOption(offset: 1 | -1): void {
+  const options = enabledOptions()
+  if (options.length === 0) {
+    setActiveValue(undefined)
+    return
   }
+  const currentIndex = options.findIndex((option) => option.value === activeValue())
+  const nextIndex =
+    currentIndex === -1
+      ? offset === 1
+        ? 0
+        : options.length - 1
+      : (currentIndex + offset + options.length) % options.length
+  const nextOption = options[nextIndex]
+  setActiveValue(nextOption.value)
+  if (local.backfill) changeValue(nextOption.value)
+}
 ```
 
 - [ ] **Step 4: Keep active option synced when opening and filtering**
@@ -706,18 +721,18 @@ Add helpers before `setOpen`:
 In `setOpen`, after `if (normalizedOpen) updateDropdownPosition()`, add:
 
 ```ts
-    if (normalizedOpen) setDefaultActiveOption()
-    else setActiveValue(undefined)
+if (normalizedOpen) setDefaultActiveOption()
+else setActiveValue(undefined)
 ```
 
 Add a `createEffect` after the popup listener effects:
 
 ```ts
-  createEffect(() => {
-    if (!open()) return
-    if (activeOption()) return
-    setDefaultActiveOption()
-  })
+createEffect(() => {
+  if (!open()) return
+  if (activeOption()) return
+  setDefaultActiveOption()
+})
 ```
 
 - [ ] **Step 5: Update keyboard handling**
@@ -725,32 +740,32 @@ Add a `createEffect` after the popup listener effects:
 In input `onKeyDown`, after the existing inherited `onKeyDown` call, add:
 
 ```ts
-            local.onInputKeyDown?.(event)
+local.onInputKeyDown?.(event)
 ```
 
 Replace the current Enter/Escape keyboard handling with:
 
 ```ts
-            if (event.key === 'Escape') {
-              setOpen(false)
-              return
-            }
-            if (event.key === 'ArrowDown') {
-              event.preventDefault()
-              if (!open()) setOpen(true)
-              moveActiveOption(1)
-              return
-            }
-            if (event.key === 'ArrowUp') {
-              event.preventDefault()
-              if (!open()) setOpen(true)
-              moveActiveOption(-1)
-              return
-            }
-            if (event.key === 'Enter' && open()) {
-              const option = activeOption()
-              if (option) selectOption(option)
-            }
+if (event.key === 'Escape') {
+  setOpen(false)
+  return
+}
+if (event.key === 'ArrowDown') {
+  event.preventDefault()
+  if (!open()) setOpen(true)
+  moveActiveOption(1)
+  return
+}
+if (event.key === 'ArrowUp') {
+  event.preventDefault()
+  if (!open()) setOpen(true)
+  moveActiveOption(-1)
+  return
+}
+if (event.key === 'Enter' && open()) {
+  const option = activeOption()
+  if (option) selectOption(option)
+}
 ```
 
 - [ ] **Step 6: Mark active option in DOM**
@@ -801,6 +816,7 @@ git commit -m "feat: add auto complete keyboard navigation"
 ### Task 6: Full verification and docs sanity
 
 **Files:**
+
 - Possibly modify: `apps/docs/src/pages/components/auto-complete.tsx` only if a type or lint issue requires it.
 
 - [ ] **Step 1: Run auto-complete test file**
