@@ -1,6 +1,26 @@
 import { createSignal } from 'solid-js'
 import { Space, Steps } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const stepsRows: ApiTableRow[] = [
+  { property: 'items', description: 'Step items rendered in order.', type: 'StepItem[]' },
+  { property: 'current', description: 'Current step index.', type: 'number', defaultValue: '0' },
+  { property: 'status', description: 'Status for the current step.', type: "'wait' | 'process' | 'finish' | 'error'" },
+  { property: 'direction', description: 'Step layout direction.', type: "'horizontal' | 'vertical'", defaultValue: "'horizontal'" },
+  { property: 'size', description: 'Step size.', type: "'default' | 'small'", defaultValue: "'default'" },
+  { property: 'type', description: 'Step style type.', type: "'default' | 'navigation'", defaultValue: "'default'" },
+  { property: 'onChange', description: 'Called when a clickable step changes current index.', type: '(current: number) => void' },
+]
+
+const stepItemRows: ApiTableRow[] = [
+  { property: 'title', description: 'Step title.', type: 'JSX.Element' },
+  { property: 'description', description: 'Step description.', type: 'JSX.Element' },
+  { property: 'status', description: 'Per-step status override.', type: "'wait' | 'process' | 'finish' | 'error'" },
+  { property: 'icon', description: 'Custom step icon.', type: 'JSX.Element' },
+  { property: 'disabled', description: 'Disables navigation to this step.', type: 'boolean' },
+]
 
 export default function StepsPage() {
   const [current, setCurrent] = createSignal(0)
@@ -88,6 +108,12 @@ export default function StepsPage() {
           ]}
         />
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Steps</h3>
+      <ApiTable rows={stepsRows} aria-label="Steps API" />
+      <h3>StepItem</h3>
+      <ApiTable rows={stepItemRows} aria-label="Step Item API" />
     </>
   )
 }
