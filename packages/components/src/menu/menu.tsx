@@ -1,6 +1,10 @@
-import { For, Show, createMemo, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { addPositionUpdateListeners } from '../shared/overlay'
+import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import { useMenuStyle } from './menu.style'
 import type {
   MenuClickInfo,
@@ -37,6 +41,8 @@ export function Menu(props: MenuProps) {
     'openKeys',
     'defaultOpenKeys',
     'inlineCollapsed',
+    'zIndex',
+    'getPopupContainer',
     'onClick',
     'onSelect',
     'onOpenChange',
@@ -45,14 +51,18 @@ export function Menu(props: MenuProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-menu`
   const [, hashId] = useMenuStyle(prefixCls())
+  const [popupZIndex] = useZIndex('Menu', local.zIndex)
   const [innerSelectedKeys, setInnerSelectedKeys] = createSignal<MenuKey[]>(
     local.defaultSelectedKeys ?? [],
   )
   const [innerOpenKeys, setInnerOpenKeys] = createSignal<MenuKey[]>(local.defaultOpenKeys ?? [])
+  const [popupPositions, setPopupPositions] = createSignal<Record<MenuKey, JSX.CSSProperties>>({})
+  const submenuTitleRefs = new Map<MenuKey, HTMLDivElement>()
   const mode = () => local.mode ?? 'vertical'
   const selectedKeys = createMemo(() => local.selectedKeys ?? innerSelectedKeys())
   const openKeys = createMemo(() => local.openKeys ?? innerOpenKeys())
   const items = () => local.items ?? []
+  const usesPopupSubMenu = () => mode() !== 'inline'
 
   const setOpenKeys = (nextOpenKeys: MenuKey[]) => {
     if (local.openKeys === undefined) setInnerOpenKeys(nextOpenKeys)
@@ -78,16 +88,84 @@ export function Menu(props: MenuProps) {
     local.onSelect?.({ ...info, selectedKeys: nextSelectedKeys })
   }
 
+  function updatePopupPosition(key: MenuKey): void {
+    if (!canUseDom()) return
+    const title = submenuTitleRefs.get(key)
+    if (!title) return
+    const rect = title.getBoundingClientRect()
+    setPopupPositions((positions) => ({
+      ...positions,
+      [key]: {
+        position: 'fixed',
+        top: `${rect.bottom + 4}px`,
+        left: `${rect.left}px`,
+        'z-index': `${popupZIndex}`,
+      },
+    }))
+  }
+
+  function updateOpenPopupPositions(): void {
+    if (!usesPopupSubMenu()) return
+    openKeys().forEach(updatePopupPosition)
+  }
+
   const toggleSubMenu = (item: SubMenuType) => {
     if (item.disabled) return
     const currentOpenKeys = openKeys()
-    const nextOpenKeys = currentOpenKeys.includes(item.key)
-      ? currentOpenKeys.filter((key) => key !== item.key)
-      : [...currentOpenKeys, item.key]
+    const willOpen = !currentOpenKeys.includes(item.key)
+    if (willOpen) updatePopupPosition(item.key)
+    const nextOpenKeys = willOpen
+      ? [...currentOpenKeys, item.key]
+      : currentOpenKeys.filter((key) => key !== item.key)
     setOpenKeys(nextOpenKeys)
   }
 
-  const renderItem = (item: MenuItem, parentKeyPath: MenuKey[] = []) => {
+  createEffect(() => {
+    if (!usesPopupSubMenu() || openKeys().length === 0) return
+    const removeListeners = addPositionUpdateListeners(updateOpenPopupPositions)
+    onCleanup(removeListeners)
+  })
+
+  const renderChildren = (children: MenuItem[], parentKeyPath: MenuKey[]) => (
+    <For each={children}>{(child) => renderItem(child, parentKeyPath)}</For>
+  )
+
+  const renderSubMenuList = (item: SubMenuType, keyPath: MenuKey[], open: () => boolean) => {
+    if (usesPopupSubMenu()) {
+      return (
+        <Show when={open()}>
+          <InternalPortal
+            mount={() =>
+              local.getPopupContainer?.(submenuTitleRefs.get(item.key)) ??
+              config.getPopupContainer?.(submenuTitleRefs.get(item.key))
+            }
+          >
+            <ul
+              role="menu"
+              class={classNames(`${prefixCls()}-submenu-list`, `${prefixCls()}-submenu-popup`)}
+              style={popupPositions()[item.key] ?? { 'z-index': `${popupZIndex}` }}
+            >
+              {renderChildren(item.children, keyPath)}
+            </ul>
+          </InternalPortal>
+        </Show>
+      )
+    }
+
+    return (
+      <ul
+        role="menu"
+        class={classNames(
+          `${prefixCls()}-submenu-list`,
+          !open() && `${prefixCls()}-submenu-list-hidden`,
+        )}
+      >
+        {renderChildren(item.children, keyPath)}
+      </ul>
+    )
+  }
+
+  const renderItem = (item: MenuItem, parentKeyPath: MenuKey[] = []): JSX.Element => {
     if (isDivider(item)) {
       return (
         <li
@@ -131,7 +209,10 @@ export function Menu(props: MenuProps) {
             aria-disabled={item.disabled ? 'true' : undefined}
             aria-haspopup="true"
             aria-expanded={open() ? 'true' : 'false'}
-            class={`${prefixCls()}-submenu-title`}
+            ref={(element) => {
+              submenuTitleRefs.set(item.key, element)
+            }}
+            class={classNames(`${prefixCls()}-submenu-title`, item.key)}
             onClick={handleActivate}
             onKeyDown={(event) => {
               if (!isActivationKey(event)) return
@@ -147,15 +228,7 @@ export function Menu(props: MenuProps) {
               ›
             </span>
           </div>
-          <ul
-            role="menu"
-            class={classNames(
-              `${prefixCls()}-submenu-list`,
-              !open() && `${prefixCls()}-submenu-list-hidden`,
-            )}
-          >
-            <For each={item.children}>{(child) => renderItem(child, keyPath)}</For>
-          </ul>
+          {renderSubMenuList(item, keyPath, open)}
         </li>
       )
     }

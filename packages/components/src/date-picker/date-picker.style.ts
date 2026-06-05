@@ -58,10 +58,6 @@ export function useDatePickerStyle(prefixCls: string) {
           color: t.colorText,
         },
         [`.${prefixCls}-dropdown`]: {
-          position: 'absolute',
-          'z-index': '1000',
-          top: '100%',
-          left: '0',
           width: '280px',
           marginTop: `${t.marginXS}px`,
           padding: `${t.paddingSM}px`,

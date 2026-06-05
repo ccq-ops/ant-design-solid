@@ -1,11 +1,16 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { ConfigProvider } from '../../config-provider'
 import { Form, useForm } from '../../form'
 import { Cascader } from '../index'
 import type { CascaderOption } from '../interface'
+
+afterEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
 
 const options: CascaderOption[] = [
   {
@@ -43,13 +48,13 @@ describe('Cascader', () => {
 
     expect(combobox).toHaveTextContent('Pick city')
     expect(combobox).toHaveAttribute('aria-expanded', 'false')
-    expect(result.queryByRole('menu')).toBeNull()
+    expect(screen.queryByRole('menu')).toBeNull()
 
     fireEvent.click(combobox)
 
     expect(combobox).toHaveAttribute('aria-expanded', 'true')
-    expect(result.getByRole('menu')).toBeTruthy()
-    expect(result.getByRole('menuitem', { name: 'Zhejiang' })).toBeTruthy()
+    expect(screen.getByRole('menu')).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'Zhejiang' })).toBeTruthy()
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
@@ -59,9 +64,9 @@ describe('Cascader', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('menuitem', { name: 'Zhejiang' }))
-    fireEvent.click(result.getByRole('menuitem', { name: 'Hangzhou' }))
-    fireEvent.click(result.getByRole('menuitem', { name: 'West Lake' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Zhejiang' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hangzhou' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'West Lake' }))
 
     expect(combobox).toHaveTextContent('Zhejiang / Hangzhou / West Lake')
     expect(combobox).toHaveAttribute('aria-expanded', 'false')
@@ -85,8 +90,8 @@ describe('Cascader', () => {
     expect(combobox).toHaveTextContent('Zhejiang / Hangzhou / West Lake')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('menuitem', { name: 'Jiangsu' }))
-    fireEvent.click(result.getByRole('menuitem', { name: 'Nanjing' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Jiangsu' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Nanjing' }))
 
     expect(combobox).toHaveTextContent('Jiangsu / Nanjing')
   })
@@ -103,26 +108,24 @@ describe('Cascader', () => {
 
     expect(onOpenChange).toHaveBeenCalledWith(true)
     expect(combobox).toHaveAttribute('aria-expanded', 'true')
-    expect(result.getByRole('menu')).toBeTruthy()
+    expect(screen.getByRole('menu')).toBeTruthy()
   })
 
   it('renders controlled open selected path columns and active branch on initial render', () => {
-    const result = render(() => (
-      <Cascader open value={['zhejiang', 'hangzhou', 'west-lake']} options={options} />
-    ))
+    render(() => <Cascader open value={['zhejiang', 'hangzhou', 'west-lake']} options={options} />)
 
-    expect(result.getByRole('menuitem', { name: 'Hangzhou' })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: 'Hangzhou' })).toHaveAttribute(
       'aria-selected',
       'true',
     )
-    expect(result.getByRole('menuitem', { name: 'West Lake' })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: 'West Lake' })).toHaveAttribute(
       'aria-selected',
       'true',
     )
-    expect(result.getByRole('menuitem', { name: 'Hangzhou' })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'Hangzhou' })).toHaveClass(
       'ads-cascader-menu-item-active',
     )
-    expect(result.getByRole('menuitem', { name: 'West Lake' })).toHaveClass(
+    expect(screen.getByRole('menuitem', { name: 'West Lake' })).toHaveClass(
       'ads-cascader-menu-item-active',
     )
   })
@@ -137,15 +140,15 @@ describe('Cascader', () => {
     ))
     const combobox = result.getByRole('combobox')
 
-    expect(result.getByRole('menuitem', { name: 'West Lake' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'West Lake' })).toBeTruthy()
 
     setValue(['jiangsu', 'nanjing'])
 
-    expect(result.getByRole('menuitem', { name: 'Nanjing' })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: 'Nanjing' })).toHaveAttribute(
       'aria-selected',
       'true',
     )
-    expect(result.queryByRole('menuitem', { name: 'West Lake' })).toBeNull()
+    expect(screen.queryByRole('menuitem', { name: 'West Lake' })).toBeNull()
 
     fireEvent.keyDown(combobox, { key: 'Enter' })
 
@@ -161,7 +164,7 @@ describe('Cascader', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('menuitem', { name: 'Zhejiang' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Zhejiang' }))
 
     expect(combobox).toHaveTextContent('Zhejiang')
     expect(combobox).toHaveAttribute('aria-expanded', 'true')
@@ -174,9 +177,9 @@ describe('Cascader', () => {
     const combobox = result.getByRole('combobox')
 
     fireEvent.click(combobox)
-    fireEvent.click(result.getByRole('menuitem', { name: 'Disabled' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Disabled' }))
 
-    expect(result.queryByRole('menuitem', { name: 'Hidden' })).toBeNull()
+    expect(screen.queryByRole('menuitem', { name: 'Hidden' })).toBeNull()
     expect(combobox).not.toHaveTextContent('Disabled')
     expect(onChange).not.toHaveBeenCalled()
   })
@@ -218,9 +221,9 @@ describe('Cascader', () => {
     const result = render(() => <Cascader expandTrigger="hover" options={options} />)
 
     fireEvent.click(result.getByRole('combobox'))
-    fireEvent.pointerEnter(result.getByRole('menuitem', { name: 'Zhejiang' }))
+    fireEvent.pointerEnter(screen.getByRole('menuitem', { name: 'Zhejiang' }))
 
-    expect(result.getByRole('menuitem', { name: 'Hangzhou' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'Hangzhou' })).toBeTruthy()
   })
 
   it('does not commit changeOnSelect values during hover expansion', () => {
@@ -230,9 +233,9 @@ describe('Cascader', () => {
     ))
 
     fireEvent.click(result.getByRole('combobox'))
-    fireEvent.pointerEnter(result.getByRole('menuitem', { name: 'Zhejiang' }))
+    fireEvent.pointerEnter(screen.getByRole('menuitem', { name: 'Zhejiang' }))
 
-    expect(result.getByRole('menuitem', { name: 'Hangzhou' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'Hangzhou' })).toBeTruthy()
     expect(onChange).not.toHaveBeenCalled()
   })
 
@@ -244,7 +247,7 @@ describe('Cascader', () => {
     fireEvent.keyDown(combobox, { key: 'Escape' })
 
     expect(combobox).toHaveAttribute('aria-expanded', 'false')
-    expect(result.queryByRole('menu')).toBeNull()
+    expect(screen.queryByRole('menu')).toBeNull()
   })
 
   it('selects the first enabled option in the current column with Enter', () => {
@@ -269,7 +272,7 @@ describe('Cascader', () => {
 
     fireEvent.keyDown(combobox, { key: 'Enter' })
 
-    expect(result.getByRole('menuitem', { name: 'Enabled child' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'Enabled child' })).toBeTruthy()
     expect(onChange).not.toHaveBeenCalled()
 
     fireEvent.keyDown(combobox, { key: 'Enter' })
@@ -314,13 +317,40 @@ describe('Cascader', () => {
     ))
 
     fireEvent.click(result.getByRole('combobox'))
-    fireEvent.click(result.getByRole('menuitem', { name: 'Jiangsu' }))
-    fireEvent.click(result.getByRole('menuitem', { name: 'Nanjing' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Jiangsu' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Nanjing' }))
 
     expect(form.getFieldValue('area')).toEqual(['jiangsu', 'nanjing'])
 
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
 
     expect(onFinish).toHaveBeenCalledWith({ area: ['jiangsu', 'nanjing'] })
+  })
+
+  it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+    const result = render(() => <Cascader zIndex={1312} options={options} />)
+    const selector = result.container.querySelector('.ads-cascader-selector') as HTMLElement
+    const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+    fireEvent.click(selector)
+
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-cascader-dropdown')!
+    expect(dropdown).toBeTruthy()
+    expect(result.container.querySelector('.ads-cascader-dropdown')).toBeFalsy()
+    expect(dropdown.style.position).toBe('fixed')
+    expect(dropdown.style.top).toBe('46px')
+    expect(dropdown.style.left).toBe('20px')
+    expect(dropdown.style.zIndex).toBe('1312')
+    rectSpy.mockRestore()
   })
 })

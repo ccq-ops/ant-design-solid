@@ -1,8 +1,21 @@
-import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
+import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
+import { addPositionUpdateListeners } from '../shared/overlay'
+import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import type { OptionValue } from '../shared/options'
 import type { CascaderOption, CascaderProps } from './interface'
 import { useCascaderStyle } from './cascader.style'
@@ -68,17 +81,22 @@ export function Cascader(props: CascaderProps) {
     'onChange',
     'onOpenChange',
     'onKeyDown',
+    'zIndex',
+    'getPopupContainer',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-cascader`
   const [, hashId] = useCascaderStyle(prefixCls())
+  const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
   const [innerValue, setInnerValue] = createSignal<OptionValue[]>(local.defaultValue ?? [])
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [activeValuePath, setActiveValuePath] = createSignal<OptionValue[]>(
     local.defaultValue ?? [],
   )
   const [lastSyncedValuePath, setLastSyncedValuePath] = createSignal<OptionValue[]>()
+  const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
+  let selectorRef: HTMLDivElement | undefined
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -123,9 +141,25 @@ export function Cascader(props: CascaderProps) {
     }
   })
 
+  function updateDropdownPosition(): void {
+    if (isServer) return
+    if (!canUseDom() || !selectorRef) {
+      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      return
+    }
+    const rect = selectorRef.getBoundingClientRect()
+    setDropdownPosition({
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      'z-index': `${dropdownZIndex}`,
+    })
+  }
+
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
     if (nextOpen) {
+      updateDropdownPosition()
       const currentValue = value()
       setActiveValuePath(currentValue)
       setLastSyncedValuePath([...currentValue])
@@ -133,6 +167,16 @@ export function Cascader(props: CascaderProps) {
     if (!isOpenControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
+
+  createRenderEffect(() => {
+    if (open()) updateDropdownPosition()
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
+    onCleanup(removeListeners)
+  })
 
   function changeValue(nextValue: OptionValue[], nextOptions: CascaderOption[]): void {
     if (
@@ -205,6 +249,9 @@ export function Cascader(props: CascaderProps) {
         tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
+        ref={(element) => {
+          selectorRef = element
+        }}
         class={`${prefixCls()}-selector`}
         onClick={() => setOpen(!open())}
         onFocusOut={(event) => {
@@ -245,41 +292,47 @@ export function Cascader(props: CascaderProps) {
         </Show>
       </div>
       <Show when={open()}>
-        <div class={`${prefixCls()}-dropdown`}>
-          <For each={columns()}>
-            {(column, columnIndex) => (
-              <ul role="menu" class={`${prefixCls()}-menu`}>
-                <For each={column}>
-                  {(option) => (
-                    <li
-                      role="menuitem"
-                      aria-selected={isSelected(option, columnIndex())}
-                      aria-disabled={Boolean(option.disabled)}
-                      class={classNames(
-                        `${prefixCls()}-menu-item`,
-                        isSelected(option, columnIndex()) && `${prefixCls()}-menu-item-selected`,
-                        isActive(option, columnIndex()) && `${prefixCls()}-menu-item-active`,
-                        option.disabled && `${prefixCls()}-menu-item-disabled`,
-                      )}
-                      onClick={() => handleOptionActivate(option, columnIndex())}
-                      onPointerEnter={() => {
-                        if (local.expandTrigger === 'hover')
-                          handleOptionActivate(option, columnIndex(), false)
-                      }}
-                    >
-                      <span>{option.label}</span>
-                      <Show when={option.children?.length}>
-                        <span aria-hidden="true" class={`${prefixCls()}-menu-item-expand-icon`}>
-                          ›
-                        </span>
-                      </Show>
-                    </li>
-                  )}
-                </For>
-              </ul>
-            )}
-          </For>
-        </div>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
+          }
+        >
+          <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+            <For each={columns()}>
+              {(column, columnIndex) => (
+                <ul role="menu" class={`${prefixCls()}-menu`}>
+                  <For each={column}>
+                    {(option) => (
+                      <li
+                        role="menuitem"
+                        aria-selected={isSelected(option, columnIndex())}
+                        aria-disabled={Boolean(option.disabled)}
+                        class={classNames(
+                          `${prefixCls()}-menu-item`,
+                          isSelected(option, columnIndex()) && `${prefixCls()}-menu-item-selected`,
+                          isActive(option, columnIndex()) && `${prefixCls()}-menu-item-active`,
+                          option.disabled && `${prefixCls()}-menu-item-disabled`,
+                        )}
+                        onClick={() => handleOptionActivate(option, columnIndex())}
+                        onPointerEnter={() => {
+                          if (local.expandTrigger === 'hover')
+                            handleOptionActivate(option, columnIndex(), false)
+                        }}
+                      >
+                        <span>{option.label}</span>
+                        <Show when={option.children?.length}>
+                          <span aria-hidden="true" class={`${prefixCls()}-menu-item-expand-icon`}>
+                            ›
+                          </span>
+                        </Show>
+                      </li>
+                    )}
+                  </For>
+                </ul>
+              )}
+            </For>
+          </div>
+        </InternalPortal>
       </Show>
     </div>
   )

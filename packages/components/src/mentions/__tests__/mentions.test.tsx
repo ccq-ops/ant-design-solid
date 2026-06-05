@@ -180,7 +180,6 @@ describe('Mentions', () => {
   })
 })
 
-
 it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
   const result = render(() => (
     <Mentions zIndex={1311} defaultValue="hello @" options={[{ value: 'one', label: 'One' }]} />

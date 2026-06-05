@@ -62,4 +62,24 @@ describe('Image', () => {
     ))
     expect(configured.container.querySelector('.corp-image')).toBeTruthy()
   })
+
+  test('uses shared zIndex and custom popup container for preview', () => {
+    const popupContainer = document.createElement('div')
+    document.body.appendChild(popupContainer)
+    const result = render(() => (
+      <Image
+        src="/photo.png"
+        alt="Custom preview"
+        zIndex={1411}
+        getPopupContainer={() => popupContainer}
+      />
+    ))
+
+    fireEvent.click(result.getByAltText('Custom preview'))
+
+    const preview = popupContainer.querySelector<HTMLElement>('.ads-image-preview')!
+    expect(preview).toBeTruthy()
+    expect(document.body.firstElementChild).not.toBe(preview)
+    expect(preview.style.zIndex).toBe('1411')
+  })
 })

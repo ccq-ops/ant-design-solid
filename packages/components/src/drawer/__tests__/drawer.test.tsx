@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { Select } from '../../select'
 import { Drawer } from '../drawer'
 
 describe('Drawer', () => {
@@ -152,5 +153,28 @@ describe('Drawer', () => {
     expect(dialog).toHaveAttribute('aria-modal', 'true')
     expect(labelId).toBeTruthy()
     expect(document.getElementById(labelId!)).toHaveTextContent('Accessible title')
+  })
+
+  it('uses shared zIndex on the drawer root', () => {
+    render(() => (
+      <Drawer open title="Layer" zIndex={1421}>
+        Body
+      </Drawer>
+    ))
+
+    const root = document.body.querySelector<HTMLElement>('.ads-drawer-root')!
+    expect(root.style.zIndex).toBe('1421')
+  })
+
+  it('raises nested consumer popups above the drawer root', () => {
+    render(() => (
+      <Drawer open title="Layer" zIndex={1421}>
+        <Select open options={[{ value: 'one', label: 'One' }]} />
+      </Drawer>
+    ))
+
+    const root = document.body.querySelector<HTMLElement>('.ads-drawer-root')!
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-select-dropdown')!
+    expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(root.style.zIndex))
   })
 })

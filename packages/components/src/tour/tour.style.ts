@@ -10,7 +10,6 @@ export function useTourStyle(prefixCls: string) {
     return {
       [`.${prefixCls}-root`]: {
         position: 'relative',
-        'z-index': tt.zIndex,
       },
       [`.${prefixCls}-mask`]: {
         position: 'fixed',

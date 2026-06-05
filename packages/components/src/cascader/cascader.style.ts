@@ -56,10 +56,6 @@ export function useCascaderStyle(prefixCls: string) {
         },
         [`.${prefixCls}-clear:hover`]: { color: t.colorText },
         [`.${prefixCls}-dropdown`]: {
-          position: 'absolute',
-          'z-index': '1000',
-          top: '100%',
-          left: '0',
           display: 'inline-flex',
           marginTop: `${t.marginXS}px`,
           border: `${t.lineWidth}px solid ${t.colorBorder}`,

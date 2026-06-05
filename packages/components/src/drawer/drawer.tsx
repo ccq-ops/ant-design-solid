@@ -10,6 +10,7 @@ import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, lockBodyScroll, unlockBodyScroll } from '../shared/overlay'
 import { InternalPortal } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { DrawerPlacement, DrawerProps } from './interface'
 import { useDrawerStyle } from './drawer.style'
 
@@ -56,6 +57,7 @@ export function Drawer(props: DrawerProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-drawer`
   const [, hashId] = useDrawerStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('Drawer', local.zIndex)
   const titleId = createUniqueId()
   const stackItem = {}
   const [retained, setRetained] = createSignal(Boolean(local.open))
@@ -113,62 +115,64 @@ export function Drawer(props: DrawerProps) {
       : { height: toCssLength(local.height, 378) }
     return { ...size, ...local.style }
   }
-  const rootStyle = () => ({ 'z-index': local.zIndex, display: local.open ? undefined : 'none' })
+  const rootStyle = () => ({ 'z-index': zIndex, display: local.open ? undefined : 'none' })
   const titleLabelId = () => local['aria-labelledby'] ?? (local.title ? titleId : undefined)
   const shouldRender = () => Boolean(local.open) || retained()
 
   return (
-    <Show when={shouldRender()}>
-      <InternalPortal>
-        <div class={classNames(`${prefixCls()}-root`, hashId())} style={rootStyle()}>
-          <Show when={local.mask ?? true}>
+    <ZIndexContext.Provider value={contextZIndex}>
+      <Show when={shouldRender()}>
+        <InternalPortal>
+          <div class={classNames(`${prefixCls()}-root`, hashId())} style={rootStyle()}>
+            <Show when={local.mask ?? true}>
+              <div
+                class={`${prefixCls()}-mask`}
+                onClick={() => {
+                  if (local.maskClosable ?? true) local.onClose?.()
+                }}
+              />
+            </Show>
             <div
-              class={`${prefixCls()}-mask`}
-              onClick={() => {
-                if (local.maskClosable ?? true) local.onClose?.()
-              }}
-            />
-          </Show>
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={local['aria-label']}
-            aria-labelledby={titleLabelId()}
-            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, local.class)}
-            classList={local.classList}
-            style={drawerStyle()}
-          >
-            <div class={`${prefixCls()}-content`}>
-              <Show when={local.title || local.extra || (local.closable ?? true)}>
-                <div class={`${prefixCls()}-header`}>
-                  <Show when={local.title} fallback={<span class={`${prefixCls()}-title`} />}>
-                    <div id={titleId} class={`${prefixCls()}-title`}>
-                      {local.title}
-                    </div>
-                  </Show>
-                  <Show when={local.extra}>
-                    <div class={`${prefixCls()}-extra`}>{local.extra}</div>
-                  </Show>
-                  <Show when={local.closable ?? true}>
-                    <button
-                      type="button"
-                      class={`${prefixCls()}-close`}
-                      aria-label="close drawer"
-                      onClick={() => local.onClose?.()}
-                    >
-                      ×
-                    </button>
-                  </Show>
-                </div>
-              </Show>
-              <div class={`${prefixCls()}-body`}>{local.children}</div>
-              <Show when={local.footer}>
-                <div class={`${prefixCls()}-footer`}>{local.footer}</div>
-              </Show>
+              role="dialog"
+              aria-modal="true"
+              aria-label={local['aria-label']}
+              aria-labelledby={titleLabelId()}
+              class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, local.class)}
+              classList={local.classList}
+              style={drawerStyle()}
+            >
+              <div class={`${prefixCls()}-content`}>
+                <Show when={local.title || local.extra || (local.closable ?? true)}>
+                  <div class={`${prefixCls()}-header`}>
+                    <Show when={local.title} fallback={<span class={`${prefixCls()}-title`} />}>
+                      <div id={titleId} class={`${prefixCls()}-title`}>
+                        {local.title}
+                      </div>
+                    </Show>
+                    <Show when={local.extra}>
+                      <div class={`${prefixCls()}-extra`}>{local.extra}</div>
+                    </Show>
+                    <Show when={local.closable ?? true}>
+                      <button
+                        type="button"
+                        class={`${prefixCls()}-close`}
+                        aria-label="close drawer"
+                        onClick={() => local.onClose?.()}
+                      >
+                        ×
+                      </button>
+                    </Show>
+                  </div>
+                </Show>
+                <div class={`${prefixCls()}-body`}>{local.children}</div>
+                <Show when={local.footer}>
+                  <div class={`${prefixCls()}-footer`}>{local.footer}</div>
+                </Show>
+              </div>
             </div>
           </div>
-        </div>
-      </InternalPortal>
-    </Show>
+        </InternalPortal>
+      </Show>
+    </ZIndexContext.Provider>
   )
 }

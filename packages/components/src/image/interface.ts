@@ -12,6 +12,8 @@ export interface ImageProps extends Omit<
   placeholder?: JSX.Element | boolean
   preview?: boolean
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onLoad?: JSX.EventHandler<HTMLImageElement, Event>
   onError?: JSX.EventHandler<HTMLImageElement, Event>
 }

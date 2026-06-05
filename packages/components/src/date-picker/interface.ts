@@ -15,4 +15,6 @@ export interface DatePickerProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>
   onChange?: (value: Date | undefined, dateString: string) => void
   onOpenChange?: (open: boolean) => void
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
 }

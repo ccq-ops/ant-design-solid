@@ -144,7 +144,6 @@ describe('AutoComplete', () => {
   })
 })
 
-
 it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
   const result = render(() => (
     <AutoComplete zIndex={1310} options={[{ value: 'one', label: 'One' }]} />

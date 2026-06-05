@@ -24,6 +24,8 @@ export interface CascaderProps extends Omit<
   expandTrigger?: 'click' | 'hover'
   displayRender?: (labels: JSX.Element[], selectedOptions: CascaderOption[]) => JSX.Element
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onChange?: (value: OptionValue[], selectedOptions: CascaderOption[]) => void
   onOpenChange?: (open: boolean) => void
 }

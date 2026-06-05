@@ -4,6 +4,7 @@ import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, lockBodyScroll, unlockBodyScroll } from '../shared/overlay'
 import { InternalPortal } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { ModalProps } from './interface'
 import { useModalStyle } from './modal.style'
 
@@ -42,6 +43,7 @@ export function ModalBase(props: ModalProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-modal`
   const [, hashId] = useModalStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('Modal', local.zIndex)
   const titleId = createUniqueId()
   const stackItem = {}
   let locked = false
@@ -85,7 +87,7 @@ export function ModalBase(props: ModalProps) {
     if (local.width === undefined) return undefined
     return typeof local.width === 'number' ? `${local.width}px` : local.width
   }
-  const rootStyle = () => ({ 'z-index': local.zIndex, ...local.style })
+  const rootStyle = () => ({ 'z-index': zIndex, ...local.style })
   const titleLabelId = () => local['aria-labelledby'] ?? (local.title ? titleId : undefined)
   const handleOk = () => {
     try {
@@ -99,68 +101,70 @@ export function ModalBase(props: ModalProps) {
   }
 
   return (
-    <Show when={local.open}>
-      <InternalPortal>
-        <div class={classNames(`${prefixCls()}-root`, hashId())} style={rootStyle()}>
-          <Show when={local.mask ?? true}>
-            <div class={`${prefixCls()}-mask`} />
-          </Show>
-          <div
-            class={classNames(`${prefixCls()}-wrap`, local.centered && `${prefixCls()}-centered`)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={local['aria-label']}
-            aria-labelledby={titleLabelId()}
-            onClick={(event) => {
-              if (event.target === event.currentTarget && (local.maskClosable ?? true)) {
-                local.onCancel?.()
-              }
-            }}
-          >
+    <ZIndexContext.Provider value={contextZIndex}>
+      <Show when={local.open}>
+        <InternalPortal>
+          <div class={classNames(`${prefixCls()}-root`, hashId())} style={rootStyle()}>
+            <Show when={local.mask ?? true}>
+              <div class={`${prefixCls()}-mask`} />
+            </Show>
             <div
-              class={classNames(prefixCls(), local.class)}
-              classList={local.classList}
-              style={{ width: widthStyle() }}
-              onClick={(event) => event.stopPropagation()}
+              class={classNames(`${prefixCls()}-wrap`, local.centered && `${prefixCls()}-centered`)}
+              role="dialog"
+              aria-modal="true"
+              aria-label={local['aria-label']}
+              aria-labelledby={titleLabelId()}
+              onClick={(event) => {
+                if (event.target === event.currentTarget && (local.maskClosable ?? true)) {
+                  local.onCancel?.()
+                }
+              }}
             >
-              <div class={`${prefixCls()}-content`}>
-                <Show when={local.closable ?? true}>
-                  <button
-                    type="button"
-                    class={`${prefixCls()}-close`}
-                    aria-label="close modal"
-                    onClick={() => local.onCancel?.()}
-                  >
-                    ×
-                  </button>
-                </Show>
-                <Show when={local.title}>
-                  <div class={`${prefixCls()}-header`}>
-                    <div id={titleId} class={`${prefixCls()}-title`}>
-                      {local.title}
+              <div
+                class={classNames(prefixCls(), local.class)}
+                classList={local.classList}
+                style={{ width: widthStyle() }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div class={`${prefixCls()}-content`}>
+                  <Show when={local.closable ?? true}>
+                    <button
+                      type="button"
+                      class={`${prefixCls()}-close`}
+                      aria-label="close modal"
+                      onClick={() => local.onCancel?.()}
+                    >
+                      ×
+                    </button>
+                  </Show>
+                  <Show when={local.title}>
+                    <div class={`${prefixCls()}-header`}>
+                      <div id={titleId} class={`${prefixCls()}-title`}>
+                        {local.title}
+                      </div>
                     </div>
-                  </div>
-                </Show>
-                <div class={`${prefixCls()}-body`}>{local.children}</div>
-                <Show when={local.footer !== null}>
-                  <div class={`${prefixCls()}-footer`}>
-                    {local.footer ?? (
-                      <>
-                        <Button onClick={() => local.onCancel?.()}>
-                          {local.cancelText ?? 'Cancel'}
-                        </Button>
-                        <Button type="primary" loading={local.confirmLoading} onClick={handleOk}>
-                          {local.okText ?? 'OK'}
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </Show>
+                  </Show>
+                  <div class={`${prefixCls()}-body`}>{local.children}</div>
+                  <Show when={local.footer !== null}>
+                    <div class={`${prefixCls()}-footer`}>
+                      {local.footer ?? (
+                        <>
+                          <Button onClick={() => local.onCancel?.()}>
+                            {local.cancelText ?? 'Cancel'}
+                          </Button>
+                          <Button type="primary" loading={local.confirmLoading} onClick={handleOk}>
+                            {local.okText ?? 'OK'}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </Show>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </InternalPortal>
-    </Show>
+        </InternalPortal>
+      </Show>
+    </ZIndexContext.Provider>
   )
 }

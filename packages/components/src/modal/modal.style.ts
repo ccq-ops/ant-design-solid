@@ -8,7 +8,7 @@ export function useModalStyle(prefixCls: string) {
     const t = token()
     const mt = getComponentToken('Modal', t)
     return {
-      [`.${prefixCls}-root`]: { position: 'relative', 'z-index': 1000 },
+      [`.${prefixCls}-root`]: { position: 'relative' },
       [`.${prefixCls}-mask`]: { position: 'fixed', inset: 0, background: mt.maskBg },
       [`.${prefixCls}-wrap`]: { position: 'fixed', inset: 0, overflow: 'auto', outline: 0 },
       [`.${prefixCls}-centered`]: {

@@ -4,7 +4,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DatePicker } from '../date-picker'
 
 describe('DatePicker', () => {
-  afterEach(() => cleanup())
+  afterEach(() => {
+    cleanup()
+    document.body.innerHTML = ''
+  })
 
   it('selects an uncontrolled date and calls onChange', () => {
     const onChange = vi.fn()
@@ -140,5 +143,32 @@ describe('DatePicker', () => {
     render(() => <DatePicker defaultValue={new Date(2026, 0, 5)} format="YYYY/MM/DD" />)
 
     expect(screen.getByRole('combobox')).toHaveTextContent('2026/01/05')
+  })
+
+  it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+    const result = render(() => <DatePicker zIndex={1313} defaultValue="2026-06-01" />)
+    const selector = result.container.querySelector('.ads-date-picker-selector') as HTMLElement
+    const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+    fireEvent.click(selector)
+
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')!
+    expect(dropdown).toBeTruthy()
+    expect(result.container.querySelector('.ads-date-picker-dropdown')).toBeFalsy()
+    expect(dropdown.style.position).toBe('fixed')
+    expect(dropdown.style.top).toBe('46px')
+    expect(dropdown.style.left).toBe('20px')
+    expect(dropdown.style.zIndex).toBe('1313')
+    rectSpy.mockRestore()
   })
 })

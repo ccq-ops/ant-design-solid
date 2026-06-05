@@ -2,6 +2,7 @@ import { Show, createEffect, createSignal, onCleanup, splitProps } from 'solid-j
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { InternalPortal } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import type { ImageProps } from './interface'
 import { useImageStyle } from './image.style'
 
@@ -19,6 +20,8 @@ export function Image(props: ImageProps) {
     'placeholder',
     'preview',
     'prefixCls',
+    'zIndex',
+    'getPopupContainer',
     'class',
     'classList',
     'onLoad',
@@ -27,6 +30,7 @@ export function Image(props: ImageProps) {
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-image`
   const [, hashId] = useImageStyle(prefixCls())
+  const [previewZIndex] = useZIndex('ImagePreview', local.zIndex)
   const [loaded, setLoaded] = createSignal(false)
   const [currentSrc, setCurrentSrc] = createSignal(local.src)
   const [previewOpen, setPreviewOpen] = createSignal(false)
@@ -82,9 +86,10 @@ export function Image(props: ImageProps) {
         </Show>
       </div>
       <Show when={previewOpen()}>
-        <InternalPortal>
+        <InternalPortal mount={() => local.getPopupContainer?.()}>
           <div
             class={`${prefixCls()}-preview`}
+            style={{ 'z-index': previewZIndex }}
             onClick={(event) => {
               if (event.target === event.currentTarget) closePreview()
             }}

@@ -58,6 +58,8 @@ export interface MenuProps extends Omit<
   openKeys?: MenuKey[]
   defaultOpenKeys?: MenuKey[]
   inlineCollapsed?: boolean
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onClick?: (info: MenuClickInfo) => void
   onSelect?: (info: MenuSelectInfo) => void
   onOpenChange?: (openKeys: MenuKey[]) => void

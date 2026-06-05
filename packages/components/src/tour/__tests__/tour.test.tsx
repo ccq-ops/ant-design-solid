@@ -143,4 +143,23 @@ describe('Tour', () => {
     expect(onClose).toHaveBeenCalledWith(0)
     expect(document.body.querySelector('.custom-tour')).toBeFalsy()
   })
+
+  it('uses shared zIndex and custom popup container', () => {
+    const popupContainer = document.createElement('div')
+    document.body.appendChild(popupContainer)
+
+    render(() => (
+      <Tour
+        defaultOpen
+        zIndex={1410}
+        getPopupContainer={() => popupContainer}
+        steps={[{ title: 'Portaled tour' }]}
+      />
+    ))
+
+    const root = popupContainer.querySelector<HTMLElement>('.ads-tour-root')!
+    expect(root).toBeTruthy()
+    expect(document.body.firstElementChild).not.toBe(root)
+    expect(root.style.zIndex).toBe('1410')
+  })
 })

@@ -318,7 +318,11 @@ export function Mentions(props: MentionsProps) {
         </button>
       </Show>
       <Show when={popupOpen()}>
-        <InternalPortal mount={() => local.getPopupContainer?.(textareaRef) ?? config.getPopupContainer?.(textareaRef)}>
+        <InternalPortal
+          mount={() =>
+            local.getPopupContainer?.(textareaRef) ?? config.getPopupContainer?.(textareaRef)
+          }
+        >
           <div role="listbox" class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
             <For each={filteredOptions()}>
               {(option) => (

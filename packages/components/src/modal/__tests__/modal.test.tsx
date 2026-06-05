@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, waitFor } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
+import { Select } from '../../select'
 import { Modal } from '../index'
 
 describe('Modal', () => {
@@ -288,5 +289,28 @@ describe('Modal', () => {
 
     expect(document.body).not.toHaveTextContent('A')
     expect(document.body).not.toHaveTextContent('B')
+  })
+
+  it('uses shared zIndex and provides context to nested popups', () => {
+    render(() => (
+      <Modal open title="Layer" zIndex={1420}>
+        <div>Body</div>
+      </Modal>
+    ))
+
+    const root = document.body.querySelector<HTMLElement>('.ads-modal-root')!
+    expect(root.style.zIndex).toBe('1420')
+  })
+
+  it('raises nested consumer popups above the modal root', () => {
+    render(() => (
+      <Modal open title="Layer" zIndex={1420}>
+        <Select open options={[{ value: 'one', label: 'One' }]} />
+      </Modal>
+    ))
+
+    const root = document.body.querySelector<HTMLElement>('.ads-modal-root')!
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-select-dropdown')!
+    expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(root.style.zIndex))
   })
 })

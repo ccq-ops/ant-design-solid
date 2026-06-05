@@ -10,7 +10,6 @@ export function useDrawerStyle(prefixCls: string) {
     return {
       [`.${prefixCls}-root`]: {
         position: 'relative',
-        'z-index': '1000',
       },
       [`.${prefixCls}-mask`]: {
         position: 'fixed',

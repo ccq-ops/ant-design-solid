@@ -1,9 +1,10 @@
-import { Show, createRenderEffect, createSignal, onCleanup } from 'solid-js'
+import { Show, createEffect, createRenderEffect, createSignal, onCleanup } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { addDocumentKeydown } from '../shared/overlay'
+import { addDocumentKeydown, addPositionUpdateListeners } from '../shared/overlay'
 import { getTooltipPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { JSX } from 'solid-js'
 import type { TourPlacement, TourProps, TourStep, TourTarget } from './interface'
 import { useTourStyle } from './tour.style'
@@ -43,6 +44,7 @@ export function Tour(props: TourProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-tour`
   const [, hashId] = useTourStyle(prefixCls())
+  const [zIndex, contextZIndex] = useZIndex('Tour', props.zIndex)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(props.defaultOpen))
   const [innerCurrent, setInnerCurrent] = createSignal(props.defaultCurrent ?? 0)
   const [position, setPosition] = createSignal<JSX.CSSProperties>(getCenterPosition())
@@ -111,115 +113,117 @@ export function Tour(props: TourProps) {
     if (dependencies.length) updatePosition()
   })
 
-  if (canUseDom()) {
-    const handleViewportChange = () => updatePosition()
-    window.addEventListener('resize', handleViewportChange)
-    window.addEventListener('scroll', handleViewportChange, true)
-    onCleanup(() => {
-      window.removeEventListener('resize', handleViewportChange)
-      window.removeEventListener('scroll', handleViewportChange, true)
-    })
-  }
+  createEffect(() => {
+    if (!mergedOpen()) return
+    const removeListeners = addPositionUpdateListeners(updatePosition)
+    onCleanup(removeListeners)
+  })
 
   onCleanup(cleanupKeydown)
 
   return (
-    <Show when={mergedOpen()}>
-      <InternalPortal>
-        <div
-          class={classNames(`${prefixCls()}-root`, hashId())}
-          style={{ 'z-index': props.zIndex, ...props.style }}
+    <ZIndexContext.Provider value={contextZIndex}>
+      <Show when={mergedOpen()}>
+        <InternalPortal
+          mount={() => props.getPopupContainer?.(resolveTarget(currentStep()?.target))}
         >
-          <Show when={mask()}>
-            <Show when={targetPosition()} fallback={<div class={`${prefixCls()}-mask`} />}>
-              {(targetStyle) => <div class={`${prefixCls()}-mask-target`} style={targetStyle()} />}
-            </Show>
-          </Show>
           <div
-            role="dialog"
-            aria-modal="true"
-            class={classNames(
-              prefixCls(),
-              `${prefixCls()}-${resolveTarget(currentStep()?.target) ? placement() : 'center'}`,
-              hashId(),
-              props.class,
-            )}
-            classList={props.classList}
-            style={position()}
+            class={classNames(`${prefixCls()}-root`, hashId())}
+            style={{ 'z-index': zIndex, ...props.style }}
           >
-            <Show when={arrow() && resolveTarget(currentStep()?.target)}>
-              <div class={`${prefixCls()}-arrow`} />
+            <Show when={mask()}>
+              <Show when={targetPosition()} fallback={<div class={`${prefixCls()}-mask`} />}>
+                {(targetStyle) => (
+                  <div class={`${prefixCls()}-mask-target`} style={targetStyle()} />
+                )}
+              </Show>
             </Show>
-            <div class={`${prefixCls()}-inner`}>
-              <button
-                type="button"
-                class={`${prefixCls()}-close`}
-                aria-label="Close"
-                onClick={close}
-              >
-                {props.closeIcon ?? '×'}
-              </button>
-              <Show when={currentStep()?.title}>
-                <div class={`${prefixCls()}-title`}>{currentStep()?.title}</div>
+            <div
+              role="dialog"
+              aria-modal="true"
+              class={classNames(
+                prefixCls(),
+                `${prefixCls()}-${resolveTarget(currentStep()?.target) ? placement() : 'center'}`,
+                hashId(),
+                props.class,
+              )}
+              classList={props.classList}
+              style={position()}
+            >
+              <Show when={arrow() && resolveTarget(currentStep()?.target)}>
+                <div class={`${prefixCls()}-arrow`} />
               </Show>
-              <Show when={currentStep()?.description}>
-                <div class={`${prefixCls()}-description`}>{currentStep()?.description}</div>
-              </Show>
-              <div class={`${prefixCls()}-footer`}>
-                <div class={`${prefixCls()}-indicators`}>
-                  {props.indicatorsRender?.(current(), steps().length) ??
-                    `${current() + 1} / ${steps().length}`}
-                </div>
-                <div class={`${prefixCls()}-buttons`}>
-                  <Show when={current() > 0}>
+              <div class={`${prefixCls()}-inner`}>
+                <button
+                  type="button"
+                  class={`${prefixCls()}-close`}
+                  aria-label="Close"
+                  onClick={close}
+                >
+                  {props.closeIcon ?? '×'}
+                </button>
+                <Show when={currentStep()?.title}>
+                  <div class={`${prefixCls()}-title`}>{currentStep()?.title}</div>
+                </Show>
+                <Show when={currentStep()?.description}>
+                  <div class={`${prefixCls()}-description`}>{currentStep()?.description}</div>
+                </Show>
+                <div class={`${prefixCls()}-footer`}>
+                  <div class={`${prefixCls()}-indicators`}>
+                    {props.indicatorsRender?.(current(), steps().length) ??
+                      `${current() + 1} / ${steps().length}`}
+                  </div>
+                  <div class={`${prefixCls()}-buttons`}>
+                    <Show when={current() > 0}>
+                      <button
+                        {...currentStep()?.prevButtonProps}
+                        type={currentStep()?.prevButtonProps?.type ?? 'button'}
+                        class={classNames(
+                          `${prefixCls()}-btn`,
+                          currentStep()?.prevButtonProps?.class,
+                        )}
+                        onClick={(event) => {
+                          const onClick = currentStep()?.prevButtonProps?.onClick as
+                            | ((event: MouseEvent) => void)
+                            | undefined
+                          onClick?.(event)
+                          prev()
+                        }}
+                      >
+                        {currentStep()?.prevButtonProps?.children ?? props.prevText ?? 'Previous'}
+                      </button>
+                    </Show>
                     <button
-                      {...currentStep()?.prevButtonProps}
-                      type={currentStep()?.prevButtonProps?.type ?? 'button'}
+                      {...currentStep()?.nextButtonProps}
+                      type={currentStep()?.nextButtonProps?.type ?? 'button'}
                       class={classNames(
                         `${prefixCls()}-btn`,
-                        currentStep()?.prevButtonProps?.class,
+                        `${prefixCls()}-primary-btn`,
+                        current() >= steps().length - 1
+                          ? `${prefixCls()}-finish-btn`
+                          : `${prefixCls()}-next-btn`,
+                        currentStep()?.nextButtonProps?.class,
                       )}
                       onClick={(event) => {
-                        const onClick = currentStep()?.prevButtonProps?.onClick as
+                        const onClick = currentStep()?.nextButtonProps?.onClick as
                           | ((event: MouseEvent) => void)
                           | undefined
                         onClick?.(event)
-                        prev()
+                        next()
                       }}
                     >
-                      {currentStep()?.prevButtonProps?.children ?? props.prevText ?? 'Previous'}
+                      {currentStep()?.nextButtonProps?.children ??
+                        (current() >= steps().length - 1
+                          ? (props.finishText ?? 'Finish')
+                          : (props.nextText ?? 'Next'))}
                     </button>
-                  </Show>
-                  <button
-                    {...currentStep()?.nextButtonProps}
-                    type={currentStep()?.nextButtonProps?.type ?? 'button'}
-                    class={classNames(
-                      `${prefixCls()}-btn`,
-                      `${prefixCls()}-primary-btn`,
-                      current() >= steps().length - 1
-                        ? `${prefixCls()}-finish-btn`
-                        : `${prefixCls()}-next-btn`,
-                      currentStep()?.nextButtonProps?.class,
-                    )}
-                    onClick={(event) => {
-                      const onClick = currentStep()?.nextButtonProps?.onClick as
-                        | ((event: MouseEvent) => void)
-                        | undefined
-                      onClick?.(event)
-                      next()
-                    }}
-                  >
-                    {currentStep()?.nextButtonProps?.children ??
-                      (current() >= steps().length - 1
-                        ? (props.finishText ?? 'Finish')
-                        : (props.nextText ?? 'Next'))}
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </InternalPortal>
-    </Show>
+        </InternalPortal>
+      </Show>
+    </ZIndexContext.Provider>
   )
 }

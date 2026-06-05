@@ -27,6 +27,7 @@ export interface TourProps {
   closeIcon?: JSX.Element
   indicatorsRender?: (current: number, total: number) => JSX.Element
   zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   gap?: number
   nextText?: JSX.Element
   prevText?: JSX.Element

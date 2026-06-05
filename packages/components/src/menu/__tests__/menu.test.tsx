@@ -1,6 +1,6 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Menu } from '../index'
 import type { MenuItem } from '../interface'
@@ -27,6 +27,11 @@ const items: MenuItem[] = [
 ]
 
 describe('Menu', () => {
+  afterEach(() => {
+    cleanup()
+    document.body.innerHTML = ''
+  })
+
   it('renders items, submenu, divider, and group with menu semantics', () => {
     const result = render(() => <Menu items={items} />)
 
@@ -170,5 +175,34 @@ describe('Menu', () => {
     expect(root.className).toContain('custom-menu-horizontal')
     expect(root.className).toContain('custom-menu-inline-collapsed')
     expect(root.className).toContain('extra-menu')
+  })
+
+  it('renders horizontal submenu popup in a portal with fixed positioning and explicit zIndex', () => {
+    const result = render(() => <Menu mode="horizontal" zIndex={1412} items={items} />)
+    const submenu = result.getByRole('menuitem', { name: 'Settings' }) as HTMLElement
+    expect(submenu).toHaveClass('settings')
+    const rectSpy = vi.spyOn(submenu, 'getBoundingClientRect').mockReturnValue({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 120,
+      width: 100,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+    fireEvent.click(submenu)
+
+    const popup = document.body.querySelector<HTMLElement>('.ads-menu-submenu-popup')!
+    expect(popup).toBeTruthy()
+    expect(result.container.querySelector('.ads-menu-submenu-popup')).toBeFalsy()
+    expect(popup.style.position).toBe('fixed')
+    expect(popup.style.top).toBe('46px')
+    expect(popup.style.left).toBe('20px')
+    expect(popup.style.zIndex).toBe('1412')
+    expect(popup).toHaveTextContent('Profile')
+    rectSpy.mockRestore()
   })
 })

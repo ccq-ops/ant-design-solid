@@ -38,7 +38,6 @@ export function useImageStyle(prefixCls: string) {
         'align-items': 'center',
         'justify-content': 'center',
         background: 'rgba(0, 0, 0, 0.72)',
-        'z-index': 1000,
       },
       [`.${prefixCls}-preview-img`]: {
         'max-width': '90vw',
