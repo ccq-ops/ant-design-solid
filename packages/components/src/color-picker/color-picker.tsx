@@ -15,7 +15,7 @@ import {
   addDocumentPointerDown,
   addPositionUpdateListeners,
 } from '../shared/overlay'
-import { getDropdownPosition, type OverlayPosition } from '../shared/placement'
+import { getDropdownPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
@@ -24,8 +24,8 @@ import { useColorPickerStyle } from './color-picker.style'
 import type { ColorPickerProps } from './interface'
 import type { ColorPickerFormat } from './interface'
 
-function emptyPosition(): OverlayPosition {
-  return { top: '0px', left: '0px' }
+function emptyPosition(): JSX.CSSProperties {
+  return { position: 'fixed', top: '0px', left: '0px' }
 }
 
 function renderText(showText: ColorPickerProps['showText'], color: Color | undefined): JSX.Element {
@@ -96,7 +96,7 @@ export function ColorPicker(props: ColorPickerProps) {
     saturation: '0',
     brightness: '100',
   })
-  const [position, setPosition] = createSignal<OverlayPosition>(emptyPosition())
+  const [position, setPosition] = createSignal<JSX.CSSProperties>(emptyPosition())
   const valueControlled = () => 'value' in props
   const openControlled = () => 'open' in props
   const formatControlled = () => 'format' in props
@@ -115,9 +115,13 @@ export function ColorPicker(props: ColorPickerProps) {
   const format = () => local.format ?? innerFormat()
   const placement = () => local.placement ?? 'bottomLeft'
 
-  function updatePosition(element = triggerRef): void {
-    if (!canUseDom() || !element) return
-    setPosition(getDropdownPosition(element.getBoundingClientRect(), placement(), 4))
+  function updatePosition(element?: HTMLButtonElement | Event): void {
+    const target = element instanceof HTMLElement ? element : triggerRef
+    if (!canUseDom() || !target) return
+    setPosition({
+      position: 'fixed',
+      ...getDropdownPosition(target.getBoundingClientRect(), placement(), 4),
+    })
   }
 
   function setOpen(nextOpen: boolean): void {

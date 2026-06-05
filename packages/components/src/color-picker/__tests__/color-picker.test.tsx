@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen, within } from '@solidjs/testing-library'
 import { Show, createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Color, clamp, colorToCss, normalizeHsb, normalizeRgb, parseColor } from '../color'
@@ -12,6 +12,8 @@ function latestPanel() {
 
 afterEach(() => {
   vi.useRealTimers()
+  cleanup()
+  document.body.innerHTML = ''
 })
 
 function mockRect(element: Element, rect: Partial<DOMRect>): void {
@@ -939,4 +941,82 @@ it('uses explicit zIndex and custom popup container', () => {
   const popup = popupContainer.querySelector<HTMLElement>('.ads-color-picker-popup')!
   expect(popup).toBeTruthy()
   expect(popup.style.zIndex).toBe('1237')
+})
+
+it('renders popup in a portal with fixed positioning and explicit zIndex', () => {
+  const result = render(() => <ColorPicker zIndex={1314} />)
+  const trigger = result.getByRole('button', { name: /color picker/i })
+  const rectSpy = vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 42,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 32,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
+
+  fireEvent.click(trigger)
+
+  const popup = screen.getAllByRole('dialog', { name: 'Color Picker Panel' }).at(-1) as HTMLElement
+  expect(result.container.querySelector('.ads-color-picker-popup')).toBeFalsy()
+  expect(popup.style.position).toBe('fixed')
+  expect(popup.style.top).toBe('46px')
+  expect(popup.style.left).toBe('20px')
+  expect(popup.style.zIndex).toBe('1314')
+  rectSpy.mockRestore()
+})
+
+it('updates portaled popup position when the page scrolls', () => {
+  const result = render(() => <ColorPicker />)
+  const trigger = result.getByRole('button', { name: /color picker/i })
+  const rectSpy = vi
+    .spyOn(trigger, 'getBoundingClientRect')
+    .mockReturnValueOnce({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+    .mockReturnValueOnce({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+    .mockReturnValue({
+      top: 30,
+      bottom: 62,
+      left: 40,
+      right: 240,
+      width: 200,
+      height: 32,
+      x: 40,
+      y: 30,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+  fireEvent.click(trigger)
+
+  const popup = screen.getAllByRole('dialog', { name: 'Color Picker Panel' }).at(-1) as HTMLElement
+  expect(popup.style.top).toBe('46px')
+  expect(popup.style.left).toBe('20px')
+
+  window.dispatchEvent(new Event('scroll'))
+
+  expect(popup.style.top).toBe('66px')
+  expect(popup.style.left).toBe('40px')
+  rectSpy.mockRestore()
 })
