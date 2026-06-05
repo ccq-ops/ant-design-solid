@@ -176,13 +176,12 @@ const CascaderBase = (props: CascaderProps) => {
     const labels = selected.map((option) => option.label)
     return local.displayRender ? local.displayRender(labels, selected) : labels.join(' / ')
   })
-  const displayedMultiplePaths = createMemo(() =>
-    filterDisplayedPaths(
-      multipleSelectedOptions(),
-      local.showCheckedStrategy ?? SHOW_PARENT,
-      options(),
-    ).map((path) => toDisplayPath(path, local.displayRender)),
-  )
+  const displayedMultiplePaths = createMemo(() => {
+    const selectedPaths = multipleSelectedOptions()
+    const strategy = local.showCheckedStrategy
+    const paths = strategy ? filterDisplayedPaths(selectedPaths, strategy, options()) : selectedPaths
+    return paths.map((path) => toDisplayPath(path, local.displayRender))
+  })
   const visibleTags = createMemo(() => {
     const tags = displayedMultiplePaths()
     if (typeof local.maxTagCount === 'number') return tags.slice(0, local.maxTagCount)

@@ -240,6 +240,88 @@ describe('Cascader', () => {
     )
   })
 
+
+  it('renders multiple tags with tagRender and removeIcon', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <Cascader
+        multiple
+        value={[
+          ['zhejiang', 'hangzhou', 'west-lake'],
+          ['jiangsu', 'nanjing'],
+        ]}
+        options={options}
+        onChange={onChange}
+        removeIcon={<span>remove</span>}
+        tagRender={(label, onClose) => (
+          <button type="button" onClick={onClose}>
+            Custom {label}
+          </button>
+        )}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' }))
+
+    expect(onChange).toHaveBeenCalledWith([['jiangsu', 'nanjing']], [[options[1], options[1].children?.[0]]])
+  })
+
+  it('supports maxTagCount maxTagPlaceholder and maxTagTextLength', () => {
+    render(() => (
+      <Cascader
+        multiple
+        value={[
+          ['zhejiang', 'hangzhou', 'west-lake'],
+          ['jiangsu', 'nanjing'],
+        ]}
+        options={options}
+        maxTagCount={1}
+        maxTagTextLength={8}
+        maxTagPlaceholder={(omitted) => <span>+{omitted.length} more</span>}
+      />
+    ))
+
+    expect(screen.getByText('Zhejiang…')).toBeTruthy()
+    expect(screen.getByText('+1 more')).toBeTruthy()
+    expect(screen.queryByText('Jiangsu / Nanjing')).toBeNull()
+  })
+
+  it('uses showCheckedStrategy to display parent or child tags', () => {
+    const branchOptions: CascaderOption[] = [
+      {
+        label: 'Parent',
+        value: 'parent',
+        children: [
+          { label: 'Child A', value: 'a' },
+          { label: 'Child B', value: 'b' },
+        ],
+      },
+    ]
+    const value = [['parent', 'a'], ['parent', 'b']]
+    const parent = render(() => (
+      <Cascader
+        multiple
+        value={value}
+        options={branchOptions}
+        showCheckedStrategy={Cascader.SHOW_PARENT}
+      />
+    ))
+    expect(parent.getByText('Parent')).toBeTruthy()
+    cleanup()
+
+    const child = render(() => (
+      <Cascader
+        multiple
+        value={value}
+        options={branchOptions}
+        showCheckedStrategy={Cascader.SHOW_CHILD}
+      />
+    ))
+    expect(child.getByText('Parent / Child A')).toBeTruthy()
+    expect(child.getByText('Parent / Child B')).toBeTruthy()
+  })
+
   it('supports controlled value mode', () => {
     const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
     const result = render(() => (
