@@ -18,6 +18,15 @@ function monthDates(value: dayjs.Dayjs): Array<dayjs.Dayjs | null> {
   return dates
 }
 
+function monthWeekRows(value: dayjs.Dayjs): Array<Array<dayjs.Dayjs | null>> {
+  const cells = monthDates(value)
+  const rows: Array<Array<dayjs.Dayjs | null>> = []
+  for (let index = 0; index < cells.length; index += 7) {
+    rows.push(cells.slice(index, index + 7))
+  }
+  return rows
+}
+
 export interface DatePanelProps {
   prefixCls: string
   viewDate: dayjs.Dayjs
@@ -37,6 +46,7 @@ export function DatePanel(props: DatePanelProps) {
   const picker = () => props.picker ?? 'date'
   const today = () => dayjs()
   const dates = createMemo(() => monthDates(props.viewDate))
+  const weekRows = createMemo(() => monthWeekRows(props.viewDate))
 
   function renderCellContent(cellDate: dayjs.Dayjs, originNode: JSX.Element): JSX.Element {
     if (props.cellRender) {
@@ -49,6 +59,74 @@ export function DatePanel(props: DatePanelProps) {
     }
     if (props.dateRender) return props.dateRender(cellDate, today())
     return cellDate.date()
+  }
+
+  function firstDateInRow(row: Array<dayjs.Dayjs | null>): dayjs.Dayjs | undefined {
+    return row.find((date): date is dayjs.Dayjs => Boolean(date))
+  }
+
+  function renderWeekButton(row: Array<dayjs.Dayjs | null>): JSX.Element {
+    const firstDate = firstDateInRow(row)
+    if (!firstDate)
+      return <div class={`${props.prefixCls}-empty-cell ${props.prefixCls}-week-cell`} />
+    const weekStart = () => firstDate.startOf('week')
+    const weekLabel = () => `${weekStart().format('YYYY')}-week-${weekStart().week()}`
+    const weekDisabled = () => Boolean(props.disabledDate?.(weekStart(), { type: 'week' }))
+    const weekSelected = () => samePickerValue(props.selectedValue, weekStart(), 'week')
+    return (
+      <button
+        type="button"
+        aria-label={weekLabel()}
+        aria-pressed={weekSelected()}
+        aria-disabled={weekDisabled()}
+        disabled={weekDisabled()}
+        class={semanticClass(
+          'cell',
+          props.classNames,
+          `${props.prefixCls}-cell`,
+          `${props.prefixCls}-week-cell`,
+          weekSelected() && `${props.prefixCls}-cell-selected`,
+          weekDisabled() && `${props.prefixCls}-cell-disabled`,
+        )}
+        style={semanticStyle('cell', props.styles)}
+        onClick={() => {
+          if (!weekDisabled()) props.onSelect?.(weekStart())
+        }}
+      >
+        {weekStart().week()}
+      </button>
+    )
+  }
+
+  function renderDateCell(date: dayjs.Dayjs | null): JSX.Element {
+    if (!date) return <div class={`${props.prefixCls}-empty-cell`} />
+    const dateString = () => date.format('YYYY-MM-DD')
+    const cellDisabled = () => Boolean(props.disabledDate?.(date, { type: picker() }))
+    const selected = () => samePickerValue(props.selectedValue, date, picker())
+    const originNode = () => date.date()
+    return (
+      <button
+        type="button"
+        aria-label={dateString()}
+        aria-pressed={selected()}
+        aria-disabled={cellDisabled()}
+        disabled={cellDisabled()}
+        class={semanticClass(
+          'cell',
+          props.classNames,
+          `${props.prefixCls}-cell`,
+          samePickerValue(today(), date, 'date') && `${props.prefixCls}-cell-today`,
+          selected() && `${props.prefixCls}-cell-selected`,
+          cellDisabled() && `${props.prefixCls}-cell-disabled`,
+        )}
+        style={semanticStyle('cell', props.styles)}
+        onClick={() => {
+          if (!cellDisabled()) props.onSelect?.(date)
+        }}
+      >
+        {renderCellContent(date, originNode())}
+      </button>
+    )
   }
 
   return (
@@ -74,81 +152,19 @@ export function DatePanel(props: DatePanelProps) {
             : `${props.prefixCls}-grid`
         }
       >
-        <For each={dates()}>
-          {(date, index) => (
-            <>
-              <Show when={picker() === 'week' && index() % 7 === 0}>
-                <Show
-                  when={date}
-                  fallback={
-                    <div class={`${props.prefixCls}-empty-cell ${props.prefixCls}-week-cell`} />
-                  }
-                >
-                  {(currentDate) => {
-                    const weekStart = () => currentDate().startOf('week')
-                    const weekLabel = () =>
-                      `${weekStart().format('YYYY')}-week-${weekStart().week()}`
-                    const weekDisabled = () =>
-                      Boolean(props.disabledDate?.(weekStart(), { type: 'week' }))
-                    const weekSelected = () =>
-                      samePickerValue(props.selectedValue, weekStart(), 'week')
-                    return (
-                      <button
-                        type="button"
-                        aria-label={weekLabel()}
-                        aria-pressed={weekSelected()}
-                        aria-disabled={weekDisabled()}
-                        class={semanticClass(
-                          'cell',
-                          props.classNames,
-                          `${props.prefixCls}-cell`,
-                          `${props.prefixCls}-week-cell`,
-                          weekSelected() && `${props.prefixCls}-cell-selected`,
-                          weekDisabled() && `${props.prefixCls}-cell-disabled`,
-                        )}
-                        style={semanticStyle('cell', props.styles)}
-                        onClick={() => props.onSelect?.(weekStart())}
-                      >
-                        {weekStart().week()}
-                      </button>
-                    )
-                  }}
-                </Show>
-              </Show>
-              <Show when={date} fallback={<div class={`${props.prefixCls}-empty-cell`} />}>
-                {(currentDate) => {
-                  const cellDate = currentDate()
-                  const dateString = () => cellDate.format('YYYY-MM-DD')
-                  const cellDisabled = () =>
-                    Boolean(props.disabledDate?.(cellDate, { type: picker() }))
-                  const selected = () => samePickerValue(props.selectedValue, cellDate, picker())
-                  const originNode = () => cellDate.date()
-                  return (
-                    <button
-                      type="button"
-                      aria-label={dateString()}
-                      aria-pressed={selected()}
-                      aria-disabled={cellDisabled()}
-                      class={semanticClass(
-                        'cell',
-                        props.classNames,
-                        `${props.prefixCls}-cell`,
-                        samePickerValue(today(), cellDate, 'date') &&
-                          `${props.prefixCls}-cell-today`,
-                        selected() && `${props.prefixCls}-cell-selected`,
-                        cellDisabled() && `${props.prefixCls}-cell-disabled`,
-                      )}
-                      style={semanticStyle('cell', props.styles)}
-                      onClick={() => props.onSelect?.(cellDate)}
-                    >
-                      {renderCellContent(cellDate, originNode())}
-                    </button>
-                  )
-                }}
-              </Show>
-            </>
-          )}
-        </For>
+        <Show
+          when={picker() === 'week'}
+          fallback={<For each={dates()}>{(date) => renderDateCell(date)}</For>}
+        >
+          <For each={weekRows()}>
+            {(row) => (
+              <>
+                {renderWeekButton(row)}
+                <For each={row}>{(date) => renderDateCell(date)}</For>
+              </>
+            )}
+          </For>
+        </Show>
       </div>
     </>
   )

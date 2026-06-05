@@ -66,6 +66,7 @@ export function MonthPanel(props: MonthPanelProps) {
               aria-label={label()}
               aria-pressed={selected()}
               aria-disabled={cellDisabled()}
+              disabled={cellDisabled()}
               class={semanticClass(
                 'cell',
                 props.classNames,
@@ -75,7 +76,9 @@ export function MonthPanel(props: MonthPanelProps) {
                 cellDisabled() && `${props.prefixCls}-cell-disabled`,
               )}
               style={semanticStyle('cell', props.styles)}
-              onClick={() => props.onSelect?.(cellDate)}
+              onClick={() => {
+                if (!cellDisabled()) props.onSelect?.(cellDate)
+              }}
             >
               {renderCellContent(cellDate, label())}
             </button>

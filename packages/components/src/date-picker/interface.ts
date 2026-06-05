@@ -166,11 +166,12 @@ export interface DatePickerProps extends CommonPickerProps {
 
 export interface RangePickerProps extends Omit<
   CommonPickerProps,
-  'placeholder' | 'showTime' | 'defaultPickerValue'
+  'placeholder' | 'showTime' | 'defaultPickerValue' | 'pickerValue' | 'onPanelChange'
 > {
   value?: RangePickerValue
   defaultValue?: RangePickerValue
-  defaultPickerValue?: [Dayjs, Dayjs]
+  defaultPickerValue?: Dayjs | [Dayjs, Dayjs]
+  pickerValue?: Dayjs | [Dayjs, Dayjs]
   placeholder?: [string, string]
   allowEmpty?: [boolean, boolean]
   showTime?: boolean | RangeShowTimeOptions
@@ -183,6 +184,7 @@ export interface RangePickerProps extends Omit<
     info: { range: RangeSide },
   ) => void
   onOk?: (dates: RangePickerValue) => void
+  onPanelChange?: (value: Dayjs | [Dayjs, Dayjs], mode: PickerMode) => void
 }
 
 export interface DatePickerRef {
