@@ -4,23 +4,55 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const alertRows: ApiTableRow[] = [
-  { property: 'type', description: 'Alert semantic type.', type: "'success' | 'info' | 'warning' | 'error'", defaultValue: "'info'" },
-  { property: 'title', description: 'Title content. `message` is also supported for Ant Design-style usage.', type: 'JSX.Element' },
+  {
+    property: 'type',
+    description: 'Alert semantic type.',
+    type: "'success' | 'info' | 'warning' | 'error'",
+    defaultValue: "'info'",
+  },
+  {
+    property: 'title',
+    description: 'Title content. `message` is also supported for Ant Design-style usage.',
+    type: 'JSX.Element',
+  },
   { property: 'message', description: 'Primary alert message content.', type: 'JSX.Element' },
   { property: 'description', description: 'Additional alert details.', type: 'JSX.Element' },
-  { property: 'closable', description: 'Shows a close button or configures close behavior.', type: 'boolean | AlertClosableConfig', defaultValue: 'false' },
-  { property: 'showIcon', description: 'Shows the default type icon.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'closable',
+    description: 'Shows a close button or configures close behavior.',
+    type: 'boolean | AlertClosableConfig',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showIcon',
+    description: 'Shows the default type icon.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
   { property: 'icon', description: 'Custom icon content.', type: 'JSX.Element' },
   { property: 'action', description: 'Action content rendered on the right.', type: 'JSX.Element' },
-  { property: 'banner', description: 'Uses banner styling.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'banner',
+    description: 'Uses banner styling.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
   { property: 'afterClose', description: 'Called after the alert closes.', type: '() => void' },
-  { property: 'onClose', description: 'Called when the close button is clicked.', type: '(event: MouseEvent) => void' },
+  {
+    property: 'onClose',
+    description: 'Called when the close button is clicked.',
+    type: '(event: MouseEvent) => void',
+  },
 ]
 
 const alertClosableRows: ApiTableRow[] = [
   { property: 'closeIcon', description: 'Custom close icon content.', type: 'JSX.Element' },
   { property: 'afterClose', description: 'Called after this alert closes.', type: '() => void' },
-  { property: 'onClose', description: 'Called when this close button is clicked.', type: '(event: MouseEvent) => void' },
+  {
+    property: 'onClose',
+    description: 'Called when this close button is clicked.',
+    type: '(event: MouseEvent) => void',
+  },
 ]
 
 export default function AlertPage() {

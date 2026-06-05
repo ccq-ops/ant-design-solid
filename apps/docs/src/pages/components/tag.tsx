@@ -9,9 +9,23 @@ const tagRows: ApiTableRow[] = [
     description: 'Preset semantic color or custom CSS color.',
     type: "'success' | 'warning' | 'error' | 'processing' | string",
   },
-  { property: 'closable', description: 'Shows a close button.', type: 'boolean', defaultValue: 'false' },
-  { property: 'onClose', description: 'Callback fired when the close button is clicked.', type: '(event: MouseEvent) => void' },
-  { property: 'bordered', description: 'Whether to render the tag border.', type: 'boolean', defaultValue: 'true' },
+  {
+    property: 'closable',
+    description: 'Shows a close button.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'onClose',
+    description: 'Callback fired when the close button is clicked.',
+    type: '(event: MouseEvent) => void',
+  },
+  {
+    property: 'bordered',
+    description: 'Whether to render the tag border.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
   { property: 'children', description: 'Tag content.', type: 'JSX.Element' },
 ]
 

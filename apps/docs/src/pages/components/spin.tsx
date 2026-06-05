@@ -5,13 +5,36 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const spinRows: ApiTableRow[] = [
-  { property: 'spinning', description: 'Controls whether the spinner is active.', type: 'boolean', defaultValue: 'true' },
-  { property: 'size', description: 'Spinner size.', type: "'small' | 'default' | 'large'", defaultValue: "'default'" },
+  {
+    property: 'spinning',
+    description: 'Controls whether the spinner is active.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'size',
+    description: 'Spinner size.',
+    type: "'small' | 'default' | 'large'",
+    defaultValue: "'default'",
+  },
   { property: 'tip', description: 'Loading text displayed with the spinner.', type: 'JSX.Element' },
-  { property: 'delay', description: 'Delay in milliseconds before showing the spinner.', type: 'number' },
-  { property: 'fullscreen', description: 'Renders the spinner as a fullscreen overlay.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'delay',
+    description: 'Delay in milliseconds before showing the spinner.',
+    type: 'number',
+  },
+  {
+    property: 'fullscreen',
+    description: 'Renders the spinner as a fullscreen overlay.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
   { property: 'indicator', description: 'Custom indicator content.', type: 'JSX.Element' },
-  { property: 'children', description: 'Nested content covered by loading overlay.', type: 'JSX.Element' },
+  {
+    property: 'children',
+    description: 'Nested content covered by loading overlay.',
+    type: 'JSX.Element',
+  },
 ]
 
 export default function SpinPage() {

@@ -5,15 +5,34 @@ import type { ApiTableRow } from '../../components/api-table'
 
 const badgeRows: ApiTableRow[] = [
   { property: 'count', description: 'Badge count content.', type: 'number | string' },
-  { property: 'dot', description: 'Shows a small dot instead of count content.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'dot',
+    description: 'Shows a small dot instead of count content.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
   {
     property: 'status',
     description: 'Standalone status badge style. Used when no children are provided.',
     type: "'success' | 'processing' | 'default' | 'error' | 'warning'",
   },
-  { property: 'text', description: 'Text displayed beside a standalone status dot.', type: 'JSX.Element' },
-  { property: 'overflowCount', description: 'Maximum numeric count before showing plus text.', type: 'number', defaultValue: '99' },
-  { property: 'showZero', description: 'Shows zero counts instead of hiding the badge.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'text',
+    description: 'Text displayed beside a standalone status dot.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'overflowCount',
+    description: 'Maximum numeric count before showing plus text.',
+    type: 'number',
+    defaultValue: '99',
+  },
+  {
+    property: 'showZero',
+    description: 'Shows zero counts instead of hiding the badge.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
   { property: 'children', description: 'Element wrapped by the badge.', type: 'JSX.Element' },
 ]
 

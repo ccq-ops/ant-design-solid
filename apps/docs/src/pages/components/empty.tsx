@@ -4,8 +4,16 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const emptyRows: ApiTableRow[] = [
-  { property: 'image', description: 'Custom empty image content or image URL.', type: 'JSX.Element | string' },
-  { property: 'imageStyle', description: 'Inline style for the image wrapper.', type: 'JSX.CSSProperties' },
+  {
+    property: 'image',
+    description: 'Custom empty image content or image URL.',
+    type: 'JSX.Element | string',
+  },
+  {
+    property: 'imageStyle',
+    description: 'Inline style for the image wrapper.',
+    type: 'JSX.CSSProperties',
+  },
   {
     property: 'description',
     description: 'Description text or content displayed below the image.',

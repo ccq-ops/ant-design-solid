@@ -5,18 +5,58 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const skeletonRows: ApiTableRow[] = [
-  { property: 'active', description: 'Shows animated loading effect.', type: 'boolean', defaultValue: 'false' },
-  { property: 'loading', description: 'Controls whether skeleton or children are rendered.', type: 'boolean', defaultValue: 'true' },
-  { property: 'avatar', description: 'Shows avatar placeholder or configures it.', type: 'boolean | SkeletonAvatarProps' },
-  { property: 'title', description: 'Shows title placeholder or configures it.', type: 'boolean | SkeletonTitleProps' },
-  { property: 'paragraph', description: 'Shows paragraph placeholders or configures them.', type: 'boolean | SkeletonParagraphProps' },
-  { property: 'round', description: 'Uses rounded placeholder corners.', type: 'boolean', defaultValue: 'false' },
-  { property: 'children', description: 'Content rendered when loading is false.', type: 'JSX.Element' },
+  {
+    property: 'active',
+    description: 'Shows animated loading effect.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'loading',
+    description: 'Controls whether skeleton or children are rendered.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'avatar',
+    description: 'Shows avatar placeholder or configures it.',
+    type: 'boolean | SkeletonAvatarProps',
+  },
+  {
+    property: 'title',
+    description: 'Shows title placeholder or configures it.',
+    type: 'boolean | SkeletonTitleProps',
+  },
+  {
+    property: 'paragraph',
+    description: 'Shows paragraph placeholders or configures them.',
+    type: 'boolean | SkeletonParagraphProps',
+  },
+  {
+    property: 'round',
+    description: 'Uses rounded placeholder corners.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'children',
+    description: 'Content rendered when loading is false.',
+    type: 'JSX.Element',
+  },
 ]
 
 const skeletonAvatarRows: ApiTableRow[] = [
-  { property: 'size', description: 'Avatar placeholder size.', type: "'small' | 'default' | 'large' | number" },
-  { property: 'shape', description: 'Avatar placeholder shape.', type: "'circle' | 'square'", defaultValue: "'circle'" },
+  {
+    property: 'size',
+    description: 'Avatar placeholder size.',
+    type: "'small' | 'default' | 'large' | number",
+  },
+  {
+    property: 'shape',
+    description: 'Avatar placeholder shape.',
+    type: "'circle' | 'square'",
+    defaultValue: "'circle'",
+  },
 ]
 
 const skeletonTitleRows: ApiTableRow[] = [
@@ -25,7 +65,11 @@ const skeletonTitleRows: ApiTableRow[] = [
 
 const skeletonParagraphRows: ApiTableRow[] = [
   { property: 'rows', description: 'Number of paragraph rows.', type: 'number' },
-  { property: 'width', description: 'Paragraph row width or widths.', type: 'SkeletonWidth | SkeletonWidth[]' },
+  {
+    property: 'width',
+    description: 'Paragraph row width or widths.',
+    type: 'SkeletonWidth | SkeletonWidth[]',
+  },
 ]
 
 export default function SkeletonPage() {

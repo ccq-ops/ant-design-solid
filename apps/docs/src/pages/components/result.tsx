@@ -13,8 +13,16 @@ const resultRows: ApiTableRow[] = [
   { property: 'title', description: 'Main result title.', type: 'JSX.Element' },
   { property: 'subTitle', description: 'Secondary result description.', type: 'JSX.Element' },
   { property: 'icon', description: 'Custom icon content.', type: 'JSX.Element' },
-  { property: 'extra', description: 'Action area rendered below the subtitle.', type: 'JSX.Element' },
-  { property: 'children', description: 'Additional content rendered in the result body.', type: 'JSX.Element' },
+  {
+    property: 'extra',
+    description: 'Action area rendered below the subtitle.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'children',
+    description: 'Additional content rendered in the result body.',
+    type: 'JSX.Element',
+  },
   { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
 ]
 
