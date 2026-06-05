@@ -1,8 +1,21 @@
-import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import {
+  For,
+  Show,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
+import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
+import { addPositionUpdateListeners } from '../shared/overlay'
+import { InternalPortal, canUseDom } from '../shared/portal'
+import { useZIndex } from '../shared/z-index'
 import type { MentionsOption, MentionsProps } from './interface'
 import { useMentionsStyle } from './mentions.style'
 
@@ -86,14 +99,18 @@ export function Mentions(props: MentionsProps) {
     'onInput',
     'onFocus',
     'onKeyDown',
+    'zIndex',
+    'getPopupContainer',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-mentions`
   const [, hashId] = useMentionsStyle(prefixCls())
+  const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
   const [innerValue, setInnerValue] = createSignal(local.defaultValue ?? '')
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [cursor, setCursor] = createSignal((local.defaultValue ?? '').length)
+  const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let textareaRef: HTMLTextAreaElement | undefined
 
   createEffect(() => {
@@ -137,9 +154,27 @@ export function Mentions(props: MentionsProps) {
   }
   const enabledOptions = () => filteredOptions().filter((option) => !option.disabled)
 
+  function updateDropdownPosition(): void {
+    if (isServer) return
+    if (!canUseDom() || !textareaRef) {
+      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      return
+    }
+    const rect = textareaRef.getBoundingClientRect()
+    setDropdownPosition({
+      position: 'fixed',
+      top: `${rect.bottom + 4}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      'z-index': `${dropdownZIndex}`,
+    })
+  }
+
   function setOpen(nextOpen: boolean): void {
     if (disabled()) return
     const normalizedOpen = nextOpen && Boolean(activeMention()) && filteredOptions().length > 0
+    if (normalizedOpen) updateDropdownPosition()
+    if (normalizedOpen) updateDropdownPosition()
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
   }
@@ -150,6 +185,16 @@ export function Mentions(props: MentionsProps) {
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
   }
+
+  createRenderEffect(() => {
+    if (popupOpen()) updateDropdownPosition()
+  })
+
+  createEffect(() => {
+    if (!popupOpen()) return
+    const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
+    onCleanup(removeListeners)
+  })
 
   function changeValue(nextValue: string): void {
     if (
@@ -273,24 +318,26 @@ export function Mentions(props: MentionsProps) {
         </button>
       </Show>
       <Show when={popupOpen()}>
-        <div role="listbox" class={`${prefixCls()}-dropdown`}>
-          <For each={filteredOptions()}>
-            {(option) => (
-              <div
-                role="option"
-                aria-disabled={Boolean(option.disabled)}
-                class={classNames(
-                  `${prefixCls()}-item`,
-                  option.disabled && `${prefixCls()}-item-disabled`,
-                )}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => selectOption(option)}
-              >
-                {option.label ?? option.value}
-              </div>
-            )}
-          </For>
-        </div>
+        <InternalPortal mount={() => local.getPopupContainer?.(textareaRef) ?? config.getPopupContainer?.(textareaRef)}>
+          <div role="listbox" class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+            <For each={filteredOptions()}>
+              {(option) => (
+                <div
+                  role="option"
+                  aria-disabled={Boolean(option.disabled)}
+                  class={classNames(
+                    `${prefixCls()}-item`,
+                    option.disabled && `${prefixCls()}-item-disabled`,
+                  )}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => selectOption(option)}
+                >
+                  {option.label ?? option.value}
+                </div>
+              )}
+            </For>
+          </div>
+        </InternalPortal>
       </Show>
     </div>
   )

@@ -1,10 +1,15 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { ConfigProvider } from '../../config-provider'
 import { Form, useForm } from '../../form'
 import { AutoComplete } from '../index'
+
+afterEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
 
 describe('AutoComplete', () => {
   const options = [
@@ -21,14 +26,14 @@ describe('AutoComplete', () => {
     const combobox = result.getByRole('combobox') as HTMLInputElement
 
     expect(combobox).toHaveAttribute('placeholder', 'Search')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.input(combobox, { target: { value: 'be' } })
 
     expect(combobox.value).toBe('be')
-    expect(result.getByRole('listbox')).toBeTruthy()
-    expect(result.getByRole('option', { name: 'Beta' })).toBeTruthy()
-    expect(result.queryByRole('option', { name: 'Alpha' })).toBeNull()
+    expect(screen.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Beta' })).toBeTruthy()
+    expect(screen.queryByRole('option', { name: 'Alpha' })).toBeNull()
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
@@ -41,10 +46,10 @@ describe('AutoComplete', () => {
     const combobox = result.getByRole('combobox') as HTMLInputElement
 
     fireEvent.input(combobox, { target: { value: 'a' } })
-    fireEvent.click(result.getByRole('option', { name: 'Alpha' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Alpha' }))
 
     expect(combobox.value).toBe('alpha')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
     expect(onChange).toHaveBeenLastCalledWith('alpha')
     expect(onSelect).toHaveBeenCalledWith('alpha', { label: 'Alpha', value: 'alpha' })
   })
@@ -68,12 +73,12 @@ describe('AutoComplete', () => {
 
     fireEvent.focus(combobox)
     expect(onOpenChange).toHaveBeenCalledWith(true)
-    expect(result.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('listbox')).toBeTruthy()
 
-    fireEvent.click(result.getByRole('option', { name: 'Beta' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
 
     expect(combobox.value).toBe('beta')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
   })
 
   it('supports filterOption=false, disabled options, clear, and keyboard handling', () => {
@@ -85,10 +90,10 @@ describe('AutoComplete', () => {
 
     fireEvent.input(combobox, { target: { value: 'zzz' } })
 
-    expect(result.getByRole('option', { name: 'Alpha' })).toBeTruthy()
-    expect(result.getByRole('option', { name: 'Gamma' })).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByRole('option', { name: 'Alpha' })).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Gamma' })).toHaveAttribute('aria-disabled', 'true')
 
-    fireEvent.click(result.getByRole('option', { name: 'Gamma' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Gamma' }))
     expect(combobox.value).toBe('zzz')
 
     fireEvent.keyDown(combobox, { key: 'Enter' })
@@ -96,7 +101,7 @@ describe('AutoComplete', () => {
 
     fireEvent.input(combobox, { target: { value: 'b' } })
     fireEvent.keyDown(combobox, { key: 'Escape' })
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.click(result.getByRole('button', { name: 'clear autocomplete' }))
     expect(combobox.value).toBe('')
@@ -129,7 +134,7 @@ describe('AutoComplete', () => {
     const combobox = result.getByRole('combobox') as HTMLInputElement
 
     fireEvent.input(combobox, { target: { value: 'be' } })
-    fireEvent.click(result.getByRole('option', { name: 'Beta' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
 
     expect(form.getFieldValue('city')).toBe('beta')
 
@@ -137,4 +142,35 @@ describe('AutoComplete', () => {
 
     expect(onFinish).toHaveBeenCalledWith({ city: 'beta' })
   })
+})
+
+
+it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+  const result = render(() => (
+    <AutoComplete zIndex={1310} options={[{ value: 'one', label: 'One' }]} />
+  ))
+  const selector = result.container.querySelector('.ads-auto-complete-selector') as HTMLElement
+  const input = result.getByRole('combobox') as HTMLInputElement
+  const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 42,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 32,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
+
+  fireEvent.input(input, { target: { value: 'o' } })
+
+  const dropdown = screen.getByRole('listbox') as HTMLElement
+  expect(result.container.querySelector('.ads-auto-complete-dropdown')).toBeFalsy()
+  expect(dropdown.style.position).toBe('fixed')
+  expect(dropdown.style.top).toBe('46px')
+  expect(dropdown.style.left).toBe('20px')
+  expect(dropdown.style.width).toBe('200px')
+  expect(dropdown.style.zIndex).toBe('1310')
+  rectSpy.mockRestore()
 })

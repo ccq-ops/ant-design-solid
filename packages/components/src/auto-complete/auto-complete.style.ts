@@ -58,11 +58,6 @@ export function useAutoCompleteStyle(prefixCls: string) {
           'line-height': '1',
         },
         [`.${prefixCls}-dropdown`]: {
-          position: 'absolute',
-          'z-index': '1000',
-          top: '100%',
-          left: '0',
-          right: '0',
           marginTop: `${t.marginXS}px`,
           padding: `${t.paddingXS}px 0`,
           border: `${t.lineWidth}px solid ${t.colorBorder}`,

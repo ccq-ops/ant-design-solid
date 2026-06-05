@@ -20,6 +20,8 @@ export interface AutoCompleteProps extends Omit<
   allowClear?: boolean
   filterOption?: boolean | ((inputValue: string, option: AutoCompleteOption) => boolean)
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onChange?: (value: string) => void
   onSelect?: (value: string, option: AutoCompleteOption) => void
   onOpenChange?: (open: boolean) => void

@@ -1,10 +1,15 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { ConfigProvider } from '../../config-provider'
 import { Form, useForm } from '../../form'
 import { Mentions } from '../index'
+
+afterEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
 
 describe('Mentions', () => {
   const options = [
@@ -27,14 +32,14 @@ describe('Mentions', () => {
     const textarea = result.getByRole('textbox') as HTMLTextAreaElement
 
     expect(textarea).toHaveAttribute('placeholder', 'Mention someone')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.input(textarea, { target: { value: 'hello @a' } })
 
     expect(textarea.value).toBe('hello @a')
-    expect(result.getByRole('listbox')).toBeTruthy()
-    expect(result.getByRole('option', { name: 'Alice' })).toBeTruthy()
-    expect(result.queryByRole('option', { name: 'Bob' })).toBeNull()
+    expect(screen.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Alice' })).toBeTruthy()
+    expect(screen.queryByRole('option', { name: 'Bob' })).toBeNull()
     expect(onSearch).toHaveBeenLastCalledWith('a', '@')
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
@@ -48,10 +53,10 @@ describe('Mentions', () => {
     const textarea = result.getByRole('textbox') as HTMLTextAreaElement
 
     fireEvent.focus(textarea)
-    fireEvent.click(result.getByRole('option', { name: 'Alice' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Alice' }))
 
     expect(textarea.value).toBe('hello @alice ')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
     expect(onChange).toHaveBeenLastCalledWith('hello @alice ')
     expect(onSelect).toHaveBeenCalledWith({ label: 'Alice', value: 'alice' }, '@')
   })
@@ -75,12 +80,12 @@ describe('Mentions', () => {
 
     fireEvent.focus(textarea)
     expect(onOpenChange).toHaveBeenCalledWith(true)
-    expect(result.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('listbox')).toBeTruthy()
 
-    fireEvent.click(result.getByRole('option', { name: 'Bob' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Bob' }))
 
     expect(textarea.value).toBe('hi @bob ')
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
   })
 
   it('supports multiple prefixes, disabled options, clear, and keyboard handling', () => {
@@ -99,10 +104,10 @@ describe('Mentions', () => {
 
     fireEvent.focus(textarea)
 
-    expect(result.getByRole('option', { name: 'Alice' })).toBeTruthy()
-    expect(result.getByRole('option', { name: 'Charlie' })).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByRole('option', { name: 'Alice' })).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Charlie' })).toHaveAttribute('aria-disabled', 'true')
 
-    fireEvent.click(result.getByRole('option', { name: 'Charlie' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Charlie' }))
     expect(textarea.value).toBe('ask #zzz')
 
     fireEvent.keyDown(textarea, { key: 'Enter' })
@@ -110,7 +115,7 @@ describe('Mentions', () => {
 
     fireEvent.input(textarea, { target: { value: 'ask @b' } })
     fireEvent.keyDown(textarea, { key: 'Escape' })
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.click(result.getByRole('button', { name: 'clear mentions' }))
     expect(textarea.value).toBe('')
@@ -129,13 +134,13 @@ describe('Mentions', () => {
     const textarea = result.getByRole('textbox') as HTMLTextAreaElement
 
     fireEvent.focus(textarea)
-    expect(result.getByRole('listbox')).toBeTruthy()
+    expect(screen.getByRole('listbox')).toBeTruthy()
 
     fireEvent.input(textarea, { target: { value: 'mail @a.b' } })
-    expect(result.queryByRole('listbox')).toBeNull()
+    expect(screen.queryByRole('listbox')).toBeNull()
 
     fireEvent.input(textarea, { target: { value: 'mail @a' } })
-    fireEvent.click(result.getByRole('option', { name: 'Alice' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Alice' }))
     expect(textarea.value).toBe('mail @alice,')
   })
 
@@ -165,7 +170,7 @@ describe('Mentions', () => {
     const textarea = result.getByRole('textbox') as HTMLTextAreaElement
 
     fireEvent.input(textarea, { target: { value: 'hello @a' } })
-    fireEvent.click(result.getByRole('option', { name: 'Alice' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Alice' }))
 
     expect(form.getFieldValue('comment')).toBe('hello @alice ')
 
@@ -173,4 +178,34 @@ describe('Mentions', () => {
 
     expect(onFinish).toHaveBeenCalledWith({ comment: 'hello @alice ' })
   })
+})
+
+
+it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
+  const result = render(() => (
+    <Mentions zIndex={1311} defaultValue="hello @" options={[{ value: 'one', label: 'One' }]} />
+  ))
+  const textarea = result.getByRole('textbox') as HTMLTextAreaElement
+  const rectSpy = vi.spyOn(textarea, 'getBoundingClientRect').mockReturnValue({
+    top: 10,
+    bottom: 50,
+    left: 20,
+    right: 220,
+    width: 200,
+    height: 40,
+    x: 20,
+    y: 10,
+    toJSON: () => ({}),
+  } as DOMRect)
+
+  fireEvent.focus(textarea)
+
+  const dropdown = screen.getByRole('listbox') as HTMLElement
+  expect(result.container.querySelector('.ads-mentions-dropdown')).toBeFalsy()
+  expect(dropdown.style.position).toBe('fixed')
+  expect(dropdown.style.top).toBe('54px')
+  expect(dropdown.style.left).toBe('20px')
+  expect(dropdown.style.width).toBe('200px')
+  expect(dropdown.style.zIndex).toBe('1311')
+  rectSpy.mockRestore()
 })

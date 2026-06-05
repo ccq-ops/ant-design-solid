@@ -23,6 +23,8 @@ export interface MentionsProps extends Omit<
   filterOption?: boolean | ((inputValue: string, option: MentionsOption) => boolean)
   validateSearch?: (text: string, props: MentionsProps) => boolean
   prefixCls?: string
+  zIndex?: number
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   onChange?: (value: string) => void
   onSelect?: (option: MentionsOption, prefix: string) => void
   onSearch?: (text: string, prefix: string) => void
