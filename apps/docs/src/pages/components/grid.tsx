@@ -74,10 +74,10 @@ export default function GridPage() {
       >
         <Row>
           <Col span={12}>
-            <div class={blockStyle}>span 12</div>
+            <div class="bg-blue-50 p-4">span 12</div>
           </Col>
           <Col span={12}>
-            <div class={strongBlockStyle}>span 12</div>
+            <div class="bg-blue-200 p-4">span 12</div>
           </Col>
         </Row>
       </DemoBlock>
