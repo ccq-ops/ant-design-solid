@@ -48,6 +48,7 @@ COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test -- cascader
 ### Task 1: Public Types and Pure Path Utilities
 
 **Files:**
+
 - Modify: `packages/components/src/cascader/interface.ts`
 - Create: `packages/components/src/cascader/types.ts`
 - Create: `packages/components/src/cascader/path-utils.ts`
@@ -90,10 +91,11 @@ describe('cascader path utils', () => {
   })
 
   it('collects selectable leaf paths and ignores disabled leaves', () => {
-    expect(collectSelectableLeafPaths(strategyOptions[0]).map((path) => pathKey(path.map((option) => option.value)))).toEqual([
-      'parent\u0000a',
-      'parent\u0000c',
-    ])
+    expect(
+      collectSelectableLeafPaths(strategyOptions[0]).map((path) =>
+        pathKey(path.map((option) => option.value)),
+      ),
+    ).toEqual(['parent\u0000a', 'parent\u0000c'])
   })
 
   it('filters displayed paths using SHOW_PARENT and SHOW_CHILD', () => {
@@ -101,16 +103,21 @@ describe('cascader path utils', () => {
     const childA = findOptionPath(strategyOptions, ['parent', 'a'])
     const childC = findOptionPath(strategyOptions, ['parent', 'c'])
 
-    expect(filterDisplayedPaths([childA, childC], SHOW_CHILD, strategyOptions).map((path) => pathKey(path.map((option) => option.value)))).toEqual([
-      'parent\u0000a',
-      'parent\u0000c',
-    ])
-    expect(filterDisplayedPaths([childA, childC], SHOW_PARENT, strategyOptions).map((path) => pathKey(path.map((option) => option.value)))).toEqual([
-      'parent',
-    ])
-    expect(filterDisplayedPaths([parent, childA], SHOW_PARENT, strategyOptions).map((path) => pathKey(path.map((option) => option.value)))).toEqual([
-      'parent',
-    ])
+    expect(
+      filterDisplayedPaths([childA, childC], SHOW_CHILD, strategyOptions).map((path) =>
+        pathKey(path.map((option) => option.value)),
+      ),
+    ).toEqual(['parent\u0000a', 'parent\u0000c'])
+    expect(
+      filterDisplayedPaths([childA, childC], SHOW_PARENT, strategyOptions).map((path) =>
+        pathKey(path.map((option) => option.value)),
+      ),
+    ).toEqual(['parent'])
+    expect(
+      filterDisplayedPaths([parent, childA], SHOW_PARENT, strategyOptions).map((path) =>
+        pathKey(path.map((option) => option.value)),
+      ),
+    ).toEqual(['parent'])
   })
 })
 ```
@@ -333,7 +340,8 @@ export function collectSelectableLeafPaths(option: CascaderOption): CascaderOpti
 
 export function isAncestorValuePath(ancestor: OptionValue[], descendant: OptionValue[]): boolean {
   return (
-    ancestor.length < descendant.length && ancestor.every((value, index) => value === descendant[index])
+    ancestor.length < descendant.length &&
+    ancestor.every((value, index) => value === descendant[index])
   )
 }
 
@@ -342,14 +350,20 @@ export function createPathEntity(path: CascaderOption[], label: JSX.Element): Ca
   return { value, options: path, key: pathKey(value), label }
 }
 
-function allSelectableLeavesSelected(parentPath: CascaderOption[], selectedKeys: Set<string>): boolean {
+function allSelectableLeavesSelected(
+  parentPath: CascaderOption[],
+  selectedKeys: Set<string>,
+): boolean {
   const parent = parentPath[parentPath.length - 1]
   if (!parent) return false
   const leafPaths = collectSelectableLeafPaths(parent).map((leafPath) => [
     ...parentPath.slice(0, -1),
     ...leafPath,
   ])
-  return leafPaths.length > 0 && leafPaths.every((path) => selectedKeys.has(pathKey(valuePathFromOptions(path))))
+  return (
+    leafPaths.length > 0 &&
+    leafPaths.every((path) => selectedKeys.has(pathKey(valuePathFromOptions(path))))
+  )
 }
 
 export function filterDisplayedPaths(
@@ -408,6 +422,7 @@ git commit -m "feat(cascader): add api types and path utilities"
 ### Task 2: Search Utilities and Single-Mode Search UI
 
 **Files:**
+
 - Create: `packages/components/src/cascader/search-utils.ts`
 - Create: `packages/components/src/cascader/cascader-selector.tsx`
 - Create: `packages/components/src/cascader/cascader-dropdown.tsx`
@@ -463,9 +478,7 @@ it('supports custom showSearch filter sort limit and render', () => {
 it('supports controlled searchValue and onSearch', () => {
   const [search, setSearch] = createSignal('west')
   const onSearch = vi.fn((next: string) => setSearch(next))
-  render(() => (
-    <Cascader showSearch searchValue={search()} onSearch={onSearch} options={options} />
-  ))
+  render(() => <Cascader showSearch searchValue={search()} onSearch={onSearch} options={options} />)
 
   fireEvent.click(screen.getByRole('combobox'))
   expect(screen.getByRole('textbox')).toHaveValue('west')
@@ -579,7 +592,11 @@ Move current JSX into `cascader-selector.tsx` and `cascader-dropdown.tsx` while 
 <ul role="listbox" class={`${prefixCls}-search-list`}>
   <For each={searchResults}>
     {(result) => (
-      <li role="option" class={`${prefixCls}-search-item`} onClick={() => onSearchSelect(result.path)}>
+      <li
+        role="option"
+        class={`${prefixCls}-search-item`}
+        onClick={() => onSearchSelect(result.path)}
+      >
         {result.label}
       </li>
     )}
@@ -611,6 +628,7 @@ git commit -m "feat(cascader): add searchable single selection"
 ### Task 3: Lazy Loading
 
 **Files:**
+
 - Modify: `packages/components/src/cascader/cascader.tsx`
 - Modify: `packages/components/src/cascader/cascader-dropdown.tsx`
 - Modify: `packages/components/src/cascader/cascader.style.ts`
@@ -631,7 +649,9 @@ it('calls loadData for non-leaf lazy options and shows loading icon while pendin
   )
   const lazyOptions: CascaderOption[] = [{ label: 'Lazy', value: 'lazy', isLeaf: false }]
 
-  render(() => <Cascader options={lazyOptions} loadData={loadData} loadingIcon={<span>Loading...</span>} />)
+  render(() => (
+    <Cascader options={lazyOptions} loadData={loadData} loadingIcon={<span>Loading...</span>} />
+  ))
 
   fireEvent.click(screen.getByRole('combobox'))
   fireEvent.click(screen.getByRole('menuitem', { name: /Lazy/ }))
@@ -694,6 +714,7 @@ git commit -m "feat(cascader): support lazy loading options"
 ### Task 4: Multiple Selection Core and Checkbox Cascade
 
 **Files:**
+
 - Create: `packages/components/src/cascader/selection-utils.ts`
 - Modify: `packages/components/src/cascader/cascader.tsx`
 - Modify: `packages/components/src/cascader/cascader-dropdown.tsx`
@@ -740,7 +761,9 @@ it('cascades parent selection to selectable leaf descendants and marks parent ch
 })
 
 it('marks parent indeterminate when only some descendants are selected', () => {
-  render(() => <Cascader multiple value={[['zhejiang', 'hangzhou', 'west-lake']]} options={options} />)
+  render(() => (
+    <Cascader multiple value={[['zhejiang', 'hangzhou', 'west-lake']]} options={options} />
+  ))
 
   fireEvent.click(screen.getByRole('combobox'))
 
@@ -775,16 +798,22 @@ import {
   valuePathFromOptions,
 } from './path-utils'
 
-export function isMultipleValue(value: OptionValue[] | OptionValue[][] | undefined): value is OptionValue[][] {
+export function isMultipleValue(
+  value: OptionValue[] | OptionValue[][] | undefined,
+): value is OptionValue[][] {
   return Array.isArray(value?.[0])
 }
 
-export function normalizeMultipleValue(value: OptionValue[] | OptionValue[][] | undefined): OptionValue[][] {
+export function normalizeMultipleValue(
+  value: OptionValue[] | OptionValue[][] | undefined,
+): OptionValue[][] {
   if (!value) return []
   return isMultipleValue(value) ? value : []
 }
 
-export function normalizeSingleValue(value: OptionValue[] | OptionValue[][] | undefined): OptionValue[] {
+export function normalizeSingleValue(
+  value: OptionValue[] | OptionValue[][] | undefined,
+): OptionValue[] {
   if (!value || isMultipleValue(value)) return []
   return value
 }
@@ -804,12 +833,10 @@ export function togglePathInMultipleValue(
   const target = optionPath[optionPath.length - 1]
   if (!target || target.disabled) return current
 
-  const targetPaths = target.children?.length && !changeOnSelect
-    ? collectSelectableLeafPaths(target).map((path) => [
-        ...optionPath.slice(0, -1),
-        ...path,
-      ])
-    : [optionPath]
+  const targetPaths =
+    target.children?.length && !changeOnSelect
+      ? collectSelectableLeafPaths(target).map((path) => [...optionPath.slice(0, -1), ...path])
+      : [optionPath]
 
   const currentMap = new Map(current.map((path) => [pathKey(path), path]))
   const targetKeys = targetPaths.map((path) => pathKey(valuePathFromOptions(path)))
@@ -887,6 +914,7 @@ git commit -m "feat(cascader): add multiple cascade selection"
 ### Task 5: Multiple Tags and Display Strategy
 
 **Files:**
+
 - Modify: `packages/components/src/cascader/cascader-selector.tsx`
 - Modify: `packages/components/src/cascader/cascader.tsx`
 - Modify: `packages/components/src/cascader/cascader.style.ts`
@@ -910,15 +938,22 @@ it('renders multiple tags with tagRender and removeIcon', () => {
       onChange={onChange}
       removeIcon={<span>remove</span>}
       tagRender={(label, onClose) => (
-        <button type="button" onClick={onClose}>Custom {label}</button>
+        <button type="button" onClick={onClose}>
+          Custom {label}
+        </button>
       )}
     />
   ))
 
-  expect(screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' })).toBeTruthy()
+  expect(
+    screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' }),
+  ).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: 'Custom Zhejiang / Hangzhou / West Lake' }))
 
-  expect(onChange).toHaveBeenCalledWith([['jiangsu', 'nanjing']], [[options[1], options[1].children?.[0]]])
+  expect(onChange).toHaveBeenCalledWith(
+    [['jiangsu', 'nanjing']],
+    [[options[1], options[1].children?.[0]]],
+  )
 })
 
 it('supports maxTagCount maxTagPlaceholder and maxTagTextLength', () => {
@@ -1004,6 +1039,7 @@ git commit -m "feat(cascader): render multiple selection tags"
 ### Task 6: Multiple Search Auto-Clear and changeOnSelect Intermediate Paths
 
 **Files:**
+
 - Modify: `packages/components/src/cascader/cascader.tsx`
 - Modify: `packages/components/src/cascader/selection-utils.ts`
 - Test: `packages/components/src/cascader/__tests__/cascader.test.tsx`
@@ -1014,7 +1050,9 @@ Add:
 
 ```tsx
 it('clears multiple search after selection by default and preserves it when disabled', () => {
-  const keep = render(() => <Cascader multiple showSearch={{ autoClearSearchValue: false }} options={options} />)
+  const keep = render(() => (
+    <Cascader multiple showSearch={{ autoClearSearchValue: false }} options={options} />
+  ))
 
   fireEvent.click(keep.getByRole('combobox'))
   fireEvent.input(screen.getByRole('textbox'), { target: { value: 'west' } })
@@ -1082,6 +1120,7 @@ git commit -m "feat(cascader): complete multiple search behavior"
 ### Task 7: Size, Status, Variant, and Prefix
 
 **Files:**
+
 - Modify: `packages/components/src/cascader/cascader.tsx`
 - Modify: `packages/components/src/cascader/cascader-selector.tsx`
 - Modify: `packages/components/src/cascader/cascader.style.ts`
@@ -1126,8 +1165,7 @@ Expected: FAIL because classes/prefix are absent.
 In root class list in `cascader.tsx`, add:
 
 ```ts
-`${prefixCls()}-${local.size ?? 'middle'}`
-`${prefixCls()}-${local.variant ?? 'outlined'}`
+;`${prefixCls()}-${local.size ?? 'middle'}``${prefixCls()}-${local.variant ?? 'outlined'}`
 local.status && `${prefixCls()}-status-${local.status}`
 ```
 
@@ -1163,6 +1201,7 @@ git commit -m "feat(cascader): add visual selector props"
 ### Task 8: Docs and Final Verification
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/cascader.tsx`
 
 - [ ] **Step 1: Update docs API table and examples**
