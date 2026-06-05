@@ -58,6 +58,16 @@ export function useDatePickerStyle(prefixCls: string) {
           color: t.colorTextDisabled,
           cursor: 'not-allowed',
         },
+        [`.${prefixCls}-prefix`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          color: t.colorTextSecondary,
+        },
+        [`.${prefixCls}-suffix`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          color: t.colorTextSecondary,
+        },
         [`.${prefixCls}-placeholder`]: {
           color: t.colorTextDisabled,
         },
@@ -158,6 +168,23 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-cell-disabled:hover`]: {
           background: 'transparent',
+        },
+        [`.${prefixCls}-footer`]: {
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'space-between',
+          'margin-top': `${t.marginSM}px`,
+          'padding-top': `${t.paddingXS}px`,
+          borderTop: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        },
+        [`.${prefixCls}-ok`]: {
+          border: '0',
+          'border-radius': `${t.borderRadius}px`,
+          padding: `0 ${t.paddingSM}px`,
+          height: `${t.controlHeightSM}px`,
+          background: t.colorPrimary,
+          color: t.colorBgContainer,
+          cursor: 'pointer',
         },
         [`.${prefixCls}-empty-cell`]: {
           minHeight: '32px',

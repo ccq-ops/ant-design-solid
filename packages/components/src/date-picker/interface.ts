@@ -118,6 +118,7 @@ export interface CommonPickerProps extends Omit<
   allowClear?: boolean | { clearIcon?: JSX.Element }
   autoFocus?: boolean
   inputReadOnly?: boolean
+  preserveInvalidOnBlur?: boolean
   open?: boolean
   defaultOpen?: boolean
   placement?: DatePickerPlacement
@@ -125,19 +126,21 @@ export interface CommonPickerProps extends Omit<
   status?: DatePickerStatus
   variant?: DatePickerVariant
   locale?: DatePickerLocale
-  disabledDate?: (current: Dayjs) => boolean
+  disabledDate?: (current: Dayjs, info: { type: PickerType }) => boolean
   minDate?: Dayjs
   maxDate?: Dayjs
   showTime?: boolean | ShowTimeOptions
   cellRender?: (current: Dayjs, info: CellRenderInfo) => JSX.Element
   dateRender?: (current: Dayjs, today: Dayjs) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
+  panelRender?: (panel: JSX.Element) => JSX.Element
   suffixIcon?: JSX.Element
   prefix?: JSX.Element
   separator?: JSX.Element
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
   styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
   prefixCls?: string
+  className?: string
   popupClassName?: string
   dropdownClassName?: string
   popupStyle?: JSX.CSSProperties
@@ -151,6 +154,7 @@ export interface CommonPickerProps extends Omit<
 export interface DatePickerProps extends CommonPickerProps {
   value?: DatePickerValue
   defaultValue?: DatePickerValue
+  defaultPickerValue?: DatePickerValue
   multiple?: boolean
   order?: boolean
   presets?: PresetValue[]

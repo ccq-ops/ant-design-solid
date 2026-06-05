@@ -1,6 +1,4 @@
-import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
-  For,
   Show,
   createEffect,
   createMemo,
@@ -16,25 +14,21 @@ import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/ov
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import { dayjs, isOutOfBounds, monthStart, normalizeDateValue, samePickerValue } from './date-utils'
+import { DatePanel } from './date-panel'
 import { useDatePickerStyle } from './date-picker.style'
 import { formatDayjs, parseDayjs } from './format-utils'
 import type { DatePickerProps, DatePickerValue } from './interface'
 import { mergeDatePickerLocale } from './locale'
+import { PickerInput } from './picker-input'
+import { PickerPanel } from './picker-panel'
 import { semanticClass, semanticStyle } from './semantic'
 
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-
-function monthDates(value: dayjs.Dayjs): Array<dayjs.Dayjs | null> {
-  const firstDate = monthStart(value)
-  const dates: Array<dayjs.Dayjs | null> = Array.from({ length: firstDate.day() }, () => null)
-  for (let day = 1; day <= firstDate.daysInMonth(); day += 1) dates.push(firstDate.date(day))
-  return dates
-}
-
 export function DatePicker(props: DatePickerProps) {
+  const ariaLabel = () => props['aria-label'] as string | undefined
   const [local, rest] = splitProps(props, [
     'value',
     'defaultValue',
+    'defaultPickerValue',
     'format',
     'picker',
     'placeholder',
@@ -42,6 +36,7 @@ export function DatePicker(props: DatePickerProps) {
     'allowClear',
     'autoFocus',
     'inputReadOnly',
+    'preserveInvalidOnBlur',
     'open',
     'defaultOpen',
     'disabledDate',
@@ -50,15 +45,18 @@ export function DatePicker(props: DatePickerProps) {
     'locale',
     'prefixCls',
     'class',
+    'className',
     'style',
     'classNames',
     'styles',
     'popupClassName',
     'dropdownClassName',
     'popupStyle',
+    'placement',
     'onChange',
     'onOpenChange',
     'onKeyDown',
+    'onOk',
     'zIndex',
     'getPopupContainer',
     'id',
@@ -66,6 +64,11 @@ export function DatePicker(props: DatePickerProps) {
     'prefix',
     'suffixIcon',
     'separator',
+    'cellRender',
+    'dateRender',
+    'renderExtraFooter',
+    'panelRender',
+    'needConfirm',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
@@ -74,7 +77,8 @@ export function DatePicker(props: DatePickerProps) {
   const picker = () => local.picker ?? 'date'
   const locale = createMemo(() => mergeDatePickerLocale(local.locale))
   const defaultSelectedDate = normalizeDateValue(local.defaultValue)
-  const initialViewDate = defaultSelectedDate ?? dayjs()
+  const defaultPickerDate = normalizeDateValue(local.defaultPickerValue)
+  const initialViewDate = defaultPickerDate ?? defaultSelectedDate ?? dayjs()
   const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
   const [inputValue, setInputValue] = createSignal(
     formatDayjs(defaultSelectedDate, local.format, picker()),
@@ -94,7 +98,6 @@ export function DatePicker(props: DatePickerProps) {
   )
   const displayValue = createMemo(() => formatDayjs(selectedDate(), local.format, picker()))
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
-  const dates = createMemo(() => monthDates(viewMonth()))
   const placeholder = () => local.placeholder ?? locale().lang?.placeholder ?? 'Select date'
 
   createEffect(() => setInputValue(displayValue()))
@@ -152,7 +155,8 @@ export function DatePicker(props: DatePickerProps) {
 
   function isDateDisabled(date: dayjs.Dayjs): boolean {
     return Boolean(
-      local.disabledDate?.(date) || isOutOfBounds(date, local.minDate, local.maxDate, picker()),
+      local.disabledDate?.(date, { type: picker() }) ||
+      isOutOfBounds(date, local.minDate, local.maxDate, picker()),
     )
   }
 
@@ -166,6 +170,7 @@ export function DatePicker(props: DatePickerProps) {
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
     changeValue(date)
+    if (local.needConfirm) return
     setOpen(false)
   }
 
@@ -183,7 +188,7 @@ export function DatePicker(props: DatePickerProps) {
     }
     const parsed = parseDayjs(rawValue, local.format, picker())
     if (!parsed || isDateDisabled(parsed)) {
-      setInputValue(displayValue())
+      if (!local.preserveInvalidOnBlur) setInputValue(displayValue())
       return
     }
     if (samePickerValue(parsed, currentValue, picker())) {
@@ -214,6 +219,7 @@ export function DatePicker(props: DatePickerProps) {
         open() && `${prefixCls()}-open`,
         hashId(),
         local.class,
+        local.className,
       )}
       style={{
         ...semanticStyle('root', local.styles),
@@ -231,21 +237,27 @@ export function DatePicker(props: DatePickerProps) {
           setOpen(true)
         }}
       >
-        <input
+        <PickerInput
           id={local.id}
           name={local.name}
-          ref={(element) => {
-            inputRef = element
-          }}
-          role="textbox"
-          aria-label={rest['aria-label']}
-          class={semanticClass('input', local.classNames, `${prefixCls()}-input`)}
-          style={semanticStyle('input', local.styles)}
+          prefixCls={prefixCls()}
           value={inputValue()}
           placeholder={placeholder()}
           disabled={disabled()}
           readOnly={local.inputReadOnly}
-          autofocus={local.autoFocus}
+          autoFocus={local.autoFocus}
+          allowClear={Boolean(local.allowClear)}
+          clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
+          prefix={local.prefix}
+          suffixIcon={local.suffixIcon}
+          ariaLabel={ariaLabel()}
+          inputClass={semanticClass('input', local.classNames, `${prefixCls()}-input`)}
+          inputStyle={semanticStyle('input', local.styles)}
+          clearClass={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
+          clearStyle={semanticStyle('clear', local.styles)}
+          inputRef={(element) => {
+            inputRef = element
+          }}
           onInput={(event) => setInputValue(event.currentTarget.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => parseInput(false)}
@@ -259,22 +271,8 @@ export function DatePicker(props: DatePickerProps) {
             }
             if (event.key === 'Escape') setOpen(false)
           }}
+          onClear={clearValue}
         />
-        <Show when={local.allowClear && !disabled() && displayValue() !== ''}>
-          <button
-            type="button"
-            aria-label="Clear date"
-            class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
-            style={semanticStyle('clear', local.styles)}
-            onClick={clearValue}
-          >
-            {typeof local.allowClear === 'object' && local.allowClear.clearIcon ? (
-              local.allowClear.clearIcon
-            ) : (
-              <CloseCircleFilled />
-            )}
-          </button>
-        </Show>
       </div>
       <Show when={open()}>
         <InternalPortal
@@ -282,79 +280,38 @@ export function DatePicker(props: DatePickerProps) {
             local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
           }
         >
-          <div
+          <PickerPanel
             ref={(element) => {
               dropdownRef = element
             }}
-            class={semanticClass(
-              'popup',
-              local.classNames,
-              `${prefixCls()}-dropdown`,
-              local.popupClassName,
-              local.dropdownClassName,
-            )}
+            prefixCls={prefixCls()}
+            viewDate={viewMonth()}
+            placement={local.placement}
+            class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
+            classNames={local.classNames}
             style={dropdownPosition()}
+            mode={picker()}
+            renderExtraFooter={local.renderExtraFooter}
+            panelRender={local.panelRender}
+            needConfirm={local.needConfirm}
+            onOk={() => local.onOk?.(selectedDate())}
+            onPrevious={() => setViewMonth(viewMonth().subtract(1, 'month'))}
+            onNext={() => setViewMonth(viewMonth().add(1, 'month'))}
           >
-            <div class={`${prefixCls()}-header`}>
-              <button
-                type="button"
-                aria-label="Previous month"
-                class={`${prefixCls()}-month-button`}
-                onClick={() => setViewMonth(viewMonth().subtract(1, 'month'))}
-              >
-                ‹
-              </button>
-              <div class={`${prefixCls()}-month-label`}>{viewMonth().format('YYYY-MM')}</div>
-              <button
-                type="button"
-                aria-label="Next month"
-                class={`${prefixCls()}-month-button`}
-                onClick={() => setViewMonth(viewMonth().add(1, 'month'))}
-              >
-                ›
-              </button>
-            </div>
-            <div class={`${prefixCls()}-weekdays`}>
-              <For each={WEEKDAYS}>
-                {(weekday) => <div class={`${prefixCls()}-weekday`}>{weekday}</div>}
-              </For>
-            </div>
-            <div class={`${prefixCls()}-grid`}>
-              <For each={dates()}>
-                {(date) => (
-                  <Show when={date} fallback={<div class={`${prefixCls()}-empty-cell`} />}>
-                    {(currentDate) => {
-                      const cellDate = currentDate()
-                      const dateString = () => cellDate.format('YYYY-MM-DD')
-                      const cellDisabled = () => isDateDisabled(cellDate)
-                      const selected = () => samePickerValue(selectedDate(), cellDate, picker())
-                      return (
-                        <button
-                          type="button"
-                          aria-label={dateString()}
-                          aria-pressed={selected()}
-                          aria-disabled={cellDisabled()}
-                          class={semanticClass(
-                            'cell',
-                            local.classNames,
-                            `${prefixCls()}-cell`,
-                            samePickerValue(dayjs(), cellDate, 'date') &&
-                              `${prefixCls()}-cell-today`,
-                            selected() && `${prefixCls()}-cell-selected`,
-                            cellDisabled() && `${prefixCls()}-cell-disabled`,
-                          )}
-                          style={semanticStyle('cell', local.styles)}
-                          onClick={() => selectDate(cellDate)}
-                        >
-                          {cellDate.date()}
-                        </button>
-                      )
-                    }}
-                  </Show>
-                )}
-              </For>
-            </div>
-          </div>
+            <DatePanel
+              prefixCls={prefixCls()}
+              viewDate={viewMonth()}
+              picker={picker()}
+              selectedValue={selectedDate()}
+              disabledDate={isDateDisabled}
+              cellRender={local.cellRender}
+              dateRender={local.dateRender}
+              locale={locale()}
+              classNames={local.classNames}
+              styles={local.styles}
+              onSelect={selectDate}
+            />
+          </PickerPanel>
         </InternalPortal>
       </Show>
     </div>

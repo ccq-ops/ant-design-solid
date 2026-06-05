@@ -150,6 +150,50 @@ describe('DatePicker dayjs value model', () => {
     expect(screen.getByRole('textbox')).toHaveValue('2026-06-01')
   })
 
+  it('passes disabledDate info and enforces minDate and maxDate', () => {
+    const onChange = vi.fn()
+    const disabledDate = vi.fn((date: Dayjs, info: { type: string }) => {
+      return info.type === 'date' && date.date() === 10
+    })
+    render(() => (
+      <DatePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        minDate={dayjs('2026-06-05')}
+        maxDate={dayjs('2026-06-20')}
+        disabledDate={disabledDate}
+        onChange={onChange}
+      />
+    ))
+
+    const beforeMin = screen.getByRole('button', { name: '2026-06-04' })
+    const disabledByCallback = screen.getByRole('button', { name: '2026-06-10' })
+    const afterMax = screen.getByRole('button', { name: '2026-06-21' })
+
+    expect(beforeMin).toHaveAttribute('aria-disabled', 'true')
+    expect(disabledByCallback).toHaveAttribute('aria-disabled', 'true')
+    expect(afterMax).toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(disabledByCallback)
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(
+      disabledDate.mock.calls.some(
+        ([value, info]) => value.format('YYYY-MM-DD') === '2026-06-10' && info.type === 'date',
+      ),
+    ).toBe(true)
+  })
+
+  it('preserves invalid text on blur when preserveInvalidOnBlur is true', () => {
+    render(() => <DatePicker preserveInvalidOnBlur />)
+
+    const input = screen.getByRole('textbox')
+    fireEvent.input(input, { target: { value: 'not a date' } })
+    fireEvent.blur(input)
+
+    expect(input).toHaveValue('not a date')
+  })
+
   it('treats controlled null value as controlled', () => {
     const onChange = vi.fn()
     render(() => (
@@ -174,6 +218,16 @@ describe('DatePicker dayjs value model', () => {
 
     expect(onOpenChange).toHaveBeenLastCalledWith(true)
     expect(screen.queryByText(/^\d{4}-\d{2}$/)).not.toBeInTheDocument()
+  })
+
+  it('keeps popup hidden when controlled closed after requesting open', () => {
+    const onOpenChange = vi.fn()
+    render(() => <DatePicker open={false} onOpenChange={onOpenChange} />)
+
+    fireEvent.focus(screen.getByRole('textbox'))
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(true)
+    expect(document.body.querySelector('.ads-date-picker-dropdown')).toBeFalsy()
   })
 
   it('does not open or emit open changes when disabled trigger is clicked', () => {
@@ -226,5 +280,21 @@ describe('DatePicker dayjs value model', () => {
     expect(dropdown.style.left).toBe('20px')
     expect(dropdown.style.zIndex).toBe('1313')
     rectSpy.mockRestore()
+  })
+
+  it('applies className alias to root and topRight placement class to popup', () => {
+    const result = render(() => (
+      <DatePicker
+        className="custom-picker"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        placement="topRight"
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-date-picker')).toHaveClass('custom-picker')
+    expect(document.body.querySelector('.ads-date-picker-dropdown')).toHaveClass(
+      'ads-date-picker-dropdown-top-right',
+    )
   })
 })
