@@ -1,7 +1,104 @@
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
 import type { CarouselRef } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const carouselRows: ApiTableRow[] = [
+  {
+    property: 'autoplay',
+    description: 'Automatically advances slides.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'autoplaySpeed',
+    description: 'Autoplay interval in milliseconds.',
+    type: 'number',
+    defaultValue: '3000',
+  },
+  {
+    property: 'dots',
+    description: 'Whether to show dots or dot configuration.',
+    type: 'boolean | { className?: string }',
+    defaultValue: 'true',
+  },
+  {
+    property: 'dotPosition',
+    description: 'Dot navigation position.',
+    type: "'top' | 'bottom' | 'left' | 'right'",
+    defaultValue: "'bottom'",
+  },
+  {
+    property: 'arrows',
+    description: 'Whether to show previous and next arrows.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'effect',
+    description: 'Transition effect.',
+    type: "'scrollx' | 'fade'",
+    defaultValue: "'scrollx'",
+  },
+  {
+    property: 'fade',
+    description: 'Alias that enables fade effect.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'easing',
+    description: 'CSS transition easing.',
+    type: 'string',
+    defaultValue: "'ease'",
+  },
+  {
+    property: 'speed',
+    description: 'Transition duration in milliseconds.',
+    type: 'number',
+    defaultValue: '500',
+  },
+  {
+    property: 'infinite',
+    description: 'Whether navigation wraps around at the ends.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'initialSlide',
+    description: 'Initial active slide index.',
+    type: 'number',
+    defaultValue: '0',
+  },
+  {
+    property: 'beforeChange',
+    description: 'Called before active slide changes.',
+    type: '(current: number, next: number) => void',
+  },
+  {
+    property: 'afterChange',
+    description: 'Called after active slide changes.',
+    type: '(current: number) => void',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  {
+    property: 'ref',
+    description: 'Receives imperative carousel methods.',
+    type: 'CarouselRef | ((ref: CarouselRef) => void)',
+  },
+]
+
+const carouselRefRows: ApiTableRow[] = [
+  {
+    property: 'goTo',
+    description: 'Switches to the given slide index.',
+    type: '(slide: number, dontAnimate?: boolean) => void',
+  },
+  { property: 'next', description: 'Switches to the next slide.', type: '() => void' },
+  { property: 'prev', description: 'Switches to the previous slide.', type: '() => void' },
+]
 
 const slideStyle = {
   height: '160px',
@@ -93,20 +190,10 @@ export default function CarouselPage() {
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          Use <code>autoplay</code> and <code>autoplaySpeed</code> to switch slides automatically.
-        </li>
-        <li>
-          Use <code>dots</code>, <code>dotPosition</code>, and <code>arrows</code> for navigation.
-        </li>
-        <li>
-          Use <code>effect="fade"</code> for fade transitions.
-        </li>
-        <li>
-          Use <code>ref</code> to call <code>goTo</code>, <code>next</code>, and <code>prev</code>.
-        </li>
-      </ul>
+      <h3>Carousel</h3>
+      <ApiTable rows={carouselRows} aria-label="Carousel API" />
+      <h3>CarouselRef</h3>
+      <ApiTable rows={carouselRefRows} aria-label="Carousel Ref API" />
     </>
   )
 }

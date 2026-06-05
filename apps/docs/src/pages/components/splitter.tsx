@@ -1,5 +1,48 @@
 import { Splitter } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const splitterRows: ApiTableRow[] = [
+  {
+    property: 'layout',
+    description: 'Panel layout direction.',
+    type: "'horizontal' | 'vertical'",
+    defaultValue: "'horizontal'",
+  },
+  {
+    property: 'onResizeStart',
+    description: 'Called when dragging a resize bar starts.',
+    type: '(sizes: SplitterSize[]) => void',
+  },
+  {
+    property: 'onResize',
+    description: 'Called while panel sizes change.',
+    type: '(sizes: SplitterSize[]) => void',
+  },
+  {
+    property: 'onResizeEnd',
+    description: 'Called when dragging a resize bar ends.',
+    type: '(sizes: SplitterSize[]) => void',
+  },
+]
+
+const splitterPanelRows: ApiTableRow[] = [
+  { property: 'size', description: 'Controlled panel size.', type: 'number | string | undefined' },
+  {
+    property: 'defaultSize',
+    description: 'Initial panel size for uncontrolled usage.',
+    type: 'number | string | undefined',
+  },
+  { property: 'min', description: 'Minimum panel size.', type: 'number | string | undefined' },
+  { property: 'max', description: 'Maximum panel size.', type: 'number | string | undefined' },
+  {
+    property: 'resizable',
+    description: 'Whether adjacent resize bars can resize this panel.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+]
 
 const panelStyle = {
   display: 'flex',
@@ -50,6 +93,12 @@ export default function SplitterPage() {
           <Splitter.Panel style={panelStyle}>Flexible</Splitter.Panel>
         </Splitter>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Splitter</h3>
+      <ApiTable rows={splitterRows} aria-label="Splitter API" />
+      <h3>Splitter.Panel</h3>
+      <ApiTable rows={splitterPanelRows} aria-label="Splitter Panel API" />
     </>
   )
 }

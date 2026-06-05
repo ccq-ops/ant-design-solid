@@ -1,7 +1,94 @@
 import { createSignal } from 'solid-js'
 import { Button, Space, Upload } from '@ant-design-solid/core'
 import type { UploadFile, UploadRequestOptions } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const uploadRows: ApiTableRow[] = [
+  { property: 'fileList', description: 'Controlled upload file list.', type: 'UploadFile[]' },
+  {
+    property: 'defaultFileList',
+    description: 'Initial upload file list for uncontrolled usage.',
+    type: 'UploadFile[]',
+  },
+  { property: 'accept', description: 'Native file input accept attribute.', type: 'string' },
+  {
+    property: 'multiple',
+    description: 'Allows selecting multiple files.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'disabled',
+    description: 'Disables file selection and removal.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'maxCount',
+    description: 'Maximum number of files kept in the list.',
+    type: 'number',
+  },
+  {
+    property: 'showUploadList',
+    description: 'Whether to render the upload list.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'beforeUpload',
+    description: 'Runs before upload. Return false to add without uploading.',
+    type: '(file: File) => boolean | Promise<boolean>',
+  },
+  {
+    property: 'customRequest',
+    description: 'Custom upload request implementation.',
+    type: '(options: UploadRequestOptions) => void',
+  },
+  {
+    property: 'onChange',
+    description: 'Called whenever the file list changes.',
+    type: '(info: UploadChangeInfo) => void',
+  },
+  {
+    property: 'onRemove',
+    description: 'Called before removing a file. Return false to keep it.',
+    type: '(file: UploadFile) => boolean | Promise<boolean>',
+  },
+  { property: 'children', description: 'Upload trigger content.', type: 'JSX.Element' },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+]
+
+const uploadFileRows: ApiTableRow[] = [
+  { property: 'uid', description: 'Unique file id.', type: 'string' },
+  { property: 'name', description: 'File name.', type: 'string' },
+  {
+    property: 'status',
+    description: 'Upload status.',
+    type: "'ready' | 'uploading' | 'done' | 'error' | 'removed'",
+  },
+  { property: 'percent', description: 'Upload progress percent.', type: 'number' },
+  { property: 'originFileObj', description: 'Original native File object.', type: 'File' },
+  { property: 'url', description: 'Download or preview URL rendered as a link.', type: 'string' },
+  { property: 'response', description: 'Upload response value.', type: 'unknown' },
+  { property: 'error', description: 'Upload error value.', type: 'unknown' },
+]
+
+const uploadRequestRows: ApiTableRow[] = [
+  { property: 'file', description: 'Native File being uploaded.', type: 'File' },
+  {
+    property: 'onProgress',
+    description: 'Report upload progress percent.',
+    type: '(percent: number) => void',
+  },
+  {
+    property: 'onSuccess',
+    description: 'Mark upload as successful.',
+    type: '(response?: unknown) => void',
+  },
+  { property: 'onError', description: 'Mark upload as failed.', type: '(error: unknown) => void' },
+]
 
 function delayedRequest({ onProgress, onSuccess }: UploadRequestOptions) {
   onProgress(35)
@@ -109,18 +196,12 @@ export default function UploadPage() {
       </DemoBlock>
 
       <h2>API</h2>
-      <ul>
-        <li>
-          Use <code>fileList</code> and <code>onChange</code> for controlled file-list state.
-        </li>
-        <li>
-          Return <code>false</code> from <code>beforeUpload</code> to keep a selected file in the
-          list without starting upload work.
-        </li>
-        <li>
-          Provide <code>customRequest</code> to report upload progress, success, and errors.
-        </li>
-      </ul>
+      <h3>Upload</h3>
+      <ApiTable rows={uploadRows} aria-label="Upload API" />
+      <h3>UploadFile</h3>
+      <ApiTable rows={uploadFileRows} aria-label="Upload File API" />
+      <h3>UploadRequestOptions</h3>
+      <ApiTable rows={uploadRequestRows} aria-label="Upload Request API" />
     </>
   )
 }

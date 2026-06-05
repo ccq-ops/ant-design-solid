@@ -1,6 +1,118 @@
 import { Button, Space, Tour } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const tourRows: ApiTableRow[] = [
+  { property: 'open', description: 'Controlled tour open state.', type: 'boolean' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial tour open state.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'current', description: 'Controlled current step index.', type: 'number' },
+  {
+    property: 'defaultCurrent',
+    description: 'Initial current step index.',
+    type: 'number',
+    defaultValue: '0',
+  },
+  { property: 'steps', description: 'Tour step definitions.', type: 'TourStep[]' },
+  {
+    property: 'placement',
+    description: 'Default step placement.',
+    type: 'TourPlacement',
+    defaultValue: "'bottom'",
+  },
+  {
+    property: 'mask',
+    description: 'Whether to show the mask.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'arrow',
+    description: 'Whether to show the arrow for targeted steps.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'closeIcon', description: 'Custom close icon.', type: 'JSX.Element' },
+  {
+    property: 'indicatorsRender',
+    description: 'Custom step indicator renderer.',
+    type: '(current: number, total: number) => JSX.Element',
+  },
+  { property: 'zIndex', description: 'Custom overlay z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns portal container.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+  {
+    property: 'gap',
+    description: 'Gap around target mask and popup.',
+    type: 'number',
+    defaultValue: '8',
+  },
+  {
+    property: 'nextText',
+    description: 'Default next button text.',
+    type: 'JSX.Element',
+    defaultValue: "'Next'",
+  },
+  {
+    property: 'prevText',
+    description: 'Default previous button text.',
+    type: 'JSX.Element',
+    defaultValue: "'Previous'",
+  },
+  {
+    property: 'finishText',
+    description: 'Default finish button text.',
+    type: 'JSX.Element',
+    defaultValue: "'Finish'",
+  },
+  {
+    property: 'onClose',
+    description: 'Called when the tour closes.',
+    type: '(current: number) => void',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when the current step changes.',
+    type: '(current: number) => void',
+  },
+  {
+    property: 'onFinish',
+    description: 'Called when the finish button is clicked.',
+    type: '() => void',
+  },
+]
+
+const tourStepRows: ApiTableRow[] = [
+  { property: 'title', description: 'Step title.', type: 'JSX.Element' },
+  { property: 'description', description: 'Step description.', type: 'JSX.Element' },
+  {
+    property: 'target',
+    description: 'Step target element or resolver.',
+    type: 'HTMLElement | null | (() => HTMLElement | null | undefined)',
+  },
+  { property: 'placement', description: 'Step placement override.', type: 'TourPlacement' },
+  { property: 'mask', description: 'Step mask override.', type: 'boolean' },
+  { property: 'arrow', description: 'Step arrow override.', type: 'boolean' },
+  {
+    property: 'nextButtonProps',
+    description: 'Props merged into the next or finish button.',
+    type: 'JSX.ButtonHTMLAttributes<HTMLButtonElement>',
+  },
+  {
+    property: 'prevButtonProps',
+    description: 'Props merged into the previous button.',
+    type: 'JSX.ButtonHTMLAttributes<HTMLButtonElement>',
+  },
+]
 
 export default function TourPage() {
   const [basicOpen, setBasicOpen] = createSignal(false)
@@ -58,6 +170,12 @@ export default function TourPage() {
           ]}
         />
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Tour</h3>
+      <ApiTable rows={tourRows} aria-label="Tour API" />
+      <h3>TourStep</h3>
+      <ApiTable rows={tourStepRows} aria-label="Tour Step API" />
     </>
   )
 }

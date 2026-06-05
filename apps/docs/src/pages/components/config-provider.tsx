@@ -1,5 +1,39 @@
 import { Button, ConfigProvider } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const configProviderRows: ApiTableRow[] = [
+  {
+    property: 'prefixCls',
+    description: 'Global CSS class prefix for components.',
+    type: 'string',
+    defaultValue: "'ads'",
+  },
+  {
+    property: 'componentSize',
+    description: 'Default component size.',
+    type: "'small' | 'middle' | 'large'",
+    defaultValue: "'middle'",
+  },
+  {
+    property: 'direction',
+    description: 'Text and layout direction.',
+    type: "'ltr' | 'rtl'",
+    defaultValue: "'ltr'",
+  },
+  { property: 'theme', description: 'Theme token configuration.', type: 'ThemeConfig' },
+  {
+    property: 'getPopupContainer',
+    description: 'Global popup portal container resolver.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+  {
+    property: 'children',
+    description: 'Application or subtree receiving the configuration.',
+    type: 'JSX.Element',
+  },
+]
 export default function ConfigProviderPage() {
   return (
     <>
@@ -12,6 +46,18 @@ export default function ConfigProviderPage() {
           <Button type="primary">Custom Theme</Button>
         </ConfigProvider>
       </DemoBlock>
+
+      <DemoBlock
+        title="Component size"
+        code={`<ConfigProvider componentSize="large"><Button>Large by config</Button></ConfigProvider>`}
+      >
+        <ConfigProvider componentSize="large">
+          <Button>Large by config</Button>
+        </ConfigProvider>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={configProviderRows} aria-label="ConfigProvider API" />
     </>
   )
 }
