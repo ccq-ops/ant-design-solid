@@ -1,7 +1,51 @@
 import { Layout, Menu } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
 import type { MenuItem } from '@ant-design-solid/core'
+
+const layoutRows: ApiTableRow[] = [
+  {
+    property: 'hasSider',
+    description: 'Applies sider-aware layout styling.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'children', description: 'Layout regions and content.', type: 'JSX.Element' },
+]
+
+const layoutPartRows: ApiTableRow[] = [
+  { property: 'children', description: 'Region content.', type: 'JSX.Element' },
+]
+
+const layoutSiderRows: ApiTableRow[] = [
+  {
+    property: 'width',
+    description: 'Expanded sider width.',
+    type: 'number | string',
+    defaultValue: '200',
+  },
+  {
+    property: 'collapsedWidth',
+    description: 'Collapsed sider width.',
+    type: 'number | string',
+    defaultValue: '80',
+  },
+  {
+    property: 'collapsed',
+    description: 'Whether the sider uses collapsed width and styling.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'theme',
+    description: 'Sider color theme.',
+    type: "'light' | 'dark'",
+    defaultValue: "'dark'",
+  },
+  { property: 'children', description: 'Sider content, often navigation.', type: 'JSX.Element' },
+]
 
 const navItems: MenuItem[] = [
   { key: 'dashboard', label: 'Dashboard' },
@@ -73,6 +117,14 @@ export default function LayoutPage() {
           <Layout.Content style={panelStyle}>Content</Layout.Content>
         </Layout>
       </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Layout</h3>
+      <ApiTable rows={layoutRows} aria-label="Layout API" />
+      <h3>Layout.Header / Layout.Content / Layout.Footer</h3>
+      <ApiTable rows={layoutPartRows} aria-label="Layout region API" />
+      <h3>Layout.Sider</h3>
+      <ApiTable rows={layoutSiderRows} aria-label="Layout Sider API" />
     </>
   )
 }

@@ -1,5 +1,39 @@
 import { Divider, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const dividerRows: ApiTableRow[] = [
+  {
+    property: 'type',
+    description: 'Divider direction.',
+    type: "'horizontal' | 'vertical'",
+    defaultValue: "'horizontal'",
+  },
+  {
+    property: 'orientation',
+    description: 'Text orientation for horizontal dividers with children.',
+    type: "'left' | 'center' | 'right'",
+    defaultValue: "'center'",
+  },
+  {
+    property: 'dashed',
+    description: 'Uses a dashed divider line.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'plain',
+    description: 'Uses plain text styling for divider content.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'children',
+    description: 'Text or content rendered inside a horizontal divider.',
+    type: 'JSX.Element',
+  },
+]
 
 export default function DividerPage() {
   return (
@@ -34,6 +68,9 @@ export default function DividerPage() {
           <span>C</span>
         </Space>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={dividerRows} aria-label="Divider API" />
     </>
   )
 }
