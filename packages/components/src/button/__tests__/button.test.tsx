@@ -59,6 +59,17 @@ describe('Button', () => {
     expect(button).toHaveTextContent('Search')
   })
 
+  it('does not add icon spacing when the button only contains an icon', () => {
+    const result = render(() => <Button icon={<SearchOutlined />} aria-label="Search" />)
+    const button = result.getByRole('button')
+    const iconWrapper = button.querySelector('.ads-btn-icon')
+
+    expect(button.className).toContain('ads-btn-icon-only')
+    expect(iconWrapper).not.toBeNull()
+    expect(iconWrapper?.className).not.toContain('ads-btn-icon-start')
+    expect(iconWrapper?.className).not.toContain('ads-btn-icon-end')
+  })
+
   it('renders the icon after children when iconPosition is end', () => {
     const result = render(() => (
       <Button icon={<SearchOutlined />} iconPosition="end">

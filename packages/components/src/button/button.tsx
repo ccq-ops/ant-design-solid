@@ -80,6 +80,13 @@ export function Button(props: ButtonProps) {
   const iconNode = () => (loadingActive() ? (loadingIcon() ?? <LoadingOutlined />) : local.icon)
   const autoInsertSpace = () => local.autoInsertSpace ?? true
   const children = () => spaceChildren(local.children, autoInsertSpace())
+  const hasChildren = () => {
+    const child = children()
+    return Array.isArray(child)
+      ? child.length > 0
+      : child !== undefined && child !== null && child !== false && child !== ''
+  }
+  const iconOnly = () => Boolean(iconNode() && !hasChildren())
 
   createEffect(() => {
     const loading = local.loading
@@ -99,7 +106,12 @@ export function Button(props: ButtonProps) {
   const renderIcon = () => (
     <Show when={iconNode()}>
       {(icon) => (
-        <span class={classNames(`${prefixCls()}-icon`, `${prefixCls()}-icon-${iconPlacement()}`)}>
+        <span
+          class={classNames(
+            `${prefixCls()}-icon`,
+            !iconOnly() && `${prefixCls()}-icon-${iconPlacement()}`,
+          )}
+        >
           {icon()}
         </span>
       )}
@@ -124,6 +136,7 @@ export function Button(props: ButtonProps) {
       local.block && `${prefixCls()}-block`,
       loadingActive() && `${prefixCls()}-loading`,
       disabled() && `${prefixCls()}-disabled`,
+      iconOnly() && `${prefixCls()}-icon-only`,
       local.shape && local.shape !== 'default' && `${prefixCls()}-${local.shape}`,
       local.ghost && `${prefixCls()}-background-ghost`,
       hashId(),
