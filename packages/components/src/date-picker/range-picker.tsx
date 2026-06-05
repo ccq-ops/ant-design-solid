@@ -248,8 +248,8 @@ export function RangePicker(props: RangePickerProps) {
 
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
-    const nextDate = applyTimeSeed(pickerSelectionStart(date, picker()))
     if (!selecting() || activeRange() === 'start') {
+      const nextDate = applyTimeSeed(pickerSelectionStart(date, picker()), 'start')
       const nextRange: RangeTuple = [nextDate, null]
       setDraftRange(nextRange)
       setPendingRange(nextRange)
@@ -263,6 +263,7 @@ export function RangePicker(props: RangePickerProps) {
       return
     }
 
+    const nextDate = applyTimeSeed(pickerSelectionStart(date, picker()), 'end')
     const currentDraft = draftRange()
     const draft: RangeTuple = [currentDraft[0] ?? selectedRange()[0], nextDate]
     const nextRange = local.order === false ? draft : sortRange(draft)
@@ -276,8 +277,11 @@ export function RangePicker(props: RangePickerProps) {
     setSelecting(false)
     setHoverValue(null)
     setDraftRange([null, null])
-    setActiveRange('start')
-    if (!showTimeEnabled()) setOpen(false)
+    setActiveRange('end')
+    if (!showTimeEnabled()) {
+      setActiveRange('start')
+      setOpen(false)
+    }
   }
 
   function selectedOrPendingRange(): RangeTuple {
@@ -285,20 +289,20 @@ export function RangePicker(props: RangePickerProps) {
     return pending[0] || pending[1] ? pending : selectedRange()
   }
 
-  function timeSeed(): dayjs.Dayjs {
+  function timeSeed(side: RangeSide = activeRange()): dayjs.Dayjs {
     const range = selectedOrPendingRange()
-    const active = range[sideIndex(activeRange())]
+    const active = range[sideIndex(side)]
     if (active) return active
     const options = typeof local.showTime === 'object' ? local.showTime : undefined
     const defaultTime = options?.defaultOpenValue ?? options?.defaultValue
     return (
-      (Array.isArray(defaultTime) ? defaultTime[sideIndex(activeRange())] : defaultTime) ??
+      (Array.isArray(defaultTime) ? defaultTime[sideIndex(side)] : defaultTime) ??
       dayjs().startOf('day')
     )
   }
 
-  function applyTimeSeed(date: dayjs.Dayjs): dayjs.Dayjs {
-    const seed = timeSeed()
+  function applyTimeSeed(date: dayjs.Dayjs, side: RangeSide): dayjs.Dayjs {
+    const seed = timeSeed(side)
     return date
       .hour(seed.hour())
       .minute(seed.minute())
@@ -308,10 +312,9 @@ export function RangePicker(props: RangePickerProps) {
 
   function selectTime(unit: 'hour' | 'minute' | 'second', value: number): void {
     const current = selectedOrPendingRange()
-    const next: RangeTuple = [
-      current[0] ? current[0].set(unit, value) : null,
-      current[1] ? current[1].set(unit, value) : null,
-    ]
+    const index = sideIndex(activeRange())
+    const next: RangeTuple = [...current] as RangeTuple
+    next[index] = next[index]?.set(unit, value) ?? null
     setPendingRange(next)
     setInputValues(rangeStrings(next, effectiveFormat(), picker()))
   }

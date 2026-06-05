@@ -96,17 +96,17 @@ describe('DatePicker showTime', () => {
       [Dayjs | null, Dayjs | null],
       [string, string],
     ]
-    expect(dates[0]?.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-10 08:00:00')
+    expect(dates[0]?.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-10 00:00:00')
     expect(dates[1]?.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-15 08:00:00')
-    expect(dateStrings).toEqual(['2026-06-10 08:00:00', '2026-06-15 08:00:00'])
+    expect(dateStrings).toEqual(['2026-06-10 00:00:00', '2026-06-15 08:00:00'])
   })
 
-  it('uses RangePicker showTime.defaultOpenValue as the initial time seed', () => {
+  it('uses side-specific RangePicker showTime.defaultOpenValue seeds', () => {
     const onChange = vi.fn()
     render(() => (
       <RangePicker
         showTime={{
-          defaultOpenValue: [dayjs('2026-01-01 07:15:00'), dayjs('2026-01-01 07:15:00')],
+          defaultOpenValue: [dayjs('2026-01-01 07:15:00'), dayjs('2026-01-01 18:45:00')],
         }}
         defaultOpen
         defaultPickerValue={dayjs('2026-06-01')}
@@ -118,6 +118,27 @@ describe('DatePicker showTime', () => {
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
     fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
-    expect(onChange.mock.calls.at(-1)![1]).toEqual(['2026-06-10 07:15:00', '2026-06-15 07:15:00'])
+    expect(onChange.mock.calls.at(-1)![1]).toEqual(['2026-06-10 07:15:00', '2026-06-15 18:45:00'])
+  })
+
+  it('applies RangePicker time edits only to the focused side', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <RangePicker
+        showTime
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
+    const [startInput] = screen.getAllByRole('textbox')
+    fireEvent.focus(startInput)
+    fireEvent.click(screen.getByRole('button', { name: 'Hour 08' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    expect(onChange.mock.calls.at(-1)![1]).toEqual(['2026-06-10 08:00:00', '2026-06-15 00:00:00'])
   })
 })
