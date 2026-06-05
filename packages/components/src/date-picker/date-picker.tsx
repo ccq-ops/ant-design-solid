@@ -30,6 +30,7 @@ import type { DatePickerProps, DatePickerValue } from './interface'
 import { mergeDatePickerLocale } from './locale'
 import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
+import { TimePanel } from './time-panel'
 import { RangePicker } from './range-picker'
 import { semanticClass, semanticStyle } from './semantic'
 
@@ -51,6 +52,9 @@ function DatePickerBase(props: DatePickerProps) {
     'open',
     'defaultOpen',
     'disabledDate',
+    'showTime',
+    'showNow',
+    'disabledTime',
     'minDate',
     'maxDate',
     'locale',
@@ -89,6 +93,9 @@ function DatePickerBase(props: DatePickerProps) {
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
   const picker = () => local.picker ?? 'date'
+  const showTimeEnabled = () => Boolean(local.showTime)
+  const effectiveFormat = () =>
+    local.format ?? (showTimeEnabled() ? 'YYYY-MM-DD HH:mm:ss' : undefined)
   const locale = createMemo(() => mergeDatePickerLocale(local.locale))
   const defaultSelectedDate = normalizeDateValue(local.defaultValue)
   const defaultPickerDate = normalizeDateValue(local.defaultPickerValue)
@@ -96,7 +103,7 @@ function DatePickerBase(props: DatePickerProps) {
   const initialViewDate = defaultPickerDate ?? defaultSelectedDate ?? dayjs()
   const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
   const [inputValue, setInputValue] = createSignal(
-    formatDayjs(defaultSelectedDate, local.format, picker()),
+    formatDayjs(defaultSelectedDate, effectiveFormat(), picker()),
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
@@ -113,7 +120,7 @@ function DatePickerBase(props: DatePickerProps) {
   const selectedDate = createMemo(() =>
     isValueControlled() ? normalizeDateValue(local.value) : innerValue(),
   )
-  const displayValue = createMemo(() => formatDayjs(selectedDate(), local.format, picker()))
+  const displayValue = createMemo(() => formatDayjs(selectedDate(), effectiveFormat(), picker()))
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
   const panelViewDate = () => controlledPickerDate() ?? viewMonth()
   const placeholder = () => local.placeholder ?? locale().lang?.placeholder ?? 'Select date'
@@ -180,15 +187,15 @@ function DatePickerBase(props: DatePickerProps) {
 
   function changeValue(nextDate: DatePickerValue): void {
     if (!isValueControlled()) setInnerValue(nextDate)
-    const nextString = formatDayjs(nextDate, local.format, picker())
+    const nextString = formatDayjs(nextDate, effectiveFormat(), picker())
     if (!isValueControlled()) setInputValue(nextString)
     local.onChange?.(nextDate, nextString)
   }
 
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
-    if (local.needConfirm) {
-      setPendingValue(date)
+    if (local.needConfirm || showTimeEnabled()) {
+      setPendingValue(applyTimeSeed(date))
       return
     }
     changeValue(date)
@@ -218,13 +225,13 @@ function DatePickerBase(props: DatePickerProps) {
       if (closePopup) setOpen(false)
       return
     }
-    const parsed = parseDayjs(rawValue, local.format, picker())
+    const parsed = parseDayjs(rawValue, effectiveFormat(), picker())
     if (!parsed || isDateDisabled(parsed)) {
       if (!local.preserveInvalidOnBlur) setInputValue(displayValue())
       return
     }
     if (samePickerValue(parsed, currentValue, picker())) {
-      setInputValue(formatDayjs(parsed, local.format, picker()))
+      setInputValue(formatDayjs(parsed, effectiveFormat(), picker()))
     } else {
       changeValue(parsed)
     }
@@ -261,6 +268,33 @@ function DatePickerBase(props: DatePickerProps) {
         : 'month'
     const amount = currentPicker === 'year' ? 12 : 1
     changePanelView(panelViewDate().add(amount, unit))
+  }
+
+  function timeSeed(): dayjs.Dayjs {
+    if (pendingValue()) return pendingValue()!
+    if (selectedDate()) return selectedDate()!
+    const options = typeof local.showTime === 'object' ? local.showTime : undefined
+    return options?.defaultOpenValue ?? options?.defaultValue ?? dayjs().startOf('day')
+  }
+
+  function applyTimeSeed(date: dayjs.Dayjs): dayjs.Dayjs {
+    const seed = timeSeed()
+    return date
+      .hour(seed.hour())
+      .minute(seed.minute())
+      .second(seed.second())
+      .millisecond(seed.millisecond())
+  }
+
+  function selectTime(unit: 'hour' | 'minute' | 'second', value: number): void {
+    const base = pendingValue() ?? selectedDate() ?? applyTimeSeed(panelViewDate())
+    setPendingValue(base.set(unit, value))
+  }
+
+  function selectNow(): void {
+    const now = dayjs()
+    setPendingValue(now)
+    if (!isPickerValueControlled()) setViewMonth(pickerViewStart(now, picker()))
   }
 
   function selectPickerValue(date: dayjs.Dayjs): void {
@@ -411,11 +445,23 @@ function DatePickerBase(props: DatePickerProps) {
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
             needConfirm={local.needConfirm}
+            showTime={showTimeEnabled()}
+            showNow={Boolean(local.showNow)}
+            onNow={selectNow}
             onOk={confirmPendingValue}
             onPrevious={previousPanel}
             onNext={nextPanel}
           >
             {panelNode()}
+            <Show when={showTimeEnabled()}>
+              <TimePanel
+                prefixCls={prefixCls()}
+                value={pendingValue() ?? selectedDate()}
+                showTime={local.showTime}
+                disabledTime={local.disabledTime?.(pendingValue() ?? selectedDate())}
+                onSelectTime={selectTime}
+              />
+            </Show>
           </PickerPanel>
         </InternalPortal>
       </Show>

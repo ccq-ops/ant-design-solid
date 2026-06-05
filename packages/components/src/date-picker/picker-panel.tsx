@@ -33,6 +33,9 @@ export interface PickerPanelProps {
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
   mode?: PickerMode
   needConfirm?: boolean
+  showTime?: boolean
+  showNow?: boolean
+  onNow?: () => void
   onPrevious?: () => void
   onNext?: () => void
   onOk?: () => void
@@ -125,10 +128,17 @@ export function PickerPanel(props: PickerPanelProps) {
         </button>
       </div>
       {props.children}
-      <Show when={props.renderExtraFooter || props.needConfirm}>
+      <Show when={props.renderExtraFooter || props.needConfirm || props.showTime}>
         <div class={`${props.prefixCls}-footer`}>
-          {props.renderExtraFooter?.(props.mode ?? 'date')}
-          <Show when={props.needConfirm}>
+          <div class={`${props.prefixCls}-footer-extra`}>
+            {props.renderExtraFooter?.(props.mode ?? 'date')}
+            <Show when={props.showTime && props.showNow}>
+              <button type="button" class={`${props.prefixCls}-now`} onClick={props.onNow}>
+                Now
+              </button>
+            </Show>
+          </div>
+          <Show when={props.needConfirm || props.showTime}>
             <button type="button" class={`${props.prefixCls}-ok`} onClick={props.onOk}>
               OK
             </button>

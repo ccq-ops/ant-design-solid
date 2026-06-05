@@ -60,6 +60,7 @@ export interface DisabledTimeConfig {
 
 export interface ShowTimeOptions extends DisabledTimeConfig {
   defaultValue?: Dayjs
+  defaultOpenValue?: Dayjs
   format?: string
   showHour?: boolean
   showMinute?: boolean
@@ -132,6 +133,8 @@ export interface CommonPickerProps extends Omit<
   minDate?: Dayjs
   maxDate?: Dayjs
   showTime?: boolean | ShowTimeOptions
+  showNow?: boolean
+  disabledTime?: (date: Dayjs | null) => DisabledTimeConfig
   cellRender?: (current: Dayjs, info: CellRenderInfo) => JSX.Element
   dateRender?: (current: Dayjs, today: Dayjs) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element

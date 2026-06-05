@@ -218,6 +218,52 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-cell-disabled:hover`]: {
           background: 'transparent',
         },
+        [`.${prefixCls}-time-panel`]: {
+          display: 'flex',
+          gap: `${t.marginXS}px`,
+          'margin-top': `${t.marginSM}px`,
+          'padding-top': `${t.paddingXS}px`,
+          borderTop: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        },
+        [`.${prefixCls}-time-column`]: {
+          flex: '1 1 0',
+          height: '160px',
+          overflow: 'auto',
+        },
+        [`.${prefixCls}-time-column-title`]: {
+          color: t.colorTextSecondary,
+          'font-size': `${t.fontSize}px`,
+          'line-height': '24px',
+          'text-align': 'center',
+        },
+        [`.${prefixCls}-time-cell`]: {
+          display: 'block',
+          width: '100%',
+          height: '28px',
+          border: '0',
+          'border-radius': `${t.borderRadius}px`,
+          background: 'transparent',
+          color: t.colorText,
+          cursor: 'pointer',
+          'font-size': `${t.fontSize}px`,
+        },
+        [`.${prefixCls}-time-cell:hover`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-time-cell-selected`]: {
+          color: t.colorBgContainer,
+          background: t.colorPrimary,
+        },
+        [`.${prefixCls}-time-cell-selected:hover`]: {
+          background: t.colorPrimary,
+        },
+        [`.${prefixCls}-time-cell-disabled`]: {
+          color: t.colorTextDisabled,
+          cursor: 'not-allowed',
+        },
+        [`.${prefixCls}-time-cell-disabled:hover`]: {
+          background: 'transparent',
+        },
         [`.${prefixCls}-footer`]: {
           display: 'flex',
           'align-items': 'center',
@@ -225,6 +271,18 @@ export function useDatePickerStyle(prefixCls: string) {
           'margin-top': `${t.marginSM}px`,
           'padding-top': `${t.paddingXS}px`,
           borderTop: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        },
+        [`.${prefixCls}-footer-extra`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          gap: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-now`]: {
+          border: '0',
+          padding: '0',
+          background: 'transparent',
+          color: t.colorPrimary,
+          cursor: 'pointer',
         },
         [`.${prefixCls}-ok`]: {
           border: '0',

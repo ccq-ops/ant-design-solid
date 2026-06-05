@@ -29,6 +29,7 @@ import type { PickerMode, RangePickerProps, RangePickerValue, RangeSide } from '
 import { mergeDatePickerLocale } from './locale'
 import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
+import { TimePanel } from './time-panel'
 import { semanticClass, semanticStyle } from './semantic'
 
 type RangeTuple = [dayjs.Dayjs | null, dayjs.Dayjs | null]
@@ -81,6 +82,8 @@ export function RangePicker(props: RangePickerProps) {
     'defaultOpen',
     'disabledDate',
     'showTime',
+    'showNow',
+    'disabledTime',
     'minDate',
     'maxDate',
     'locale',
@@ -113,12 +116,16 @@ export function RangePicker(props: RangePickerProps) {
     'order',
     'onFocus',
     'onBlur',
+    'onOk',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
   const picker = () => local.picker ?? 'date'
+  const showTimeEnabled = () => Boolean(local.showTime)
+  const effectiveFormat = () =>
+    local.format ?? (showTimeEnabled() ? 'YYYY-MM-DD HH:mm:ss' : undefined)
   const locale = createMemo(() => mergeDatePickerLocale(local.locale))
   const defaultSelectedRange = normalizeRangeValue(local.defaultValue)
   const defaultPickerDate = normalizePickerValue(local.defaultPickerValue)
@@ -126,12 +133,13 @@ export function RangePicker(props: RangePickerProps) {
     defaultPickerDate ?? defaultSelectedRange[0] ?? defaultSelectedRange[1] ?? dayjs()
   const [innerValue, setInnerValue] = createSignal<RangeTuple>(defaultSelectedRange)
   const [inputValues, setInputValues] = createSignal<[string, string]>(
-    rangeStrings(defaultSelectedRange, local.format, picker()),
+    rangeStrings(defaultSelectedRange, effectiveFormat(), picker()),
   )
   const [activeRange, setActiveRange] = createSignal<RangeSide>('start')
   const [selecting, setSelecting] = createSignal(false)
   const [hoverValue, setHoverValue] = createSignal<dayjs.Dayjs | null>(null)
   const [draftRange, setDraftRange] = createSignal<RangeTuple>([null, null])
+  const [pendingRange, setPendingRange] = createSignal<RangeTuple>([null, null])
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
@@ -146,7 +154,7 @@ export function RangePicker(props: RangePickerProps) {
   const selectedRange = createMemo<RangeTuple>(() =>
     isValueControlled() ? normalizeRangeValue(local.value) : innerValue(),
   )
-  const displayValues = createMemo(() => rangeStrings(selectedRange(), local.format, picker()))
+  const displayValues = createMemo(() => rangeStrings(selectedRange(), effectiveFormat(), picker()))
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
   const panelViewDate = () => normalizePickerValue(local.pickerValue) ?? viewMonth()
   const placeholder = createMemo<[string, string]>(
@@ -155,7 +163,11 @@ export function RangePicker(props: RangePickerProps) {
   const allDisabled = () =>
     disabledForSide(local.disabled, 'start') && disabledForSide(local.disabled, 'end')
 
-  createEffect(() => setInputValues(displayValues()))
+  createEffect(() => {
+    if (!showTimeEnabled() || !(pendingRange()[0] || pendingRange()[1])) {
+      setInputValues(displayValues())
+    }
+  })
   createEffect(() => {
     const [start, end] = selectedRange()
     if ((start || end) && !isPickerValueControlled())
@@ -219,7 +231,7 @@ export function RangePicker(props: RangePickerProps) {
   function commitValue(nextRange: RangeTuple): void {
     const normalized = filledRange(nextRange)
     if (!isValueControlled()) setInnerValue(nextRange)
-    const nextStrings = rangeStrings(nextRange, local.format, picker())
+    const nextStrings = rangeStrings(nextRange, effectiveFormat(), picker())
     if (!isValueControlled()) setInputValues(nextStrings)
     local.onChange?.(normalized, nextStrings)
   }
@@ -227,7 +239,7 @@ export function RangePicker(props: RangePickerProps) {
   function emitCalendarChange(nextRange: RangeTuple, range: RangeSide): void {
     local.onCalendarChange?.(
       filledRange(nextRange),
-      rangeStrings(nextRange, local.format, picker()),
+      rangeStrings(nextRange, effectiveFormat(), picker()),
       {
         range,
       },
@@ -236,12 +248,13 @@ export function RangePicker(props: RangePickerProps) {
 
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
-    const nextDate = pickerSelectionStart(date, picker())
+    const nextDate = applyTimeSeed(pickerSelectionStart(date, picker()))
     if (!selecting() || activeRange() === 'start') {
       const nextRange: RangeTuple = [nextDate, null]
       setDraftRange(nextRange)
-      if (!isValueControlled()) setInnerValue(nextRange)
-      setInputValues(rangeStrings(nextRange, local.format, picker()))
+      setPendingRange(nextRange)
+      if (!showTimeEnabled() && !isValueControlled()) setInnerValue(nextRange)
+      setInputValues(rangeStrings(nextRange, effectiveFormat(), picker()))
       emitCalendarChange(nextRange, 'start')
       setSelecting(true)
       setHoverValue(null)
@@ -253,13 +266,72 @@ export function RangePicker(props: RangePickerProps) {
     const currentDraft = draftRange()
     const draft: RangeTuple = [currentDraft[0] ?? selectedRange()[0], nextDate]
     const nextRange = local.order === false ? draft : sortRange(draft)
-    commitValue(nextRange)
+    if (showTimeEnabled()) {
+      setPendingRange(nextRange)
+      setInputValues(rangeStrings(nextRange, effectiveFormat(), picker()))
+    } else {
+      commitValue(nextRange)
+    }
     emitCalendarChange(nextRange, 'end')
     setSelecting(false)
     setHoverValue(null)
     setDraftRange([null, null])
     setActiveRange('start')
-    setOpen(false)
+    if (!showTimeEnabled()) setOpen(false)
+  }
+
+  function selectedOrPendingRange(): RangeTuple {
+    const pending = pendingRange()
+    return pending[0] || pending[1] ? pending : selectedRange()
+  }
+
+  function timeSeed(): dayjs.Dayjs {
+    const range = selectedOrPendingRange()
+    const active = range[sideIndex(activeRange())]
+    if (active) return active
+    const options = typeof local.showTime === 'object' ? local.showTime : undefined
+    const defaultValue = options?.defaultValue
+    return (
+      (Array.isArray(defaultValue) ? defaultValue[sideIndex(activeRange())] : defaultValue) ??
+      dayjs().startOf('day')
+    )
+  }
+
+  function applyTimeSeed(date: dayjs.Dayjs): dayjs.Dayjs {
+    const seed = timeSeed()
+    return date
+      .hour(seed.hour())
+      .minute(seed.minute())
+      .second(seed.second())
+      .millisecond(seed.millisecond())
+  }
+
+  function selectTime(unit: 'hour' | 'minute' | 'second', value: number): void {
+    const current = selectedOrPendingRange()
+    const next: RangeTuple = [
+      current[0] ? current[0].set(unit, value) : null,
+      current[1] ? current[1].set(unit, value) : null,
+    ]
+    setPendingRange(next)
+    setInputValues(rangeStrings(next, effectiveFormat(), picker()))
+  }
+
+  function confirmPendingValue(): void {
+    const pending = pendingRange()
+    const nextRange = pending[0] || pending[1] ? pending : selectedRange()
+    if (nextRange[0] && nextRange[1]) {
+      commitValue(nextRange)
+      local.onOk?.(filledRange(nextRange))
+      setPendingRange([null, null])
+      setOpen(false)
+    }
+  }
+
+  function selectNow(): void {
+    const now = dayjs()
+    setPendingRange([now, now])
+    setInputValues(rangeStrings([now, now], effectiveFormat(), picker()))
+    if (!isPickerValueControlled()) setViewMonth(pickerViewStart(now, picker()))
   }
 
   function changeHoverValue(date: dayjs.Dayjs | null): void {
@@ -431,6 +503,10 @@ export function RangePicker(props: RangePickerProps) {
             mode={picker()}
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
+            showTime={showTimeEnabled()}
+            showNow={Boolean(local.showNow)}
+            onNow={selectNow}
+            onOk={confirmPendingValue}
             onPrevious={previousPanel}
             onNext={nextPanel}
           >
@@ -438,8 +514,12 @@ export function RangePicker(props: RangePickerProps) {
               prefixCls={prefixCls()}
               viewDate={panelViewDate()}
               picker={picker()}
-              selectedValue={activeRange() === 'start' ? selectedRange()[0] : selectedRange()[1]}
-              rangeValue={selectedRange()}
+              selectedValue={
+                activeRange() === 'start'
+                  ? selectedOrPendingRange()[0]
+                  : selectedOrPendingRange()[1]
+              }
+              rangeValue={selectedOrPendingRange()}
               activeRange={activeRange()}
               hoverValue={hoverValue()}
               disabledDate={isDateDisabled}
@@ -451,6 +531,17 @@ export function RangePicker(props: RangePickerProps) {
               onSelect={selectDate}
               onHover={changeHoverValue}
             />
+            <Show when={showTimeEnabled()}>
+              <TimePanel
+                prefixCls={prefixCls()}
+                value={selectedOrPendingRange()[sideIndex(activeRange())]}
+                showTime={local.showTime}
+                disabledTime={local.disabledTime?.(
+                  selectedOrPendingRange()[sideIndex(activeRange())],
+                )}
+                onSelectTime={selectTime}
+              />
+            </Show>
           </PickerPanel>
         </InternalPortal>
       </Show>
