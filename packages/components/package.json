@@ -24,7 +24,8 @@
   "dependencies": {
     "@ant-design-solid/cssinjs": "workspace:*",
     "@ant-design-solid/icons": "workspace:*",
-    "@ant-design-solid/theme": "workspace:*"
+    "@ant-design-solid/theme": "workspace:*",
+    "dayjs": "^1.11.13"
   },
   "peerDependencies": {
     "solid-js": ">=1.9.0"

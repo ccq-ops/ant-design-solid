@@ -12,97 +12,22 @@ import {
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/class-names'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
-import type { DatePickerProps, DatePickerValue } from './interface'
+import { dayjs, isOutOfBounds, monthStart, normalizeDateValue, samePickerValue } from './date-utils'
 import { useDatePickerStyle } from './date-picker.style'
+import { formatDayjs, parseDayjs } from './format-utils'
+import type { DatePickerProps, DatePickerValue } from './interface'
+import { mergeDatePickerLocale } from './locale'
+import { semanticClass, semanticStyle } from './semantic'
 
-const DEFAULT_FORMAT = 'YYYY-MM-DD'
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
-function pad(value: number): string {
-  return String(value).padStart(2, '0')
-}
-
-function isValidDate(value: Date): boolean {
-  return !Number.isNaN(value.getTime())
-}
-
-function startOfDay(value: Date): Date {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate())
-}
-
-function sameDate(a: Date | undefined, b: Date | undefined): boolean {
-  return Boolean(
-    a &&
-    b &&
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate(),
-  )
-}
-
-function parseDate(value: DatePickerValue | undefined): Date | undefined {
-  if (value === undefined) return undefined
-  if (value instanceof Date) return isValidDate(value) ? startOfDay(value) : undefined
-
-  const trimmed = value.trim()
-  if (!trimmed) return undefined
-
-  const match = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s].*)?$/.exec(trimmed)
-  if (match) {
-    const year = Number(match[1])
-    const month = Number(match[2])
-    const day = Number(match[3])
-    const parsed = new Date(year, month - 1, day)
-    if (
-      parsed.getFullYear() === year &&
-      parsed.getMonth() === month - 1 &&
-      parsed.getDate() === day
-    ) {
-      return parsed
-    }
-    return undefined
-  }
-
-  const fallback = new Date(trimmed)
-  if (!isValidDate(fallback)) return undefined
-  return startOfDay(fallback)
-}
-
-function formatDate(value: Date, format: string): string {
-  const replacements: Record<string, string> = {
-    YYYY: String(value.getFullYear()),
-    MM: pad(value.getMonth() + 1),
-    DD: pad(value.getDate()),
-  }
-
-  return format.replace(/YYYY|MM|DD/g, (token) => replacements[token] ?? token)
-}
-
-function monthLabel(value: Date): string {
-  return `${value.getFullYear()}-${pad(value.getMonth() + 1)}`
-}
-
-function addMonths(value: Date, offset: number): Date {
-  return new Date(value.getFullYear(), value.getMonth() + offset, 1)
-}
-
-function daysInMonth(value: Date): number {
-  return new Date(value.getFullYear(), value.getMonth() + 1, 0).getDate()
-}
-
-function monthDates(value: Date): Array<Date | undefined> {
-  const firstDate = new Date(value.getFullYear(), value.getMonth(), 1)
-  const blanks = firstDate.getDay()
-  const dates: Array<Date | undefined> = Array.from({ length: blanks }, () => undefined)
-
-  for (let day = 1; day <= daysInMonth(value); day += 1) {
-    dates.push(new Date(value.getFullYear(), value.getMonth(), day))
-  }
-
+function monthDates(value: dayjs.Dayjs): Array<dayjs.Dayjs | null> {
+  const firstDate = monthStart(value)
+  const dates: Array<dayjs.Dayjs | null> = Array.from({ length: firstDate.day() }, () => null)
+  for (let day = 1; day <= firstDate.daysInMonth(); day += 1) dates.push(firstDate.date(day))
   return dates
 }
 
@@ -111,54 +36,71 @@ export function DatePicker(props: DatePickerProps) {
     'value',
     'defaultValue',
     'format',
+    'picker',
     'placeholder',
     'disabled',
     'allowClear',
+    'autoFocus',
+    'inputReadOnly',
     'open',
     'defaultOpen',
     'disabledDate',
+    'minDate',
+    'maxDate',
+    'locale',
     'prefixCls',
     'class',
     'style',
+    'classNames',
+    'styles',
+    'popupClassName',
+    'dropdownClassName',
+    'popupStyle',
     'onChange',
     'onOpenChange',
     'onKeyDown',
     'zIndex',
     'getPopupContainer',
+    'id',
+    'name',
+    'prefix',
+    'suffixIcon',
+    'separator',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
-  const defaultSelectedDate = parseDate(local.defaultValue)
-  const initialViewDate = defaultSelectedDate ?? new Date()
-  const [innerValue, setInnerValue] = createSignal<Date | undefined>(defaultSelectedDate)
-  const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
-  const [viewMonth, setViewMonth] = createSignal(
-    new Date(initialViewDate.getFullYear(), initialViewDate.getMonth(), 1),
+  const picker = () => local.picker ?? 'date'
+  const locale = createMemo(() => mergeDatePickerLocale(local.locale))
+  const defaultSelectedDate = normalizeDateValue(local.defaultValue)
+  const initialViewDate = defaultSelectedDate ?? dayjs()
+  const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
+  const [inputValue, setInputValue] = createSignal(
+    formatDayjs(defaultSelectedDate, local.format, picker()),
   )
+  const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const [viewMonth, setViewMonth] = createSignal(monthStart(initialViewDate))
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
+  let inputRef: HTMLInputElement | undefined
   let dropdownRef: HTMLDivElement | undefined
 
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
-  const format = () => local.format ?? DEFAULT_FORMAT
   const disabled = () => Boolean(local.disabled)
   const selectedDate = createMemo(() =>
-    isValueControlled() ? parseDate(local.value) : innerValue(),
+    isValueControlled() ? normalizeDateValue(local.value) : innerValue(),
   )
-  const displayValue = () => {
-    const selected = selectedDate()
-    return selected ? formatDate(selected, format()) : undefined
-  }
+  const displayValue = createMemo(() => formatDayjs(selectedDate(), local.format, picker()))
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
   const dates = createMemo(() => monthDates(viewMonth()))
-  const today = () => startOfDay(new Date())
+  const placeholder = () => local.placeholder ?? locale().lang?.placeholder ?? 'Select date'
 
+  createEffect(() => setInputValue(displayValue()))
   createEffect(() => {
     const selected = selectedDate()
-    if (selected) setViewMonth(new Date(selected.getFullYear(), selected.getMonth(), 1))
+    if (selected) setViewMonth(monthStart(selected))
   })
 
   function updateDropdownPosition(): void {
@@ -173,6 +115,7 @@ export function DatePicker(props: DatePickerProps) {
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       'z-index': `${dropdownZIndex}`,
+      ...local.popupStyle,
     })
   }
 
@@ -194,13 +137,11 @@ export function DatePicker(props: DatePickerProps) {
   createRenderEffect(() => {
     if (open()) updateDropdownPosition()
   })
-
   createEffect(() => {
     if (!open()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
     onCleanup(removeListeners)
   })
-
   createEffect(() => {
     if (!open()) return
     const removePointerDown = addDocumentPointerDown((event) => {
@@ -209,62 +150,129 @@ export function DatePicker(props: DatePickerProps) {
     onCleanup(removePointerDown)
   })
 
-  function changeValue(nextDate: Date | undefined): void {
-    if (!isValueControlled()) setInnerValue(nextDate)
-    local.onChange?.(nextDate, nextDate ? formatDate(nextDate, format()) : '')
+  function isDateDisabled(date: dayjs.Dayjs): boolean {
+    return Boolean(
+      local.disabledDate?.(date) || isOutOfBounds(date, local.minDate, local.maxDate, picker()),
+    )
   }
 
-  function selectDate(date: Date): void {
-    if (local.disabledDate?.(date)) return
+  function changeValue(nextDate: DatePickerValue): void {
+    if (!isValueControlled()) setInnerValue(nextDate)
+    const nextString = formatDayjs(nextDate, local.format, picker())
+    if (!isValueControlled()) setInputValue(nextString)
+    local.onChange?.(nextDate, nextString)
+  }
+
+  function selectDate(date: dayjs.Dayjs): void {
+    if (isDateDisabled(date)) return
     changeValue(date)
     setOpen(false)
   }
 
+  function parseInput(closePopup: boolean): void {
+    const rawValue = inputValue()
+    const currentValue = selectedDate()
+    if (!rawValue.trim()) {
+      if (currentValue === null) {
+        setInputValue('')
+      } else {
+        changeValue(null)
+      }
+      if (closePopup) setOpen(false)
+      return
+    }
+    const parsed = parseDayjs(rawValue, local.format, picker())
+    if (!parsed || isDateDisabled(parsed)) {
+      setInputValue(displayValue())
+      return
+    }
+    if (samePickerValue(parsed, currentValue, picker())) {
+      setInputValue(formatDayjs(parsed, local.format, picker()))
+    } else {
+      changeValue(parsed)
+    }
+    setViewMonth(monthStart(parsed))
+    if (closePopup) setOpen(false)
+  }
+
   function clearValue(event: MouseEvent): void {
     event.stopPropagation()
-    changeValue(undefined)
+    changeValue(null)
   }
 
   return (
     <div
       {...rest}
-      class={classNames(
+      ref={(element) => {
+        selectorRef = element
+      }}
+      class={semanticClass(
+        'root',
+        local.classNames,
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         hashId(),
         local.class,
       )}
-      style={local.style}
+      style={{
+        ...semanticStyle('root', local.styles),
+        ...(local.style as JSX.CSSProperties | undefined),
+      }}
     >
       <div
         role="combobox"
-        tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
-        ref={(element) => {
-          selectorRef = element
-        }}
-        class={`${prefixCls()}-selector`}
-        onClick={() => setOpen(!open())}
-        onKeyDown={(event) => {
-          ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(event)
-          if (event.key === 'Escape') setOpen(false)
+        class={semanticClass('selector', local.classNames, `${prefixCls()}-selector`)}
+        style={semanticStyle('selector', local.styles)}
+        onClick={() => {
+          inputRef?.focus()
+          setOpen(true)
         }}
       >
-        <span
-          class={displayValue() ? `${prefixCls()}-selection-item` : `${prefixCls()}-placeholder`}
-        >
-          {displayValue() ?? local.placeholder ?? 'Select date'}
-        </span>
-        <Show when={local.allowClear && !disabled() && displayValue() !== undefined}>
+        <input
+          id={local.id}
+          name={local.name}
+          ref={(element) => {
+            inputRef = element
+          }}
+          role="textbox"
+          aria-label={rest['aria-label']}
+          class={semanticClass('input', local.classNames, `${prefixCls()}-input`)}
+          style={semanticStyle('input', local.styles)}
+          value={inputValue()}
+          placeholder={placeholder()}
+          disabled={disabled()}
+          readOnly={local.inputReadOnly}
+          autofocus={local.autoFocus}
+          onInput={(event) => setInputValue(event.currentTarget.value)}
+          onFocus={() => setOpen(true)}
+          onBlur={() => parseInput(false)}
+          onKeyDown={(event) => {
+            ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(
+              event,
+            )
+            if (event.key === 'Enter') {
+              event.preventDefault()
+              parseInput(true)
+            }
+            if (event.key === 'Escape') setOpen(false)
+          }}
+        />
+        <Show when={local.allowClear && !disabled() && displayValue() !== ''}>
           <button
             type="button"
             aria-label="Clear date"
-            class={`${prefixCls()}-clear`}
+            class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
+            style={semanticStyle('clear', local.styles)}
             onClick={clearValue}
           >
-            <CloseCircleFilled />
+            {typeof local.allowClear === 'object' && local.allowClear.clearIcon ? (
+              local.allowClear.clearIcon
+            ) : (
+              <CloseCircleFilled />
+            )}
           </button>
         </Show>
       </div>
@@ -278,7 +286,13 @@ export function DatePicker(props: DatePickerProps) {
             ref={(element) => {
               dropdownRef = element
             }}
-            class={`${prefixCls()}-dropdown`}
+            class={semanticClass(
+              'popup',
+              local.classNames,
+              `${prefixCls()}-dropdown`,
+              local.popupClassName,
+              local.dropdownClassName,
+            )}
             style={dropdownPosition()}
           >
             <div class={`${prefixCls()}-header`}>
@@ -286,16 +300,16 @@ export function DatePicker(props: DatePickerProps) {
                 type="button"
                 aria-label="Previous month"
                 class={`${prefixCls()}-month-button`}
-                onClick={() => setViewMonth(addMonths(viewMonth(), -1))}
+                onClick={() => setViewMonth(viewMonth().subtract(1, 'month'))}
               >
                 ‹
               </button>
-              <div class={`${prefixCls()}-month-label`}>{monthLabel(viewMonth())}</div>
+              <div class={`${prefixCls()}-month-label`}>{viewMonth().format('YYYY-MM')}</div>
               <button
                 type="button"
                 aria-label="Next month"
                 class={`${prefixCls()}-month-button`}
-                onClick={() => setViewMonth(addMonths(viewMonth(), 1))}
+                onClick={() => setViewMonth(viewMonth().add(1, 'month'))}
               >
                 ›
               </button>
@@ -311,24 +325,28 @@ export function DatePicker(props: DatePickerProps) {
                   <Show when={date} fallback={<div class={`${prefixCls()}-empty-cell`} />}>
                     {(currentDate) => {
                       const cellDate = currentDate()
-                      const dateString = () => formatDate(cellDate, DEFAULT_FORMAT)
-                      const cellDisabled = () => Boolean(local.disabledDate?.(cellDate))
-                      const selected = () => sameDate(selectedDate(), cellDate)
+                      const dateString = () => cellDate.format('YYYY-MM-DD')
+                      const cellDisabled = () => isDateDisabled(cellDate)
+                      const selected = () => samePickerValue(selectedDate(), cellDate, picker())
                       return (
                         <button
                           type="button"
                           aria-label={dateString()}
                           aria-pressed={selected()}
                           aria-disabled={cellDisabled()}
-                          class={classNames(
+                          class={semanticClass(
+                            'cell',
+                            local.classNames,
                             `${prefixCls()}-cell`,
-                            sameDate(today(), cellDate) && `${prefixCls()}-cell-today`,
+                            samePickerValue(dayjs(), cellDate, 'date') &&
+                              `${prefixCls()}-cell-today`,
                             selected() && `${prefixCls()}-cell-selected`,
                             cellDisabled() && `${prefixCls()}-cell-disabled`,
                           )}
+                          style={semanticStyle('cell', local.styles)}
                           onClick={() => selectDate(cellDate)}
                         >
-                          {cellDate.getDate()}
+                          {cellDate.date()}
                         </button>
                       )
                     }}

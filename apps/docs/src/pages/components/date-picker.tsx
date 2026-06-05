@@ -1,3 +1,4 @@
+import dayjs, { type Dayjs } from 'dayjs'
 import { createSignal } from 'solid-js'
 import { DatePicker, Space } from '@ant-design-solid/core'
 import { ApiTable } from '../../components/api-table'
@@ -5,16 +6,16 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const datePickerRows: ApiTableRow[] = [
-  { property: 'value', description: 'Controlled selected date.', type: 'Date | string' },
+  { property: 'value', description: 'Controlled selected date.', type: 'Dayjs | null' },
   {
     property: 'defaultValue',
     description: 'Initial selected date for uncontrolled usage.',
-    type: 'Date | string',
+    type: 'Dayjs | null',
   },
   {
     property: 'format',
     description: 'Display and emitted date string format.',
-    type: 'string',
+    type: "string | string[] | ((value: Dayjs) => string) | { format: string; type?: 'mask' }",
     defaultValue: "'YYYY-MM-DD'",
   },
   {
@@ -32,7 +33,7 @@ const datePickerRows: ApiTableRow[] = [
   {
     property: 'allowClear',
     description: 'Shows a clear button when a value is selected.',
-    type: 'boolean',
+    type: 'boolean | { clearIcon?: JSX.Element }',
     defaultValue: 'false',
   },
   { property: 'open', description: 'Controlled popup open state.', type: 'boolean' },
@@ -45,12 +46,12 @@ const datePickerRows: ApiTableRow[] = [
   {
     property: 'disabledDate',
     description: 'Disables date cells.',
-    type: '(date: Date) => boolean',
+    type: '(date: Dayjs) => boolean',
   },
   {
     property: 'onChange',
     description: 'Called when selection changes.',
-    type: '(value: Date | undefined, dateString: string) => void',
+    type: '(value: Dayjs | null, dateString: string) => void',
   },
   {
     property: 'onOpenChange',
@@ -67,12 +68,9 @@ const datePickerRows: ApiTableRow[] = [
 ]
 
 export default function DatePickerPage() {
-  const [value, setValue] = createSignal<Date | string | undefined>('2026-06-15')
+  const [value, setValue] = createSignal<Dayjs | null>(dayjs('2026-06-15'))
   const [open, setOpen] = createSignal(false)
-  const selectedLabel = () => {
-    const selected = value()
-    return selected instanceof Date ? selected.toDateString() : (selected ?? 'none')
-  }
+  const selectedLabel = () => value()?.format('YYYY-MM-DD') ?? 'none'
 
   return (
     <>
@@ -85,7 +83,7 @@ export default function DatePickerPage() {
 
       <DemoBlock
         title="Controlled"
-        code={`const [value, setValue] = createSignal<Date | string | undefined>('2026-06-15')
+        code={`const [value, setValue] = createSignal<Dayjs | null>(dayjs('2026-06-15'))
 const [open, setOpen] = createSignal(false)
 <DatePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen} />`}
       >
@@ -97,23 +95,29 @@ const [open, setOpen] = createSignal(false)
 
       <DemoBlock
         title="Disabled date"
-        code={`<DatePicker disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6} />`}
+        code={`<DatePicker disabledDate={(date) => date.day() === 0 || date.day() === 6} />`}
       >
-        <DatePicker disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6} />
+        <DatePicker disabledDate={(date) => date.day() === 0 || date.day() === 6} />
       </DemoBlock>
 
-      <DemoBlock title="Clearable" code={`<DatePicker allowClear defaultValue="2026-06-15" />`}>
-        <DatePicker allowClear defaultValue="2026-06-15" />
+      <DemoBlock
+        title="Clearable"
+        code={`<DatePicker allowClear defaultValue={dayjs('2026-06-15')} />`}
+      >
+        <DatePicker allowClear defaultValue={dayjs('2026-06-15')} />
       </DemoBlock>
 
-      <DemoBlock title="Disabled" code={`<DatePicker disabled defaultValue="2026-06-15" />`}>
-        <DatePicker disabled defaultValue="2026-06-15" />
+      <DemoBlock
+        title="Disabled"
+        code={`<DatePicker disabled defaultValue={dayjs('2026-06-15')} />`}
+      >
+        <DatePicker disabled defaultValue={dayjs('2026-06-15')} />
       </DemoBlock>
 
       <h2>API</h2>
       <p>
-        <code>format</code> supports common <code>YYYY</code>, <code>MM</code>, and <code>DD</code>
-        tokens for display and emitted strings.
+        <code>format</code> supports dayjs format strings, arrays, display functions, and mask
+        objects for display and emitted strings.
       </p>
       <ApiTable rows={datePickerRows} aria-label="DatePicker API" />
     </>

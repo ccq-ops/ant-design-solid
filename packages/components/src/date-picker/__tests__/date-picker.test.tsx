@@ -1,50 +1,127 @@
-import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen, waitFor } from '@solidjs/testing-library'
+import dayjs, { type Dayjs } from 'dayjs'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DatePicker } from '../date-picker'
 
-describe('DatePicker', () => {
+describe('DatePicker dayjs value model', () => {
   afterEach(() => {
     cleanup()
     document.body.innerHTML = ''
   })
 
-  it('selects an uncontrolled date and calls onChange', () => {
+  it('emits a dayjs value and formatted string when selecting an uncontrolled date', async () => {
     const onChange = vi.fn()
-    render(() => <DatePicker defaultOpen defaultValue="2026-06-01" onChange={onChange} />)
+    render(() => <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} onChange={onChange} />)
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
 
-    expect(onChange).toHaveBeenLastCalledWith(expect.any(Date), '2026-06-15')
-    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-15')
-    expect(screen.queryByText('2026-06')).not.toBeInTheDocument()
+    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(dayjs.isDayjs(nextValue)).toBe(true)
+    expect(nextValue.format('YYYY-MM-DD')).toBe('2026-06-15')
+    expect(nextString).toBe('2026-06-15')
+    expect(screen.getByRole('textbox')).toHaveValue('2026-06-15')
+    await waitFor(() => expect(screen.queryByText('2026-06')).not.toBeInTheDocument())
   })
 
-  it('supports controlled value', () => {
+  it('updates the displayed value when controlled dayjs value changes', () => {
     function Demo() {
-      const [value, setValue] = createSignal<Date | string | undefined>('2026-06-01')
-      return <DatePicker value={value()} defaultOpen onChange={(next) => setValue(next)} />
+      const [value, setValue] = createSignal(dayjs('2026-06-01'))
+      return (
+        <>
+          <DatePicker value={value()} />
+          <button type="button" onClick={() => setValue(dayjs('2026-06-20'))}>
+            Change date
+          </button>
+        </>
+      )
     }
 
     render(() => <Demo />)
-    fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
-    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-20')
+    expect(screen.getByRole('textbox')).toHaveValue('2026-06-01')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change date' }))
+
+    expect(screen.getByRole('textbox')).toHaveValue('2026-06-20')
   })
 
-  it('closes dropdown on outside pointer down', () => {
+  it('displays string, array, function, and mask formats', () => {
+    const value = dayjs('2026-06-01')
+    render(() => (
+      <>
+        <DatePicker aria-label="string format" value={value} format="YYYY/MM/DD" />
+        <DatePicker aria-label="array format" value={value} format={['DD.MM.YYYY', 'YYYY-MM-DD']} />
+        <DatePicker
+          aria-label="function format"
+          value={value}
+          format={(date) => `Day ${date.format('D')}`}
+        />
+        <DatePicker
+          aria-label="mask format"
+          value={value}
+          format={{ format: 'MM-DD-YYYY', type: 'mask' }}
+        />
+      </>
+    ))
+
+    expect(screen.getByRole('textbox', { name: 'string format' })).toHaveValue('2026/06/01')
+    expect(screen.getByRole('textbox', { name: 'array format' })).toHaveValue('01.06.2026')
+    expect(screen.getByRole('textbox', { name: 'function format' })).toHaveValue('Day 1')
+    expect(screen.getByRole('textbox', { name: 'mask format' })).toHaveValue('06-01-2026')
+  })
+
+  it('parses typed input with an array format on Enter', () => {
+    const onChange = vi.fn()
+    render(() => <DatePicker format={['DD/MM/YYYY', 'YYYY-MM-DD']} onChange={onChange} />)
+
+    const input = screen.getByRole('textbox')
+    fireEvent.input(input, { target: { value: '15/06/2026' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(dayjs.isDayjs(nextValue)).toBe(true)
+    expect(nextValue.format('YYYY-MM-DD')).toBe('2026-06-15')
+    expect(nextString).toBe('15/06/2026')
+    expect(input).toHaveValue('15/06/2026')
+  })
+
+  it('clears to null and an empty string', () => {
+    const onChange = vi.fn()
+    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} allowClear onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear date' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(null, '')
+    expect(screen.getByRole('textbox')).toHaveValue('')
+  })
+
+  it('does not emit onChange when blurring unchanged valid input', () => {
+    const onChange = vi.fn()
+    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} onChange={onChange} />)
+
+    const input = screen.getByRole('textbox')
+    fireEvent.focus(input)
+    fireEvent.blur(input)
+
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('closes popup on outside pointer down and calls onOpenChange', async () => {
     const onOpenChange = vi.fn()
-    render(() => <DatePicker defaultOpen defaultValue="2026-06-01" onOpenChange={onOpenChange} />)
+    render(() => (
+      <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} onOpenChange={onOpenChange} />
+    ))
 
     expect(screen.getByText('2026-06')).toBeInTheDocument()
 
     fireEvent.pointerDown(document.body)
 
-    expect(screen.queryByText('2026-06')).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByText('2026-06')).not.toBeInTheDocument())
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
   })
 
   it('navigates months', () => {
-    render(() => <DatePicker defaultOpen defaultValue="2026-06-01" />)
+    render(() => <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Next month' }))
     expect(screen.getByText('2026-07')).toBeInTheDocument()
@@ -52,13 +129,14 @@ describe('DatePicker', () => {
     expect(screen.getByText('2026-06')).toBeInTheDocument()
   })
 
-  it('does not select disabled dates', () => {
+  it('does not select disabled dates and passes dayjs values to disabledDate', () => {
     const onChange = vi.fn()
+    const disabledDate = vi.fn((date: Dayjs) => date.date() === 10)
     render(() => (
       <DatePicker
         defaultOpen
-        defaultValue="2026-06-01"
-        disabledDate={(date) => date.getDate() === 10}
+        defaultValue={dayjs('2026-06-01')}
+        disabledDate={disabledDate}
         onChange={onChange}
       />
     ))
@@ -66,42 +144,26 @@ describe('DatePicker', () => {
     const date = screen.getByRole('button', { name: '2026-06-10' })
     expect(date).toHaveAttribute('aria-disabled', 'true')
     fireEvent.click(date)
+
+    expect(disabledDate.mock.calls.some(([value]) => dayjs.isDayjs(value))).toBe(true)
     expect(onChange).not.toHaveBeenCalled()
-    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-01')
+    expect(screen.getByRole('textbox')).toHaveValue('2026-06-01')
   })
 
-  it('clears value and closes with Escape', () => {
-    const onChange = vi.fn()
-    const onOpenChange = vi.fn()
-    render(() => (
-      <DatePicker
-        defaultOpen
-        defaultValue="2026-06-01"
-        allowClear
-        onChange={onChange}
-        onOpenChange={onOpenChange}
-      />
-    ))
-
-    fireEvent.click(screen.getByRole('button', { name: 'Clear date' }))
-    expect(onChange).toHaveBeenLastCalledWith(undefined, '')
-    expect(screen.getByRole('combobox')).toHaveTextContent('Select date')
-
-    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Escape' })
-    expect(onOpenChange).toHaveBeenLastCalledWith(false)
-  })
-
-  it('treats controlled undefined value as controlled', () => {
+  it('treats controlled null value as controlled', () => {
     const onChange = vi.fn()
     render(() => (
-      <DatePicker value={undefined} defaultOpen defaultValue="2026-06-01" onChange={onChange} />
+      <DatePicker value={null} defaultOpen defaultValue={dayjs('2026-06-01')} onChange={onChange} />
     ))
 
-    expect(screen.getByRole('combobox')).toHaveTextContent('Select date')
+    expect(screen.getByRole('textbox')).toHaveValue('')
     fireEvent.click(screen.getByRole('button', { name: '2026-06-12' }))
 
-    expect(onChange).toHaveBeenLastCalledWith(expect.any(Date), '2026-06-12')
-    expect(screen.getByRole('combobox')).toHaveTextContent('Select date')
+    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(dayjs.isDayjs(nextValue)).toBe(true)
+    expect(nextValue.format('YYYY-MM-DD')).toBe('2026-06-12')
+    expect(nextString).toBe('2026-06-12')
+    expect(screen.getByRole('textbox')).toHaveValue('')
   })
 
   it('respects controlled open state', () => {
@@ -125,7 +187,7 @@ describe('DatePicker', () => {
   })
 
   it('marks the selected date cell as pressed', () => {
-    render(() => <DatePicker defaultOpen defaultValue="2026-06-01" />)
+    render(() => <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />)
 
     expect(screen.getByRole('button', { name: '2026-06-01' })).toHaveAttribute(
       'aria-pressed',
@@ -133,33 +195,15 @@ describe('DatePicker', () => {
     )
   })
 
-  it('parses ISO-like defaultValue strings and displays the formatted local date', () => {
-    render(() => <DatePicker defaultValue="2026-06-01T12:00:00" />)
-
-    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-01')
-  })
-
-  it('parses ISO-like controlled value strings and displays the formatted local date', () => {
-    render(() => <DatePicker value="2026-06-01T12:00:00" />)
-
-    expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-01')
-  })
-
-  it('displays a custom placeholder when no value is selected', () => {
+  it('displays a custom placeholder on the input', () => {
     render(() => <DatePicker placeholder="Pick a day" />)
 
-    expect(screen.getByRole('combobox')).toHaveTextContent('Pick a day')
-  })
-
-  it('formats Date values with local date getters', () => {
-    render(() => <DatePicker defaultValue={new Date(2026, 0, 5)} format="YYYY/MM/DD" />)
-
-    expect(screen.getByRole('combobox')).toHaveTextContent('2026/01/05')
+    expect(screen.getByRole('textbox')).toHaveAttribute('placeholder', 'Pick a day')
   })
 
   it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
-    const result = render(() => <DatePicker zIndex={1313} defaultValue="2026-06-01" />)
-    const selector = result.container.querySelector('.ads-date-picker-selector') as HTMLElement
+    const result = render(() => <DatePicker zIndex={1313} defaultValue={dayjs('2026-06-01')} />)
+    const selector = result.container.querySelector('.ads-date-picker') as HTMLElement
     const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
       top: 10,
       bottom: 42,
@@ -172,7 +216,7 @@ describe('DatePicker', () => {
       toJSON: () => ({}),
     } as DOMRect)
 
-    fireEvent.click(selector)
+    fireEvent.click(screen.getByRole('combobox'))
 
     const dropdown = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')!
     expect(dropdown).toBeTruthy()

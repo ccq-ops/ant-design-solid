@@ -39,6 +39,25 @@ export function useDatePickerStyle(prefixCls: string) {
           background: t.colorFillAlter,
           cursor: 'not-allowed',
         },
+        [`.${prefixCls}-input`]: {
+          flex: '1 1 auto',
+          minWidth: '0',
+          border: '0',
+          outline: '0',
+          padding: '0',
+          background: 'transparent',
+          color: t.colorText,
+          'font-size': `${t.fontSize}px`,
+          'font-family': t.fontFamily,
+          cursor: 'inherit',
+        },
+        [`.${prefixCls}-input::placeholder`]: {
+          color: t.colorTextDisabled,
+        },
+        [`.${prefixCls}-input:disabled`]: {
+          color: t.colorTextDisabled,
+          cursor: 'not-allowed',
+        },
         [`.${prefixCls}-placeholder`]: {
           color: t.colorTextDisabled,
         },
