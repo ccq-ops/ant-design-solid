@@ -138,6 +138,28 @@ describe('AutoComplete', () => {
     expect(root).toHaveClass('ads-auto-complete-filled')
   })
 
+  it('supports object allowClear with custom icon and onClear callback', () => {
+    const onChange = vi.fn()
+    const onClear = vi.fn()
+    const result = render(() => (
+      <AutoComplete
+        defaultValue="alpha"
+        allowClear={{ clearIcon: <span data-testid="custom-clear">clear</span> }}
+        options={options}
+        onChange={onChange}
+        onClear={onClear}
+      />
+    ))
+
+    expect(result.getByTestId('custom-clear')).toBeTruthy()
+
+    fireEvent.click(result.getByRole('button', { name: 'clear autocomplete' }))
+
+    expect((result.getByRole('combobox') as HTMLInputElement).value).toBe('')
+    expect(onChange).toHaveBeenLastCalledWith('')
+    expect(onClear).toHaveBeenCalledTimes(1)
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <AutoComplete prefixCls="custom-auto" options={options} />)
     expect(withProp.container.querySelector('.custom-auto')).toBeTruthy()

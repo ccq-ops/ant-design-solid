@@ -84,6 +84,11 @@ export function AutoComplete(props: AutoCompleteProps) {
   })
 
   const disabled = () => Boolean(local.disabled)
+  const allowClear = () => Boolean(local.allowClear)
+  const clearIcon = () =>
+    typeof local.allowClear === 'object' && local.allowClear.clearIcon
+      ? local.allowClear.clearIcon
+      : <CloseCircleFilled />
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
   const value = () => {
@@ -169,6 +174,7 @@ export function AutoComplete(props: AutoCompleteProps) {
     changeValue(option.value)
     local.onSelect?.(option.value, option)
     setOpen(false)
+    local.onClear?.()
   }
 
   function handleInput(event: InputEvent & { currentTarget: HTMLInputElement; target: Element }) {
@@ -180,6 +186,7 @@ export function AutoComplete(props: AutoCompleteProps) {
     event.stopPropagation()
     changeValue('')
     setOpen(false)
+    local.onClear?.()
   }
 
   return (
@@ -231,14 +238,14 @@ export function AutoComplete(props: AutoCompleteProps) {
             }
           }}
         />
-        <Show when={local.allowClear && !disabled() && value()}>
+        <Show when={allowClear() && !disabled() && value()}>
           <button
             type="button"
             aria-label="clear autocomplete"
             class={`${prefixCls()}-clear`}
             onClick={clearValue}
           >
-            <CloseCircleFilled />
+            {clearIcon()}
           </button>
         </Show>
       </div>
