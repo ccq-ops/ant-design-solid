@@ -4,10 +4,26 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const affixRows: ApiTableRow[] = [
-  { property: 'offsetTop', description: 'Distance from the top of the target before affixing.', type: 'number' },
-  { property: 'offsetBottom', description: 'Distance from the bottom of the target before affixing.', type: 'number' },
-  { property: 'target', description: 'Scroll container used to calculate affix state.', type: '() => Window | HTMLElement | undefined | null' },
-  { property: 'onChange', description: 'Called when affixed state changes.', type: '(affixed: boolean) => void' },
+  {
+    property: 'offsetTop',
+    description: 'Distance from the top of the target before affixing.',
+    type: 'number',
+  },
+  {
+    property: 'offsetBottom',
+    description: 'Distance from the bottom of the target before affixing.',
+    type: 'number',
+  },
+  {
+    property: 'target',
+    description: 'Scroll container used to calculate affix state.',
+    type: '() => Window | HTMLElement | undefined | null',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when affixed state changes.',
+    type: '(affixed: boolean) => void',
+  },
   { property: 'children', description: 'Content to pin.', type: 'JSX.Element' },
 ]
 

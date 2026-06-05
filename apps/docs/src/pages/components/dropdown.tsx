@@ -5,28 +5,70 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const dropdownRows: ApiTableRow[] = [
-  { property: 'menu', description: 'Menu configuration rendered in the overlay.', type: 'DropdownMenuProps' },
-  { property: 'trigger', description: 'Interaction that opens the dropdown.', type: "'hover' | 'click'", defaultValue: "'click'" },
-  { property: 'placement', description: 'Overlay placement relative to the trigger.', type: 'DropdownPlacement' },
+  {
+    property: 'menu',
+    description: 'Menu configuration rendered in the overlay.',
+    type: 'DropdownMenuProps',
+  },
+  {
+    property: 'trigger',
+    description: 'Interaction that opens the dropdown.',
+    type: "'hover' | 'click'",
+    defaultValue: "'click'",
+  },
+  {
+    property: 'placement',
+    description: 'Overlay placement relative to the trigger.',
+    type: 'DropdownPlacement',
+  },
   { property: 'open', description: 'Controlled overlay open state.', type: 'boolean' },
-  { property: 'defaultOpen', description: 'Initial overlay open state for uncontrolled usage.', type: 'boolean', defaultValue: 'false' },
-  { property: 'onOpenChange', description: 'Called when overlay open state changes.', type: '(open: boolean) => void' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial overlay open state for uncontrolled usage.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'onOpenChange',
+    description: 'Called when overlay open state changes.',
+    type: '(open: boolean) => void',
+  },
   { property: 'overlayClass', description: 'Additional class for the overlay.', type: 'string' },
-  { property: 'overlayStyle', description: 'Inline style for the overlay.', type: 'JSX.CSSProperties' },
+  {
+    property: 'overlayStyle',
+    description: 'Inline style for the overlay.',
+    type: 'JSX.CSSProperties',
+  },
   { property: 'zIndex', description: 'Overrides overlay z-index.', type: 'number' },
-  { property: 'getPopupContainer', description: 'Returns the element used to mount the overlay portal.', type: '(triggerNode?: HTMLElement) => HTMLElement' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns the element used to mount the overlay portal.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
 ]
 
 const dropdownMenuRows: ApiTableRow[] = [
-  { property: 'items', description: 'Menu items rendered in the dropdown.', type: 'DropdownMenuItem[]' },
-  { property: 'onClick', description: 'Called when an enabled menu item is clicked.', type: '(info: DropdownMenuClickInfo) => void' },
+  {
+    property: 'items',
+    description: 'Menu items rendered in the dropdown.',
+    type: 'DropdownMenuItem[]',
+  },
+  {
+    property: 'onClick',
+    description: 'Called when an enabled menu item is clicked.',
+    type: '(info: DropdownMenuClickInfo) => void',
+  },
 ]
 
 const dropdownItemRows: ApiTableRow[] = [
   { property: 'key', description: 'Stable menu item key.', type: 'string' },
   { property: 'label', description: 'Menu item label.', type: 'JSX.Element' },
   { property: 'disabled', description: 'Disables this item.', type: 'boolean' },
-  { property: 'type', description: 'Renders a normal item or a divider.', type: "'item' | 'divider'" },
+  {
+    property: 'type',
+    description: 'Renders a normal item or a divider.',
+    type: "'item' | 'divider'",
+  },
 ]
 
 const items = [

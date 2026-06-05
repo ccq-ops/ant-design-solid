@@ -12,12 +12,39 @@ const items = [
 const tabsRows: ApiTableRow[] = [
   { property: 'items', description: 'Tab items rendered as tabs and panes.', type: 'TabsItem[]' },
   { property: 'activeKey', description: 'Controlled active tab key.', type: 'string' },
-  { property: 'defaultActiveKey', description: 'Initial active tab key for uncontrolled usage.', type: 'string' },
-  { property: 'onChange', description: 'Called when the active tab changes.', type: '(activeKey: string) => void' },
-  { property: 'type', description: 'Tab visual style.', type: "'line' | 'card'", defaultValue: "'line'" },
-  { property: 'size', description: 'Tab size from the theme component size scale.', type: 'ComponentSize' },
-  { property: 'tabPosition', description: 'Tab bar position.', type: "'top' | 'bottom'", defaultValue: "'top'" },
-  { property: 'destroyInactiveTabPane', description: 'Unmounts inactive tab pane content.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'defaultActiveKey',
+    description: 'Initial active tab key for uncontrolled usage.',
+    type: 'string',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when the active tab changes.',
+    type: '(activeKey: string) => void',
+  },
+  {
+    property: 'type',
+    description: 'Tab visual style.',
+    type: "'line' | 'card'",
+    defaultValue: "'line'",
+  },
+  {
+    property: 'size',
+    description: 'Tab size from the theme component size scale.',
+    type: 'ComponentSize',
+  },
+  {
+    property: 'tabPosition',
+    description: 'Tab bar position.',
+    type: "'top' | 'bottom'",
+    defaultValue: "'top'",
+  },
+  {
+    property: 'destroyInactiveTabPane',
+    description: 'Unmounts inactive tab pane content.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
 ]
 
 const tabsItemRows: ApiTableRow[] = [

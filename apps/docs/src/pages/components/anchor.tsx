@@ -4,17 +4,59 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const anchorRows: ApiTableRow[] = [
-  { property: 'items', description: 'Anchor links rendered as navigation items.', type: 'AnchorItem[]' },
-  { property: 'affix', description: 'Wraps the anchor in Affix behavior.', type: 'boolean', defaultValue: 'true' },
+  {
+    property: 'items',
+    description: 'Anchor links rendered as navigation items.',
+    type: 'AnchorItem[]',
+  },
+  {
+    property: 'affix',
+    description: 'Wraps the anchor in Affix behavior.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
   { property: 'offsetTop', description: 'Top offset used by the affixed anchor.', type: 'number' },
-  { property: 'targetOffset', description: 'Scroll target offset used when navigating to anchors.', type: 'number' },
-  { property: 'getContainer', description: 'Returns the scroll container observed by the anchor.', type: '() => Window | HTMLElement | undefined | null' },
-  { property: 'bounds', description: 'Pixel tolerance when determining the current active anchor.', type: 'number' },
-  { property: 'getCurrentAnchor', description: 'Overrides active anchor selection.', type: '(activeLink: string) => string' },
-  { property: 'direction', description: 'Anchor layout direction.', type: "'vertical' | 'horizontal'", defaultValue: "'vertical'" },
-  { property: 'replace', description: 'Uses history replace instead of push for navigation.', type: 'boolean' },
-  { property: 'onClick', description: 'Called when a link is clicked.', type: '(event: MouseEvent, link: AnchorItem) => void' },
-  { property: 'onChange', description: 'Called when the active link changes.', type: '(currentActiveLink: string) => void' },
+  {
+    property: 'targetOffset',
+    description: 'Scroll target offset used when navigating to anchors.',
+    type: 'number',
+  },
+  {
+    property: 'getContainer',
+    description: 'Returns the scroll container observed by the anchor.',
+    type: '() => Window | HTMLElement | undefined | null',
+  },
+  {
+    property: 'bounds',
+    description: 'Pixel tolerance when determining the current active anchor.',
+    type: 'number',
+  },
+  {
+    property: 'getCurrentAnchor',
+    description: 'Overrides active anchor selection.',
+    type: '(activeLink: string) => string',
+  },
+  {
+    property: 'direction',
+    description: 'Anchor layout direction.',
+    type: "'vertical' | 'horizontal'",
+    defaultValue: "'vertical'",
+  },
+  {
+    property: 'replace',
+    description: 'Uses history replace instead of push for navigation.',
+    type: 'boolean',
+  },
+  {
+    property: 'onClick',
+    description: 'Called when a link is clicked.',
+    type: '(event: MouseEvent, link: AnchorItem) => void',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when the active link changes.',
+    type: '(currentActiveLink: string) => void',
+  },
 ]
 
 const anchorItemRows: ApiTableRow[] = [
@@ -22,8 +64,16 @@ const anchorItemRows: ApiTableRow[] = [
   { property: 'href', description: 'Anchor href target.', type: 'string' },
   { property: 'target', description: 'Link target attribute.', type: 'string' },
   { property: 'title', description: 'Link label content.', type: 'JSX.Element' },
-  { property: 'replace', description: 'Overrides replace behavior for this item.', type: 'boolean' },
-  { property: 'targetOffset', description: 'Overrides target offset for this item.', type: 'number' },
+  {
+    property: 'replace',
+    description: 'Overrides replace behavior for this item.',
+    type: 'boolean',
+  },
+  {
+    property: 'targetOffset',
+    description: 'Overrides target offset for this item.',
+    type: 'number',
+  },
   { property: 'children', description: 'Nested anchor items.', type: 'AnchorItem[]' },
 ]
 
