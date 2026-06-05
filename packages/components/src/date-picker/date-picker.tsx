@@ -85,6 +85,7 @@ export function DatePicker(props: DatePickerProps) {
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [viewMonth, setViewMonth] = createSignal(monthStart(initialViewDate))
+  const [pendingValue, setPendingValue] = createSignal<DatePickerValue>(null)
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
   let inputRef: HTMLInputElement | undefined
@@ -169,8 +170,22 @@ export function DatePicker(props: DatePickerProps) {
 
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
+    if (local.needConfirm) {
+      setPendingValue(date)
+      return
+    }
     changeValue(date)
-    if (local.needConfirm) return
+    setOpen(false)
+  }
+
+  function confirmPendingValue(): void {
+    const pending = pendingValue()
+    const committed = pending ?? selectedDate()
+    if (pending) {
+      changeValue(pending)
+      setPendingValue(null)
+    }
+    local.onOk?.(committed)
     setOpen(false)
   }
 
@@ -294,7 +309,7 @@ export function DatePicker(props: DatePickerProps) {
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
             needConfirm={local.needConfirm}
-            onOk={() => local.onOk?.(selectedDate())}
+            onOk={confirmPendingValue}
             onPrevious={() => setViewMonth(viewMonth().subtract(1, 'month'))}
             onNext={() => setViewMonth(viewMonth().add(1, 'month'))}
           >
@@ -302,7 +317,7 @@ export function DatePicker(props: DatePickerProps) {
               prefixCls={prefixCls()}
               viewDate={viewMonth()}
               picker={picker()}
-              selectedValue={selectedDate()}
+              selectedValue={pendingValue() ?? selectedDate()}
               disabledDate={isDateDisabled}
               cellRender={local.cellRender}
               dateRender={local.dateRender}

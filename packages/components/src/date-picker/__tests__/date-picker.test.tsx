@@ -297,4 +297,31 @@ describe('DatePicker dayjs value model', () => {
       'ads-date-picker-dropdown-top-right',
     )
   })
+
+  it('delays value changes until OK when needConfirm is true', () => {
+    const onChange = vi.fn()
+    const onOk = vi.fn()
+    render(() => (
+      <DatePicker
+        needConfirm
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+        onOk={onOk}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByText('2026-06')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [value, dateString] = onChange.mock.calls.at(-1)!
+    expect(value.format('YYYY-MM-DD')).toBe('2026-06-15')
+    expect(dateString).toBe('2026-06-15')
+    expect(onOk).toHaveBeenLastCalledWith(expect.anything())
+    expect(screen.queryByText('2026-06')).not.toBeInTheDocument()
+  })
 })
