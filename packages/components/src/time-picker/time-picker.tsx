@@ -1,3 +1,4 @@
+import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
   For,
   Show,
@@ -137,7 +138,7 @@ export function TimePicker(props: TimePickerProps) {
       position: 'fixed',
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
-      width: `${rect.width}px`,
+      'min-width': `${rect.width}px`,
       'z-index': `${dropdownZIndex}`,
     })
   }
@@ -301,7 +302,7 @@ export function TimePicker(props: TimePickerProps) {
             class={`${prefixCls()}-clear`}
             onClick={clearValue}
           >
-            ×
+            <CloseCircleFilled />
           </button>
         </Show>
       </div>

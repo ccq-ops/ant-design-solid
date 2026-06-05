@@ -1,4 +1,5 @@
 import { Show, createEffect, createRenderEffect, createSignal, onCleanup } from 'solid-js'
+import { CloseOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, addPositionUpdateListeners } from '../shared/overlay'
@@ -160,7 +161,7 @@ export function Tour(props: TourProps) {
                   aria-label="Close"
                   onClick={close}
                 >
-                  {props.closeIcon ?? '×'}
+                  {props.closeIcon ?? <CloseOutlined />}
                 </button>
                 <Show when={currentStep()?.title}>
                   <div class={`${prefixCls()}-title`}>{currentStep()?.title}</div>

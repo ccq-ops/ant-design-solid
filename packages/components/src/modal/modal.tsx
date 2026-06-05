@@ -7,6 +7,7 @@ import { InternalPortal } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { ModalProps } from './interface'
 import { useModalStyle } from './modal.style'
+import { CloseOutlined } from '@ant-design-solid/icons'
 
 const modalStack: object[] = []
 
@@ -134,7 +135,7 @@ export function ModalBase(props: ModalProps) {
                       aria-label="close modal"
                       onClick={() => local.onCancel?.()}
                     >
-                      ×
+                      <CloseOutlined />
                     </button>
                   </Show>
                   <Show when={local.title}>

@@ -63,7 +63,7 @@ describe('Progress', () => {
     expect(screen.queryByText('40 done')).toBeNull()
   })
 
-  it('shows status symbols unless format overrides them', () => {
+  it('shows status icons from the icons package unless format overrides them', () => {
     const [status, setStatus] = createSignal<'success' | 'exception'>('success')
     const [customFormat, setCustomFormat] = createSignal(false)
     render(() => (
@@ -74,11 +74,11 @@ describe('Progress', () => {
       />
     ))
 
-    expect(screen.getByText('✓')).toBeInTheDocument()
+    expect(document.body.querySelector('.ads-progress-text svg')).toBeInTheDocument()
 
     setStatus('exception')
 
-    expect(screen.getByText('✕')).toBeInTheDocument()
+    expect(document.body.querySelector('.ads-progress-text svg')).toBeInTheDocument()
 
     setStatus('success')
     setCustomFormat(true)

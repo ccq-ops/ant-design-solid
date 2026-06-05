@@ -1,5 +1,12 @@
-import { For, Show } from 'solid-js'
+import { For, Match, Show, Switch } from 'solid-js'
 import { render } from 'solid-js/web'
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  CloseOutlined,
+  ExclamationCircleFilled,
+  InfoCircleFilled,
+} from '@ant-design-solid/icons'
 import { ConfigProvider, useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -19,11 +26,23 @@ const classByPlacement: Record<NotificationPlacement, string> = {
   bottomLeft: 'bottom-left',
   bottomRight: 'bottom-right',
 }
-const iconMap: Record<NotificationType, string> = {
-  success: '✓',
-  info: 'ℹ',
-  warning: '!',
-  error: '×',
+function NotificationIcon(props: { type: NotificationType }) {
+  return (
+    <Switch>
+      <Match when={props.type === 'success'}>
+        <CheckCircleFilled />
+      </Match>
+      <Match when={props.type === 'info'}>
+        <InfoCircleFilled />
+      </Match>
+      <Match when={props.type === 'warning'}>
+        <ExclamationCircleFilled />
+      </Match>
+      <Match when={props.type === 'error'}>
+        <CloseCircleFilled />
+      </Match>
+    </Switch>
+  )
 }
 
 function NotificationHolder(props: NotificationHolderProps) {
@@ -52,13 +71,13 @@ function NotificationHolder(props: NotificationHolderProps) {
                     aria-label="close notification"
                     onClick={() => props.close(notice.key)}
                   >
-                    ×
+                    <CloseOutlined />
                   </button>
                   <div class={`${prefixCls()}-notice-message`}>
                     <Show when={notice.type}>
                       {(type) => (
                         <span class={`${prefixCls()}-icon-${type()}`} aria-hidden="true">
-                          {iconMap[type()]}
+                          <NotificationIcon type={type()} />
                         </span>
                       )}
                     </Show>

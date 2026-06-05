@@ -1,3 +1,4 @@
+import { CloseOutlined } from '@ant-design-solid/icons'
 import {
   Show,
   createRenderEffect,
@@ -159,7 +160,7 @@ export function Drawer(props: DrawerProps) {
                         aria-label="close drawer"
                         onClick={() => local.onClose?.()}
                       >
-                        ×
+                        <CloseOutlined />
                       </button>
                     </Show>
                   </div>

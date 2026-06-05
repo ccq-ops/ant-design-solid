@@ -3,6 +3,7 @@ import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type { UploadFile, UploadProps } from './interface'
 import { useUploadStyle } from './upload.style'
+import { CloseOutlined } from '@ant-design-solid/icons'
 
 let uidSeed = 0
 
@@ -277,7 +278,7 @@ export function Upload(props: UploadProps) {
                   disabled={disabled()}
                   onClick={() => void removeFile(file)}
                 >
-                  ×
+                  <CloseOutlined />
                 </button>
               </li>
             )}

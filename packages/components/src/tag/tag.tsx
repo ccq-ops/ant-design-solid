@@ -2,6 +2,7 @@ import { Show, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useTagStyle } from './tag.style'
+import { CloseOutlined } from '@ant-design-solid/icons'
 import type { JSX } from 'solid-js'
 import type { TagProps } from './interface'
 
@@ -51,7 +52,7 @@ export function Tag(props: TagProps) {
           class={`${prefixCls()}-close`}
           onClick={(event) => local.onClose?.(event)}
         >
-          ×
+          <CloseOutlined />
         </button>
       </Show>
     </span>

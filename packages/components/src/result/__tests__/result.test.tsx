@@ -10,7 +10,7 @@ describe('Result', () => {
     expect(result.getByText('Information')).toBeTruthy()
     expect(result.getByText('Helpful details')).toBeTruthy()
     expect(result.container.querySelector('.ads-result-info')).toBeTruthy()
-    expect(result.container.querySelector('.ads-result-icon')).toHaveTextContent('ℹ')
+    expect(result.container.querySelector('.ads-result-icon svg')).toBeTruthy()
   })
 
   test('renders status classes for common and http statuses', () => {

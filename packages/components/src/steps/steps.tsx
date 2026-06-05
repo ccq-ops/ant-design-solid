@@ -1,4 +1,5 @@
 import { For, Show, splitProps } from 'solid-js'
+import { CheckOutlined, CloseOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useStepsStyle } from './steps.style'
@@ -27,8 +28,8 @@ function getItemStatus(
 }
 
 function defaultIcon(status: StepsStatus, index: number) {
-  if (status === 'finish') return '✓'
-  if (status === 'error') return '×'
+  if (status === 'finish') return <CheckOutlined />
+  if (status === 'error') return <CloseOutlined />
   return index + 1
 }
 

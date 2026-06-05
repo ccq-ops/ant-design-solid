@@ -5,6 +5,7 @@ import { InternalPortal } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { ImageProps } from './interface'
 import { useImageStyle } from './image.style'
+import { CloseOutlined } from '@ant-design-solid/icons'
 
 function toCssSize(value: number | string | undefined) {
   return typeof value === 'number' ? `${value}px` : value
@@ -95,7 +96,7 @@ export function Image(props: ImageProps) {
             }}
           >
             <button type="button" class={`${prefixCls()}-preview-close`} onClick={closePreview}>
-              ×
+              <CloseOutlined />
             </button>
             <img class={`${prefixCls()}-preview-img`} src={currentSrc()} alt={local.alt ?? ''} />
           </div>

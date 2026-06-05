@@ -1,17 +1,32 @@
-import { Show, splitProps } from 'solid-js'
+import { Match, Show, Switch, splitProps } from 'solid-js'
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ExclamationCircleFilled,
+  InfoCircleFilled,
+} from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type { ResultProps, ResultStatus } from './interface'
 import { useResultStyle } from './result.style'
 
-const statusIcon: Record<ResultStatus, string> = {
-  success: '✓',
-  error: '✕',
-  info: 'ℹ',
-  warning: '!',
-  '404': '404',
-  '403': '403',
-  '500': '500',
+function ResultStatusIcon(props: { status: ResultStatus }) {
+  return (
+    <Switch fallback={props.status}>
+      <Match when={props.status === 'success'}>
+        <CheckCircleFilled />
+      </Match>
+      <Match when={props.status === 'error'}>
+        <CloseCircleFilled />
+      </Match>
+      <Match when={props.status === 'info'}>
+        <InfoCircleFilled />
+      </Match>
+      <Match when={props.status === 'warning'}>
+        <ExclamationCircleFilled />
+      </Match>
+    </Switch>
+  )
 }
 
 export function Result(props: ResultProps) {
@@ -37,7 +52,9 @@ export function Result(props: ResultProps) {
       class={classNames(prefixCls(), `${prefixCls()}-${status()}`, hashId(), local.class)}
       classList={local.classList}
     >
-      <div class={`${prefixCls()}-icon`}>{local.icon ?? statusIcon[status()]}</div>
+      <div class={`${prefixCls()}-icon`}>
+        {local.icon ?? <ResultStatusIcon status={status()} />}
+      </div>
       <Show when={local.title !== undefined && local.title !== null}>
         <div class={`${prefixCls()}-title`}>{local.title}</div>
       </Show>

@@ -1,3 +1,4 @@
+import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
   For,
   Show,
@@ -199,7 +200,7 @@ export function Select(props: SelectProps) {
               changeValue(undefined, undefined)
             }}
           >
-            ×
+            <CloseCircleFilled />
           </button>
         </Show>
       </div>

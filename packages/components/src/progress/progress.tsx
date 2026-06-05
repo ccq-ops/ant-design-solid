@@ -1,4 +1,5 @@
 import { Show, createMemo, splitProps } from 'solid-js'
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type { ProgressProps, ProgressStatus } from './interface'
@@ -52,8 +53,8 @@ export function Progress(props: ProgressProps) {
   const dashOffset = () => ((100 - percent()) / 100) * circumference
   const info = () => {
     if (local.format) return local.format(percent())
-    if (status() === 'success') return '✓'
-    if (status() === 'exception') return '✕'
+    if (status() === 'success') return <CheckCircleFilled />
+    if (status() === 'exception') return <CloseCircleFilled />
     return `${percent()}%`
   }
 

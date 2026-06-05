@@ -1,3 +1,4 @@
+import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
   For,
   Show,
@@ -222,7 +223,7 @@ export function AutoComplete(props: AutoCompleteProps) {
             class={`${prefixCls()}-clear`}
             onClick={clearValue}
           >
-            ×
+            <CloseCircleFilled />
           </button>
         </Show>
       </div>
