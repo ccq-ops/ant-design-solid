@@ -31,6 +31,18 @@ describe('DatePicker', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent('2026-06-20')
   })
 
+  it('closes dropdown on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    render(() => <DatePicker defaultOpen defaultValue="2026-06-01" onOpenChange={onOpenChange} />)
+
+    expect(screen.getByText('2026-06')).toBeInTheDocument()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByText('2026-06')).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('navigates months', () => {
     render(() => <DatePicker defaultOpen defaultValue="2026-06-01" />)
 

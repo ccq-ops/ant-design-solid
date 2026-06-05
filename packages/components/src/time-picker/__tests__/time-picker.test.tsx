@@ -75,6 +75,18 @@ describe('TimePicker', () => {
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
   })
 
+  it('closes dropdown on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    render(() => <TimePicker defaultOpen onOpenChange={onOpenChange} />)
+
+    expect(screen.getByRole('listbox', { name: 'hours' })).toBeInTheDocument()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('listbox', { name: 'hours' })).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('supports controlled open state', () => {
     const [open, setOpen] = createSignal(false)
     const onOpenChange = vi.fn((next: boolean) => setOpen(next))

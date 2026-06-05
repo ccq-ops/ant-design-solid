@@ -13,7 +13,7 @@ import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
-import { addPositionUpdateListeners } from '../shared/overlay'
+import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { OptionValue } from '../shared/options'
@@ -97,6 +97,7 @@ export function Cascader(props: CascaderProps) {
   const [lastSyncedValuePath, setLastSyncedValuePath] = createSignal<OptionValue[]>()
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
+  let dropdownRef: HTMLDivElement | undefined
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -156,8 +157,16 @@ export function Cascader(props: CascaderProps) {
     })
   }
 
+  function containsPopupTarget(target: EventTarget | null): boolean {
+    return Boolean(
+      target instanceof Node &&
+      ((selectorRef && selectorRef.contains(target)) ||
+        (dropdownRef && dropdownRef.contains(target))),
+    )
+  }
+
   function setOpen(nextOpen: boolean): void {
-    if (disabled()) return
+    if (disabled() && nextOpen) return
     if (nextOpen) {
       updateDropdownPosition()
       const currentValue = value()
@@ -176,6 +185,14 @@ export function Cascader(props: CascaderProps) {
     if (!open()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
     onCleanup(removeListeners)
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removePointerDown = addDocumentPointerDown((event) => {
+      if (!containsPopupTarget(event.target)) setOpen(false)
+    })
+    onCleanup(removePointerDown)
   })
 
   function changeValue(nextValue: OptionValue[], nextOptions: CascaderOption[]): void {
@@ -297,7 +314,13 @@ export function Cascader(props: CascaderProps) {
             local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
           }
         >
-          <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+          <div
+            ref={(element) => {
+              dropdownRef = element
+            }}
+            class={`${prefixCls()}-dropdown`}
+            style={dropdownPosition()}
+          >
             <For each={columns()}>
               {(column, columnIndex) => (
                 <ul role="menu" class={`${prefixCls()}-menu`}>

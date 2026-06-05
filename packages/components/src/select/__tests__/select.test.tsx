@@ -114,6 +114,21 @@ describe('Select', () => {
     expect(result.queryByRole('button', { name: 'clear selection' })).toBeNull()
   })
 
+  it('closes dropdown on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => <Select options={options} onOpenChange={onOpenChange} />)
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+    expect(screen.getByRole('listbox')).toBeTruthy()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('listbox')).toBeNull()
+    expect(combobox).toHaveAttribute('aria-expanded', 'false')
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('closes with Escape and selects first enabled option with Enter', () => {
     const onChange = vi.fn()
     const result = render(() => (

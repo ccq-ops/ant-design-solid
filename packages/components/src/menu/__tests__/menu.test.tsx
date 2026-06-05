@@ -105,6 +105,23 @@ describe('Menu', () => {
     expect(submenu).toHaveAttribute('aria-expanded', 'false')
   })
 
+  it('closes horizontal submenu popup on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => (
+      <Menu mode="horizontal" items={items} onOpenChange={onOpenChange} />
+    ))
+    const submenu = result.getByRole('menuitem', { name: 'Settings' })
+
+    fireEvent.click(submenu)
+    expect(document.body.querySelector('.ads-menu-submenu-popup')).toBeTruthy()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(document.body.querySelector('.ads-menu-submenu-popup')).toBeFalsy()
+    expect(submenu).toHaveAttribute('aria-expanded', 'false')
+    expect(onOpenChange).toHaveBeenLastCalledWith([])
+  })
+
   it('controlled openKeys calls onOpenChange without changing open state by itself', () => {
     const onOpenChange = vi.fn()
     const result = render(() => <Menu items={items} openKeys={[]} onOpenChange={onOpenChange} />)

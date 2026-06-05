@@ -37,6 +37,20 @@ describe('AutoComplete', () => {
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
+  it('closes dropdown on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => <AutoComplete options={options} onOpenChange={onOpenChange} />)
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.input(combobox, { target: { value: 'a' } })
+    expect(screen.getByRole('listbox')).toBeTruthy()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('listbox')).toBeNull()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('selects an option and calls callbacks', () => {
     const onChange = vi.fn()
     const onSelect = vi.fn()

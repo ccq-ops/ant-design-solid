@@ -12,7 +12,7 @@ import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { addPositionUpdateListeners } from '../shared/overlay'
+import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { TimePickerFormat, TimePickerProps } from './interface'
@@ -110,6 +110,7 @@ export function TimePicker(props: TimePickerProps) {
   const [draftParts, setDraftParts] = createSignal<Partial<TimeParts>>({})
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
+  let dropdownRef: HTMLDivElement | undefined
 
   const isValueControlled = () => 'value' in props
   const format = () => local.format ?? DEFAULT_FORMAT
@@ -141,8 +142,16 @@ export function TimePicker(props: TimePickerProps) {
     })
   }
 
+  function containsPopupTarget(target: EventTarget | null): boolean {
+    return Boolean(
+      target instanceof Node &&
+      ((selectorRef && selectorRef.contains(target)) ||
+        (dropdownRef && dropdownRef.contains(target))),
+    )
+  }
+
   function setOpen(nextOpen: boolean): void {
-    if (disabled()) return
+    if (disabled() && nextOpen) return
     if (nextOpen) updateDropdownPosition()
     if (local.open === undefined) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
@@ -156,6 +165,14 @@ export function TimePicker(props: TimePickerProps) {
     if (!open()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
     onCleanup(removeListeners)
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removePointerDown = addDocumentPointerDown((event) => {
+      if (!containsPopupTarget(event.target)) setOpen(false)
+    })
+    onCleanup(removePointerDown)
   })
 
   function changeValue(nextValue: string | undefined): void {
@@ -294,7 +311,13 @@ export function TimePicker(props: TimePickerProps) {
             local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
           }
         >
-          <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+          <div
+            ref={(element) => {
+              dropdownRef = element
+            }}
+            class={`${prefixCls()}-dropdown`}
+            style={dropdownPosition()}
+          >
             <div role="group" aria-label="Time selection" class={`${prefixCls()}-panel`}>
               {renderColumn('hour', 23)}
               {renderColumn('minute', 59, minuteStep())}

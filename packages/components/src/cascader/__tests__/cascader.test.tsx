@@ -58,6 +58,21 @@ describe('Cascader', () => {
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
+  it('closes dropdown on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => <Cascader options={options} onOpenChange={onOpenChange} />)
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+    expect(screen.getByRole('menu')).toBeTruthy()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('menu')).toBeNull()
+    expect(combobox).toHaveAttribute('aria-expanded', 'false')
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('selects an uncontrolled leaf path and closes', () => {
     const onChange = vi.fn()
     const result = render(() => <Cascader options={options} onChange={onChange} />)

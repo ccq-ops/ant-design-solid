@@ -13,7 +13,7 @@ import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
-import { addPositionUpdateListeners } from '../shared/overlay'
+import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { MentionsOption, MentionsProps } from './interface'
@@ -112,6 +112,7 @@ export function Mentions(props: MentionsProps) {
   const [cursor, setCursor] = createSignal((local.defaultValue ?? '').length)
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let textareaRef: HTMLTextAreaElement | undefined
+  let dropdownRef: HTMLDivElement | undefined
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -170,8 +171,16 @@ export function Mentions(props: MentionsProps) {
     })
   }
 
+  function containsPopupTarget(target: EventTarget | null): boolean {
+    return Boolean(
+      target instanceof Node &&
+      ((textareaRef && textareaRef.contains(target)) ||
+        (dropdownRef && dropdownRef.contains(target))),
+    )
+  }
+
   function setOpen(nextOpen: boolean): void {
-    if (disabled()) return
+    if (disabled() && nextOpen) return
     const normalizedOpen = nextOpen && Boolean(activeMention()) && filteredOptions().length > 0
     if (normalizedOpen) updateDropdownPosition()
     if (normalizedOpen) updateDropdownPosition()
@@ -180,7 +189,7 @@ export function Mentions(props: MentionsProps) {
   }
 
   function setOpenForActive(nextOpen: boolean, active: ActiveMention | undefined): void {
-    if (disabled()) return
+    if (disabled() && nextOpen) return
     const normalizedOpen = nextOpen && Boolean(active) && filterOptions(active).length > 0
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
@@ -194,6 +203,14 @@ export function Mentions(props: MentionsProps) {
     if (!popupOpen()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
     onCleanup(removeListeners)
+  })
+
+  createEffect(() => {
+    if (!popupOpen()) return
+    const removePointerDown = addDocumentPointerDown((event) => {
+      if (!containsPopupTarget(event.target)) setOpen(false)
+    })
+    onCleanup(removePointerDown)
   })
 
   function changeValue(nextValue: string): void {
@@ -323,7 +340,14 @@ export function Mentions(props: MentionsProps) {
             local.getPopupContainer?.(textareaRef) ?? config.getPopupContainer?.(textareaRef)
           }
         >
-          <div role="listbox" class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+          <div
+            role="listbox"
+            ref={(element) => {
+              dropdownRef = element
+            }}
+            class={`${prefixCls()}-dropdown`}
+            style={dropdownPosition()}
+          >
             <For each={filteredOptions()}>
               {(option) => (
                 <div

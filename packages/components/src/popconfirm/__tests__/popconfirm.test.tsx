@@ -34,6 +34,23 @@ describe('Popconfirm', () => {
     await waitFor(() => expect(document.body).not.toHaveTextContent('Delete?'))
   })
 
+  it('closes on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => (
+      <Popconfirm title="Outside?" onOpenChange={onOpenChange}>
+        <Button>Open</Button>
+      </Popconfirm>
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Open' }))
+    expect(document.body).toHaveTextContent('Outside?')
+
+    fireEvent.pointerDown(document.body)
+
+    expect(document.body).not.toHaveTextContent('Outside?')
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('cancels and closes', () => {
     const onCancel = vi.fn()
     const result = render(() => (

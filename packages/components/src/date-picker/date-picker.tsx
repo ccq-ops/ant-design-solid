@@ -12,7 +12,7 @@ import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { addPositionUpdateListeners } from '../shared/overlay'
+import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type { DatePickerProps, DatePickerValue } from './interface'
@@ -138,6 +138,7 @@ export function DatePicker(props: DatePickerProps) {
   )
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
+  let dropdownRef: HTMLDivElement | undefined
 
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
@@ -174,8 +175,16 @@ export function DatePicker(props: DatePickerProps) {
     })
   }
 
+  function containsPopupTarget(target: EventTarget | null): boolean {
+    return Boolean(
+      target instanceof Node &&
+      ((selectorRef && selectorRef.contains(target)) ||
+        (dropdownRef && dropdownRef.contains(target))),
+    )
+  }
+
   function setOpen(nextOpen: boolean): void {
-    if (disabled()) return
+    if (disabled() && nextOpen) return
     if (nextOpen) updateDropdownPosition()
     if (!isOpenControlled()) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
@@ -189,6 +198,14 @@ export function DatePicker(props: DatePickerProps) {
     if (!open()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
     onCleanup(removeListeners)
+  })
+
+  createEffect(() => {
+    if (!open()) return
+    const removePointerDown = addDocumentPointerDown((event) => {
+      if (!containsPopupTarget(event.target)) setOpen(false)
+    })
+    onCleanup(removePointerDown)
   })
 
   function changeValue(nextDate: Date | undefined): void {
@@ -256,7 +273,13 @@ export function DatePicker(props: DatePickerProps) {
             local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
           }
         >
-          <div class={`${prefixCls()}-dropdown`} style={dropdownPosition()}>
+          <div
+            ref={(element) => {
+              dropdownRef = element
+            }}
+            class={`${prefixCls()}-dropdown`}
+            style={dropdownPosition()}
+          >
             <div class={`${prefixCls()}-header`}>
               <button
                 type="button"

@@ -2,7 +2,7 @@ import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { addPositionUpdateListeners } from '../shared/overlay'
+import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import type { PopconfirmProps } from './interface'
@@ -13,6 +13,7 @@ const POPUP_GAP = 8
 export function Popconfirm(props: PopconfirmProps) {
   const [innerOpen, setInnerOpen] = createSignal(props.defaultOpen ?? false)
   const [trigger, setTrigger] = createSignal<HTMLElement>()
+  const [popup, setPopup] = createSignal<HTMLDivElement>()
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-popconfirm`
   const [, hashId] = usePopconfirmStyle(prefixCls())
@@ -24,6 +25,12 @@ export function Popconfirm(props: PopconfirmProps) {
     if (props.disabled && next) return
     if (props.open === undefined) setInnerOpen(next)
     props.onOpenChange?.(next)
+  }
+
+  function containsPopupTarget(target: EventTarget | null): boolean {
+    return Boolean(
+      target instanceof Node && (trigger()?.contains(target) || popup()?.contains(target)),
+    )
   }
 
   const getPosition = (element = trigger()) => {
@@ -57,6 +64,14 @@ export function Popconfirm(props: PopconfirmProps) {
     if (!mergedOpen()) return
     const removeListeners = addPositionUpdateListeners(updatePosition)
     onCleanup(removeListeners)
+  })
+
+  createEffect(() => {
+    if (!mergedOpen()) return
+    const removePointerDown = addDocumentPointerDown((event) => {
+      if (!containsPopupTarget(event.target)) setOpen(false)
+    })
+    onCleanup(removePointerDown)
   })
 
   const confirm = async (event?: MouseEvent) => {
@@ -94,6 +109,7 @@ export function Popconfirm(props: PopconfirmProps) {
           }
         >
           <div
+            ref={setPopup}
             class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
             style={{ ...position(), 'z-index': zIndex }}
             role="dialog"

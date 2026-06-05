@@ -44,6 +44,22 @@ describe('Mentions', () => {
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
+  it('closes suggestions on outside pointer down', () => {
+    const onOpenChange = vi.fn()
+    const result = render(() => (
+      <Mentions defaultValue="hello @a" options={options} onOpenChange={onOpenChange} />
+    ))
+    const textarea = result.getByRole('textbox') as HTMLTextAreaElement
+
+    fireEvent.focus(textarea)
+    expect(screen.getByRole('listbox')).toBeTruthy()
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('listbox')).toBeNull()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
   it('selects an option and inserts the mention into the textarea', () => {
     const onChange = vi.fn()
     const onSelect = vi.fn()
