@@ -290,9 +290,9 @@ export function RangePicker(props: RangePickerProps) {
     const active = range[sideIndex(activeRange())]
     if (active) return active
     const options = typeof local.showTime === 'object' ? local.showTime : undefined
-    const defaultValue = options?.defaultValue
+    const defaultTime = options?.defaultOpenValue ?? options?.defaultValue
     return (
-      (Array.isArray(defaultValue) ? defaultValue[sideIndex(activeRange())] : defaultValue) ??
+      (Array.isArray(defaultTime) ? defaultTime[sideIndex(activeRange())] : defaultTime) ??
       dayjs().startOf('day')
     )
   }

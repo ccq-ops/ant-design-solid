@@ -70,8 +70,12 @@ export interface ShowTimeOptions extends DisabledTimeConfig {
   hideDisabledOptions?: boolean
 }
 
-export interface RangeShowTimeOptions extends Omit<ShowTimeOptions, 'defaultValue'> {
+export interface RangeShowTimeOptions extends Omit<
+  ShowTimeOptions,
+  'defaultValue' | 'defaultOpenValue'
+> {
   defaultValue?: [Dayjs, Dayjs]
+  defaultOpenValue?: [Dayjs, Dayjs]
 }
 
 export interface CellRenderInfo {

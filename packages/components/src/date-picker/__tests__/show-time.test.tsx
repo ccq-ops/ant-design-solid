@@ -39,16 +39,26 @@ describe('DatePicker showTime', () => {
   })
 
   it('marks disabled time options as disabled and prevents selection', () => {
+    const onChange = vi.fn()
     render(() => (
       <DatePicker
         showTime
         defaultOpen
         defaultPickerValue={dayjs('2026-06-01')}
         disabledTime={() => ({ disabledHours: () => [9] })}
+        onChange={onChange}
       />
     ))
 
-    expect(screen.getByRole('button', { name: 'Hour 09' })).toHaveAttribute('aria-disabled', 'true')
+    const disabledHour = screen.getByRole('button', { name: 'Hour 09' })
+    expect(disabledHour).toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(disabledHour)
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [nextValue] = onChange.mock.lastCall as [Dayjs, string]
+    expect(nextValue.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-15 00:00:00')
   })
 
   it('supports showNow quick selection before OK', () => {
@@ -89,5 +99,25 @@ describe('DatePicker showTime', () => {
     expect(dates[0]?.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-10 08:00:00')
     expect(dates[1]?.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-15 08:00:00')
     expect(dateStrings).toEqual(['2026-06-10 08:00:00', '2026-06-15 08:00:00'])
+  })
+
+  it('uses RangePicker showTime.defaultOpenValue as the initial time seed', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <RangePicker
+        showTime={{
+          defaultOpenValue: [dayjs('2026-01-01 07:15:00'), dayjs('2026-01-01 07:15:00')],
+        }}
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    expect(onChange.mock.calls.at(-1)![1]).toEqual(['2026-06-10 07:15:00', '2026-06-15 07:15:00'])
   })
 })
