@@ -6,12 +6,10 @@ coverage/
 .vite/
 .superpowers/
 *.log
+.pnpm-store/
+.worktrees/
 
 # k2 injected: managed agent directories
 .codex/skills/k2/
 .claude/skills/k2/
 .k2/
-
-.pnpm-store/
-
-.worktrees/

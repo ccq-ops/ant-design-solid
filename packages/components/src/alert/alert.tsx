@@ -1,15 +1,15 @@
-import { Show, createSignal, splitProps } from 'solid-js'
+import { Match, Show, Switch, createSignal, splitProps } from 'solid-js'
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  CloseOutlined,
+  ExclamationCircleFilled,
+  InfoCircleFilled,
+} from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useAlertStyle } from './alert.style'
 import type { AlertProps } from './interface'
-
-const iconMap = {
-  success: '✓',
-  info: 'ℹ',
-  warning: '!',
-  error: '×',
-}
 
 export function Alert(props: AlertProps) {
   const [closed, setClosed] = createSignal(false)
@@ -53,8 +53,21 @@ export function Alert(props: AlertProps) {
         style={local.style}
       >
         <Show when={local.showIcon}>
-          <span class={`${prefixCls()}-icon`} aria-hidden="true">
-            {iconMap[type()]}
+          <span class={`${prefixCls()}-icon`}>
+            <Switch>
+              <Match when={type() === 'success'}>
+                <CheckCircleFilled />
+              </Match>
+              <Match when={type() === 'info'}>
+                <InfoCircleFilled />
+              </Match>
+              <Match when={type() === 'warning'}>
+                <ExclamationCircleFilled />
+              </Match>
+              <Match when={type() === 'error'}>
+                <CloseCircleFilled />
+              </Match>
+            </Switch>
           </span>
         </Show>
         <div class={`${prefixCls()}-content`}>
@@ -73,7 +86,7 @@ export function Alert(props: AlertProps) {
             aria-label="close alert"
             onClick={close}
           >
-            ×
+            <CloseOutlined />
           </button>
         </Show>
       </div>

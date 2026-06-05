@@ -14,14 +14,27 @@ describe('Alert', () => {
     expect(result.container.querySelector('.ads-alert-with-description')).toBeTruthy()
   })
 
-  it('renders action and icon when requested', () => {
+  it('renders action and icon from the icons package when requested', () => {
     const result = render(() => (
-      <Alert showIcon message="Warning" action={<button>Retry</button>} />
+      <Alert showIcon type="warning" message="Warning" action={<button>Retry</button>} />
     ))
     expect(result.getByText('Retry')).toBeTruthy()
     const icon = result.container.querySelector('.ads-alert-icon')
     expect(icon).toBeTruthy()
-    expect(icon?.getAttribute('aria-hidden')).toBe('true')
+    const svg = icon?.querySelector('svg')
+    expect(svg).toBeTruthy()
+    expect(svg?.getAttribute('aria-hidden')).toBe('true')
+    expect(icon?.textContent).toBe('')
+  })
+
+  it('renders a close icon from the icons package when closable', () => {
+    const result = render(() => <Alert closable message="Close me" />)
+    const closeButton = result.getByRole('button', { name: 'close alert' })
+    const svg = closeButton.querySelector('svg')
+
+    expect(svg).toBeTruthy()
+    expect(svg?.getAttribute('aria-hidden')).toBe('true')
+    expect(closeButton.textContent).toBe('')
   })
 
   it('closes and calls close callbacks', () => {
