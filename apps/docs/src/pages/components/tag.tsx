@@ -1,5 +1,19 @@
 import { Tag, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const tagRows: ApiTableRow[] = [
+  {
+    property: 'color',
+    description: 'Preset semantic color or custom CSS color.',
+    type: "'success' | 'warning' | 'error' | 'processing' | string",
+  },
+  { property: 'closable', description: 'Shows a close button.', type: 'boolean', defaultValue: 'false' },
+  { property: 'onClose', description: 'Callback fired when the close button is clicked.', type: '(event: MouseEvent) => void' },
+  { property: 'bordered', description: 'Whether to render the tag border.', type: 'boolean', defaultValue: 'true' },
+  { property: 'children', description: 'Tag content.', type: 'JSX.Element' },
+]
 
 export default function TagPage() {
   return (
@@ -14,6 +28,21 @@ export default function TagPage() {
           <Tag color="#722ed1">Custom</Tag>
         </Space>
       </DemoBlock>
+      <DemoBlock title="Preset colors" code={`<Tag color="processing">Processing</Tag>`}>
+        <Space wrap>
+          <Tag color="success">Success</Tag>
+          <Tag color="processing">Processing</Tag>
+          <Tag color="warning">Warning</Tag>
+          <Tag color="error">Error</Tag>
+        </Space>
+      </DemoBlock>
+      <DemoBlock title="Custom colors" code={`<Tag color="#2f54eb">Custom blue</Tag>`}>
+        <Space wrap>
+          <Tag color="#2f54eb">Custom blue</Tag>
+          <Tag color="#13c2c2">Cyan</Tag>
+          <Tag color="#722ed1">Purple</Tag>
+        </Space>
+      </DemoBlock>
       <DemoBlock
         title="Closable"
         code={`<Tag closable onClose={() => console.log('closed')}>Closable</Tag>`}
@@ -25,6 +54,9 @@ export default function TagPage() {
       <DemoBlock title="Borderless" code={`<Tag bordered={false}>Borderless</Tag>`}>
         <Tag bordered={false}>Borderless</Tag>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={tagRows} aria-label="Tag API" />
     </>
   )
 }

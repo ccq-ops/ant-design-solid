@@ -1,5 +1,21 @@
 import { Badge, Button, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const badgeRows: ApiTableRow[] = [
+  { property: 'count', description: 'Badge count content.', type: 'number | string' },
+  { property: 'dot', description: 'Shows a small dot instead of count content.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'status',
+    description: 'Standalone status badge style. Used when no children are provided.',
+    type: "'success' | 'processing' | 'default' | 'error' | 'warning'",
+  },
+  { property: 'text', description: 'Text displayed beside a standalone status dot.', type: 'JSX.Element' },
+  { property: 'overflowCount', description: 'Maximum numeric count before showing plus text.', type: 'number', defaultValue: '99' },
+  { property: 'showZero', description: 'Shows zero counts instead of hiding the badge.', type: 'boolean', defaultValue: 'false' },
+  { property: 'children', description: 'Element wrapped by the badge.', type: 'JSX.Element' },
+]
 
 export default function BadgePage() {
   return (
@@ -18,6 +34,16 @@ export default function BadgePage() {
           </Badge>
         </Space>
       </DemoBlock>
+      <DemoBlock title="Overflow count" code={`<Badge count={1000} overflowCount={999} />`}>
+        <Space wrap>
+          <Badge count={1000} overflowCount={999}>
+            <Button>Messages</Button>
+          </Badge>
+          <Badge count="NEW">
+            <Button>Release</Button>
+          </Badge>
+        </Space>
+      </DemoBlock>
       <DemoBlock title="Dot" code={`<Badge dot><Button>Updates</Button></Badge>`}>
         <Badge dot>
           <Button>Updates</Button>
@@ -32,6 +58,9 @@ export default function BadgePage() {
           <Badge status="default" text="Default" />
         </Space>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={badgeRows} aria-label="Badge API" />
     </>
   )
 }

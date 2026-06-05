@@ -1,5 +1,19 @@
 import { Button, Empty, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const emptyRows: ApiTableRow[] = [
+  { property: 'image', description: 'Custom empty image content or image URL.', type: 'JSX.Element | string' },
+  { property: 'imageStyle', description: 'Inline style for the image wrapper.', type: 'JSX.CSSProperties' },
+  {
+    property: 'description',
+    description: 'Description text or content displayed below the image.',
+    type: 'JSX.Element',
+    defaultValue: "'No Data'",
+  },
+  { property: 'children', description: 'Footer content, usually actions.', type: 'JSX.Element' },
+]
 
 function CustomEmptyImage() {
   return (
@@ -45,6 +59,9 @@ export default function EmptyPage() {
           </Space>
         </Empty>
       </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={emptyRows} aria-label="Empty API" />
     </>
   )
 }
