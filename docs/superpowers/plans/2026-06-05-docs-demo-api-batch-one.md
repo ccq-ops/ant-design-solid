@@ -31,6 +31,7 @@
 ### Task 1: Shared ApiTable component
 
 **Files:**
+
 - Create: `apps/docs/src/components/api-table.tsx`
 - Create: `apps/docs/src/components/api-table.test.tsx`
 
@@ -168,6 +169,7 @@ git commit -m "docs: add reusable api table"
 ### Task 2: Form, Grid, Input pages
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 - Modify: `apps/docs/src/pages/components/grid.tsx`
 - Modify: `apps/docs/src/pages/components/input.tsx`
@@ -236,6 +238,7 @@ git commit -m "docs: expand form grid input documentation"
 ### Task 3: Select, Switch, Space pages
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/select.tsx`
 - Modify: `apps/docs/src/pages/components/switch.tsx`
 - Modify: `apps/docs/src/pages/components/space.tsx`
@@ -275,6 +278,7 @@ git commit -m "docs: expand select switch space documentation"
 ### Task 4: Modal, Message, Popconfirm pages
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/modal.tsx`
 - Modify: `apps/docs/src/pages/components/message.tsx`
 - Modify: `apps/docs/src/pages/components/popconfirm.tsx`
@@ -314,6 +318,7 @@ git commit -m "docs: expand feedback component documentation"
 ### Task 5: Typography page
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/typography.tsx`
 
 - [ ] **Step 1: Update Typography page**
@@ -343,6 +348,7 @@ git commit -m "docs: expand typography documentation"
 ### Task 6: Full repository verification
 
 **Files:**
+
 - No planned file changes unless verification exposes issues.
 
 - [ ] **Step 1: Run lint**

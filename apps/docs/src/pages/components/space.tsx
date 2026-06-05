@@ -62,8 +62,11 @@ export default function SpacePage() {
         </Space>
       </DemoBlock>
 
-      <DemoBlock title="Size" code={`<Space size="large">...</Space>
-<Space size={[8, 24]}>...</Space>`}>
+      <DemoBlock
+        title="Size"
+        code={`<Space size="large">...</Space>
+<Space size={[8, 24]}>...</Space>`}
+      >
         <Space direction="vertical">
           <Space size="large">
             <Button>Large</Button>
@@ -98,7 +101,10 @@ export default function SpacePage() {
         </Space>
       </DemoBlock>
 
-      <DemoBlock title="Split" code={`<Space split={<span>/</span>}><a>Home</a><a>Docs</a></Space>`}>
+      <DemoBlock
+        title="Split"
+        code={`<Space split={<span>/</span>}><a>Home</a><a>Docs</a></Space>`}
+      >
         <Space split={<span class="text-gray-300">/</span>}>
           <a href="#home">Home</a>
           <a href="#docs">Docs</a>

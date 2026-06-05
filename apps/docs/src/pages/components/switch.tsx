@@ -82,24 +82,33 @@ export default function SwitchPage() {
         </Space>
       </DemoBlock>
 
-      <DemoBlock title="Disabled" code={`<Switch disabled />
-<Switch disabled defaultChecked />`}>
+      <DemoBlock
+        title="Disabled"
+        code={`<Switch disabled />
+<Switch disabled defaultChecked />`}
+      >
         <Space>
           <Switch disabled />
           <Switch disabled defaultChecked />
         </Space>
       </DemoBlock>
 
-      <DemoBlock title="Loading" code={`<Switch loading />
-<Switch loading defaultChecked />`}>
+      <DemoBlock
+        title="Loading"
+        code={`<Switch loading />
+<Switch loading defaultChecked />`}
+      >
         <Space>
           <Switch loading />
           <Switch loading defaultChecked />
         </Space>
       </DemoBlock>
 
-      <DemoBlock title="Sizes" code={`<Switch size="small" />
-<Switch />`}>
+      <DemoBlock
+        title="Sizes"
+        code={`<Switch size="small" />
+<Switch />`}
+      >
         <Space align="center">
           <Switch size="small" defaultChecked />
           <Switch defaultChecked />

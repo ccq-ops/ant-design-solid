@@ -1,5 +1,14 @@
 import { createSignal } from 'solid-js'
-import { Button, Checkbox, Form, Input, Space, Switch, message, useForm } from '@ant-design-solid/core'
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Space,
+  Switch,
+  message,
+  useForm,
+} from '@ant-design-solid/core'
 import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
@@ -216,7 +225,9 @@ export default function FormPage() {
       >
         <Form
           onFinish={() => message.success('Validation passed')}
-          onFinishFailed={({ errorFields }) => message.error(errorFields[0]?.errors[0] ?? 'Invalid')}
+          onFinishFailed={({ errorFields }) =>
+            message.error(errorFields[0]?.errors[0] ?? 'Invalid')
+          }
         >
           <Space direction="vertical" class="w-90">
             <Form.Item
