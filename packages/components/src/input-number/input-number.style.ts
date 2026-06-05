@@ -80,6 +80,9 @@ export function useInputNumberStyle(prefixCls: string) {
             cursor: 'not-allowed',
           },
         },
+        [`.${prefixCls}-handler svg`]: {
+          display: 'block',
+        },
         [`.${prefixCls}-handler-up`]: {
           'border-bottom': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         },

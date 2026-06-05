@@ -1,4 +1,5 @@
 import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import { DownOutlined, UpOutlined } from '@ant-design-solid/icons'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
@@ -199,7 +200,7 @@ export function InputNumber(props: InputNumberProps) {
             disabled={disabled()}
             onClick={() => stepValue(1)}
           >
-            ▲
+            <UpOutlined />
           </button>
           <button
             type="button"
@@ -208,7 +209,7 @@ export function InputNumber(props: InputNumberProps) {
             disabled={disabled()}
             onClick={() => stepValue(-1)}
           >
-            ▼
+            <DownOutlined />
           </button>
         </span>
       </Show>

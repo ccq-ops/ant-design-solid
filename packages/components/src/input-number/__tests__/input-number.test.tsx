@@ -101,6 +101,17 @@ describe('InputNumber', () => {
     expect(result.getByRole('spinbutton')).toHaveValue('2')
   })
 
+  it('renders icon components for step controls', () => {
+    const result = render(() => <InputNumber defaultValue={2} />)
+    const increaseButton = result.getByRole('button', { name: 'increase value' })
+    const decreaseButton = result.getByRole('button', { name: 'decrease value' })
+
+    expect(increaseButton.querySelector('svg')).toBeInTheDocument()
+    expect(decreaseButton.querySelector('svg')).toBeInTheDocument()
+    expect(increaseButton).not.toHaveTextContent('▲')
+    expect(decreaseButton).not.toHaveTextContent('▼')
+  })
+
   it('supports keyboard increment and decrement', () => {
     const onChange = vi.fn()
     const result = render(() => <InputNumber defaultValue={1} onChange={onChange} />)
