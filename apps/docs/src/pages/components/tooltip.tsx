@@ -1,7 +1,27 @@
+import { createSignal } from 'solid-js'
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
+import type { ApiTableRow } from '../../components/api-table'
+
+const tooltipRows: ApiTableRow[] = [
+  { property: 'title', description: 'Tooltip content.', type: 'JSX.Element' },
+  { property: 'placement', description: 'Overlay placement relative to the trigger.', type: 'TooltipPlacement' },
+  { property: 'trigger', description: 'Interaction that opens the overlay.', type: "'hover' | 'click' | 'focus'", defaultValue: "'hover'" },
+  { property: 'open', description: 'Controlled overlay open state.', type: 'boolean' },
+  { property: 'defaultOpen', description: 'Initial overlay open state for uncontrolled usage.', type: 'boolean', defaultValue: 'false' },
+  { property: 'onOpenChange', description: 'Called when overlay open state changes.', type: '(open: boolean) => void' },
+  { property: 'mouseEnterDelay', description: 'Delay before opening on hover.', type: 'number' },
+  { property: 'mouseLeaveDelay', description: 'Delay before closing after hover leaves.', type: 'number' },
+  { property: 'overlayClass', description: 'Additional class for the overlay.', type: 'string' },
+  { property: 'overlayStyle', description: 'Inline style for the overlay.', type: 'JSX.CSSProperties' },
+  { property: 'zIndex', description: 'Overrides overlay z-index.', type: 'number' },
+  { property: 'getPopupContainer', description: 'Returns the element used to mount the overlay portal.', type: '(triggerNode?: HTMLElement) => HTMLElement' },
+]
 
 export default function TooltipPage() {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <>
       <h1>Tooltip</h1>
@@ -45,6 +65,21 @@ export default function TooltipPage() {
           </Tooltip>
         </Space>
       </DemoBlock>
+
+      <DemoBlock
+        title="Controlled"
+        code={`<Tooltip open={open()} onOpenChange={setOpen} title="Controlled text"><Button>Controlled</Button></Tooltip>`}
+      >
+        <Space>
+          <Tooltip open={open()} onOpenChange={setOpen} title="Controlled text">
+            <Button>Controlled</Button>
+          </Tooltip>
+          <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+        </Space>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={tooltipRows} aria-label="Tooltip API" />
     </>
   )
 }
