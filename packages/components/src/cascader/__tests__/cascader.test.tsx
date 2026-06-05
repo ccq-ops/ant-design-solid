@@ -91,6 +91,69 @@ describe('Cascader', () => {
     )
   })
 
+
+  it('filters paths with showSearch and selects a search result', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Cascader showSearch options={options} onChange={onChange} />)
+
+    fireEvent.click(result.getByRole('combobox'))
+    const input = screen.getByRole('textbox')
+    fireEvent.input(input, { target: { value: 'west' } })
+
+    expect(screen.getByRole('option', { name: 'Zhejiang / Hangzhou / West Lake' })).toBeTruthy()
+    expect(screen.queryByRole('menuitem', { name: 'Jiangsu' })).toBeNull()
+
+    fireEvent.click(screen.getByRole('option', { name: 'Zhejiang / Hangzhou / West Lake' }))
+
+    expect(result.getByRole('combobox')).toHaveTextContent('Zhejiang / Hangzhou / West Lake')
+    expect(onChange).toHaveBeenCalledWith(
+      ['zhejiang', 'hangzhou', 'west-lake'],
+      [options[0], options[0].children?.[0], options[0].children?.[0].children?.[0]],
+    )
+  })
+
+  it('supports custom showSearch filter sort limit and render', () => {
+    const searchOptions: CascaderOption[] = [
+      { label: 'Alpha', value: 'match-a' },
+      { label: 'Zulu', value: 'match-z' },
+    ]
+    render(() => (
+      <Cascader
+        showSearch={{
+          filter: (input, path) => path.some((option) => String(option.value).includes(input)),
+          sort: (a, b) =>
+            String(b[b.length - 1].label).localeCompare(String(a[a.length - 1].label)),
+          limit: 1,
+          render: (_input, path) => <span>Result: {path[path.length - 1].label}</span>,
+        }}
+        options={searchOptions}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.input(screen.getByRole('textbox'), { target: { value: 'match' } })
+
+    expect(screen.getByRole('option')).toHaveTextContent('Result: Zulu')
+    expect(screen.queryByText('Result: Alpha')).toBeNull()
+  })
+
+  it('supports controlled searchValue and onSearch', () => {
+    const [search, setSearch] = createSignal('west')
+    const onSearch = vi.fn((next: string) => setSearch(next))
+    render(() => (
+      <Cascader showSearch searchValue={search()} onSearch={onSearch} options={options} />
+    ))
+
+    fireEvent.click(screen.getByRole('combobox'))
+    expect(screen.getByRole('textbox')).toHaveValue('west')
+    expect(screen.getByRole('option', { name: 'Zhejiang / Hangzhou / West Lake' })).toBeTruthy()
+
+    fireEvent.input(screen.getByRole('textbox'), { target: { value: 'nan' } })
+
+    expect(onSearch).toHaveBeenCalledWith('nan')
+    expect(screen.getByRole('option', { name: 'Jiangsu / Nanjing' })).toBeTruthy()
+  })
+
   it('supports controlled value mode', () => {
     const [value, setValue] = createSignal(['zhejiang', 'hangzhou', 'west-lake'])
     const result = render(() => (
