@@ -98,9 +98,11 @@ export function AutoComplete(props: AutoCompleteProps) {
     return innerValue()
   }
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
+  const showSearchConfig = () => (typeof local.showSearch === 'object' ? local.showSearch : undefined)
+  const mergedFilterOption = () => showSearchConfig()?.filterOption ?? local.filterOption
   const filteredOptions = createMemo(() => {
     const options = local.options ?? []
-    const filter = local.filterOption
+    const filter = mergedFilterOption()
     if (open() && inputFocused() && filter === undefined) return options
     if (filter === false) return options
     if (typeof filter === 'function') return options.filter((option) => filter(value(), option))
@@ -178,7 +180,9 @@ export function AutoComplete(props: AutoCompleteProps) {
   }
 
   function handleInput(event: InputEvent & { currentTarget: HTMLInputElement; target: Element }) {
-    changeValue(event.currentTarget.value)
+    const nextValue = event.currentTarget.value
+    changeValue(nextValue)
+    showSearchConfig()?.onSearch?.(nextValue)
     if (!disabled()) setOpen(true)
   }
 

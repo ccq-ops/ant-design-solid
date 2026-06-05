@@ -160,6 +160,38 @@ describe('AutoComplete', () => {
     expect(onClear).toHaveBeenCalledTimes(1)
   })
 
+  it('calls showSearch.onSearch when the user types', () => {
+    const onSearch = vi.fn()
+    const result = render(() => <AutoComplete options={options} showSearch={{ onSearch }} />)
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.input(combobox, { target: { value: 'alp' } })
+
+    expect(onSearch).toHaveBeenCalledWith('alp')
+  })
+
+  it('uses showSearch.filterOption before legacy filterOption', () => {
+    const legacyFilter = vi.fn(() => false)
+    const searchFilter = vi.fn((inputValue: string, option: { value: string }) =>
+      option.value.includes(inputValue),
+    )
+    const result = render(() => (
+      <AutoComplete
+        options={options}
+        filterOption={legacyFilter}
+        showSearch={{ filterOption: searchFilter }}
+      />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.input(combobox, { target: { value: 'alp' } })
+
+    expect(screen.getByRole('option', { name: 'Alpha' })).toBeTruthy()
+    expect(screen.queryByRole('option', { name: 'Beta' })).toBeNull()
+    expect(searchFilter).toHaveBeenCalled()
+    expect(legacyFilter).not.toHaveBeenCalled()
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <AutoComplete prefixCls="custom-auto" options={options} />)
     expect(withProp.container.querySelector('.custom-auto')).toBeTruthy()
