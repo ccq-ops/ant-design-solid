@@ -1,6 +1,8 @@
 import type { Accessor, JSX } from 'solid-js'
 
-export type FieldName = string
+export type NamePath = string | number | Array<string | number>
+export type InternalNamePath = Array<string | number>
+export type FieldName = NamePath
 export type FieldValue = unknown
 export type FormValues = Record<string, FieldValue>
 export type ValidateStatus = 'success' | 'warning' | 'error' | 'validating'

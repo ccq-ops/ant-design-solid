@@ -8,6 +8,7 @@ import type {
   FormValues,
   ValidateErrorInfo,
 } from './interface'
+import { serializeNamePath } from './name-path'
 import { validateValue } from './validation'
 
 interface CreateFormOptions {
@@ -15,6 +16,16 @@ interface CreateFormOptions {
   onFinish?: (values: FormValues) => void
   onFinishFailed?: (errorInfo: ValidateErrorInfo) => void
   onValuesChange?: (changedValues: FormValues, allValues: FormValues) => void
+}
+
+type FieldKey = string
+
+function getFieldKey(name: FieldName): FieldKey {
+  return serializeNamePath(name)
+}
+
+function getValueKey(name: FieldName): string | number {
+  return Array.isArray(name) ? serializeNamePath(name) : name
 }
 
 interface InternalFormInstance extends FormInstance {
@@ -31,15 +42,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       onValuesChange: options.onValuesChange,
     }
     const [values, setValues] = createSignal<FormValues>({ ...formInitialValues })
-    const fields = new Map<FieldName, FieldMeta>()
-    const fieldInitialValues = new Map<FieldName, FieldValue>()
-    const errorSignals = new Map<FieldName, [Accessor<string[]>, (errors: string[]) => void]>()
+    const fields = new Map<FieldKey, FieldMeta>()
+    const fieldInitialValues = new Map<FieldKey, FieldValue>()
+    const errorSignals = new Map<FieldKey, [Accessor<string[]>, (errors: string[]) => void]>()
 
     function ensureErrorSignal(name: FieldName) {
-      let pair = errorSignals.get(name)
+      const key = getFieldKey(name)
+      let pair = errorSignals.get(key)
       if (!pair) {
         pair = createSignal<string[]>([])
-        errorSignals.set(name, pair)
+        errorSignals.set(key, pair)
       }
       return pair
     }
@@ -49,14 +61,19 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
 
     function getInitialValue(name: FieldName): FieldValue {
-      return fieldInitialValues.has(name) ? fieldInitialValues.get(name) : formInitialValues[name]
+      const fieldKey = getFieldKey(name)
+      const valueKey = getValueKey(name)
+      return fieldInitialValues.has(fieldKey)
+        ? fieldInitialValues.get(fieldKey)
+        : formInitialValues[valueKey]
     }
 
     function setFieldValue(name: FieldName, value: FieldValue): void {
       batch(() => {
         setValues((current) => {
-          const next = { ...current, [name]: value }
-          callbacks.onValuesChange?.({ [name]: value }, next)
+          const valueKey = getValueKey(name)
+          const next = { ...current, [valueKey]: value }
+          callbacks.onValuesChange?.({ [valueKey]: value }, next)
           return next
         })
         clearErrors([name])
@@ -70,8 +87,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       const currentValues = values()
       const errorFields: FieldError[] = []
       for (const name of names) {
-        const meta = fields.get(name)
-        const errors = validateValue(name, currentValues[name], currentValues, meta?.rules ?? [])
+        const meta = fields.get(getFieldKey(name))
+        const valueKey = getValueKey(name)
+        const errors = validateValue(
+          String(valueKey),
+          currentValues[valueKey],
+          currentValues,
+          meta?.rules ?? [],
+        )
         ensureErrorSignal(name)[1](errors)
         if (errors.length > 0) errorFields.push({ name, errors })
       }
@@ -80,7 +103,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
 
     const form: InternalFormInstance = {
       getFieldValue(name) {
-        return values()[name]
+        return values()[getValueKey(name)]
       },
       setFieldValue,
       getFieldsValue() {
@@ -97,40 +120,43 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         })
       },
       resetFields(names) {
-        const targetNames = names ?? Array.from(fields.keys())
+        const targetNames = names ?? Array.from(fields.values()).map((field) => field.name)
         batch(() => {
           setValues((current) => {
             const next = { ...current }
-            for (const name of targetNames) next[name] = getInitialValue(name)
+            for (const name of targetNames) next[getValueKey(name)] = getInitialValue(name)
             return next
           })
           clearErrors(targetNames)
         })
       },
       async validateFields(names) {
-        const targetNames = names ?? Array.from(fields.keys())
+        const targetNames = names ?? Array.from(fields.values()).map((field) => field.name)
         const result = validateFieldNames(targetNames)
         if (result.errorFields.length > 0) throw result
         return result.values
       },
       submit() {
-        const result = validateFieldNames(Array.from(fields.keys()))
+        const result = validateFieldNames(Array.from(fields.values()).map((field) => field.name))
         if (result.errorFields.length > 0) callbacks.onFinishFailed?.(result)
         else callbacks.onFinish?.(result.values)
       },
       registerField(meta) {
-        fields.set(meta.name, meta)
-        if (meta.initialValue !== undefined) fieldInitialValues.set(meta.name, meta.initialValue)
-        else fieldInitialValues.delete(meta.name)
-        if (meta.initialValue !== undefined && untrack(values)[meta.name] === undefined) {
-          setValues((current) => ({ ...current, [meta.name]: meta.initialValue }))
+        const fieldKey = getFieldKey(meta.name)
+        const valueKey = getValueKey(meta.name)
+        fields.set(fieldKey, meta)
+        if (meta.initialValue !== undefined) fieldInitialValues.set(fieldKey, meta.initialValue)
+        else fieldInitialValues.delete(fieldKey)
+        if (meta.initialValue !== undefined && untrack(values)[valueKey] === undefined) {
+          setValues((current) => ({ ...current, [valueKey]: meta.initialValue }))
         }
         ensureErrorSignal(meta.name)
         return () => {
-          if (fields.get(meta.name) === meta) fields.delete(meta.name)
-          if (!fields.has(meta.name)) {
-            fieldInitialValues.delete(meta.name)
-            errorSignals.delete(meta.name)
+          const fieldKey = getFieldKey(meta.name)
+          if (fields.get(fieldKey) === meta) fields.delete(fieldKey)
+          if (!fields.has(fieldKey)) {
+            fieldInitialValues.delete(fieldKey)
+            errorSignals.delete(fieldKey)
           }
         }
       },
