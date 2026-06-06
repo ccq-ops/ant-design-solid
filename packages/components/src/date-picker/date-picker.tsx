@@ -550,6 +550,7 @@ function DatePickerBase(props: DatePickerProps) {
           autoFocus={local.autoFocus}
           allowClear={Boolean(local.allowClear)}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
+          clearAriaLabel={local.locale?.lang?.clear ?? 'Clear date'}
           prefix={local.prefix}
           suffixIcon={local.suffixIcon}
           ariaLabel={ariaLabel()}

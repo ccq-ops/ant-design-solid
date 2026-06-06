@@ -29,6 +29,8 @@ export interface DatePickerLocale {
     backToToday?: string
     ok?: string
     clear?: string
+    clearStart?: string
+    clearEnd?: string
     month?: string
     year?: string
     week?: string
@@ -47,6 +49,12 @@ export interface DatePickerLocale {
     nextYear?: string
     previousDecade?: string
     nextDecade?: string
+    previousYears?: string
+    nextYears?: string
+    previousDecades?: string
+    nextDecades?: string
+    previousCenturies?: string
+    nextCenturies?: string
   }
   timePickerLocale?: Record<string, unknown>
 }

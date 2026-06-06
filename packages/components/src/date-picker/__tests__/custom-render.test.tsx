@@ -317,6 +317,54 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(document.activeElement).not.toBe(inputs[0])
   })
 
+  it('localizes panel navigation button accessible labels', () => {
+    render(() => (
+      <DatePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        locale={{
+          lang: {
+            previousMonth: '上个月',
+            nextMonth: '下个月',
+            previousYear: '上一年',
+            nextYear: '下一年',
+          },
+        }}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: '上个月' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '下个月' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '上一年' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '下一年' })).toBeInTheDocument()
+  })
+
+  it('localizes DatePicker clear button accessible label', () => {
+    render(() => (
+      <DatePicker
+        allowClear
+        defaultValue={dayjs('2026-06-01')}
+        locale={{ lang: { clear: '清除' } }}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: '清除' })).toBeInTheDocument()
+  })
+
+  it('localizes RangePicker clear button accessible labels', () => {
+    render(() => (
+      <RangePicker
+        allowClear
+        allowEmpty={[true, true]}
+        defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-30')]}
+        locale={{ lang: { clearStart: '清除开始日期', clearEnd: '清除结束日期' } }}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: '清除开始日期' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '清除结束日期' })).toBeInTheDocument()
+  })
+
   it('localizes showTime now and ok panel actions', () => {
     render(() => (
       <DatePicker showTime showNow defaultOpen locale={{ lang: { now: '现在', ok: '确定' } }} />

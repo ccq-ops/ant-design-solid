@@ -79,67 +79,70 @@ function panelLabel(viewDate: dayjs.Dayjs, mode: PickerMode = 'date'): string {
   }
 }
 
-function previousLabel(mode: PickerMode = 'date'): string {
+function previousLabel(locale: DatePickerLocale | undefined, mode: PickerMode = 'date'): string {
   switch (mode) {
     case 'year':
-      return 'Previous years'
+      return locale?.lang?.previousYears ?? 'Previous years'
     case 'month':
     case 'quarter':
-      return 'Previous year'
+      return locale?.lang?.previousYear ?? 'Previous year'
     case 'decade':
-      return 'Previous decade'
+      return locale?.lang?.previousDecade ?? 'Previous decade'
     case 'week':
     case 'date':
     default:
-      return 'Previous month'
+      return locale?.lang?.previousMonth ?? 'Previous month'
   }
 }
 
-function nextLabel(mode: PickerMode = 'date'): string {
+function nextLabel(locale: DatePickerLocale | undefined, mode: PickerMode = 'date'): string {
   switch (mode) {
     case 'year':
-      return 'Next years'
+      return locale?.lang?.nextYears ?? 'Next years'
     case 'month':
     case 'quarter':
-      return 'Next year'
+      return locale?.lang?.nextYear ?? 'Next year'
     case 'decade':
-      return 'Next decade'
+      return locale?.lang?.nextDecade ?? 'Next decade'
     case 'week':
     case 'date':
     default:
-      return 'Next month'
+      return locale?.lang?.nextMonth ?? 'Next month'
   }
 }
 
-function superPreviousLabel(mode: PickerMode = 'date'): string {
+function superPreviousLabel(
+  locale: DatePickerLocale | undefined,
+  mode: PickerMode = 'date',
+): string {
   switch (mode) {
     case 'year':
-      return 'Previous decades'
+      return locale?.lang?.previousDecades ?? 'Previous decades'
     case 'month':
     case 'quarter':
-      return 'Previous years'
+      return locale?.lang?.previousYears ?? 'Previous years'
     case 'decade':
-      return 'Previous centuries'
+      return locale?.lang?.previousCenturies ?? 'Previous centuries'
     case 'week':
     case 'date':
     default:
-      return 'Previous year'
+      return locale?.lang?.previousYear ?? 'Previous year'
   }
 }
 
-function superNextLabel(mode: PickerMode = 'date'): string {
+function superNextLabel(locale: DatePickerLocale | undefined, mode: PickerMode = 'date'): string {
   switch (mode) {
     case 'year':
-      return 'Next decades'
+      return locale?.lang?.nextDecades ?? 'Next decades'
     case 'month':
     case 'quarter':
-      return 'Next years'
+      return locale?.lang?.nextYears ?? 'Next years'
     case 'decade':
-      return 'Next centuries'
+      return locale?.lang?.nextCenturies ?? 'Next centuries'
     case 'week':
     case 'date':
     default:
-      return 'Next year'
+      return locale?.lang?.nextYear ?? 'Next year'
   }
 }
 
@@ -170,7 +173,7 @@ export function PickerPanel(props: PickerPanelProps) {
       <div class={`${props.prefixCls}-header`}>
         <button
           type="button"
-          aria-label={superPreviousLabel(props.mode)}
+          aria-label={superPreviousLabel(props.locale, props.mode)}
           class={`${props.prefixCls}-super-month-button`}
           onClick={props.onSuperPrevious}
         >
@@ -178,7 +181,7 @@ export function PickerPanel(props: PickerPanelProps) {
         </button>
         <button
           type="button"
-          aria-label={previousLabel(props.mode)}
+          aria-label={previousLabel(props.locale, props.mode)}
           class={`${props.prefixCls}-month-button`}
           onClick={props.onPrevious}
         >
@@ -187,7 +190,7 @@ export function PickerPanel(props: PickerPanelProps) {
         <div class={`${props.prefixCls}-month-label`}>{panelLabel(props.viewDate, props.mode)}</div>
         <button
           type="button"
-          aria-label={nextLabel(props.mode)}
+          aria-label={nextLabel(props.locale, props.mode)}
           class={`${props.prefixCls}-month-button`}
           onClick={props.onNext}
         >
@@ -195,7 +198,7 @@ export function PickerPanel(props: PickerPanelProps) {
         </button>
         <button
           type="button"
-          aria-label={superNextLabel(props.mode)}
+          aria-label={superNextLabel(props.locale, props.mode)}
           class={`${props.prefixCls}-super-month-button`}
           onClick={props.onSuperNext}
         >

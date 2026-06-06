@@ -200,6 +200,13 @@ export function RangePicker(props: RangePickerProps) {
   const placeholder = createMemo<[string, string]>(
     () => local.placeholder ?? locale().lang?.rangePlaceholder ?? ['Start date', 'End date'],
   )
+  const clearAriaLabel = (side: RangeSide): string => {
+    const lang = local.locale?.lang
+    if (side === 'start') {
+      return lang?.clearStart ?? (lang?.clear ? `${lang.clear} start date` : 'Clear start date')
+    }
+    return lang?.clearEnd ?? (lang?.clear ? `${lang.clear} end date` : 'Clear end date')
+  }
   const allDisabled = () =>
     disabledForSide(local.disabled, 'start') && disabledForSide(local.disabled, 'end')
 
@@ -568,7 +575,7 @@ export function RangePicker(props: RangePickerProps) {
           autoFocus={local.autoFocus}
           allowClear={Boolean(local.allowClear) && Boolean(local.allowEmpty?.[0])}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
-          clearAriaLabel="Clear start date"
+          clearAriaLabel={clearAriaLabel('start')}
           inputClass={semanticClass(
             'input',
             local.classNames,
@@ -602,7 +609,7 @@ export function RangePicker(props: RangePickerProps) {
           readOnly={local.inputReadOnly}
           allowClear={Boolean(local.allowClear) && Boolean(local.allowEmpty?.[1])}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
-          clearAriaLabel="Clear end date"
+          clearAriaLabel={clearAriaLabel('end')}
           inputClass={semanticClass(
             'input',
             local.classNames,
