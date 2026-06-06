@@ -141,25 +141,13 @@ async function validateRule(
   return undefined
 }
 
-function isLikelyLegacyValidator(rule: RuleConfig, values: FormValues): boolean {
-  if (!rule.validator) return false
-  if (rule.validator.legacy) return true
-  if (rule.validator.length < 2) return false
-  return (
-    !('message' in rule) &&
-    !('required' in rule) &&
-    !('type' in rule) &&
-    Object.keys(values).length > 0
-  )
-}
-
 async function callValidator(
   rule: RuleConfig,
   value: FieldValue,
   values: FormValues,
 ): Promise<string | void> {
   if (!rule.validator) return undefined
-  const validatorResult = isLikelyLegacyValidator(rule, values)
+  const validatorResult = rule.validator.legacy
     ? await rule.validator(value as RuleConfig & FieldValue, values)
     : await rule.validator(rule, value, values)
   if (typeof validatorResult === 'string') return validatorResult

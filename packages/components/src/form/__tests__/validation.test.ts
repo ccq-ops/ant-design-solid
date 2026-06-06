@@ -117,6 +117,18 @@ describe('form validation v2', () => {
     ).resolves.toEqual({ errors: ['Error'], warnings: [] })
   })
 
+  it('uses modern validator signature by default even with non-empty values and no rule metadata', async () => {
+    await expect(
+      validateValue('username', 'taken', { username: 'taken' }, [
+        {
+          validator(_rule, value) {
+            if (value === 'taken') return 'Taken'
+          },
+        },
+      ]),
+    ).resolves.toEqual({ errors: ['Taken'], warnings: [] })
+  })
+
   it('supports legacy validator signature with value and values', async () => {
     const validator = ((value: unknown, values: Record<string, unknown>) => {
       if (value === 'taken' && values.username === 'taken') return 'Taken'
