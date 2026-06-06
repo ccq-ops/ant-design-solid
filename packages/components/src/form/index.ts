@@ -22,6 +22,7 @@ export { useFormItemControl, useFormInstance, useFormItemStatus } from './contex
 export { useWatch }
 export type { WatchOptions } from './use-watch'
 export type {
+  FieldData,
   FieldError,
   FieldMeta,
   FieldName,
@@ -38,6 +39,7 @@ export type {
   FormValues,
   NamePath,
   Rule,
+  ValidateConfig,
   ValidateErrorInfo,
   ValidateStatus,
 } from './interface'

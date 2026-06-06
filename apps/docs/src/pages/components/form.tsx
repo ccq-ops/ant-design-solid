@@ -223,7 +223,7 @@ const formInstanceRows: ApiTableRow[] = [
   {
     property: 'isFieldsTouched',
     description: 'Checks whether any or all fields have been touched.',
-    type: '(names?: NamePath[], allTouched?: boolean) => boolean',
+    type: '(allTouched?: boolean) => boolean; (names?: NamePath[], allTouched?: boolean) => boolean',
   },
   {
     property: 'submit',
@@ -256,11 +256,12 @@ const ruleRows: ApiTableRow[] = [
   {
     property: 'message',
     description: 'Error message shown when the rule fails.',
-    type: 'string',
+    type: 'JSX.Element',
   },
   {
     property: 'validator',
-    description: 'Custom validator. Return a string, throw, or reject to report an error.',
+    description:
+      'Custom validator. Return a string, throw, or reject to report an error. Set validator.legacy = true to use the old (value, values) call shape.',
     type: '(rule, value, values?) => string | void | Promise<void>',
   },
 ]
