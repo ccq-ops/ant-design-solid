@@ -411,6 +411,22 @@ export function RangePicker(props: RangePickerProps) {
     changePanelView(panelViewDate().subtract(amount, unit))
   }
 
+  function superPanelAmount(): number {
+    const currentPicker = picker()
+    if (currentPicker === 'year') return 120
+    if (currentPicker === 'month' || currentPicker === 'quarter') return 10
+    return 12
+  }
+
+  function superPreviousPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    changePanelView(panelViewDate().subtract(superPanelAmount(), unit))
+  }
+
   function nextPanel(): void {
     const currentPicker = picker()
     const unit =
@@ -419,6 +435,15 @@ export function RangePicker(props: RangePickerProps) {
         : 'month'
     const amount = currentPicker === 'year' ? 12 : 1
     changePanelView(panelViewDate().add(amount, unit))
+  }
+
+  function superNextPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    changePanelView(panelViewDate().add(superPanelAmount(), unit))
   }
 
   function focusSide(side: RangeSide, event: FocusEvent): void {
@@ -643,7 +668,9 @@ export function RangePicker(props: RangePickerProps) {
               setOpen(false)
             }}
             onPrevious={previousPanel}
+            onSuperPrevious={superPreviousPanel}
             onNext={nextPanel}
+            onSuperNext={superNextPanel}
           >
             {rangePanelNode()}
             <Show when={showTimeEnabled()}>

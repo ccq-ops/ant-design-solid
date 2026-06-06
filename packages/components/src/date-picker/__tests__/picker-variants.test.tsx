@@ -32,6 +32,22 @@ describe('DatePicker picker variants', () => {
     expect(screen.getByRole('textbox')).toHaveValue('2026-06')
   })
 
+  it('uses super navigation for month picker decade jumps', () => {
+    render(() => (
+      <DatePicker
+        picker="month"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        superNextIcon={<span>super-next</span>}
+      />
+    ))
+
+    fireEvent.click(screen.getByText('super-next'))
+
+    expect(screen.getByText('2036')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '2036-06' })).toBeInTheDocument()
+  })
+
   it('selects quarter values with quarter formatting', () => {
     const onChange = vi.fn()
     render(() => (

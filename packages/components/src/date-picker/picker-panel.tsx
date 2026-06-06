@@ -48,7 +48,9 @@ export interface PickerPanelProps {
   showNow?: boolean
   onNow?: () => void
   onPrevious?: () => void
+  onSuperPrevious?: () => void
   onNext?: () => void
+  onSuperNext?: () => void
   onOk?: () => void
   onPresetSelect?: (value: ResolvedPresetValue) => void
   ref?: (element: HTMLDivElement) => void
@@ -168,7 +170,7 @@ export function PickerPanel(props: PickerPanelProps) {
           type="button"
           aria-label={superPreviousLabel(props.mode)}
           class={`${props.prefixCls}-super-month-button`}
-          onClick={props.onPrevious}
+          onClick={props.onSuperPrevious}
         >
           {props.superPreviousIcon ?? '«'}
         </button>
@@ -193,7 +195,7 @@ export function PickerPanel(props: PickerPanelProps) {
           type="button"
           aria-label={superNextLabel(props.mode)}
           class={`${props.prefixCls}-super-month-button`}
-          onClick={props.onNext}
+          onClick={props.onSuperNext}
         >
           {props.superNextIcon ?? '»'}
         </button>

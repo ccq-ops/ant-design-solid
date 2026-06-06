@@ -365,6 +365,39 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(selected.format('YYYY-MM-DD')).toBe('2026-06-15')
   })
 
+  it('uses super navigation icons for DatePicker year jumps', () => {
+    render(() => (
+      <DatePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        superPrevIcon={<span>super-prev</span>}
+        superNextIcon={<span>super-next</span>}
+      />
+    ))
+
+    fireEvent.click(screen.getByText('super-next'))
+
+    expect(screen.getByText('2027-06')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('super-prev'))
+
+    expect(screen.getByText('2026-06')).toBeInTheDocument()
+  })
+
+  it('uses super navigation icons for RangePicker date mode year jumps', () => {
+    render(() => (
+      <RangePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        superNextIcon={<span>range-super-next</span>}
+      />
+    ))
+
+    fireEvent.click(screen.getByText('range-super-next'))
+
+    expect(screen.getByText('2027-06')).toBeInTheDocument()
+  })
+
   it('does not forward common owned props from RangePicker to the root DOM element', () => {
     const result = render(() => (
       <RangePicker

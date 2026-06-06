@@ -381,6 +381,22 @@ function DatePickerBase(props: DatePickerProps) {
     changePanelView(panelViewDate().subtract(amount, unit))
   }
 
+  function superPanelAmount(): number {
+    const currentPicker = picker()
+    if (currentPicker === 'year') return 120
+    if (currentPicker === 'month' || currentPicker === 'quarter') return 10
+    return 12
+  }
+
+  function superPreviousPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    changePanelView(panelViewDate().subtract(superPanelAmount(), unit))
+  }
+
   function nextPanel(): void {
     const currentPicker = picker()
     const unit =
@@ -389,6 +405,15 @@ function DatePickerBase(props: DatePickerProps) {
         : 'month'
     const amount = currentPicker === 'year' ? 12 : 1
     changePanelView(panelViewDate().add(amount, unit))
+  }
+
+  function superNextPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    changePanelView(panelViewDate().add(superPanelAmount(), unit))
   }
 
   function timeSeed(): dayjs.Dayjs {
@@ -596,7 +621,9 @@ function DatePickerBase(props: DatePickerProps) {
               setOpen(false)
             }}
             onPrevious={previousPanel}
+            onSuperPrevious={superPreviousPanel}
             onNext={nextPanel}
+            onSuperNext={superNextPanel}
           >
             {panelNode()}
             <Show when={showTimeEnabled()}>
