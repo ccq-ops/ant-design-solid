@@ -73,10 +73,11 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     const warningSignals = new Map<string, [Accessor<string[]>, (warnings: string[]) => void]>()
     const validatingSignals = new Map<string, [Accessor<boolean>, (validating: boolean) => void]>()
     const validationSequences = new WeakMap<FieldRecord, number>()
-    const subscribers = new Set<() => void>()
+    const subscribers = new Set<(previousValues?: FormValues) => void>()
+    const fieldInstances = new Map<string, HTMLElement>()
 
-    function notifySubscribers(): void {
-      for (const listener of subscribers) listener()
+    function notifySubscribers(previousValues?: FormValues): void {
+      for (const listener of subscribers) listener(previousValues)
     }
 
     function nextValidationSequence(record: FieldRecord): number {
@@ -306,11 +307,12 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       setFieldValue(name, value) {
         batch(() => {
+          const previousValues = cloneFormValues(values())
           const record = setFieldValueInternal(name, value, true)
           const changedValues = setValue({}, name, value)
           callbacks.onValuesChange?.(changedValues, cloneFormValues(values()))
           if (record) notifyFieldsChange([record])
-          notifySubscribers()
+          notifySubscribers(previousValues)
           revalidateDependencies([name])
         })
       },
@@ -324,6 +326,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       setFieldsValue(nextValues) {
         batch(() => {
+          const previousValues = cloneFormValues(values())
           setValues((currentValues) => mergeValues(currentValues, nextValues))
           const changedPaths = collectChangedValuePaths(nextValues)
           const changedRecords = Array.from(fields.values()).filter((record) =>
@@ -339,12 +342,13 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           }
           callbacks.onValuesChange?.(cloneFormValues(nextValues), cloneFormValues(values()))
           notifyFieldsChange(changedRecords)
-          notifySubscribers()
+          notifySubscribers(previousValues)
           revalidateDependencies(changedPaths)
         })
       },
       setFields(nextFields) {
         batch(() => {
+          const previousValues = cloneFormValues(values())
           const changedRecords: FieldRecord[] = []
           for (const field of nextFields) {
             const key = getFieldKey(field.name)
@@ -367,12 +371,13 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             changedRecords.push(record)
           }
           notifyFieldsChange(changedRecords)
-          if (nextFields.some((field) => 'value' in field)) notifySubscribers()
+          if (nextFields.some((field) => 'value' in field)) notifySubscribers(previousValues)
         })
       },
       resetFields(names) {
         const targetRecords = getRegisteredRecords(names)
         batch(() => {
+          const previousValues = cloneFormValues(values())
           for (const record of targetRecords) {
             const itemInitialValue = record.meta.initialValue
             const initialValue =
@@ -389,7 +394,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             record.setErrors([])
           }
           notifyFieldsChange(targetRecords)
-          notifySubscribers()
+          notifySubscribers(previousValues)
         })
       },
       async validateFields(names, config) {
@@ -472,6 +477,30 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       getFieldValidatingAccessor(name): Accessor<boolean> {
         return ensureValidatingSignal(name)[0]
+      },
+      scrollToField(name, options) {
+        const element = fieldInstances.get(getFieldKey(name))
+        if (!element) return
+        const { focus, ...scrollOptions } = (options ?? {}) as ScrollIntoViewOptions & {
+          focus?: boolean
+        }
+        element.scrollIntoView(Object.keys(scrollOptions).length > 0 ? scrollOptions : undefined)
+        if (focus) {
+          const focusTarget = element.matches('input,textarea,select,button,[tabindex]')
+            ? element
+            : element.querySelector<HTMLElement>('input,textarea,select,button,[tabindex]')
+          focusTarget?.focus?.()
+        }
+      },
+      getFieldInstance(name) {
+        return fieldInstances.get(getFieldKey(name))
+      },
+      registerFieldInstance(name, element) {
+        const key = getFieldKey(name)
+        fieldInstances.set(key, element)
+        return () => {
+          if (fieldInstances.get(key) === element) fieldInstances.delete(key)
+        }
       },
       isFieldTouched(name) {
         return fields.get(getFieldKey(name))?.state.touched ?? false

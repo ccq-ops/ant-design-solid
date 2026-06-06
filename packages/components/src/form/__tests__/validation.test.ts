@@ -163,4 +163,26 @@ describe('form validation v2', () => {
       ),
     ).resolves.toEqual({ errors: ['Required'], warnings: [] })
   })
+
+  it('applies defaultField rules to each array item', async () => {
+    await expect(
+      validateValue('tags', ['ok', ''], {}, [
+        { type: 'array', defaultField: { required: true, message: 'Tag required' } },
+      ]),
+    ).resolves.toEqual({ errors: ['Tag required'], warnings: [] })
+  })
+
+  it('applies fields rules to object child values', async () => {
+    await expect(
+      validateValue('user', { email: 'bad', age: 17 }, {}, [
+        {
+          type: 'object',
+          fields: {
+            email: { type: 'email', message: 'Invalid email' },
+            age: { min: 18, message: 'Too young' },
+          },
+        },
+      ]),
+    ).resolves.toEqual({ errors: ['Invalid email', 'Too young'], warnings: [] })
+  })
 })

@@ -216,4 +216,25 @@ describe('Form.List', () => {
     expect(result.getByText('Broken')).toBeInTheDocument()
     expect(result.getByText('Careful')).toBeInTheDocument()
   })
+
+  it('exposes list-level rule errors through meta and Form.ErrorList', async () => {
+    const onFinishFailed = vi.fn()
+    const result = render(() => (
+      <Form initialValues={{ users: [] }} onFinishFailed={onFinishFailed}>
+        <Form.List name="users" rules={[{ required: true, message: 'Add at least one user' }]}>
+          {(_, __, meta) => (
+            <>
+              <Form.ErrorList errors={meta.errors} />
+              <Button htmlType="submit">Submit</Button>
+            </>
+          )}
+        </Form.List>
+      </Form>
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Submit' }))
+
+    expect(onFinishFailed).toHaveBeenCalled()
+    expect(result.getByText('Add at least one user')).toBeInTheDocument()
+  })
 })

@@ -102,6 +102,81 @@ describe('Form.Item advanced binding APIs', () => {
     expect(result.getByText('Required')).toBeInTheDocument()
   })
 
+  it('uses Form validateTrigger as the default item validate trigger', async () => {
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} validateTrigger="onBlur" initialValues={{ username: 'seed' }}>
+        <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
+          <Input placeholder="form trigger username" />
+        </Form.Item>
+      </Form>
+    ))
+    const input = result.getByPlaceholderText('form trigger username')
+
+    fireEvent.input(input, { target: { value: '' } })
+    expect(form.getFieldError('username')).toEqual([])
+    expect(result.queryByText('Required')).not.toBeInTheDocument()
+
+    fireEvent.blur(input)
+
+    await waitFor(() => expect(form.getFieldError('username')).toEqual(['Required']))
+    expect(result.getByText('Required')).toBeInTheDocument()
+  })
+
+  it('re-renders unnamed render area when shouldUpdate is true', async () => {
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ username: 'Ada' }}>
+        <Form.Item name="username">
+          <Input placeholder="should update username" />
+        </Form.Item>
+        <Form.Item shouldUpdate>
+          {() => (
+            <output data-testid="summary">{String(form.getFieldValue('username') ?? '')}</output>
+          )}
+        </Form.Item>
+      </Form>
+    ))
+
+    expect(result.getByTestId('summary')).toHaveTextContent('Ada')
+
+    fireEvent.input(result.getByPlaceholderText('should update username'), {
+      target: { value: 'Grace' },
+    })
+
+    await waitFor(() => expect(result.getByTestId('summary')).toHaveTextContent('Grace'))
+  })
+
+  it('re-renders unnamed render area only when shouldUpdate predicate returns true', async () => {
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ user: 'Ada', ignored: 'first' }}>
+        <Form.Item name="user">
+          <Input placeholder="tracked user" />
+        </Form.Item>
+        <Form.Item name="ignored">
+          <Input placeholder="ignored field" />
+        </Form.Item>
+        <Form.Item shouldUpdate={(previous, next) => previous.user !== next.user}>
+          {() => (
+            <output data-testid="predicate-summary">
+              {String(form.getFieldValue('user') ?? '')}
+            </output>
+          )}
+        </Form.Item>
+      </Form>
+    ))
+
+    expect(result.getByTestId('predicate-summary')).toHaveTextContent('Ada')
+
+    fireEvent.input(result.getByPlaceholderText('ignored field'), { target: { value: 'second' } })
+    expect(result.getByTestId('predicate-summary')).toHaveTextContent('Ada')
+
+    form.setFieldValue('user', 'Grace')
+
+    await waitFor(() => expect(result.getByTestId('predicate-summary')).toHaveTextContent('Grace'))
+  })
+
   it('Form.Item.useStatus exposes status, errors, and warnings reactively', async () => {
     const [form] = useForm()
     const result = render(() => (

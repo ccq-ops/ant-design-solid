@@ -480,4 +480,28 @@ describe('FormInstance core parity APIs', () => {
       [expect.objectContaining({ name: ['user', 'email'], errors: [] })],
     )
   })
+
+  it('returns named field element and scrolls it with optional focus', () => {
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form}>
+        <Form.Item name="username">
+          <Input aria-label="username" />
+        </Form.Item>
+      </Form>
+    ))
+    const input = result.getByLabelText('username')
+    const fieldElement = form.getFieldInstance?.('username')
+    const scrollIntoView = vi.fn()
+    const focus = vi.fn()
+
+    expect(fieldElement).toBeInstanceOf(HTMLElement)
+    ;(fieldElement as HTMLElement).scrollIntoView = scrollIntoView
+    input.focus = focus
+
+    form.scrollToField?.('username', { block: 'center', focus: true })
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'center' })
+    expect(focus).toHaveBeenCalled()
+  })
 })

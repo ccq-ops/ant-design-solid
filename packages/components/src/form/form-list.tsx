@@ -51,6 +51,20 @@ export function FormList(props: FormListProps) {
     form.setFieldValue(listName(), props.initialValue)
   })
 
+  let unregisterListField: (() => void) | undefined
+  createEffect(() => {
+    unregisterListField?.()
+    unregisterListField = undefined
+    if (!form || !props.rules || props.rules.length === 0) return
+    unregisterListField = form.registerField({
+      name: listName(),
+      rules: props.rules,
+      initialValue: props.initialValue,
+      preserve: true,
+    })
+  })
+  onCleanup(() => unregisterListField?.())
+
   const fields = createMemo<FormListField[]>(() =>
     keys().map((key, index) => ({ key, name: index, fieldKey: key })),
   )
@@ -105,7 +119,10 @@ export function FormList(props: FormListProps) {
 
   return (
     <FormListContext.Provider value={listName()}>
-      {props.children(fields, operation, { errors: [], warnings: [] })}
+      {props.children(fields, operation, {
+        errors: form?.getFieldErrorAccessor(listName())() ?? [],
+        warnings: form?.getFieldWarningAccessor?.(listName())() ?? [],
+      })}
     </FormListContext.Provider>
   )
 }

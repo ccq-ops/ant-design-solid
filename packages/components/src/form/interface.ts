@@ -14,6 +14,9 @@ export interface FormLayoutContextValue {
   requiredMark: Accessor<RequiredMark>
   colon: Accessor<boolean>
   labelAlign: Accessor<'left' | 'right'>
+  labelCol: Accessor<unknown>
+  wrapperCol: Accessor<unknown>
+  validateTrigger: Accessor<string | string[] | undefined>
 }
 
 export interface ValidateConfig {
@@ -36,6 +39,8 @@ export interface RuleConfig {
   warningOnly?: boolean
   validateTrigger?: string | string[]
   validateFirst?: boolean | 'parallel'
+  fields?: Record<string, Rule>
+  defaultField?: Rule
   validator?: ((
     rule: RuleConfig,
     value: FieldValue,
@@ -94,13 +99,16 @@ export interface FormInstance {
   getFieldWarnings?: (name: FieldName) => string[]
   getFieldWarningAccessor?: (name: FieldName) => Accessor<string[]>
   getFieldValidatingAccessor?: (name: FieldName) => Accessor<boolean>
+  scrollToField?: (name: NamePath, options?: ScrollIntoViewOptions | { focus?: boolean }) => void
+  getFieldInstance?: (name: NamePath) => unknown
+  registerFieldInstance?: (name: NamePath, element: HTMLElement) => () => void
   isFieldTouched: (name: FieldName) => boolean
   isFieldsTouched: {
     (allTouched?: boolean): boolean
     (nameList?: FieldName[], allTouched?: boolean): boolean
   }
   isFieldValidating: (name: FieldName) => boolean
-  subscribe: (listener: () => void) => () => void
+  subscribe: (listener: (previousValues?: FormValues) => void) => () => void
 }
 
 export interface FormItemControl {
@@ -137,6 +145,7 @@ export interface FormListMeta {
 export interface FormListProps {
   name: NamePath
   initialValue?: FieldValue[]
+  rules?: Rule[]
   children: (
     fields: Accessor<FormListField[]>,
     operation: FormListOperation,
@@ -160,6 +169,9 @@ export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   labelAlign?: 'left' | 'right'
   colon?: boolean
   requiredMark?: RequiredMark
+  validateTrigger?: string | string[]
+  labelCol?: unknown
+  wrapperCol?: unknown
   children?: JSX.Element
 }
 
@@ -184,5 +196,11 @@ export interface FormItemProps {
   hidden?: boolean
   extra?: JSX.Element
   initialValue?: FieldValue
+  labelCol?: unknown
+  wrapperCol?: unknown
+  labelAlign?: 'left' | 'right'
+  colon?: boolean
+  tooltip?: JSX.Element
+  shouldUpdate?: boolean | ((prevValues: FormValues, nextValues: FormValues) => boolean)
   children?: JSX.Element | ((control: FormItemControl) => JSX.Element)
 }

@@ -20,6 +20,9 @@ export function FormRoot(props: FormProps) {
     'labelAlign',
     'colon',
     'requiredMark',
+    'validateTrigger',
+    'labelCol',
+    'wrapperCol',
     'class',
     'onSubmit',
     'onReset',
@@ -38,11 +41,17 @@ export function FormRoot(props: FormProps) {
   const requiredMark = () => local.requiredMark ?? true
   const colon = () => local.colon ?? true
   const labelAlign = () => local.labelAlign ?? 'right'
+  const labelCol = () => local.labelCol
+  const wrapperCol = () => local.wrapperCol
+  const validateTrigger = () => local.validateTrigger
   const layoutContext = {
     layout,
     requiredMark,
     colon,
     labelAlign,
+    labelCol,
+    wrapperCol,
+    validateTrigger,
   }
 
   createEffect(() => {

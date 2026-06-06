@@ -51,6 +51,12 @@ function resolveRule(rule: Rule, form?: FormInstance): RuleConfig {
   return typeof rule === 'function' ? rule(form as FormInstance) : rule
 }
 
+function readChildValue(value: FieldValue, key: string): FieldValue {
+  if (Array.isArray(value) && /^\d+$/.test(key)) return value[Number(key)]
+  if (value && typeof value === 'object') return (value as Record<string, FieldValue>)[key]
+  return undefined
+}
+
 function validateRuleBase(
   name: string,
   rawValue: FieldValue,
@@ -125,20 +131,47 @@ async function validateRule(
   rawValue: FieldValue,
   values: FormValues,
   rule: RuleConfig,
-): Promise<string | undefined> {
+): Promise<string[]> {
   const [value, baseError] = validateRuleBase(name, rawValue, rule)
-  if (baseError) return baseError
+  if (baseError) return [baseError]
+
+  const nestedErrors: string[] = []
+  if (rule.defaultField && Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      nestedErrors.push(
+        ...(await validateRule(
+          `${name}.${index}`,
+          value[index],
+          values,
+          resolveRule(rule.defaultField),
+        )),
+      )
+    }
+  }
+  if (rule.fields && value && typeof value === 'object') {
+    for (const key of Object.keys(rule.fields)) {
+      nestedErrors.push(
+        ...(await validateRule(
+          `${name}.${key}`,
+          readChildValue(value, key),
+          values,
+          resolveRule(rule.fields[key]),
+        )),
+      )
+    }
+  }
+  if (nestedErrors.length > 0) return nestedErrors
 
   if (rule.validator) {
     try {
       const result = await callValidator(rule, value, values)
-      if (typeof result === 'string') return result
+      if (typeof result === 'string') return [result]
     } catch (error) {
-      return error instanceof Error ? error.message : String(error)
+      return [error instanceof Error ? error.message : String(error)]
     }
   }
 
-  return undefined
+  return []
 }
 
 async function callValidator(
@@ -157,10 +190,35 @@ async function callValidator(
 function appendResult(
   result: ValidateValueResult,
   rule: RuleConfig,
-  error: string | undefined,
+  errors: string | string[] | undefined,
 ): void {
-  if (!error) return
-  ;(rule.warningOnly ? result.warnings : result.errors).push(error)
+  const messages = Array.isArray(errors) ? errors : errors ? [errors] : []
+  if (messages.length === 0) return
+  ;(rule.warningOnly ? result.warnings : result.errors).push(...messages)
+}
+
+function validateNestedRulesSync(name: string, value: FieldValue, rule: RuleConfig): string[] {
+  const errors: string[] = []
+  if (rule.defaultField && Array.isArray(value)) {
+    const nestedRule = resolveRule(rule.defaultField)
+    if (nestedRule.validator) return []
+    for (let index = 0; index < value.length; index += 1) {
+      const [, error] = validateRuleBase(`${name}.${index}`, value[index], nestedRule)
+      if (error) errors.push(error)
+      errors.push(...validateNestedRulesSync(`${name}.${index}`, value[index], nestedRule))
+    }
+  }
+  if (rule.fields && value && typeof value === 'object') {
+    for (const key of Object.keys(rule.fields)) {
+      const nestedRule = resolveRule(rule.fields[key])
+      if (nestedRule.validator) return []
+      const childValue = readChildValue(value, key)
+      const [, error] = validateRuleBase(`${name}.${key}`, childValue, nestedRule)
+      if (error) errors.push(error)
+      errors.push(...validateNestedRulesSync(`${name}.${key}`, childValue, nestedRule))
+    }
+  }
+  return errors
 }
 
 export function validateValueSync(
@@ -180,8 +238,10 @@ export function validateValueSync(
 
   for (const rule of resolvedRules) {
     const [, error] = validateRuleBase(name, value, rule)
-    appendResult(result, rule, error)
-    if (error && validateFirst && !rule.warningOnly) break
+    const nestedErrors = !error ? validateNestedRulesSync(name, value, rule) : []
+    const messages = error ? [error] : nestedErrors
+    appendResult(result, rule, messages)
+    if (messages.length > 0 && validateFirst && !rule.warningOnly) break
   }
 
   return result
@@ -204,21 +264,21 @@ export async function validateValue(
       resolvedRules.map((rule) => validateRule(name, value, values, rule)),
     )
     const firstErrorIndex = results.findIndex(
-      (error, index) => error && !resolvedRules[index].warningOnly,
+      (errors, index) => errors.length > 0 && !resolvedRules[index].warningOnly,
     )
     if (firstErrorIndex >= 0) {
-      result.errors.push(results[firstErrorIndex] as string)
+      result.errors.push(results[firstErrorIndex][0] as string)
       return result
     }
-    const firstWarningIndex = results.findIndex(Boolean)
-    if (firstWarningIndex >= 0) result.warnings.push(results[firstWarningIndex] as string)
+    const firstWarningIndex = results.findIndex((errors) => errors.length > 0)
+    if (firstWarningIndex >= 0) result.warnings.push(results[firstWarningIndex][0] as string)
     return result
   }
 
   for (const rule of resolvedRules) {
-    const error = await validateRule(name, value, values, rule)
-    appendResult(result, rule, error)
-    if (error && validateFirst && !rule.warningOnly) break
+    const errors = await validateRule(name, value, values, rule)
+    appendResult(result, rule, errors)
+    if (errors.length > 0 && validateFirst && !rule.warningOnly) break
   }
 
   return result

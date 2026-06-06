@@ -92,4 +92,34 @@ describe('Form layout props', () => {
 
     expect(result.getByText('(optional)')).toBeInTheDocument()
   })
+
+  it('allows Form.Item labelAlign and colon to override Form defaults', () => {
+    const result = render(() => (
+      <ConfigProvider prefixCls="ant">
+        <Form labelAlign="right" colon>
+          <Form.Item label="Username" labelAlign="left" colon={false}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </ConfigProvider>
+    ))
+
+    const label = result.getByText('Username').closest('label')
+    expect(label).toHaveClass('ant-form-item-label-left')
+    expect(label).not.toHaveClass('ant-form-item-label-colon')
+  })
+
+  it('renders Form.Item tooltip beside the label', () => {
+    const result = render(() => (
+      <ConfigProvider prefixCls="ant">
+        <Form>
+          <Form.Item label="Username" tooltip={<span>Helpful hint</span>}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </ConfigProvider>
+    ))
+
+    expect(result.getByText('Helpful hint')).toBeInTheDocument()
+  })
 })

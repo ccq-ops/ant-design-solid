@@ -1,4 +1,4 @@
-import { createEffect, createMemo, on, onCleanup, Show, untrack } from 'solid-js'
+import { createEffect, createMemo, createSignal, on, onCleanup, Show, untrack } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import {
@@ -71,6 +71,16 @@ function noopCatch(error: unknown): void {
   if (error && typeof error === 'object') return
 }
 
+function serializeLayoutValue(value: unknown): string | undefined {
+  if (value === undefined) return undefined
+  if (typeof value === 'string') return value
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return String(value)
+  }
+}
+
 export function FormItem(props: FormItemProps) {
   const form = useFormContext()
   const config = useConfig()
@@ -81,7 +91,7 @@ export function FormItem(props: FormItemProps) {
   const fieldName = (): FieldName | undefined =>
     props.name === undefined ? undefined : composeNamePath(listPrefix, props.name)
   const trigger = () => props.trigger ?? 'onChange'
-  const validateTrigger = () => props.validateTrigger ?? trigger()
+  const validateTrigger = () => props.validateTrigger ?? layout.validateTrigger() ?? trigger()
   const rules = () =>
     props.required ? [{ required: true }, ...(props.rules ?? [])] : (props.rules ?? [])
   const errors = () => {
@@ -92,6 +102,10 @@ export function FormItem(props: FormItemProps) {
     props.required === true || rules().some((rule) => isRequiredRule(rule, form))
   const showRequiredMark = () => layout.requiredMark() === true && isRequired()
   const showOptionalMark = () => layout.requiredMark() === 'optional' && !isRequired()
+  const mergedLabelAlign = () => props.labelAlign ?? layout.labelAlign()
+  const mergedColon = () => props.colon ?? layout.colon()
+  const labelCol = () => serializeLayoutValue(props.labelCol ?? layout.labelCol())
+  const wrapperCol = () => serializeLayoutValue(props.wrapperCol ?? layout.wrapperCol())
 
   const warnings = () => {
     const name = fieldName()
@@ -126,7 +140,7 @@ export function FormItem(props: FormItemProps) {
           initialValue: props.initialValue,
           preserve: props.preserve,
           dependencies: props.dependencies,
-          validateTrigger: props.validateTrigger,
+          validateTrigger: validateTrigger(),
           validateFirst: props.validateFirst,
         }
         unregisterField = untrack(() => form.registerField(registeredMeta as FieldMeta))
@@ -143,7 +157,7 @@ export function FormItem(props: FormItemProps) {
     registeredMeta.initialValue = props.initialValue
     registeredMeta.preserve = props.preserve
     registeredMeta.dependencies = props.dependencies
-    registeredMeta.validateTrigger = props.validateTrigger
+    registeredMeta.validateTrigger = validateTrigger()
     registeredMeta.validateFirst = props.validateFirst
   })
   onCleanup(() => unregisterField?.())
@@ -221,9 +235,22 @@ export function FormItem(props: FormItemProps) {
     warnings,
   }))
 
+  const [renderVersion, setRenderVersion] = createSignal(0)
+  const shouldUpdate = () => props.shouldUpdate
+  const unsubscribeShouldUpdate = form?.subscribe((previousValues) => {
+    const updater = shouldUpdate()
+    if (!updater) return
+    const nextValues = form.getFieldsValue(true)
+    const previous = previousValues ?? nextValues
+    const shouldRender = updater === true ? true : updater(previous, nextValues)
+    if (shouldRender) setRenderVersion((version) => version + 1)
+  })
+  onCleanup(() => unsubscribeShouldUpdate?.())
+
   const content = () => {
+    renderVersion()
     const itemControl = control()
-    if (itemControl && isRenderProp(props.children)) return props.children(itemControl)
+    if (isRenderProp(props.children)) return props.children(itemControl as FormItemControl)
     return props.children as JSX.Element
   }
 
@@ -237,13 +264,28 @@ export function FormItem(props: FormItemProps) {
     </FormItemStatusContext.Provider>
   )
 
+  let itemElement: HTMLDivElement | undefined
+  let unregisterFieldInstance: (() => void) | undefined
+  createEffect(() => {
+    unregisterFieldInstance?.()
+    unregisterFieldInstance = undefined
+    const name = fieldName()
+    if (name !== undefined && itemElement) {
+      unregisterFieldInstance = form?.registerFieldInstance?.(name, itemElement)
+    }
+  })
+  onCleanup(() => unregisterFieldInstance?.())
+
   if (props.noStyle) return providers()
 
   return (
     <div
+      ref={(element) => {
+        itemElement = element
+      }}
       class={classNames(
         `${prefixCls()}-item`,
-        `${prefixCls()}-item-label-${layout.labelAlign()}`,
+        `${prefixCls()}-item-label-${mergedLabelAlign()}`,
         mergedStatus() && `${prefixCls()}-item-has-${mergedStatus()}`,
         props.hidden && `${prefixCls()}-item-hidden`,
       )}
@@ -252,13 +294,17 @@ export function FormItem(props: FormItemProps) {
     >
       <Show when={props.label}>
         <label
+          data-label-col={labelCol()}
           class={classNames(
             `${prefixCls()}-item-label`,
-            `${prefixCls()}-item-label-${layout.labelAlign()}`,
-            layout.colon() && `${prefixCls()}-item-label-colon`,
+            `${prefixCls()}-item-label-${mergedLabelAlign()}`,
+            mergedColon() && `${prefixCls()}-item-label-colon`,
           )}
         >
           <span class={`${prefixCls()}-item-label-content`}>{props.label}</span>
+          <Show when={props.tooltip}>
+            <span class={`${prefixCls()}-item-tooltip`}>{props.tooltip}</span>
+          </Show>
           <Show when={showRequiredMark()}>
             <span class={`${prefixCls()}-item-required`}>*</span>
           </Show>
@@ -267,7 +313,7 @@ export function FormItem(props: FormItemProps) {
           </Show>
         </label>
       </Show>
-      <div class={`${prefixCls()}-item-control`}>
+      <div class={`${prefixCls()}-item-control`} data-wrapper-col={wrapperCol()}>
         {providers()}
         <Show when={props.help ?? errors()[0] ?? warnings()[0]}>
           <div

@@ -13,6 +13,9 @@ const defaultFormLayoutContext: FormLayoutContextValue = {
   requiredMark: () => true,
   colon: () => true,
   labelAlign: () => 'right',
+  labelCol: () => undefined,
+  wrapperCol: () => undefined,
+  validateTrigger: () => undefined,
 }
 
 export const FormLayoutContext = createContext<FormLayoutContextValue>(defaultFormLayoutContext)

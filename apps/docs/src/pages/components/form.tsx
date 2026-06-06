@@ -37,6 +37,17 @@ const formRows: ApiTableRow[] = [
     defaultValue: 'true',
   },
   {
+    property: 'validateTrigger',
+    description: 'Default event name or names that trigger validation for child Form.Item fields.',
+    type: 'string | string[]',
+    defaultValue: "'onChange'",
+  },
+  {
+    property: 'labelCol / wrapperCol',
+    description: 'Common label and control layout metadata passed to form items.',
+    type: 'unknown',
+  },
+  {
     property: 'onFinish',
     description: 'Called with all values after validation succeeds on submit.',
     type: '(values: FormValues) => void',
@@ -106,7 +117,24 @@ const formItemRows: ApiTableRow[] = [
     property: 'validateTrigger',
     description: 'Event name or names that trigger validation.',
     type: 'string | string[]',
-    defaultValue: "'onChange'",
+    defaultValue: 'Form validateTrigger or trigger',
+  },
+  {
+    property: 'shouldUpdate',
+    description:
+      'For unnamed render areas, re-render when form values change or when a predicate returns true.',
+    type: 'boolean | ((prevValues, nextValues) => boolean)',
+  },
+  {
+    property: 'labelCol / wrapperCol',
+    description: 'Item-level label and control layout metadata.',
+    type: 'unknown',
+  },
+  {
+    property: 'labelAlign / colon / tooltip',
+    description:
+      'Override label alignment, colon display, or render extra label help for this item.',
+    type: "'left' | 'right' / boolean / JSX.Element",
   },
   {
     property: 'getValueFromEvent',
@@ -169,6 +197,25 @@ const formItemRows: ApiTableRow[] = [
   },
 ]
 
+const formListRows: ApiTableRow[] = [
+  {
+    property: 'name',
+    description: 'List field name path.',
+    type: 'NamePath',
+  },
+  {
+    property: 'initialValue',
+    description: 'Initial array value for the list.',
+    type: 'unknown[]',
+  },
+  {
+    property: 'rules',
+    description:
+      'List-level validation rules exposed through render meta.errors and meta.warnings.',
+    type: 'Rule[]',
+  },
+]
+
 const formInstanceRows: ApiTableRow[] = [
   {
     property: 'getFieldValue',
@@ -216,6 +263,16 @@ const formInstanceRows: ApiTableRow[] = [
     type: '(names?: NamePath[]) => FieldError[]',
   },
   {
+    property: 'scrollToField',
+    description: 'Scrolls a registered field element into view and can focus its control.',
+    type: '(name: NamePath, options?: ScrollIntoViewOptions | { focus?: boolean }) => void',
+  },
+  {
+    property: 'getFieldInstance',
+    description: 'Returns the registered field DOM element when available.',
+    type: '(name: NamePath) => unknown',
+  },
+  {
     property: 'isFieldTouched',
     description: 'Checks whether a field has been touched.',
     type: '(name: NamePath) => boolean',
@@ -257,6 +314,16 @@ const ruleRows: ApiTableRow[] = [
     property: 'message',
     description: 'Error message shown when the rule fails.',
     type: 'JSX.Element',
+  },
+  {
+    property: 'fields',
+    description: 'Object or array child rules keyed by property name or numeric index string.',
+    type: 'Record<string, Rule>',
+  },
+  {
+    property: 'defaultField',
+    description: 'Rule applied to each item when validating an array value.',
+    type: 'Rule',
   },
   {
     property: 'validator',
@@ -508,6 +575,8 @@ export default function FormPage() {
       <ApiTable rows={formRows} aria-label="Form API" />
       <h3>Form.Item</h3>
       <ApiTable rows={formItemRows} aria-label="Form Item API" />
+      <h3>Form.List</h3>
+      <ApiTable rows={formListRows} aria-label="Form List API" />
       <h3>FormInstance</h3>
       <ApiTable rows={formInstanceRows} aria-label="Form Instance API" />
       <h3>Rule</h3>
