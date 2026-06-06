@@ -35,7 +35,7 @@ export interface RuleConfig {
   pattern?: RegExp
   whitespace?: boolean
   transform?: (value: FieldValue) => FieldValue
-  message?: JSX.Element
+  message?: string
   warningOnly?: boolean
   validateTrigger?: string | string[]
   validateFirst?: boolean | 'parallel'

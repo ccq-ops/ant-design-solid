@@ -313,7 +313,7 @@ const ruleRows: ApiTableRow[] = [
   {
     property: 'message',
     description: 'Error message shown when the rule fails.',
-    type: 'JSX.Element',
+    type: 'string',
   },
   {
     property: 'fields',
