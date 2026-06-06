@@ -89,7 +89,12 @@ export interface CellRenderInfo {
 
 export interface PresetValue {
   label: JSX.Element
-  value: Dayjs | (() => Dayjs) | RangePickerValue | (() => RangePickerValue)
+  value:
+    | Dayjs
+    | (() => Dayjs)
+    | RangePickerValue
+    | [Dayjs | (() => Dayjs) | null, Dayjs | (() => Dayjs) | null]
+    | (() => RangePickerValue)
 }
 
 export interface TagRenderProps {

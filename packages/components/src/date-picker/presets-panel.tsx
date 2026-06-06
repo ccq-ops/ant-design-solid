@@ -15,7 +15,9 @@ export interface PresetsPanelProps {
 }
 
 function resolvePresetValue(preset: PresetValue): ResolvedPresetValue {
-  return typeof preset.value === 'function' ? preset.value() : preset.value
+  const value = typeof preset.value === 'function' ? preset.value() : preset.value
+  if (!Array.isArray(value)) return value
+  return value.map((item) => (typeof item === 'function' ? item() : item)) as RangePickerValue
 }
 
 export function PresetsPanel(props: PresetsPanelProps) {

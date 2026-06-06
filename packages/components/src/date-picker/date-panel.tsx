@@ -57,6 +57,7 @@ export function DatePanel(props: DatePanelProps) {
       return props.cellRender(cellDate, {
         originNode,
         today: today(),
+        range: props.activeRange,
         type: picker(),
         locale: props.locale,
       })
