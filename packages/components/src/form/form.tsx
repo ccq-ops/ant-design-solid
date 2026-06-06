@@ -34,12 +34,16 @@ export function FormRoot(props: FormProps) {
     setFormInitialValues(form(), local.initialValues)
   })
 
-  const layoutContext = () => ({
-    layout: local.layout ?? 'horizontal',
-    requiredMark: local.requiredMark ?? true,
-    colon: local.colon ?? true,
-    labelAlign: local.labelAlign ?? 'right',
-  })
+  const layout = () => local.layout ?? 'horizontal'
+  const requiredMark = () => local.requiredMark ?? true
+  const colon = () => local.colon ?? true
+  const labelAlign = () => local.labelAlign ?? 'right'
+  const layoutContext = {
+    layout,
+    requiredMark,
+    colon,
+    labelAlign,
+  }
 
   createEffect(() => {
     setFormCallbacks(form(), {
@@ -52,15 +56,10 @@ export function FormRoot(props: FormProps) {
 
   return (
     <FormContext.Provider value={form()}>
-      <FormLayoutContext.Provider value={layoutContext()}>
+      <FormLayoutContext.Provider value={layoutContext}>
         <form
           {...rest}
-          class={classNames(
-            prefixCls(),
-            `${prefixCls()}-${layoutContext().layout}`,
-            hashId(),
-            local.class,
-          )}
+          class={classNames(prefixCls(), `${prefixCls()}-${layout()}`, hashId(), local.class)}
           onSubmit={(event) => {
             event.preventDefault()
             ;(local.onSubmit as JSX.EventHandler<HTMLFormElement, SubmitEvent> | undefined)?.(event)

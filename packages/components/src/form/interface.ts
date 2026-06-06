@@ -10,10 +10,10 @@ export type FormLayout = 'horizontal' | 'vertical' | 'inline'
 export type RequiredMark = boolean | 'optional'
 
 export interface FormLayoutContextValue {
-  layout: FormLayout
-  requiredMark: RequiredMark
-  colon: boolean
-  labelAlign: 'left' | 'right'
+  layout: Accessor<FormLayout>
+  requiredMark: Accessor<RequiredMark>
+  colon: Accessor<boolean>
+  labelAlign: Accessor<'left' | 'right'>
 }
 
 export interface ValidateConfig {

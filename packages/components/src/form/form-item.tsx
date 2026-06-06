@@ -50,8 +50,9 @@ function isRenderProp(
   return typeof children === 'function'
 }
 
-function isRequiredRule(rule: Rule): boolean {
-  return typeof rule !== 'function' && rule.required === true
+function isRequiredRule(rule: Rule, form: ReturnType<typeof useFormContext>): boolean {
+  if (typeof rule !== 'function') return rule.required === true
+  return form ? rule(form).required === true : false
 }
 
 function toArray(value: string | string[] | undefined): string[] {
@@ -87,9 +88,10 @@ export function FormItem(props: FormItemProps) {
     const name = fieldName()
     return name !== undefined && form ? form.getFieldErrorAccessor(name)() : []
   }
-  const isRequired = () => props.required === true || rules().some(isRequiredRule)
-  const showRequiredMark = () => layout.requiredMark === true && isRequired()
-  const showOptionalMark = () => layout.requiredMark === 'optional' && !isRequired()
+  const isRequired = () =>
+    props.required === true || rules().some((rule) => isRequiredRule(rule, form))
+  const showRequiredMark = () => layout.requiredMark() === true && isRequired()
+  const showOptionalMark = () => layout.requiredMark() === 'optional' && !isRequired()
 
   const warnings = () => {
     const name = fieldName()
@@ -241,7 +243,7 @@ export function FormItem(props: FormItemProps) {
     <div
       class={classNames(
         `${prefixCls()}-item`,
-        `${prefixCls()}-item-label-${layout.labelAlign}`,
+        `${prefixCls()}-item-label-${layout.labelAlign()}`,
         mergedStatus() && `${prefixCls()}-item-has-${mergedStatus()}`,
         props.hidden && `${prefixCls()}-item-hidden`,
       )}
@@ -252,8 +254,8 @@ export function FormItem(props: FormItemProps) {
         <label
           class={classNames(
             `${prefixCls()}-item-label`,
-            `${prefixCls()}-item-label-${layout.labelAlign}`,
-            layout.colon && `${prefixCls()}-item-label-colon`,
+            `${prefixCls()}-item-label-${layout.labelAlign()}`,
+            layout.colon() && `${prefixCls()}-item-label-colon`,
           )}
         >
           <span class={`${prefixCls()}-item-label-content`}>{props.label}</span>

@@ -8,14 +8,16 @@ import type {
   ValidateStatus,
 } from './interface'
 
-export const FormLayoutContext = createContext<FormLayoutContextValue>({
-  layout: 'horizontal',
-  requiredMark: true,
-  colon: true,
-  labelAlign: 'right',
-})
+const defaultFormLayoutContext: FormLayoutContextValue = {
+  layout: () => 'horizontal',
+  requiredMark: () => true,
+  colon: () => true,
+  labelAlign: () => 'right',
+}
+
+export const FormLayoutContext = createContext<FormLayoutContextValue>(defaultFormLayoutContext)
 export function useFormLayoutContext(): FormLayoutContextValue {
-  return useContext(FormLayoutContext)
+  return useContext(FormLayoutContext) ?? defaultFormLayoutContext
 }
 
 export const FormContext = createContext<FormInstance>()
