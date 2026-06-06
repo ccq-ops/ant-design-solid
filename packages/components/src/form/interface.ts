@@ -81,6 +81,9 @@ export interface FormInstance {
   getFieldError: (name: FieldName) => string[]
   getFieldsError: (nameList?: FieldName[]) => FieldError[]
   getFieldErrorAccessor: (name: FieldName) => Accessor<string[]>
+  getFieldWarnings?: (name: FieldName) => string[]
+  getFieldWarningAccessor?: (name: FieldName) => Accessor<string[]>
+  getFieldValidatingAccessor?: (name: FieldName) => Accessor<boolean>
   isFieldTouched: (name: FieldName) => boolean
   isFieldsTouched: {
     (allTouched?: boolean): boolean
@@ -92,10 +95,12 @@ export interface FormInstance {
 export interface FormItemControl {
   name: FieldName
   value: Accessor<FieldValue>
+  valueProps: Accessor<Record<string, unknown>>
   valuePropName: Accessor<string>
   trigger: Accessor<string>
+  validateTrigger: Accessor<string | string[]>
   onChange: (nextOrEvent: FieldValue) => void
-  setFieldValueFromControl: (nextOrEvent: FieldValue) => void
+  setFieldValueFromControl: (nextOrEvent: FieldValue, sourceTrigger?: string) => void
   errors: Accessor<string[]>
   status: Accessor<ValidateStatus | undefined>
 }
@@ -113,12 +118,23 @@ export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
 export interface FormItemProps {
   label?: JSX.Element
   name?: FieldName
+  dependencies?: NamePath[]
   rules?: Rule[]
   required?: boolean
   help?: JSX.Element
   validateStatus?: ValidateStatus
   valuePropName?: string
   trigger?: string
+  getValueFromEvent?: (...args: unknown[]) => FieldValue
+  getValueProps?: (value: FieldValue) => Record<string, unknown>
+  normalize?: (value: FieldValue, prevValue: FieldValue, allValues: FormValues) => FieldValue
+  validateTrigger?: string | string[]
+  validateFirst?: boolean | 'parallel'
+  validateDebounce?: number
+  preserve?: boolean
+  noStyle?: boolean
+  hidden?: boolean
+  extra?: JSX.Element
   initialValue?: FieldValue
   children?: JSX.Element | ((control: FormItemControl) => JSX.Element)
 }

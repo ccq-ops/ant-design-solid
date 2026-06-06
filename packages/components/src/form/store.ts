@@ -63,6 +63,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
     const fields = new Map<string, FieldRecord>()
     const errorSignals = new Map<string, [Accessor<string[]>, (errors: string[]) => void]>()
+    const warningSignals = new Map<string, [Accessor<string[]>, (warnings: string[]) => void]>()
+    const validatingSignals = new Map<string, [Accessor<boolean>, (validating: boolean) => void]>()
     const validationSequences = new WeakMap<FieldRecord, number>()
 
     function nextValidationSequence(record: FieldRecord): number {
@@ -92,6 +94,40 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       return signal
     }
 
+    function ensureWarningSignal(
+      name: FieldName,
+    ): [Accessor<string[]>, (warnings: string[]) => void] {
+      const key = getFieldKey(name)
+      let signal = warningSignals.get(key)
+      if (!signal) {
+        signal = createSignal<string[]>([])
+        warningSignals.set(key, signal)
+      }
+      return signal
+    }
+
+    function ensureValidatingSignal(
+      name: FieldName,
+    ): [Accessor<boolean>, (validating: boolean) => void] {
+      const key = getFieldKey(name)
+      let signal = validatingSignals.get(key)
+      if (!signal) {
+        signal = createSignal<boolean>(false)
+        validatingSignals.set(key, signal)
+      }
+      return signal
+    }
+
+    function setRecordWarnings(record: FieldRecord, warnings: string[]): void {
+      record.state.warnings = [...warnings]
+      ensureWarningSignal(record.state.name)[1]([...warnings])
+    }
+
+    function setRecordValidating(record: FieldRecord, validating: boolean): void {
+      record.state.validating = validating
+      ensureValidatingSignal(record.state.name)[1](validating)
+    }
+
     function getRegisteredRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
       const records = Array.from(fields.values())
       if (!nameList) return records
@@ -115,8 +151,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     function clearRecordValidation(record: FieldRecord) {
       invalidateValidation(record)
       record.setErrors([])
-      record.state.warnings = []
-      record.state.validating = false
+      setRecordWarnings(record, [])
+      setRecordValidating(record, false)
     }
 
     function setFieldValueInternal(
@@ -155,7 +191,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         if (!validateOnly) {
           record.state.validated = true
           record.setErrors(result.errors)
-          record.state.warnings = result.warnings
+          setRecordWarnings(record, result.warnings)
           changedRecords.push(record)
         }
       }
@@ -178,7 +214,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         if (config.dirty && !record.state.dirty && !record.state.validated) continue
         const sequence = nextValidationSequence(record)
         if (!config.validateOnly) {
-          record.state.validating = true
+          setRecordValidating(record, true)
           notifyFieldsChange([record])
         }
         try {
@@ -205,7 +241,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           })
         } finally {
           if (!config.validateOnly && isCurrentValidation(record, sequence)) {
-            record.state.validating = false
+            setRecordValidating(record, false)
             notifyFieldsChange([record])
           }
         }
@@ -290,9 +326,9 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
               setValues((currentValues) => setValue(currentValues, field.name, field.value))
             }
             if (field.errors) record.setErrors(field.errors)
-            if (field.warnings) record.state.warnings = [...field.warnings]
+            if (field.warnings) setRecordWarnings(record, field.warnings)
             if (field.touched !== undefined) record.state.touched = field.touched
-            if (field.validating !== undefined) record.state.validating = field.validating
+            if (field.validating !== undefined) setRecordValidating(record, field.validating)
             if ('value' in field) record.state.dirty = true
             changedRecords.push(record)
           }
@@ -311,10 +347,10 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             setValues((currentValues) => setValue(currentValues, record.state.name, initialValue))
             record.state.touched = false
             invalidateValidation(record)
-            record.state.validating = false
+            setRecordValidating(record, false)
             record.state.validated = false
             record.state.dirty = false
-            record.state.warnings = []
+            setRecordWarnings(record, [])
             record.setErrors([])
           }
           notifyFieldsChange(targetRecords)
@@ -376,6 +412,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       getFieldErrorAccessor(name): Accessor<string[]> {
         return ensureErrorSignal(name)[0]
       },
+      getFieldWarnings(name) {
+        const key = getFieldKey(name)
+        return [...(fields.get(key)?.state.warnings ?? warningSignals.get(key)?.[0]() ?? [])]
+      },
+      getFieldWarningAccessor(name): Accessor<string[]> {
+        return ensureWarningSignal(name)[0]
+      },
+      getFieldValidatingAccessor(name): Accessor<boolean> {
+        return ensureValidatingSignal(name)[0]
+      },
       isFieldTouched(name) {
         return fields.get(getFieldKey(name))?.state.touched ?? false
       },
@@ -391,7 +437,11 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           : records.some((record) => record.state.touched)
       },
       isFieldValidating(name) {
-        return fields.get(getFieldKey(name))?.state.validating ?? false
+        return (
+          fields.get(getFieldKey(name))?.state.validating ??
+          validatingSignals.get(getFieldKey(name))?.[0]() ??
+          false
+        )
       },
       setInitialValues(nextInitialValues) {
         const nextInitialValuesClone = cloneFormValues(nextInitialValues ?? {})

@@ -1,10 +1,13 @@
 import { FormRoot } from './form'
 import { FormItem } from './form-item'
+import { useFormItemStatus } from './context'
 
-export const Form = Object.assign(FormRoot, { Item: FormItem })
-export { FormItem }
+const Item = Object.assign(FormItem, { useStatus: useFormItemStatus })
+
+export const Form = Object.assign(FormRoot, { Item })
+export { Item as FormItem }
 export { useForm, createFormInstance } from './store'
-export { useFormItemControl } from './context'
+export { useFormItemControl, useFormItemStatus } from './context'
 export type {
   FieldError,
   FieldMeta,
