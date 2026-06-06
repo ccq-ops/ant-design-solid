@@ -139,11 +139,11 @@ describe('Form', () => {
     ))
 
     form.submit()
-    expect(form.getFieldError('a')()).toEqual(['A required'])
+    expect(form.getFieldError('a')).toEqual(['A required'])
 
     form.setFieldValue('b', 'changed')
 
-    expect(form.getFieldError('a')()).toEqual(['A required'])
+    expect(form.getFieldError('a')).toEqual(['A required'])
     expect(result.getByText('A required')).toBeInTheDocument()
   })
 
@@ -308,7 +308,8 @@ describe('Form', () => {
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
     expect(firstOnFinishFailed).toHaveBeenCalledWith({
       values: { username: '' },
-      errorFields: [{ name: 'username', errors: ['Required'] }],
+      errorFields: [{ name: ['username'], errors: ['Required'], warnings: [] }],
+      outOfDate: false,
     })
 
     setUseSecondCallback(true)
@@ -317,7 +318,8 @@ describe('Form', () => {
     expect(firstOnFinishFailed).toHaveBeenCalledOnce()
     expect(secondOnFinishFailed).toHaveBeenCalledWith({
       values: { username: '' },
-      errorFields: [{ name: 'username', errors: ['Required'] }],
+      errorFields: [{ name: ['username'], errors: ['Required'], warnings: [] }],
+      outOfDate: false,
     })
     expect(await result.findByText('Required')).toBeInTheDocument()
   })
@@ -471,7 +473,7 @@ describe('Form', () => {
     setRequired(true)
 
     await expect(form.validateFields()).rejects.toMatchObject({
-      errorFields: [{ name: 'username', errors: ['Now required'] }],
+      errorFields: [{ name: ['username'], errors: ['Now required'] }],
     })
   })
 

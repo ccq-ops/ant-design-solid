@@ -43,9 +43,11 @@ export function FormItem(props: FormItemProps) {
   const trigger = () => props.trigger ?? 'onChange'
   const rules = () =>
     props.required ? [{ required: true }, ...(props.rules ?? [])] : (props.rules ?? [])
-  const errors = () => (props.name !== undefined && form ? form.getFieldError(props.name)() : [])
+  const errors = () =>
+    props.name !== undefined && form ? form.getFieldErrorAccessor(props.name)() : []
   const mergedStatus = () => props.validateStatus ?? (errors().length > 0 ? 'error' : undefined)
 
+  let unregisterField: (() => void) | undefined
   createEffect(() => {
     if (props.name === undefined || !form) return
     const unregister = form.registerField({
@@ -53,8 +55,9 @@ export function FormItem(props: FormItemProps) {
       rules: rules(),
       initialValue: props.initialValue,
     })
-    onCleanup(unregister)
+    unregisterField ??= unregister
   })
+  onCleanup(() => unregisterField?.())
 
   const control = createMemo<FormItemControl | undefined>(() => {
     if (props.name === undefined || !form) return undefined

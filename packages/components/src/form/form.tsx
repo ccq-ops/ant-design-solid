@@ -14,6 +14,7 @@ export function FormRoot(props: FormProps) {
     'onFinish',
     'onFinishFailed',
     'onValuesChange',
+    'onFieldsChange',
     'children',
     'class',
     'onSubmit',
@@ -34,6 +35,7 @@ export function FormRoot(props: FormProps) {
       onFinish: local.onFinish,
       onFinishFailed: local.onFinishFailed,
       onValuesChange: local.onValuesChange,
+      onFieldsChange: local.onFieldsChange,
     })
   })
 

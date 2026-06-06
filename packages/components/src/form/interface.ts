@@ -7,6 +7,12 @@ export type FieldValue = unknown
 export type FormValues = Record<string, FieldValue>
 export type ValidateStatus = 'success' | 'warning' | 'error' | 'validating'
 
+export interface ValidateConfig {
+  validateOnly?: boolean
+  recursive?: boolean
+  dirty?: boolean
+}
+
 export interface Rule {
   required?: boolean
   type?: 'string' | 'number' | 'boolean' | 'array'
@@ -18,32 +24,52 @@ export interface Rule {
   validator?: (value: FieldValue, values: FormValues) => string | void
 }
 
+export type RuleConfig = Rule
+
 export interface FieldError {
-  name: FieldName
+  name: InternalNamePath
   errors: string[]
+  warnings?: string[]
+}
+
+export interface FieldData extends Omit<FieldError, 'name'> {
+  name: NamePath
+  value?: FieldValue
+  touched?: boolean
+  validating?: boolean
 }
 
 export interface ValidateErrorInfo {
   values: FormValues
   errorFields: FieldError[]
+  outOfDate: boolean
 }
 
 export interface FieldMeta {
   name: FieldName
   rules: Rule[]
   initialValue?: FieldValue
+  preserve?: boolean
+  dependencies?: NamePath[]
+  validateTrigger?: string | string[]
 }
 
 export interface FormInstance {
   getFieldValue: (name: FieldName) => FieldValue
   setFieldValue: (name: FieldName, value: FieldValue) => void
-  getFieldsValue: () => FormValues
+  getFieldsValue: (nameList?: true | FieldName[]) => FormValues
   setFieldsValue: (values: FormValues) => void
+  setFields: (fields: FieldData[]) => void
   resetFields: (names?: FieldName[]) => void
-  validateFields: (names?: FieldName[]) => Promise<FormValues>
+  validateFields: (names?: FieldName[], config?: ValidateConfig) => Promise<FormValues>
   submit: () => void
   registerField: (meta: FieldMeta) => () => void
-  getFieldError: (name: FieldName) => Accessor<string[]>
+  getFieldError: (name: FieldName) => string[]
+  getFieldsError: (nameList?: FieldName[]) => FieldError[]
+  getFieldErrorAccessor: (name: FieldName) => Accessor<string[]>
+  isFieldTouched: (name: FieldName) => boolean
+  isFieldsTouched: (nameList?: FieldName[], allTouched?: boolean) => boolean
+  isFieldValidating: (name: FieldName) => boolean
 }
 
 export interface FormItemControl {
@@ -63,6 +89,7 @@ export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   onFinish?: (values: FormValues) => void
   onFinishFailed?: (errorInfo: ValidateErrorInfo) => void
   onValuesChange?: (changedValues: FormValues, allValues: FormValues) => void
+  onFieldsChange?: (changedFields: FieldData[], allFields: FieldData[]) => void
   children?: JSX.Element
 }
 
