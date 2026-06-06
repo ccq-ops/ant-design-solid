@@ -16,6 +16,9 @@ export function useDrawerStyle(prefixCls: string) {
         inset: '0',
         background: modalToken.maskBg,
       },
+      [`.${prefixCls}-mask-blur`]: {
+        'backdrop-filter': 'blur(4px)',
+      },
       [`.${prefixCls}`]: {
         position: 'fixed',
         'box-sizing': 'border-box',
@@ -28,6 +31,7 @@ export function useDrawerStyle(prefixCls: string) {
         'font-size': `${t.fontSize}px`,
         'line-height': `${t.lineHeight}`,
         outline: '0',
+        transition: 'transform 0.2s',
       },
       [`.${prefixCls}-right`]: {
         top: '0',
@@ -64,6 +68,9 @@ export function useDrawerStyle(prefixCls: string) {
         padding: `${t.padding}px ${t.paddingLG}px`,
         'border-bottom': `1px solid ${t.colorBorderSecondary}`,
       },
+      [`.${prefixCls}-header-close-start`]: {
+        'justify-content': 'flex-start',
+      },
       [`.${prefixCls}-title`]: {
         flex: '1',
         margin: '0',
@@ -85,6 +92,9 @@ export function useDrawerStyle(prefixCls: string) {
         padding: `${t.paddingSM}px ${t.paddingLG}px`,
         'border-top': `1px solid ${t.colorBorderSecondary}`,
       },
+      [`.${prefixCls}-loading`]: {
+        width: '100%',
+      },
       [`.${prefixCls}-close`]: {
         border: '0',
         background: 'transparent',
@@ -93,6 +103,42 @@ export function useDrawerStyle(prefixCls: string) {
         'font-size': `${t.fontSize + 2}px`,
         'line-height': '1',
         padding: '0',
+      },
+      [`.${prefixCls}-close:disabled`]: {
+        cursor: 'not-allowed',
+        opacity: 0.45,
+      },
+      [`.${prefixCls}-resize-handle`]: {
+        position: 'absolute',
+        'z-index': 1,
+      },
+      [`.${prefixCls}-resize-handle-right`]: {
+        top: '0',
+        bottom: '0',
+        left: '-3px',
+        width: '6px',
+        cursor: 'ew-resize',
+      },
+      [`.${prefixCls}-resize-handle-left`]: {
+        top: '0',
+        right: '-3px',
+        bottom: '0',
+        width: '6px',
+        cursor: 'ew-resize',
+      },
+      [`.${prefixCls}-resize-handle-top`]: {
+        right: '0',
+        bottom: '-3px',
+        left: '0',
+        height: '6px',
+        cursor: 'ns-resize',
+      },
+      [`.${prefixCls}-resize-handle-bottom`]: {
+        top: '-3px',
+        right: '0',
+        left: '0',
+        height: '6px',
+        cursor: 'ns-resize',
       },
     }
   })
