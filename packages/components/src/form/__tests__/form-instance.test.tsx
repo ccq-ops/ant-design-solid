@@ -176,6 +176,48 @@ describe('FormInstance core parity APIs', () => {
     )
   })
 
+  it('notifies validating state changes during async validation', async () => {
+    let resolveValidation!: () => void
+    const validationPending = new Promise<void>((resolve) => {
+      resolveValidation = resolve
+    })
+    const onFieldsChange = vi.fn()
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: 'Ada' }} onFieldsChange={onFieldsChange}>
+        <Form.Item
+          name="username"
+          rules={[
+            {
+              async validator() {
+                await validationPending
+              },
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    const validation = form.validateFields(['username'])
+
+    expect(form.isFieldValidating('username')).toBe(true)
+    expect(onFieldsChange).toHaveBeenCalledWith(
+      [expect.objectContaining({ name: ['username'], validating: true })],
+      [expect.objectContaining({ name: ['username'], validating: true })],
+    )
+
+    resolveValidation()
+    await expect(validation).resolves.toEqual({ username: 'Ada' })
+
+    expect(form.isFieldValidating('username')).toBe(false)
+    expect(onFieldsChange).toHaveBeenCalledWith(
+      [expect.objectContaining({ name: ['username'], validating: false })],
+      [expect.objectContaining({ name: ['username'], validating: false })],
+    )
+  })
+
   it('does not notify onFieldsChange when validateOnly is true', async () => {
     const onFieldsChange = vi.fn()
     const [form] = useForm()

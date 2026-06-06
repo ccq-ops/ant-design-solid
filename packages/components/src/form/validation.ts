@@ -1,7 +1,5 @@
 import type { FieldValue, FormInstance, FormValues, Rule, RuleConfig } from './interface'
 
-const ASYNC_VALIDATOR = Symbol('ASYNC_VALIDATOR')
-
 export interface ValidateValueOptions {
   form?: FormInstance
   validateFirst?: boolean | 'parallel'
@@ -11,8 +9,6 @@ export interface ValidateValueResult {
   errors: string[]
   warnings: string[]
 }
-
-type SyncValidateRuleResult = string | undefined | typeof ASYNC_VALIDATOR
 
 function isEmpty(value: FieldValue): boolean {
   return (
@@ -81,7 +77,7 @@ function validateRuleBase(
   if (rule.type === 'url' && !isUrl(value)) {
     return [value, messageOf(name, rule, `${name} is not a valid url`)]
   }
-  if (rule.type === 'enum' && rule.enum && !rule.enum.includes(value)) {
+  if (rule.enum && !rule.enum.includes(value)) {
     return [value, messageOf(name, rule, `${name} is not in enum`)]
   }
   if (
@@ -135,7 +131,7 @@ async function validateRule(
 
   if (rule.validator) {
     try {
-      const result = await callValidator(rule, value, values)
+      const result = await callValidator(rule, value)
       if (typeof result === 'string') return result
     } catch (error) {
       return error instanceof Error ? error.message : String(error)
@@ -145,33 +141,9 @@ async function validateRule(
   return undefined
 }
 
-type ValidatorFunction = NonNullable<RuleConfig['validator']>
-
-function getFirstParameterName(fn: ValidatorFunction): string | undefined {
-  const source = fn.toString().trim()
-  const arrowIndex = source.indexOf('=>')
-  const openParenIndex = source.indexOf('(')
-  if (openParenIndex >= 0 && (arrowIndex < 0 || openParenIndex < arrowIndex)) {
-    return source.slice(openParenIndex + 1).match(/^\s*([^,)=\s]+)/)?.[1]
-  }
-  if (arrowIndex >= 0) return source.slice(0, arrowIndex).trim()
-  return undefined
-}
-
-async function callValidator(
-  rule: RuleConfig,
-  value: FieldValue,
-  values: FormValues,
-): Promise<string | void> {
+async function callValidator(rule: RuleConfig, value: FieldValue): Promise<string | void> {
   if (!rule.validator) return undefined
-
-  const firstParameterName = getFirstParameterName(rule.validator)
-  const prefersModernSignature = firstParameterName === '_' || firstParameterName === 'rule'
-  const args: [FieldValue | RuleConfig, FieldValue | FormValues] = prefersModernSignature
-    ? [rule, value]
-    : [value, values]
-
-  const validatorResult = await rule.validator(args[0] as never, args[1])
+  const validatorResult = await rule.validator(rule, value)
   if (typeof validatorResult === 'string') return validatorResult
   return undefined
 }
@@ -185,36 +157,6 @@ function appendResult(
   ;(rule.warningOnly ? result.warnings : result.errors).push(error)
 }
 
-function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
-  return Boolean(value) && typeof (value as { then?: unknown }).then === 'function'
-}
-
-function validateRuleSync(
-  name: string,
-  rawValue: FieldValue,
-  values: FormValues,
-  rule: RuleConfig,
-): SyncValidateRuleResult {
-  const [value, baseError] = validateRuleBase(name, rawValue, rule)
-  if (baseError) return baseError
-  if (!rule.validator) return undefined
-
-  try {
-    const firstParameterName = getFirstParameterName(rule.validator)
-    const prefersModernSignature = firstParameterName === '_' || firstParameterName === 'rule'
-    const args: [FieldValue | RuleConfig, FieldValue | FormValues] = prefersModernSignature
-      ? [rule, value]
-      : [value, values]
-
-    const validatorResult = rule.validator(args[0] as never, args[1])
-    if (isPromiseLike(validatorResult)) return ASYNC_VALIDATOR
-    if (typeof validatorResult === 'string') return validatorResult
-    return undefined
-  } catch (error) {
-    return error instanceof Error ? error.message : String(error)
-  }
-}
-
 export function validateValueSync(
   name: string,
   value: FieldValue,
@@ -223,15 +165,15 @@ export function validateValueSync(
   options: ValidateValueOptions = {},
 ): ValidateValueResult | undefined {
   const resolvedRules = rules.map((rule) => resolveRule(rule, options.form))
+  if (options.validateFirst === 'parallel') return undefined
+  if (resolvedRules.some((rule) => rule.validator)) return undefined
+
   const result: ValidateValueResult = { errors: [], warnings: [] }
   const validateFirst =
     options.validateFirst ?? resolvedRules.find((rule) => rule.validateFirst)?.validateFirst
 
-  if (validateFirst === 'parallel') return undefined
-
   for (const rule of resolvedRules) {
-    const error = validateRuleSync(name, value, values, rule)
-    if (error === ASYNC_VALIDATOR) return undefined
+    const [, error] = validateRuleBase(name, value, rule)
     appendResult(result, rule, error)
     if (error && validateFirst && !rule.warningOnly) break
   }
@@ -255,8 +197,15 @@ export async function validateValue(
     const results = await Promise.all(
       resolvedRules.map((rule) => validateRule(name, value, values, rule)),
     )
-    const firstIndex = results.findIndex(Boolean)
-    if (firstIndex >= 0) appendResult(result, resolvedRules[firstIndex], results[firstIndex])
+    const firstErrorIndex = results.findIndex(
+      (error, index) => error && !resolvedRules[index].warningOnly,
+    )
+    if (firstErrorIndex >= 0) {
+      result.errors.push(results[firstErrorIndex] as string)
+      return result
+    }
+    const firstWarningIndex = results.findIndex(Boolean)
+    if (firstWarningIndex >= 0) result.warnings.push(results[firstWarningIndex] as string)
     return result
   }
 

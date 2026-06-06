@@ -156,6 +156,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       for (const record of records) {
         if (config.dirty && !record.state.dirty && !record.state.validated) continue
         record.state.validating = true
+        if (!config.validateOnly) notifyFieldsChange([record])
         const result = await validateValue(
           record.state.name.join('.'),
           getValue(values(), record.state.name),
@@ -164,6 +165,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           { form },
         )
         record.state.validating = false
+        if (!config.validateOnly) notifyFieldsChange([record])
         results.set(record, result)
       }
       return buildValidationResult(records, results, config.validateOnly)
