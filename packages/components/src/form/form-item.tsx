@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onCleanup, Show } from 'solid-js'
+import { createEffect, createMemo, onCleanup, Show, untrack } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { FormItemContext, useFormContext } from './context'
@@ -49,13 +49,15 @@ export function FormItem(props: FormItemProps) {
 
   let unregisterField: (() => void) | undefined
   createEffect(() => {
+    unregisterField?.()
+    unregisterField = undefined
     if (props.name === undefined || !form) return
-    const unregister = form.registerField({
+    const meta = {
       name: props.name,
       rules: rules(),
       initialValue: props.initialValue,
-    })
-    unregisterField ??= unregister
+    }
+    unregisterField = untrack(() => form.registerField(meta))
   })
   onCleanup(() => unregisterField?.())
 

@@ -1,14 +1,7 @@
 import { batch, createRoot, createSignal, type Accessor } from 'solid-js'
 import { createFieldRecord, fieldRecordToData, getFieldKey, type FieldRecord } from './field-store'
 import { matchNamePath } from './name-path'
-import {
-  cloneFormValues,
-  flattenValuePaths,
-  getValue,
-  mergeValues,
-  pickValues,
-  setValue,
-} from './value-util'
+import { cloneFormValues, getValue, mergeValues, pickValues, setValue } from './value-util'
 import { validateValue } from './validation'
 import type {
   FieldData,
@@ -17,6 +10,7 @@ import type {
   FieldValue,
   FormInstance,
   FormValues,
+  InternalNamePath,
   ValidateConfig,
   ValidateErrorInfo,
 } from './interface'
@@ -34,6 +28,28 @@ interface InternalFormInstance extends FormInstance {
   setCallbacks?: (callbacks: Omit<CreateFormOptions, 'initialValues'>) => void
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return false
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
+}
+
+function collectChangedValuePaths(
+  value: unknown,
+  prefix: InternalNamePath = [],
+): InternalNamePath[] {
+  if (Array.isArray(value)) {
+    if (value.length === 0) return prefix.length > 0 ? [prefix] : []
+    return value.flatMap((item, index) => collectChangedValuePaths(item, [...prefix, index]))
+  }
+  if (isPlainObject(value)) {
+    const keys = Object.keys(value)
+    if (keys.length === 0) return prefix.length > 0 ? [prefix] : []
+    return keys.flatMap((key) => collectChangedValuePaths(value[key], [...prefix, key]))
+  }
+  return prefix.length > 0 ? [prefix] : []
+}
+
 export function createFormInstance(options: CreateFormOptions = {}): FormInstance {
   return createRoot(() => {
     let sourceInitialValues = options.initialValues
@@ -46,6 +62,17 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       onFieldsChange: options.onFieldsChange,
     }
     const fields = new Map<string, FieldRecord>()
+    const errorSignals = new Map<string, [Accessor<string[]>, (errors: string[]) => void]>()
+
+    function ensureErrorSignal(name: FieldName): [Accessor<string[]>, (errors: string[]) => void] {
+      const key = getFieldKey(name)
+      let signal = errorSignals.get(key)
+      if (!signal) {
+        signal = createSignal<string[]>([])
+        errorSignals.set(key, signal)
+      }
+      return signal
+    }
 
     function getRegisteredRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
       const records = Array.from(fields.values())
@@ -147,9 +174,13 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       setFieldsValue(nextValues) {
         batch(() => {
           setValues((currentValues) => mergeValues(currentValues, nextValues))
-          const changedPaths = flattenValuePaths(nextValues)
+          const changedPaths = collectChangedValuePaths(nextValues)
           const changedRecords = Array.from(fields.values()).filter((record) =>
-            changedPaths.some((path) => matchNamePath(path, record.state.name, false)),
+            changedPaths.some(
+              (path) =>
+                matchNamePath(path, record.state.name, true) ||
+                matchNamePath(record.state.name, path, true),
+            ),
           )
           for (const record of changedRecords) {
             record.state.dirty = true
@@ -166,7 +197,10 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             const key = getFieldKey(field.name)
             let record = fields.get(key)
             if (!record) {
-              record = createFieldRecord({ name: field.name, rules: [] })
+              record = createFieldRecord(
+                { name: field.name, rules: [] },
+                ensureErrorSignal(field.name),
+              )
               fields.set(key, record)
             }
             if ('value' in field) {
@@ -217,7 +251,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       registerField(meta) {
         const key = getFieldKey(meta.name)
         const existing = fields.get(key)
-        const record = existing ?? createFieldRecord(meta)
+        const record = existing ?? createFieldRecord(meta, ensureErrorSignal(meta.name))
         record.meta = meta
         fields.set(key, record)
         if (meta.initialValue !== undefined && getValue(values(), meta.name) === undefined) {
@@ -228,7 +262,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         }
       },
       getFieldError(name) {
-        return [...(fields.get(getFieldKey(name))?.state.errors ?? [])]
+        const key = getFieldKey(name)
+        return [...(fields.get(key)?.state.errors ?? errorSignals.get(key)?.[0]() ?? [])]
       },
       getFieldsError(nameList) {
         return getRegisteredRecords(nameList).map((record) => ({
@@ -238,13 +273,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         }))
       },
       getFieldErrorAccessor(name): Accessor<string[]> {
-        const key = getFieldKey(name)
-        let record = fields.get(key)
-        if (!record) {
-          record = createFieldRecord({ name, rules: [] })
-          fields.set(key, record)
-        }
-        return record.errors
+        return ensureErrorSignal(name)[0]
       },
       isFieldTouched(name) {
         return fields.get(getFieldKey(name))?.state.touched ?? false

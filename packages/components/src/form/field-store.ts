@@ -32,9 +32,13 @@ export function createFieldState(name: FieldName): FieldState {
   }
 }
 
-export function createFieldRecord(meta: FieldMeta): FieldRecord {
-  const [errors, setErrorsSignal] = createSignal<string[]>([])
+export function createFieldRecord(
+  meta: FieldMeta,
+  errorSignal?: [Accessor<string[]>, (errors: string[]) => void],
+): FieldRecord {
+  const [errors, setErrorsSignal] = errorSignal ?? createSignal<string[]>([])
   const state = createFieldState(meta.name)
+  state.errors = [...errors()]
   const setErrors = (nextErrors: string[]) => {
     state.errors = [...nextErrors]
     setErrorsSignal([...nextErrors])

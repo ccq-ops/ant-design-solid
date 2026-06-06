@@ -1,4 +1,5 @@
 import { render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Input } from '../../input'
 import { Form, useForm } from '../index'
@@ -214,5 +215,60 @@ describe('FormInstance core parity APIs', () => {
     form.setFields([{ name: 'second', touched: true }])
 
     expect(form.isFieldsTouched(true)).toBe(true)
+  })
+
+  it('keeps only the active field registered after a reactive name change', () => {
+    const [form] = useForm()
+    const [fieldName, setFieldName] = createSignal('first')
+    render(() => (
+      <Form form={form}>
+        <Form.Item name={fieldName()}>
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    form.setFieldValue('first', 'a')
+    setFieldName('second')
+    form.setFieldValue('second', 'b')
+
+    expect(form.getFieldsValue()).toEqual({ second: 'b' })
+  })
+
+  it('does not register fields when reading an unregistered field error accessor', async () => {
+    const [form] = useForm()
+    const accessor = form.getFieldErrorAccessor('ghost')
+
+    expect(accessor()).toEqual([])
+    expect(form.getFieldsValue()).toEqual({})
+    expect(form.getFieldsError()).toEqual([])
+    await expect(form.validateFields()).resolves.toEqual({})
+  })
+
+  it('clears descendant validation state when setFieldsValue replaces a parent object', () => {
+    const onFieldsChange = vi.fn()
+    const [form] = useForm()
+    render(() => (
+      <Form
+        form={form}
+        initialValues={{ user: { email: 'seed@example.com' } }}
+        onFieldsChange={onFieldsChange}
+      >
+        <Form.Item name={['user', 'email']}>
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    form.setFields([{ name: ['user', 'email'], errors: ['Bad'] }])
+    onFieldsChange.mockClear()
+
+    form.setFieldsValue({ user: {} })
+
+    expect(form.getFieldError(['user', 'email'])).toEqual([])
+    expect(onFieldsChange).toHaveBeenCalledWith(
+      [expect.objectContaining({ name: ['user', 'email'], errors: [] })],
+      [expect.objectContaining({ name: ['user', 'email'], errors: [] })],
+    )
   })
 })
