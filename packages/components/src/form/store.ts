@@ -73,6 +73,11 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     const warningSignals = new Map<string, [Accessor<string[]>, (warnings: string[]) => void]>()
     const validatingSignals = new Map<string, [Accessor<boolean>, (validating: boolean) => void]>()
     const validationSequences = new WeakMap<FieldRecord, number>()
+    const subscribers = new Set<() => void>()
+
+    function notifySubscribers(): void {
+      for (const listener of subscribers) listener()
+    }
 
     function nextValidationSequence(record: FieldRecord): number {
       const sequence = (validationSequences.get(record) ?? 0) + 1
@@ -305,6 +310,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           const changedValues = setValue({}, name, value)
           callbacks.onValuesChange?.(changedValues, cloneFormValues(values()))
           if (record) notifyFieldsChange([record])
+          notifySubscribers()
           revalidateDependencies([name])
         })
       },
@@ -333,6 +339,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           }
           callbacks.onValuesChange?.(cloneFormValues(nextValues), cloneFormValues(values()))
           notifyFieldsChange(changedRecords)
+          notifySubscribers()
           revalidateDependencies(changedPaths)
         })
       },
@@ -360,6 +367,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             changedRecords.push(record)
           }
           notifyFieldsChange(changedRecords)
+          if (nextFields.some((field) => 'value' in field)) notifySubscribers()
         })
       },
       resetFields(names) {
@@ -381,6 +389,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             record.setErrors([])
           }
           notifyFieldsChange(targetRecords)
+          notifySubscribers()
         })
       },
       async validateFields(names, config) {
@@ -420,6 +429,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         fields.set(key, record)
         if (meta.initialValue !== undefined && getValue(values(), meta.name) === undefined) {
           setValues((currentValues) => setValue(currentValues, meta.name, meta.initialValue))
+          notifySubscribers()
         }
         return () => {
           if (fields.get(key) !== record) return
@@ -433,6 +443,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
                 cloneFormValues(values()),
               )
               notifyFieldsChange([record])
+              notifySubscribers()
               revalidateDependencies([record.state.name])
             })
           }
@@ -483,13 +494,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           false
         )
       },
+      subscribe(listener) {
+        subscribers.add(listener)
+        return () => subscribers.delete(listener)
+      },
       setInitialValues(nextInitialValues) {
         const nextInitialValuesClone = cloneFormValues(nextInitialValues ?? {})
-        setValues((currentValues) =>
-          sourceInitialValues === nextInitialValues
-            ? currentValues
-            : mergeValues(nextInitialValuesClone, currentValues),
-        )
+        if (sourceInitialValues !== nextInitialValues) {
+          setValues((currentValues) => mergeValues(nextInitialValuesClone, currentValues))
+          notifySubscribers()
+        }
         sourceInitialValues = nextInitialValues
         formInitialValues = nextInitialValuesClone
       },

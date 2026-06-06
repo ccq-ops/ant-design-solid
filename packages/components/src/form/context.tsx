@@ -7,6 +7,12 @@ export function useFormContext(): FormInstance | undefined {
   return useContext(FormContext)
 }
 
+export function useFormInstance(): FormInstance {
+  const form = useFormContext()
+  if (!form) throw new Error('Form.useFormInstance must be used under a Form component')
+  return form
+}
+
 export const FormItemContext = createContext<FormItemControl>()
 export function useFormItemControl(): FormItemControl | undefined {
   return useContext(FormItemContext)

@@ -91,6 +91,7 @@ export interface FormInstance {
     (nameList?: FieldName[], allTouched?: boolean): boolean
   }
   isFieldValidating: (name: FieldName) => boolean
+  subscribe: (listener: () => void) => () => void
 }
 
 export interface FormItemControl {
