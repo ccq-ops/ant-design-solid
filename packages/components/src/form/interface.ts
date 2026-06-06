@@ -13,18 +13,27 @@ export interface ValidateConfig {
   dirty?: boolean
 }
 
-export interface Rule {
+export interface RuleConfig {
   required?: boolean
-  type?: 'string' | 'number' | 'boolean' | 'array'
+  type?: 'string' | 'number' | 'boolean' | 'array' | 'object' | 'email' | 'url' | 'enum'
+  enum?: FieldValue[]
   min?: number
   max?: number
   len?: number
   pattern?: RegExp
-  message?: string
-  validator?: (value: FieldValue, values: FormValues) => string | void
+  whitespace?: boolean
+  transform?: (value: FieldValue) => FieldValue
+  message?: JSX.Element
+  warningOnly?: boolean
+  validateTrigger?: string | string[]
+  validateFirst?: boolean | 'parallel'
+  validator?: {
+    (rule: RuleConfig, value: FieldValue): string | void | Promise<void>
+    (value: FieldValue, values: FormValues): string | void | Promise<void>
+  }
 }
 
-export type RuleConfig = Rule
+export type Rule = RuleConfig | ((form: FormInstance) => RuleConfig)
 
 export interface FieldError {
   name: InternalNamePath

@@ -1,4 +1,18 @@
-import type { FieldValue, FormValues, Rule } from './interface'
+import type { FieldValue, FormInstance, FormValues, Rule, RuleConfig } from './interface'
+
+const ASYNC_VALIDATOR = Symbol('ASYNC_VALIDATOR')
+
+export interface ValidateValueOptions {
+  form?: FormInstance
+  validateFirst?: boolean | 'parallel'
+}
+
+export interface ValidateValueResult {
+  errors: string[]
+  warnings: string[]
+}
+
+type SyncValidateRuleResult = string | undefined | typeof ASYNC_VALIDATOR
 
 function isEmpty(value: FieldValue): boolean {
   return (
@@ -14,46 +28,243 @@ function getLength(value: FieldValue): number | undefined {
   return undefined
 }
 
-export function validateValue(
+function isObject(value: FieldValue): boolean {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isEmail(value: FieldValue): boolean {
+  return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function isUrl(value: FieldValue): boolean {
+  if (typeof value !== 'string') return false
+  try {
+    new URL(value)
+    return true
+  } catch {
+    return false
+  }
+}
+
+function messageOf(name: string, rule: RuleConfig, fallback: string): string {
+  if (typeof rule.message === 'string') return rule.message
+  return fallback.replace('${name}', name)
+}
+
+function resolveRule(rule: Rule, form?: FormInstance): RuleConfig {
+  return typeof rule === 'function' ? rule(form as FormInstance) : rule
+}
+
+function validateRuleBase(
+  name: string,
+  rawValue: FieldValue,
+  rule: RuleConfig,
+): [FieldValue, string | undefined] {
+  const value = rule.transform ? rule.transform(rawValue) : rawValue
+
+  if (rule.required && isEmpty(value)) return [value, messageOf(name, rule, `${name} is required`)]
+  if (isEmpty(value)) return [value, undefined]
+
+  if (rule.whitespace && typeof value === 'string' && value.trim() === '') {
+    return [value, messageOf(name, rule, `${name} cannot be blank`)]
+  }
+
+  if (rule.type === 'array' && !Array.isArray(value)) {
+    return [value, messageOf(name, rule, `${name} is not an array`)]
+  }
+  if (rule.type === 'object' && !isObject(value)) {
+    return [value, messageOf(name, rule, `${name} is not an object`)]
+  }
+  if (rule.type === 'email' && !isEmail(value)) {
+    return [value, messageOf(name, rule, `${name} is not a valid email`)]
+  }
+  if (rule.type === 'url' && !isUrl(value)) {
+    return [value, messageOf(name, rule, `${name} is not a valid url`)]
+  }
+  if (rule.type === 'enum' && rule.enum && !rule.enum.includes(value)) {
+    return [value, messageOf(name, rule, `${name} is not in enum`)]
+  }
+  if (
+    rule.type &&
+    !['array', 'object', 'email', 'url', 'enum'].includes(rule.type) &&
+    typeof value !== rule.type
+  ) {
+    return [value, messageOf(name, rule, `${name} is not a valid ${rule.type}`)]
+  }
+
+  if (typeof value === 'number') {
+    if (rule.len !== undefined && value !== rule.len) {
+      return [value, messageOf(name, rule, `${name} must equal ${rule.len}`)]
+    }
+    if (rule.min !== undefined && value < rule.min) {
+      return [value, messageOf(name, rule, `${name} must be at least ${rule.min}`)]
+    }
+    if (rule.max !== undefined && value > rule.max) {
+      return [value, messageOf(name, rule, `${name} must be at most ${rule.max}`)]
+    }
+  }
+
+  const length = getLength(value)
+  if (length !== undefined) {
+    if (rule.len !== undefined && length !== rule.len) {
+      return [value, messageOf(name, rule, `${name} must be ${rule.len} characters`)]
+    }
+    if (rule.min !== undefined && length < rule.min) {
+      return [value, messageOf(name, rule, `${name} must be at least ${rule.min} characters`)]
+    }
+    if (rule.max !== undefined && length > rule.max) {
+      return [value, messageOf(name, rule, `${name} must be at most ${rule.max} characters`)]
+    }
+  }
+
+  if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) {
+    return [value, messageOf(name, rule, `${name} format is invalid`)]
+  }
+
+  return [value, undefined]
+}
+
+async function validateRule(
+  name: string,
+  rawValue: FieldValue,
+  values: FormValues,
+  rule: RuleConfig,
+): Promise<string | undefined> {
+  const [value, baseError] = validateRuleBase(name, rawValue, rule)
+  if (baseError) return baseError
+
+  if (rule.validator) {
+    try {
+      const result = await callValidator(rule, value, values)
+      if (typeof result === 'string') return result
+    } catch (error) {
+      return error instanceof Error ? error.message : String(error)
+    }
+  }
+
+  return undefined
+}
+
+type ValidatorFunction = NonNullable<RuleConfig['validator']>
+
+function getFirstParameterName(fn: ValidatorFunction): string | undefined {
+  const source = fn.toString().trim()
+  const arrowIndex = source.indexOf('=>')
+  const openParenIndex = source.indexOf('(')
+  if (openParenIndex >= 0 && (arrowIndex < 0 || openParenIndex < arrowIndex)) {
+    return source.slice(openParenIndex + 1).match(/^\s*([^,)=\s]+)/)?.[1]
+  }
+  if (arrowIndex >= 0) return source.slice(0, arrowIndex).trim()
+  return undefined
+}
+
+async function callValidator(
+  rule: RuleConfig,
+  value: FieldValue,
+  values: FormValues,
+): Promise<string | void> {
+  if (!rule.validator) return undefined
+
+  const firstParameterName = getFirstParameterName(rule.validator)
+  const prefersModernSignature = firstParameterName === '_' || firstParameterName === 'rule'
+  const args: [FieldValue | RuleConfig, FieldValue | FormValues] = prefersModernSignature
+    ? [rule, value]
+    : [value, values]
+
+  const validatorResult = await rule.validator(args[0] as never, args[1])
+  if (typeof validatorResult === 'string') return validatorResult
+  return undefined
+}
+
+function appendResult(
+  result: ValidateValueResult,
+  rule: RuleConfig,
+  error: string | undefined,
+): void {
+  if (!error) return
+  ;(rule.warningOnly ? result.warnings : result.errors).push(error)
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return Boolean(value) && typeof (value as { then?: unknown }).then === 'function'
+}
+
+function validateRuleSync(
+  name: string,
+  rawValue: FieldValue,
+  values: FormValues,
+  rule: RuleConfig,
+): SyncValidateRuleResult {
+  const [value, baseError] = validateRuleBase(name, rawValue, rule)
+  if (baseError) return baseError
+  if (!rule.validator) return undefined
+
+  try {
+    const firstParameterName = getFirstParameterName(rule.validator)
+    const prefersModernSignature = firstParameterName === '_' || firstParameterName === 'rule'
+    const args: [FieldValue | RuleConfig, FieldValue | FormValues] = prefersModernSignature
+      ? [rule, value]
+      : [value, values]
+
+    const validatorResult = rule.validator(args[0] as never, args[1])
+    if (isPromiseLike(validatorResult)) return ASYNC_VALIDATOR
+    if (typeof validatorResult === 'string') return validatorResult
+    return undefined
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error)
+  }
+}
+
+export function validateValueSync(
   name: string,
   value: FieldValue,
   values: FormValues,
   rules: Rule[] = [],
-): string[] {
-  for (const rule of rules) {
-    if (rule.required && isEmpty(value)) return [rule.message ?? `${name} is required`]
-    if (isEmpty(value)) continue
+  options: ValidateValueOptions = {},
+): ValidateValueResult | undefined {
+  const resolvedRules = rules.map((rule) => resolveRule(rule, options.form))
+  const result: ValidateValueResult = { errors: [], warnings: [] }
+  const validateFirst =
+    options.validateFirst ?? resolvedRules.find((rule) => rule.validateFirst)?.validateFirst
 
-    if (rule.type === 'array' && !Array.isArray(value))
-      return [rule.message ?? `${name} is not an array`]
-    if (rule.type && rule.type !== 'array' && typeof value !== rule.type)
-      return [rule.message ?? `${name} is not a valid ${rule.type}`]
+  if (validateFirst === 'parallel') return undefined
 
-    if (typeof value === 'number') {
-      if (rule.len !== undefined && value !== rule.len)
-        return [rule.message ?? `${name} must equal ${rule.len}`]
-      if (rule.min !== undefined && value < rule.min)
-        return [rule.message ?? `${name} must be at least ${rule.min}`]
-      if (rule.max !== undefined && value > rule.max)
-        return [rule.message ?? `${name} must be at most ${rule.max}`]
-    }
-
-    const length = getLength(value)
-    if (length !== undefined) {
-      if (rule.len !== undefined && length !== rule.len)
-        return [rule.message ?? `${name} must be ${rule.len} characters`]
-      if (rule.min !== undefined && length < rule.min)
-        return [rule.message ?? `${name} must be at least ${rule.min} characters`]
-      if (rule.max !== undefined && length > rule.max)
-        return [rule.message ?? `${name} must be at most ${rule.max} characters`]
-    }
-
-    if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value))
-      return [rule.message ?? `${name} format is invalid`]
-
-    const customError = rule.validator?.(value, values)
-    if (customError) return [customError]
+  for (const rule of resolvedRules) {
+    const error = validateRuleSync(name, value, values, rule)
+    if (error === ASYNC_VALIDATOR) return undefined
+    appendResult(result, rule, error)
+    if (error && validateFirst && !rule.warningOnly) break
   }
 
-  return []
+  return result
+}
+
+export async function validateValue(
+  name: string,
+  value: FieldValue,
+  values: FormValues,
+  rules: Rule[] = [],
+  options: ValidateValueOptions = {},
+): Promise<ValidateValueResult> {
+  const resolvedRules = rules.map((rule) => resolveRule(rule, options.form))
+  const result: ValidateValueResult = { errors: [], warnings: [] }
+  const validateFirst =
+    options.validateFirst ?? resolvedRules.find((rule) => rule.validateFirst)?.validateFirst
+
+  if (validateFirst === 'parallel') {
+    const results = await Promise.all(
+      resolvedRules.map((rule) => validateRule(name, value, values, rule)),
+    )
+    const firstIndex = results.findIndex(Boolean)
+    if (firstIndex >= 0) appendResult(result, resolvedRules[firstIndex], results[firstIndex])
+    return result
+  }
+
+  for (const rule of resolvedRules) {
+    const error = await validateRule(name, value, values, rule)
+    appendResult(result, rule, error)
+    if (error && validateFirst && !rule.warningOnly) break
+  }
+
+  return result
 }

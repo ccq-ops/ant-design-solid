@@ -2,7 +2,7 @@ import { batch, createRoot, createSignal, type Accessor } from 'solid-js'
 import { createFieldRecord, fieldRecordToData, getFieldKey, type FieldRecord } from './field-store'
 import { matchNamePath } from './name-path'
 import { cloneFormValues, getValue, mergeValues, pickValues, setValue } from './value-util'
-import { validateValue } from './validation'
+import { validateValue, validateValueSync, type ValidateValueResult } from './validation'
 import type {
   FieldData,
   FieldError,
@@ -115,40 +115,79 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       return record
     }
 
-    function validateFieldNames(
-      names: FieldName[],
-      config: ValidateConfig = {},
+    function buildValidationResult(
+      records: FieldRecord[],
+      results: Map<FieldRecord, ValidateValueResult>,
+      validateOnly?: boolean,
     ): ValidateErrorInfo {
-      const records = getRegisteredRecords(names, config.recursive)
       const errorFields: FieldError[] = []
       const changedRecords: FieldRecord[] = []
       for (const record of records) {
-        if (config.dirty && !record.state.dirty && !record.state.validated) continue
-        const errors = validateValue(
-          record.state.name.join('.'),
-          getValue(values(), record.state.name),
-          values(),
-          record.meta.rules,
-        )
-        if (errors.length > 0) {
+        const result = results.get(record)
+        if (!result) continue
+        if (result.errors.length > 0) {
           errorFields.push({
             name: [...record.state.name],
-            errors,
-            warnings: [...record.state.warnings],
+            errors: result.errors,
+            warnings: result.warnings,
           })
         }
-        if (!config.validateOnly) {
+        if (!validateOnly) {
           record.state.validated = true
-          record.setErrors(errors)
+          record.setErrors(result.errors)
+          record.state.warnings = result.warnings
           changedRecords.push(record)
         }
       }
-      if (!config.validateOnly) notifyFieldsChange(changedRecords)
+      if (!validateOnly) notifyFieldsChange(changedRecords)
       return {
         values: cloneFormValues(values()),
         errorFields,
         outOfDate: false,
       }
+    }
+
+    async function validateFieldNames(
+      names: FieldName[],
+      config: ValidateConfig = {},
+    ): Promise<ValidateErrorInfo> {
+      const records = getRegisteredRecords(names, config.recursive)
+      const results = new Map<FieldRecord, ValidateValueResult>()
+      for (const record of records) {
+        if (config.dirty && !record.state.dirty && !record.state.validated) continue
+        record.state.validating = true
+        const result = await validateValue(
+          record.state.name.join('.'),
+          getValue(values(), record.state.name),
+          values(),
+          record.meta.rules,
+          { form },
+        )
+        record.state.validating = false
+        results.set(record, result)
+      }
+      return buildValidationResult(records, results, config.validateOnly)
+    }
+
+    function validateFieldNamesSync(
+      names: FieldName[],
+      config: ValidateConfig = {},
+    ): ValidateErrorInfo | undefined {
+      const records = getRegisteredRecords(names, config.recursive)
+      const results = new Map<FieldRecord, ValidateValueResult>()
+      for (const record of records) {
+        if (config.dirty && !record.state.dirty && !record.state.validated) continue
+        const result = validateValueSync(
+          record.state.name.join('.'),
+          getValue(values(), record.state.name),
+          values(),
+          record.meta.rules,
+          { form },
+        )
+        if (!result) return undefined
+        results.set(record, result)
+      }
+      return buildValidationResult(records, results, config.validateOnly)
     }
 
     const form: InternalFormInstance = {
@@ -238,15 +277,22 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       async validateFields(names, config) {
         const targetNames = names ?? Array.from(fields.values()).map((record) => record.state.name)
-        const result = validateFieldNames(targetNames, config)
+        const result = await validateFieldNames(targetNames, config)
         if (result.errorFields.length > 0) throw result
         return result.values
       },
       submit() {
         const targetNames = Array.from(fields.values()).map((record) => record.state.name)
-        const result = validateFieldNames(targetNames)
-        if (result.errorFields.length > 0) callbacks.onFinishFailed?.(result)
-        else callbacks.onFinish?.(result.values)
+        const syncResult = validateFieldNamesSync(targetNames)
+        if (syncResult) {
+          if (syncResult.errorFields.length > 0) callbacks.onFinishFailed?.(syncResult)
+          else callbacks.onFinish?.(syncResult.values)
+          return
+        }
+        void validateFieldNames(targetNames).then((result) => {
+          if (result.errorFields.length > 0) callbacks.onFinishFailed?.(result)
+          else callbacks.onFinish?.(result.values)
+        })
       },
       registerField(meta) {
         const key = getFieldKey(meta.name)

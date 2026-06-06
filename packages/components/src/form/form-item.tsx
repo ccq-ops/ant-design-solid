@@ -2,7 +2,7 @@ import { createEffect, createMemo, onCleanup, Show, untrack } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { FormItemContext, useFormContext } from './context'
-import type { FieldValue, FormItemControl, FormItemProps } from './interface'
+import type { FieldValue, FormItemControl, FormItemProps, Rule } from './interface'
 import type { JSX } from 'solid-js'
 
 function hasUsableEventValue(
@@ -33,6 +33,10 @@ function isRenderProp(
   children: FormItemProps['children'],
 ): children is (control: FormItemControl) => JSX.Element {
   return typeof children === 'function'
+}
+
+function isRequiredRule(rule: Rule): boolean {
+  return typeof rule !== 'function' && rule.required === true
 }
 
 export function FormItem(props: FormItemProps) {
@@ -93,7 +97,7 @@ export function FormItem(props: FormItemProps) {
     >
       <Show when={props.label}>
         <label class={`${prefixCls()}-item-label`}>
-          <Show when={props.required || rules().some((rule) => rule.required)}>
+          <Show when={props.required || rules().some(isRequiredRule)}>
             <span class={`${prefixCls()}-item-required`}>*</span>
           </Show>
           {props.label}
