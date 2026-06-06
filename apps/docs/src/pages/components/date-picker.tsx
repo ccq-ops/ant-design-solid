@@ -35,6 +35,18 @@ const datePickerRows: ApiTableRow[] = [
     defaultValue: 'false',
   },
   {
+    property: 'showWeek',
+    description: 'Shows the Week header and week-number column in the date panel.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'needConfirm',
+    description: 'Requires pressing OK before committing the selected dayjs value.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
     property: 'placeholder',
     description: 'Placeholder text when no date is selected.',
     type: 'string',
@@ -51,6 +63,65 @@ const datePickerRows: ApiTableRow[] = [
     description: 'Shows a clear button when a value is selected.',
     type: 'boolean | { clearIcon?: JSX.Element }',
     defaultValue: 'false',
+  },
+  {
+    property: 'variant',
+    description: 'Visual variant of the selector.',
+    type: "'outlined' | 'borderless' | 'filled' | 'underlined'",
+    defaultValue: "'outlined'",
+  },
+  {
+    property: 'status',
+    description: 'Validation status styling.',
+    type: "'' | 'error' | 'warning'",
+  },
+  {
+    property: 'size',
+    description: 'Selector size.',
+    type: "'small' | 'middle' | 'large'",
+    defaultValue: "'middle'",
+  },
+  {
+    property: 'classNames',
+    description: 'Semantic slot class names.',
+    type: 'Partial<Record<DatePickerSemanticSlot, string>>',
+  },
+  {
+    property: 'styles',
+    description: 'Semantic slot inline styles.',
+    type: 'Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>',
+  },
+  {
+    property: 'prefix',
+    description: 'Custom prefix content inside the selector.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'suffixIcon',
+    description: 'Custom suffix icon inside the selector.',
+    type: 'JSX.Element',
+  },
+  { property: 'prevIcon', description: 'Custom previous navigation icon.', type: 'JSX.Element' },
+  { property: 'nextIcon', description: 'Custom next navigation icon.', type: 'JSX.Element' },
+  {
+    property: 'superPrevIcon',
+    description: 'Custom super previous navigation icon.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'superNextIcon',
+    description: 'Custom super next navigation icon.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'components',
+    description: 'Overrides supported internal slots such as input and panel.',
+    type: "Partial<Record<'input' | 'panel' | PickerMode, Component>>",
+  },
+  {
+    property: 'previewValue',
+    description: 'Controlled preview value for hover/range preview parity.',
+    type: 'Dayjs | [Dayjs | null, Dayjs | null] | null',
   },
   { property: 'open', description: 'Controlled popup open state.', type: 'boolean' },
   {
@@ -86,6 +157,12 @@ const datePickerRows: ApiTableRow[] = [
     defaultValue: 'false',
   },
   {
+    property: 'showNow',
+    description: 'Shows the Now shortcut when time selection is enabled.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
     property: 'presets',
     description: 'Quick selections. Preset values are dayjs objects or callbacks returning dayjs.',
     type: 'Array<{ label: JSX.Element; value: Dayjs | (() => Dayjs) }>',
@@ -114,6 +191,11 @@ const datePickerRows: ApiTableRow[] = [
     property: 'onChange',
     description: 'Called when selection changes. The value argument uses dayjs.',
     type: '(value: Dayjs | null, dateString: string) => void; multiple: (value: Dayjs[], dateString: string[]) => void',
+  },
+  {
+    property: 'onSelect',
+    description: 'Called when a dayjs cell value is selected.',
+    type: '(value: Dayjs) => void',
   },
   {
     property: 'onOpenChange',

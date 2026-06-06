@@ -1,5 +1,5 @@
 import type { Dayjs } from 'dayjs'
-import type { JSX } from 'solid-js'
+import type { Component, JSX } from 'solid-js'
 import type { ComponentSize } from '../config-provider'
 
 export type PickerType = 'date' | 'week' | 'month' | 'quarter' | 'year' | 'time'
@@ -104,6 +104,51 @@ export interface TagRenderProps {
   onClose: () => void
 }
 
+export interface PickerInputSlotProps {
+  prefixCls: string
+  value: string
+  multiple?: boolean
+  multipleValues?: Dayjs[]
+  multipleFormat?: DatePickerFormat
+  multiplePicker?: PickerType
+  tagRender?: (props: TagRenderProps) => JSX.Element
+  placeholder?: string
+  disabled?: boolean
+  readOnly?: boolean
+  allowClear?: boolean
+  clearIcon?: JSX.Element
+  clearAriaLabel?: string
+  prefix?: JSX.Element
+  suffixIcon?: JSX.Element
+  id?: string
+  name?: string
+  ariaLabel?: string
+  autoFocus?: boolean
+  inputClass?: string
+  inputStyle?: JSX.CSSProperties
+  clearClass?: string
+  clearStyle?: JSX.CSSProperties
+  inputRef?: (element: HTMLInputElement) => void
+  onInput?: JSX.EventHandler<HTMLInputElement, InputEvent>
+  onFocus?: JSX.EventHandler<HTMLInputElement, FocusEvent>
+  onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent>
+  onKeyDown?: JSX.EventHandler<HTMLInputElement, KeyboardEvent>
+  onClear?: (event: MouseEvent) => void
+  onRemoveTag?: (value: Dayjs) => void
+}
+
+export interface PickerPanelSlotProps {
+  prefixCls: string
+  mode: PickerMode
+  children?: JSX.Element
+}
+
+export type PickerComponents = Partial<
+  Record<'input', Component<PickerInputSlotProps>> &
+    Record<'panel' | PickerMode, Component<PickerPanelSlotProps>>
+> &
+  Record<string, Component<any> | undefined>
+
 export type DatePickerSemanticSlot =
   | 'root'
   | 'selector'
@@ -116,7 +161,7 @@ export type DatePickerSemanticSlot =
 
 export interface CommonPickerProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onInput' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'prefix' | 'ref'
+  'onChange' | 'onInput' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'onSelect' | 'prefix' | 'ref'
 > {
   id?: string
   name?: string
@@ -153,7 +198,13 @@ export interface CommonPickerProps extends Omit<
   separator?: JSX.Element
   prevIcon?: JSX.Element
   nextIcon?: JSX.Element
+  superPrevIcon?: JSX.Element
+  superNextIcon?: JSX.Element
   previousIcon?: JSX.Element
+  components?: PickerComponents
+  previewValue?: DatePickerValue | RangePickerValue
+  onSelect?: (date: Dayjs) => void
+  showWeek?: boolean
   bordered?: boolean
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
   styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
@@ -209,6 +260,7 @@ export interface RangePickerProps extends Omit<
   | 'id'
   | 'onFocus'
   | 'onBlur'
+  | 'showWeek'
 > {
   value?: RangePickerValue
   defaultValue?: RangePickerValue

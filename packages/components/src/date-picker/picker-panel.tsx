@@ -1,6 +1,11 @@
 import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
-import type { DatePickerPlacement, DatePickerSemanticSlot, PickerMode } from './interface'
+import type {
+  DatePickerPlacement,
+  DatePickerSemanticSlot,
+  PickerComponents,
+  PickerMode,
+} from './interface'
 import { PresetsPanel, type ResolvedPresetValue } from './presets-panel'
 import { semanticClass, semanticStyle } from './semantic'
 import type { dayjs } from './date-utils'
@@ -31,6 +36,9 @@ export interface PickerPanelProps {
   style?: JSX.CSSProperties
   previousIcon?: JSX.Element
   nextIcon?: JSX.Element
+  superPreviousIcon?: JSX.Element
+  superNextIcon?: JSX.Element
+  components?: PickerComponents
   presets?: Array<import('./interface').PresetValue<import('./presets-panel').AnyPresetValue>>
   panelRender?: (panel: JSX.Element) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
@@ -99,7 +107,50 @@ function nextLabel(mode: PickerMode = 'date'): string {
   }
 }
 
+function superPreviousLabel(mode: PickerMode = 'date'): string {
+  switch (mode) {
+    case 'year':
+      return 'Previous decades'
+    case 'month':
+    case 'quarter':
+      return 'Previous years'
+    case 'decade':
+      return 'Previous centuries'
+    case 'week':
+    case 'date':
+    default:
+      return 'Previous year'
+  }
+}
+
+function superNextLabel(mode: PickerMode = 'date'): string {
+  switch (mode) {
+    case 'year':
+      return 'Next decades'
+    case 'month':
+    case 'quarter':
+      return 'Next years'
+    case 'decade':
+      return 'Next centuries'
+    case 'week':
+    case 'date':
+    default:
+      return 'Next year'
+  }
+}
+
 export function PickerPanel(props: PickerPanelProps) {
+  const panelContent = () => {
+    const Component = props.components?.[props.mode ?? 'date'] ?? props.components?.panel
+    return Component ? (
+      <Component prefixCls={props.prefixCls} mode={props.mode ?? 'date'}>
+        {props.children}
+      </Component>
+    ) : (
+      props.children
+    )
+  }
+
   const panel = () => (
     <div
       ref={props.ref}
@@ -113,6 +164,14 @@ export function PickerPanel(props: PickerPanelProps) {
       style={props.style}
     >
       <div class={`${props.prefixCls}-header`}>
+        <button
+          type="button"
+          aria-label={superPreviousLabel(props.mode)}
+          class={`${props.prefixCls}-super-month-button`}
+          onClick={props.onPrevious}
+        >
+          {props.superPreviousIcon ?? '«'}
+        </button>
         <button
           type="button"
           aria-label={previousLabel(props.mode)}
@@ -130,6 +189,14 @@ export function PickerPanel(props: PickerPanelProps) {
         >
           {props.nextIcon ?? '›'}
         </button>
+        <button
+          type="button"
+          aria-label={superNextLabel(props.mode)}
+          class={`${props.prefixCls}-super-month-button`}
+          onClick={props.onNext}
+        >
+          {props.superNextIcon ?? '»'}
+        </button>
       </div>
       <PresetsPanel
         prefixCls={props.prefixCls}
@@ -138,7 +205,7 @@ export function PickerPanel(props: PickerPanelProps) {
         styles={props.styles}
         onSelect={props.onPresetSelect}
       />
-      {props.children}
+      {panelContent()}
       <Show when={props.renderExtraFooter || props.needConfirm || props.showTime}>
         <div
           class={semanticClass('footer', props.classNames, `${props.prefixCls}-footer`)}

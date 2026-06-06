@@ -72,4 +72,34 @@ describe('DatePicker public types', () => {
     expect(badSinglePreset).toBeTruthy()
     expect(badRangePreset).toBeTruthy()
   })
+
+  it('accepts public parity props for single and range pickers', () => {
+    const single = (
+      <DatePicker
+        showWeek
+        previewValue={dayjs('2026-06-01')}
+        superPrevIcon={<span />}
+        superNextIcon={<span />}
+        components={{
+          input: (props) => <input ref={props.inputRef} value={props.value} />,
+          panel: (props) => <div>{props.children}</div>,
+          date: (props) => <div>{props.children}</div>,
+        }}
+        onSelect={(date) => date.format('YYYY-MM-DD')}
+      />
+    )
+    const range = (
+      <RangePicker
+        picker="month"
+        previewValue={[dayjs('2026-06-01'), dayjs('2026-06-30')]}
+        superPrevIcon={<span />}
+        superNextIcon={<span />}
+        components={{ input: (props) => <input ref={props.inputRef} value={props.value} /> }}
+        onSelect={(date) => date.format('YYYY-MM-DD')}
+      />
+    )
+
+    expect(single).toBeTruthy()
+    expect(range).toBeTruthy()
+  })
 })

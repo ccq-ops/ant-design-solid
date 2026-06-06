@@ -168,12 +168,12 @@ export function DatePanel(props: DatePanelProps) {
     <>
       <div
         class={
-          picker() === 'week'
+          picker() === 'week' || props.showWeek
             ? `${props.prefixCls}-weekdays ${props.prefixCls}-weekdays-with-week`
             : `${props.prefixCls}-weekdays`
         }
       >
-        <Show when={picker() === 'week'}>
+        <Show when={picker() === 'week' || props.showWeek}>
           <div class={`${props.prefixCls}-weekday ${props.prefixCls}-week-column-header`}>Week</div>
         </Show>
         <For each={WEEKDAYS}>
@@ -182,13 +182,13 @@ export function DatePanel(props: DatePanelProps) {
       </div>
       <div
         class={
-          picker() === 'week'
+          picker() === 'week' || props.showWeek
             ? `${props.prefixCls}-grid ${props.prefixCls}-week-grid`
             : `${props.prefixCls}-grid`
         }
       >
         <Show
-          when={picker() === 'week'}
+          when={picker() === 'week' || props.showWeek}
           fallback={<For each={dates()}>{(date) => renderDateCell(date)}</For>}
         >
           <For each={weekRows()}>

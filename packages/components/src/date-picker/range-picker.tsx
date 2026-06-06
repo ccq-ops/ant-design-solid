@@ -8,7 +8,7 @@ import {
   splitProps,
 } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { Dynamic, isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -23,6 +23,8 @@ import {
   sortRange,
 } from './date-utils'
 import { DatePanel } from './date-panel'
+import { MonthPanel } from './month-panel'
+import { YearPanel } from './year-panel'
 import { useDatePickerStyle } from './date-picker.style'
 import { formatDayjs } from './format-utils'
 import type {
@@ -121,6 +123,11 @@ export function RangePicker(props: RangePickerProps) {
     'bordered',
     'prevIcon',
     'nextIcon',
+    'superPrevIcon',
+    'superNextIcon',
+    'components',
+    'previewValue',
+    'onSelect',
     'previousIcon',
     'presets',
     'cellRender',
@@ -285,6 +292,7 @@ export function RangePicker(props: RangePickerProps) {
 
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
+    local.onSelect?.(date)
     if (!selecting() || activeRange() === 'start') {
       const nextDate = applyTimeSeed(pickerSelectionStart(date, picker()), 'start')
       const nextRange: RangeTuple = [nextDate, null]
@@ -394,11 +402,23 @@ export function RangePicker(props: RangePickerProps) {
   }
 
   function previousPanel(): void {
-    changePanelView(panelViewDate().subtract(1, 'month'))
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    const amount = currentPicker === 'year' ? 12 : 1
+    changePanelView(panelViewDate().subtract(amount, unit))
   }
 
   function nextPanel(): void {
-    changePanelView(panelViewDate().add(1, 'month'))
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    const amount = currentPicker === 'year' ? 12 : 1
+    changePanelView(panelViewDate().add(amount, unit))
   }
 
   function focusSide(side: RangeSide, event: FocusEvent): void {
@@ -409,6 +429,63 @@ export function RangePicker(props: RangePickerProps) {
 
   function blurSide(side: RangeSide, event: FocusEvent): void {
     ;(local.onBlur as RangeMetaHandler | undefined)?.(event, { range: side })
+  }
+
+  const InputComponent = () => local.components?.input ?? PickerInput
+
+  const rangePanelNode = () => {
+    if (picker() === 'month' || picker() === 'quarter') {
+      return (
+        <MonthPanel
+          prefixCls={prefixCls()}
+          viewDate={panelViewDate()}
+          picker={picker() as 'month' | 'quarter'}
+          selectedValue={selectedOrPendingRange()[sideIndex(activeRange())]}
+          disabledDate={isDateDisabled}
+          cellRender={local.cellRender}
+          locale={locale()}
+          classNames={local.classNames}
+          styles={local.styles}
+          onSelect={selectDate}
+        />
+      )
+    }
+    if (picker() === 'year') {
+      return (
+        <YearPanel
+          prefixCls={prefixCls()}
+          viewDate={panelViewDate()}
+          selectedValue={selectedOrPendingRange()[sideIndex(activeRange())]}
+          disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
+          cellRender={local.cellRender}
+          locale={locale()}
+          classNames={local.classNames}
+          styles={local.styles}
+          onSelect={selectDate}
+        />
+      )
+    }
+    return (
+      <DatePanel
+        prefixCls={prefixCls()}
+        viewDate={panelViewDate()}
+        picker={picker()}
+        selectedValue={
+          activeRange() === 'start' ? selectedOrPendingRange()[0] : selectedOrPendingRange()[1]
+        }
+        rangeValue={selectedOrPendingRange()}
+        activeRange={activeRange()}
+        hoverValue={hoverValue()}
+        disabledDate={isDateDisabled}
+        cellRender={local.cellRender}
+        dateRender={local.dateRender}
+        locale={locale()}
+        classNames={local.classNames}
+        styles={local.styles}
+        onSelect={selectDate}
+        onHover={changeHoverValue}
+      />
+    )
   }
 
   function inputId(side: RangeSide): string | undefined {
@@ -454,7 +531,8 @@ export function RangePicker(props: RangePickerProps) {
         <Show when={local.prefix}>
           <span class={`${prefixCls()}-prefix`}>{local.prefix}</span>
         </Show>
-        <PickerInput
+        <Dynamic
+          component={InputComponent()}
           id={inputId('start')}
           name={local.name}
           prefixCls={prefixCls()}
@@ -489,7 +567,8 @@ export function RangePicker(props: RangePickerProps) {
           onClear={(event) => clearSide('start', event)}
         />
         <span class={`${prefixCls()}-range-separator`}>{local.separator ?? '-'}</span>
-        <PickerInput
+        <Dynamic
+          component={InputComponent()}
           id={inputId('end')}
           prefixCls={prefixCls()}
           value={inputValues()[1]}
@@ -548,7 +627,10 @@ export function RangePicker(props: RangePickerProps) {
             panelRender={local.panelRender}
             showTime={showTimeEnabled()}
             previousIcon={local.prevIcon ?? local.previousIcon}
+            superPreviousIcon={local.superPrevIcon}
             nextIcon={local.nextIcon}
+            superNextIcon={local.superNextIcon}
+            components={local.components}
             showNow={Boolean(local.showNow)}
             onNow={selectNow}
             onOk={confirmPendingValue}
@@ -563,27 +645,7 @@ export function RangePicker(props: RangePickerProps) {
             onPrevious={previousPanel}
             onNext={nextPanel}
           >
-            <DatePanel
-              prefixCls={prefixCls()}
-              viewDate={panelViewDate()}
-              picker={picker()}
-              selectedValue={
-                activeRange() === 'start'
-                  ? selectedOrPendingRange()[0]
-                  : selectedOrPendingRange()[1]
-              }
-              rangeValue={selectedOrPendingRange()}
-              activeRange={activeRange()}
-              hoverValue={hoverValue()}
-              disabledDate={isDateDisabled}
-              cellRender={local.cellRender}
-              dateRender={local.dateRender}
-              locale={locale()}
-              classNames={local.classNames}
-              styles={local.styles}
-              onSelect={selectDate}
-              onHover={changeHoverValue}
-            />
+            {rangePanelNode()}
             <Show when={showTimeEnabled()}>
               <TimePanel
                 prefixCls={prefixCls()}

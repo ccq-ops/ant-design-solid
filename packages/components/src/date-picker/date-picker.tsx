@@ -8,7 +8,7 @@ import {
   splitProps,
 } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { Dynamic, isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -94,6 +94,12 @@ function DatePickerBase(props: DatePickerProps) {
     'bordered',
     'prevIcon',
     'nextIcon',
+    'superPrevIcon',
+    'superNextIcon',
+    'components',
+    'previewValue',
+    'onSelect',
+    'showWeek',
     'previousIcon',
     'presets',
     'cellRender',
@@ -283,6 +289,7 @@ function DatePickerBase(props: DatePickerProps) {
 
   function selectDate(date: dayjs.Dayjs): void {
     if (isDateDisabled(date)) return
+    local.onSelect?.(date)
     if (multiple()) {
       const next = toggleMultipleDate(date)
       if (local.needConfirm) {
@@ -415,6 +422,8 @@ function DatePickerBase(props: DatePickerProps) {
     selectDate(pickerSelectionStart(date, picker()))
   }
 
+  const InputComponent = () => local.components?.input ?? PickerInput
+
   const panelNode = () => {
     if (picker() === 'month' || picker() === 'quarter') {
       return (
@@ -452,6 +461,7 @@ function DatePickerBase(props: DatePickerProps) {
         prefixCls={prefixCls()}
         viewDate={panelViewDate()}
         picker={picker()}
+        showWeek={local.showWeek}
         selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
         disabledDate={isDateDisabled}
         cellRender={local.cellRender}
@@ -498,7 +508,8 @@ function DatePickerBase(props: DatePickerProps) {
           setOpen(true)
         }}
       >
-        <PickerInput
+        <Dynamic
+          component={InputComponent()}
           id={local.id}
           name={local.name}
           prefixCls={prefixCls()}
@@ -571,7 +582,10 @@ function DatePickerBase(props: DatePickerProps) {
             needConfirm={local.needConfirm}
             showTime={showTimeEnabled()}
             previousIcon={local.prevIcon ?? local.previousIcon}
+            superPreviousIcon={local.superPrevIcon}
             nextIcon={local.nextIcon}
+            superNextIcon={local.superNextIcon}
+            components={local.components}
             showNow={Boolean(local.showNow)}
             onNow={selectNow}
             onOk={confirmPendingValue}

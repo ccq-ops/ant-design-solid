@@ -316,4 +316,70 @@ describe('DatePicker custom rendering and visual APIs', () => {
     ref?.blur()
     expect(document.activeElement).not.toBe(inputs[0])
   })
+
+  it('supports super navigation icons, onSelect, showWeek, components, and owns non-dom props', () => {
+    const onSelect = vi.fn()
+    const result = render(() => (
+      <DatePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        showWeek
+        previewValue={dayjs('2026-06-10')}
+        onSelect={onSelect}
+        superPrevIcon={<span data-testid="super-prev-icon">super prev</span>}
+        superNextIcon={<span data-testid="super-next-icon">super next</span>}
+        components={{
+          input: (props) => (
+            <div data-testid="custom-input-wrapper">
+              <input
+                aria-label={props.ariaLabel ?? 'custom input'}
+                value={props.value}
+                ref={props.inputRef}
+                onInput={props.onInput}
+                onFocus={props.onFocus}
+                onBlur={props.onBlur}
+                onKeyDown={props.onKeyDown}
+              />
+            </div>
+          ),
+          panel: (props) => <section aria-label="components panel">{props.children}</section>,
+          unsupported: () => <span data-testid="unsupported-component" />,
+        }}
+      />
+    ))
+
+    const root = result.container.firstElementChild
+    expect(root).not.toHaveAttribute('previewValue')
+    expect(root).not.toHaveAttribute('components')
+    expect(screen.getByTestId('custom-input-wrapper')).toBeInTheDocument()
+    expect(screen.getByLabelText('components panel')).toBeInTheDocument()
+    expect(screen.queryByTestId('unsupported-component')).not.toBeInTheDocument()
+    expect(screen.getByTestId('super-prev-icon')).toBeInTheDocument()
+    expect(screen.getByTestId('super-next-icon')).toBeInTheDocument()
+    expect(screen.getByText('Week')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
+
+    expect(onSelect).toHaveBeenCalledTimes(1)
+    const [selected] = onSelect.mock.lastCall as [Dayjs]
+    expect(selected.format('YYYY-MM-DD')).toBe('2026-06-15')
+  })
+
+  it('does not forward common owned props from RangePicker to the root DOM element', () => {
+    const result = render(() => (
+      <RangePicker
+        previewValue={[dayjs('2026-06-01'), dayjs('2026-06-30')]}
+        components={{
+          input: (props) => <input aria-label="range custom input" ref={props.inputRef} />,
+        }}
+        superPrevIcon={<span />}
+        superNextIcon={<span />}
+      />
+    ))
+
+    expect(result.container.firstElementChild).not.toHaveAttribute('previewValue')
+    expect(result.container.firstElementChild).not.toHaveAttribute('components')
+    expect(result.container.firstElementChild).not.toHaveAttribute('superPrevIcon')
+    expect(result.container.firstElementChild).not.toHaveAttribute('superNextIcon')
+  })
 })

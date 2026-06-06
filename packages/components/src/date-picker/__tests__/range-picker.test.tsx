@@ -198,4 +198,70 @@ describe('RangePicker', () => {
     expect(inputs[0]).not.toBeDisabled()
     expect(inputs[1]).toBeDisabled()
   })
+
+  it('selects ordered month ranges with month picker formatting', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <DatePickerModule.RangePicker
+        picker="month"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026-05' }))
+
+    const [dates, dateStrings] = onChange.mock.lastCall as [
+      [Dayjs | null, Dayjs | null],
+      [string, string],
+    ]
+    expect(dates.map((date) => date?.format('YYYY-MM'))).toEqual(['2026-05', '2026-06'])
+    expect(dateStrings).toEqual(['2026-05', '2026-06'])
+  })
+
+  it('selects ordered year ranges with year picker formatting', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <DatePickerModule.RangePicker
+        picker="year"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2028' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026' }))
+
+    const [dates, dateStrings] = onChange.mock.lastCall as [
+      [Dayjs | null, Dayjs | null],
+      [string, string],
+    ]
+    expect(dates.map((date) => date?.format('YYYY'))).toEqual(['2026', '2028'])
+    expect(dateStrings).toEqual(['2026', '2028'])
+  })
+
+  it('selects ordered quarter ranges with quarter picker formatting', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <DatePickerModule.RangePicker
+        picker="quarter"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-Q3' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026-Q1' }))
+
+    const [dates, dateStrings] = onChange.mock.lastCall as [
+      [Dayjs | null, Dayjs | null],
+      [string, string],
+    ]
+    expect(dates.map((date) => date?.format('YYYY-[Q]Q'))).toEqual(['2026-Q1', '2026-Q3'])
+    expect(dateStrings).toEqual(['2026-Q1', '2026-Q3'])
+  })
 })
