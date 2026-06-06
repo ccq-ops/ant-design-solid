@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, on, onCleanup, Show, untrack } from 'solid-js'
+import { createEffect, createMemo, on, onCleanup, Show, untrack } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import {
@@ -9,6 +9,7 @@ import {
 } from './context'
 import { composeNamePath } from './name-path'
 import type {
+  FieldMeta,
   FieldName,
   FieldValue,
   FormItemControl,
@@ -100,46 +101,42 @@ export function FormItem(props: FormItemProps) {
     return undefined
   }
 
-  const [registrationVersion, setRegistrationVersion] = createSignal(0)
   let unregisterField: (() => void) | undefined
+  let registeredMeta: FieldMeta | undefined
   createEffect(
     on(
       fieldName,
       () => {
         unregisterField?.()
         unregisterField = undefined
+        registeredMeta = undefined
         const name = fieldName()
         if (name === undefined || !form) return
-        unregisterField = untrack(() =>
-          form.registerField({
-            name,
-            rules: rules(),
-            initialValue: props.initialValue,
-            preserve: props.preserve,
-            dependencies: props.dependencies,
-            validateTrigger: props.validateTrigger,
-            validateFirst: props.validateFirst,
-          }),
-        )
-        setRegistrationVersion((version) => version + 1)
+        registeredMeta = {
+          name,
+          rules: rules(),
+          initialValue: props.initialValue,
+          preserve: props.preserve,
+          dependencies: props.dependencies,
+          validateTrigger: props.validateTrigger,
+          validateFirst: props.validateFirst,
+        }
+        unregisterField = untrack(() => form.registerField(registeredMeta as FieldMeta))
       },
       { defer: false },
     ),
   )
   createEffect(() => {
-    registrationVersion()
     const name = fieldName()
-    if (name === undefined || !form) return
-    const meta = {
-      name,
-      rules: rules(),
-      initialValue: props.initialValue,
-      preserve: props.preserve,
-      dependencies: props.dependencies,
-      validateTrigger: props.validateTrigger,
-      validateFirst: props.validateFirst,
-    }
-    untrack(() => form.registerField(meta))
+    const nextRules = rules()
+    if (name === undefined || !registeredMeta) return
+    registeredMeta.name = name
+    registeredMeta.rules = nextRules
+    registeredMeta.initialValue = props.initialValue
+    registeredMeta.preserve = props.preserve
+    registeredMeta.dependencies = props.dependencies
+    registeredMeta.validateTrigger = props.validateTrigger
+    registeredMeta.validateFirst = props.validateFirst
   })
   onCleanup(() => unregisterField?.())
 
