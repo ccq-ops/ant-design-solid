@@ -1,6 +1,22 @@
 import { createContext, useContext } from 'solid-js'
 import type { Accessor } from 'solid-js'
-import type { FormInstance, FormItemControl, NamePath, ValidateStatus } from './interface'
+import type {
+  FormInstance,
+  FormItemControl,
+  FormLayoutContextValue,
+  NamePath,
+  ValidateStatus,
+} from './interface'
+
+export const FormLayoutContext = createContext<FormLayoutContextValue>({
+  layout: 'horizontal',
+  requiredMark: true,
+  colon: true,
+  labelAlign: 'right',
+})
+export function useFormLayoutContext(): FormLayoutContextValue {
+  return useContext(FormLayoutContext)
+}
 
 export const FormContext = createContext<FormInstance>()
 export function useFormContext(): FormInstance | undefined {

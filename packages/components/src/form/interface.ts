@@ -6,6 +6,15 @@ export type FieldName = NamePath
 export type FieldValue = unknown
 export type FormValues = Record<string, FieldValue>
 export type ValidateStatus = 'success' | 'warning' | 'error' | 'validating'
+export type FormLayout = 'horizontal' | 'vertical' | 'inline'
+export type RequiredMark = boolean | 'optional'
+
+export interface FormLayoutContextValue {
+  layout: FormLayout
+  requiredMark: RequiredMark
+  colon: boolean
+  labelAlign: 'left' | 'right'
+}
 
 export interface ValidateConfig {
   validateOnly?: boolean
@@ -147,6 +156,10 @@ export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   onFinishFailed?: (errorInfo: ValidateErrorInfo) => void
   onValuesChange?: (changedValues: FormValues, allValues: FormValues) => void
   onFieldsChange?: (changedFields: FieldData[], allFields: FieldData[]) => void
+  layout?: FormLayout
+  labelAlign?: 'left' | 'right'
+  colon?: boolean
+  requiredMark?: RequiredMark
   children?: JSX.Element
 }
 

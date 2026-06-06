@@ -1,7 +1,7 @@
 import { createEffect, createMemo, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { FormContext } from './context'
+import { FormContext, FormLayoutContext } from './context'
 import { useForm, setFormCallbacks, setFormInitialValues } from './store'
 import { useFormStyle } from './form.style'
 import type { FormInstance, FormProps } from './interface'
@@ -16,6 +16,10 @@ export function FormRoot(props: FormProps) {
     'onValuesChange',
     'onFieldsChange',
     'children',
+    'layout',
+    'labelAlign',
+    'colon',
+    'requiredMark',
     'class',
     'onSubmit',
     'onReset',
@@ -30,6 +34,13 @@ export function FormRoot(props: FormProps) {
     setFormInitialValues(form(), local.initialValues)
   })
 
+  const layoutContext = () => ({
+    layout: local.layout ?? 'horizontal',
+    requiredMark: local.requiredMark ?? true,
+    colon: local.colon ?? true,
+    labelAlign: local.labelAlign ?? 'right',
+  })
+
   createEffect(() => {
     setFormCallbacks(form(), {
       onFinish: local.onFinish,
@@ -41,22 +52,29 @@ export function FormRoot(props: FormProps) {
 
   return (
     <FormContext.Provider value={form()}>
-      <form
-        {...rest}
-        class={classNames(prefixCls(), hashId(), local.class)}
-        onSubmit={(event) => {
-          event.preventDefault()
-          ;(local.onSubmit as JSX.EventHandler<HTMLFormElement, SubmitEvent> | undefined)?.(event)
-          form().submit()
-        }}
-        onReset={(event) => {
-          event.preventDefault()
-          ;(local.onReset as JSX.EventHandler<HTMLFormElement, Event> | undefined)?.(event)
-          form().resetFields()
-        }}
-      >
-        {local.children}
-      </form>
+      <FormLayoutContext.Provider value={layoutContext()}>
+        <form
+          {...rest}
+          class={classNames(
+            prefixCls(),
+            `${prefixCls()}-${layoutContext().layout}`,
+            hashId(),
+            local.class,
+          )}
+          onSubmit={(event) => {
+            event.preventDefault()
+            ;(local.onSubmit as JSX.EventHandler<HTMLFormElement, SubmitEvent> | undefined)?.(event)
+            form().submit()
+          }}
+          onReset={(event) => {
+            event.preventDefault()
+            ;(local.onReset as JSX.EventHandler<HTMLFormElement, Event> | undefined)?.(event)
+            form().resetFields()
+          }}
+        >
+          {local.children}
+        </form>
+      </FormLayoutContext.Provider>
     </FormContext.Provider>
   )
 }

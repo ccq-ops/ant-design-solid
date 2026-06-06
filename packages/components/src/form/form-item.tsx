@@ -5,6 +5,7 @@ import {
   FormItemContext,
   FormItemStatusContext,
   useFormContext,
+  useFormLayoutContext,
   useFormListPrefix,
 } from './context'
 import { composeNamePath } from './name-path'
@@ -73,6 +74,7 @@ export function FormItem(props: FormItemProps) {
   const form = useFormContext()
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-form`
+  const layout = useFormLayoutContext()
   const valuePropName = () => props.valuePropName ?? 'value'
   const listPrefix = useFormListPrefix()
   const fieldName = (): FieldName | undefined =>
@@ -85,6 +87,10 @@ export function FormItem(props: FormItemProps) {
     const name = fieldName()
     return name !== undefined && form ? form.getFieldErrorAccessor(name)() : []
   }
+  const isRequired = () => props.required === true || rules().some(isRequiredRule)
+  const showRequiredMark = () => layout.requiredMark === true && isRequired()
+  const showOptionalMark = () => layout.requiredMark === 'optional' && !isRequired()
+
   const warnings = () => {
     const name = fieldName()
     return name !== undefined && form ? (form.getFieldWarningAccessor?.(name)() ?? []) : []
@@ -235,6 +241,7 @@ export function FormItem(props: FormItemProps) {
     <div
       class={classNames(
         `${prefixCls()}-item`,
+        `${prefixCls()}-item-label-${layout.labelAlign}`,
         mergedStatus() && `${prefixCls()}-item-has-${mergedStatus()}`,
         props.hidden && `${prefixCls()}-item-hidden`,
       )}
@@ -242,11 +249,20 @@ export function FormItem(props: FormItemProps) {
       onFocusOut={validateOnBlur}
     >
       <Show when={props.label}>
-        <label class={`${prefixCls()}-item-label`}>
-          <Show when={props.required || rules().some(isRequiredRule)}>
+        <label
+          class={classNames(
+            `${prefixCls()}-item-label`,
+            `${prefixCls()}-item-label-${layout.labelAlign}`,
+            layout.colon && `${prefixCls()}-item-label-colon`,
+          )}
+        >
+          <span class={`${prefixCls()}-item-label-content`}>{props.label}</span>
+          <Show when={showRequiredMark()}>
             <span class={`${prefixCls()}-item-required`}>*</span>
           </Show>
-          {props.label}
+          <Show when={showOptionalMark()}>
+            <span class={`${prefixCls()}-item-optional`}>(optional)</span>
+          </Show>
         </label>
       </Show>
       <div class={`${prefixCls()}-item-control`}>
