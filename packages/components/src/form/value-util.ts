@@ -106,15 +106,19 @@ export function mergeValues(current: FormValues, patch: FormValues): FormValues 
   for (const key of Object.keys(patch)) {
     const currentValue = next[key]
     const patchValue = patch[key]
-    next[key] = isPlainObject(currentValue) && isPlainObject(patchValue)
-      ? mergeValues(currentValue, patchValue)
-      : cloneValue(patchValue)
+    next[key] =
+      isPlainObject(currentValue) && isPlainObject(patchValue)
+        ? mergeValues(currentValue, patchValue)
+        : cloneValue(patchValue)
   }
 
   return next
 }
 
-export function flattenValuePaths(values: unknown, prefix: InternalNamePath = []): InternalNamePath[] {
+export function flattenValuePaths(
+  values: unknown,
+  prefix: InternalNamePath = [],
+): InternalNamePath[] {
   if (Array.isArray(values)) {
     return values.flatMap((item, index) => flattenValuePaths(item, [...prefix, index]))
   }
