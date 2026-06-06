@@ -24,8 +24,10 @@ function getFieldKey(name: FieldName): FieldKey {
   return serializeNamePath(name)
 }
 
-function getValueKey(name: FieldName): string | number {
-  return Array.isArray(name) ? serializeNamePath(name) : name
+function flatValueKey(name: FieldName): string | number {
+  // Task 1 keeps form values in a flat object. Array paths are typed for
+  // metadata/API compatibility only; nested value semantics land later.
+  return name as string | number
 }
 
 interface InternalFormInstance extends FormInstance {
@@ -62,7 +64,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
 
     function getInitialValue(name: FieldName): FieldValue {
       const fieldKey = getFieldKey(name)
-      const valueKey = getValueKey(name)
+      const valueKey = flatValueKey(name)
       return fieldInitialValues.has(fieldKey)
         ? fieldInitialValues.get(fieldKey)
         : formInitialValues[valueKey]
@@ -71,7 +73,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     function setFieldValue(name: FieldName, value: FieldValue): void {
       batch(() => {
         setValues((current) => {
-          const valueKey = getValueKey(name)
+          const valueKey = flatValueKey(name)
           const next = { ...current, [valueKey]: value }
           callbacks.onValuesChange?.({ [valueKey]: value }, next)
           return next
@@ -88,7 +90,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       const errorFields: FieldError[] = []
       for (const name of names) {
         const meta = fields.get(getFieldKey(name))
-        const valueKey = getValueKey(name)
+        const valueKey = flatValueKey(name)
         const errors = validateValue(
           String(valueKey),
           currentValues[valueKey],
@@ -103,7 +105,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
 
     const form: InternalFormInstance = {
       getFieldValue(name) {
-        return values()[getValueKey(name)]
+        return values()[flatValueKey(name)]
       },
       setFieldValue,
       getFieldsValue() {
@@ -124,7 +126,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         batch(() => {
           setValues((current) => {
             const next = { ...current }
-            for (const name of targetNames) next[getValueKey(name)] = getInitialValue(name)
+            for (const name of targetNames) next[flatValueKey(name)] = getInitialValue(name)
             return next
           })
           clearErrors(targetNames)
@@ -143,7 +145,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       registerField(meta) {
         const fieldKey = getFieldKey(meta.name)
-        const valueKey = getValueKey(meta.name)
+        const valueKey = flatValueKey(meta.name)
         fields.set(fieldKey, meta)
         if (meta.initialValue !== undefined) fieldInitialValues.set(fieldKey, meta.initialValue)
         else fieldInitialValues.delete(fieldKey)

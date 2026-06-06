@@ -71,6 +71,27 @@ describe('Form', () => {
     expect(onFinish).toHaveBeenCalledWith({ username: 'solid' })
   })
 
+  it('registers and submits numeric field names', () => {
+    const onFinish = vi.fn()
+    const result = render(() => (
+      <Form initialValues={{ 0: 'seed' }} onFinish={onFinish}>
+        <Form.Item name={0}>
+          <Input placeholder="numeric name" />
+        </Form.Item>
+        <Button htmlType="submit">Submit</Button>
+      </Form>
+    ))
+
+    expect((result.getByPlaceholderText('numeric name') as HTMLInputElement).value).toBe('seed')
+
+    fireEvent.change(result.getByPlaceholderText('numeric name'), {
+      target: { value: 'changed' },
+    })
+    fireEvent.click(result.getByRole('button', { name: 'Submit' }))
+
+    expect(onFinish).toHaveBeenCalledWith({ 0: 'changed' })
+  })
+
   it('blocks submit and displays rule errors', async () => {
     const onFinish = vi.fn()
     const onFinishFailed = vi.fn()
