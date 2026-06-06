@@ -66,6 +66,7 @@ export interface FieldMeta {
   preserve?: boolean
   dependencies?: NamePath[]
   validateTrigger?: string | string[]
+  validateFirst?: boolean | 'parallel'
 }
 
 export interface FormInstance {

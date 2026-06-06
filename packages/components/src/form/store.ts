@@ -1,7 +1,14 @@
 import { batch, createRoot, createSignal, type Accessor } from 'solid-js'
 import { createFieldRecord, fieldRecordToData, getFieldKey, type FieldRecord } from './field-store'
 import { matchNamePath } from './name-path'
-import { cloneFormValues, getValue, mergeValues, pickValues, setValue } from './value-util'
+import {
+  cloneFormValues,
+  deleteValue,
+  getValue,
+  mergeValues,
+  pickValues,
+  setValue,
+} from './value-util'
 import { validateValue, validateValueSync, type ValidateValueResult } from './validation'
 import type {
   FieldData,
@@ -170,6 +177,24 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       return record
     }
 
+    function getDependencyRecords(changedNames: FieldName[]): FieldRecord[] {
+      return Array.from(fields.values()).filter((record) =>
+        record.meta.dependencies?.some((dependency) =>
+          changedNames.some(
+            (changedName) =>
+              matchNamePath(dependency, changedName, true) ||
+              matchNamePath(changedName, dependency, true),
+          ),
+        ),
+      )
+    }
+
+    function revalidateDependencies(changedNames: FieldName[]): void {
+      const dependencyRecords = getDependencyRecords(changedNames)
+      if (dependencyRecords.length === 0) return
+      void form.validateFields(dependencyRecords.map((record) => record.state.name)).catch(() => {})
+    }
+
     function buildValidationResult(
       records: FieldRecord[],
       results: Map<FieldRecord, ValidateValueResult>,
@@ -223,7 +248,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             getValue(values(), record.state.name),
             values(),
             record.meta.rules,
-            { form },
+            { form, validateFirst: record.meta.validateFirst },
           )
           if (!isCurrentValidation(record, sequence)) {
             outOfDate = true
@@ -262,7 +287,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           getValue(values(), record.state.name),
           values(),
           record.meta.rules,
-          { form },
+          { form, validateFirst: record.meta.validateFirst },
         )
         if (!result) return undefined
         results.set(record, result)
@@ -280,6 +305,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           const changedValues = setValue({}, name, value)
           callbacks.onValuesChange?.(changedValues, cloneFormValues(values()))
           if (record) notifyFieldsChange([record])
+          revalidateDependencies([name])
         })
       },
       getFieldsValue(nameList) {
@@ -307,6 +333,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           }
           callbacks.onValuesChange?.(cloneFormValues(nextValues), cloneFormValues(values()))
           notifyFieldsChange(changedRecords)
+          revalidateDependencies(changedPaths)
         })
       },
       setFields(nextFields) {
@@ -395,7 +422,20 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           setValues((currentValues) => setValue(currentValues, meta.name, meta.initialValue))
         }
         return () => {
-          if (fields.get(key) === record) fields.delete(key)
+          if (fields.get(key) !== record) return
+          fields.delete(key)
+          if (record.meta.preserve === false) {
+            batch(() => {
+              setValues((currentValues) => deleteValue(currentValues, record.state.name))
+              clearRecordValidation(record)
+              callbacks.onValuesChange?.(
+                deleteValue({}, record.state.name),
+                cloneFormValues(values()),
+              )
+              notifyFieldsChange([record])
+              revalidateDependencies([record.state.name])
+            })
+          }
         }
       },
       getFieldError(name) {

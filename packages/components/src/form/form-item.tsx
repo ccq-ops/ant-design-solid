@@ -92,6 +92,7 @@ export function FormItem(props: FormItemProps) {
       preserve: props.preserve,
       dependencies: props.dependencies,
       validateTrigger: props.validateTrigger,
+      validateFirst: props.validateFirst,
     }
     unregisterField = untrack(() => form.registerField(meta))
   })

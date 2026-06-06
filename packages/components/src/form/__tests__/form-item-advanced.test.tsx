@@ -1,5 +1,7 @@
 import { fireEvent, render, waitFor } from '@solidjs/testing-library'
+import { createSignal, Show } from 'solid-js'
 import { describe, expect, it } from 'vitest'
+import { Button } from '../../button'
 import { Input } from '../../input'
 import { Form, useForm } from '../index'
 import type { FormItemControl, ValidateStatus } from '../index'
@@ -130,6 +132,142 @@ describe('Form.Item advanced binding APIs', () => {
     await waitFor(() =>
       expect(result.getByTestId('status-probe')).toHaveAttribute('data-status', 'warning'),
     )
+  })
+
+  it('wires validateFirst from Form.Item metadata', async () => {
+    const [firstForm] = useForm()
+    render(() => (
+      <Form form={firstForm} initialValues={{ username: '' }}>
+        <Form.Item
+          name="username"
+          validateFirst
+          rules={[{ required: true, message: 'Required' }, { validator: () => 'Second error' }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(firstForm.validateFields(['username'])).rejects.toMatchObject({
+      errorFields: [{ name: ['username'], errors: ['Required'] }],
+    })
+    expect(firstForm.getFieldError('username')).toEqual(['Required'])
+
+    const [collectForm] = useForm()
+    render(() => (
+      <Form form={collectForm} initialValues={{ username: '' }}>
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: 'Required' }, { validator: () => 'Second error' }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(collectForm.validateFields(['username'])).rejects.toMatchObject({
+      errorFields: [{ name: ['username'], errors: ['Required', 'Second error'] }],
+    })
+    expect(collectForm.getFieldError('username')).toEqual(['Required', 'Second error'])
+  })
+
+  it('removes values on unmount only when preserve is false', () => {
+    const [preservedShown, setPreservedShown] = createSignal(true)
+    const [removedShown, setRemovedShown] = createSignal(true)
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ kept: 'seed', removed: 'seed' }}>
+        <Show when={preservedShown()}>
+          <Form.Item name="kept">
+            <Input placeholder="kept" />
+          </Form.Item>
+        </Show>
+        <Show when={removedShown()}>
+          <Form.Item name="removed" preserve={false}>
+            <Input placeholder="removed" />
+          </Form.Item>
+        </Show>
+        <Button onClick={() => setPreservedShown(false)}>Hide kept</Button>
+        <Button onClick={() => setRemovedShown(false)}>Hide removed</Button>
+      </Form>
+    ))
+
+    fireEvent.input(result.getByPlaceholderText('kept'), { target: { value: 'typed kept' } })
+    fireEvent.input(result.getByPlaceholderText('removed'), { target: { value: 'typed removed' } })
+
+    fireEvent.click(result.getByRole('button', { name: 'Hide kept' }))
+    fireEvent.click(result.getByRole('button', { name: 'Hide removed' }))
+
+    expect(form.getFieldValue('kept')).toBe('typed kept')
+    expect(form.getFieldValue('removed')).toBeUndefined()
+    expect(form.getFieldsValue(true)).toEqual({ kept: 'typed kept' })
+  })
+
+  it('revalidates dependency fields when a dependency changes', async () => {
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ password: 'secret', confirm: 'secret' }}>
+        <Form.Item name="password">
+          <Input placeholder="password" />
+        </Form.Item>
+        <Form.Item
+          name="confirm"
+          dependencies={['password']}
+          rules={[
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (value !== getFieldValue('password')) return 'Passwords do not match'
+              },
+            }),
+          ]}
+        >
+          <Input placeholder="confirm" />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(form.validateFields(['confirm'])).resolves.toEqual({
+      password: 'secret',
+      confirm: 'secret',
+    })
+    expect(form.getFieldError('confirm')).toEqual([])
+
+    fireEvent.input(result.getByPlaceholderText('password'), { target: { value: 'changed' } })
+
+    await waitFor(() => expect(form.getFieldError('confirm')).toEqual(['Passwords do not match']))
+  })
+
+  it('render-prop controls can provide a source trigger for validation timing', async () => {
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ username: 'seed' }}>
+        <Form.Item
+          name="username"
+          validateTrigger="onBlur"
+          rules={[{ required: true, message: 'Required' }]}
+        >
+          {(control: FormItemControl) => (
+            <button
+              type="button"
+              data-testid="blur-control"
+              onClick={() => control.setFieldValueFromControl('', 'onChange')}
+              onBlur={() => control.setFieldValueFromControl('', 'onBlur')}
+            >
+              Custom
+            </button>
+          )}
+        </Form.Item>
+      </Form>
+    ))
+
+    const control = result.getByTestId('blur-control')
+    fireEvent.click(control)
+    expect(form.getFieldValue('username')).toBe('')
+    expect(form.getFieldError('username')).toEqual([])
+
+    fireEvent.blur(control)
+
+    await waitFor(() => expect(form.getFieldError('username')).toEqual(['Required']))
   })
 
   it('prefers explicit validateStatus in useStatus', () => {
