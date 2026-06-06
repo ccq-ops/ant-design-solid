@@ -1,8 +1,21 @@
 import { createEffect, createMemo, createSignal, on, onCleanup, Show, untrack } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { FormItemContext, FormItemStatusContext, useFormContext } from './context'
-import type { FieldValue, FormItemControl, FormItemProps, Rule, ValidateStatus } from './interface'
+import {
+  FormItemContext,
+  FormItemStatusContext,
+  useFormContext,
+  useFormListPrefix,
+} from './context'
+import { composeNamePath } from './name-path'
+import type {
+  FieldName,
+  FieldValue,
+  FormItemControl,
+  FormItemProps,
+  Rule,
+  ValidateStatus,
+} from './interface'
 import type { JSX } from 'solid-js'
 
 function hasUsableEventValue(
@@ -60,18 +73,25 @@ export function FormItem(props: FormItemProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-form`
   const valuePropName = () => props.valuePropName ?? 'value'
+  const listPrefix = useFormListPrefix()
+  const fieldName = (): FieldName | undefined =>
+    props.name === undefined ? undefined : composeNamePath(listPrefix, props.name)
   const trigger = () => props.trigger ?? 'onChange'
   const validateTrigger = () => props.validateTrigger ?? trigger()
   const rules = () =>
     props.required ? [{ required: true }, ...(props.rules ?? [])] : (props.rules ?? [])
-  const errors = () =>
-    props.name !== undefined && form ? form.getFieldErrorAccessor(props.name)() : []
-  const warnings = () =>
-    props.name !== undefined && form ? (form.getFieldWarningAccessor?.(props.name)() ?? []) : []
-  const validating = () =>
-    props.name !== undefined && form
-      ? (form.getFieldValidatingAccessor?.(props.name)() ?? false)
-      : false
+  const errors = () => {
+    const name = fieldName()
+    return name !== undefined && form ? form.getFieldErrorAccessor(name)() : []
+  }
+  const warnings = () => {
+    const name = fieldName()
+    return name !== undefined && form ? (form.getFieldWarningAccessor?.(name)() ?? []) : []
+  }
+  const validating = () => {
+    const name = fieldName()
+    return name !== undefined && form ? (form.getFieldValidatingAccessor?.(name)() ?? false) : false
+  }
   const mergedStatus = (): ValidateStatus | undefined => {
     if (props.validateStatus) return props.validateStatus
     if (validating()) return 'validating'
@@ -84,14 +104,15 @@ export function FormItem(props: FormItemProps) {
   let unregisterField: (() => void) | undefined
   createEffect(
     on(
-      () => props.name,
+      fieldName,
       () => {
         unregisterField?.()
         unregisterField = undefined
-        if (props.name === undefined || !form) return
+        const name = fieldName()
+        if (name === undefined || !form) return
         unregisterField = untrack(() =>
           form.registerField({
-            name: props.name as NonNullable<FormItemProps['name']>,
+            name,
             rules: rules(),
             initialValue: props.initialValue,
             preserve: props.preserve,
@@ -107,9 +128,10 @@ export function FormItem(props: FormItemProps) {
   )
   createEffect(() => {
     registrationVersion()
-    if (props.name === undefined || !form) return
+    const name = fieldName()
+    if (name === undefined || !form) return
     const meta = {
-      name: props.name as NonNullable<FormItemProps['name']>,
+      name,
       rules: rules(),
       initialValue: props.initialValue,
       preserve: props.preserve,
@@ -135,17 +157,16 @@ export function FormItem(props: FormItemProps) {
   })
 
   const validateCurrentField = () => {
-    if (props.name === undefined || !form) return
+    const name = fieldName()
+    if (name === undefined || !form) return
     if (props.validateDebounce && props.validateDebounce > 0) {
       if (validateDebounceTimer) clearTimeout(validateDebounceTimer)
       validateDebounceTimer = setTimeout(() => {
-        void form
-          .validateFields([props.name as NonNullable<FormItemProps['name']>])
-          .catch(noopCatch)
+        void form.validateFields([name]).catch(noopCatch)
       }, props.validateDebounce)
       return
     }
-    void form.validateFields([props.name]).catch(noopCatch)
+    void form.validateFields([name]).catch(noopCatch)
   }
 
   const validate = (sourceTrigger = trigger()) => {
@@ -153,25 +174,27 @@ export function FormItem(props: FormItemProps) {
   }
 
   const setFieldValueFromControl = (nextOrEvent: unknown, sourceTrigger = trigger()) => {
-    if (props.name === undefined || !form) return
-    const previousValue = form.getFieldValue(props.name)
+    const name = fieldName()
+    if (name === undefined || !form) return
+    const previousValue = form.getFieldValue(name)
     let nextValue = getControlValue([nextOrEvent])
     if (props.normalize)
       nextValue = props.normalize(nextValue, previousValue, form.getFieldsValue(true))
-    form.setFieldValue(props.name, nextValue)
+    form.setFieldValue(name, nextValue)
     validate(sourceTrigger)
   }
 
   const valueProps = (): Record<string, unknown> => {
-    if (props.name === undefined || !form) return {}
-    const value = form.getFieldValue(props.name)
+    const name = fieldName()
+    if (name === undefined || !form) return {}
+    const value = form.getFieldValue(name)
     if (props.getValueProps) return props.getValueProps(value)
     return { [valuePropName()]: value }
   }
 
   const control = createMemo<FormItemControl | undefined>(() => {
-    if (props.name === undefined || !form) return undefined
-    const name = props.name
+    const name = fieldName()
+    if (name === undefined || !form) return undefined
     return {
       name,
       value: () => form.getFieldValue(name),

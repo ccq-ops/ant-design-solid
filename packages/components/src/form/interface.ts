@@ -108,6 +108,38 @@ export interface FormItemControl {
   status: Accessor<ValidateStatus | undefined>
 }
 
+export interface FormListField {
+  key: number
+  name: number
+  fieldKey: number
+}
+
+export interface FormListOperation {
+  add: (defaultValue?: FieldValue, insertIndex?: number) => void
+  remove: (index: number | number[]) => void
+  move: (from: number, to: number) => void
+}
+
+export interface FormListMeta {
+  errors: JSX.Element[]
+  warnings: JSX.Element[]
+}
+
+export interface FormListProps {
+  name: NamePath
+  initialValue?: FieldValue[]
+  children: (
+    fields: Accessor<FormListField[]>,
+    operation: FormListOperation,
+    meta: FormListMeta,
+  ) => JSX.Element
+}
+
+export interface FormErrorListProps {
+  errors?: JSX.Element[]
+  warnings?: JSX.Element[]
+}
+
 export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   form?: FormInstance
   initialValues?: FormValues

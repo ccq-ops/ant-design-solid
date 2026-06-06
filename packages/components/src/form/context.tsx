@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'solid-js'
 import type { Accessor } from 'solid-js'
-import type { FormInstance, FormItemControl, ValidateStatus } from './interface'
+import type { FormInstance, FormItemControl, NamePath, ValidateStatus } from './interface'
 
 export const FormContext = createContext<FormInstance>()
 export function useFormContext(): FormInstance | undefined {
@@ -33,4 +33,9 @@ const emptyStatus: FormItemStatusContextValue = {
 export const FormItemStatusContext = createContext<FormItemStatusContextValue>(emptyStatus)
 export function useFormItemStatus(): FormItemStatusContextValue {
   return useContext(FormItemStatusContext) ?? emptyStatus
+}
+
+export const FormListContext = createContext<NamePath>()
+export function useFormListPrefix(): NamePath | undefined {
+  return useContext(FormListContext)
 }
