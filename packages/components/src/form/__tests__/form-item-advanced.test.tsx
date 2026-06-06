@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@solidjs/testing-library'
 import { createSignal, Show } from 'solid-js'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { Input } from '../../input'
 import { Form, useForm } from '../index'
@@ -19,6 +19,9 @@ function StatusProbe() {
 }
 
 describe('Form.Item advanced binding APIs', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
   it('applies getValueFromEvent and normalize before storing the value', () => {
     const [form] = useForm()
     const result = render(() => (
@@ -268,6 +271,86 @@ describe('Form.Item advanced binding APIs', () => {
     fireEvent.blur(control)
 
     await waitFor(() => expect(form.getFieldError('username')).toEqual(['Required']))
+  })
+
+  it('validates on Input blur without firing onValuesChange again', async () => {
+    const onValuesChange = vi.fn()
+    const result = render(() => (
+      <Form initialValues={{ username: 'seed' }} onValuesChange={onValuesChange}>
+        <Form.Item
+          name="username"
+          validateTrigger="onBlur"
+          rules={[{ required: true, message: 'Required' }]}
+        >
+          <Input placeholder="blur username" />
+        </Form.Item>
+      </Form>
+    ))
+    const input = result.getByPlaceholderText('blur username')
+
+    fireEvent.input(input, { target: { value: '' } })
+    expect(onValuesChange).toHaveBeenCalledTimes(1)
+    expect(result.queryByText('Required')).not.toBeInTheDocument()
+
+    fireEvent.blur(input)
+
+    await waitFor(() => expect(result.getByText('Required')).toBeInTheDocument())
+    expect(onValuesChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps preserve=false field value during reactive metadata updates while mounted', () => {
+    const [required, setRequired] = createSignal(false)
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ username: 'seed' }}>
+        <Form.Item
+          name="username"
+          preserve={false}
+          rules={required() ? [{ required: true, message: 'Required' }] : []}
+        >
+          <Input placeholder="preserve metadata" />
+        </Form.Item>
+        <Button onClick={() => setRequired(true)}>Require</Button>
+      </Form>
+    ))
+
+    fireEvent.input(result.getByPlaceholderText('preserve metadata'), {
+      target: { value: 'typed' },
+    })
+    fireEvent.click(result.getByRole('button', { name: 'Require' }))
+
+    expect(form.getFieldValue('username')).toBe('typed')
+  })
+
+  it('debounces validation and cancels stale validation timers', async () => {
+    vi.useFakeTimers()
+    const [form] = useForm()
+    const result = render(() => (
+      <Form form={form} initialValues={{ username: 'seed' }}>
+        <Form.Item
+          name="username"
+          validateDebounce={100}
+          rules={[{ required: true, message: 'Required' }]}
+        >
+          <Input placeholder="debounced username" />
+        </Form.Item>
+      </Form>
+    ))
+    const input = result.getByPlaceholderText('debounced username')
+
+    fireEvent.input(input, { target: { value: '' } })
+    await vi.advanceTimersByTimeAsync(99)
+    expect(form.getFieldError('username')).toEqual([])
+
+    fireEvent.input(input, { target: { value: 'ok' } })
+    await vi.advanceTimersByTimeAsync(99)
+    expect(form.getFieldError('username')).toEqual([])
+
+    await vi.advanceTimersByTimeAsync(1)
+    await Promise.resolve()
+
+    expect(form.getFieldError('username')).toEqual([])
+    await expect(form.validateFields(['username'])).resolves.toEqual({ username: 'ok' })
   })
 
   it('prefers explicit validateStatus in useStatus', () => {

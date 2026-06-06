@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onCleanup, Show, untrack } from 'solid-js'
+import { createEffect, createMemo, createSignal, on, onCleanup, Show, untrack } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { FormItemContext, FormItemStatusContext, useFormContext } from './context'
@@ -80,13 +80,36 @@ export function FormItem(props: FormItemProps) {
     return undefined
   }
 
+  const [registrationVersion, setRegistrationVersion] = createSignal(0)
   let unregisterField: (() => void) | undefined
+  createEffect(
+    on(
+      () => props.name,
+      () => {
+        unregisterField?.()
+        unregisterField = undefined
+        if (props.name === undefined || !form) return
+        unregisterField = untrack(() =>
+          form.registerField({
+            name: props.name as NonNullable<FormItemProps['name']>,
+            rules: rules(),
+            initialValue: props.initialValue,
+            preserve: props.preserve,
+            dependencies: props.dependencies,
+            validateTrigger: props.validateTrigger,
+            validateFirst: props.validateFirst,
+          }),
+        )
+        setRegistrationVersion((version) => version + 1)
+      },
+      { defer: false },
+    ),
+  )
   createEffect(() => {
-    unregisterField?.()
-    unregisterField = undefined
+    registrationVersion()
     if (props.name === undefined || !form) return
     const meta = {
-      name: props.name,
+      name: props.name as NonNullable<FormItemProps['name']>,
       rules: rules(),
       initialValue: props.initialValue,
       preserve: props.preserve,
@@ -94,11 +117,14 @@ export function FormItem(props: FormItemProps) {
       validateTrigger: props.validateTrigger,
       validateFirst: props.validateFirst,
     }
-    unregisterField = untrack(() => form.registerField(meta))
+    untrack(() => form.registerField(meta))
   })
   onCleanup(() => unregisterField?.())
 
   const getControlValue = (args: unknown[]): FieldValue => {
+    // Programmatic FormItemControl callbacks currently pass one value/event plus an optional
+    // source trigger. Native child components should call the dedicated validate() API for
+    // validation-only triggers so getValueFromEvent is not invoked with trigger metadata.
     if (props.getValueFromEvent) return props.getValueFromEvent(...args)
     return getValueFromControl(valuePropName(), args[0])
   }
@@ -122,6 +148,10 @@ export function FormItem(props: FormItemProps) {
     void form.validateFields([props.name]).catch(noopCatch)
   }
 
+  const validate = (sourceTrigger = trigger()) => {
+    if (matchesTrigger(sourceTrigger, validateTrigger())) validateCurrentField()
+  }
+
   const setFieldValueFromControl = (nextOrEvent: unknown, sourceTrigger = trigger()) => {
     if (props.name === undefined || !form) return
     const previousValue = form.getFieldValue(props.name)
@@ -129,7 +159,7 @@ export function FormItem(props: FormItemProps) {
     if (props.normalize)
       nextValue = props.normalize(nextValue, previousValue, form.getFieldsValue(true))
     form.setFieldValue(props.name, nextValue)
-    if (matchesTrigger(sourceTrigger, validateTrigger())) validateCurrentField()
+    validate(sourceTrigger)
   }
 
   const valueProps = (): Record<string, unknown> => {
@@ -151,6 +181,7 @@ export function FormItem(props: FormItemProps) {
       validateTrigger,
       onChange: (nextOrEvent) => setFieldValueFromControl(nextOrEvent, trigger()),
       setFieldValueFromControl,
+      validate,
       errors,
       status: mergedStatus,
     }

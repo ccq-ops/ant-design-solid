@@ -49,8 +49,11 @@ export function Input(props: InputProps) {
     const matchesValidateTrigger =
       validateTriggers.includes(handlerName) ||
       (validateTriggers.includes('onChange') && handlerName === 'onInput')
-    if (matchesValueTrigger || matchesValidateTrigger)
-      formItem.setFieldValueFromControl(event, matchesValueTrigger ? trigger : handlerName)
+    if (matchesValueTrigger) {
+      formItem.setFieldValueFromControl(event, trigger)
+      return
+    }
+    if (matchesValidateTrigger) formItem.validate(handlerName)
   }
 
   function clearValue() {

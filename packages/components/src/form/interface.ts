@@ -102,6 +102,7 @@ export interface FormItemControl {
   validateTrigger: Accessor<string | string[]>
   onChange: (nextOrEvent: FieldValue) => void
   setFieldValueFromControl: (nextOrEvent: FieldValue, sourceTrigger?: string) => void
+  validate: (sourceTrigger?: string) => void
   errors: Accessor<string[]>
   status: Accessor<ValidateStatus | undefined>
 }
