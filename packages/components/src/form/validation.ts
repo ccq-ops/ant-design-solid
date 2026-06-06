@@ -131,7 +131,7 @@ async function validateRule(
 
   if (rule.validator) {
     try {
-      const result = await callValidator(rule, value)
+      const result = await callValidator(rule, value, values)
       if (typeof result === 'string') return result
     } catch (error) {
       return error instanceof Error ? error.message : String(error)
@@ -141,9 +141,27 @@ async function validateRule(
   return undefined
 }
 
-async function callValidator(rule: RuleConfig, value: FieldValue): Promise<string | void> {
+function isLikelyLegacyValidator(rule: RuleConfig, values: FormValues): boolean {
+  if (!rule.validator) return false
+  if (rule.validator.legacy) return true
+  if (rule.validator.length < 2) return false
+  return (
+    !('message' in rule) &&
+    !('required' in rule) &&
+    !('type' in rule) &&
+    Object.keys(values).length > 0
+  )
+}
+
+async function callValidator(
+  rule: RuleConfig,
+  value: FieldValue,
+  values: FormValues,
+): Promise<string | void> {
   if (!rule.validator) return undefined
-  const validatorResult = await rule.validator(rule, value)
+  const validatorResult = isLikelyLegacyValidator(rule, values)
+    ? await rule.validator(value as RuleConfig & FieldValue, values)
+    : await rule.validator(rule, value, values)
   if (typeof validatorResult === 'string') return validatorResult
   return undefined
 }

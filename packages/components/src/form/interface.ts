@@ -27,7 +27,13 @@ export interface RuleConfig {
   warningOnly?: boolean
   validateTrigger?: string | string[]
   validateFirst?: boolean | 'parallel'
-  validator?: (rule: RuleConfig, value: FieldValue) => string | void | Promise<void>
+  validator?: ((
+    rule: RuleConfig,
+    value: FieldValue,
+    values?: FormValues,
+  ) => string | void | Promise<void>) & {
+    legacy?: boolean
+  }
 }
 
 export type Rule = RuleConfig | ((form: FormInstance) => RuleConfig)

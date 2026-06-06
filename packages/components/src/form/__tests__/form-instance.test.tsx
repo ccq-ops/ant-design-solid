@@ -218,6 +218,173 @@ describe('FormInstance core parity APIs', () => {
     )
   })
 
+  it('keeps latest validation result when overlapping validations finish out of order', async () => {
+    const resolvers: Array<() => void> = []
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: 'bad' }}>
+        <Form.Item
+          name="username"
+          rules={[
+            {
+              async validator(_, value) {
+                await new Promise<void>((resolve) => {
+                  resolvers.push(resolve)
+                })
+                if (value === 'bad') throw new Error('Bad')
+              },
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    const staleValidation = form.validateFields(['username'])
+    form.setFieldValue('username', 'good')
+    const latestValidation = form.validateFields(['username'])
+
+    resolvers[1]()
+    await expect(latestValidation).resolves.toEqual({ username: 'good' })
+    expect(form.getFieldError('username')).toEqual([])
+
+    resolvers[0]()
+    await expect(staleValidation).rejects.toMatchObject({ outOfDate: true })
+    expect(form.getFieldError('username')).toEqual([])
+  })
+
+  it('keeps field validating while a newer overlapping validation is pending', async () => {
+    const resolvers: Array<() => void> = []
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: 'Ada' }}>
+        <Form.Item
+          name="username"
+          rules={[
+            {
+              async validator() {
+                await new Promise<void>((resolve) => {
+                  resolvers.push(resolve)
+                })
+              },
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    const firstValidation = form.validateFields(['username'])
+    const secondValidation = form.validateFields(['username'])
+
+    expect(form.isFieldValidating('username')).toBe(true)
+    resolvers[0]()
+    await expect(firstValidation).rejects.toMatchObject({ outOfDate: true })
+    expect(form.isFieldValidating('username')).toBe(true)
+
+    resolvers[1]()
+    await expect(secondValidation).resolves.toEqual({ username: 'Ada' })
+    expect(form.isFieldValidating('username')).toBe(false)
+  })
+
+  it('does not write stale validation errors after a field remounts', async () => {
+    let resolveValidation!: () => void
+    const pendingValidation = new Promise<void>((resolve) => {
+      resolveValidation = resolve
+    })
+    const [shown, setShown] = createSignal(true)
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: 'bad' }}>
+        {shown() && (
+          <Form.Item
+            name="username"
+            rules={[
+              {
+                async validator() {
+                  await pendingValidation
+                  throw new Error('Stale')
+                },
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        )}
+      </Form>
+    ))
+
+    const staleValidation = form.validateFields(['username'])
+    setShown(false)
+    setShown(true)
+
+    resolveValidation()
+    await expect(staleValidation).rejects.toMatchObject({ outOfDate: true })
+    expect(form.getFieldError('username')).toEqual([])
+  })
+
+  it('cleans up validating state when transform throws', async () => {
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: 'Ada' }}>
+        <Form.Item
+          name="username"
+          rules={[
+            {
+              transform() {
+                throw new Error('Boom')
+              },
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(form.validateFields(['username'])).rejects.toMatchObject({
+      errorFields: [{ name: ['username'], errors: ['Boom'] }],
+    })
+    expect(form.isFieldValidating('username')).toBe(false)
+  })
+
+  it('does not expose validating state for validateOnly async validation', async () => {
+    let resolveValidation!: () => void
+    const pendingValidation = new Promise<void>((resolve) => {
+      resolveValidation = resolve
+    })
+    const onFieldsChange = vi.fn()
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: 'Ada' }} onFieldsChange={onFieldsChange}>
+        <Form.Item
+          name="username"
+          rules={[
+            {
+              async validator() {
+                await pendingValidation
+              },
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    const validation = form.validateFields(['username'], { validateOnly: true })
+
+    expect(form.isFieldValidating('username')).toBe(false)
+    expect(onFieldsChange).not.toHaveBeenCalled()
+
+    resolveValidation()
+    await expect(validation).resolves.toEqual({ username: 'Ada' })
+    expect(form.isFieldValidating('username')).toBe(false)
+    expect(onFieldsChange).not.toHaveBeenCalled()
+  })
+
   it('does not notify onFieldsChange when validateOnly is true', async () => {
     const onFieldsChange = vi.fn()
     const [form] = useForm()

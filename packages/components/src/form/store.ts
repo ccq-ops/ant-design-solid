@@ -63,6 +63,24 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
     const fields = new Map<string, FieldRecord>()
     const errorSignals = new Map<string, [Accessor<string[]>, (errors: string[]) => void]>()
+    const validationSequences = new WeakMap<FieldRecord, number>()
+
+    function nextValidationSequence(record: FieldRecord): number {
+      const sequence = (validationSequences.get(record) ?? 0) + 1
+      validationSequences.set(record, sequence)
+      return sequence
+    }
+
+    function invalidateValidation(record: FieldRecord): void {
+      validationSequences.set(record, (validationSequences.get(record) ?? 0) + 1)
+    }
+
+    function isCurrentValidation(record: FieldRecord, sequence: number): boolean {
+      return (
+        validationSequences.get(record) === sequence &&
+        fields.get(getFieldKey(record.state.name)) === record
+      )
+    }
 
     function ensureErrorSignal(name: FieldName): [Accessor<string[]>, (errors: string[]) => void] {
       const key = getFieldKey(name)
@@ -95,6 +113,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
 
     function clearRecordValidation(record: FieldRecord) {
+      invalidateValidation(record)
       record.setErrors([])
       record.state.warnings = []
       record.state.validating = false
@@ -119,6 +138,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       records: FieldRecord[],
       results: Map<FieldRecord, ValidateValueResult>,
       validateOnly?: boolean,
+      outOfDate = false,
     ): ValidateErrorInfo {
       const errorFields: FieldError[] = []
       const changedRecords: FieldRecord[] = []
@@ -143,7 +163,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       return {
         values: cloneFormValues(values()),
         errorFields,
-        outOfDate: false,
+        outOfDate,
       }
     }
 
@@ -153,22 +173,44 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     ): Promise<ValidateErrorInfo> {
       const records = getRegisteredRecords(names, config.recursive)
       const results = new Map<FieldRecord, ValidateValueResult>()
+      let outOfDate = false
       for (const record of records) {
         if (config.dirty && !record.state.dirty && !record.state.validated) continue
-        record.state.validating = true
-        if (!config.validateOnly) notifyFieldsChange([record])
-        const result = await validateValue(
-          record.state.name.join('.'),
-          getValue(values(), record.state.name),
-          values(),
-          record.meta.rules,
-          { form },
-        )
-        record.state.validating = false
-        if (!config.validateOnly) notifyFieldsChange([record])
-        results.set(record, result)
+        const sequence = nextValidationSequence(record)
+        if (!config.validateOnly) {
+          record.state.validating = true
+          notifyFieldsChange([record])
+        }
+        try {
+          const result = await validateValue(
+            record.state.name.join('.'),
+            getValue(values(), record.state.name),
+            values(),
+            record.meta.rules,
+            { form },
+          )
+          if (!isCurrentValidation(record, sequence)) {
+            outOfDate = true
+            continue
+          }
+          results.set(record, result)
+        } catch (error) {
+          if (!isCurrentValidation(record, sequence)) {
+            outOfDate = true
+            continue
+          }
+          results.set(record, {
+            errors: [error instanceof Error ? error.message : String(error)],
+            warnings: [],
+          })
+        } finally {
+          if (!config.validateOnly && isCurrentValidation(record, sequence)) {
+            record.state.validating = false
+            notifyFieldsChange([record])
+          }
+        }
       }
-      return buildValidationResult(records, results, config.validateOnly)
+      return buildValidationResult(records, results, config.validateOnly, outOfDate)
     }
 
     function validateFieldNamesSync(
@@ -268,6 +310,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
                 : getValue(formInitialValues, record.state.name)
             setValues((currentValues) => setValue(currentValues, record.state.name, initialValue))
             record.state.touched = false
+            invalidateValidation(record)
             record.state.validating = false
             record.state.validated = false
             record.state.dirty = false
@@ -280,7 +323,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       async validateFields(names, config) {
         const targetNames = names ?? Array.from(fields.values()).map((record) => record.state.name)
         const result = await validateFieldNames(targetNames, config)
-        if (result.errorFields.length > 0) throw result
+        if (result.errorFields.length > 0 || result.outOfDate) throw result
         return result.values
       },
       submit() {
@@ -291,10 +334,20 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           else callbacks.onFinish?.(syncResult.values)
           return
         }
-        void validateFieldNames(targetNames).then((result) => {
-          if (result.errorFields.length > 0) callbacks.onFinishFailed?.(result)
-          else callbacks.onFinish?.(result.values)
-        })
+        void validateFieldNames(targetNames)
+          .then((result) => {
+            if (result.errorFields.length > 0 || result.outOfDate)
+              callbacks.onFinishFailed?.(result)
+            else callbacks.onFinish?.(result.values)
+          })
+          .catch((error: unknown) => {
+            callbacks.onFinishFailed?.({
+              values: cloneFormValues(values()),
+              errorFields: [],
+              outOfDate: false,
+              ...(typeof error === 'object' && error !== null ? error : {}),
+            })
+          })
       },
       registerField(meta) {
         const key = getFieldKey(meta.name)

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { RuleConfig } from '../interface'
 import { validateValue } from '../validation'
 
 describe('form validation v2', () => {
@@ -114,6 +115,17 @@ describe('form validation v2', () => {
         { validateFirst: 'parallel' },
       ),
     ).resolves.toEqual({ errors: ['Error'], warnings: [] })
+  })
+
+  it('supports legacy validator signature with value and values', async () => {
+    const validator = ((value: unknown, values: Record<string, unknown>) => {
+      if (value === 'taken' && values.username === 'taken') return 'Taken'
+    }) as NonNullable<RuleConfig['validator']>
+    validator.legacy = true
+
+    await expect(
+      validateValue('username', 'taken', { username: 'taken' }, [{ validator }]),
+    ).resolves.toEqual({ errors: ['Taken'], warnings: [] })
   })
 
   it('stores warningOnly failures as warnings', async () => {
