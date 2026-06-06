@@ -87,14 +87,14 @@ export interface CellRenderInfo {
   subType?: TimeSubtype
 }
 
-export interface PresetValue {
+export type SinglePresetValue = Dayjs | (() => Dayjs)
+export type RangePresetEndpoint = Dayjs | (() => Dayjs) | null
+export type RangePresetTuple = [RangePresetEndpoint, RangePresetEndpoint]
+export type RangePresetValue = RangePresetTuple | (() => RangePresetTuple)
+
+export interface PresetValue<T> {
   label: JSX.Element
-  value:
-    | Dayjs
-    | (() => Dayjs)
-    | RangePickerValue
-    | [Dayjs | (() => Dayjs) | null, Dayjs | (() => Dayjs) | null]
-    | (() => RangePickerValue)
+  value: T
 }
 
 export interface TagRenderProps {
@@ -177,7 +177,7 @@ export interface DatePickerSingleProps extends CommonPickerProps {
   defaultValue?: DatePickerValue
   multiple?: false
   order?: boolean
-  presets?: PresetValue[]
+  presets?: Array<PresetValue<SinglePresetValue>>
   needConfirm?: boolean
   tagRender?: (props: TagRenderProps) => JSX.Element
   onChange?: (date: DatePickerValue, dateString: string) => void
@@ -189,7 +189,7 @@ export interface DatePickerMultipleProps extends CommonPickerProps {
   defaultValue?: DatePickerMultipleValue
   multiple: true
   order?: boolean
-  presets?: PresetValue[]
+  presets?: Array<PresetValue<SinglePresetValue>>
   needConfirm?: boolean
   tagRender?: (props: TagRenderProps) => JSX.Element
   onChange?: (date: DatePickerMultipleValue, dateString: string[]) => void
@@ -219,7 +219,7 @@ export interface RangePickerProps extends Omit<
   disabled?: boolean | [boolean, boolean]
   allowEmpty?: [boolean, boolean]
   showTime?: boolean | RangeShowTimeOptions
-  presets?: PresetValue[]
+  presets?: Array<PresetValue<RangePresetValue>>
   order?: boolean
   onChange?: (dates: RangePickerValue, dateStrings: [string, string]) => void
   onCalendarChange?: (

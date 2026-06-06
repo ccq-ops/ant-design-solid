@@ -31,7 +31,7 @@ export interface PickerPanelProps {
   style?: JSX.CSSProperties
   previousIcon?: JSX.Element
   nextIcon?: JSX.Element
-  presets?: import('./interface').PresetValue[]
+  presets?: Array<import('./interface').PresetValue<import('./presets-panel').AnyPresetValue>>
   panelRender?: (panel: JSX.Element) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
   mode?: PickerMode

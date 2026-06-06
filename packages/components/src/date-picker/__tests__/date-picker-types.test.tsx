@@ -1,6 +1,7 @@
 import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import { describe, expect, it } from 'vitest'
-import { DatePicker } from '../date-picker'
+import { DatePicker, RangePicker } from '../date-picker'
 
 describe('DatePicker public types', () => {
   it('narrows callback value types by multiple mode', () => {
@@ -31,5 +32,44 @@ describe('DatePicker public types', () => {
 
     expect(single).toBeTruthy()
     expect(multiple).toBeTruthy()
+  })
+
+  it('narrows preset value shapes by picker kind', () => {
+    const singlePreset = <DatePicker presets={[{ label: 'Single', value: dayjs('2026-06-01') }]} />
+    const rangePreset = (
+      <RangePicker
+        presets={[{ label: 'Range', value: [dayjs('2026-06-01'), dayjs('2026-06-30')] }]}
+      />
+    )
+    const rangeCallbackPreset = (
+      <RangePicker
+        presets={[
+          {
+            label: 'Range callback',
+            value: () => [dayjs('2026-06-01'), () => dayjs('2026-06-30')],
+          },
+        ]}
+      />
+    )
+    const nextWeekPreset = (
+      <RangePicker
+        presets={[{ label: 'Next week', value: () => [dayjs(), () => dayjs().add(7, 'day')] }]}
+      />
+    )
+    const badSinglePreset = (
+      // @ts-expect-error DatePicker presets do not accept ranges
+      <DatePicker presets={[{ label: 'Bad', value: [dayjs('2026-06-01'), dayjs('2026-06-30')] }]} />
+    )
+    const badRangePreset = (
+      // @ts-expect-error RangePicker presets do not accept single values
+      <RangePicker presets={[{ label: 'Bad', value: dayjs('2026-06-01') }]} />
+    )
+
+    expect(singlePreset).toBeTruthy()
+    expect(rangePreset).toBeTruthy()
+    expect(rangeCallbackPreset).toBeTruthy()
+    expect(nextWeekPreset).toBeTruthy()
+    expect(badSinglePreset).toBeTruthy()
+    expect(badRangePreset).toBeTruthy()
   })
 })
