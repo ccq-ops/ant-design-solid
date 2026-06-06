@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js'
+import { For, createSignal } from 'solid-js'
 import {
   Button,
   Checkbox,
@@ -25,6 +25,18 @@ const formRows: ApiTableRow[] = [
     type: 'FormValues',
   },
   {
+    property: 'layout',
+    description: 'Form layout mode.',
+    type: "'horizontal' | 'vertical' | 'inline'",
+    defaultValue: "'horizontal'",
+  },
+  {
+    property: 'requiredMark',
+    description: 'Required mark display style for Form.Item labels.',
+    type: "boolean | 'optional'",
+    defaultValue: 'true',
+  },
+  {
     property: 'onFinish',
     description: 'Called with all values after validation succeeds on submit.',
     type: '(values: FormValues) => void',
@@ -39,6 +51,11 @@ const formRows: ApiTableRow[] = [
     description: 'Called whenever a registered field updates its value.',
     type: '(changedValues: FormValues, allValues: FormValues) => void',
   },
+  {
+    property: 'onFieldsChange',
+    description: 'Called when registered field values or field state change.',
+    type: '(changedFields: FieldData[], allFields: FieldData[]) => void',
+  },
 ]
 
 const formItemRows: ApiTableRow[] = [
@@ -50,7 +67,7 @@ const formItemRows: ApiTableRow[] = [
   {
     property: 'name',
     description: 'Field name used to read and write values in the form store.',
-    type: 'string',
+    type: 'NamePath',
   },
   {
     property: 'rules',
@@ -86,6 +103,66 @@ const formItemRows: ApiTableRow[] = [
     defaultValue: "'onChange'",
   },
   {
+    property: 'validateTrigger',
+    description: 'Event name or names that trigger validation.',
+    type: 'string | string[]',
+    defaultValue: "'onChange'",
+  },
+  {
+    property: 'getValueFromEvent',
+    description: 'Customize how a field value is extracted from control events.',
+    type: '(...args: unknown[]) => unknown',
+  },
+  {
+    property: 'getValueProps',
+    description: 'Customize props derived from the current field value.',
+    type: '(value: unknown) => Record<string, unknown>',
+  },
+  {
+    property: 'normalize',
+    description: 'Normalize a value before storing it in the form.',
+    type: '(value, prevValue, allValues) => unknown',
+  },
+  {
+    property: 'dependencies',
+    description: 'Revalidate this field when dependent fields update.',
+    type: 'NamePath[]',
+  },
+  {
+    property: 'validateFirst',
+    description: 'Stop validation on the first failing rule, or run rules in parallel.',
+    type: "boolean | 'parallel'",
+    defaultValue: 'false',
+  },
+  {
+    property: 'validateDebounce',
+    description: 'Debounce triggered validation by the given milliseconds.',
+    type: 'number',
+  },
+  {
+    property: 'preserve',
+    description: 'Keep a field value when the field is unmounted.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'noStyle',
+    description: 'Register a field without rendering the styled Form.Item wrapper.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'hidden',
+    description: 'Hide the field while still collecting and validating its value.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'extra',
+    description: 'Extra prompt content shown below validation help.',
+    type: 'JSX.Element',
+  },
+  {
     property: 'initialValue',
     description: 'Initial value for this field.',
     type: 'unknown',
@@ -96,17 +173,17 @@ const formInstanceRows: ApiTableRow[] = [
   {
     property: 'getFieldValue',
     description: 'Reads one field value.',
-    type: '(name: string) => unknown',
+    type: '(name: NamePath) => unknown',
   },
   {
     property: 'setFieldValue',
     description: 'Sets one field value and clears its errors.',
-    type: '(name: string, value: unknown) => void',
+    type: '(name: NamePath, value: unknown) => void',
   },
   {
     property: 'getFieldsValue',
-    description: 'Returns a shallow copy of all form values.',
-    type: '() => FormValues',
+    description: 'Returns registered field values, selected values, or all values with true.',
+    type: '(nameList?: true | NamePath[]) => FormValues',
   },
   {
     property: 'setFieldsValue',
@@ -114,14 +191,39 @@ const formInstanceRows: ApiTableRow[] = [
     type: '(values: FormValues) => void',
   },
   {
+    property: 'setFields',
+    description: 'Sets field values or field state such as errors and touched.',
+    type: '(fields: FieldData[]) => void',
+  },
+  {
     property: 'resetFields',
     description: 'Resets all fields or the provided field names to their initial values.',
-    type: '(names?: string[]) => void',
+    type: '(names?: NamePath[]) => void',
   },
   {
     property: 'validateFields',
     description: 'Validates all fields or selected fields and resolves with values.',
-    type: '(names?: string[]) => Promise<FormValues>',
+    type: '(names?: NamePath[], config?: ValidateConfig) => Promise<FormValues>',
+  },
+  {
+    property: 'getFieldError',
+    description: 'Returns current errors for one field.',
+    type: '(name: NamePath) => string[]',
+  },
+  {
+    property: 'getFieldsError',
+    description: 'Returns error and warning state for registered fields.',
+    type: '(names?: NamePath[]) => FieldError[]',
+  },
+  {
+    property: 'isFieldTouched',
+    description: 'Checks whether a field has been touched.',
+    type: '(name: NamePath) => boolean',
+  },
+  {
+    property: 'isFieldsTouched',
+    description: 'Checks whether any or all fields have been touched.',
+    type: '(names?: NamePath[], allTouched?: boolean) => boolean',
   },
   {
     property: 'submit',
@@ -139,7 +241,7 @@ const ruleRows: ApiTableRow[] = [
   {
     property: 'type',
     description: 'Checks the runtime value type.',
-    type: "'string' | 'number' | 'boolean' | 'array'",
+    type: "'string' | 'number' | 'boolean' | 'array' | 'object' | 'email' | 'url' | 'enum'",
   },
   {
     property: 'min / max / len',
@@ -158,10 +260,15 @@ const ruleRows: ApiTableRow[] = [
   },
   {
     property: 'validator',
-    description: 'Custom synchronous validator. Return a string to report an error.',
-    type: '(value: unknown, values: FormValues) => string | void',
+    description: 'Custom validator. Return a string, throw, or reject to report an error.',
+    type: '(rule, value, values?) => string | void | Promise<void>',
   },
 ]
+
+function WatchedUsername() {
+  const username = Form.useWatch('username')
+  return <span>Watched: {String(username() ?? '')}</span>
+}
 
 export default function FormPage() {
   const [instanceForm] = useForm()
@@ -301,6 +408,97 @@ export default function FormPage() {
               Save
             </Button>
           </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Nested fields"
+        code={`<Form initialValues={{ user: { email: 'hello@example.com' } }} onFinish={console.log}>
+  <Form.Item label="Email" name={['user', 'email']} rules={[{ type: 'email' }]}>
+    <Input />
+  </Form.Item>
+</Form>`}
+      >
+        <Form
+          initialValues={{ user: { email: 'hello@example.com' } }}
+          onFinish={(values) => message.success(JSON.stringify(values))}
+        >
+          <Space direction="vertical" class="w-90">
+            <Form.Item
+              label="Email"
+              name={['user', 'email']}
+              rules={[{ type: 'email', message: 'Enter an email' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Button htmlType="submit">Submit nested</Button>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Watch fields"
+        code={`function WatchedUsername() {
+  const username = Form.useWatch('username')
+  return <span>Watched: {String(username() ?? '')}</span>
+}
+
+<Form>
+  <Form.Item label="Username" name="username"><Input /></Form.Item>
+  <WatchedUsername />
+</Form>`}
+      >
+        <Form>
+          <Space direction="vertical" class="w-90">
+            <Form.Item label="Username" name="username">
+              <Input />
+            </Form.Item>
+            <WatchedUsername />
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Dynamic list"
+        code={`<Form initialValues={{ users: [{ name: 'Ada' }] }} onFinish={console.log}>
+  <Form.List name="users">
+    {(fields, operation) => (
+      <>
+        <For each={fields()}>
+          {(field) => (
+            <Form.Item label={"User " + (field.name + 1)} name={[field.name, 'name']}>
+              <Input />
+            </Form.Item>
+          )}
+        </For>
+        <Button onClick={() => operation.add({ name: '' })}>Add user</Button>
+        <Button htmlType="submit">Submit list</Button>
+      </>
+    )}
+  </Form.List>
+</Form>`}
+      >
+        <Form
+          initialValues={{ users: [{ name: 'Ada' }] }}
+          onFinish={(values) => message.success(JSON.stringify(values))}
+        >
+          <Form.List name="users">
+            {(fields, operation) => (
+              <Space direction="vertical" class="w-90">
+                <For each={fields()}>
+                  {(field) => (
+                    <Form.Item label={'User ' + (field.name + 1)} name={[field.name, 'name']}>
+                      <Input />
+                    </Form.Item>
+                  )}
+                </For>
+                <Space>
+                  <Button onClick={() => operation.add({ name: '' })}>Add user</Button>
+                  <Button htmlType="submit">Submit list</Button>
+                </Space>
+              </Space>
+            )}
+          </Form.List>
         </Form>
       </DemoBlock>
 
