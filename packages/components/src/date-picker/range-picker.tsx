@@ -650,6 +650,7 @@ export function RangePicker(props: RangePickerProps) {
             presets={local.presets}
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
+            locale={locale()}
             showTime={showTimeEnabled()}
             previousIcon={local.prevIcon ?? local.previousIcon}
             superPreviousIcon={local.superPrevIcon}
@@ -681,6 +682,7 @@ export function RangePicker(props: RangePickerProps) {
                 disabledTime={local.disabledTime?.(
                   selectedOrPendingRange()[sideIndex(activeRange())],
                 )}
+                locale={locale()}
                 onSelectTime={selectTime}
               />
             </Show>

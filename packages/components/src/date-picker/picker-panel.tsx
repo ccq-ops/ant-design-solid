@@ -1,6 +1,7 @@
 import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import type {
+  DatePickerLocale,
   DatePickerPlacement,
   DatePickerSemanticSlot,
   PickerComponents,
@@ -42,6 +43,7 @@ export interface PickerPanelProps {
   presets?: Array<import('./interface').PresetValue<import('./presets-panel').AnyPresetValue>>
   panelRender?: (panel: JSX.Element) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
+  locale?: DatePickerLocale
   mode?: PickerMode
   needConfirm?: boolean
   showTime?: boolean
@@ -217,13 +219,13 @@ export function PickerPanel(props: PickerPanelProps) {
             {props.renderExtraFooter?.(props.mode ?? 'date')}
             <Show when={props.showTime && props.showNow}>
               <button type="button" class={`${props.prefixCls}-now`} onClick={props.onNow}>
-                Now
+                {props.locale?.lang?.now ?? 'Now'}
               </button>
             </Show>
           </div>
           <Show when={props.needConfirm || props.showTime}>
             <button type="button" class={`${props.prefixCls}-ok`} onClick={props.onOk}>
-              OK
+              {props.locale?.lang?.ok ?? 'OK'}
             </button>
           </Show>
         </div>

@@ -31,6 +31,10 @@ export interface DatePickerLocale {
     clear?: string
     month?: string
     year?: string
+    week?: string
+    hour?: string
+    minute?: string
+    second?: string
     timeSelect?: string
     dateSelect?: string
     weekSelect?: string

@@ -1,5 +1,10 @@
 import { For, Show, createMemo } from 'solid-js'
-import type { DisabledTimeConfig, RangeShowTimeOptions, ShowTimeOptions } from './interface'
+import type {
+  DatePickerLocale,
+  DisabledTimeConfig,
+  RangeShowTimeOptions,
+  ShowTimeOptions,
+} from './interface'
 import type { dayjs } from './date-utils'
 
 export interface TimePanelProps {
@@ -7,6 +12,7 @@ export interface TimePanelProps {
   value: dayjs.Dayjs | null
   showTime?: boolean | ShowTimeOptions | RangeShowTimeOptions
   disabledTime?: DisabledTimeConfig
+  locale?: DatePickerLocale
   onSelectTime?: (unit: 'hour' | 'minute' | 'second', value: number) => void
 }
 
@@ -88,13 +94,31 @@ export function TimePanel(props: TimePanelProps) {
   return (
     <div class={`${props.prefixCls}-time-panel`}>
       <Show when={showHour()}>
-        {renderColumn('Hour', 'hour', range(24), hour(), disabledHours())}
+        {renderColumn(
+          props.locale?.lang?.hour ?? 'Hour',
+          'hour',
+          range(24),
+          hour(),
+          disabledHours(),
+        )}
       </Show>
       <Show when={showMinute()}>
-        {renderColumn('Minute', 'minute', range(60), minute(), disabledMinutes())}
+        {renderColumn(
+          props.locale?.lang?.minute ?? 'Minute',
+          'minute',
+          range(60),
+          minute(),
+          disabledMinutes(),
+        )}
       </Show>
       <Show when={showSecond()}>
-        {renderColumn('Second', 'second', range(60), second(), disabledSeconds())}
+        {renderColumn(
+          props.locale?.lang?.second ?? 'Second',
+          'second',
+          range(60),
+          second(),
+          disabledSeconds(),
+        )}
       </Show>
     </div>
   )

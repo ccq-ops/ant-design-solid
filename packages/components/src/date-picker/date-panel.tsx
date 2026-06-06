@@ -174,7 +174,9 @@ export function DatePanel(props: DatePanelProps) {
         }
       >
         <Show when={picker() === 'week' || props.showWeek}>
-          <div class={`${props.prefixCls}-weekday ${props.prefixCls}-week-column-header`}>Week</div>
+          <div class={`${props.prefixCls}-weekday ${props.prefixCls}-week-column-header`}>
+            {props.locale?.lang?.week ?? 'Week'}
+          </div>
         </Show>
         <For each={WEEKDAYS}>
           {(weekday) => <div class={`${props.prefixCls}-weekday`}>{weekday}</div>}

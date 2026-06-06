@@ -317,6 +317,43 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(document.activeElement).not.toBe(inputs[0])
   })
 
+  it('localizes showTime now and ok panel actions', () => {
+    render(() => (
+      <DatePicker showTime showNow defaultOpen locale={{ lang: { now: '现在', ok: '确定' } }} />
+    ))
+
+    expect(screen.getByRole('button', { name: '现在' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '确定' })).toBeInTheDocument()
+  })
+
+  it('localizes showWeek column header', () => {
+    render(() => (
+      <DatePicker
+        showWeek
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        locale={{ lang: { week: '周' } }}
+      />
+    ))
+
+    expect(screen.getByText('周')).toBeInTheDocument()
+  })
+
+  it('localizes time column accessible labels', () => {
+    render(() => (
+      <DatePicker
+        showTime
+        defaultOpen
+        defaultValue={dayjs('2026-06-01 09:30:00')}
+        locale={{ lang: { hour: '小时', minute: '分钟', second: '秒' } }}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: '小时 09' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '分钟 30' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '秒 00' })).toBeInTheDocument()
+  })
+
   it('supports super navigation icons, onSelect, showWeek, components, and owns non-dom props', () => {
     const onSelect = vi.fn()
     const result = render(() => (

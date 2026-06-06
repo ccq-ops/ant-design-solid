@@ -604,6 +604,7 @@ function DatePickerBase(props: DatePickerProps) {
             presets={local.presets}
             renderExtraFooter={local.renderExtraFooter}
             panelRender={local.panelRender}
+            locale={locale()}
             needConfirm={local.needConfirm}
             showTime={showTimeEnabled()}
             previousIcon={local.prevIcon ?? local.previousIcon}
@@ -632,6 +633,7 @@ function DatePickerBase(props: DatePickerProps) {
                 value={pendingValue() ?? selectedDate()}
                 showTime={local.showTime}
                 disabledTime={local.disabledTime?.(pendingValue() ?? selectedDate())}
+                locale={locale()}
                 onSelectTime={selectTime}
               />
             </Show>
