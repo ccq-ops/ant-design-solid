@@ -24,6 +24,37 @@ describe('DatePicker dayjs value model', () => {
     await waitFor(() => expect(screen.queryByText('2026-06')).not.toBeInTheDocument())
   })
 
+  it('selects a date with the first click after the input blurs to the panel', async () => {
+    const onChange = vi.fn()
+    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} onChange={onChange} />)
+
+    const input = screen.getByRole('textbox')
+    fireEvent.focus(input)
+    const date = await screen.findByRole('button', { name: '2026-06-15' })
+    const mouseDown = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+    const defaultAllowed = date.dispatchEvent(mouseDown)
+    if (defaultAllowed) fireEvent.blur(input, { relatedTarget: date })
+    fireEvent.mouseUp(date)
+    fireEvent.click(date)
+
+    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(nextValue.format('YYYY-MM-DD')).toBe('2026-06-15')
+    expect(nextString).toBe('2026-06-15')
+    expect(screen.getByRole('textbox')).toHaveValue('2026-06-15')
+  })
+
+  it('does not commit a date on mouse down before the click selection event', async () => {
+    const onChange = vi.fn()
+    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} onChange={onChange} />)
+
+    fireEvent.focus(screen.getByRole('textbox'))
+    const date = await screen.findByRole('button', { name: '2026-06-15' })
+    fireEvent.mouseDown(date)
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('textbox')).toHaveValue('2026-06-01')
+  })
+
   it('updates the displayed value when controlled dayjs value changes', () => {
     function Demo() {
       const [value, setValue] = createSignal(dayjs('2026-06-01'))

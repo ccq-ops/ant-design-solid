@@ -465,6 +465,13 @@ export function RangePicker(props: RangePickerProps) {
 
   const InputComponent = () => local.components?.input ?? PickerInput
 
+  function panelSelectedValue(): dayjs.Dayjs | dayjs.Dayjs[] | null {
+    const range = selectedOrPendingRange()
+    const values = range.filter((date): date is dayjs.Dayjs => Boolean(date))
+    if (values.length > 0) return values
+    return range[sideIndex(activeRange())]
+  }
+
   const rangePanelNode = () => {
     if (picker() === 'month' || picker() === 'quarter') {
       return (
@@ -472,7 +479,7 @@ export function RangePicker(props: RangePickerProps) {
           prefixCls={prefixCls()}
           viewDate={panelViewDate()}
           picker={picker() as 'month' | 'quarter'}
-          selectedValue={selectedOrPendingRange()[sideIndex(activeRange())]}
+          selectedValue={panelSelectedValue()}
           disabledDate={isDateDisabled}
           cellRender={local.cellRender}
           locale={locale()}
@@ -487,7 +494,7 @@ export function RangePicker(props: RangePickerProps) {
         <YearPanel
           prefixCls={prefixCls()}
           viewDate={panelViewDate()}
-          selectedValue={selectedOrPendingRange()[sideIndex(activeRange())]}
+          selectedValue={panelSelectedValue()}
           disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
           cellRender={local.cellRender}
           locale={locale()}
@@ -502,9 +509,7 @@ export function RangePicker(props: RangePickerProps) {
         prefixCls={prefixCls()}
         viewDate={panelViewDate()}
         picker={picker()}
-        selectedValue={
-          activeRange() === 'start' ? selectedOrPendingRange()[0] : selectedOrPendingRange()[1]
-        }
+        selectedValue={panelSelectedValue()}
         rangeValue={selectedOrPendingRange()}
         activeRange={activeRange()}
         hoverValue={hoverValue()}

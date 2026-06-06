@@ -263,16 +263,22 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'line-height': '1',
         },
-        [`.${prefixCls}-cell:hover`]: {
-          background: t.colorFillAlter,
+        [`.${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-range-start):not(.${prefixCls}-cell-range-end):hover`]:
+          {
+            background: t.colorFillAlter,
+          },
+        [`.${prefixCls}-cell:active`]: {
+          color: t.colorBgContainer,
+          background: t.colorPrimary,
         },
         [`.${prefixCls}-cell-selected`]: {
           color: t.colorBgContainer,
           background: t.colorPrimary,
           'font-weight': '600',
         },
-        [`.${prefixCls}-cell-selected:hover`]: {
+        [`.${prefixCls}-cell-selected:hover, .${prefixCls}-cell-selected:active`]: {
           background: t.colorPrimary,
+          color: t.colorBgContainer,
         },
 
         [`.${prefixCls}-cell-in-range`]: {
@@ -283,9 +289,11 @@ export function useDatePickerStyle(prefixCls: string) {
           background: t.colorPrimary,
           'font-weight': '600',
         },
-        [`.${prefixCls}-cell-range-start:hover, .${prefixCls}-cell-range-end:hover`]: {
-          background: t.colorPrimary,
-        },
+        [`.${prefixCls}-cell-range-start:hover, .${prefixCls}-cell-range-start:active, .${prefixCls}-cell-range-end:hover, .${prefixCls}-cell-range-end:active`]:
+          {
+            background: t.colorPrimary,
+            color: t.colorBgContainer,
+          },
         [`.${prefixCls}-cell-today`]: {
           border: `${t.lineWidth}px solid ${t.colorPrimary}`,
         },

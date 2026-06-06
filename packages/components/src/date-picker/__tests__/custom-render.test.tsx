@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import dayjs, { type Dayjs } from 'dayjs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -5,6 +6,27 @@ import { DatePicker, RangePicker } from '..'
 import type { DatePickerRef } from '../interface'
 
 describe('DatePicker custom rendering and visual APIs', () => {
+  it('keeps selected and range endpoint text visible on hover and active states', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0, 0, 0, 0.02);',
+    )
+    expect(css).toContain(
+      '.ads-date-picker-cell-selected:hover, .ads-date-picker-cell-selected:active{background:#1677ff;color:#ffffff;',
+    )
+    expect(css).toContain(
+      '.ads-date-picker-cell-range-start:hover, .ads-date-picker-cell-range-start:active, .ads-date-picker-cell-range-end:hover, .ads-date-picker-cell-range-end:active{background:#1677ff;color:#ffffff;',
+    )
+    expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0, 0, 0, 0.02);')
+  })
+
   afterEach(() => {
     cleanup()
     document.body.innerHTML = ''

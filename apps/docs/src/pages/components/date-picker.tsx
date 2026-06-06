@@ -1,5 +1,13 @@
 import dayjs, { type Dayjs } from 'dayjs'
 import { createSignal } from 'solid-js'
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
+  LeftOutlined,
+  RightOutlined,
+} from '@ant-design-solid/icons'
 import { DatePicker, Space } from '@ant-design-solid/core'
 import { ApiTable } from '../../components/api-table'
 import { DemoBlock } from '../../components/demo-block'
@@ -214,6 +222,73 @@ const datePickerRows: ApiTableRow[] = [
     description: 'Returns popup portal container.',
     type: '(triggerNode?: HTMLElement) => HTMLElement',
   },
+  { property: 'mode', description: 'Controlled panel mode.', type: 'PickerMode' },
+  {
+    property: 'minDate',
+    description: 'Minimum selectable and navigable dayjs date.',
+    type: 'Dayjs',
+  },
+  {
+    property: 'maxDate',
+    description: 'Maximum selectable and navigable dayjs date.',
+    type: 'Dayjs',
+  },
+  {
+    property: 'placement',
+    description: 'Popup placement relative to the selector.',
+    type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'",
+    defaultValue: "'bottomLeft'",
+  },
+  { property: 'autoFocus', description: 'Focuses the input on mount.', type: 'boolean' },
+  { property: 'inputReadOnly', description: 'Sets the text input to read-only.', type: 'boolean' },
+  {
+    property: 'preserveInvalidOnBlur',
+    description: 'Keeps invalid typed text when the input blurs.',
+    type: 'boolean',
+  },
+  { property: 'popupClassName', description: 'Custom popup class name.', type: 'string' },
+  {
+    property: 'dropdownClassName',
+    description: 'Alias for popupClassName.',
+    type: 'string',
+  },
+  { property: 'popupStyle', description: 'Custom popup inline style.', type: 'JSX.CSSProperties' },
+  {
+    property: 'bordered',
+    description: 'Legacy border switch. false maps to borderless.',
+    type: 'boolean',
+  },
+  {
+    property: 'order',
+    description: 'Sorts multiple values before emitting them.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'tagRender',
+    description: 'Custom tag renderer when multiple is enabled.',
+    type: '(props: TagRenderProps) => JSX.Element',
+  },
+  {
+    property: 'onPanelChange',
+    description: 'Called when panel date or mode changes.',
+    type: '(value: Dayjs, mode: PickerMode) => void',
+  },
+  {
+    property: 'onFocus',
+    description: 'Called when the input receives focus.',
+    type: '(event: FocusEvent) => void',
+  },
+  {
+    property: 'onBlur',
+    description: 'Called when the input loses focus.',
+    type: '(event: FocusEvent) => void',
+  },
+  {
+    property: 'onKeyDown',
+    description: 'Called for input keyboard events.',
+    type: '(event: KeyboardEvent) => void',
+  },
 ]
 
 const rangePickerRows: ApiTableRow[] = [
@@ -265,6 +340,159 @@ const rangePickerRows: ApiTableRow[] = [
     description: 'Called while selecting range endpoints. The dates argument uses dayjs values.',
     type: "(dates, dateStrings, info: { range: 'start' | 'end' }) => void",
   },
+  {
+    property: 'id',
+    description: 'Input id for start and end fields.',
+    type: 'string | [string, string]',
+  },
+  {
+    property: 'defaultPickerValue',
+    description: 'Initial panel date for uncontrolled usage.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  {
+    property: 'pickerValue',
+    description: 'Controlled panel date for one or both range panels.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  {
+    property: 'disabledTime',
+    description: 'Disables time options for the active range endpoint.',
+    type: '(date: Dayjs | null) => DisabledTimeConfig',
+  },
+  {
+    property: 'order',
+    description: 'Orders start and end values before emitting them.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'separator',
+    description: 'Custom separator content between start and end inputs.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'onOk',
+    description: 'Called when an OK-confirmed range value is accepted.',
+    type: '(dates: [Dayjs | null, Dayjs | null] | null) => void',
+  },
+  {
+    property: 'onPanelChange',
+    description: 'Called when the range panel date or mode changes.',
+    type: '(value: Dayjs | [Dayjs, Dayjs], mode: PickerMode) => void',
+  },
+  {
+    property: 'onFocus',
+    description: 'Called when a range input receives focus.',
+    type: "(event: FocusEvent, info: { range: 'start' | 'end' }) => void",
+  },
+  {
+    property: 'onBlur',
+    description: 'Called when a range input loses focus.',
+    type: "(event: FocusEvent, info: { range: 'start' | 'end' }) => void",
+  },
+]
+
+const showTimeRows: ApiTableRow[] = [
+  {
+    property: 'defaultValue',
+    description: 'Default time merged into the selected date. RangePicker accepts a tuple.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  {
+    property: 'defaultOpenValue',
+    description: 'Default time shown before a date is selected. RangePicker accepts a tuple.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  { property: 'format', description: 'Time display format.', type: 'string' },
+  {
+    property: 'showHour',
+    description: 'Shows the hour column.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'showMinute',
+    description: 'Shows the minute column.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'showSecond',
+    description: 'Shows the second column.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'use12Hours', description: 'Uses 12-hour meridiem display.', type: 'boolean' },
+  {
+    property: 'hideDisabledOptions',
+    description: 'Hides disabled time options instead of rendering them disabled.',
+    type: 'boolean',
+  },
+]
+
+const disabledTimeRows: ApiTableRow[] = [
+  {
+    property: 'disabledHours',
+    description: 'Returns disabled hour numbers.',
+    type: '() => number[]',
+  },
+  {
+    property: 'disabledMinutes',
+    description: 'Returns disabled minute numbers for a selected hour.',
+    type: '(selectedHour: number) => number[]',
+  },
+  {
+    property: 'disabledSeconds',
+    description: 'Returns disabled second numbers for a selected hour and minute.',
+    type: '(selectedHour: number, selectedMinute: number) => number[]',
+  },
+  {
+    property: 'disabledMilliseconds',
+    description: 'Returns disabled millisecond numbers for a selected time.',
+    type: '(selectedHour: number, selectedMinute: number, selectedSecond: number) => number[]',
+  },
+]
+
+const localeRows: ApiTableRow[] = [
+  { property: 'placeholder', description: 'Single picker placeholder.', type: 'string' },
+  {
+    property: 'rangePlaceholder',
+    description: 'RangePicker placeholders.',
+    type: '[string, string]',
+  },
+  { property: 'now / ok / clear', description: 'Footer and clear action labels.', type: 'string' },
+  {
+    property: 'week / hour / minute / second',
+    description: 'Panel column labels.',
+    type: 'string',
+  },
+  {
+    property: 'previousMonth / nextMonth / ...',
+    description: 'ARIA labels for previous, next, and super navigation buttons.',
+    type: 'string',
+  },
+]
+
+const semanticSlotRows: ApiTableRow[] = [
+  { property: 'root', description: 'Outer DatePicker wrapper.', type: 'string' },
+  { property: 'selector', description: 'Visible selector box.', type: 'string' },
+  { property: 'input', description: 'Text input element.', type: 'string' },
+  { property: 'clear', description: 'Clear button.', type: 'string' },
+  { property: 'popup', description: 'Popup dropdown container.', type: 'string' },
+  { property: 'cell', description: 'Panel cell.', type: 'string' },
+  { property: 'presets', description: 'Presets column.', type: 'string' },
+  { property: 'footer', description: 'Footer area.', type: 'string' },
+]
+
+const methodRows: ApiTableRow[] = [
+  { property: 'focus()', description: 'Focuses the picker input.', type: '() => void' },
+  { property: 'blur()', description: 'Blurs the picker input.', type: '() => void' },
+  {
+    property: 'nativeElement',
+    description: 'Outer wrapper element.',
+    type: 'HTMLDivElement | undefined',
+  },
 ]
 
 export default function DatePickerPage() {
@@ -274,6 +502,9 @@ export default function DatePickerPage() {
     dayjs('2026-06-10'),
     dayjs('2026-06-15'),
   ])
+  let pickerRef: { focus: () => void; blur: () => void } | undefined
+  const [confirmedValue, setConfirmedValue] = createSignal<Dayjs | null>(dayjs('2026-06-15 09:30'))
+  const [confirmedLabel, setConfirmedLabel] = createSignal('2026-06-15 09:30:00')
   const selectedLabel = () => value()?.format('YYYY-MM-DD') ?? 'none'
   const multipleLabel = () =>
     multipleValue()
@@ -329,10 +560,108 @@ const [open, setOpen] = createSignal(false)
       </DemoBlock>
 
       <DemoBlock
+        title="Format"
+        code={`<Space direction="vertical">
+  <DatePicker defaultValue={dayjs('2026-06-15')} format="YYYY/MM/DD" />
+  <DatePicker defaultValue={dayjs('2026-06-15')} format={['YYYY-MM-DD', 'YYYY/MM/DD']} />
+  <DatePicker defaultValue={dayjs('2026-06-15')} format={(value) => 'June ' + value.date() + ', ' + value.year()} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker defaultValue={dayjs('2026-06-15')} format="YYYY/MM/DD" />
+          <DatePicker defaultValue={dayjs('2026-06-15')} format={['YYYY-MM-DD', 'YYYY/MM/DD']} />
+          <DatePicker
+            defaultValue={dayjs('2026-06-15')}
+            format={(date) => `June ${date.date()}, ${date.year()}`}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Size, status, and variant"
+        code={`<Space direction="vertical">
+  <Space wrap>
+    <DatePicker size="small" />
+    <DatePicker />
+    <DatePicker size="large" />
+  </Space>
+  <Space wrap>
+    <DatePicker status="error" />
+    <DatePicker status="warning" />
+  </Space>
+  <Space wrap>
+    <DatePicker variant="outlined" />
+    <DatePicker variant="filled" />
+    <DatePicker variant="borderless" />
+    <DatePicker variant="underlined" />
+  </Space>
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Space wrap>
+            <DatePicker size="small" />
+            <DatePicker />
+            <DatePicker size="large" />
+          </Space>
+          <Space wrap>
+            <DatePicker status="error" />
+            <DatePicker status="warning" />
+          </Space>
+          <Space wrap>
+            <DatePicker variant="outlined" />
+            <DatePicker variant="filled" />
+            <DatePicker variant="borderless" />
+            <DatePicker variant="underlined" />
+          </Space>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Common input states"
+        code={`<Space wrap>
+  <DatePicker placeholder="Pick a deadline" />
+  <DatePicker allowClear defaultValue={dayjs('2026-06-15')} />
+  <DatePicker disabled defaultValue={dayjs('2026-06-15')} />
+  <DatePicker inputReadOnly />
+</Space>`}
+      >
+        <Space wrap>
+          <DatePicker placeholder="Pick a deadline" />
+          <DatePicker allowClear defaultValue={dayjs('2026-06-15')} />
+          <DatePicker disabled defaultValue={dayjs('2026-06-15')} />
+          <DatePicker inputReadOnly />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
         title="RangePicker"
         code={`<DatePicker.RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} />`}
       >
         <DatePicker.RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} />
+      </DemoBlock>
+
+      <DemoBlock
+        title="RangePicker variants"
+        code={`<Space direction="vertical">
+  <DatePicker.RangePicker picker="month" defaultValue={[dayjs('2026-01-01'), dayjs('2026-06-01')]} />
+  <DatePicker.RangePicker picker="quarter" defaultValue={[dayjs('2026-01-01'), dayjs('2026-07-01')]} />
+  <DatePicker.RangePicker picker="year" defaultValue={[dayjs('2024-01-01'), dayjs('2026-01-01')]} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker.RangePicker
+            picker="month"
+            defaultValue={[dayjs('2026-01-01'), dayjs('2026-06-01')]}
+          />
+          <DatePicker.RangePicker
+            picker="quarter"
+            defaultValue={[dayjs('2026-01-01'), dayjs('2026-07-01')]}
+          />
+          <DatePicker.RangePicker
+            picker="year"
+            defaultValue={[dayjs('2024-01-01'), dayjs('2026-01-01')]}
+          />
+        </Space>
       </DemoBlock>
 
       <DemoBlock
@@ -369,6 +698,34 @@ const [open, setOpen] = createSignal(false)
             showTime
             defaultValue={[dayjs('2026-06-01 09:00:00'), dayjs('2026-06-15 18:00:00')]}
           />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Need confirm and onOk"
+        code={`const [confirmedValue, setConfirmedValue] = createSignal<Dayjs | null>(dayjs('2026-06-15 09:30'))
+const [confirmedLabel, setConfirmedLabel] = createSignal('2026-06-15 09:30:00')
+
+<Space direction="vertical">
+  <DatePicker
+    showTime
+    needConfirm
+    value={confirmedValue()}
+    onChange={setConfirmedValue}
+    onOk={(date) => setConfirmedLabel(date?.format('YYYY-MM-DD HH:mm:ss') ?? 'none')}
+  />
+  <span>Confirmed value: {confirmedLabel()}</span>
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker
+            showTime
+            needConfirm
+            value={confirmedValue()}
+            onChange={setConfirmedValue}
+            onOk={(date) => setConfirmedLabel(date?.format('YYYY-MM-DD HH:mm:ss') ?? 'none')}
+          />
+          <span>Confirmed value: {confirmedLabel()}</span>
         </Space>
       </DemoBlock>
 
@@ -450,6 +807,102 @@ const [open, setOpen] = createSignal(false)
         />
       </DemoBlock>
 
+      <DemoBlock
+        title="Show week and locale"
+        code={`<Space direction="vertical">
+  <DatePicker showWeek defaultPickerValue={dayjs('2026-06-01')} />
+  <DatePicker
+    locale={{
+      lang: {
+        placeholder: '请选择日期',
+        now: '此刻',
+        ok: '确定',
+        clear: '清除',
+        week: '周',
+        previousMonth: '上个月',
+        nextMonth: '下个月',
+      },
+    }}
+  />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker showWeek defaultPickerValue={dayjs('2026-06-01')} />
+          <DatePicker
+            locale={{
+              lang: {
+                placeholder: '请选择日期',
+                now: '此刻',
+                ok: '确定',
+                clear: '清除',
+                week: '周',
+                previousMonth: '上个月',
+                nextMonth: '下个月',
+              },
+            }}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Custom icons and prefix"
+        code={`<DatePicker
+  prefix={<ClockCircleOutlined />}
+  suffixIcon={<CalendarOutlined />}
+  allowClear={{ clearIcon: <span aria-hidden="true">×</span> }}
+  prevIcon={<LeftOutlined />}
+  nextIcon={<RightOutlined />}
+  superPrevIcon={<DoubleLeftOutlined />}
+  superNextIcon={<DoubleRightOutlined />}
+/>`}
+      >
+        <DatePicker
+          prefix={<ClockCircleOutlined />}
+          suffixIcon={<CalendarOutlined />}
+          allowClear={{ clearIcon: <span aria-hidden="true">×</span> }}
+          prevIcon={<LeftOutlined />}
+          nextIcon={<RightOutlined />}
+          superPrevIcon={<DoubleLeftOutlined />}
+          superNextIcon={<DoubleRightOutlined />}
+        />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Semantic classNames and styles"
+        code={`<DatePicker
+  classNames={{ selector: 'shadow-sm', popup: 'date-picker-popup' }}
+  styles={{ selector: { 'border-color': '#1677ff' }, footer: { color: '#1677ff' } }}
+  renderExtraFooter={() => 'Styled footer'}
+/>`}
+      >
+        <DatePicker
+          classNames={{ selector: 'shadow-sm', popup: 'date-picker-popup' }}
+          styles={{ selector: { 'border-color': '#1677ff' }, footer: { color: '#1677ff' } }}
+          renderExtraFooter={() => 'Styled footer'}
+        />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Focus and blur methods"
+        code={`let pickerRef: { focus: () => void; blur: () => void } | undefined
+
+<Space>
+  <DatePicker ref={(ref) => (pickerRef = ref)} />
+  <button type="button" onClick={() => pickerRef?.focus()}>Focus</button>
+  <button type="button" onClick={() => pickerRef?.blur()}>Blur</button>
+</Space>`}
+      >
+        <Space>
+          <DatePicker ref={(ref) => (pickerRef = ref)} />
+          <button type="button" onClick={() => pickerRef?.focus()}>
+            Focus
+          </button>
+          <button type="button" onClick={() => pickerRef?.blur()}>
+            Blur
+          </button>
+        </Space>
+      </DemoBlock>
+
       <h2>API</h2>
       <p>
         DatePicker and RangePicker values use <code>dayjs</code>. The <code>dateString</code>{' '}
@@ -459,6 +912,33 @@ const [open, setOpen] = createSignal(false)
 
       <h2>RangePicker API</h2>
       <ApiTable rows={rangePickerRows} aria-label="RangePicker API" />
+
+      <h2>ShowTimeOptions</h2>
+      <p>
+        Pass these fields through <code>showTime</code> to configure the time panel. The same
+        disabled callbacks are also available from <code>disabledTime</code>.
+      </p>
+      <ApiTable rows={showTimeRows} aria-label="DatePicker ShowTimeOptions API" />
+
+      <h2>DisabledTimeConfig</h2>
+      <ApiTable rows={disabledTimeRows} aria-label="DatePicker DisabledTimeConfig API" />
+
+      <h2>Locale</h2>
+      <p>
+        The locale object is shallow-merged with the built-in English labels. Provide only the
+        fields you need to override.
+      </p>
+      <ApiTable rows={localeRows} aria-label="DatePicker Locale API" />
+
+      <h2>Semantic slots</h2>
+      <p>
+        Use these slot names in <code>classNames</code> and <code>styles</code> for targeted styling
+        without depending on generated DOM order.
+      </p>
+      <ApiTable rows={semanticSlotRows} aria-label="DatePicker Semantic Slots API" />
+
+      <h2>Methods</h2>
+      <ApiTable rows={methodRows} aria-label="DatePicker Methods API" />
     </>
   )
 }

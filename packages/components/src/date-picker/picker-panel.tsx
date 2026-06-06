@@ -169,6 +169,7 @@ export function PickerPanel(props: PickerPanelProps) {
         props.class,
       )}
       style={props.style}
+      onMouseDown={(event) => event.preventDefault()}
     >
       <div class={`${props.prefixCls}-header`}>
         <button

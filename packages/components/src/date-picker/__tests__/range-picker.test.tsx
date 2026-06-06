@@ -162,6 +162,35 @@ describe('RangePicker', () => {
     )
   })
 
+  it('marks the first selected range date as the range start while choosing an end date', () => {
+    render(() => (
+      <DatePickerModule.RangePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+
+    const startDate = screen.getByRole('button', { name: '2026-06-10' })
+    expect(startDate).toHaveClass('ads-date-picker-cell-range-start')
+    expect(startDate).toHaveClass('ads-date-picker-cell-selected')
+    expect(startDate).not.toHaveClass('ads-date-picker-cell-range-end')
+  })
+
+  it('keeps the first selected month highlighted while choosing a range end', () => {
+    render(() => (
+      <DatePickerModule.RangePicker
+        picker="month"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-01-01')}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06' }))
+
+    expect(screen.getByRole('button', { name: '2026-06' })).toHaveClass(
+      'ads-date-picker-cell-selected',
+    )
+  })
+
   it('keeps an internal draft while selecting a controlled range', () => {
     const onChange = vi.fn()
     render(() => (
