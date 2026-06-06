@@ -1,6 +1,4 @@
-import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
-  For,
   Show,
   createEffect,
   createMemo,
@@ -10,161 +8,191 @@ import {
   splitProps,
 } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { Dynamic, isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
-import { classNames } from '../shared/class-names'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
-import type { DatePickerProps, DatePickerValue } from './interface'
+import {
+  dayjs,
+  isOutOfBounds,
+  normalizeDateValue,
+  pickerSelectionStart,
+  pickerViewStart,
+  samePickerValue,
+} from './date-utils'
+import { DatePanel } from './date-panel'
+import { MonthPanel } from './month-panel'
+import { YearPanel } from './year-panel'
 import { useDatePickerStyle } from './date-picker.style'
+import { formatDayjs, parseDayjs } from './format-utils'
+import type {
+  DatePickerMultipleProps,
+  DatePickerProps,
+  DatePickerRef,
+  DatePickerSingleProps,
+  DatePickerValue,
+} from './interface'
+import { mergeDatePickerLocale } from './locale'
+import { PickerInput } from './picker-input'
+import { PickerPanel } from './picker-panel'
+import { TimePanel } from './time-panel'
+import { RangePicker } from './range-picker'
+import { rootVariantClass, semanticClass, semanticStyle } from './semantic'
 
-const DEFAULT_FORMAT = 'YYYY-MM-DD'
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-
-function pad(value: number): string {
-  return String(value).padStart(2, '0')
-}
-
-function isValidDate(value: Date): boolean {
-  return !Number.isNaN(value.getTime())
-}
-
-function startOfDay(value: Date): Date {
-  return new Date(value.getFullYear(), value.getMonth(), value.getDate())
-}
-
-function sameDate(a: Date | undefined, b: Date | undefined): boolean {
-  return Boolean(
-    a &&
-    b &&
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate(),
-  )
-}
-
-function parseDate(value: DatePickerValue | undefined): Date | undefined {
-  if (value === undefined) return undefined
-  if (value instanceof Date) return isValidDate(value) ? startOfDay(value) : undefined
-
-  const trimmed = value.trim()
-  if (!trimmed) return undefined
-
-  const match = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s].*)?$/.exec(trimmed)
-  if (match) {
-    const year = Number(match[1])
-    const month = Number(match[2])
-    const day = Number(match[3])
-    const parsed = new Date(year, month - 1, day)
-    if (
-      parsed.getFullYear() === year &&
-      parsed.getMonth() === month - 1 &&
-      parsed.getDate() === day
-    ) {
-      return parsed
-    }
-    return undefined
-  }
-
-  const fallback = new Date(trimmed)
-  if (!isValidDate(fallback)) return undefined
-  return startOfDay(fallback)
-}
-
-function formatDate(value: Date, format: string): string {
-  const replacements: Record<string, string> = {
-    YYYY: String(value.getFullYear()),
-    MM: pad(value.getMonth() + 1),
-    DD: pad(value.getDate()),
-  }
-
-  return format.replace(/YYYY|MM|DD/g, (token) => replacements[token] ?? token)
-}
-
-function monthLabel(value: Date): string {
-  return `${value.getFullYear()}-${pad(value.getMonth() + 1)}`
-}
-
-function addMonths(value: Date, offset: number): Date {
-  return new Date(value.getFullYear(), value.getMonth() + offset, 1)
-}
-
-function daysInMonth(value: Date): number {
-  return new Date(value.getFullYear(), value.getMonth() + 1, 0).getDate()
-}
-
-function monthDates(value: Date): Array<Date | undefined> {
-  const firstDate = new Date(value.getFullYear(), value.getMonth(), 1)
-  const blanks = firstDate.getDay()
-  const dates: Array<Date | undefined> = Array.from({ length: blanks }, () => undefined)
-
-  for (let day = 1; day <= daysInMonth(value); day += 1) {
-    dates.push(new Date(value.getFullYear(), value.getMonth(), day))
-  }
-
-  return dates
-}
-
-export function DatePicker(props: DatePickerProps) {
+function DatePickerBase(props: DatePickerProps) {
+  const ariaLabel = () => props['aria-label'] as string | undefined
   const [local, rest] = splitProps(props, [
     'value',
     'defaultValue',
+    'defaultPickerValue',
+    'pickerValue',
     'format',
+    'picker',
     'placeholder',
     'disabled',
     'allowClear',
+    'autoFocus',
+    'inputReadOnly',
+    'preserveInvalidOnBlur',
     'open',
     'defaultOpen',
     'disabledDate',
+    'showTime',
+    'showNow',
+    'disabledTime',
+    'minDate',
+    'maxDate',
+    'locale',
     'prefixCls',
     'class',
+    'className',
     'style',
+    'classNames',
+    'styles',
+    'popupClassName',
+    'dropdownClassName',
+    'popupStyle',
+    'placement',
     'onChange',
     'onOpenChange',
+    'onFocus',
+    'onBlur',
     'onKeyDown',
+    'onOk',
+    'onPanelChange',
     'zIndex',
     'getPopupContainer',
+    'id',
+    'name',
+    'prefix',
+    'suffixIcon',
+    'separator',
+    'status',
+    'variant',
+    'size',
+    'bordered',
+    'prevIcon',
+    'nextIcon',
+    'superPrevIcon',
+    'superNextIcon',
+    'components',
+    'previewValue',
+    'onSelect',
+    'showWeek',
+    'previousIcon',
+    'presets',
+    'cellRender',
+    'dateRender',
+    'renderExtraFooter',
+    'panelRender',
+    'needConfirm',
+    'multiple',
+    'order',
+    'tagRender',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
-  const defaultSelectedDate = parseDate(local.defaultValue)
-  const initialViewDate = defaultSelectedDate ?? new Date()
-  const [innerValue, setInnerValue] = createSignal<Date | undefined>(defaultSelectedDate)
-  const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
-  const [viewMonth, setViewMonth] = createSignal(
-    new Date(initialViewDate.getFullYear(), initialViewDate.getMonth(), 1),
+  const picker = () => local.picker ?? 'date'
+  const multiple = () => Boolean(local.multiple)
+  const showTimeEnabled = () => !multiple() && Boolean(local.showTime)
+  const effectiveFormat = () =>
+    local.format ?? (showTimeEnabled() ? 'YYYY-MM-DD HH:mm:ss' : undefined)
+  const locale = createMemo(() => mergeDatePickerLocale(local.locale))
+  const defaultSelectedDate = Array.isArray(local.defaultValue)
+    ? null
+    : normalizeDateValue(local.defaultValue)
+  const defaultSelectedDates = Array.isArray(local.defaultValue) ? local.defaultValue : []
+  const defaultPickerDate = normalizeDateValue(local.defaultPickerValue)
+  const controlledPickerDate = () => normalizeDateValue(local.pickerValue)
+  const initialViewDate =
+    defaultPickerDate ?? defaultSelectedDate ?? defaultSelectedDates[0] ?? dayjs()
+  const [innerValue, setInnerValue] = createSignal<DatePickerValue>(defaultSelectedDate)
+  const [innerMultipleValue, setInnerMultipleValue] =
+    createSignal<dayjs.Dayjs[]>(defaultSelectedDates)
+  const [inputValue, setInputValue] = createSignal(
+    formatDayjs(defaultSelectedDate, effectiveFormat(), picker()),
   )
+  const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const [viewMonth, setViewMonth] = createSignal(pickerViewStart(initialViewDate, picker()))
+  const [pendingValue, setPendingValue] = createSignal<DatePickerValue>(null)
+  const [pendingMultipleValue, setPendingMultipleValue] = createSignal<dayjs.Dayjs[] | null>(null)
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
+  let inputRef: HTMLInputElement | undefined
   let dropdownRef: HTMLDivElement | undefined
+
+  const pickerRef: DatePickerRef = {
+    focus: () => inputRef?.focus(),
+    blur: () => inputRef?.blur(),
+    get nativeElement() {
+      return selectorRef
+    },
+  }
+  if (local.ref) {
+    if (typeof local.ref === 'function') local.ref(pickerRef)
+    else {
+      Object.assign(local.ref as object, pickerRef)
+      if ('current' in local.ref) local.ref.current = pickerRef
+    }
+  }
 
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
-  const format = () => local.format ?? DEFAULT_FORMAT
+  const isPickerValueControlled = () => 'pickerValue' in props
   const disabled = () => Boolean(local.disabled)
   const selectedDate = createMemo(() =>
-    isValueControlled() ? parseDate(local.value) : innerValue(),
+    isValueControlled() && !Array.isArray(local.value)
+      ? normalizeDateValue(local.value)
+      : innerValue(),
   )
-  const displayValue = () => {
-    const selected = selectedDate()
-    return selected ? formatDate(selected, format()) : undefined
-  }
+  const selectedDates = createMemo(() =>
+    isValueControlled() && Array.isArray(local.value) ? local.value : innerMultipleValue(),
+  )
+  const activeMultipleValue = createMemo(() => pendingMultipleValue() ?? selectedDates())
+  const displayValue = createMemo(() =>
+    multiple() ? '' : formatDayjs(selectedDate(), effectiveFormat(), picker()),
+  )
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
-  const dates = createMemo(() => monthDates(viewMonth()))
-  const today = () => startOfDay(new Date())
+  const panelViewDate = () => controlledPickerDate() ?? viewMonth()
+  const placeholder = () => local.placeholder ?? locale().lang?.placeholder ?? 'Select date'
 
+  createEffect(() => setInputValue(displayValue()))
   createEffect(() => {
-    const selected = selectedDate()
-    if (selected) setViewMonth(new Date(selected.getFullYear(), selected.getMonth(), 1))
+    const selected = multiple() ? selectedDates()[0] : selectedDate()
+    if (selected && !isPickerValueControlled()) setViewMonth(pickerViewStart(selected, picker()))
   })
 
   function updateDropdownPosition(): void {
     if (isServer) return
     if (!canUseDom() || !selectorRef) {
-      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      setDropdownPosition({
+        'z-index': `${dropdownZIndex}`,
+        ...semanticStyle('popup', local.styles),
+      })
       return
     }
     const rect = selectorRef.getBoundingClientRect()
@@ -173,6 +201,8 @@ export function DatePicker(props: DatePickerProps) {
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       'z-index': `${dropdownZIndex}`,
+      ...semanticStyle('popup', local.styles),
+      ...local.popupStyle,
     })
   }
 
@@ -194,13 +224,11 @@ export function DatePicker(props: DatePickerProps) {
   createRenderEffect(() => {
     if (open()) updateDropdownPosition()
   })
-
   createEffect(() => {
     if (!open()) return
     const removeListeners = addPositionUpdateListeners(updateDropdownPosition)
     onCleanup(removeListeners)
   })
-
   createEffect(() => {
     if (!open()) return
     const removePointerDown = addDocumentPointerDown((event) => {
@@ -209,64 +237,352 @@ export function DatePicker(props: DatePickerProps) {
     onCleanup(removePointerDown)
   })
 
-  function changeValue(nextDate: Date | undefined): void {
-    if (!isValueControlled()) setInnerValue(nextDate)
-    local.onChange?.(nextDate, nextDate ? formatDate(nextDate, format()) : '')
+  function isDateDisabled(date: dayjs.Dayjs): boolean {
+    return Boolean(
+      local.disabledDate?.(date, { type: picker() }) ||
+      isOutOfBounds(date, local.minDate, local.maxDate, picker()),
+    )
   }
 
-  function selectDate(date: Date): void {
-    if (local.disabledDate?.(date)) return
+  function changeValue(nextDate: DatePickerValue): void {
+    if (!isValueControlled()) setInnerValue(nextDate)
+    const nextString = formatDayjs(nextDate, effectiveFormat(), picker())
+    if (!isValueControlled()) setInputValue(nextString)
+    ;(local.onChange as DatePickerSingleProps['onChange'] | undefined)?.(nextDate, nextString)
+  }
+
+  function formatMultipleValue(values: dayjs.Dayjs[]): string[] {
+    return values.map((value) => formatDayjs(value, effectiveFormat(), picker()))
+  }
+
+  function normalizeMultipleValues(values: dayjs.Dayjs[]): dayjs.Dayjs[] {
+    if (local.order === false) return values
+    return [...values].sort((a, b) => a.valueOf() - b.valueOf())
+  }
+
+  function changeMultipleValue(nextDates: dayjs.Dayjs[]): void {
+    const normalized = normalizeMultipleValues(nextDates)
+    if (!isValueControlled()) setInnerMultipleValue(normalized)
+    ;(local.onChange as DatePickerMultipleProps['onChange'] | undefined)?.(
+      normalized,
+      formatMultipleValue(normalized),
+    )
+  }
+
+  function toggleMultipleDate(date: dayjs.Dayjs, source = activeMultipleValue()): dayjs.Dayjs[] {
+    const exists = source.some((value) => samePickerValue(value, date, picker()))
+    const next = exists
+      ? source.filter((value) => !samePickerValue(value, date, picker()))
+      : [...source, date]
+    return normalizeMultipleValues(next)
+  }
+
+  function removeMultipleDate(date: dayjs.Dayjs): void {
+    const source = activeMultipleValue()
+    const next = source.filter((value) => !samePickerValue(value, date, picker()))
+    if (local.needConfirm) {
+      setPendingMultipleValue(next)
+      return
+    }
+    changeMultipleValue(next)
+  }
+
+  function selectDate(date: dayjs.Dayjs): void {
+    if (isDateDisabled(date)) return
+    local.onSelect?.(date)
+    if (multiple()) {
+      const next = toggleMultipleDate(date)
+      if (local.needConfirm) {
+        setPendingMultipleValue(next)
+        return
+      }
+      changeMultipleValue(next)
+      return
+    }
+    if (local.needConfirm || showTimeEnabled()) {
+      setPendingValue(applyTimeSeed(date))
+      return
+    }
     changeValue(date)
     setOpen(false)
   }
 
+  function confirmPendingValue(): void {
+    if (multiple()) {
+      const pending = pendingMultipleValue()
+      const committed = pending ?? selectedDates()
+      if (pending) {
+        changeMultipleValue(pending)
+        setPendingMultipleValue(null)
+      }
+      ;(local.onOk as DatePickerMultipleProps['onOk'] | undefined)?.(committed)
+      setOpen(false)
+      return
+    }
+    const pending = pendingValue()
+    const committed = pending ?? selectedDate()
+    if (pending) {
+      changeValue(pending)
+      setPendingValue(null)
+    }
+    ;(local.onOk as DatePickerSingleProps['onOk'] | undefined)?.(committed)
+    setOpen(false)
+  }
+
+  function parseInput(closePopup: boolean): void {
+    const rawValue = inputValue()
+    const currentValue = selectedDate()
+    if (!rawValue.trim()) {
+      if (currentValue === null) {
+        setInputValue('')
+      } else {
+        changeValue(null)
+      }
+      if (closePopup) setOpen(false)
+      return
+    }
+    const parsed = parseDayjs(rawValue, effectiveFormat(), picker())
+    if (!parsed || isDateDisabled(parsed)) {
+      if (!local.preserveInvalidOnBlur) setInputValue(displayValue())
+      return
+    }
+    if (samePickerValue(parsed, currentValue, picker())) {
+      setInputValue(formatDayjs(parsed, effectiveFormat(), picker()))
+    } else {
+      changeValue(parsed)
+    }
+    if (!isPickerValueControlled()) setViewMonth(pickerViewStart(parsed, picker()))
+    if (closePopup) setOpen(false)
+  }
+
   function clearValue(event: MouseEvent): void {
     event.stopPropagation()
-    changeValue(undefined)
+    if (multiple()) {
+      if (local.needConfirm) setPendingMultipleValue([])
+      else changeMultipleValue([])
+      return
+    }
+    changeValue(null)
+  }
+
+  function changePanelView(nextViewDate: dayjs.Dayjs): void {
+    const next = pickerViewStart(nextViewDate, picker())
+    if (!isPickerValueControlled()) setViewMonth(next)
+    local.onPanelChange?.(next, picker())
+  }
+
+  function previousPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    const amount = currentPicker === 'year' ? 12 : 1
+    changePanelView(panelViewDate().subtract(amount, unit))
+  }
+
+  function superPanelAmount(): number {
+    const currentPicker = picker()
+    if (currentPicker === 'year') return 120
+    if (currentPicker === 'month' || currentPicker === 'quarter') return 10
+    return 12
+  }
+
+  function superPreviousPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    changePanelView(panelViewDate().subtract(superPanelAmount(), unit))
+  }
+
+  function nextPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    const amount = currentPicker === 'year' ? 12 : 1
+    changePanelView(panelViewDate().add(amount, unit))
+  }
+
+  function superNextPanel(): void {
+    const currentPicker = picker()
+    const unit =
+      currentPicker === 'year' || currentPicker === 'month' || currentPicker === 'quarter'
+        ? 'year'
+        : 'month'
+    changePanelView(panelViewDate().add(superPanelAmount(), unit))
+  }
+
+  function timeSeed(): dayjs.Dayjs {
+    if (pendingValue()) return pendingValue()!
+    if (selectedDate()) return selectedDate()!
+    const options = typeof local.showTime === 'object' ? local.showTime : undefined
+    return options?.defaultOpenValue ?? options?.defaultValue ?? dayjs().startOf('day')
+  }
+
+  function applyTimeSeed(date: dayjs.Dayjs): dayjs.Dayjs {
+    const seed = timeSeed()
+    return date
+      .hour(seed.hour())
+      .minute(seed.minute())
+      .second(seed.second())
+      .millisecond(seed.millisecond())
+  }
+
+  function selectTime(unit: 'hour' | 'minute' | 'second', value: number): void {
+    const base = pendingValue() ?? selectedDate() ?? applyTimeSeed(panelViewDate())
+    setPendingValue(base.set(unit, value))
+  }
+
+  function selectNow(): void {
+    const now = dayjs()
+    setPendingValue(now)
+    if (!isPickerValueControlled()) setViewMonth(pickerViewStart(now, picker()))
+  }
+
+  function selectPickerValue(date: dayjs.Dayjs): void {
+    selectDate(pickerSelectionStart(date, picker()))
+  }
+
+  const InputComponent = () => local.components?.input ?? PickerInput
+
+  const panelNode = () => {
+    if (picker() === 'month' || picker() === 'quarter') {
+      return (
+        <MonthPanel
+          prefixCls={prefixCls()}
+          viewDate={panelViewDate()}
+          picker={picker() as 'month' | 'quarter'}
+          selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
+          disabledDate={isDateDisabled}
+          cellRender={local.cellRender}
+          locale={locale()}
+          classNames={local.classNames}
+          styles={local.styles}
+          onSelect={selectPickerValue}
+        />
+      )
+    }
+    if (picker() === 'year') {
+      return (
+        <YearPanel
+          prefixCls={prefixCls()}
+          viewDate={panelViewDate()}
+          selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
+          disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
+          cellRender={local.cellRender}
+          locale={locale()}
+          classNames={local.classNames}
+          styles={local.styles}
+          onSelect={selectPickerValue}
+        />
+      )
+    }
+    return (
+      <DatePanel
+        prefixCls={prefixCls()}
+        viewDate={panelViewDate()}
+        picker={picker()}
+        showWeek={local.showWeek}
+        selectedValue={multiple() ? activeMultipleValue() : (pendingValue() ?? selectedDate())}
+        disabledDate={isDateDisabled}
+        cellRender={local.cellRender}
+        dateRender={local.dateRender}
+        locale={locale()}
+        classNames={local.classNames}
+        styles={local.styles}
+        onSelect={selectPickerValue}
+      />
+    )
   }
 
   return (
     <div
       {...rest}
-      class={classNames(
+      ref={(element) => {
+        selectorRef = element
+      }}
+      class={semanticClass(
+        'root',
+        local.classNames,
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
+        multiple() && `${prefixCls()}-multiple`,
+        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size, local.bordered),
         hashId(),
         local.class,
+        local.className,
       )}
-      style={local.style}
+      style={{
+        ...semanticStyle('root', local.styles),
+        ...(local.style as JSX.CSSProperties | undefined),
+      }}
     >
       <div
         role="combobox"
-        tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
-        ref={(element) => {
-          selectorRef = element
-        }}
-        class={`${prefixCls()}-selector`}
-        onClick={() => setOpen(!open())}
-        onKeyDown={(event) => {
-          ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(event)
-          if (event.key === 'Escape') setOpen(false)
+        class={semanticClass('selector', local.classNames, `${prefixCls()}-selector`)}
+        style={semanticStyle('selector', local.styles)}
+        onClick={() => {
+          inputRef?.focus()
+          setOpen(true)
         }}
       >
-        <span
-          class={displayValue() ? `${prefixCls()}-selection-item` : `${prefixCls()}-placeholder`}
-        >
-          {displayValue() ?? local.placeholder ?? 'Select date'}
-        </span>
-        <Show when={local.allowClear && !disabled() && displayValue() !== undefined}>
-          <button
-            type="button"
-            aria-label="Clear date"
-            class={`${prefixCls()}-clear`}
-            onClick={clearValue}
-          >
-            <CloseCircleFilled />
-          </button>
-        </Show>
+        <Dynamic
+          component={InputComponent()}
+          id={local.id}
+          name={local.name}
+          prefixCls={prefixCls()}
+          value={inputValue()}
+          multiple={multiple()}
+          multipleValues={activeMultipleValue()}
+          multipleFormat={effectiveFormat()}
+          multiplePicker={picker()}
+          tagRender={local.tagRender}
+          placeholder={placeholder()}
+          disabled={disabled()}
+          readOnly={local.inputReadOnly}
+          autoFocus={local.autoFocus}
+          allowClear={Boolean(local.allowClear)}
+          clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
+          clearAriaLabel={local.locale?.lang?.clear ?? 'Clear date'}
+          prefix={local.prefix}
+          suffixIcon={local.suffixIcon}
+          ariaLabel={ariaLabel()}
+          inputClass={semanticClass('input', local.classNames, `${prefixCls()}-input`)}
+          inputStyle={semanticStyle('input', local.styles)}
+          clearClass={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
+          clearStyle={semanticStyle('clear', local.styles)}
+          inputRef={(element) => {
+            inputRef = element
+          }}
+          onInput={(event) => setInputValue(event.currentTarget.value)}
+          onFocus={(event) => {
+            setOpen(true)
+            ;(local.onFocus as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
+          }}
+          onBlur={(event) => {
+            parseInput(false)
+            ;(local.onBlur as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
+          }}
+          onKeyDown={(event) => {
+            ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(
+              event,
+            )
+            if (event.key === 'Enter') {
+              event.preventDefault()
+              parseInput(true)
+            }
+            if (event.key === 'Escape') setOpen(false)
+          }}
+          onClear={clearValue}
+          onRemoveTag={removeMultipleDate}
+        />
       </div>
       <Show when={open()}>
         <InternalPortal
@@ -274,71 +590,60 @@ export function DatePicker(props: DatePickerProps) {
             local.getPopupContainer?.(selectorRef) ?? config.getPopupContainer?.(selectorRef)
           }
         >
-          <div
+          <PickerPanel
             ref={(element) => {
               dropdownRef = element
             }}
-            class={`${prefixCls()}-dropdown`}
+            prefixCls={prefixCls()}
+            viewDate={panelViewDate()}
+            placement={local.placement}
+            class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
+            classNames={local.classNames}
+            styles={local.styles}
             style={dropdownPosition()}
+            mode={picker()}
+            presets={local.presets}
+            renderExtraFooter={local.renderExtraFooter}
+            panelRender={local.panelRender}
+            locale={locale()}
+            needConfirm={local.needConfirm}
+            showTime={showTimeEnabled()}
+            previousIcon={local.prevIcon ?? local.previousIcon}
+            superPreviousIcon={local.superPrevIcon}
+            nextIcon={local.nextIcon}
+            superNextIcon={local.superNextIcon}
+            components={local.components}
+            showNow={Boolean(local.showNow)}
+            onNow={selectNow}
+            onOk={confirmPendingValue}
+            onPresetSelect={(value) => {
+              if (Array.isArray(value) || !value) return
+              changeValue(value)
+              if (!isPickerValueControlled()) setViewMonth(pickerViewStart(value, picker()))
+              setOpen(false)
+            }}
+            onPrevious={previousPanel}
+            onSuperPrevious={superPreviousPanel}
+            onNext={nextPanel}
+            onSuperNext={superNextPanel}
           >
-            <div class={`${prefixCls()}-header`}>
-              <button
-                type="button"
-                aria-label="Previous month"
-                class={`${prefixCls()}-month-button`}
-                onClick={() => setViewMonth(addMonths(viewMonth(), -1))}
-              >
-                ‹
-              </button>
-              <div class={`${prefixCls()}-month-label`}>{monthLabel(viewMonth())}</div>
-              <button
-                type="button"
-                aria-label="Next month"
-                class={`${prefixCls()}-month-button`}
-                onClick={() => setViewMonth(addMonths(viewMonth(), 1))}
-              >
-                ›
-              </button>
-            </div>
-            <div class={`${prefixCls()}-weekdays`}>
-              <For each={WEEKDAYS}>
-                {(weekday) => <div class={`${prefixCls()}-weekday`}>{weekday}</div>}
-              </For>
-            </div>
-            <div class={`${prefixCls()}-grid`}>
-              <For each={dates()}>
-                {(date) => (
-                  <Show when={date} fallback={<div class={`${prefixCls()}-empty-cell`} />}>
-                    {(currentDate) => {
-                      const cellDate = currentDate()
-                      const dateString = () => formatDate(cellDate, DEFAULT_FORMAT)
-                      const cellDisabled = () => Boolean(local.disabledDate?.(cellDate))
-                      const selected = () => sameDate(selectedDate(), cellDate)
-                      return (
-                        <button
-                          type="button"
-                          aria-label={dateString()}
-                          aria-pressed={selected()}
-                          aria-disabled={cellDisabled()}
-                          class={classNames(
-                            `${prefixCls()}-cell`,
-                            sameDate(today(), cellDate) && `${prefixCls()}-cell-today`,
-                            selected() && `${prefixCls()}-cell-selected`,
-                            cellDisabled() && `${prefixCls()}-cell-disabled`,
-                          )}
-                          onClick={() => selectDate(cellDate)}
-                        >
-                          {cellDate.getDate()}
-                        </button>
-                      )
-                    }}
-                  </Show>
-                )}
-              </For>
-            </div>
-          </div>
+            {panelNode()}
+            <Show when={showTimeEnabled()}>
+              <TimePanel
+                prefixCls={prefixCls()}
+                value={pendingValue() ?? selectedDate()}
+                showTime={local.showTime}
+                disabledTime={local.disabledTime?.(pendingValue() ?? selectedDate())}
+                locale={locale()}
+                onSelectTime={selectTime}
+              />
+            </Show>
+          </PickerPanel>
         </InternalPortal>
       </Show>
     </div>
   )
 }
+
+export const DatePicker = Object.assign(DatePickerBase, { RangePicker })
+export { RangePicker }
