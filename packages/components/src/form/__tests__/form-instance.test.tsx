@@ -119,4 +119,100 @@ describe('FormInstance core parity APIs', () => {
     expect(form.getFieldError(['user', 'email'])).toEqual([])
     expect(form.isFieldTouched(['user', 'email'])).toBe(false)
   })
+
+  it('validates descendant fields when recursive config is enabled', async () => {
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ user: { email: '' } }}>
+        <Form.Item
+          name={['user', 'email']}
+          rules={[{ required: true, message: 'Email is required' }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(form.validateFields([['user']], { recursive: true })).rejects.toMatchObject({
+      errorFields: [{ name: ['user', 'email'], errors: ['Email is required'] }],
+    })
+  })
+
+  it('validateOnly rejects without updating stored field errors', async () => {
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: '' }}>
+        <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(form.validateFields(['username'], { validateOnly: true })).rejects.toMatchObject({
+      errorFields: [{ name: ['username'], errors: ['Required'] }],
+    })
+    expect(form.getFieldError('username')).toEqual([])
+  })
+
+  it('notifies onFieldsChange when validateFields stores errors', async () => {
+    const onFieldsChange = vi.fn()
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: '' }} onFieldsChange={onFieldsChange}>
+        <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(form.validateFields(['username'])).rejects.toMatchObject({
+      errorFields: [{ name: ['username'], errors: ['Required'] }],
+    })
+
+    expect(onFieldsChange).toHaveBeenCalledWith(
+      [expect.objectContaining({ name: ['username'], errors: ['Required'] })],
+      [expect.objectContaining({ name: ['username'], errors: ['Required'] })],
+    )
+  })
+
+  it('does not notify onFieldsChange when validateOnly is true', async () => {
+    const onFieldsChange = vi.fn()
+    const [form] = useForm()
+    render(() => (
+      <Form form={form} initialValues={{ username: '' }} onFieldsChange={onFieldsChange}>
+        <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    await expect(form.validateFields(['username'], { validateOnly: true })).rejects.toMatchObject({
+      errorFields: [{ name: ['username'], errors: ['Required'] }],
+    })
+
+    expect(onFieldsChange).not.toHaveBeenCalled()
+  })
+
+  it('supports isFieldsTouched allTouched boolean overload', () => {
+    const [form] = useForm()
+    render(() => (
+      <Form form={form}>
+        <Form.Item name="first">
+          <Input />
+        </Form.Item>
+        <Form.Item name="second">
+          <Input />
+        </Form.Item>
+      </Form>
+    ))
+
+    form.setFields([{ name: 'first', touched: true }])
+
+    expect(form.isFieldsTouched()).toBe(true)
+    expect(form.isFieldsTouched(true)).toBe(false)
+
+    form.setFields([{ name: 'second', touched: true }])
+
+    expect(form.isFieldsTouched(true)).toBe(true)
+  })
 })

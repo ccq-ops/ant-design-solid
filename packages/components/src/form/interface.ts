@@ -32,9 +32,11 @@ export interface FieldError {
   warnings?: string[]
 }
 
-export interface FieldData extends Omit<FieldError, 'name'> {
+export interface FieldData {
   name: NamePath
   value?: FieldValue
+  errors?: string[]
+  warnings?: string[]
   touched?: boolean
   validating?: boolean
 }
@@ -68,7 +70,10 @@ export interface FormInstance {
   getFieldsError: (nameList?: FieldName[]) => FieldError[]
   getFieldErrorAccessor: (name: FieldName) => Accessor<string[]>
   isFieldTouched: (name: FieldName) => boolean
-  isFieldsTouched: (nameList?: FieldName[], allTouched?: boolean) => boolean
+  isFieldsTouched: {
+    (allTouched?: boolean): boolean
+    (nameList?: FieldName[], allTouched?: boolean): boolean
+  }
   isFieldValidating: (name: FieldName) => boolean
 }
 

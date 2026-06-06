@@ -34,16 +34,6 @@ interface InternalFormInstance extends FormInstance {
   setCallbacks?: (callbacks: Omit<CreateFormOptions, 'initialValues'>) => void
 }
 
-function toErrorFields(records: FieldRecord[]): FieldError[] {
-  return records
-    .filter((record) => record.state.errors.length > 0)
-    .map((record) => ({
-      name: [...record.state.name],
-      errors: [...record.state.errors],
-      warnings: [...record.state.warnings],
-    }))
-}
-
 export function createFormInstance(options: CreateFormOptions = {}): FormInstance {
   return createRoot(() => {
     let sourceInitialValues = options.initialValues
@@ -57,11 +47,11 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
     const fields = new Map<string, FieldRecord>()
 
-    function getRegisteredRecords(nameList?: FieldName[]): FieldRecord[] {
+    function getRegisteredRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
       const records = Array.from(fields.values())
       if (!nameList) return records
       return records.filter((record) =>
-        nameList.some((name) => matchNamePath(name, record.state.name, false)),
+        nameList.some((name) => matchNamePath(name, record.state.name, recursive)),
       )
     }
 
@@ -102,7 +92,9 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       names: FieldName[],
       config: ValidateConfig = {},
     ): ValidateErrorInfo {
-      const records = getRegisteredRecords(names)
+      const records = getRegisteredRecords(names, config.recursive)
+      const errorFields: FieldError[] = []
+      const changedRecords: FieldRecord[] = []
       for (const record of records) {
         if (config.dirty && !record.state.dirty && !record.state.validated) continue
         const errors = validateValue(
@@ -111,12 +103,23 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           values(),
           record.meta.rules,
         )
-        record.state.validated = true
-        if (!config.validateOnly) record.setErrors(errors)
+        if (errors.length > 0) {
+          errorFields.push({
+            name: [...record.state.name],
+            errors,
+            warnings: [...record.state.warnings],
+          })
+        }
+        if (!config.validateOnly) {
+          record.state.validated = true
+          record.setErrors(errors)
+          changedRecords.push(record)
+        }
       }
+      if (!config.validateOnly) notifyFieldsChange(changedRecords)
       return {
         values: cloneFormValues(values()),
-        errorFields: toErrorFields(records),
+        errorFields,
         outOfDate: false,
       }
     }
@@ -246,10 +249,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       isFieldTouched(name) {
         return fields.get(getFieldKey(name))?.state.touched ?? false
       },
-      isFieldsTouched(nameList, allTouched = false) {
-        const records = getRegisteredRecords(nameList)
+      isFieldsTouched(nameListOrAllTouched?: FieldName[] | boolean, allTouched = false) {
+        const records = getRegisteredRecords(
+          Array.isArray(nameListOrAllTouched) ? nameListOrAllTouched : undefined,
+        )
+        const requireAllTouched =
+          typeof nameListOrAllTouched === 'boolean' ? nameListOrAllTouched : allTouched
         if (records.length === 0) return false
-        return allTouched
+        return requireAllTouched
           ? records.every((record) => record.state.touched)
           : records.some((record) => record.state.touched)
       },
