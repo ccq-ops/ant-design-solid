@@ -435,7 +435,7 @@ export default function DrawerPage() {
   classNames={{ header: 'demo-drawer-header', body: 'demo-drawer-body' }}
   styles={{
     header: { 'border-bottom': '2px solid #1677ff' },
-    body: { background: '#fafafa' },
+    body: { background: 'var(--docs-surface-subtle)' },
   }}
 >
   Style semantic parts without depending on internal DOM depth.
@@ -450,7 +450,7 @@ export default function DrawerPage() {
           classNames={{ header: 'demo-drawer-header', body: 'demo-drawer-body' }}
           styles={{
             header: { 'border-bottom': '2px solid #1677ff' },
-            body: { background: '#fafafa' },
+            body: { background: 'var(--docs-surface-subtle)' },
           }}
           onClose={() => setRenderOpen(false)}
         >

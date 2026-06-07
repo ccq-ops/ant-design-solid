@@ -37,10 +37,10 @@ const panelStyle = {
   position: 'relative',
   width: '300px',
   padding: '24px',
-  border: '1px solid #d9d9d9',
+  border: '1px solid var(--docs-border)',
   'border-radius': '12px',
-  background: '#fff',
-  'box-shadow': '0 6px 16px rgba(0, 0, 0, 0.08)',
+  background: 'var(--docs-surface-solid)',
+  'box-shadow': 'var(--docs-card-shadow)',
 } as const
 
 export default function BorderBeamPage() {
@@ -52,7 +52,7 @@ export default function BorderBeamPage() {
       <DemoBlock
         title="Basic"
         code={`<BorderBeam>
-  <div style={{ position: 'relative', border: '1px solid #d9d9d9', 'border-radius': '12px' }}>
+  <div style={{ position: 'relative', border: '1px solid var(--docs-border)', 'border-radius': '12px' }}>
     Content
   </div>
 </BorderBeam>`}

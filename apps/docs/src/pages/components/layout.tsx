@@ -55,7 +55,7 @@ const navItems: MenuItem[] = [
 
 const panelStyle = {
   padding: '24px',
-  background: '#fff',
+  background: 'var(--docs-surface-solid)',
   'min-height': '120px',
 }
 

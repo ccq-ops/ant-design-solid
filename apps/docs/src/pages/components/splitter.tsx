@@ -49,7 +49,7 @@ const panelStyle = {
   'align-items': 'center',
   'justify-content': 'center',
   height: '100%',
-  background: '#f5f5f5',
+  background: 'var(--docs-surface-subtle)',
 }
 
 export default function SplitterPage() {

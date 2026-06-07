@@ -25,21 +25,21 @@ export default function Home() {
 
   return (
     <div class="space-y-10 pb-8">
-      <section class="relative overflow-hidden rounded-[36px] border border-blue-100 bg-[radial-gradient(circle_at_top,_rgba(219,234,254,0.95),_rgba(255,255,255,0.98)_46%,_rgba(245,243,255,0.92))] px-6 py-14 text-center shadow-[0_32px_120px_rgba(37,99,235,0.14)] sm:px-10 lg:px-14">
-        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_82%,rgba(59,130,246,0.18),transparent_28%),radial-gradient(circle_at_82%_70%,rgba(124,58,237,0.14),transparent_26%)]" />
+      <section class="docs-hero docs-border relative overflow-hidden rounded-[36px] border px-6 py-14 text-center sm:px-10 lg:px-14">
+        <div class="docs-hero-overlay pointer-events-none absolute inset-0" />
         <div class="pointer-events-none absolute left-1/2 top-28 h-64 w-[min(760px,86%)] -translate-x-1/2 rounded-full bg-blue-300/20 blur-3xl" />
 
         <div class="relative z-[1] mx-auto max-w-[860px]">
-          <div class="mb-6 inline-flex rounded-full border border-blue-200/70 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 shadow-sm backdrop-blur">
+          <div class="mb-6 inline-flex docs-border-subtle docs-surface-muted rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-600 shadow-sm backdrop-blur">
             SolidJS · Design System · Token Driven
           </div>
-          <h1 class="mb-5 mt-0 text-5xl font-black tracking-[-0.045em] text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1 class="mb-5 mt-0 text-5xl font-black docs-text-strong tracking-[-0.045em] sm:text-6xl lg:text-7xl">
             Ant Design Solid
           </h1>
-          <p class="mx-auto mb-2 max-w-[720px] text-2xl font-semibold tracking-[-0.025em] text-slate-900 sm:text-3xl">
+          <p class="mx-auto mb-2 max-w-[720px] text-2xl font-semibold docs-text-strong tracking-[-0.025em] sm:text-3xl">
             Ant Design for the Solid era
           </p>
-          <p class="mx-auto max-w-[760px] text-base leading-[1.8] text-black/65 sm:text-lg">
+          <p class="mx-auto max-w-[760px] text-base docs-text-secondary leading-[1.8] sm:text-lg">
             Build polished product interfaces with Ant Design-inspired semantics, Solid-native
             performance, token-driven theming, and a docs experience designed for fast discovery.
           </p>
@@ -54,10 +54,10 @@ export default function Home() {
         </div>
 
         <div class="relative z-[1] mx-auto mt-12 max-w-[960px]">
-          <div class="rounded-[32px] border border-white/80 bg-white/45 p-2 shadow-[0_36px_100px_rgba(37,99,235,0.22)] backdrop-blur-xl">
+          <div class="docs-border docs-surface-glass docs-card-shadow rounded-[32px] border p-2 backdrop-blur-xl">
             <img
               alt="Blue glassmorphism interface hero artwork"
-              class="w-full rounded-[26px] object-cover shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
+              class="w-full rounded-[26px] object-cover"
               src={heroBanner}
             />
           </div>
@@ -66,23 +66,23 @@ export default function Home() {
 
       <section class="grid gap-5 lg:grid-cols-3">
         {features.map((feature) => (
-          <Card class="h-full border-blue-100 shadow-[0_18px_48px_rgba(15,23,42,0.06)]">
-            <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-lg text-blue-600">
+          <Card class="docs-border-subtle docs-card-shadow h-full">
+            <div class="mb-4 flex h-11 w-11 items-center justify-center docs-primary-soft rounded-2xl text-lg text-blue-600">
               ✦
             </div>
-            <h2 class="mb-3 mt-0 text-xl font-bold text-slate-950">{feature.title}</h2>
-            <p class="m-0 leading-[1.75] text-black/65">{feature.description}</p>
+            <h2 class="mb-3 mt-0 text-xl docs-text-strong font-bold">{feature.title}</h2>
+            <p class="docs-text-secondary m-0 leading-[1.75]">{feature.description}</p>
           </Card>
         ))}
       </section>
 
-      <section class="grid gap-6 rounded-[32px] border border-blue-100 bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.06)] lg:grid-cols-[1fr_1.25fr] lg:p-8">
+      <section class="grid gap-6 docs-border-subtle docs-surface-solid docs-float-shadow rounded-[32px] border p-6 lg:grid-cols-[1fr_1.25fr] lg:p-8">
         <div>
           <Tag color="blue">Components</Tag>
-          <h2 class="mb-3 mt-4 text-3xl font-black tracking-[-0.035em] text-slate-950">
+          <h2 class="mb-3 mt-4 text-3xl docs-text-strong font-black tracking-[-0.035em]">
             Preview the building blocks
           </h2>
-          <p class="mb-6 leading-[1.75] text-black/65">
+          <p class="docs-text-secondary mb-6 leading-[1.75]">
             Ready for production docs, examples, and theme exploration without leaving the SolidJS
             workflow.
           </p>
@@ -95,7 +95,7 @@ export default function Home() {
           </Space>
         </div>
 
-        <Card class="border-slate-100 bg-slate-50/80">
+        <Card class="docs-border docs-surface-subtle">
           <Tabs
             defaultActiveKey="theme"
             items={[
@@ -103,8 +103,8 @@ export default function Home() {
                 key: 'theme',
                 label: 'Theme',
                 children: (
-                  <div class="rounded-2xl bg-white p-5 shadow-sm">
-                    <div class="mb-3 text-sm font-semibold text-slate-950">Token preview</div>
+                  <div class="docs-surface-solid docs-card-shadow rounded-2xl p-5">
+                    <div class="docs-text-strong mb-3 text-sm font-semibold">Token preview</div>
                     <div class="flex gap-3">
                       <span class="h-10 flex-1 rounded-xl bg-blue-500" />
                       <span class="h-10 flex-1 rounded-xl bg-indigo-500" />
@@ -117,7 +117,7 @@ export default function Home() {
                 key: 'runtime',
                 label: 'Runtime',
                 children: (
-                  <div class="rounded-2xl bg-white p-5 text-sm leading-7 text-black/65 shadow-sm">
+                  <div class="docs-surface-solid docs-text-secondary docs-card-shadow rounded-2xl p-5 text-sm leading-7">
                     Fine-grained updates, component-level styles, and predictable composition for
                     Solid applications.
                   </div>

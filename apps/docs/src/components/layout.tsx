@@ -24,11 +24,11 @@ export function Layout(props: { children?: JSX.Element }) {
 
   return (
     <div class="min-h-screen">
-      <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white/90 px-8 backdrop-blur">
+      <header class="docs-border docs-surface sticky top-0 z-10 flex h-16 items-center justify-between border-b px-8 backdrop-blur">
         <A class="text-lg font-bold text-blue-600" href="/">
           Ant Design Solid
         </A>
-        <nav class="flex gap-6 text-black/65">
+        <nav class="docs-text-secondary flex gap-6">
           <For each={topNavItems}>
             {(item) => (
               <A class="transition-colors hover:text-blue-600" href={item.path}>
@@ -44,7 +44,7 @@ export function Layout(props: { children?: JSX.Element }) {
           </a>
           <button
             type="button"
-            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-base transition-colors hover:border-blue-600 hover:text-blue-600"
+            class="docs-border inline-flex h-8 w-8 items-center justify-center rounded-full border text-base transition-colors hover:border-blue-600 hover:text-blue-600"
             aria-label={
               docsTheme.mode() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'
             }
@@ -62,7 +62,7 @@ export function Layout(props: { children?: JSX.Element }) {
         }
       >
         <Show when={showSidebar()}>
-          <aside class="sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r border-gray-200 p-6">
+          <aside class="docs-border sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r p-6">
             <Show when={sidebarItems().length > 0}>
               <For each={sidebarItems()}>
                 {(item) => (

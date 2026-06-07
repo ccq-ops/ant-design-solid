@@ -71,7 +71,7 @@ const baseItems = [
 function DemoCard(props: { title: string; height: number; color: string }) {
   return (
     <Card title={props.title} style={{ background: props.color }}>
-      <div style={{ height: `${props.height}px`, color: '#666' }}>
+      <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
         Variable-height content creates a waterfall layout.
       </div>
     </Card>
@@ -127,8 +127,8 @@ export default function MasonryPage() {
             <div
               style={{
                 height: `${item.height + 80}px`,
-                background: `linear-gradient(135deg, ${item.color}, #ffffff)`,
-                border: '1px solid #f0f0f0',
+                background: `linear-gradient(135deg, ${item.color}, var(--docs-surface-solid))`,
+                border: '1px solid var(--docs-border)',
                 'border-radius': '8px',
                 display: 'flex',
                 'align-items': 'end',

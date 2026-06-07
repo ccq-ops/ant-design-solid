@@ -20,7 +20,7 @@ describe('DemoBlock', () => {
     expect(heading).toHaveClass('py-2.5')
     expect(result.getByText('Example')).toHaveClass('uppercase')
     expect(result.getByText('Code').parentElement).toHaveClass('uppercase')
-    expect(button.closest('[data-demo-block-preview]')).toHaveClass('bg-white')
+    expect(button.closest('[data-demo-block-preview]')).toHaveClass('docs-demo-preview')
     expect(button.closest('[data-demo-block-preview]')).toHaveClass('px-4')
 
     await waitFor(() => {
@@ -28,7 +28,7 @@ describe('DemoBlock', () => {
       const pre = codeSection?.querySelector('pre')
 
       expect(codeSection).toHaveClass('border-t')
-      expect(codeSection).toHaveClass('bg-slate-50')
+      expect(codeSection).toHaveClass('docs-surface-subtle')
       expect(pre).toHaveClass('overflow-auto')
       expect(pre).toHaveClass('text-xs')
       expect(pre?.textContent).toBe('<Button>Click</Button>')

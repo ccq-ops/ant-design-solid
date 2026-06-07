@@ -36,9 +36,8 @@ describe('Home', () => {
 
     expect(hero).toHaveClass('overflow-hidden')
     expect(hero).toHaveClass('text-center')
-    expect(hero).toHaveClass(
-      'bg-[radial-gradient(circle_at_top,_rgba(219,234,254,0.95),_rgba(255,255,255,0.98)_46%,_rgba(245,243,255,0.92))]',
-    )
+    expect(hero).toHaveClass('docs-hero')
+    expect(hero).toHaveClass('docs-border')
     expect(result.getByText('SolidJS · Design System · Token Driven')).toBeInTheDocument()
     expect(result.getByText(/Ant Design for the Solid era/)).toBeInTheDocument()
     expect(result.getAllByText(/Ant Design-inspired semantics/).length).toBeGreaterThan(0)

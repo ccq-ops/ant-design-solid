@@ -95,25 +95,22 @@ export function DemoBlock(props: DemoBlockProps) {
   const language = () => props.language ?? 'tsx'
 
   return (
-    <section
-      class="my-4 overflow-hidden rounded-lg border border-gray-200"
-      aria-label={props.title}
-    >
-      <h3 class="m-0 border-b border-gray-200 px-4 py-2.5 text-base font-semibold">
+    <section class="docs-border my-4 overflow-hidden rounded-lg border" aria-label={props.title}>
+      <h3 class="docs-border docs-text m-0 border-b px-4 py-2.5 text-base font-semibold">
         {props.title}
       </h3>
-      <div data-demo-block-preview class="bg-white px-4 py-4">
-        <div class="mb-2 text-[11px] font-medium uppercase tracking-wide text-gray-400">
+      <div data-demo-block-preview class="docs-demo-preview px-4 py-4">
+        <div class="docs-text-tertiary mb-2 text-[11px] font-medium uppercase tracking-wide">
           Example
         </div>
         {props.children}
       </div>
-      <div data-demo-block-code class="border-t border-gray-200 bg-slate-50">
-        <div class="flex items-center justify-between border-b border-gray-200 px-4 py-1.5 text-[11px] font-medium uppercase tracking-wide text-gray-400">
+      <div data-demo-block-code class="docs-border docs-surface-subtle border-t">
+        <div class="docs-border docs-text-tertiary flex items-center justify-between border-b px-4 py-1.5 text-[11px] font-medium uppercase tracking-wide">
           <span>Code</span>
           <button
             type="button"
-            class="rounded px-2 py-1 text-[11px] font-medium normal-case tracking-normal text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
+            class="docs-text-secondary rounded px-2 py-1 text-[11px] font-medium normal-case tracking-normal transition-colors hover:bg-gray-200 hover:text-blue-600"
             aria-expanded={codeVisible()}
             onClick={() => setCodeVisible((visible) => !visible)}
           >
