@@ -387,7 +387,7 @@ function StatusInput() {
 export default function FormPage() {
   const [instanceForm] = useForm()
   const [validateOnlyForm] = useForm()
-  const [scrollForm] = useForm()
+  const [_scrollForm] = useForm()
   const [summary, setSummary] = createSignal('Submit the form to see values.')
 
   return (
@@ -544,7 +544,15 @@ export default function FormPage() {
       <DemoBlock
         title="Validate trigger"
         code={`<Form>
-  <Form.Item label="Email" name="email" validateTrigger="onBlur" rules={[{ type: 'email', message: 'Enter a valid email' }]}>
+  <Form.Item
+    label="Email"
+    name="email"
+    validateTrigger="onBlur"
+    rules={[
+      { required: true, message: 'Email is required' },
+      { type: 'email', message: 'Enter a valid email after blur' },
+    ]}
+  >
     <Input />
   </Form.Item>
 </Form>`}
@@ -555,7 +563,10 @@ export default function FormPage() {
               label="Email"
               name="triggerEmail"
               validateTrigger="onBlur"
-              rules={[{ type: 'email', message: 'Enter a valid email' }]}
+              rules={[
+                { required: true, message: 'Email is required' },
+                { type: 'email', message: 'Enter a valid email after blur' },
+              ]}
             >
               <Input placeholder="Validation runs on blur" />
             </Form.Item>
