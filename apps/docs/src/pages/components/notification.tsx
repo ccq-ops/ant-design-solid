@@ -14,19 +14,142 @@ const notificationRows: ApiTableRow[] = [
     description: 'Notification semantic type.',
     type: "'success' | 'info' | 'warning' | 'error'",
   },
-  { property: 'message', description: 'Notification title content.', type: 'JSX.Element' },
+  {
+    property: 'title',
+    description: 'Notification title content. Preferred over message.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'message',
+    description: 'Deprecated-compatible notification title content.',
+    type: 'JSX.Element',
+  },
   { property: 'description', description: 'Notification body content.', type: 'JSX.Element' },
-  { property: 'duration', description: 'Auto-close delay in seconds.', type: 'number' },
+  {
+    property: 'duration',
+    description: 'Auto-close delay in seconds. Set 0 or false to keep open.',
+    type: 'number | false',
+    defaultValue: '4.5',
+  },
   {
     property: 'placement',
-    description: 'Screen corner placement.',
-    type: "'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'",
+    description: 'Screen placement.',
+    type: "'top' | 'topLeft' | 'topRight' | 'bottom' | 'bottomLeft' | 'bottomRight'",
+    defaultValue: "'topRight'",
+  },
+  { property: 'icon', description: 'Custom notification icon.', type: 'JSX.Element' },
+  { property: 'actions', description: 'Custom action area.', type: 'JSX.Element' },
+  {
+    property: 'btn',
+    description: 'Deprecated-compatible custom action area.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'closable',
+    description: 'Whether to show close button, or close button config.',
+    type: 'boolean | { closeIcon?: JSX.Element; onClose?: () => void }',
+    defaultValue: 'true',
+  },
+  {
+    property: 'closeIcon',
+    description: 'Custom close icon. Set false or null to hide close button.',
+    type: 'JSX.Element | boolean | null',
+  },
+  { property: 'className', description: 'Custom class for the notice element.', type: 'string' },
+  {
+    property: 'classNames',
+    description: 'Custom classes for semantic DOM parts.',
+    type: 'Partial<Record<NotificationSemanticKey, string>>',
+  },
+  {
+    property: 'style',
+    description: 'Inline style for the notice element.',
+    type: 'JSX.CSSProperties',
+  },
+  {
+    property: 'styles',
+    description: 'Inline styles for semantic DOM parts.',
+    type: 'Partial<Record<NotificationSemanticKey, JSX.CSSProperties>>',
+  },
+  {
+    property: 'props',
+    description: 'Additional attributes for the notice element.',
+    type: 'JSX.HTMLAttributes<HTMLDivElement>',
+  },
+  {
+    property: 'role',
+    description: 'Screen reader role for notification content.',
+    type: "'alert' | 'status'",
+    defaultValue: "'alert'",
+  },
+  { property: 'showProgress', description: 'Show auto-close progress bar.', type: 'boolean' },
+  {
+    property: 'pauseOnHover',
+    description: 'Pause auto-close timer while hovered.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'onClick',
+    description: 'Called when the notification is clicked.',
+    type: 'JSX.EventHandler<HTMLDivElement, MouseEvent>',
+  },
+  { property: 'onClose', description: 'Called when the notification closes.', type: '() => void' },
+]
+
+const notificationConfigRows: ApiTableRow[] = [
+  {
+    property: 'placement',
+    description: 'Default placement for new notifications.',
+    type: 'NotificationPlacement',
     defaultValue: "'topRight'",
   },
   {
-    property: 'onClose',
-    description: 'Called when the notification closes by timer or handle.',
-    type: '() => void',
+    property: 'duration',
+    description: 'Default auto-close delay in seconds.',
+    type: 'number | false',
+    defaultValue: '4.5',
+  },
+  {
+    property: 'top',
+    description: 'Distance from top edge in pixels for top placements.',
+    type: 'number',
+    defaultValue: '24',
+  },
+  {
+    property: 'bottom',
+    description: 'Distance from bottom edge in pixels for bottom placements.',
+    type: 'number',
+    defaultValue: '24',
+  },
+  {
+    property: 'getContainer',
+    description: 'Returns the container used to mount notifications.',
+    type: '() => HTMLElement',
+    defaultValue: 'document.body',
+  },
+  {
+    property: 'maxCount',
+    description: 'Maximum visible notifications; oldest are dropped when exceeded.',
+    type: 'number',
+  },
+  {
+    property: 'closeIcon',
+    description: 'Default close icon config.',
+    type: 'JSX.Element | boolean | null',
+  },
+  { property: 'showProgress', description: 'Default progress bar visibility.', type: 'boolean' },
+  {
+    property: 'pauseOnHover',
+    description: 'Default hover pause behavior.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'rtl',
+    description: 'Enable RTL notification container class.',
+    type: 'boolean',
+    defaultValue: 'false',
   },
 ]
 
@@ -68,6 +191,11 @@ const notificationInstanceRows: ApiTableRow[] = [
     property: 'notification.destroy',
     description: 'Destroys one keyed notification or all notifications.',
     type: '(key?: string) => void',
+  },
+  {
+    property: 'notification.config',
+    description: 'Configures defaults for subsequent notifications.',
+    type: '(options: NotificationConfig) => void',
   },
 ]
 
@@ -158,6 +286,8 @@ notification.error({ message: 'Error' })`}
       <h2>API</h2>
       <h3>NotificationArgs</h3>
       <ApiTable rows={notificationRows} aria-label="Notification Args API" />
+      <h3>NotificationConfig</h3>
+      <ApiTable rows={notificationConfigRows} aria-label="Notification Config API" />
       <h3>NotificationHandle</h3>
       <ApiTable rows={notificationHandleRows} aria-label="Notification Handle API" />
       <h3>NotificationInstance</h3>

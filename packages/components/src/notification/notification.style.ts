@@ -11,8 +11,20 @@ export function useNotificationStyle(prefixCls: string) {
       const nt = getComponentToken('Notification', t)
       const placementBase = { position: 'fixed', 'z-index': 1010 }
       return {
+        [`.${prefixCls}-top`]: {
+          ...placementBase,
+          top: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+        },
         [`.${prefixCls}-top-right`]: { ...placementBase, top: 24, right: 24 },
         [`.${prefixCls}-top-left`]: { ...placementBase, top: 24, left: 24 },
+        [`.${prefixCls}-bottom`]: {
+          ...placementBase,
+          bottom: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+        },
         [`.${prefixCls}-bottom-right`]: { ...placementBase, bottom: 24, right: 24 },
         [`.${prefixCls}-bottom-left`]: { ...placementBase, bottom: 24, left: 24 },
         [`.${prefixCls}-notice`]: {
@@ -32,6 +44,23 @@ export function useNotificationStyle(prefixCls: string) {
         [`.${prefixCls}-notice-description`]: {
           color: t.colorTextSecondary,
           'margin-top': t.marginXS,
+        },
+        [`.${prefixCls}-notice-actions`]: {
+          'margin-top': t.marginSM,
+        },
+        [`.${prefixCls}-notice-progress`]: {
+          position: 'absolute',
+          left: 0,
+          bottom: 0,
+          height: 2,
+          width: '100%',
+          background: t.colorPrimary,
+          'transform-origin': 'left center',
+          animation: `${prefixCls}-progress linear forwards`,
+        },
+        [`@keyframes ${prefixCls}-progress`]: {
+          from: { transform: 'scaleX(1)' },
+          to: { transform: 'scaleX(0)' },
         },
         [`.${prefixCls}-notice-close`]: {
           position: 'absolute',
