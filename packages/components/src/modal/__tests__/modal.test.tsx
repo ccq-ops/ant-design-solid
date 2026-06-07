@@ -354,4 +354,141 @@ describe('Modal', () => {
     expect(container.querySelector('.ads-modal-mask-blur')).toBeTruthy()
     expect(container.querySelector('.ads-modal-loading')).toBeTruthy()
   })
+
+  it('applies button props okType className and wrapClassName', () => {
+    render(() => (
+      <Modal
+        open
+        title="Buttons"
+        className="dialog-class"
+        wrapClassName="wrap-class"
+        okType="default"
+        okButtonProps={{ danger: true, class: 'ok-extra' }}
+        cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
+      >
+        Body
+      </Modal>
+    ))
+
+    expect(document.body.querySelector('.dialog-class')).toBeTruthy()
+    expect(document.body.querySelector('.wrap-class')).toBeTruthy()
+    expect(document.body.querySelector('.ok-extra')).toBeTruthy()
+    expect(document.body.querySelector('.ok-extra')!.className).not.toContain('ads-btn-primary')
+    expect(document.body.querySelector('.ok-extra')!.className).toContain('ads-btn-dangerous')
+    expect(document.body.querySelector<HTMLButtonElement>('.cancel-extra')!.disabled).toBe(true)
+  })
+
+  it('supports object closable custom icon and disabled close', () => {
+    const onClose = vi.fn()
+    const onCancel = vi.fn()
+    render(() => (
+      <Modal
+        open
+        title="Close"
+        closable={{
+          closeIcon: <span data-testid="close-icon">custom</span>,
+          disabled: true,
+          onClose,
+        }}
+        onCancel={onCancel}
+      >
+        Body
+      </Modal>
+    ))
+
+    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-close')!)
+
+    expect(document.body.querySelector('[data-testid="close-icon"]')).toBeTruthy()
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('supports object mask visibility blur and closable precedence', () => {
+    const onCancel = vi.fn()
+    render(() => (
+      <Modal open title="Mask" mask={{ enabled: true, blur: true, closable: false }} onCancel={onCancel}>
+        Body
+      </Modal>
+    ))
+
+    expect(document.body.querySelector('.ads-modal-mask')).toBeTruthy()
+    expect(document.body.querySelector('.ads-modal-mask-blur')).toBeTruthy()
+    fireEvent.click(document.body.querySelector('.ads-modal-wrap')!)
+    expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('supports getContainer selector and false inline rendering', () => {
+    const host = document.createElement('div')
+    host.id = 'modal-host'
+    document.body.appendChild(host)
+
+    const inline = render(() => (
+      <div data-testid="inline-root">
+        <Modal open title="Inline" getContainer={false}>
+          Inline body
+        </Modal>
+      </div>
+    ))
+    render(() => (
+      <Modal open title="Hosted" getContainer="#modal-host">
+        Hosted body
+      </Modal>
+    ))
+
+    expect(host).toHaveTextContent('Hosted')
+    expect(inline.container).toHaveTextContent('Inline')
+  })
+
+  it('preserves hidden content by default and destroys it with destroyOnHidden', () => {
+    const [open, setOpen] = createSignal(true)
+    const preserved = render(() => (
+      <Modal open={open()} title="Preserved">
+        Preserved body
+      </Modal>
+    ))
+
+    setOpen(false)
+    expect(document.body).toHaveTextContent('Preserved body')
+
+    preserved.unmount()
+    const [destroyOpen, setDestroyOpen] = createSignal(true)
+    render(() => (
+      <Modal open={destroyOpen()} destroyOnHidden title="Destroyed">
+        Destroyed body
+      </Modal>
+    ))
+
+    setDestroyOpen(false)
+    expect(document.body).not.toHaveTextContent('Destroyed body')
+  })
+
+  it('supports forceRender modalRender classNames styles loading and afterOpenChange', () => {
+    const [open, setOpen] = createSignal(false)
+    const afterOpenChange = vi.fn()
+    render(() => (
+      <Modal
+        open={open()}
+        forceRender
+        title="Advanced"
+        classNames={{ body: 'semantic-body' }}
+        styles={{ body: { color: 'blue' } }}
+        modalRender={(node) => <section data-testid="wrapped-modal">{node}</section>}
+        loading
+        afterOpenChange={afterOpenChange}
+      >
+        Advanced body
+      </Modal>
+    ))
+
+    expect(document.body).toHaveTextContent('Advanced')
+    expect(document.body.querySelector('[data-testid="wrapped-modal"]')).toBeTruthy()
+    expect(document.body.querySelector('.semantic-body')).toBeTruthy()
+    expect(document.body.querySelector<HTMLElement>('.semantic-body')!.style.color).toBe('blue')
+    expect(document.body.querySelector('.ads-modal-loading')).toBeTruthy()
+
+    setOpen(true)
+    expect(afterOpenChange).toHaveBeenCalledWith(true)
+    setOpen(false)
+    expect(afterOpenChange).toHaveBeenCalledWith(false)
+  })
 })

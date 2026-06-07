@@ -10,6 +10,7 @@ export function useModalStyle(prefixCls: string) {
     return {
       [`.${prefixCls}-root`]: { position: 'relative' },
       [`.${prefixCls}-mask`]: { position: 'fixed', inset: 0, background: mt.maskBg },
+      [`.${prefixCls}-mask-blur`]: { 'backdrop-filter': 'blur(2px)' },
       [`.${prefixCls}-wrap`]: { position: 'fixed', inset: 0, overflow: 'auto', outline: 0 },
       [`.${prefixCls}-centered`]: {
         display: 'flex',
@@ -41,6 +42,11 @@ export function useModalStyle(prefixCls: string) {
         'font-weight': 600,
       },
       [`.${prefixCls}-body`]: { padding: t.paddingLG, color: t.colorText },
+      [`.${prefixCls}-loading`]: {
+        color: t.colorTextSecondary,
+        padding: t.paddingLG,
+        'text-align': 'center',
+      },
       [`.${prefixCls}-footer`]: {
         display: 'flex',
         'justify-content': 'flex-end',
@@ -59,6 +65,9 @@ export function useModalStyle(prefixCls: string) {
       [`.${prefixCls}-confirm .${prefixCls}-body`]: {
         padding: `${t.paddingLG}px ${t.paddingLG}px 0`,
       },
+      [`.${prefixCls}-confirm-body`]: { display: 'flex', gap: t.marginSM },
+      [`.${prefixCls}-confirm-icon`]: { 'font-size': t.fontSizeLG, 'line-height': 1 },
+      [`.${prefixCls}-confirm-message`]: { flex: 1 },
       [`.${prefixCls}-confirm-content`]: { color: t.colorText },
       [`.${prefixCls}-confirm-success .${prefixCls}-title`]: { color: t.colorSuccess },
       [`.${prefixCls}-confirm-info .${prefixCls}-title`]: { color: t.colorInfo },
