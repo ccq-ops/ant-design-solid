@@ -386,6 +386,8 @@ function StatusInput() {
 
 export default function FormPage() {
   const [instanceForm] = useForm()
+  const [validateOnlyForm] = useForm()
+  const [scrollForm] = useForm()
   const [summary, setSummary] = createSignal('Submit the form to see values.')
 
   return (
@@ -535,6 +537,89 @@ export default function FormPage() {
               <Input placeholder="name@example.com" />
             </Form.Item>
             <Button htmlType="submit">Validate</Button>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Validate trigger"
+        code={`<Form>
+  <Form.Item label="Email" name="email" validateTrigger="onBlur" rules={[{ type: 'email', message: 'Enter a valid email' }]}>
+    <Input />
+  </Form.Item>
+</Form>`}
+      >
+        <Form>
+          <Space direction="vertical" class="w-90">
+            <Form.Item
+              label="Email"
+              name="triggerEmail"
+              validateTrigger="onBlur"
+              rules={[{ type: 'email', message: 'Enter a valid email' }]}
+            >
+              <Input placeholder="Validation runs on blur" />
+            </Form.Item>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Validate only"
+        code={`const [form] = useForm()
+form.validateFields(undefined, { validateOnly: true })
+
+<Form form={form}>
+  <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+    <Input />
+  </Form.Item>
+</Form>`}
+      >
+        <Space direction="vertical" class="w-90">
+          <Form form={validateOnlyForm}>
+            <Form.Item
+              label="Username"
+              name="validateOnlyUsername"
+              rules={[{ required: true, message: 'Username is required' }]}
+            >
+              <Input placeholder="Validate without showing field errors" />
+            </Form.Item>
+          </Form>
+          <Button
+            onClick={() => {
+              void validateOnlyForm
+                .validateFields(undefined, { validateOnly: true })
+                .then(() => message.success('Validate only passed'))
+                .catch((error) =>
+                  message.error(error.errorFields?.[0]?.errors[0] ?? 'Validation failed'),
+                )
+            }}
+          >
+            Validate only
+          </Button>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Warning only"
+        code={`<Form onFinish={console.log}>
+  <Form.Item label="Website" name="website" rules={[{ type: 'url', warningOnly: true, message: 'Enter a valid URL' }]}>
+    <Input />
+  </Form.Item>
+  <Button htmlType="submit">Submit</Button>
+</Form>`}
+      >
+        <Form onFinish={() => message.success('Submitted despite warnings')}>
+          <Space direction="vertical" class="w-90">
+            <Form.Item
+              label="Website"
+              name="warningWebsite"
+              rules={[{ type: 'url', warningOnly: true, message: 'Enter a valid URL' }]}
+            >
+              <Input placeholder="https://example.com" />
+            </Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
           </Space>
         </Form>
       </DemoBlock>
