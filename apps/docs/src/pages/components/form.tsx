@@ -387,6 +387,7 @@ function StatusInput() {
 export default function FormPage() {
   const [instanceForm] = useForm()
   const [validateOnlyForm] = useForm()
+  const [shouldUpdateForm] = useForm()
   const [_scrollForm] = useForm()
   const [summary, setSummary] = createSignal('Submit the form to see values.')
 
@@ -737,6 +738,176 @@ form.validateFields(undefined, { validateOnly: true })
               <Input />
             </Form.Item>
             <WatchedUsername />
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Dynamic rules"
+        code={`function DynamicRuleFields() {
+  const requireNickname = Form.useWatch('requireNickname')
+
+  return (
+    <>
+      <Form.Item name="requireNickname" valuePropName="checked">
+        <Checkbox>Nickname is required</Checkbox>
+      </Form.Item>
+      <Form.Item label="Nickname" name="nickname" rules={[{ required: Boolean(requireNickname()) }]}>
+        <Input />
+      </Form.Item>
+    </>
+  )
+}
+
+<Form onFinish={console.log}>
+  <DynamicRuleFields />
+  <Button htmlType="submit">Submit</Button>
+</Form>`}
+      >
+        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+          <Space direction="vertical" class="w-90">
+            <DynamicRuleFields />
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Dependencies"
+        code={`<Form onFinish={console.log}>
+  <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+    <Input type="password" />
+  </Form.Item>
+  <Form.Item
+    label="Confirm"
+    name="confirm"
+    dependencies={['password']}
+    rules={[{
+      validator: (_, value, values) => {
+        if (value && value !== values?.password) return 'Passwords do not match'
+      },
+    }]}
+  >
+    <Input type="password" />
+  </Form.Item>
+</Form>`}
+      >
+        <Form onFinish={() => message.success('Password confirmed')}>
+          <Space direction="vertical" class="w-90">
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[{ required: true, message: 'Please input password' }]}
+            >
+              <Input type="password" placeholder="Password" />
+            </Form.Item>
+            <Form.Item
+              label="Confirm"
+              name="confirm"
+              dependencies={['password']}
+              rules={[
+                { required: true, message: 'Please confirm password' },
+                {
+                  validator: (_, value, values) => {
+                    const formValues = values as { password?: unknown } | undefined
+                    if (value && value !== formValues?.password) return 'Passwords do not match'
+                  },
+                },
+              ]}
+            >
+              <Input type="password" placeholder="Confirm password" />
+            </Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="shouldUpdate"
+        code={`const [form] = useForm()
+
+<Form form={form} initialValues={{ username: 'Ada' }}>
+  <Form.Item label="Username" name="username"><Input /></Form.Item>
+  <Form.Item shouldUpdate>
+    {() => <pre>{JSON.stringify(form.getFieldsValue(true), null, 2)}</pre>}
+  </Form.Item>
+</Form>`}
+      >
+        <Form form={shouldUpdateForm} initialValues={{ username: 'Ada', email: 'ada@example.com' }}>
+          <Space direction="vertical" class="w-90">
+            <Form.Item label="Username" name="username">
+              <Input placeholder="Username" />
+            </Form.Item>
+            <Form.Item label="Email" name="email">
+              <Input placeholder="Email" />
+            </Form.Item>
+            <Form.Item shouldUpdate>
+              {() => (
+                <pre class="rounded bg-gray-50 p-3 text-sm">
+                  {JSON.stringify(shouldUpdateForm.getFieldsValue(true), null, 2)}
+                </pre>
+              )}
+            </Form.Item>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="noStyle nested control"
+        code={`<Form onFinish={console.log}>
+  <Form.Item label="Address">
+    <Form.Item name={['address', 'street']} noStyle>
+      <Input placeholder="Street" />
+    </Form.Item>
+  </Form.Item>
+</Form>`}
+      >
+        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+          <Space direction="vertical" class="w-90">
+            <Form.Item label="Address">
+              <Form.Item name={['address', 'street']} noStyle>
+                <Input placeholder="Street" />
+              </Form.Item>
+            </Form.Item>
+            <Button htmlType="submit">Submit address</Button>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Dynamic Form.Item"
+        code={`function ConditionalCompanyField() {
+  const business = Form.useWatch('business')
+
+  return (
+    <>
+      <Form.Item name="business" valuePropName="checked">
+        <Checkbox>Business account</Checkbox>
+      </Form.Item>
+      {business() ? (
+        <Form.Item label="Company" name="company" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+      ) : null}
+    </>
+  )
+}
+
+<Form onFinish={console.log}>
+  <ConditionalCompanyField />
+  <Button htmlType="submit">Submit</Button>
+</Form>`}
+      >
+        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+          <Space direction="vertical" class="w-90">
+            <ConditionalCompanyField />
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
           </Space>
         </Form>
       </DemoBlock>
