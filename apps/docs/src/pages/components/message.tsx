@@ -7,7 +7,7 @@ const messageArgsRows: ApiTableRow[] = [
   {
     property: 'key',
     description: 'Stable key used to update or destroy a message.',
-    type: 'string',
+    type: 'string | number',
   },
   {
     property: 'type',
@@ -18,18 +18,93 @@ const messageArgsRows: ApiTableRow[] = [
   { property: 'content', description: 'Message content.', type: 'JSX.Element' },
   {
     property: 'duration',
-    description: 'Auto-close delay in seconds. Loading messages default to 0.',
+    description:
+      'Auto-close delay in seconds. Set to 0 to keep open. Loading messages default to 0.',
     type: 'number',
     defaultValue: '3',
   },
   {
     property: 'onClose',
-    description: 'Called after an auto-close timer removes the message.',
+    description: 'Called when the message closes.',
     type: '() => void',
+  },
+  {
+    property: 'icon',
+    description: 'Custom icon node.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'className',
+    description: 'Custom class for the notice wrapper.',
+    type: 'string',
+  },
+  {
+    property: 'style',
+    description: 'Custom style for the notice wrapper.',
+    type: 'JSX.CSSProperties',
+  },
+  {
+    property: 'classNames / styles',
+    description: 'Semantic class and style maps for root, wrapper, listContent, icon, and title.',
+    type: 'Record<string, string | CSSProperties>',
+  },
+  {
+    property: 'onClick',
+    description: 'Called when the message content is clicked.',
+    type: '(event: MouseEvent) => void',
+  },
+  {
+    property: 'pauseOnHover',
+    description: 'Pause auto-close timer while hovering.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+]
+
+const configRows: ApiTableRow[] = [
+  {
+    property: 'top',
+    description: 'Distance from top.',
+    type: 'string | number',
+    defaultValue: '8',
+  },
+  {
+    property: 'duration',
+    description: 'Global default duration in seconds.',
+    type: 'number',
+    defaultValue: '3',
+  },
+  {
+    property: 'getContainer',
+    description: 'Returns the mount container.',
+    type: '() => HTMLElement',
+  },
+  {
+    property: 'maxCount',
+    description: 'Maximum visible messages; older messages are closed.',
+    type: 'number',
+  },
+  { property: 'prefixCls', description: 'Custom message root class prefix.', type: 'string' },
+  { property: 'rtl', description: 'Enable RTL class.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'pauseOnHover',
+    description: 'Global pause-on-hover default.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'stack',
+    description: 'Limit rendered messages to the latest threshold when enabled.',
+    type: 'boolean | { threshold?: number }',
   },
 ]
 
 const handleRows: ApiTableRow[] = [
+  {
+    property: 'call',
+    description: 'The handle itself can be called to close the message.',
+    type: '() => void',
+  },
   {
     property: 'close',
     description: 'Closes the message created by the returned handle.',
@@ -46,32 +121,42 @@ const instanceRows: ApiTableRow[] = [
   {
     property: 'message.info',
     description: 'Opens an info message.',
-    type: '(content, duration?) => MessageHandle',
+    type: '(content, duration?, onClose?) => MessageHandle',
   },
   {
     property: 'message.success',
     description: 'Opens a success message.',
-    type: '(content, duration?) => MessageHandle',
+    type: '(content, duration?, onClose?) => MessageHandle',
   },
   {
     property: 'message.error',
     description: 'Opens an error message.',
-    type: '(content, duration?) => MessageHandle',
+    type: '(content, duration?, onClose?) => MessageHandle',
   },
   {
     property: 'message.warning',
     description: 'Opens a warning message.',
-    type: '(content, duration?) => MessageHandle',
+    type: '(content, duration?, onClose?) => MessageHandle',
   },
   {
     property: 'message.loading',
     description: 'Opens a loading message. It remains until closed when duration is omitted.',
-    type: '(content, duration?) => MessageHandle',
+    type: '(content, duration?, onClose?) => MessageHandle',
   },
   {
     property: 'message.destroy',
     description: 'Destroys one keyed message or all messages.',
-    type: '(key?: string) => void',
+    type: '(key?: string | number) => void',
+  },
+  {
+    property: 'message.config',
+    description: 'Configures global message defaults.',
+    type: '(options: MessageConfigOptions) => void',
+  },
+  {
+    property: 'message.useMessage',
+    description: 'Creates a local message API and context holder.',
+    type: '(config?: MessageConfigOptions) => [MessageInstance, JSX.Element]',
   },
 ]
 
@@ -145,6 +230,8 @@ setTimeout(() => message.open({ key: 'upload', type: 'success', content: 'Upload
       <ApiTable rows={messageArgsRows} aria-label="Message Args API" />
       <h3>MessageHandle</h3>
       <ApiTable rows={handleRows} aria-label="Message Handle API" />
+      <h3>MessageConfigOptions</h3>
+      <ApiTable rows={configRows} aria-label="Message Config API" />
       <h3>MessageInstance</h3>
       <ApiTable rows={instanceRows} aria-label="Message Instance API" />
     </>
