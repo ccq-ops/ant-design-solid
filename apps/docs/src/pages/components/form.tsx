@@ -388,7 +388,7 @@ export default function FormPage() {
   const [instanceForm] = useForm()
   const [validateOnlyForm] = useForm()
   const [shouldUpdateForm] = useForm()
-  const [_scrollForm] = useForm()
+  const [scrollForm] = useForm()
   const [summary, setSummary] = createSignal('Submit the form to see values.')
 
   return (
@@ -953,6 +953,185 @@ form.validateFields(undefined, { validateOnly: true })
               </Space>
             )}
           </Form.List>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Advanced dynamic list"
+        code={`<Form.List
+  name="passengers"
+  initialValue={[{ name: 'Ada' }, { name: 'Grace' }]}
+  rules={[{ required: true, message: 'At least one passenger is required' }]}
+>
+  {(fields, operation, meta) => (
+    <>
+      <For each={fields()}>
+        {(field) => (
+          <Space>
+            <Form.Item name={[field.name, 'name']} rules={[{ required: true }]}>
+              <Input placeholder="Passenger name" />
+            </Form.Item>
+            <Button onClick={() => operation.move(field.name, field.name - 1)}>Up</Button>
+            <Button onClick={() => operation.remove(field.name)}>Remove</Button>
+          </Space>
+        )}
+      </For>
+      <Button onClick={() => operation.add({ name: '' })}>Add passenger</Button>
+      <Form.ErrorList errors={meta.errors} />
+    </>
+  )}
+</Form.List>`}
+      >
+        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+          <Form.List
+            name="passengers"
+            initialValue={[{ name: 'Ada' }, { name: 'Grace' }]}
+            rules={[{ required: true, message: 'At least one passenger is required' }]}
+          >
+            {(fields, operation, meta) => (
+              <Space direction="vertical" class="w-100">
+                <For each={fields()}>
+                  {(field) => (
+                    <Space>
+                      <Form.Item
+                        label={'Passenger ' + (field.name + 1)}
+                        name={[field.name, 'name']}
+                        rules={[{ required: true, message: 'Passenger name is required' }]}
+                      >
+                        <Input placeholder="Passenger name" />
+                      </Form.Item>
+                      <Button
+                        disabled={field.name === 0}
+                        onClick={() => operation.move(field.name, field.name - 1)}
+                      >
+                        Up
+                      </Button>
+                      <Button onClick={() => operation.move(field.name, field.name + 1)}>
+                        Down
+                      </Button>
+                      <Button danger onClick={() => operation.remove(field.name)}>
+                        Remove
+                      </Button>
+                    </Space>
+                  )}
+                </For>
+                <Space>
+                  <Button onClick={() => operation.add({ name: '' })}>Add passenger</Button>
+                  <Button onClick={() => operation.add({ name: 'Inserted' }, 0)}>Add to top</Button>
+                  <Button type="primary" htmlType="submit">
+                    Submit passengers
+                  </Button>
+                </Space>
+                <Form.ErrorList errors={meta.errors} />
+              </Space>
+            )}
+          </Form.List>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Scroll to field"
+        code={`const [form] = useForm()
+
+<Form form={form}>
+  <Form.Item label="Target" name="target" rules={[{ required: true }]}>
+    <Input />
+  </Form.Item>
+</Form>
+<Button onClick={() => form.scrollToField?.('target', { focus: true })}>
+  Scroll to target
+</Button>`}
+      >
+        <Space direction="vertical" class="w-90">
+          <Form form={scrollForm}>
+            <Space direction="vertical" class="w-90">
+              <Form.Item label="Before" name="before">
+                <Input placeholder="Another field" />
+              </Form.Item>
+              <div style={{ height: '120px' }} />
+              <Form.Item
+                label="Target"
+                name="target"
+                rules={[{ required: true, message: 'Target is required' }]}
+              >
+                <Input placeholder="Scroll target" />
+              </Form.Item>
+            </Space>
+          </Form>
+          <Button onClick={() => scrollForm.scrollToField?.('target', { focus: true })}>
+            Scroll to target
+          </Button>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="getValueProps and normalize"
+        code={`<Form initialValues={{ code: 'SOLID' }}>
+  <Form.Item
+    label="Code"
+    name="code"
+    normalize={(value) => String(value).trim().toUpperCase()}
+    getValueProps={(value) => ({ value: String(value ?? '').toLowerCase() })}
+  >
+    {(control) => (
+      <input
+        value={String(control.valueProps().value ?? '')}
+        onInput={(event) => control.onChange(event)}
+      />
+    )}
+  </Form.Item>
+</Form>`}
+      >
+        <Form
+          initialValues={{ code: 'SOLID' }}
+          onFinish={(values) => message.success(JSON.stringify(values))}
+        >
+          <Space direction="vertical" class="w-90">
+            <Form.Item
+              label="Code"
+              name="code"
+              normalize={(value) => String(value).trim().toUpperCase()}
+              getValueProps={(value) => ({ value: String(value ?? '').toLowerCase() })}
+              extra="Stored value is trimmed and uppercased; the input displays it in lowercase."
+            >
+              {(control) => (
+                <input
+                  class="ant-input"
+                  value={String(control.valueProps().value ?? '')}
+                  placeholder="Type with spaces or mixed case"
+                  onInput={(event) => control.onChange(event)}
+                />
+              )}
+            </Form.Item>
+            <Button htmlType="submit">Submit normalized value</Button>
+          </Space>
+        </Form>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Form.Item.useStatus"
+        code={`function StatusInput() {
+  const status = Form.Item.useStatus()
+  return <Input placeholder={\`Status: \${status.status() ?? 'none'}\`} />
+}
+
+<Form>
+  <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+    <StatusInput />
+  </Form.Item>
+</Form>`}
+      >
+        <Form>
+          <Space direction="vertical" class="w-90">
+            <Form.Item
+              label="Username"
+              name="statusUsername"
+              rules={[{ required: true, message: 'Username is required' }]}
+            >
+              <StatusInput />
+            </Form.Item>
+            <Button htmlType="submit">Check status</Button>
+          </Space>
         </Form>
       </DemoBlock>
 
