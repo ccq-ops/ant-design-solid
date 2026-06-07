@@ -338,6 +338,52 @@ function WatchedUsername() {
   return <span>Watched: {String(username() ?? '')}</span>
 }
 
+function DynamicRuleFields() {
+  const requireNickname = Form.useWatch('requireNickname')
+
+  return (
+    <>
+      <Form.Item name="requireNickname" valuePropName="checked">
+        <Checkbox>Nickname is required</Checkbox>
+      </Form.Item>
+      <Form.Item
+        label="Nickname"
+        name="nickname"
+        rules={[
+          {
+            required: Boolean(requireNickname()),
+            message: 'Please input nickname',
+          },
+        ]}
+      >
+        <Input placeholder="Nickname" />
+      </Form.Item>
+    </>
+  )
+}
+
+function ConditionalCompanyField() {
+  const business = Form.useWatch('business')
+
+  return (
+    <>
+      <Form.Item name="business" valuePropName="checked">
+        <Checkbox>Business account</Checkbox>
+      </Form.Item>
+      {business() ? (
+        <Form.Item label="Company" name="company" rules={[{ required: true }]}>
+          <Input placeholder="Company name" />
+        </Form.Item>
+      ) : null}
+    </>
+  )
+}
+
+function StatusInput() {
+  const status = Form.Item.useStatus()
+  return <Input placeholder={`Status: ${status.status() ?? 'none'}`} />
+}
+
 export default function FormPage() {
   const [instanceForm] = useForm()
   const [summary, setSummary] = createSignal('Submit the form to see values.')
