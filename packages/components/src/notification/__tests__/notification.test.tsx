@@ -121,6 +121,20 @@ describe('notification', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  it('aligns icon and title in one centered row', () => {
+    notification.success({ message: 'Aligned title', duration: 0 })
+
+    const message = document.body.querySelector<HTMLElement>('.ads-notification-notice-message')
+    const icon = document.body.querySelector<HTMLElement>('.ads-notification-icon')
+
+    expect(message).toHaveStyle({ display: 'flex', 'align-items': 'center' })
+    expect(icon).toHaveStyle({
+      display: 'inline-flex',
+      'align-items': 'center',
+      'flex-shrink': '0',
+    })
+  })
+
   it('renders custom icon actions and deprecated btn content', () => {
     notification.open({
       message: 'With actions',

@@ -38,6 +38,9 @@ export function useNotificationStyle(prefixCls: string) {
           'box-shadow': nt.boxShadow,
         },
         [`.${prefixCls}-notice-message`]: {
+          display: 'flex',
+          'align-items': 'center',
+          gap: t.marginXS,
           'font-weight': 600,
           'padding-inline-end': 24,
         },
@@ -70,6 +73,12 @@ export function useNotificationStyle(prefixCls: string) {
           background: 'transparent',
           cursor: 'pointer',
           color: t.colorTextSecondary,
+        },
+        [`.${prefixCls}-icon`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'line-height': 1,
+          'flex-shrink': 0,
         },
         [`.${prefixCls}-notice-success .${prefixCls}-notice-message`]: { color: t.colorSuccess },
         [`.${prefixCls}-notice-info .${prefixCls}-notice-message`]: { color: t.colorInfo },
