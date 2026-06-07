@@ -1,15 +1,15 @@
 import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
-import { DownOutlined, UpOutlined } from '@ant-design-solid/icons'
+import { DownOutlined, MinusOutlined, PlusOutlined, UpOutlined } from '@ant-design-solid/icons'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
-import type { InputNumberProps } from './interface'
+import type { InputNumberChangeValue, InputNumberProps, InputNumberStepEmitter } from './interface'
 import { useInputNumberStyle } from './input-number.style'
 
 const MAX_PRECISION = 20
 
-function isFiniteNumber(value: number | undefined): value is number {
+function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value)
 }
 
@@ -32,10 +32,42 @@ function roundByPrecision(value: number, precision: number | undefined): number 
   return Math.round(value * factor) / factor
 }
 
-function defaultParser(displayValue: string): number | undefined {
-  if (displayValue.trim() === '') return undefined
-  const parsed = Number(displayValue)
+function countDecimalPlaces(value: number | string | undefined): number {
+  if (value === undefined) return 0
+  const [, decimal = ''] = String(value).toLowerCase().split(/[.e]/)
+  return decimal.replace(/^-/, '').length
+}
+
+function addByStep(value: number, step: number): number {
+  const precision = Math.max(countDecimalPlaces(value), countDecimalPlaces(step))
+  const factor = 10 ** Math.min(precision, MAX_PRECISION)
+  return (Math.round(value * factor) + Math.round(step * factor)) / factor
+}
+
+function defaultParser(
+  displayValue: string,
+  decimalSeparator: string | undefined,
+): number | undefined {
+  const normalized = decimalSeparator ? displayValue.replace(decimalSeparator, '.') : displayValue
+  if (normalized.trim() === '') return undefined
+  const parsed = Number(normalized)
   return Number.isFinite(parsed) ? parsed : undefined
+}
+
+function applyDecimalSeparator(value: string, decimalSeparator: string | undefined): string {
+  if (!decimalSeparator || decimalSeparator === '.') return value
+  return value.replace('.', decimalSeparator)
+}
+
+function toNumber(value: InputNumberChangeValue): number | undefined {
+  if (value === undefined) return undefined
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+function toOutputValue(value: number | undefined, stringMode: boolean): InputNumberChangeValue {
+  if (value === undefined) return undefined
+  return stringMode ? String(value) : value
 }
 
 export function InputNumber(props: InputNumberProps) {
@@ -48,6 +80,7 @@ export function InputNumber(props: InputNumberProps) {
     'precision',
     'placeholder',
     'disabled',
+    'readOnly',
     'size',
     'status',
     'controls',
@@ -58,19 +91,41 @@ export function InputNumber(props: InputNumberProps) {
     'onBlur',
     'onFocus',
     'onKeyDown',
+    'onPressEnter',
+    'onWheel',
+    'onStep',
     'class',
+    'style',
+    'keyboard',
+    'changeOnBlur',
+    'changeOnWheel',
+    'prefix',
+    'suffix',
+    'variant',
+    'mode',
+    'stringMode',
+    'decimalSeparator',
+    'classNames',
+    'styles',
+    'rootClassName',
+    'prefixCls',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
-  const prefixCls = () => `${config.prefixCls()}-input-number`
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-input-number`
   const [, hashId] = useInputNumberStyle(prefixCls())
-  const [innerValue, setInnerValue] = createSignal<number | undefined>(local.defaultValue)
-  const [draftValue, setDraftValue] = createSignal<number | undefined>()
+  const [innerValue, setInnerValue] = createSignal<InputNumberChangeValue>(local.defaultValue)
+  const [draftValue, setDraftValue] = createSignal<InputNumberChangeValue>()
   const [displayValue, setDisplayValue] = createSignal('')
   const [focused, setFocused] = createSignal(false)
-  const controls = () => local.controls !== false
+  const controls = () => local.controls !== false && !local.readOnly
   const disabled = () => Boolean(local.disabled)
+  const readOnly = () => Boolean(local.readOnly)
   const size = () => local.size ?? config.componentSize()
+  const variant = () => local.variant ?? 'outlined'
+  const keyboard = () => local.keyboard !== false
+  const changeOnBlur = () => local.changeOnBlur !== false
+  const stringMode = () => Boolean(local.stringMode)
   const isValueControlled = () => 'value' in props
   const isFormOwned = () => formItem?.valuePropName() === 'value'
   const isFormBlurTrigger = () => isFormOwned() && formItem?.trigger() === 'onBlur'
@@ -80,20 +135,21 @@ export function InputNumber(props: InputNumberProps) {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
   }
 
-  const sourceValue = createMemo<number | undefined>(() => {
-    if (isFormOwned()) return formItem?.value() as number | undefined
+  const sourceValue = createMemo<InputNumberChangeValue>(() => {
+    if (isFormOwned()) return formItem?.value() as InputNumberChangeValue
     if (isValueControlled()) return local.value
     return innerValue()
   })
 
-  const mergedValue = createMemo<number | undefined>(() => {
+  const mergedValue = createMemo<InputNumberChangeValue>(() => {
     if (isFormBlurTrigger()) return draftValue() ?? sourceValue()
     return sourceValue()
   })
 
-  function formatValue(value: number | undefined): string {
-    if (local.formatter) return local.formatter(value)
-    return value === undefined ? '' : String(value)
+  function formatValue(value: InputNumberChangeValue, userTyping = false, input?: string): string {
+    const displayInput = input ?? (value === undefined ? '' : String(value))
+    if (local.formatter) return local.formatter(value, { userTyping, input: displayInput })
+    return value === undefined ? '' : applyDecimalSeparator(String(value), local.decimalSeparator)
   }
 
   createEffect(() => {
@@ -105,20 +161,27 @@ export function InputNumber(props: InputNumberProps) {
     if (!focused()) setDisplayValue(formatValue(mergedValue()))
   })
 
-  function parseDisplay(value: string): number | undefined {
-    return local.parser ? local.parser(value) : defaultParser(value)
+  function parseDisplay(value: string): InputNumberChangeValue {
+    return local.parser ? local.parser(value) : defaultParser(value, local.decimalSeparator)
   }
 
-  function normalize(value: number | undefined): number | undefined {
-    if (!isFiniteNumber(value)) return undefined
-    return roundByPrecision(clamp(value, local.min, local.max), local.precision)
+  function normalize(value: InputNumberChangeValue): InputNumberChangeValue {
+    const numeric = toNumber(value)
+    if (!isFiniteNumber(numeric)) return undefined
+    return toOutputValue(
+      roundByPrecision(clamp(numeric, local.min, local.max), local.precision),
+      stringMode(),
+    )
   }
 
   function syncDisplayToSource(): void {
     setDisplayValue(formatValue(mergedValue()))
   }
 
-  function commitValue(nextValue: number | undefined, trigger: 'onChange' | 'onBlur'): void {
+  function commitValue(
+    nextValue: InputNumberChangeValue,
+    trigger: 'onChange' | 'onBlur',
+  ): InputNumberChangeValue {
     const normalized = normalize(nextValue)
     if (isFormBlurTrigger()) setDraftValue(normalized)
     else if (!isSourceControlled()) setInnerValue(normalized)
@@ -129,12 +192,34 @@ export function InputNumber(props: InputNumberProps) {
     )
       formItem.setFieldValueFromControl(normalized)
     syncDisplayToSource()
+    return normalized
   }
 
-  function stepValue(direction: 1 | -1): void {
-    if (disabled()) return
-    const base = mergedValue() ?? 0
-    commitValue(base + step() * direction, 'onChange')
+  function stepValue(direction: 1 | -1, emitter: InputNumberStepEmitter): void {
+    if (disabled() || readOnly()) return
+    const base = toNumber(mergedValue()) ?? 0
+    const offset = step() * direction
+    const normalized = commitValue(addByStep(base, offset), 'onChange')
+    local.onStep?.(normalized, {
+      offset: stringMode() ? String(offset) : offset,
+      type: direction > 0 ? 'up' : 'down',
+      emitter,
+    })
+  }
+
+  function renderUpIcon() {
+    if (typeof local.controls === 'object' && local.controls.upIcon) return local.controls.upIcon
+    return local.mode === 'spinner' ? <PlusOutlined /> : <UpOutlined />
+  }
+
+  function renderDownIcon() {
+    if (typeof local.controls === 'object' && local.controls.downIcon)
+      return local.controls.downIcon
+    return local.mode === 'spinner' ? <MinusOutlined /> : <DownOutlined />
+  }
+
+  function commitInputValue(input: string, trigger: 'onChange' | 'onBlur'): void {
+    commitValue(parseDisplay(input), trigger)
   }
 
   return (
@@ -143,28 +228,50 @@ export function InputNumber(props: InputNumberProps) {
         prefixCls(),
         focused() && `${prefixCls()}-focused`,
         disabled() && `${prefixCls()}-disabled`,
+        readOnly() && `${prefixCls()}-readonly`,
         size() === 'small' && `${prefixCls()}-sm`,
         size() === 'large' && `${prefixCls()}-lg`,
         local.status && `${prefixCls()}-status-${local.status}`,
+        `${prefixCls()}-variant-${variant()}`,
+        !controls() && `${prefixCls()}-without-controls`,
+        local.mode === 'spinner' && `${prefixCls()}-mode-spinner`,
         hashId(),
+        local.rootClassName,
         local.class,
+        local.classNames?.root,
       )}
+      style={{ ...local.styles?.root, ...(local.style as JSX.CSSProperties | undefined) }}
     >
+      <Show when={local.prefix}>
+        <span
+          class={classNames(`${prefixCls()}-prefix`, local.classNames?.prefix)}
+          style={local.styles?.prefix}
+        >
+          {local.prefix}
+        </span>
+      </Show>
       <input
         {...rest}
         role="spinbutton"
         type="text"
-        class={`${prefixCls()}-input`}
+        class={classNames(`${prefixCls()}-input`, local.classNames?.input)}
+        style={local.styles?.input}
         value={displayValue()}
         placeholder={local.placeholder}
         disabled={disabled()}
+        readOnly={readOnly()}
         aria-disabled={disabled() ? 'true' : undefined}
         aria-valuemin={local.min}
         aria-valuemax={local.max}
-        aria-valuenow={mergedValue()}
+        aria-valuenow={toNumber(mergedValue())}
         onInput={(event) => {
-          if (disabled()) return
-          setDisplayValue(event.currentTarget.value)
+          if (disabled() || readOnly()) {
+            event.currentTarget.value = displayValue()
+            return
+          }
+          const input = event.currentTarget.value
+          setDisplayValue(local.formatter ? formatValue(parseDisplay(input), true, input) : input)
+          if (!changeOnBlur()) commitInputValue(input, 'onChange')
           ;(local.onInput as JSX.EventHandler<HTMLInputElement, InputEvent> | undefined)?.(event)
         }}
         onFocus={(event) => {
@@ -173,43 +280,68 @@ export function InputNumber(props: InputNumberProps) {
         }}
         onBlur={(event) => {
           setFocused(false)
-          commitValue(parseDisplay(event.currentTarget.value), 'onBlur')
+          if (!disabled() && !readOnly() && changeOnBlur())
+            commitInputValue(event.currentTarget.value, 'onBlur')
+          else syncDisplayToSource()
           ;(local.onBlur as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
+        }}
+        onWheel={(event) => {
+          ;(local.onWheel as JSX.EventHandler<HTMLInputElement, WheelEvent> | undefined)?.(event)
+          if (event.defaultPrevented || !local.changeOnWheel || disabled() || readOnly()) return
+          event.preventDefault()
+          stepValue(event.deltaY < 0 ? 1 : -1, 'wheel')
         }}
         onKeyDown={(event) => {
           ;(local.onKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined)?.(
             event,
           )
-          if (event.defaultPrevented) return
+          if (event.key === 'Enter' && !event.defaultPrevented) {
+            ;(
+              local.onPressEnter as JSX.EventHandler<HTMLInputElement, KeyboardEvent> | undefined
+            )?.(event)
+          }
+          if (event.defaultPrevented || disabled() || readOnly() || !keyboard()) return
           if (event.key === 'ArrowUp') {
             event.preventDefault()
-            stepValue(1)
+            stepValue(1, 'keydown')
           }
           if (event.key === 'ArrowDown') {
             event.preventDefault()
-            stepValue(-1)
+            stepValue(-1, 'keydown')
           }
         }}
       />
+      <Show when={local.suffix}>
+        <span
+          class={classNames(`${prefixCls()}-suffix`, local.classNames?.suffix)}
+          style={local.styles?.suffix}
+        >
+          {local.suffix}
+        </span>
+      </Show>
       <Show when={controls()}>
-        <span class={`${prefixCls()}-controls`} aria-disabled={disabled() ? 'true' : undefined}>
+        <span
+          class={classNames(`${prefixCls()}-controls`, local.classNames?.actions)}
+          style={local.styles?.actions}
+          aria-disabled={disabled() ? 'true' : undefined}
+        >
           <button
             type="button"
             aria-label="increase value"
             class={classNames(`${prefixCls()}-handler`, `${prefixCls()}-handler-up`)}
             disabled={disabled()}
-            onClick={() => stepValue(1)}
+            onClick={() => stepValue(1, 'handler')}
           >
-            <UpOutlined />
+            {renderUpIcon()}
           </button>
           <button
             type="button"
             aria-label="decrease value"
             class={classNames(`${prefixCls()}-handler`, `${prefixCls()}-handler-down`)}
             disabled={disabled()}
-            onClick={() => stepValue(-1)}
+            onClick={() => stepValue(-1, 'handler')}
           >
-            <DownOutlined />
+            {renderDownIcon()}
           </button>
         </span>
       </Show>

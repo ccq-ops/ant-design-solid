@@ -21,6 +21,19 @@ export function useInputNumberStyle(prefixCls: string) {
           transition: `border-color ${t.motionDurationMid} ${t.motionEaseInOut}`,
           '&:hover': { 'border-color': t.colorPrimaryHover },
         },
+        [`.${prefixCls}-variant-borderless`]: {
+          border: 0,
+          background: 'transparent',
+        },
+        [`.${prefixCls}-variant-filled`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-variant-underlined`]: {
+          'border-top': 0,
+          'border-left': 0,
+          'border-right': 0,
+          'border-radius': 0,
+        },
         [`.${prefixCls}-focused`]: {
           'border-color': t.colorPrimary,
           'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
@@ -36,6 +49,12 @@ export function useInputNumberStyle(prefixCls: string) {
         },
         [`.${prefixCls}-status-warning`]: {
           'border-color': t.colorWarning,
+        },
+        [`.${prefixCls}-prefix, .${prefixCls}-suffix`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          padding: `0 ${t.paddingXS}px`,
+          color: t.colorTextSecondary,
         },
         [`.${prefixCls}-input`]: {
           flex: '1 1 auto',
@@ -56,6 +75,9 @@ export function useInputNumberStyle(prefixCls: string) {
             margin: 0,
             appearance: 'none',
           },
+        [`.${prefixCls}-without-controls .${prefixCls}-input`]: {
+          'padding-right': `${t.paddingXS}px`,
+        },
         [`.${prefixCls}-controls`]: {
           display: 'inline-flex',
           'flex-direction': 'column',
@@ -79,6 +101,9 @@ export function useInputNumberStyle(prefixCls: string) {
             color: t.colorTextDisabled,
             cursor: 'not-allowed',
           },
+        },
+        [`.${prefixCls}-readonly .${prefixCls}-handler`]: {
+          cursor: 'default',
         },
         [`.${prefixCls}-handler svg`]: {
           display: 'block',

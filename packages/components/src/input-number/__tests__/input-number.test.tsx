@@ -57,7 +57,7 @@ describe('InputNumber', () => {
   it('reflects parent-clamped controlled values after commit', () => {
     const [value, setValue] = createSignal(5)
     const result = render(() => (
-      <InputNumber value={value()} onChange={(next) => setValue(Math.min(next ?? 0, 6))} />
+      <InputNumber value={value()} onChange={(next) => setValue(Math.min(Number(next ?? 0), 6))} />
     ))
     const input = result.getByRole('spinbutton') as HTMLInputElement
 
@@ -110,6 +110,185 @@ describe('InputNumber', () => {
     expect(decreaseButton.querySelector('svg')).toBeInTheDocument()
     expect(increaseButton).not.toHaveTextContent('▲')
     expect(decreaseButton).not.toHaveTextContent('▼')
+  })
+
+  it('disables arrow key stepping when keyboard is false', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <InputNumber defaultValue={1} keyboard={false} onChange={onChange} />
+    ))
+    const input = result.getByRole('spinbutton')
+
+    fireEvent.keyDown(input, { key: 'ArrowUp' })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(input).toHaveValue('1')
+  })
+
+  it('calls onPressEnter after onKeyDown for Enter', () => {
+    const onKeyDown = vi.fn()
+    const onPressEnter = vi.fn()
+    const result = render(() => <InputNumber onKeyDown={onKeyDown} onPressEnter={onPressEnter} />)
+    const input = result.getByRole('spinbutton')
+
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+    expect(onPressEnter).toHaveBeenCalledTimes(1)
+  })
+
+  it('commits while typing when changeOnBlur is false', () => {
+    const onChange = vi.fn()
+    const result = render(() => <InputNumber changeOnBlur={false} onChange={onChange} />)
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    fireEvent.input(input, { target: { value: '12' } })
+
+    expect(onChange).toHaveBeenLastCalledWith(12)
+    expect(input).toHaveValue('12')
+  })
+
+  it('readOnly prevents typing, keyboard, wheel, and control commits', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <InputNumber defaultValue={4} readOnly changeOnWheel onChange={onChange} />
+    ))
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    expect(input).toHaveAttribute('readonly')
+    fireEvent.input(input, { target: { value: '8' } })
+    fireEvent.keyDown(input, { key: 'ArrowUp' })
+    fireEvent.wheel(input, { deltaY: -1 })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(input).toHaveValue('4')
+    expect(result.queryByRole('button', { name: 'increase value' })).toBeNull()
+  })
+
+  it('supports mouse wheel stepping and onStep metadata', () => {
+    const onChange = vi.fn()
+    const onStep = vi.fn()
+    const result = render(() => (
+      <InputNumber defaultValue={2} step={0.5} changeOnWheel onChange={onChange} onStep={onStep} />
+    ))
+    const input = result.getByRole('spinbutton')
+
+    fireEvent.wheel(input, { deltaY: -1 })
+
+    expect(onChange).toHaveBeenLastCalledWith(2.5)
+    expect(onStep).toHaveBeenLastCalledWith(2.5, {
+      offset: 0.5,
+      type: 'up',
+      emitter: 'wheel',
+    })
+  })
+
+  it('calls onStep for handler and keyboard stepping', () => {
+    const onStep = vi.fn()
+    const result = render(() => <InputNumber defaultValue={2} step={2} onStep={onStep} />)
+    const input = result.getByRole('spinbutton')
+
+    fireEvent.click(result.getByRole('button', { name: 'increase value' }))
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+    expect(onStep).toHaveBeenNthCalledWith(1, 4, {
+      offset: 2,
+      type: 'up',
+      emitter: 'handler',
+    })
+    expect(onStep).toHaveBeenNthCalledWith(2, 2, {
+      offset: -2,
+      type: 'down',
+      emitter: 'keydown',
+    })
+  })
+
+  it('renders prefix, suffix, custom controls, and variant class', () => {
+    const result = render(() => (
+      <InputNumber
+        prefix={<span data-testid="prefix-node">$</span>}
+        suffix={<span data-testid="suffix-node">USD</span>}
+        controls={{ upIcon: <span>plus</span>, downIcon: <span>minus</span> }}
+        variant="filled"
+      />
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(result.getByTestId('prefix-node')).toBeInTheDocument()
+    expect(result.getByTestId('suffix-node')).toBeInTheDocument()
+    expect(result.getByRole('button', { name: 'increase value' })).toHaveTextContent('plus')
+    expect(result.getByRole('button', { name: 'decrease value' })).toHaveTextContent('minus')
+    expect(root.className).toContain('ads-input-number-variant-filled')
+  })
+
+  it('supports string step values and stringMode change values', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <InputNumber defaultValue="1.1" step="0.2" stringMode onChange={onChange} />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'increase value' }))
+
+    expect(onChange).toHaveBeenLastCalledWith('1.3')
+    expect(result.getByRole('spinbutton')).toHaveValue('1.3')
+  })
+
+  it('supports decimalSeparator parsing and display', () => {
+    const onChange = vi.fn()
+    const result = render(() => <InputNumber decimalSeparator="," onChange={onChange} />)
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    fireEvent.input(input, { target: { value: '1,5' } })
+    fireEvent.blur(input)
+
+    expect(onChange).toHaveBeenLastCalledWith(1.5)
+    expect(input).toHaveValue('1,5')
+  })
+
+  it('passes userTyping info to formatter', () => {
+    const formatter = vi.fn(
+      (value: number | string | undefined, info: { userTyping: boolean; input: string }) =>
+        info.userTyping ? info.input : `#${value ?? ''}`,
+    )
+    const result = render(() => <InputNumber defaultValue={3} formatter={formatter} />)
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    expect(input).toHaveValue('#3')
+    fireEvent.input(input, { target: { value: '12' } })
+
+    expect(formatter).toHaveBeenCalledWith(3, { userTyping: false, input: '3' })
+    expect(input).toHaveValue('12')
+  })
+
+  it('applies semantic classes, styles, rootClassName, and prefixCls override', () => {
+    const result = render(() => (
+      <InputNumber
+        prefixCls="custom-number"
+        rootClassName="root-extra"
+        prefix={<span />}
+        suffix={<span />}
+        classNames={{
+          root: 'root-slot',
+          prefix: 'prefix-slot',
+          suffix: 'suffix-slot',
+          input: 'input-slot',
+          actions: 'actions-slot',
+        }}
+        styles={{ root: { width: '222px' }, input: { color: 'red' } }}
+      />
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    expect(root.className).toContain('custom-number')
+    expect(root.className).toContain('root-extra')
+    expect(root.className).toContain('root-slot')
+    expect(root).toHaveStyle({ width: '222px' })
+    expect(input.className).toContain('input-slot')
+    expect(input).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+    expect(root.querySelector('.prefix-slot')).toBeInTheDocument()
+    expect(root.querySelector('.suffix-slot')).toBeInTheDocument()
+    expect(root.querySelector('.actions-slot')).toBeInTheDocument()
   })
 
   it('supports keyboard increment and decrement', () => {
