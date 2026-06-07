@@ -15,10 +15,28 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-vertical .${prefixCls}-item`]: {
         display: 'block',
+        'align-items': 'flex-start',
       },
+      [`.${prefixCls}-vertical .${prefixCls}-item-label`]: {
+        height: 'auto',
+        margin: 0,
+        padding: `0 0 ${formToken.verticalLabelPadding}px`,
+        'text-align': 'left',
+      },
+      [`.${prefixCls}-vertical .${prefixCls}-item-label-colon .${prefixCls}-item-label-content::after`]:
+        {
+          visibility: 'hidden',
+        },
       [`.${prefixCls}-horizontal .${prefixCls}-item`]: {
         display: 'flex',
-        gap: 12,
+        'align-items': 'flex-start',
+        gap: 0,
+      },
+      [`.${prefixCls}-horizontal .${prefixCls}-item-label`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        height: t.controlHeight,
+        'margin-bottom': 0,
       },
       [`.${prefixCls}-inline`]: {
         display: 'flex',
@@ -35,9 +53,21 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-label`]: {
         color: formToken.labelColor,
-        'margin-bottom': formToken.verticalLabelPadding,
         'white-space': 'nowrap',
       },
+      [`.${prefixCls}-item-label.${prefixCls}-item-required::before`]: {
+        display: 'inline-block',
+        'margin-inline-end': t.marginXS / 2,
+        color: formToken.labelRequiredMarkColor,
+        'font-size': t.fontSize,
+        'font-family': 'sans-serif',
+        'line-height': 1,
+        content: '"*"',
+      },
+      [`.${prefixCls}-item-label.${prefixCls}-item-required.${prefixCls}-item-required-mark-hidden::before, .${prefixCls}-item-label.${prefixCls}-item-required.${prefixCls}-item-required-mark-optional::before`]:
+        {
+          display: 'none',
+        },
       [`.${prefixCls}-item-label-left`]: {
         'text-align': 'left',
       },
@@ -46,10 +76,8 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-label-colon .${prefixCls}-item-label-content::after`]: {
         content: '":"',
-      },
-      [`.${prefixCls}-item-required`]: {
-        color: formToken.labelRequiredMarkColor,
-        'margin-inline-start': 4,
+        'margin-inline-start': t.marginXS / 4,
+        'margin-inline-end': t.marginXS,
       },
       [`.${prefixCls}-item-optional`]: {
         color: t.colorTextSecondary,

@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it } from 'vitest'
@@ -15,18 +16,77 @@ describe('Form layout props', () => {
     expect(result.getByLabelText('profile')).toHaveClass('ant-form-vertical')
   })
 
-  it('renders required mark according to required rules', () => {
-    const result = render(() => (
-      <ConfigProvider prefixCls="ant">
-        <Form requiredMark>
-          <Form.Item label="Username" name="username" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Form>
-      </ConfigProvider>
+  it('centers horizontal labels with controls and Ant Design label spacing', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider prefixCls="ant">
+          <Form layout="horizontal">
+            <Form.Item label="Username">
+              <Input />
+            </Form.Item>
+          </Form>
+        </ConfigProvider>
+      </StyleProvider>
     ))
 
-    expect(result.getByText('*')).toBeInTheDocument()
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ant-form-horizontal .ant-form-item{align-items:flex-start;display:flex;gap:0;',
+    )
+    expect(css).toContain(
+      '.ant-form-horizontal .ant-form-item-label{align-items:center;display:inline-flex;height:32px;margin-bottom:0;',
+    )
+    expect(css).toContain(
+      '.ant-form-item-label-colon .ant-form-item-label-content::after{content:":";margin-inline-end:8px;margin-inline-start:2px;',
+    )
+  })
+
+  it('places vertical labels at top left with Ant Design vertical spacing', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider prefixCls="ant">
+          <Form layout="vertical">
+            <Form.Item label="Username">
+              <Input />
+            </Form.Item>
+          </Form>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain('.ant-form-vertical .ant-form-item{align-items:flex-start;display:block;')
+    expect(css).toContain(
+      '.ant-form-vertical .ant-form-item-label{height:auto;margin:0;padding:0 0 8px;text-align:left;',
+    )
+    expect(css).toContain(
+      '.ant-form-vertical .ant-form-item-label-colon .ant-form-item-label-content::after{visibility:hidden;',
+    )
+  })
+
+  it('renders required mark as an Ant Design-style label pseudo element', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider prefixCls="ant">
+          <Form requiredMark>
+            <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+          </Form>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    expect(result.getByText('Username').closest('label')).toHaveClass('ant-form-item-required')
+    expect(result.queryByText('*')).not.toBeInTheDocument()
+
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ant-form-item-label.ant-form-item-required::before{color:#ff4d4f;content:"*";display:inline-block;font-family:sans-serif;font-size:14px;line-height:1;margin-inline-end:4px;',
+    )
   })
 
   it('hides required mark when disabled at Form level', () => {
@@ -62,7 +122,7 @@ describe('Form layout props', () => {
 
     fireEvent.click(result.getByRole('button', { name: 'Show marks' }))
 
-    expect(result.getByText('*')).toBeInTheDocument()
+    expect(result.getByText('Username').closest('label')).toHaveClass('ant-form-item-required')
   })
 
   it('renders required mark for function rules that resolve to required', () => {
@@ -76,7 +136,7 @@ describe('Form layout props', () => {
       </ConfigProvider>
     ))
 
-    expect(result.getByText('*')).toBeInTheDocument()
+    expect(result.getByText('Email').closest('label')).toHaveClass('ant-form-item-required')
   })
 
   it('shows optional label for non-required fields', () => {

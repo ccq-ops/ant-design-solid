@@ -100,7 +100,6 @@ export function FormItem(props: FormItemProps) {
   }
   const isRequired = () =>
     props.required === true || rules().some((rule) => isRequiredRule(rule, form))
-  const showRequiredMark = () => layout.requiredMark() === true && isRequired()
   const showOptionalMark = () => layout.requiredMark() === 'optional' && !isRequired()
   const mergedLabelAlign = () => props.labelAlign ?? layout.labelAlign()
   const mergedColon = () => props.colon ?? layout.colon()
@@ -299,14 +298,14 @@ export function FormItem(props: FormItemProps) {
             `${prefixCls()}-item-label`,
             `${prefixCls()}-item-label-${mergedLabelAlign()}`,
             mergedColon() && `${prefixCls()}-item-label-colon`,
+            isRequired() && `${prefixCls()}-item-required`,
+            layout.requiredMark() === false && `${prefixCls()}-item-required-mark-hidden`,
+            layout.requiredMark() === 'optional' && `${prefixCls()}-item-required-mark-optional`,
           )}
         >
           <span class={`${prefixCls()}-item-label-content`}>{props.label}</span>
           <Show when={props.tooltip}>
             <span class={`${prefixCls()}-item-tooltip`}>{props.tooltip}</span>
-          </Show>
-          <Show when={showRequiredMark()}>
-            <span class={`${prefixCls()}-item-required`}>*</span>
           </Show>
           <Show when={showOptionalMark()}>
             <span class={`${prefixCls()}-item-optional`}>(optional)</span>
