@@ -142,7 +142,8 @@ export function MessageHolder(props: MessageHolderProps) {
     return props.notices().slice(-threshold)
   })
   const firstNotice = () => visibleNotices()[0] ?? ({ content: '' } as MessageNotice)
-  const holderClassNames = () => mergeClassNames(cfg().classNames, firstNotice().classNames, firstNotice())
+  const holderClassNames = () =>
+    mergeClassNames(cfg().classNames, firstNotice().classNames, firstNotice())
   const holderStyles = () => mergeStyles(cfg().styles, firstNotice().styles, firstNotice())
 
   return (
@@ -157,7 +158,8 @@ export function MessageHolder(props: MessageHolderProps) {
     >
       <For each={visibleNotices()}>
         {(notice) => {
-          const semanticClassNames = () => mergeClassNames(cfg().classNames, notice.classNames, notice)
+          const semanticClassNames = () =>
+            mergeClassNames(cfg().classNames, notice.classNames, notice)
           const semanticStyles = () => mergeStyles(cfg().styles, notice.styles, notice)
           const pauseOnHover = () => notice.pauseOnHover ?? cfg().pauseOnHover ?? true
           return (
@@ -168,17 +170,26 @@ export function MessageHolder(props: MessageHolderProps) {
                 notice.className,
                 semanticClassNames().wrapper,
               )}
-              style={{ ...normalizeStyle(notice.style), ...normalizeStyle(semanticStyles().wrapper) }}
+              style={{
+                ...normalizeStyle(notice.style),
+                ...normalizeStyle(semanticStyles().wrapper),
+              }}
             >
               <div
-                class={classNames(`${prefixCls()}-notice-content`, semanticClassNames().listContent)}
+                class={classNames(
+                  `${prefixCls()}-notice-content`,
+                  semanticClassNames().listContent,
+                )}
                 style={normalizeStyle(semanticStyles().listContent)}
                 onClick={(event) => notice.onClick?.(event)}
                 onMouseEnter={() => pauseOnHover() && props.onMouseEnter?.(notice.key)}
                 onMouseLeave={() => pauseOnHover() && props.onMouseLeave?.(notice.key)}
               >
                 <span
-                  class={classNames(`${prefixCls()}-icon-${notice.type}`, semanticClassNames().icon)}
+                  class={classNames(
+                    `${prefixCls()}-icon-${notice.type}`,
+                    semanticClassNames().icon,
+                  )}
                   style={normalizeStyle(semanticStyles().icon)}
                   aria-hidden="true"
                 >

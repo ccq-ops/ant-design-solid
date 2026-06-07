@@ -281,12 +281,15 @@ function useMessage(localConfig?: MessageConfigOptions): [MessageInstance, JSX.E
     getConfig: () => localConfig ?? {},
   })
   onCleanup(() => runtime.destroy())
-  return [createInstance(runtime), createMessageHolder({
-    notices,
-    config: () => localConfig ?? {},
-    onMouseEnter: runtime.pause,
-    onMouseLeave: runtime.resume,
-  })]
+  return [
+    createInstance(runtime),
+    createMessageHolder({
+      notices,
+      config: () => localConfig ?? {},
+      onMouseEnter: runtime.pause,
+      onMouseLeave: runtime.resume,
+    }),
+  ]
 }
 
 function createInstance(runtime: Runtime): MessageInstance {
