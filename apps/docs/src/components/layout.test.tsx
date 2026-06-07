@@ -105,6 +105,14 @@ describe('Layout', () => {
     expect(toggleTheme).toHaveBeenCalledTimes(1)
   })
 
+  it('centers the theme toggle icon within its circular button', () => {
+    const result = renderLayout()
+    const toggle = result.getByRole('button', { name: 'Switch to dark theme' })
+
+    expect(toggle).toHaveClass('leading-none')
+    expect(toggle.querySelector('svg')).toHaveClass('block')
+  })
+
   it('updates the theme toggle label in dark mode', () => {
     mode.mockReturnValue('dark')
     const result = renderLayout()
@@ -127,6 +135,14 @@ describe('Layout', () => {
     )
   })
 
+  it('centers top navigation items horizontally within the nav row', () => {
+    const result = renderLayout()
+    const docsLink = result.getByRole('link', { name: 'Docs' })
+    const topNav = docsLink.closest('nav')
+
+    expect(topNav).toHaveClass('items-center')
+  })
+
   it('centers the home page content when the sidebar is hidden', () => {
     const result = renderLayout()
     const main = result.getByRole('main')
@@ -146,6 +162,16 @@ describe('Layout', () => {
     expect(sidebar).toHaveClass('top-16')
     expect(sidebar).toHaveClass('h-[calc(100vh-4rem)]')
     expect(sidebar).toHaveClass('overflow-y-auto')
+  })
+
+  it('centers sidebar document labels horizontally', () => {
+    setPath('/docs/getting-started')
+    const result = renderLayout()
+    const gettingStartedLink = result.getByRole('link', { name: 'Getting Started' })
+
+    expect(gettingStartedLink).toHaveClass('flex')
+    expect(gettingStartedLink).toHaveClass('justify-center')
+    expect(gettingStartedLink).toHaveClass('text-center')
   })
 
   it('shows only the sidebar menu for the current top navigation group', () => {

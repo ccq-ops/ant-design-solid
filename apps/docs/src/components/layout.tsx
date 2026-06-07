@@ -5,7 +5,7 @@ import { sideNavGroups, topNavItems } from '../routes'
 import { useDocsTheme } from './theme-context'
 
 const sidebarLinkClass =
-  'rounded-lg px-3 py-2 transition-colors hover:bg-blue-50 hover:text-blue-600'
+  'flex justify-center rounded-lg px-3 py-2 text-center transition-colors hover:bg-blue-50 hover:text-blue-600'
 const sidebarActiveLinkClass = 'bg-blue-50 text-blue-600 font-medium'
 
 function groupFromPath(pathname: string) {
@@ -28,7 +28,7 @@ export function Layout(props: { children?: JSX.Element }) {
         <A class="text-lg font-bold text-blue-600" href="/">
           Ant Design Solid
         </A>
-        <nav class="docs-text-secondary flex gap-6">
+        <nav class="docs-text-secondary flex items-center gap-6">
           <For each={topNavItems}>
             {(item) => (
               <A class="transition-colors hover:text-blue-600" href={item.path}>
@@ -44,13 +44,17 @@ export function Layout(props: { children?: JSX.Element }) {
           </a>
           <button
             type="button"
-            class="docs-border inline-flex h-8 w-8 items-center justify-center rounded-full border text-base transition-colors hover:border-blue-600 hover:text-blue-600"
+            class="docs-border inline-flex h-8 w-8 items-center justify-center rounded-full border text-base leading-none transition-colors hover:border-blue-600 hover:text-blue-600"
             aria-label={
               docsTheme.mode() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'
             }
             onClick={docsTheme.toggleTheme}
           >
-            {docsTheme.mode() === 'light' ? <MoonOutlined /> : <SunOutlined />}
+            {docsTheme.mode() === 'light' ? (
+              <MoonOutlined class="block" />
+            ) : (
+              <SunOutlined class="block" />
+            )}
           </button>
         </nav>
       </header>
