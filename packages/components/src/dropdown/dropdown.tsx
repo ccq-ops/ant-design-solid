@@ -44,6 +44,7 @@ export function Dropdown(props: DropdownProps) {
   const [overlayElement, setOverlayElement] = createSignal<HTMLDivElement>()
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [position, setPosition] = createSignal<JSX.CSSProperties>(emptyPosition())
+  let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
   const trigger = () => local.trigger ?? 'click'
   const placement = () => local.placement ?? 'bottomLeft'
   const mergedOpen = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
@@ -63,11 +64,37 @@ export function Dropdown(props: DropdownProps) {
     local.onOpenChange?.(nextOpen)
   }
 
+  function clearHoverCloseTimer() {
+    if (!hoverCloseTimer) return
+    clearTimeout(hoverCloseTimer)
+    hoverCloseTimer = undefined
+  }
+
+  function scheduleHoverClose() {
+    clearHoverCloseTimer()
+    hoverCloseTimer = setTimeout(() => {
+      hoverCloseTimer = undefined
+      setOpen(false)
+    }, 100)
+  }
+
   function containsTarget(target: EventTarget | null) {
     return Boolean(
       target instanceof Node &&
       (triggerElement()?.contains(target) || overlayElement()?.contains(target)),
     )
+  }
+
+  function handleHoverEnter() {
+    if (trigger() !== 'hover') return
+    clearHoverCloseTimer()
+    setOpen(true)
+  }
+
+  function handleHoverLeave(event: MouseEvent) {
+    if (trigger() !== 'hover') return
+    if (containsTarget(event.relatedTarget)) return
+    scheduleHoverClose()
   }
 
   const removeKeydown = addDocumentKeydown((event) => {
@@ -86,6 +113,7 @@ export function Dropdown(props: DropdownProps) {
   onCleanup(() => {
     removeKeydown()
     removePointerDown()
+    clearHoverCloseTimer()
   })
 
   function clickItem(item: DropdownMenuItem, event: MouseEvent) {
@@ -108,11 +136,11 @@ export function Dropdown(props: DropdownProps) {
         }}
         onMouseEnter={(event) => {
           ;(local.onMouseEnter as ((event: MouseEvent) => void) | undefined)?.(event)
-          if (trigger() === 'hover') setOpen(true)
+          handleHoverEnter()
         }}
         onMouseLeave={(event) => {
           ;(local.onMouseLeave as ((event: MouseEvent) => void) | undefined)?.(event)
-          if (trigger() === 'hover') setOpen(false)
+          handleHoverLeave(event)
         }}
       >
         {local.children}
@@ -133,6 +161,8 @@ export function Dropdown(props: DropdownProps) {
               local.overlayClass,
             )}
             style={{ ...position(), 'z-index': zIndex, ...local.overlayStyle }}
+            onMouseEnter={handleHoverEnter}
+            onMouseLeave={handleHoverLeave}
             on:click={(event) => event.stopPropagation()}
           >
             <ul role="menu" class={`${prefixCls()}-menu`}>

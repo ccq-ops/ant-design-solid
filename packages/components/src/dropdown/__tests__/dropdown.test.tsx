@@ -34,6 +34,7 @@ describe('Dropdown', () => {
   })
 
   it('opens and closes overlay on hover trigger', () => {
+    vi.useFakeTimers()
     const result = render(() => (
       <Dropdown trigger="hover" menu={{ items: [{ key: 'edit', label: 'Edit' }] }}>
         <button type="button">Actions</button>
@@ -45,7 +46,37 @@ describe('Dropdown', () => {
     expect(document.body.querySelector('[role="menu"]')).toHaveTextContent('Edit')
 
     fireEvent.mouseLeave(trigger)
+    vi.advanceTimersByTime(200)
+
     expect(document.body.querySelector('[role="menu"]')).toBeFalsy()
+    vi.useRealTimers()
+  })
+  it('keeps hover overlay open when moving from trigger into the portaled overlay', () => {
+    vi.useFakeTimers()
+    const result = render(() => (
+      <Dropdown trigger="hover" menu={{ items: [{ key: 'edit', label: 'Edit' }] }}>
+        <button type="button">Actions</button>
+      </Dropdown>
+    ))
+    const trigger = result.container.querySelector('.ads-dropdown-trigger')!
+
+    fireEvent.mouseEnter(trigger)
+    const overlay = document.body.querySelector<HTMLElement>('.ads-dropdown')!
+    expect(overlay).toBeTruthy()
+
+    fireEvent.mouseLeave(trigger, { relatedTarget: document.body })
+    expect(document.body.querySelector('[role="menu"]')).toHaveTextContent('Edit')
+
+    fireEvent.mouseEnter(overlay, { relatedTarget: document.body })
+    vi.advanceTimersByTime(200)
+
+    expect(document.body.querySelector('[role="menu"]')).toHaveTextContent('Edit')
+
+    fireEvent.mouseLeave(overlay, { relatedTarget: document.body })
+    vi.advanceTimersByTime(200)
+
+    expect(document.body.querySelector('[role="menu"]')).toBeFalsy()
+    vi.useRealTimers()
   })
 
   it('calls menu onClick and closes when clicking an enabled item', () => {
