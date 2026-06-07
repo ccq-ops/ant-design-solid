@@ -66,7 +66,7 @@ export function useModalStyle(prefixCls: string) {
         padding: `${t.paddingLG}px ${t.paddingLG}px 0`,
       },
       [`.${prefixCls}-confirm-body`]: { display: 'flex', gap: t.marginSM },
-      [`.${prefixCls}-confirm-icon`]: { 'font-size': t.fontSizeLG, 'line-height': 1 },
+      [`.${prefixCls}-confirm-icon`]: { 'font-size': t.fontSize, 'line-height': 1 },
       [`.${prefixCls}-confirm-message`]: { flex: 1 },
       [`.${prefixCls}-confirm-content`]: { color: t.colorText },
       [`.${prefixCls}-confirm-success .${prefixCls}-title`]: { color: t.colorSuccess },

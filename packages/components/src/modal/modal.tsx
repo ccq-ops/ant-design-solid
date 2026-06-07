@@ -6,7 +6,6 @@ import {
   onCleanup,
   splitProps,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
