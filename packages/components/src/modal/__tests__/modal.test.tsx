@@ -313,4 +313,45 @@ describe('Modal', () => {
     const dropdown = document.body.querySelector<HTMLElement>('.ads-select-dropdown')!
     expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(root.style.zIndex))
   })
+
+  it('accepts P0 and P1 modal api props at runtime', () => {
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    const afterOpenChange = vi.fn()
+
+    render(() => (
+      <Modal
+        open
+        title="Compat"
+        className="compat-modal"
+        wrapClassName="compat-wrap"
+        okType="default"
+        okButtonProps={{ danger: true, class: 'ok-extra' }}
+        cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
+        closeIcon={<span data-testid="custom-close">x</span>}
+        mask={{ enabled: true, blur: true, closable: false }}
+        closable={{ closeIcon: <span data-testid="object-close">close</span> }}
+        classNames={{ body: 'compat-body' }}
+        styles={{ body: { color: 'red' } }}
+        getContainer={container}
+        modalRender={(node) => <section data-testid="modal-render">{node}</section>}
+        forceRender
+        destroyOnHidden={false}
+        afterOpenChange={afterOpenChange}
+        loading
+      >
+        Body
+      </Modal>
+    ))
+
+    expect(container).toHaveTextContent('Compat')
+    expect(container.querySelector('.compat-modal')).toBeTruthy()
+    expect(container.querySelector('.compat-wrap')).toBeTruthy()
+    expect(container.querySelector('.compat-body')).toBeTruthy()
+    expect(container.querySelector<HTMLElement>('.compat-body')!.style.color).toBe('red')
+    expect(container.querySelector('[data-testid="modal-render"]')).toBeTruthy()
+    expect(container.querySelector('[data-testid="object-close"]')).toBeTruthy()
+    expect(container.querySelector('.ads-modal-mask-blur')).toBeTruthy()
+    expect(container.querySelector('.ads-modal-loading')).toBeTruthy()
+  })
 })

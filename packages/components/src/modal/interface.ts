@@ -1,19 +1,76 @@
 import type { JSX } from 'solid-js'
+import type { ButtonProps, ButtonType } from '../button'
+
+export type ModalSemanticName =
+  | 'root'
+  | 'mask'
+  | 'wrap'
+  | 'modal'
+  | 'content'
+  | 'header'
+  | 'title'
+  | 'body'
+  | 'footer'
+  | 'close'
+
+export type ModalClassNames = Partial<Record<ModalSemanticName, string>>
+export type ModalStyles = Partial<Record<ModalSemanticName, JSX.CSSProperties>>
+
+export interface ModalMaskConfig {
+  enabled?: boolean
+  blur?: boolean
+  closable?: boolean
+}
+
+export interface ModalClosableConfig {
+  closeIcon?: JSX.Element
+  disabled?: boolean
+  onClose?: () => void
+  afterClose?: () => void
+}
+
+export type ModalGetContainer = HTMLElement | (() => HTMLElement | undefined) | string | false
+
+export interface ModalFooterRenderExtra {
+  OkBtn: () => JSX.Element
+  CancelBtn: () => JSX.Element
+}
+
+export type ModalFooterRender = (
+  originNode: JSX.Element,
+  extra: ModalFooterRenderExtra,
+) => JSX.Element
+
+export type ModalFooter = JSX.Element | ModalFooterRender | null
 
 export interface ModalProps {
   open?: boolean
   title?: JSX.Element
-  footer?: JSX.Element | null
+  footer?: ModalFooter
   okText?: JSX.Element
   cancelText?: JSX.Element
   confirmLoading?: boolean
-  closable?: boolean
-  mask?: boolean
+  closable?: boolean | ModalClosableConfig
+  closeIcon?: JSX.Element
+  mask?: boolean | ModalMaskConfig
   maskClosable?: boolean
   keyboard?: boolean
   centered?: boolean
   width?: number | string
   zIndex?: number
+  okType?: ButtonType
+  okButtonProps?: ButtonProps
+  cancelButtonProps?: ButtonProps
+  destroyOnHidden?: boolean
+  forceRender?: boolean
+  getContainer?: ModalGetContainer
+  modalRender?: (node: JSX.Element) => JSX.Element
+  afterOpenChange?: (open: boolean) => void
+  loading?: boolean
+  className?: string
+  wrapClassName?: string
+  classNames?: ModalClassNames
+  styles?: ModalStyles
   onOk?: () => void | Promise<void>
   onCancel?: () => void
   afterClose?: () => void
@@ -26,6 +83,7 @@ export interface ModalProps {
 }
 
 export type ModalFuncType = 'info' | 'success' | 'error' | 'warning' | 'confirm'
+export type ModalFuncClose = () => void
 
 export interface ModalFuncProps {
   type?: ModalFuncType
@@ -33,17 +91,40 @@ export interface ModalFuncProps {
   content?: JSX.Element
   okText?: JSX.Element
   cancelText?: JSX.Element
-  closable?: boolean
+  closable?: boolean | ModalClosableConfig
+  closeIcon?: JSX.Element
+  mask?: boolean | ModalMaskConfig
   maskClosable?: boolean
   keyboard?: boolean
+  centered?: boolean
   width?: number | string
-  onOk?: () => void | Promise<void>
-  onCancel?: () => void
+  zIndex?: number
+  style?: JSX.CSSProperties
+  className?: string
+  wrapClassName?: string
+  classNames?: ModalClassNames
+  styles?: ModalStyles
+  okType?: ButtonType
+  okButtonProps?: ButtonProps
+  cancelButtonProps?: ButtonProps
+  footer?: ModalFooter
+  icon?: JSX.Element
+  afterClose?: () => void
+  getContainer?: ModalGetContainer
+  modalRender?: (node: JSX.Element) => JSX.Element
+  destroyOnHidden?: boolean
+  forceRender?: boolean
+  onOk?: (close?: ModalFuncClose) => void | Promise<void>
+  onCancel?: (close?: ModalFuncClose) => void | Promise<void>
 }
+
+export type ModalFuncUpdate =
+  | Partial<ModalFuncProps>
+  | ((prevConfig: ModalFuncProps) => Partial<ModalFuncProps>)
 
 export interface ModalFuncReturn {
   destroy: () => void
-  update: (config: Partial<ModalFuncProps>) => void
+  update: (config: ModalFuncUpdate) => void
 }
 
 export interface ModalStaticMethods {
