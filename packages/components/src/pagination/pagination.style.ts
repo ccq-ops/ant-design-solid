@@ -31,17 +31,28 @@ export function usePaginationStyle(prefixCls: string) {
         [`.${prefixCls}-align-end`]: {
           'justify-content': 'flex-end',
         },
-        [`.${prefixCls}-large .${prefixCls}-item-button, .${prefixCls}-large .${prefixCls}-input, .${prefixCls}-large .${prefixCls}-select`]:
+        [`.${prefixCls}-large .${prefixCls}-item-button, .${prefixCls}-large .${prefixCls}-input`]:
           {
             'min-width': `${t.controlHeight}px`,
             height: `${t.controlHeight}px`,
           },
-        [`.${prefixCls}-small .${prefixCls}-item-button, .${prefixCls}-small .${prefixCls}-input, .${prefixCls}-small .${prefixCls}-select`]:
+        [`.${prefixCls}-large .${prefixCls}-select [role="combobox"]`]: {
+          'min-width': `${t.controlHeight}px`,
+          height: `${t.controlHeight}px`,
+        },
+        [`.${prefixCls}-small .${prefixCls}-item-button, .${prefixCls}-small .${prefixCls}-input`]:
           {
             'min-width': `${t.controlHeightSM}px`,
             height: `${t.controlHeightSM}px`,
             'font-size': `${t.fontSize - 2}px`,
           },
+        [`.${prefixCls}-small .${prefixCls}-select`]: {
+          'font-size': `${t.fontSize - 2}px`,
+        },
+        [`.${prefixCls}-small .${prefixCls}-select [role="combobox"]`]: {
+          'min-width': `${t.controlHeightSM}px`,
+          height: `${t.controlHeightSM}px`,
+        },
         [`.${prefixCls}-disabled`]: {
           cursor: 'not-allowed',
         },
@@ -121,18 +132,11 @@ export function usePaginationStyle(prefixCls: string) {
           cursor: 'not-allowed',
         },
         [`.${prefixCls}-select`]: {
-          height: `${itemSize}px`,
-          padding: `0 ${t.paddingXS}px`,
-          border: `${t.lineWidth}px solid ${t.colorBorder}`,
-          'border-radius': `${t.borderRadius}px`,
-          color: t.colorText,
-          background: t.colorBgContainer,
           font: 'inherit',
         },
-        [`.${prefixCls}-select:disabled`]: {
-          color: t.colorTextDisabled,
-          background: t.colorFillAlter,
-          cursor: 'not-allowed',
+        [`.${prefixCls}-select [role="combobox"]`]: {
+          height: `${itemSize}px`,
+          padding: `0 ${t.paddingXS}px`,
         },
         [`.${prefixCls}-quick-jumper`]: {
           display: 'inline-flex',

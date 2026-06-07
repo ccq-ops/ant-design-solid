@@ -1,4 +1,5 @@
 import type { JSX } from 'solid-js'
+import type { SelectProps } from '../select'
 
 export type PaginationPageSizeOption = string | number
 export type PaginationAlign = 'start' | 'center' | 'end'
@@ -14,8 +15,8 @@ export interface PaginationQuickJumperConfig {
 }
 
 export type PaginationShowSizeChangerConfig = Omit<
-  JSX.SelectHTMLAttributes<HTMLSelectElement>,
-  'children' | 'value'
+  SelectProps,
+  'children' | 'value' | 'defaultValue' | 'options'
 >
 
 export type PaginationShowSizeChanger = boolean | PaginationShowSizeChangerConfig

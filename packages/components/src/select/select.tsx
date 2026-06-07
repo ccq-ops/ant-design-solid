@@ -45,6 +45,8 @@ export function Select(props: SelectProps) {
     'onKeyDown',
     'zIndex',
     'getPopupContainer',
+    'aria-label',
+    'aria-labelledby',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
@@ -162,6 +164,8 @@ export function Select(props: SelectProps) {
       <div
         role="combobox"
         tabindex={disabled() ? undefined : 0}
+        aria-label={local['aria-label']}
+        aria-labelledby={local['aria-labelledby']}
         aria-expanded={open()}
         aria-disabled={disabled()}
         ref={(element) => {

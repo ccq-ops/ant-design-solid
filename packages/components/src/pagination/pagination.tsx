@@ -1,6 +1,7 @@
 import { For, Show, createEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
+import { Select } from '../select'
 import { classNames } from '../shared/class-names'
 import { usePaginationStyle } from './pagination.style'
 import type {
@@ -62,10 +63,6 @@ function getPageItems(current: number, pageCount: number, showLessItems = false)
 
 function readInputValue(event: Event): string {
   return event.currentTarget instanceof HTMLInputElement ? event.currentTarget.value : ''
-}
-
-function readSelectValue(event: Event): string {
-  return event.currentTarget instanceof HTMLSelectElement ? event.currentTarget.value : ''
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -217,7 +214,7 @@ export function Pagination(props: PaginationProps) {
     const selectConfig = showSizeChangerConfig()
     return (
       <Show when={shouldShowSizeChanger()}>
-        <select
+        <Select
           {...selectConfig}
           class={classNames(`${prefixCls()}-select`, selectConfig?.class, local.classNames?.select)}
           style={{
@@ -227,19 +224,15 @@ export function Pagination(props: PaginationProps) {
           aria-label={selectConfig?.['aria-label'] ?? 'Page Size'}
           value={String(mergedPageSize())}
           disabled={disabled() || Boolean(selectConfig?.disabled)}
-          onChange={(event) => {
-            ;(selectConfig?.onChange as JSX.EventHandler<HTMLSelectElement, Event> | undefined)?.(
-              event,
-            )
-            if (!event.defaultPrevented) changePageSize(Number(readSelectValue(event)))
+          options={pageSizeOptions().map((option: PaginationPageSizeOption) => ({
+            value: String(option),
+            label: `${String(option)} / page`,
+          }))}
+          onChange={(value, option) => {
+            selectConfig?.onChange?.(value, option)
+            changePageSize(Number(value))
           }}
-        >
-          <For each={pageSizeOptions()}>
-            {(option: PaginationPageSizeOption) => (
-              <option value={String(option)}>{String(option)} / page</option>
-            )}
-          </For>
-        </select>
+        />
       </Show>
     )
   }

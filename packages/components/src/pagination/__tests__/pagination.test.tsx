@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -49,10 +50,25 @@ describe('Pagination', () => {
     expect(onChange).toHaveBeenLastCalledWith(4, 10)
   })
 
-  it('supports page size changes', () => {
+  it('scopes page size Select sizing styles to the selector element', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Pagination total={100} showSizeChanger />
+      </StyleProvider>
+    ))
+
+    const styles = extractStyle(cache)
+
+    expect(styles).toContain('.ads-pagination-select [role="combobox"]')
+    expect(styles).not.toContain('.ads-pagination-select{height:')
+    expect(styles).not.toContain('.ads-pagination-select{padding:')
+  })
+
+  it('uses the library Select for page size changes', () => {
     const onChange = vi.fn()
     const onShowSizeChange = vi.fn()
-    render(() => (
+    const { container } = render(() => (
       <Pagination
         total={100}
         defaultCurrent={3}
@@ -64,7 +80,13 @@ describe('Pagination', () => {
       />
     ))
 
-    fireEvent.change(screen.getByLabelText('Page Size'), { target: { value: '20' } })
+    expect(container.querySelector('select')).toBeNull()
+
+    const pageSizeSelect = screen.getByRole('combobox', { name: 'Page Size' })
+    expect(pageSizeSelect.closest('.ads-select')).toBeTruthy()
+
+    fireEvent.click(pageSizeSelect)
+    fireEvent.click(screen.getByRole('option', { name: '20 / page' }))
 
     expect(onShowSizeChange).toHaveBeenLastCalledWith(3, 20)
     expect(onChange).toHaveBeenLastCalledWith(3, 20)
