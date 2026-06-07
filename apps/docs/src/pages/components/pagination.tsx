@@ -5,6 +5,21 @@ import { DemoBlock } from '../../components/demo-block'
 import type { ApiTableRow } from '../../components/api-table'
 
 const paginationRows: ApiTableRow[] = [
+  {
+    property: 'align',
+    description: 'Aligns pagination items within the container.',
+    type: "'start' | 'center' | 'end'",
+  },
+  {
+    property: 'class',
+    description: 'Additional class name for the root pagination element.',
+    type: 'string',
+  },
+  {
+    property: 'classNames',
+    description: 'Semantic class names for internal slots.',
+    type: 'Partial<Record<PaginationSemanticSlot, string>>',
+  },
   { property: 'current', description: 'Controlled current page.', type: 'number' },
   {
     property: 'defaultCurrent',
@@ -12,24 +27,11 @@ const paginationRows: ApiTableRow[] = [
     type: 'number',
     defaultValue: '1',
   },
-  { property: 'pageSize', description: 'Controlled items per page.', type: 'number' },
-  {
-    property: 'itemRender',
-    description: 'Customizes page, previous, and next item content.',
-    type: "(page: number, type: 'page' | 'prev' | 'next', originalElement: JSX.Element) => JSX.Element",
-  },
   {
     property: 'defaultPageSize',
     description: 'Initial items per page for uncontrolled usage.',
     type: 'number',
     defaultValue: '10',
-  },
-  { property: 'total', description: 'Total number of items.', type: 'number', defaultValue: '0' },
-  {
-    property: 'totalBoundaryShowSizeChanger',
-    description: 'Shows the size changer automatically when total is larger than this value.',
-    type: 'number',
-    defaultValue: '50',
   },
   {
     property: 'disabled',
@@ -38,34 +40,26 @@ const paginationRows: ApiTableRow[] = [
     defaultValue: 'false',
   },
   {
-    property: 'align',
-    description: 'Aligns pagination items.',
-    type: "'start' | 'center' | 'end'",
-  },
-  {
-    property: 'classNames',
-    description: 'Semantic class names for internal slots.',
-    type: 'PaginationSemanticClassNames',
-  },
-  {
-    property: 'simple',
-    description: 'Uses the compact simple layout, optionally with a read-only input.',
-    type: 'boolean | { readOnly?: boolean }',
+    property: 'hideOnSinglePage',
+    description: 'Hides pagination when total fits on one page.',
+    type: 'boolean',
     defaultValue: 'false',
   },
   {
-    property: 'showSizeChanger',
-    description: 'Shows page size selection. Object form is passed to the internal select.',
-    type: 'boolean | SelectHTMLAttributes<HTMLSelectElement>',
+    property: 'itemRender',
+    description: 'Customizes page, previous, and next item content.',
+    type: "(page: number, type: 'page' | 'prev' | 'next', originalElement: JSX.Element) => JSX.Element",
   },
+  { property: 'pageSize', description: 'Controlled items per page.', type: 'number' },
   {
     property: 'pageSizeOptions',
     description: 'Options for page size selection.',
     type: '(string | number)[]',
+    defaultValue: '[10, 20, 50, 100]',
   },
   {
     property: 'responsive',
-    description: 'Adds responsive pagination class for responsive styling.',
+    description: 'Adds a responsive class for responsive pagination styling.',
     type: 'boolean',
     defaultValue: 'false',
   },
@@ -82,10 +76,26 @@ const paginationRows: ApiTableRow[] = [
     defaultValue: 'false',
   },
   {
+    property: 'showSizeChanger',
+    description: 'Shows page size selection. Object form is passed to the internal select.',
+    type: 'boolean | SelectHTMLAttributes<HTMLSelectElement>',
+  },
+  {
     property: 'showTitle',
     description: 'Shows title attributes on page controls.',
     type: 'boolean',
     defaultValue: 'true',
+  },
+  {
+    property: 'showTotal',
+    description: 'Renders custom total text.',
+    type: '(total: number, range: [number, number]) => JSX.Element',
+  },
+  {
+    property: 'simple',
+    description: 'Uses the compact simple layout, optionally with a read-only input.',
+    type: 'boolean | { readOnly?: boolean }',
+    defaultValue: 'false',
   },
   {
     property: 'size',
@@ -94,20 +104,21 @@ const paginationRows: ApiTableRow[] = [
     defaultValue: "'medium'",
   },
   {
+    property: 'style',
+    description: 'Inline style for the root pagination element.',
+    type: 'JSX.CSSProperties',
+  },
+  {
     property: 'styles',
     description: 'Semantic inline styles for internal slots.',
-    type: 'PaginationSemanticStyles',
+    type: 'Partial<Record<PaginationSemanticSlot, JSX.CSSProperties>>',
   },
+  { property: 'total', description: 'Total number of items.', type: 'number', defaultValue: '0' },
   {
-    property: 'hideOnSinglePage',
-    description: 'Hides pagination when total fits on one page.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'showTotal',
-    description: 'Renders custom total text.',
-    type: '(total: number, range: [number, number]) => JSX.Element',
+    property: 'totalBoundaryShowSizeChanger',
+    description: 'Shows the size changer automatically when total is larger than this value.',
+    type: 'number',
+    defaultValue: '50',
   },
   {
     property: 'onChange',
@@ -118,6 +129,34 @@ const paginationRows: ApiTableRow[] = [
     property: 'onShowSizeChange',
     description: 'Called when page size changes.',
     type: '(current: number, size: number) => void',
+  },
+]
+
+const semanticRows: ApiTableRow[] = [
+  { property: 'root', description: 'Root nav element.', type: 'classNames | styles' },
+  { property: 'list', description: 'The page item list.', type: 'classNames | styles' },
+  { property: 'item', description: 'Each page list item.', type: 'classNames | styles' },
+  {
+    property: 'itemButton',
+    description: 'Page, previous, and next buttons.',
+    type: 'classNames | styles',
+  },
+  { property: 'prev', description: 'Previous item wrapper.', type: 'classNames | styles' },
+  { property: 'next', description: 'Next item wrapper.', type: 'classNames | styles' },
+  { property: 'ellipsis', description: 'Ellipsis item.', type: 'classNames | styles' },
+  {
+    property: 'simplePager',
+    description: 'Simple mode input wrapper.',
+    type: 'classNames | styles',
+  },
+  { property: 'input', description: 'Simple and quick jumper input.', type: 'classNames | styles' },
+  { property: 'select', description: 'Page size select.', type: 'classNames | styles' },
+  { property: 'quickJumper', description: 'Quick jumper wrapper.', type: 'classNames | styles' },
+  { property: 'totalText', description: 'Total text wrapper.', type: 'classNames | styles' },
+  {
+    property: 'goButton',
+    description: 'Quick jumper go button wrapper.',
+    type: 'classNames | styles',
   },
 ]
 
@@ -133,20 +172,6 @@ export default function PaginationPage() {
       <DemoBlock title="More pages" code={`<Pagination total={500} defaultCurrent={6} />`}>
         <Pagination total={500} defaultCurrent={6} />
       </DemoBlock>
-      <DemoBlock title="Simple" code={`<Pagination simple total={50} />`}>
-        <Pagination simple total={50} />
-      </DemoBlock>
-      <DemoBlock
-        title="Size changer and quick jumper"
-        code={`<Pagination total={200} showSizeChanger showQuickJumper showTotal={(total, range) => \`${'${range[0]}-${range[1]} of ${total} items'}\`} />`}
-      >
-        <Pagination
-          total={200}
-          showSizeChanger
-          showQuickJumper
-          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-        />
-      </DemoBlock>
       <DemoBlock
         title="Controlled"
         code={`const [current, setCurrent] = createSignal(2)\n<Pagination current={current()} total={80} onChange={setCurrent} />`}
@@ -156,26 +181,151 @@ export default function PaginationPage() {
           <span>Current page: {current()}</span>
         </Space>
       </DemoBlock>
+      <DemoBlock
+        title="Align"
+        code={`<Space direction="vertical" style={{ width: '100%' }}>
+  <Pagination align="start" total={80} />
+  <Pagination align="center" total={80} />
+  <Pagination align="end" total={80} />
+</Space>`}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Pagination align="start" total={80} />
+          <Pagination align="center" total={80} />
+          <Pagination align="end" total={80} />
+        </Space>
+      </DemoBlock>
+      <DemoBlock
+        title="Size"
+        code={`<Space direction="vertical">
+  <Pagination size="large" total={80} />
+  <Pagination size="medium" total={80} />
+  <Pagination size="small" total={80} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Pagination size="large" total={80} />
+          <Pagination size="medium" total={80} />
+          <Pagination size="small" total={80} />
+        </Space>
+      </DemoBlock>
+      <DemoBlock
+        title="Simple"
+        code={`<Space direction="vertical">
+  <Pagination simple total={50} />
+  <Pagination simple={{ readOnly: true }} total={50} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Pagination simple total={50} />
+          <Pagination simple={{ readOnly: true }} total={50} />
+        </Space>
+      </DemoBlock>
+      <DemoBlock
+        title="Size changer"
+        code={`<Space direction="vertical">
+  <Pagination total={51} />
+  <Pagination total={80} totalBoundaryShowSizeChanger={100} />
+  <Pagination total={200} showSizeChanger={{ 'aria-label': 'Items per page' }} pageSizeOptions={[10, 25, 50]} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Pagination total={51} />
+          <Pagination total={80} totalBoundaryShowSizeChanger={100} />
+          <Pagination
+            total={200}
+            showSizeChanger={{ 'aria-label': 'Items per page' }}
+            pageSizeOptions={[10, 25, 50]}
+          />
+        </Space>
+      </DemoBlock>
+      <DemoBlock
+        title="Quick jumper"
+        code={`<Space direction="vertical">
+  <Pagination total={200} showQuickJumper />
+  <Pagination total={200} showQuickJumper={{ goButton: <button type="button">Go</button> }} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Pagination total={200} showQuickJumper />
+          <Pagination
+            total={200}
+            showQuickJumper={{ goButton: <button type="button">Go</button> }}
+          />
+        </Space>
+      </DemoBlock>
+      <DemoBlock
+        title="Total number"
+        code={
+          '<Pagination total={200} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />'
+        }
+      >
+        <Pagination
+          total={200}
+          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+        />
+      </DemoBlock>
+      <DemoBlock
+        title="Less items and hidden title"
+        code={`<Space direction="vertical">
+  <Pagination total={500} defaultCurrent={25} showLessItems />
+  <Pagination total={80} showTitle={false} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Pagination total={500} defaultCurrent={25} showLessItems />
+          <Pagination total={80} showTitle={false} />
+        </Space>
+      </DemoBlock>
+      <DemoBlock
+        title="Custom item render"
+        code={`<Pagination
+  total={120}
+  itemRender={(page, type, originalElement) => {
+    if (type === 'prev') return <span>Previous</span>
+    if (type === 'next') return <span>Next</span>
+    return <strong>{page}</strong>
+  }}
+/>`}
+      >
+        <Pagination
+          total={120}
+          itemRender={(page, type, originalElement) => {
+            if (type === 'prev') return <span>Previous</span>
+            if (type === 'next') return <span>Next</span>
+            return <strong>{page}</strong>
+          }}
+        />
+      </DemoBlock>
+      <DemoBlock
+        title="Semantic styles"
+        code={`<Pagination
+  total={80}
+  classNames={{ root: 'custom-pagination', itemButton: 'custom-page-button' }}
+  styles={{ root: { 'justify-content': 'center' }, itemButton: { 'border-radius': '999px' } }}
+/>`}
+      >
+        <Pagination
+          total={80}
+          classNames={{ root: 'custom-pagination', itemButton: 'custom-page-button' }}
+          styles={{
+            root: { 'justify-content': 'center' },
+            itemButton: { 'border-radius': '999px' },
+          }}
+        />
+      </DemoBlock>
       <DemoBlock title="Disabled" code={`<Pagination disabled total={80} defaultCurrent={3} />`}>
         <Pagination disabled total={80} defaultCurrent={3} />
       </DemoBlock>
-      <DemoBlock
-        title="Customized"
-        code={`<Pagination align="center" size="small" total={120} itemRender={(page, type, originalElement) => type === 'page' ? <strong>{page}</strong> : originalElement} showQuickJumper={{ goButton: <button type="button">Go</button> }} />`}
-      >
-        <Pagination
-          align="center"
-          size="small"
-          total={120}
-          itemRender={(page, type, originalElement) =>
-            type === 'page' ? <strong>{page}</strong> : originalElement
-          }
-          showQuickJumper={{ goButton: <button type="button">Go</button> }}
-        />
+      <DemoBlock title="Hide on single page" code={`<Pagination total={5} hideOnSinglePage />`}>
+        <Pagination total={5} hideOnSinglePage />
       </DemoBlock>
 
       <h2>API</h2>
       <ApiTable rows={paginationRows} aria-label="Pagination API" />
+
+      <h2>Semantic DOM</h2>
+      <ApiTable rows={semanticRows} aria-label="Pagination semantic DOM API" />
     </>
   )
 }
