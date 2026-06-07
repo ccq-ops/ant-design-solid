@@ -437,6 +437,79 @@ export default function FormPage() {
       </DemoBlock>
 
       <DemoBlock
+        title="Form layout"
+        code={`<Form layout="vertical">
+  <Form.Item label="Username" name="verticalUsername"><Input /></Form.Item>
+  <Form.Item label="Email" name="verticalEmail"><Input /></Form.Item>
+</Form>
+<Form layout="inline">
+  <Form.Item name="inlineUsername"><Input placeholder="Username" /></Form.Item>
+  <Button htmlType="submit">Submit</Button>
+</Form>`}
+      >
+        <Space direction="vertical" size="large">
+          <Form layout="vertical" initialValues={{ verticalUsername: 'solid-user' }}>
+            <Space direction="vertical" class="w-90">
+              <Form.Item label="Username" name="verticalUsername">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Email" name="verticalEmail">
+                <Input placeholder="hello@example.com" />
+              </Form.Item>
+            </Space>
+          </Form>
+          <Form layout="inline" onFinish={() => message.success('Inline form submitted')}>
+            <Form.Item name="inlineUsername">
+              <Input placeholder="Username" />
+            </Form.Item>
+            <Form.Item name="inlineEmail">
+              <Input placeholder="Email" />
+            </Form.Item>
+            <Button htmlType="submit">Submit</Button>
+          </Form>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Required mark"
+        code={`<Form requiredMark="optional">
+  <Form.Item label="Username" name="username" rules={[{ required: true }]}><Input /></Form.Item>
+  <Form.Item label="Nickname" name="nickname"><Input /></Form.Item>
+</Form>
+<Form requiredMark={false}>
+  <Form.Item label="Email" name="email" rules={[{ required: true }]}><Input /></Form.Item>
+</Form>`}
+      >
+        <Space direction="vertical" size="large">
+          <Form requiredMark="optional">
+            <Space direction="vertical" class="w-90">
+              <Form.Item
+                label="Username"
+                name="markUsername"
+                rules={[{ required: true }]}
+              >
+                <Input placeholder="Required" />
+              </Form.Item>
+              <Form.Item label="Nickname" name="markNickname">
+                <Input placeholder="Optional" />
+              </Form.Item>
+            </Space>
+          </Form>
+          <Form requiredMark={false}>
+            <Space direction="vertical" class="w-90">
+              <Form.Item
+                label="Email"
+                name="hiddenMarkEmail"
+                rules={[{ required: true }]}
+              >
+                <Input placeholder="Required mark hidden" />
+              </Form.Item>
+            </Space>
+          </Form>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
         title="Validation"
         code={`<Form onFinishFailed={({ errorFields }) => console.log(errorFields)}>
   <Form.Item label="Email" name="email" rules={[{ required: true }, { pattern: /@/, message: 'Enter a valid email' }]}>
