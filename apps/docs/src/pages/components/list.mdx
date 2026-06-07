@@ -1,0 +1,181 @@
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const listRows = [
+  {
+    property: 'dataSource',
+    description: 'Array of data items rendered by renderItem.',
+    type: 'T[]',
+  },
+  {
+    property: 'renderItem',
+    description: 'Render function for each data item.',
+    type: '(item: T, index: number) => JSX.Element',
+  },
+  {
+    property: 'header',
+    description: 'Header content rendered above the list items.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'footer',
+    description: 'Footer content rendered below the list items.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'bordered',
+    description: 'Whether to render the list border.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'split',
+    description: 'Whether to render separators between items.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'size',
+    description: 'List size.',
+    type: "'default' | 'large' | 'small'",
+    defaultValue: "'default'",
+  },
+  {
+    property: 'loading',
+    description: 'Shows loading placeholder instead of items.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'emptyText',
+    description: 'Empty state content when there are no items.',
+    type: 'JSX.Element',
+    defaultValue: "'No Data'",
+  },
+  {
+    property: 'children',
+    description: 'Manual list items used when dataSource is not provided.',
+    type: 'JSX.Element',
+  },
+]
+
+export const listItemRows = [
+  {
+    property: 'actions',
+    description: 'Action items rendered after the main content.',
+    type: 'JSX.Element[]',
+  },
+  {
+    property: 'extra',
+    description: 'Extra content rendered at the end of the item.',
+    type: 'JSX.Element',
+  },
+  { property: 'children', description: 'Main list item content.', type: 'JSX.Element' },
+]
+
+export const listItemMetaRows = [
+  {
+    property: 'avatar',
+    description: 'Avatar content rendered before metadata.',
+    type: 'JSX.Element',
+  },
+  { property: 'title', description: 'Metadata title.', type: 'JSX.Element' },
+  { property: 'description', description: 'Metadata description.', type: 'JSX.Element' },
+  { property: 'children', description: 'Additional metadata content.', type: 'JSX.Element' },
+]
+
+export const tasks = ['Create component API', 'Write tests', 'Document examples']
+
+export const users = [
+  {
+    name: 'Ada Lovelace',
+    description: 'Mathematician and first computer programmer.',
+    avatar: 'A',
+  },
+  {
+    name: 'Grace Hopper',
+    description: 'Computer scientist and compiler pioneer.',
+    avatar: 'G',
+  },
+]
+
+export default function ListPage() {
+  return (
+    <>
+      <h1>List</h1>
+      <p>List displays a group of related items with optional headers, actions, and metadata.</p>
+
+      <DemoBlock
+        title="Data source"
+        code={`<List dataSource={['Create API', 'Write tests']} renderItem={(item) => <List.Item>{item}</List.Item>} />`}
+      >
+        <List
+          dataSource={tasks}
+          renderItem={(item, index) => <List.Item>{`${index + 1}. ${item}`}</List.Item>}
+        />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Bordered with header and footer"
+        code={`<List bordered header="Header" footer="Footer" dataSource={items} renderItem={(item) => <List.Item>{item}</List.Item>} />`}
+      >
+        <List
+          bordered
+          header={<strong>Project checklist</strong>}
+          footer="3 items"
+          dataSource={tasks}
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+        />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Meta and actions"
+        code={`<List dataSource={users} renderItem={(user) => <List.Item actions={[<a>Edit</a>]}><List.Item.Meta avatar={<Avatar>{user.avatar}</Avatar>} title={user.name} description={user.description} /></List.Item>} />`}
+      >
+        <List
+          dataSource={users}
+          renderItem={(user) => (
+            <List.Item
+              actions={[
+                <a href={`#edit-${user.avatar}`}>Edit</a>,
+                <a href={`#view-${user.avatar}`}>View</a>,
+              ]}
+              extra={<Button size="small">Follow</Button>}
+            >
+              <List.Item.Meta
+                avatar={<Avatar>{user.avatar}</Avatar>}
+                title={<a href={`#${user.avatar}`}>{user.name}</a>}
+                description={user.description}
+              />
+            </List.Item>
+          )}
+        />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Loading and empty"
+        code={`<List loading dataSource={items} renderItem={(item) => <List.Item>{item}</List.Item>} />\n<List dataSource={[]} emptyText="Nothing found" />`}
+      >
+        <Space direction="vertical" class="w-full">
+          <List
+            loading
+            dataSource={tasks}
+            renderItem={(item) => <List.Item>{item}</List.Item>}
+            bordered
+          />
+          <List dataSource={[]} emptyText="Nothing found" bordered />
+        </Space>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <h3>List</h3>
+      <ApiTable rows={listRows} aria-label="List API" />
+      <h3>List.Item</h3>
+      <ApiTable rows={listItemRows} aria-label="List Item API" />
+      <h3>List.Item.Meta</h3>
+      <ApiTable rows={listItemMetaRows} aria-label="List Item Meta API" />
+    </>
+
+)
+}

@@ -1,0 +1,214 @@
+import { createSignal } from 'solid-js'
+import { Button, Space, Upload } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const uploadRows = [
+  { property: 'fileList', description: 'Controlled upload file list.', type: 'UploadFile[]' },
+  {
+    property: 'defaultFileList',
+    description: 'Initial upload file list for uncontrolled usage.',
+    type: 'UploadFile[]',
+  },
+  { property: 'accept', description: 'Native file input accept attribute.', type: 'string' },
+  {
+    property: 'multiple',
+    description: 'Allows selecting multiple files.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'disabled',
+    description: 'Disables file selection and removal.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'maxCount',
+    description: 'Maximum number of files kept in the list.',
+    type: 'number',
+  },
+  {
+    property: 'showUploadList',
+    description: 'Whether to render the upload list.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'beforeUpload',
+    description: 'Runs before upload. Return false to add without uploading.',
+    type: '(file: File) => boolean | Promise<boolean>',
+  },
+  {
+    property: 'customRequest',
+    description: 'Custom upload request implementation.',
+    type: '(options: UploadRequestOptions) => void',
+  },
+  {
+    property: 'onChange',
+    description: 'Called whenever the file list changes.',
+    type: '(info: UploadChangeInfo) => void',
+  },
+  {
+    property: 'onRemove',
+    description: 'Called before removing a file. Return false to keep it.',
+    type: '(file: UploadFile) => boolean | Promise<boolean>',
+  },
+  { property: 'children', description: 'Upload trigger content.', type: 'JSX.Element' },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+]
+
+export const uploadFileRows = [
+  { property: 'uid', description: 'Unique file id.', type: 'string' },
+  { property: 'name', description: 'File name.', type: 'string' },
+  {
+    property: 'status',
+    description: 'Upload status.',
+    type: "'ready' | 'uploading' | 'done' | 'error' | 'removed'",
+  },
+  { property: 'percent', description: 'Upload progress percent.', type: 'number' },
+  { property: 'originFileObj', description: 'Original native File object.', type: 'File' },
+  { property: 'url', description: 'Download or preview URL rendered as a link.', type: 'string' },
+  { property: 'response', description: 'Upload response value.', type: 'unknown' },
+  { property: 'error', description: 'Upload error value.', type: 'unknown' },
+]
+
+export const uploadRequestRows = [
+  { property: 'file', description: 'Native File being uploaded.', type: 'File' },
+  {
+    property: 'onProgress',
+    description: 'Report upload progress percent.',
+    type: '(percent: number) => void',
+  },
+  {
+    property: 'onSuccess',
+    description: 'Mark upload as successful.',
+    type: '(response?: unknown) => void',
+  },
+  { property: 'onError', description: 'Mark upload as failed.', type: '(error: unknown) => void' },
+]
+
+export function delayedRequest({ onProgress, onSuccess }) {
+  onProgress(35)
+  window.setTimeout(() => {
+    onProgress(100)
+    onSuccess({ ok: true })
+  }, 600)
+}
+
+export default function UploadPage() {
+  const [manualFiles, setManualFiles] = createSignal([])
+
+return (
+
+<>
+<h1>Upload</h1>
+<p>Select files, optionally intercept uploads, and render a basic upload list.</p>
+
+      <DemoBlock
+        title="Basic"
+        code={`<Upload>
+
+  <Button>Upload file</Button>
+</Upload>`}
+      >
+        <Upload>
+          <Button>Upload file</Button>
+        </Upload>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Multiple"
+        code={`<Upload multiple>
+
+  <Button>Upload files</Button>
+</Upload>`}
+      >
+        <Upload multiple>
+          <Button>Upload files</Button>
+        </Upload>
+      </DemoBlock>
+
+      <DemoBlock
+        title="beforeUpload false"
+        code={`const [manualFiles, setManualFiles] = createSignal([])
+
+<Upload
+  fileList={manualFiles()}
+  beforeUpload={() => false}
+  onChange={({ fileList }) => setManualFiles(fileList)}
+>
+  <Button>Select without uploading</Button>
+</Upload>`}
+      >
+        <Space direction="vertical">
+          <Upload
+            fileList={manualFiles()}
+            beforeUpload={() => false}
+            onChange={({ fileList }) => setManualFiles(fileList)}
+          >
+            <Button>Select without uploading</Button>
+          </Upload>
+          <span>
+            Manual files:{' '}
+            {manualFiles()
+              .map((file) => file.name)
+              .join(', ') || 'none'}
+          </span>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Custom request"
+        code={`<Upload customRequest={({ onProgress, onSuccess }) => {
+
+onProgress(35)
+window.setTimeout(() => {
+onProgress(100)
+onSuccess({ ok: true })
+}, 600)
+}}>
+
+  <Button>Upload with progress</Button>
+</Upload>`}
+      >
+        <Upload customRequest={delayedRequest}>
+          <Button>Upload with progress</Button>
+        </Upload>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Max count"
+        code={`<Upload multiple maxCount={2}>
+
+  <Button>Keep latest two</Button>
+</Upload>`}
+      >
+        <Upload multiple maxCount={2}>
+          <Button>Keep latest two</Button>
+        </Upload>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Disabled"
+        code={`<Upload disabled defaultFileList={[{ uid: '1', name: 'locked.txt', status: 'done' }]}>
+
+  <Button disabled>Upload disabled</Button>
+</Upload>`}
+      >
+        <Upload disabled defaultFileList={[{ uid: '1', name: 'locked.txt', status: 'done' }]}>
+          <Button disabled>Upload disabled</Button>
+        </Upload>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Upload</h3>
+      <ApiTable rows={uploadRows} aria-label="Upload API" />
+      <h3>UploadFile</h3>
+      <ApiTable rows={uploadFileRows} aria-label="Upload File API" />
+      <h3>UploadRequestOptions</h3>
+      <ApiTable rows={uploadRequestRows} aria-label="Upload Request API" />
+    </>
+
+)
+}

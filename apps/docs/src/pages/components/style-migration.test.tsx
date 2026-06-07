@@ -1,8 +1,15 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import autoCompleteSource from './auto-complete.tsx?raw'
-import cardSource from './card.tsx?raw'
-import gridSource from './grid.tsx?raw'
-import menuSource from './menu.tsx?raw'
+
+function readPageSource(fileName: string) {
+  return readFileSync(fileURLToPath(new URL(fileName, import.meta.url)), 'utf8')
+}
+
+const autoCompleteSource = readPageSource('./auto-complete.mdx')
+const cardSource = readPageSource('./card.mdx')
+const gridSource = readPageSource('./grid.mdx')
+const menuSource = readPageSource('./menu.mdx')
 
 function expectSourceWithoutInlineStyle(source: string, label: string) {
   expect(source, `${label} should not use inline style attributes`).not.toMatch(/style=\{\{/)

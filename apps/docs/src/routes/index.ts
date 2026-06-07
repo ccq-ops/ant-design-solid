@@ -23,7 +23,7 @@ export type SiteRoutes = {
 }
 
 function isPageRouteFile(filePath: string) {
-  return !/(^|\/)__tests__\//.test(filePath) && !/\.(?:test|spec)\.tsx$/.test(filePath)
+  return !/(^|\/)__tests__\//.test(filePath) && !/\.(?:test|spec)\.(?:tsx|mdx)$/.test(filePath)
 }
 
 export function routePathFromFilePath(filePath: string) {
@@ -31,7 +31,7 @@ export function routePathFromFilePath(filePath: string) {
     .replace(/^\/src\/pages\//, '')
     .replace(/^\.\.\/pages\//, '')
     .replace(/^\.\/pages\//, '')
-  const withoutExtension = withoutPrefix.replace(/\.tsx$/, '')
+  const withoutExtension = withoutPrefix.replace(/\.(?:tsx|mdx)$/, '')
   const segments = withoutExtension.split('/')
 
   if (segments.at(-1) === 'index') {
@@ -107,9 +107,13 @@ export function createSiteRoutesFromModules(modules: Record<string, RouteImporte
 
 const routeModules = import.meta.glob<RouteModule>([
   '/src/pages/**/*.tsx',
+  '/src/pages/**/*.mdx',
   '!/src/pages/**/*.test.tsx',
   '!/src/pages/**/*.spec.tsx',
+  '!/src/pages/**/*.test.mdx',
+  '!/src/pages/**/*.spec.mdx',
   '!/src/pages/**/__tests__/**/*.tsx',
+  '!/src/pages/**/__tests__/**/*.mdx',
 ])
 const siteRoutes = createSiteRoutesFromModules(routeModules)
 

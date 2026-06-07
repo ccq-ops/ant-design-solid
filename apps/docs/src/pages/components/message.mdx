@@ -1,0 +1,240 @@
+import { Button, Space, message } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const messageArgsRows = [
+  {
+    property: 'key',
+    description: 'Stable key used to update or destroy a message.',
+    type: 'string | number',
+  },
+  {
+    property: 'type',
+    description: 'Message visual type.',
+    type: "'info' | 'success' | 'error' | 'warning' | 'loading'",
+    defaultValue: "'info'",
+  },
+  { property: 'content', description: 'Message content.', type: 'JSX.Element' },
+  {
+    property: 'duration',
+    description:
+      'Auto-close delay in seconds. Set to 0 to keep open. Loading messages default to 0.',
+    type: 'number',
+    defaultValue: '3',
+  },
+  {
+    property: 'onClose',
+    description: 'Called when the message closes.',
+    type: '() => void',
+  },
+  {
+    property: 'icon',
+    description: 'Custom icon node.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'className',
+    description: 'Custom class for the notice wrapper.',
+    type: 'string',
+  },
+  {
+    property: 'style',
+    description: 'Custom style for the notice wrapper.',
+    type: 'JSX.CSSProperties',
+  },
+  {
+    property: 'classNames / styles',
+    description: 'Semantic class and style maps for root, wrapper, listContent, icon, and title.',
+    type: 'Record<string, string | CSSProperties>',
+  },
+  {
+    property: 'onClick',
+    description: 'Called when the message content is clicked.',
+    type: '(event: MouseEvent) => void',
+  },
+  {
+    property: 'pauseOnHover',
+    description: 'Pause auto-close timer while hovering.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+]
+
+export const configRows = [
+  {
+    property: 'top',
+    description: 'Distance from top.',
+    type: 'string | number',
+    defaultValue: '8',
+  },
+  {
+    property: 'duration',
+    description: 'Global default duration in seconds.',
+    type: 'number',
+    defaultValue: '3',
+  },
+  {
+    property: 'getContainer',
+    description: 'Returns the mount container.',
+    type: '() => HTMLElement',
+  },
+  {
+    property: 'maxCount',
+    description: 'Maximum visible messages; older messages are closed.',
+    type: 'number',
+  },
+  { property: 'prefixCls', description: 'Custom message root class prefix.', type: 'string' },
+  { property: 'rtl', description: 'Enable RTL class.', type: 'boolean', defaultValue: 'false' },
+  {
+    property: 'pauseOnHover',
+    description: 'Global pause-on-hover default.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'stack',
+    description: 'Limit rendered messages to the latest threshold when enabled.',
+    type: 'boolean | { threshold?: number }',
+  },
+]
+
+export const handleRows = [
+  {
+    property: 'call',
+    description: 'The handle itself can be called to close the message.',
+    type: '() => void',
+  },
+  {
+    property: 'close',
+    description: 'Closes the message created by the returned handle.',
+    type: '() => void',
+  },
+]
+
+export const instanceRows = [
+  {
+    property: 'message.open',
+    description: 'Opens a message with a full configuration object.',
+    type: '(args: MessageArgs) => MessageHandle',
+  },
+  {
+    property: 'message.info',
+    description: 'Opens an info message.',
+    type: '(content, duration?, onClose?) => MessageHandle',
+  },
+  {
+    property: 'message.success',
+    description: 'Opens a success message.',
+    type: '(content, duration?, onClose?) => MessageHandle',
+  },
+  {
+    property: 'message.error',
+    description: 'Opens an error message.',
+    type: '(content, duration?, onClose?) => MessageHandle',
+  },
+  {
+    property: 'message.warning',
+    description: 'Opens a warning message.',
+    type: '(content, duration?, onClose?) => MessageHandle',
+  },
+  {
+    property: 'message.loading',
+    description: 'Opens a loading message. It remains until closed when duration is omitted.',
+    type: '(content, duration?, onClose?) => MessageHandle',
+  },
+  {
+    property: 'message.destroy',
+    description: 'Destroys one keyed message or all messages.',
+    type: '(key?: string | number) => void',
+  },
+  {
+    property: 'message.config',
+    description: 'Configures global message defaults.',
+    type: '(options: MessageConfigOptions) => void',
+  },
+  {
+    property: 'message.useMessage',
+    description: 'Creates a local message API and context holder.',
+    type: '(config?: MessageConfigOptions) => [MessageInstance, JSX.Element]',
+  },
+]
+
+export default function MessagePage() {
+  return (
+    <>
+      <h1>Message</h1>
+      <p>Message provides lightweight global feedback for user actions.</p>
+
+      <DemoBlock title="Basic" code={`message.info('Hello message')`}>
+        <Button onClick={() => message.info('Hello message')}>Show message</Button>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Types"
+        code={`message.success('Saved')
+
+message.error('Failed')
+message.warning('Check input')`} >
+
+<Space wrap>
+<Button onClick={() => message.success('Saved')}>Success</Button>
+<Button onClick={() => message.error('Failed')}>Error</Button>
+<Button onClick={() => message.warning('Check input')}>Warning</Button>
+<Button onClick={() => message.info('Info')}>Info</Button>
+</Space>
+</DemoBlock>
+
+      <DemoBlock
+        title="Duration"
+        code={`message.open({ content: 'Closes after 1 second', duration: 1 })`}
+      >
+        <Button onClick={() => message.open({ content: 'Closes after 1 second', duration: 1 })}>
+          Short message
+        </Button>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Loading"
+        code={`const handle = message.loading('Loading')
+
+setTimeout(() => handle.close(), 1200)`} >
+
+<Button
+onClick={() => {
+const handle = message.loading('Loading')
+window.setTimeout(() => handle.close(), 1200)
+}} >
+Show loading
+</Button>
+</DemoBlock>
+
+      <DemoBlock
+        title="Keyed update"
+        code={`message.open({ key: 'upload', type: 'loading', content: 'Uploading', duration: 0 })
+
+setTimeout(() => message.open({ key: 'upload', type: 'success', content: 'Uploaded' }), 1000)`} >
+
+<Button
+onClick={() => {
+message.open({ key: 'upload', type: 'loading', content: 'Uploading', duration: 0 })
+window.setTimeout(() => {
+message.open({ key: 'upload', type: 'success', content: 'Uploaded' })
+}, 1000)
+}} >
+Update keyed message
+</Button>
+</DemoBlock>
+
+      <h2>API</h2>
+      <h3>MessageArgs</h3>
+      <ApiTable rows={messageArgsRows} aria-label="Message Args API" />
+      <h3>MessageHandle</h3>
+      <ApiTable rows={handleRows} aria-label="Message Handle API" />
+      <h3>MessageConfigOptions</h3>
+      <ApiTable rows={configRows} aria-label="Message Config API" />
+      <h3>MessageInstance</h3>
+      <ApiTable rows={instanceRows} aria-label="Message Instance API" />
+    </>
+
+)
+}

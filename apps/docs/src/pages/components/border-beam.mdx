@@ -1,0 +1,140 @@
+import { BorderBeam, Card, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const borderBeamRows = [
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  {
+    property: 'class',
+    description: 'Additional class applied to the generated beam element.',
+    type: 'string',
+  },
+  {
+    property: 'classList',
+    description: 'Conditional classes applied to the generated beam element.',
+    type: 'Record<string, boolean | undefined>',
+  },
+  {
+    property: 'style',
+    description: 'Inline style merged into the generated beam element.',
+    type: 'JSX.CSSProperties | string',
+  },
+  { property: 'children', description: 'Single host element to decorate.', type: 'JSX.Element' },
+  {
+    property: 'color',
+    description: 'CSS color string or gradient stop array for the beam.',
+    type: 'BorderBeamColor',
+  },
+  {
+    property: 'outset',
+    description: 'Distance the beam extends outside the host border.',
+    type: 'number | string',
+  },
+]
+
+export const panelStyle = {
+  position: 'relative',
+  width: '300px',
+  padding: '24px',
+  border: '1px solid var(--docs-border)',
+  'border-radius': '12px',
+  background: 'var(--docs-surface-solid)',
+  'box-shadow': 'var(--docs-card-shadow)',
+}
+
+export default function BorderBeamPage() {
+  return (
+    <>
+      <h1>BorderBeam</h1>
+      <p>Add an animated beam around the border of a single HTML element.</p>
+
+      <DemoBlock
+        title="Basic"
+        code={`<BorderBeam>
+
+  <div style={{ position: 'relative', border: '1px solid var(--docs-border)', 'border-radius': '12px' }}>
+    Content
+  </div>
+</BorderBeam>`}
+      >
+        <BorderBeam>
+          <div style={panelStyle}>
+            <h3>AI Assistant</h3>
+            <p>BorderBeam decorates the host element without adding a visible wrapper.</p>
+          </div>
+        </BorderBeam>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Custom color"
+        code={`<BorderBeam color="#36cfc9">
+
+  <div>Custom color beam</div>
+</BorderBeam>`}
+      >
+        <BorderBeam color="#36cfc9">
+          <div style={panelStyle}>
+            <h3>Custom color</h3>
+            <p>The beam color can be a single CSS color value.</p>
+          </div>
+        </BorderBeam>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Gradient and outset"
+        code={`<BorderBeam
+
+outset={4}
+color={[
+{ color: '#1677ff', percent: 0 },
+{ color: '#36cfc9', percent: 55 },
+{ color: '#95de64', percent: 100 },
+]}
+
+>
+
+  <div>Gradient beam</div>
+</BorderBeam>`}
+      >
+        <BorderBeam
+          outset={4}
+          color={[
+            { color: '#1677ff', percent: 0 },
+            { color: '#36cfc9', percent: 55 },
+            { color: '#95de64', percent: 100 },
+          ]}
+        >
+          <div style={panelStyle}>
+            <h3>Gradient beam</h3>
+            <p>Use gradient stops and an outset to draw the beam outside the element border.</p>
+          </div>
+        </BorderBeam>
+      </DemoBlock>
+
+      <DemoBlock
+        title="With Card"
+        code={`<BorderBeam>
+
+  <Card title="Insight">Card content</Card>
+</BorderBeam>`}
+      >
+        <Space wrap>
+          <BorderBeam color="#722ed1" outset="2px">
+            <Card title="Insight" style={{ width: '300px', position: 'relative' }}>
+              BorderBeam can decorate existing components when the child resolves to an HTML
+              element.
+            </Card>
+          </BorderBeam>
+        </Space>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <p>
+        The child must resolve to a single <code>HTMLElement</code>; text and SVG children are
+        rendered without the beam.
+      </p>
+      <ApiTable rows={borderBeamRows} aria-label="BorderBeam API" />
+    </>
+
+)
+}

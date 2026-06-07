@@ -1,0 +1,89 @@
+import { Image, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const imageRows = [
+  { property: 'src', description: 'Image source URL.', type: 'string' },
+  { property: 'alt', description: 'Image alternate text.', type: 'string' },
+  { property: 'width', description: 'Image width.', type: 'number | string' },
+  { property: 'height', description: 'Image height.', type: 'number | string' },
+  {
+    property: 'fallback',
+    description: 'Fallback image URL used after load failure.',
+    type: 'string',
+  },
+  {
+    property: 'placeholder',
+    description:
+      'Placeholder shown before image load completes. Boolean true renders default loading text.',
+    type: 'JSX.Element | boolean',
+  },
+  {
+    property: 'preview',
+    description: 'Whether clicking opens the preview overlay.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  { property: 'zIndex', description: 'Custom preview overlay z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns the container used for preview portal rendering.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+  {
+    property: 'onLoad',
+    description: 'Called when the image loads.',
+    type: 'JSX.EventHandler<HTMLImageElement, Event>',
+  },
+  {
+    property: 'onError',
+    description: 'Called when the image fails to load.',
+    type: 'JSX.EventHandler<HTMLImageElement, Event>',
+  },
+]
+
+export const src = 'https://dummyimage.com/240x160/e6f4ff/1677ff.png&text=Image'
+
+export default function ImagePage() {
+  return (
+    <>
+      <h1>Image</h1>
+      <p>Render images with fallback, placeholder, and preview.</p>
+
+      <DemoBlock title="Basic" code={`<Image width={240} src={src} alt="Example" />`}>
+        <Image width={240} src={src} alt="Example" />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Placeholder"
+        code={`<Image width={240} src={src} placeholder="Loading image" />`}
+      >
+        <Image width={240} src={src} alt="Placeholder" placeholder="Loading image" />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Fallback"
+        code={`<Image src="/missing.png" fallback="https://dummyimage.com/240x160/f5f5f5/999.png&text=Fallback" />`}
+      >
+        <Image
+          width={240}
+          src="/missing.png"
+          fallback="https://dummyimage.com/240x160/f5f5f5/999.png&text=Fallback"
+          alt="Fallback"
+        />
+      </DemoBlock>
+
+      <DemoBlock title="Preview" code={`<Image width={160} src={src} />`}>
+        <Space>
+          <Image width={160} src={src} alt="Preview" />
+          <Image preview={false} width={160} src={src} alt="No preview" />
+        </Space>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <ApiTable rows={imageRows} aria-label="Image API" />
+    </>
+
+)
+}

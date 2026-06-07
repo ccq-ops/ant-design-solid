@@ -2,7 +2,7 @@ import { fireEvent, render } from '@solidjs/testing-library'
 import { ConfigProvider } from '@ant-design-solid/core'
 import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import Home from './index'
+import Home from './index.mdx'
 
 const navigate = vi.hoisted(() => vi.fn())
 

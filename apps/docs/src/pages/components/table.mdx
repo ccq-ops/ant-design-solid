@@ -1,0 +1,122 @@
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const tableRows = [
+  { property: 'columns', description: 'Table column definitions.', type: 'TableColumn<T>[]' },
+  { property: 'dataSource', description: 'Data records rendered as rows.', type: 'T[]' },
+  {
+    property: 'rowKey',
+    description: 'Record field or function used as row key.',
+    type: 'keyof T | ((record: T, index: number) => string | number)',
+    defaultValue: 'record.key || index',
+  },
+  {
+    property: 'loading',
+    description: 'Shows the loading indicator.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'emptyText',
+    description: 'Empty state content.',
+    type: 'JSX.Element',
+    defaultValue: "'No data'",
+  },
+  {
+    property: 'size',
+    description: 'Table size.',
+    type: "'small' | 'middle' | 'large'",
+    defaultValue: "'middle'",
+  },
+  {
+    property: 'bordered',
+    description: 'Whether to render bordered table styling.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showHeader',
+    description: 'Whether to render the header row.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'onRow',
+    description: 'Returns extra props for each table row.',
+    type: '(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>',
+  },
+]
+
+export const tableColumnRows = [
+  { property: 'title', description: 'Column header content.', type: 'JSX.Element' },
+  {
+    property: 'dataIndex',
+    description: 'Record field read for this column.',
+    type: 'keyof T | string',
+  },
+  { property: 'key', description: 'Column key.', type: 'string' },
+  {
+    property: 'render',
+    description: 'Custom cell renderer.',
+    type: '(value: unknown, record: T, index: number) => JSX.Element',
+  },
+  { property: 'width', description: 'Column width.', type: 'number | string' },
+  { property: 'align', description: 'Cell text alignment.', type: "'left' | 'center' | 'right'" },
+  { property: 'class', description: 'Additional cell class.', type: 'string' },
+  {
+    property: 'classList',
+    description: 'Conditional cell classes.',
+    type: 'Record<string, boolean | undefined>',
+  },
+]
+
+export const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+  { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+]
+
+export const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (value) =>
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
+  },
+]
+
+export default function TablePage() {
+  return (
+    <>
+      <h1>Table</h1>
+      <DemoBlock title="Basic" code={`<Table columns={columns} dataSource={data} />`}>
+        <Table columns={columns} dataSource={data} />
+      </DemoBlock>
+      <DemoBlock
+        title="Bordered small"
+        code={`<Table bordered size="small" columns={columns} dataSource={data} />`}
+      >
+        <Table bordered size="small" columns={columns} dataSource={data} />
+      </DemoBlock>
+      <DemoBlock
+        title="Empty and loading"
+        code={`<Table loading columns={columns} dataSource={[]} emptyText="No users" />`}
+      >
+        <Table loading columns={columns} dataSource={[]} emptyText="No users" />
+      </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Table</h3>
+      <ApiTable rows={tableRows} aria-label="Table API" />
+      <h3>TableColumn</h3>
+      <ApiTable rows={tableColumnRows} aria-label="Table Column API" />
+    </>
+
+)
+}

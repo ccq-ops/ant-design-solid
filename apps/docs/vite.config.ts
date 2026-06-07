@@ -1,10 +1,11 @@
 import { fileURLToPath, URL } from 'node:url'
+import mdx from '@mdx-js/rollup'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
 export default defineConfig({
-  plugins: [solid(), tailwindcss()],
+  plugins: [mdx({ jsxImportSource: 'solid-js/h' }), solid(), tailwindcss()],
   resolve: {
     alias: {
       '@ant-design-solid/core': fileURLToPath(

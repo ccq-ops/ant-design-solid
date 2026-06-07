@@ -1,0 +1,90 @@
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const rateRows = [
+  { property: 'value', description: 'Controlled rating value.', type: 'number' },
+  {
+    property: 'defaultValue',
+    description: 'Initial rating value for uncontrolled usage.',
+    type: 'number',
+  },
+  { property: 'count', description: 'Number of rating items.', type: 'number', defaultValue: '5' },
+  {
+    property: 'allowHalf',
+    description: 'Allows selecting half values.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'allowClear',
+    description: 'Allows clearing the rating by clicking the selected value.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'disabled',
+    description: 'Disables user interaction.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'character',
+    description: 'Custom rating character or render function.',
+    type: 'JSX.Element | ((index: number) => JSX.Element)',
+  },
+  { property: 'tooltips', description: 'Tooltip text for each rating item.', type: 'string[]' },
+  {
+    property: 'onChange',
+    description: 'Called when the rating value changes.',
+    type: '(next: number) => void',
+  },
+  {
+    property: 'onHoverChange',
+    description: 'Called when hover value changes.',
+    type: '(next: number) => void',
+  },
+]
+
+export default function RatePage() {
+  const [value, setValue] = createSignal(3)
+
+return (
+
+<>
+<h1>Rate</h1>
+<DemoBlock title="Basic" code={`<Rate defaultValue={3} />`}>
+<Rate defaultValue={3} />
+</DemoBlock>
+<DemoBlock title="Half star" code={`<Rate allowHalf defaultValue={2.5} />`}>
+<Rate allowHalf defaultValue={2.5} />
+</DemoBlock>
+<DemoBlock title="Disable clear" code={`<Rate defaultValue={3} allowClear={false} />`}>
+<Rate defaultValue={3} allowClear={false} />
+</DemoBlock>
+<DemoBlock
+title="Controlled"
+code={`const [value, setValue] = createSignal(3)\n<Rate value={value()} onChange={setValue} />`} >
+<Space direction="vertical">
+<Rate value={value()} onChange={setValue} />
+<span>Current value: {value()}</span>
+</Space>
+</DemoBlock>
+<DemoBlock title="Custom character" code={`<Rate character="♡" defaultValue={4} />`}>
+<Space direction="vertical">
+<Rate character="♡" defaultValue={4} />
+<Rate character={(index) => index + 1} defaultValue={3} />
+</Space>
+</DemoBlock>
+<DemoBlock title="Disabled" code={`<Rate disabled defaultValue={3} />`}>
+<Rate disabled defaultValue={3} />
+</DemoBlock>
+
+      <h2>API</h2>
+      <h3>Rate</h3>
+      <ApiTable rows={rateRows} aria-label="Rate API" />
+    </>
+
+)
+}

@@ -1,0 +1,182 @@
+import { Button, Space, Tour } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const tourRows = [
+  { property: 'open', description: 'Controlled tour open state.', type: 'boolean' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial tour open state.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  { property: 'current', description: 'Controlled current step index.', type: 'number' },
+  {
+    property: 'defaultCurrent',
+    description: 'Initial current step index.',
+    type: 'number',
+    defaultValue: '0',
+  },
+  { property: 'steps', description: 'Tour step definitions.', type: 'TourStep[]' },
+  {
+    property: 'placement',
+    description: 'Default step placement.',
+    type: 'TourPlacement',
+    defaultValue: "'bottom'",
+  },
+  {
+    property: 'mask',
+    description: 'Whether to show the mask.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'arrow',
+    description: 'Whether to show the arrow for targeted steps.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'closeIcon', description: 'Custom close icon.', type: 'JSX.Element' },
+  {
+    property: 'indicatorsRender',
+    description: 'Custom step indicator renderer.',
+    type: '(current: number, total: number) => JSX.Element',
+  },
+  { property: 'zIndex', description: 'Custom overlay z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns portal container.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+  {
+    property: 'gap',
+    description: 'Gap around target mask and popup.',
+    type: 'number',
+    defaultValue: '8',
+  },
+  {
+    property: 'nextText',
+    description: 'Default next button text.',
+    type: 'JSX.Element',
+    defaultValue: "'Next'",
+  },
+  {
+    property: 'prevText',
+    description: 'Default previous button text.',
+    type: 'JSX.Element',
+    defaultValue: "'Previous'",
+  },
+  {
+    property: 'finishText',
+    description: 'Default finish button text.',
+    type: 'JSX.Element',
+    defaultValue: "'Finish'",
+  },
+  {
+    property: 'onClose',
+    description: 'Called when the tour closes.',
+    type: '(current: number) => void',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when the current step changes.',
+    type: '(current: number) => void',
+  },
+  {
+    property: 'onFinish',
+    description: 'Called when the finish button is clicked.',
+    type: '() => void',
+  },
+]
+
+export const tourStepRows = [
+  { property: 'title', description: 'Step title.', type: 'JSX.Element' },
+  { property: 'description', description: 'Step description.', type: 'JSX.Element' },
+  {
+    property: 'target',
+    description: 'Step target element or resolver.',
+    type: 'HTMLElement | null | (() => HTMLElement | null | undefined)',
+  },
+  { property: 'placement', description: 'Step placement override.', type: 'TourPlacement' },
+  { property: 'mask', description: 'Step mask override.', type: 'boolean' },
+  { property: 'arrow', description: 'Step arrow override.', type: 'boolean' },
+  {
+    property: 'nextButtonProps',
+    description: 'Props merged into the next or finish button.',
+    type: 'JSX.ButtonHTMLAttributes<HTMLButtonElement>',
+  },
+  {
+    property: 'prevButtonProps',
+    description: 'Props merged into the previous button.',
+    type: 'JSX.ButtonHTMLAttributes<HTMLButtonElement>',
+  },
+]
+
+export default function TourPage() {
+  const [basicOpen, setBasicOpen] = createSignal(false)
+  const [targetOpen, setTargetOpen] = createSignal(false)
+  let targetButton
+
+return (
+
+<>
+<h1>Tour</h1>
+<p>Tour guides users through features step by step.</p>
+
+      <DemoBlock
+        title="Basic"
+        code={`<Tour open={open()} steps={[{ title: 'Welcome', description: 'Start here' }]} />`}
+      >
+        <Button type="primary" onClick={() => setBasicOpen(true)}>
+          Start tour
+        </Button>
+        <Tour
+          open={basicOpen()}
+          onClose={() => setBasicOpen(false)}
+          onFinish={() => setBasicOpen(false)}
+          steps={[
+            { title: 'Welcome', description: 'This tour is centered on the page.' },
+            { title: 'Finish', description: 'Use steps to explain important workflows.' },
+          ]}
+        />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Target"
+        code={`<Tour open={open()} steps={[{ title: 'Targeted', target: () => target }]} />`}
+      >
+        <Space>
+          <Button
+            ref={(element) => {
+              targetButton = element
+            }}
+          >
+            Target button
+          </Button>
+          <Button onClick={() => setTargetOpen(true)}>Show target tour</Button>
+        </Space>
+        <Tour
+          open={targetOpen()}
+          placement="bottom"
+          onClose={() => setTargetOpen(false)}
+          onFinish={() => setTargetOpen(false)}
+          steps={[
+            {
+              title: 'Targeted step',
+              description: 'This step points to the target button.',
+              target: () => targetButton,
+            },
+          ]}
+        />
+      </DemoBlock>
+
+      <h2>API</h2>
+      <h3>Tour</h3>
+      <ApiTable rows={tourRows} aria-label="Tour API" />
+      <h3>TourStep</h3>
+      <ApiTable rows={tourStepRows} aria-label="Tour Step API" />
+    </>
+
+)
+}

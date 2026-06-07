@@ -11,23 +11,27 @@ describe('routePathFromFilePath', () => {
     expect(routePathFromFilePath('./pages/docs/index.tsx')).toBe('/docs')
   })
 
-  it('maps nested page files to kebab-case URL paths', () => {
+  it('maps nested TSX and MDX page files to kebab-case URL paths', () => {
     expect(routePathFromFilePath('./pages/docs/getting-started.tsx')).toBe('/docs/getting-started')
+    expect(routePathFromFilePath('./pages/docs/getting-started.mdx')).toBe('/docs/getting-started')
     expect(routePathFromFilePath('./pages/components/config-provider.tsx')).toBe(
+      '/components/config-provider',
+    )
+    expect(routePathFromFilePath('./pages/components/config-provider.mdx')).toBe(
       '/components/config-provider',
     )
   })
 })
 
 describe('createSiteRoutesFromModules', () => {
-  it('creates sorted lazy route definitions and navigation groups from page modules', () => {
+  it('creates sorted lazy route definitions and navigation groups from MDX page modules', () => {
     const siteRoutes = createSiteRoutesFromModules({
-      './pages/components/button.tsx': () => Promise.resolve({ default: Page }),
-      './pages/components/alert.tsx': () => Promise.resolve({ default: Page }),
-      './pages/index.tsx': () => Promise.resolve({ default: Page }),
-      './pages/docs/theming.tsx': () => Promise.resolve({ default: Page }),
-      './pages/docs/getting-started.tsx': () => Promise.resolve({ default: Page }),
-      './pages/design-guides/overview.tsx': () => Promise.resolve({ default: Page }),
+      './pages/components/button.mdx': () => Promise.resolve({ default: Page }),
+      './pages/components/alert.mdx': () => Promise.resolve({ default: Page }),
+      './pages/index.mdx': () => Promise.resolve({ default: Page }),
+      './pages/docs/theming.mdx': () => Promise.resolve({ default: Page }),
+      './pages/docs/getting-started.mdx': () => Promise.resolve({ default: Page }),
+      './pages/design-guides/overview.mdx': () => Promise.resolve({ default: Page }),
     })
 
     expect(siteRoutes.routes.map((route) => route.path)).toEqual([
@@ -61,12 +65,16 @@ describe('createSiteRoutesFromModules', () => {
     const siteRoutes = createSiteRoutesFromModules({
       './pages/__tests__/index.tsx': () => Promise.resolve({ default: Page }),
       './pages/components/__tests__/button.tsx': () => Promise.resolve({ default: Page }),
+      './pages/components/button.spec.mdx': () => Promise.resolve({ default: Page }),
       './pages/components/button.spec.tsx': () => Promise.resolve({ default: Page }),
+      './pages/components/button.test.mdx': () => Promise.resolve({ default: Page }),
       './pages/components/button.test.tsx': () => Promise.resolve({ default: Page }),
-      './pages/components/button.tsx': () => Promise.resolve({ default: Page }),
+      './pages/components/button.mdx': () => Promise.resolve({ default: Page }),
+      './pages/index.spec.mdx': () => Promise.resolve({ default: Page }),
       './pages/index.spec.tsx': () => Promise.resolve({ default: Page }),
+      './pages/index.test.mdx': () => Promise.resolve({ default: Page }),
       './pages/index.test.tsx': () => Promise.resolve({ default: Page }),
-      './pages/index.tsx': () => Promise.resolve({ default: Page }),
+      './pages/index.mdx': () => Promise.resolve({ default: Page }),
     })
 
     expect(siteRoutes.routes.map((route) => route.path)).toEqual(['/', '/components/button'])
@@ -85,5 +93,11 @@ describe('docs route module discovery', () => {
     expect(routes.map((route) => route.path)).toContain('/')
     expect(routes.map((route) => route.path)).toContain('/components/button')
     expect(topNavItems.map((item) => item.group)).toContain('components')
+  })
+
+  it('discovers the migrated docs site from MDX page files without legacy TSX pages', () => {
+    expect(routes.map((route) => route.path)).toContain('/')
+    expect(routes.map((route) => route.path)).toContain('/components/button')
+    expect(routes.map((route) => route.path)).toContain('/docs/getting-started')
   })
 })

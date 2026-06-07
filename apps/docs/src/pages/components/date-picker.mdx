@@ -1,0 +1,960 @@
+import dayjs from 'dayjs'
+import { createSignal } from 'solid-js'
+import {
+  CalendarOutlined,
+  ClockCircleOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
+  LeftOutlined,
+  RightOutlined,
+} from '@ant-design-solid/icons'
+import { DatePicker, Space } from '@ant-design-solid/core'
+import { ApiTable } from '../../components/api-table'
+import { DemoBlock } from '../../components/demo-block'
+
+export const datePickerRows = [
+  {
+    property: 'value',
+    description: 'Controlled selected value. DatePicker values use dayjs objects.',
+    type: 'Dayjs | null; Dayjs[] when multiple',
+  },
+  {
+    property: 'defaultValue',
+    description: 'Initial selected value for uncontrolled usage. Values use dayjs objects.',
+    type: 'Dayjs | null; Dayjs[] when multiple',
+  },
+  {
+    property: 'format',
+    description: 'Display and emitted date string format. Formatting is applied to dayjs values.',
+    type: "string | string[] | ((value: Dayjs) => string) | { format: string; type?: 'mask' }",
+    defaultValue: "'YYYY-MM-DD'",
+  },
+  {
+    property: 'picker',
+    description: 'Panel granularity for the dayjs value selection.',
+    type: "'date' | 'week' | 'month' | 'quarter' | 'year' | 'time'",
+    defaultValue: "'date'",
+  },
+  {
+    property: 'multiple',
+    description: 'Allows selecting multiple dayjs values in one DatePicker.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showWeek',
+    description: 'Shows the Week header and week-number column in the date panel.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'needConfirm',
+    description: 'Requires pressing OK before committing the selected dayjs value.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'placeholder',
+    description: 'Placeholder text when no date is selected.',
+    type: 'string',
+    defaultValue: "'Select date'",
+  },
+  {
+    property: 'disabled',
+    description: 'Disables the picker.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'allowClear',
+    description: 'Shows a clear button when a value is selected.',
+    type: 'boolean | { clearIcon?: JSX.Element }',
+    defaultValue: 'false',
+  },
+  {
+    property: 'variant',
+    description: 'Visual variant of the selector.',
+    type: "'outlined' | 'borderless' | 'filled' | 'underlined'",
+    defaultValue: "'outlined'",
+  },
+  {
+    property: 'status',
+    description: 'Validation status styling.',
+    type: "'' | 'error' | 'warning'",
+  },
+  {
+    property: 'size',
+    description: 'Selector size.',
+    type: "'small' | 'middle' | 'large'",
+    defaultValue: "'middle'",
+  },
+  {
+    property: 'classNames',
+    description: 'Semantic slot class names.',
+    type: 'Partial<Record<DatePickerSemanticSlot, string>>',
+  },
+  {
+    property: 'styles',
+    description: 'Semantic slot inline styles.',
+    type: 'Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>',
+  },
+  {
+    property: 'prefix',
+    description: 'Custom prefix content inside the selector.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'suffixIcon',
+    description: 'Custom suffix icon inside the selector.',
+    type: 'JSX.Element',
+  },
+  { property: 'prevIcon', description: 'Custom previous navigation icon.', type: 'JSX.Element' },
+  { property: 'nextIcon', description: 'Custom next navigation icon.', type: 'JSX.Element' },
+  {
+    property: 'superPrevIcon',
+    description: 'Custom super previous navigation icon.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'superNextIcon',
+    description: 'Custom super next navigation icon.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'components',
+    description: 'Overrides supported internal slots such as input and panel.',
+    type: "Partial<Record<'input' | 'panel' | PickerMode, Component>>",
+  },
+  {
+    property: 'previewValue',
+    description: 'Controlled preview value for hover/range preview parity.',
+    type: 'Dayjs | [Dayjs | null, Dayjs | null] | null',
+  },
+  { property: 'open', description: 'Controlled popup open state.', type: 'boolean' },
+  {
+    property: 'defaultOpen',
+    description: 'Initial popup open state.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'pickerValue',
+    description: 'Controlled panel date. The panel value uses dayjs.',
+    type: 'Dayjs',
+  },
+  {
+    property: 'defaultPickerValue',
+    description: 'Initial panel date for uncontrolled usage. The panel value uses dayjs.',
+    type: 'Dayjs',
+  },
+  {
+    property: 'disabledDate',
+    description: 'Disables dayjs date cells.',
+    type: '(current: Dayjs, info: { type: PickerType }) => boolean',
+  },
+  {
+    property: 'disabledTime',
+    description: 'Disables time options for a selected dayjs value.',
+    type: '(date: Dayjs | null) => DisabledTimeConfig',
+  },
+  {
+    property: 'showTime',
+    description: 'Adds a time panel and keeps the value as a dayjs object.',
+    type: 'boolean | ShowTimeOptions',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showNow',
+    description: 'Shows the Now shortcut when time selection is enabled.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'presets',
+    description: 'Quick selections. Preset values are dayjs objects or callbacks returning dayjs.',
+    type: 'Array<{ label: JSX.Element; value: Dayjs | (() => Dayjs) }>',
+  },
+  {
+    property: 'cellRender',
+    description: 'Custom cell rendering for dayjs panel values.',
+    type: '(current: Dayjs, info: CellRenderInfo) => JSX.Element',
+  },
+  {
+    property: 'dateRender',
+    description: 'Legacy custom date cell rendering for dayjs values.',
+    type: '(current: Dayjs, today: Dayjs) => JSX.Element',
+  },
+  {
+    property: 'renderExtraFooter',
+    description: 'Renders extra content in the popup footer.',
+    type: '(mode: PickerMode) => JSX.Element',
+  },
+  {
+    property: 'panelRender',
+    description: 'Wraps or replaces the generated picker panel.',
+    type: '(panel: JSX.Element) => JSX.Element',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when selection changes. The value argument uses dayjs.',
+    type: '(value: Dayjs | null, dateString: string) => void; multiple: (value: Dayjs[], dateString: string[]) => void',
+  },
+  {
+    property: 'onSelect',
+    description: 'Called when a dayjs cell value is selected.',
+    type: '(value: Dayjs) => void',
+  },
+  {
+    property: 'onOpenChange',
+    description: 'Called when popup open state changes.',
+    type: '(open: boolean) => void',
+  },
+  {
+    property: 'onOk',
+    description: 'Called when an OK-confirmed dayjs value is accepted.',
+    type: '(value?: Dayjs | null | Dayjs[]) => void',
+  },
+  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
+  { property: 'zIndex', description: 'Custom popup z-index.', type: 'number' },
+  {
+    property: 'getPopupContainer',
+    description: 'Returns popup portal container.',
+    type: '(triggerNode?: HTMLElement) => HTMLElement',
+  },
+  { property: 'mode', description: 'Controlled panel mode.', type: 'PickerMode' },
+  {
+    property: 'minDate',
+    description: 'Minimum selectable and navigable dayjs date.',
+    type: 'Dayjs',
+  },
+  {
+    property: 'maxDate',
+    description: 'Maximum selectable and navigable dayjs date.',
+    type: 'Dayjs',
+  },
+  {
+    property: 'placement',
+    description: 'Popup placement relative to the selector.',
+    type: "'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'",
+    defaultValue: "'bottomLeft'",
+  },
+  { property: 'autoFocus', description: 'Focuses the input on mount.', type: 'boolean' },
+  { property: 'inputReadOnly', description: 'Sets the text input to read-only.', type: 'boolean' },
+  {
+    property: 'preserveInvalidOnBlur',
+    description: 'Keeps invalid typed text when the input blurs.',
+    type: 'boolean',
+  },
+  { property: 'popupClassName', description: 'Custom popup class name.', type: 'string' },
+  {
+    property: 'dropdownClassName',
+    description: 'Alias for popupClassName.',
+    type: 'string',
+  },
+  { property: 'popupStyle', description: 'Custom popup inline style.', type: 'JSX.CSSProperties' },
+  {
+    property: 'bordered',
+    description: 'Legacy border switch. false maps to borderless.',
+    type: 'boolean',
+  },
+  {
+    property: 'order',
+    description: 'Sorts multiple values before emitting them.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'tagRender',
+    description: 'Custom tag renderer when multiple is enabled.',
+    type: '(props: TagRenderProps) => JSX.Element',
+  },
+  {
+    property: 'onPanelChange',
+    description: 'Called when panel date or mode changes.',
+    type: '(value: Dayjs, mode: PickerMode) => void',
+  },
+  {
+    property: 'onFocus',
+    description: 'Called when the input receives focus.',
+    type: '(event: FocusEvent) => void',
+  },
+  {
+    property: 'onBlur',
+    description: 'Called when the input loses focus.',
+    type: '(event: FocusEvent) => void',
+  },
+  {
+    property: 'onKeyDown',
+    description: 'Called for input keyboard events.',
+    type: '(event: KeyboardEvent) => void',
+  },
+]
+
+export const rangePickerRows = [
+  {
+    property: 'value',
+    description: 'Controlled range value. RangePicker values use dayjs objects.',
+    type: '[Dayjs | null, Dayjs | null] | null',
+  },
+  {
+    property: 'defaultValue',
+    description: 'Initial range value for uncontrolled usage. Values use dayjs objects.',
+    type: '[Dayjs | null, Dayjs | null] | null',
+  },
+  {
+    property: 'placeholder',
+    description: 'Placeholder text for the start and end inputs.',
+    type: '[string, string]',
+    defaultValue: "['Start date', 'End date']",
+  },
+  {
+    property: 'disabled',
+    description: 'Disables both inputs or an individual range side.',
+    type: 'boolean | [boolean, boolean]',
+    defaultValue: 'false',
+  },
+  {
+    property: 'allowEmpty',
+    description: 'Allows clearing the start or end dayjs value independently.',
+    type: '[boolean, boolean]',
+  },
+  {
+    property: 'showTime',
+    description: 'Adds a time panel and keeps range values as dayjs objects.',
+    type: 'boolean | RangeShowTimeOptions',
+    defaultValue: 'false',
+  },
+  {
+    property: 'presets',
+    description: 'Quick range selections. Preset endpoints are dayjs objects, null, or callbacks.',
+    type: 'Array<{ label: JSX.Element; value: [Dayjs | (() => Dayjs) | null, Dayjs | (() => Dayjs) | null] | (() => tuple) }>',
+  },
+  {
+    property: 'onChange',
+    description: 'Called when the selected range changes. The dates argument uses dayjs values.',
+    type: '(dates: [Dayjs | null, Dayjs | null] | null, dateStrings: [string, string]) => void',
+  },
+  {
+    property: 'onCalendarChange',
+    description: 'Called while selecting range endpoints. The dates argument uses dayjs values.',
+    type: "(dates, dateStrings, info: { range: 'start' | 'end' }) => void",
+  },
+  {
+    property: 'id',
+    description: 'Input id for start and end fields.',
+    type: 'string | [string, string]',
+  },
+  {
+    property: 'defaultPickerValue',
+    description: 'Initial panel date for uncontrolled usage.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  {
+    property: 'pickerValue',
+    description: 'Controlled panel date for one or both range panels.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  {
+    property: 'disabledTime',
+    description: 'Disables time options for the active range endpoint.',
+    type: '(date: Dayjs | null) => DisabledTimeConfig',
+  },
+  {
+    property: 'order',
+    description: 'Orders start and end values before emitting them.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'separator',
+    description: 'Custom separator content between start and end inputs.',
+    type: 'JSX.Element',
+  },
+  {
+    property: 'onOk',
+    description: 'Called when an OK-confirmed range value is accepted.',
+    type: '(dates: [Dayjs | null, Dayjs | null] | null) => void',
+  },
+  {
+    property: 'onPanelChange',
+    description: 'Called when the range panel date or mode changes.',
+    type: '(value: Dayjs | [Dayjs, Dayjs], mode: PickerMode) => void',
+  },
+  {
+    property: 'onFocus',
+    description: 'Called when a range input receives focus.',
+    type: "(event: FocusEvent, info: { range: 'start' | 'end' }) => void",
+  },
+  {
+    property: 'onBlur',
+    description: 'Called when a range input loses focus.',
+    type: "(event: FocusEvent, info: { range: 'start' | 'end' }) => void",
+  },
+]
+
+export const showTimeRows = [
+  {
+    property: 'defaultValue',
+    description: 'Default time merged into the selected date. RangePicker accepts a tuple.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  {
+    property: 'defaultOpenValue',
+    description: 'Default time shown before a date is selected. RangePicker accepts a tuple.',
+    type: 'Dayjs | [Dayjs, Dayjs]',
+  },
+  { property: 'format', description: 'Time display format.', type: 'string' },
+  {
+    property: 'showHour',
+    description: 'Shows the hour column.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'showMinute',
+    description: 'Shows the minute column.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'showSecond',
+    description: 'Shows the second column.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  { property: 'use12Hours', description: 'Uses 12-hour meridiem display.', type: 'boolean' },
+  {
+    property: 'hideDisabledOptions',
+    description: 'Hides disabled time options instead of rendering them disabled.',
+    type: 'boolean',
+  },
+]
+
+export const disabledTimeRows = [
+  {
+    property: 'disabledHours',
+    description: 'Returns disabled hour numbers.',
+    type: '() => number[]',
+  },
+  {
+    property: 'disabledMinutes',
+    description: 'Returns disabled minute numbers for a selected hour.',
+    type: '(selectedHour: number) => number[]',
+  },
+  {
+    property: 'disabledSeconds',
+    description: 'Returns disabled second numbers for a selected hour and minute.',
+    type: '(selectedHour: number, selectedMinute: number) => number[]',
+  },
+  {
+    property: 'disabledMilliseconds',
+    description: 'Returns disabled millisecond numbers for a selected time.',
+    type: '(selectedHour: number, selectedMinute: number, selectedSecond: number) => number[]',
+  },
+]
+
+export const localeRows = [
+  { property: 'placeholder', description: 'Single picker placeholder.', type: 'string' },
+  {
+    property: 'rangePlaceholder',
+    description: 'RangePicker placeholders.',
+    type: '[string, string]',
+  },
+  { property: 'now / ok / clear', description: 'Footer and clear action labels.', type: 'string' },
+  {
+    property: 'week / hour / minute / second',
+    description: 'Panel column labels.',
+    type: 'string',
+  },
+  {
+    property: 'previousMonth / nextMonth / ...',
+    description: 'ARIA labels for previous, next, and super navigation buttons.',
+    type: 'string',
+  },
+]
+
+export const semanticSlotRows = [
+  { property: 'root', description: 'Outer DatePicker wrapper.', type: 'string' },
+  { property: 'selector', description: 'Visible selector box.', type: 'string' },
+  { property: 'input', description: 'Text input element.', type: 'string' },
+  { property: 'clear', description: 'Clear button.', type: 'string' },
+  { property: 'popup', description: 'Popup dropdown container.', type: 'string' },
+  { property: 'cell', description: 'Panel cell.', type: 'string' },
+  { property: 'presets', description: 'Presets column.', type: 'string' },
+  { property: 'footer', description: 'Footer area.', type: 'string' },
+]
+
+export const methodRows = [
+  { property: 'focus()', description: 'Focuses the picker input.', type: '() => void' },
+  { property: 'blur()', description: 'Blurs the picker input.', type: '() => void' },
+  {
+    property: 'nativeElement',
+    description: 'Outer wrapper element.',
+    type: 'HTMLDivElement | undefined',
+  },
+]
+
+export default function DatePickerPage() {
+  const [value, setValue] = createSignal(dayjs('2026-06-15'))
+  const [open, setOpen] = createSignal(false)
+  const [multipleValue, setMultipleValue] = createSignal([
+    dayjs('2026-06-10'),
+    dayjs('2026-06-15'),
+  ])
+  let pickerRef
+  const [confirmedValue, setConfirmedValue] = createSignal(dayjs('2026-06-15 09:30'))
+  const [confirmedLabel, setConfirmedLabel] = createSignal('2026-06-15 09:30:00')
+  const selectedLabel = () => value()?.format('YYYY-MM-DD') ?? 'none'
+  const multipleLabel = () =>
+    multipleValue()
+      .map((date) => date.format('YYYY-MM-DD'))
+      .join(', ') || 'none'
+
+return (
+
+<>
+<h1>DatePicker</h1>
+<p>
+Select dates, date ranges, and date-time values. Like antd, DatePicker values are{' '}
+<code>dayjs</code> objects rather than strings.
+</p>
+
+      <DemoBlock
+        title="Basic dayjs value"
+        code={`<DatePicker defaultValue={dayjs('2026-06-15')} />`}
+      >
+        <DatePicker defaultValue={dayjs('2026-06-15')} />
+      </DemoBlock>
+
+      <DemoBlock
+        title="Controlled open and value"
+        code={`const [value, setValue] = createSignal(dayjs('2026-06-15'))
+
+const [open, setOpen] = createSignal(false)
+
+<Space direction="vertical">
+  <DatePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen} />
+  <span>Selected date: {value()?.format('YYYY-MM-DD') ?? 'none'}</span>
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen} />
+          <span>Selected date: {selectedLabel()}</span>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Picker variants"
+        code={`<Space wrap>
+
+  <DatePicker picker="week" defaultValue={dayjs('2026-06-15')} />
+  <DatePicker picker="month" defaultValue={dayjs('2026-06-01')} />
+  <DatePicker picker="quarter" defaultValue={dayjs('2026-04-01')} />
+  <DatePicker picker="year" defaultValue={dayjs('2026-01-01')} />
+</Space>`}
+      >
+        <Space wrap>
+          <DatePicker picker="week" defaultValue={dayjs('2026-06-15')} />
+          <DatePicker picker="month" defaultValue={dayjs('2026-06-01')} />
+          <DatePicker picker="quarter" defaultValue={dayjs('2026-04-01')} />
+          <DatePicker picker="year" defaultValue={dayjs('2026-01-01')} />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Format"
+        code={`<Space direction="vertical">
+
+  <DatePicker defaultValue={dayjs('2026-06-15')} format="YYYY/MM/DD" />
+  <DatePicker defaultValue={dayjs('2026-06-15')} format={['YYYY-MM-DD', 'YYYY/MM/DD']} />
+  <DatePicker defaultValue={dayjs('2026-06-15')} format={(value) => 'June ' + value.date() + ', ' + value.year()} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker defaultValue={dayjs('2026-06-15')} format="YYYY/MM/DD" />
+          <DatePicker defaultValue={dayjs('2026-06-15')} format={['YYYY-MM-DD', 'YYYY/MM/DD']} />
+          <DatePicker
+            defaultValue={dayjs('2026-06-15')}
+            format={(date) => `June ${date.date()}, ${date.year()}`}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Size, status, and variant"
+        code={`<Space direction="vertical">
+
+  <Space wrap>
+    <DatePicker size="small" />
+    <DatePicker />
+    <DatePicker size="large" />
+  </Space>
+  <Space wrap>
+    <DatePicker status="error" />
+    <DatePicker status="warning" />
+  </Space>
+  <Space wrap>
+    <DatePicker variant="outlined" />
+    <DatePicker variant="filled" />
+    <DatePicker variant="borderless" />
+    <DatePicker variant="underlined" />
+  </Space>
+</Space>`}
+      >
+        <Space direction="vertical">
+          <Space wrap>
+            <DatePicker size="small" />
+            <DatePicker />
+            <DatePicker size="large" />
+          </Space>
+          <Space wrap>
+            <DatePicker status="error" />
+            <DatePicker status="warning" />
+          </Space>
+          <Space wrap>
+            <DatePicker variant="outlined" />
+            <DatePicker variant="filled" />
+            <DatePicker variant="borderless" />
+            <DatePicker variant="underlined" />
+          </Space>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Common input states"
+        code={`<Space wrap>
+
+  <DatePicker placeholder="Pick a deadline" />
+  <DatePicker allowClear defaultValue={dayjs('2026-06-15')} />
+  <DatePicker disabled defaultValue={dayjs('2026-06-15')} />
+  <DatePicker inputReadOnly />
+</Space>`}
+      >
+        <Space wrap>
+          <DatePicker placeholder="Pick a deadline" />
+          <DatePicker allowClear defaultValue={dayjs('2026-06-15')} />
+          <DatePicker disabled defaultValue={dayjs('2026-06-15')} />
+          <DatePicker inputReadOnly />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="RangePicker"
+        code={`<DatePicker.RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} />`}
+      >
+        <DatePicker.RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} />
+      </DemoBlock>
+
+      <DemoBlock
+        title="RangePicker variants"
+        code={`<Space direction="vertical">
+
+  <DatePicker.RangePicker picker="month" defaultValue={[dayjs('2026-01-01'), dayjs('2026-06-01')]} />
+  <DatePicker.RangePicker picker="quarter" defaultValue={[dayjs('2026-01-01'), dayjs('2026-07-01')]} />
+  <DatePicker.RangePicker picker="year" defaultValue={[dayjs('2024-01-01'), dayjs('2026-01-01')]} />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker.RangePicker
+            picker="month"
+            defaultValue={[dayjs('2026-01-01'), dayjs('2026-06-01')]}
+          />
+          <DatePicker.RangePicker
+            picker="quarter"
+            defaultValue={[dayjs('2026-01-01'), dayjs('2026-07-01')]}
+          />
+          <DatePicker.RangePicker
+            picker="year"
+            defaultValue={[dayjs('2024-01-01'), dayjs('2026-01-01')]}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Disabled date and time"
+        code={`<DatePicker
+
+showTime
+disabledDate={(date) => date.isBefore(dayjs('2026-06-01'), 'day') || date.day() === 0}
+disabledTime={() => ({
+disabledHours: () => [0, 1, 2, 3, 4, 5, 22, 23],
+disabledMinutes: (hour) => (hour === 12 ? [0, 15, 30, 45] : []),
+})}
+/>`} >
+
+<DatePicker
+showTime
+disabledDate={(date) => date.isBefore(dayjs('2026-06-01'), 'day') || date.day() === 0}
+disabledTime={() => ({
+disabledHours: () => [0, 1, 2, 3, 4, 5, 22, 23],
+disabledMinutes: (hour) => (hour === 12 ? [0, 15, 30, 45] : []),
+})}
+/>
+</DemoBlock>
+
+      <DemoBlock
+        title="Show time"
+        code={`<Space wrap>
+
+  <DatePicker showTime defaultValue={dayjs('2026-06-15 09:30:00')} />
+  <DatePicker.RangePicker showTime defaultValue={[dayjs('2026-06-01 09:00:00'), dayjs('2026-06-15 18:00:00')]} />
+</Space>`}
+      >
+        <Space wrap>
+          <DatePicker showTime defaultValue={dayjs('2026-06-15 09:30:00')} />
+          <DatePicker.RangePicker
+            showTime
+            defaultValue={[dayjs('2026-06-01 09:00:00'), dayjs('2026-06-15 18:00:00')]}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Need confirm and onOk"
+        code={`const [confirmedValue, setConfirmedValue] = createSignal(dayjs('2026-06-15 09:30'))
+
+const [confirmedLabel, setConfirmedLabel] = createSignal('2026-06-15 09:30:00')
+
+<Space direction="vertical">
+  <DatePicker
+    showTime
+    needConfirm
+    value={confirmedValue()}
+    onChange={setConfirmedValue}
+    onOk={(date) => setConfirmedLabel(date?.format('YYYY-MM-DD HH:mm:ss') ?? 'none')}
+  />
+  <span>Confirmed value: {confirmedLabel()}</span>
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker
+            showTime
+            needConfirm
+            value={confirmedValue()}
+            onChange={setConfirmedValue}
+            onOk={(date) => setConfirmedLabel(date?.format('YYYY-MM-DD HH:mm:ss') ?? 'none')}
+          />
+          <span>Confirmed value: {confirmedLabel()}</span>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Multiple"
+        code={`const [multipleValue, setMultipleValue] = createSignal([
+
+dayjs('2026-06-10'),
+dayjs('2026-06-15'),
+])
+
+<Space direction="vertical">
+  <DatePicker multiple value={multipleValue()} onChange={setMultipleValue} />
+  <span>Selected dates: {multipleValue().map((date) => date.format('YYYY-MM-DD')).join(', ') || 'none'}</span>
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker multiple value={multipleValue()} onChange={setMultipleValue} />
+          <span>Selected dates: {multipleLabel()}</span>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Presets"
+        code={`<Space direction="vertical">
+
+  <DatePicker
+    presets={[
+      { label: 'Today', value: () => dayjs() },
+      { label: 'Next week', value: () => dayjs().add(7, 'day') },
+    ]}
+  />
+  <DatePicker.RangePicker
+    presets={[
+      { label: 'This month', value: [dayjs().startOf('month'), dayjs().endOf('month')] },
+      { label: 'Next 7 days', value: () => [dayjs(), dayjs().add(7, 'day')] },
+    ]}
+  />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker
+            presets={[
+              { label: 'Today', value: () => dayjs() },
+              { label: 'Next week', value: () => dayjs().add(7, 'day') },
+            ]}
+          />
+          <DatePicker.RangePicker
+            presets={[
+              { label: 'This month', value: [dayjs().startOf('month'), dayjs().endOf('month')] },
+              { label: 'Next 7 days', value: () => [dayjs(), dayjs().add(7, 'day')] },
+            ]}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Custom rendering"
+        code={`<DatePicker
+
+defaultOpen
+defaultPickerValue={dayjs('2026-06-01')}
+cellRender={(current, info) => (
+
+<div class={current.date() === 15 ? 'rounded bg-blue-50 text-blue-600' : undefined}>
+{info.originNode}
+</div>
+)}
+renderExtraFooter={() => <span>Custom footer</span>}
+panelRender={(panel) => <section aria-label="custom date panel">{panel}</section>}
+/>`} >
+<DatePicker
+defaultOpen
+defaultPickerValue={dayjs('2026-06-01')}
+cellRender={(current, info) => (
+<div class={current.date() === 15 ? 'rounded bg-blue-50 text-blue-600' : undefined}>
+{info.originNode}
+</div>
+)}
+renderExtraFooter={() => <span>Custom footer</span>}
+panelRender={(panel) => <section aria-label="custom date panel">{panel}</section>}
+/>
+</DemoBlock>
+
+      <DemoBlock
+        title="Show week and locale"
+        code={`<Space direction="vertical">
+
+  <DatePicker showWeek defaultPickerValue={dayjs('2026-06-01')} />
+  <DatePicker
+    locale={{
+      lang: {
+        placeholder: '请选择日期',
+        now: '此刻',
+        ok: '确定',
+        clear: '清除',
+        week: '周',
+        previousMonth: '上个月',
+        nextMonth: '下个月',
+      },
+    }}
+  />
+</Space>`}
+      >
+        <Space direction="vertical">
+          <DatePicker showWeek defaultPickerValue={dayjs('2026-06-01')} />
+          <DatePicker
+            locale={{
+              lang: {
+                placeholder: '请选择日期',
+                now: '此刻',
+                ok: '确定',
+                clear: '清除',
+                week: '周',
+                previousMonth: '上个月',
+                nextMonth: '下个月',
+              },
+            }}
+          />
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock
+        title="Custom icons and prefix"
+        code={`<DatePicker
+
+prefix={<ClockCircleOutlined />}
+suffixIcon={<CalendarOutlined />}
+allowClear={{ clearIcon: <span aria-hidden="true">×</span> }}
+prevIcon={<LeftOutlined />}
+nextIcon={<RightOutlined />}
+superPrevIcon={<DoubleLeftOutlined />}
+superNextIcon={<DoubleRightOutlined />}
+/>`} >
+
+<DatePicker
+prefix={<ClockCircleOutlined />}
+suffixIcon={<CalendarOutlined />}
+allowClear={{ clearIcon: <span aria-hidden="true">×</span> }}
+prevIcon={<LeftOutlined />}
+nextIcon={<RightOutlined />}
+superPrevIcon={<DoubleLeftOutlined />}
+superNextIcon={<DoubleRightOutlined />}
+/>
+</DemoBlock>
+
+      <DemoBlock
+        title="Semantic classNames and styles"
+        code={`<DatePicker
+
+classNames={{ selector: 'shadow-sm', popup: 'date-picker-popup' }}
+styles={{ selector: { 'border-color': '#1677ff' }, footer: { color: '#1677ff' } }}
+renderExtraFooter={() => 'Styled footer'}
+/>`} >
+
+<DatePicker
+classNames={{ selector: 'shadow-sm', popup: 'date-picker-popup' }}
+styles={{ selector: { 'border-color': '#1677ff' }, footer: { color: '#1677ff' } }}
+renderExtraFooter={() => 'Styled footer'}
+/>
+</DemoBlock>
+
+      <DemoBlock
+        title="Focus and blur methods"
+        code={`let pickerRef
+
+<Space>
+  <DatePicker ref={(ref) => (pickerRef = ref)} />
+  <button type="button" onClick={() => pickerRef?.focus()}>Focus</button>
+  <button type="button" onClick={() => pickerRef?.blur()}>Blur</button>
+</Space>`}
+      >
+        <Space>
+          <DatePicker ref={(ref) => (pickerRef = ref)} />
+          <button type="button" onClick={() => pickerRef?.focus()}>
+            Focus
+          </button>
+          <button type="button" onClick={() => pickerRef?.blur()}>
+            Blur
+          </button>
+        </Space>
+      </DemoBlock>
+
+      <h2>API</h2>
+      <p>
+        DatePicker and RangePicker values use <code>dayjs</code>. The <code>dateString</code>{' '}
+        callback argument is only the formatted string representation of those dayjs values.
+      </p>
+      <ApiTable rows={datePickerRows} aria-label="DatePicker API" />
+
+      <h2>RangePicker API</h2>
+      <ApiTable rows={rangePickerRows} aria-label="RangePicker API" />
+
+      <h2>ShowTimeOptions</h2>
+      <p>
+        Pass these fields through <code>showTime</code> to configure the time panel. The same
+        disabled callbacks are also available from <code>disabledTime</code>.
+      </p>
+      <ApiTable rows={showTimeRows} aria-label="DatePicker ShowTimeOptions API" />
+
+      <h2>DisabledTimeConfig</h2>
+      <ApiTable rows={disabledTimeRows} aria-label="DatePicker DisabledTimeConfig API" />
+
+      <h2>Locale</h2>
+      <p>
+        The locale object is shallow-merged with the built-in English labels. Provide only the
+        fields you need to override.
+      </p>
+      <ApiTable rows={localeRows} aria-label="DatePicker Locale API" />
+
+      <h2>Semantic slots</h2>
+      <p>
+        Use these slot names in <code>classNames</code> and <code>styles</code> for targeted styling
+        without depending on generated DOM order.
+      </p>
+      <ApiTable rows={semanticSlotRows} aria-label="DatePicker Semantic Slots API" />
+
+      <h2>Methods</h2>
+      <ApiTable rows={methodRows} aria-label="DatePicker Methods API" />
+    </>
+
+)
+}
