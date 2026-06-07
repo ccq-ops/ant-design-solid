@@ -38,6 +38,7 @@ If this command does not match the repo setup, inspect `package.json` and use th
 ## Task 1: Extend Modal API types
 
 **Files:**
+
 - Modify: `packages/components/src/modal/interface.ts`
 - Test: `packages/components/src/modal/__tests__/modal.test.tsx`
 
@@ -46,46 +47,46 @@ If this command does not match the repo setup, inspect `package.json` and use th
 Append this test near the end of `packages/components/src/modal/__tests__/modal.test.tsx`:
 
 ```tsx
-  it('accepts P0 and P1 modal api props at runtime', () => {
-    const container = document.createElement('div')
-    document.body.appendChild(container)
-    const afterOpenChange = vi.fn()
+it('accepts P0 and P1 modal api props at runtime', () => {
+  const container = document.createElement('div')
+  document.body.appendChild(container)
+  const afterOpenChange = vi.fn()
 
-    render(() => (
-      <Modal
-        open
-        title="Compat"
-        className="compat-modal"
-        wrapClassName="compat-wrap"
-        okType="default"
-        okButtonProps={{ danger: true, class: 'ok-extra' }}
-        cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
-        closeIcon={<span data-testid="custom-close">x</span>}
-        mask={{ enabled: true, blur: true, closable: false }}
-        closable={{ closeIcon: <span data-testid="object-close">close</span> }}
-        classNames={{ body: 'compat-body' }}
-        styles={{ body: { color: 'red' } }}
-        getContainer={container}
-        modalRender={(node) => <section data-testid="modal-render">{node}</section>}
-        forceRender
-        destroyOnHidden={false}
-        afterOpenChange={afterOpenChange}
-        loading
-      >
-        Body
-      </Modal>
-    ))
+  render(() => (
+    <Modal
+      open
+      title="Compat"
+      className="compat-modal"
+      wrapClassName="compat-wrap"
+      okType="default"
+      okButtonProps={{ danger: true, class: 'ok-extra' }}
+      cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
+      closeIcon={<span data-testid="custom-close">x</span>}
+      mask={{ enabled: true, blur: true, closable: false }}
+      closable={{ closeIcon: <span data-testid="object-close">close</span> }}
+      classNames={{ body: 'compat-body' }}
+      styles={{ body: { color: 'red' } }}
+      getContainer={container}
+      modalRender={(node) => <section data-testid="modal-render">{node}</section>}
+      forceRender
+      destroyOnHidden={false}
+      afterOpenChange={afterOpenChange}
+      loading
+    >
+      Body
+    </Modal>
+  ))
 
-    expect(container).toHaveTextContent('Compat')
-    expect(container.querySelector('.compat-modal')).toBeTruthy()
-    expect(container.querySelector('.compat-wrap')).toBeTruthy()
-    expect(container.querySelector('.compat-body')).toBeTruthy()
-    expect(container.querySelector<HTMLElement>('.compat-body')!.style.color).toBe('red')
-    expect(container.querySelector('[data-testid="modal-render"]')).toBeTruthy()
-    expect(container.querySelector('[data-testid="object-close"]')).toBeTruthy()
-    expect(container.querySelector('.ads-modal-mask-blur')).toBeTruthy()
-    expect(container.querySelector('.ads-modal-loading')).toBeTruthy()
-  })
+  expect(container).toHaveTextContent('Compat')
+  expect(container.querySelector('.compat-modal')).toBeTruthy()
+  expect(container.querySelector('.compat-wrap')).toBeTruthy()
+  expect(container.querySelector('.compat-body')).toBeTruthy()
+  expect(container.querySelector<HTMLElement>('.compat-body')!.style.color).toBe('red')
+  expect(container.querySelector('[data-testid="modal-render"]')).toBeTruthy()
+  expect(container.querySelector('[data-testid="object-close"]')).toBeTruthy()
+  expect(container.querySelector('.ads-modal-mask-blur')).toBeTruthy()
+  expect(container.querySelector('.ads-modal-loading')).toBeTruthy()
+})
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -251,6 +252,7 @@ Run the modal test command. Expected: the new test still fails because runtime b
 ## Task 2: Implement regular Modal P0/P1 rendering
 
 **Files:**
+
 - Modify: `packages/components/src/modal/modal.tsx`
 - Modify: `packages/components/src/modal/modal.style.ts`
 - Test: `packages/components/src/modal/__tests__/modal.test.tsx`
@@ -260,142 +262,147 @@ Run the modal test command. Expected: the new test still fails because runtime b
 Add these tests to `modal.test.tsx`:
 
 ```tsx
-  it('applies button props okType className and wrapClassName', () => {
-    render(() => (
-      <Modal
-        open
-        title="Buttons"
-        className="dialog-class"
-        wrapClassName="wrap-class"
-        okType="default"
-        okButtonProps={{ danger: true, class: 'ok-extra' }}
-        cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
-      >
-        Body
+it('applies button props okType className and wrapClassName', () => {
+  render(() => (
+    <Modal
+      open
+      title="Buttons"
+      className="dialog-class"
+      wrapClassName="wrap-class"
+      okType="default"
+      okButtonProps={{ danger: true, class: 'ok-extra' }}
+      cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
+    >
+      Body
+    </Modal>
+  ))
+
+  expect(document.body.querySelector('.dialog-class')).toBeTruthy()
+  expect(document.body.querySelector('.wrap-class')).toBeTruthy()
+  expect(document.body.querySelector('.ok-extra')).toBeTruthy()
+  expect(document.body.querySelector('.ok-extra')!.className).not.toContain('ads-btn-primary')
+  expect(document.body.querySelector('.ok-extra')!.className).toContain('ads-btn-dangerous')
+  expect(document.body.querySelector<HTMLButtonElement>('.cancel-extra')!.disabled).toBe(true)
+})
+
+it('supports object closable custom icon and disabled close', () => {
+  const onClose = vi.fn()
+  const onCancel = vi.fn()
+  render(() => (
+    <Modal
+      open
+      title="Close"
+      closable={{
+        closeIcon: <span data-testid="close-icon">custom</span>,
+        disabled: true,
+        onClose,
+      }}
+      onCancel={onCancel}
+    >
+      Body
+    </Modal>
+  ))
+
+  fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-close')!)
+
+  expect(document.body.querySelector('[data-testid="close-icon"]')).toBeTruthy()
+  expect(onClose).toHaveBeenCalledTimes(1)
+  expect(onCancel).not.toHaveBeenCalled()
+})
+
+it('supports object mask visibility blur and closable precedence', () => {
+  const onCancel = vi.fn()
+  render(() => (
+    <Modal
+      open
+      title="Mask"
+      mask={{ enabled: true, blur: true, closable: false }}
+      onCancel={onCancel}
+    >
+      Body
+    </Modal>
+  ))
+
+  expect(document.body.querySelector('.ads-modal-mask')).toBeTruthy()
+  expect(document.body.querySelector('.ads-modal-mask-blur')).toBeTruthy()
+  fireEvent.click(document.body.querySelector('.ads-modal-wrap')!)
+  expect(onCancel).not.toHaveBeenCalled()
+})
+
+it('supports getContainer selector and false inline rendering', () => {
+  const host = document.createElement('div')
+  host.id = 'modal-host'
+  document.body.appendChild(host)
+
+  const inline = render(() => (
+    <div data-testid="inline-root">
+      <Modal open title="Inline" getContainer={false}>
+        Inline body
       </Modal>
-    ))
+    </div>
+  ))
+  render(() => (
+    <Modal open title="Hosted" getContainer="#modal-host">
+      Hosted body
+    </Modal>
+  ))
 
-    expect(document.body.querySelector('.dialog-class')).toBeTruthy()
-    expect(document.body.querySelector('.wrap-class')).toBeTruthy()
-    expect(document.body.querySelector('.ok-extra')).toBeTruthy()
-    expect(document.body.querySelector('.ok-extra')!.className).not.toContain('ads-btn-primary')
-    expect(document.body.querySelector('.ok-extra')!.className).toContain('ads-btn-dangerous')
-    expect(document.body.querySelector<HTMLButtonElement>('.cancel-extra')!.disabled).toBe(true)
-  })
+  expect(host).toHaveTextContent('Hosted')
+  expect(inline.container).toHaveTextContent('Inline')
+})
 
-  it('supports object closable custom icon and disabled close', () => {
-    const onClose = vi.fn()
-    const onCancel = vi.fn()
-    render(() => (
-      <Modal
-        open
-        title="Close"
-        closable={{
-          closeIcon: <span data-testid="close-icon">custom</span>,
-          disabled: true,
-          onClose,
-        }}
-        onCancel={onCancel}
-      >
-        Body
-      </Modal>
-    ))
+it('preserves hidden content by default and destroys it with destroyOnHidden', () => {
+  const [open, setOpen] = createSignal(true)
+  const preserved = render(() => (
+    <Modal open={open()} title="Preserved">
+      Preserved body
+    </Modal>
+  ))
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-close')!)
+  setOpen(false)
+  expect(document.body).toHaveTextContent('Preserved body')
 
-    expect(document.body.querySelector('[data-testid="close-icon"]')).toBeTruthy()
-    expect(onClose).toHaveBeenCalledTimes(1)
-    expect(onCancel).not.toHaveBeenCalled()
-  })
+  preserved.unmount()
+  const [destroyOpen, setDestroyOpen] = createSignal(true)
+  render(() => (
+    <Modal open={destroyOpen()} destroyOnHidden title="Destroyed">
+      Destroyed body
+    </Modal>
+  ))
 
-  it('supports object mask visibility blur and closable precedence', () => {
-    const onCancel = vi.fn()
-    render(() => (
-      <Modal open title="Mask" mask={{ enabled: true, blur: true, closable: false }} onCancel={onCancel}>
-        Body
-      </Modal>
-    ))
+  setDestroyOpen(false)
+  expect(document.body).not.toHaveTextContent('Destroyed body')
+})
 
-    expect(document.body.querySelector('.ads-modal-mask')).toBeTruthy()
-    expect(document.body.querySelector('.ads-modal-mask-blur')).toBeTruthy()
-    fireEvent.click(document.body.querySelector('.ads-modal-wrap')!)
-    expect(onCancel).not.toHaveBeenCalled()
-  })
+it('supports forceRender modalRender classNames styles loading and afterOpenChange', () => {
+  const [open, setOpen] = createSignal(false)
+  const afterOpenChange = vi.fn()
+  render(() => (
+    <Modal
+      open={open()}
+      forceRender
+      title="Advanced"
+      classNames={{ body: 'semantic-body' }}
+      styles={{ body: { color: 'blue' } }}
+      modalRender={(node) => <section data-testid="wrapped-modal">{node}</section>}
+      loading
+      afterOpenChange={afterOpenChange}
+    >
+      Advanced body
+    </Modal>
+  ))
 
-  it('supports getContainer selector and false inline rendering', () => {
-    const host = document.createElement('div')
-    host.id = 'modal-host'
-    document.body.appendChild(host)
+  expect(document.body).toHaveTextContent('Advanced')
+  expect(document.body.querySelector('[data-testid="wrapped-modal"]')).toBeTruthy()
+  expect(document.body.querySelector('.semantic-body')).toBeTruthy()
+  expect(document.body.querySelector<HTMLElement>('.semantic-body')!.style.color).toBe('blue')
+  expect(document.body.querySelector('.ads-modal-loading')).toBeTruthy()
 
-    const inline = render(() => (
-      <div data-testid="inline-root">
-        <Modal open title="Inline" getContainer={false}>
-          Inline body
-        </Modal>
-      </div>
-    ))
-    render(() => (
-      <Modal open title="Hosted" getContainer="#modal-host">
-        Hosted body
-      </Modal>
-    ))
-
-    expect(host).toHaveTextContent('Hosted')
-    expect(inline.container).toHaveTextContent('Inline')
-  })
-
-  it('preserves hidden content by default and destroys it with destroyOnHidden', () => {
-    const [open, setOpen] = createSignal(true)
-    const preserved = render(() => (
-      <Modal open={open()} title="Preserved">
-        Preserved body
-      </Modal>
-    ))
-
-    setOpen(false)
-    expect(document.body).toHaveTextContent('Preserved body')
-
-    preserved.unmount()
-    const [destroyOpen, setDestroyOpen] = createSignal(true)
-    render(() => (
-      <Modal open={destroyOpen()} destroyOnHidden title="Destroyed">
-        Destroyed body
-      </Modal>
-    ))
-
-    setDestroyOpen(false)
-    expect(document.body).not.toHaveTextContent('Destroyed body')
-  })
-
-  it('supports forceRender modalRender classNames styles loading and afterOpenChange', () => {
-    const [open, setOpen] = createSignal(false)
-    const afterOpenChange = vi.fn()
-    render(() => (
-      <Modal
-        open={open()}
-        forceRender
-        title="Advanced"
-        classNames={{ body: 'semantic-body' }}
-        styles={{ body: { color: 'blue' } }}
-        modalRender={(node) => <section data-testid="wrapped-modal">{node}</section>}
-        loading
-        afterOpenChange={afterOpenChange}
-      >
-        Advanced body
-      </Modal>
-    ))
-
-    expect(document.body).toHaveTextContent('Advanced')
-    expect(document.body.querySelector('[data-testid="wrapped-modal"]')).toBeTruthy()
-    expect(document.body.querySelector('.semantic-body')).toBeTruthy()
-    expect(document.body.querySelector<HTMLElement>('.semantic-body')!.style.color).toBe('blue')
-    expect(document.body.querySelector('.ads-modal-loading')).toBeTruthy()
-
-    setOpen(true)
-    expect(afterOpenChange).toHaveBeenCalledWith(true)
-    setOpen(false)
-    expect(afterOpenChange).toHaveBeenCalledWith(false)
-  })
+  setOpen(true)
+  expect(afterOpenChange).toHaveBeenCalledWith(true)
+  setOpen(false)
+  expect(afterOpenChange).toHaveBeenCalledWith(false)
+})
 ```
 
 - [ ] **Step 2: Run test to verify failures**
@@ -419,10 +426,13 @@ function isFooterRender(footer: ModalProps['footer']): footer is ModalFooterRend
   return typeof footer === 'function'
 }
 
-function resolveGetContainer(getContainer: ModalProps['getContainer']): HTMLElement | undefined | false {
+function resolveGetContainer(
+  getContainer: ModalProps['getContainer'],
+): HTMLElement | undefined | false {
   if (!canUseDom()) return undefined
   if (getContainer === false) return false
-  if (typeof getContainer === 'string') return document.querySelector<HTMLElement>(getContainer) ?? undefined
+  if (typeof getContainer === 'string')
+    return document.querySelector<HTMLElement>(getContainer) ?? undefined
   if (typeof getContainer === 'function') return getContainer()
   return getContainer
 }
@@ -441,11 +451,19 @@ const [hasRendered, setHasRendered] = createSignal(Boolean(local.open || local.f
 createRenderEffect(() => {
   if (local.open || local.forceRender) setHasRendered(true)
 })
-const shouldRender = () => Boolean(local.open || local.forceRender || (hasRendered() && !local.destroyOnHidden))
+const shouldRender = () =>
+  Boolean(local.open || local.forceRender || (hasRendered() && !local.destroyOnHidden))
 const hiddenStyle = () => (local.open ? undefined : { display: 'none' })
-const maskEnabled = () => (isMaskConfig(local.mask) ? local.mask.enabled !== false : local.mask !== false)
-const maskClosable = () => isMaskConfig(local.mask) && local.mask.closable !== undefined ? local.mask.closable : (local.maskClosable ?? true)
-const closeIcon = () => isClosableConfig(local.closable) ? (local.closable.closeIcon ?? local.closeIcon ?? <CloseOutlined />) : (local.closeIcon ?? <CloseOutlined />)
+const maskEnabled = () =>
+  isMaskConfig(local.mask) ? local.mask.enabled !== false : local.mask !== false
+const maskClosable = () =>
+  isMaskConfig(local.mask) && local.mask.closable !== undefined
+    ? local.mask.closable
+    : (local.maskClosable ?? true)
+const closeIcon = () =>
+  isClosableConfig(local.closable)
+    ? (local.closable.closeIcon ?? local.closeIcon ?? <CloseOutlined />)
+    : (local.closeIcon ?? <CloseOutlined />)
 ```
 
 The root element style must merge z-index, hidden display, semantic root style, and `local.style`.
@@ -482,6 +500,7 @@ Run the modal test command. Expected: all modal tests pass.
 ## Task 3: Implement static method P0/P1 config compatibility
 
 **Files:**
+
 - Modify: `packages/components/src/modal/confirm.tsx`
 - Modify: `packages/components/src/modal/modal-method.ts`
 - Test: `packages/components/src/modal/__tests__/modal.test.tsx`
@@ -491,62 +510,68 @@ Run the modal test command. Expected: all modal tests pass.
 Add these tests:
 
 ```tsx
-  it('passes static method visual and layout config to ModalBase', () => {
-    const afterClose = vi.fn()
-    const instance = Modal.confirm({
-      title: 'Static config',
-      content: 'Static body',
-      centered: true,
-      zIndex: 1555,
-      style: { top: '12px' },
-      className: 'static-dialog',
-      wrapClassName: 'static-wrap',
-      okType: 'default',
-      okButtonProps: { class: 'static-ok' },
-      cancelButtonProps: { class: 'static-cancel' },
-      closeIcon: <span data-testid="static-close">close</span>,
-      closable: true,
-      icon: <span data-testid="static-icon">!</span>,
-      footer: <button type="button">custom footer</button>,
-      afterClose,
-    })
-
-    expect(document.body.querySelector('.static-dialog')).toBeTruthy()
-    expect(document.body.querySelector('.static-wrap')).toBeTruthy()
-    expect(document.body.querySelector<HTMLElement>('.ads-modal-root')!.style.zIndex).toBe('1555')
-    expect(document.body.querySelector<HTMLElement>('.ads-modal-root')!.style.top).toBe('12px')
-    expect(document.body.querySelector('[data-testid="static-close"]')).toBeTruthy()
-    expect(document.body.querySelector('[data-testid="static-icon"]')).toBeTruthy()
-    expect(document.body).toHaveTextContent('custom footer')
-
-    instance.destroy()
-    expect(afterClose).toHaveBeenCalledTimes(1)
+it('passes static method visual and layout config to ModalBase', () => {
+  const afterClose = vi.fn()
+  const instance = Modal.confirm({
+    title: 'Static config',
+    content: 'Static body',
+    centered: true,
+    zIndex: 1555,
+    style: { top: '12px' },
+    className: 'static-dialog',
+    wrapClassName: 'static-wrap',
+    okType: 'default',
+    okButtonProps: { class: 'static-ok' },
+    cancelButtonProps: { class: 'static-cancel' },
+    closeIcon: <span data-testid="static-close">close</span>,
+    closable: true,
+    icon: <span data-testid="static-icon">!</span>,
+    footer: <button type="button">custom footer</button>,
+    afterClose,
   })
 
-  it('supports static update function form', () => {
-    const instance = Modal.info({ title: 'Before', content: 'Body' })
+  expect(document.body.querySelector('.static-dialog')).toBeTruthy()
+  expect(document.body.querySelector('.static-wrap')).toBeTruthy()
+  expect(document.body.querySelector<HTMLElement>('.ads-modal-root')!.style.zIndex).toBe('1555')
+  expect(document.body.querySelector<HTMLElement>('.ads-modal-root')!.style.top).toBe('12px')
+  expect(document.body.querySelector('[data-testid="static-close"]')).toBeTruthy()
+  expect(document.body.querySelector('[data-testid="static-icon"]')).toBeTruthy()
+  expect(document.body).toHaveTextContent('custom footer')
 
-    instance.update((prev) => ({ title: `${prev.title} After`, content: 'Updated body' }))
+  instance.destroy()
+  expect(afterClose).toHaveBeenCalledTimes(1)
+})
 
-    expect(document.body).toHaveTextContent('Before After')
-    expect(document.body).toHaveTextContent('Updated body')
-    instance.destroy()
-  })
+it('supports static update function form', () => {
+  const instance = Modal.info({ title: 'Before', content: 'Body' })
 
-  it('passes close function to static onOk and onCancel handlers', () => {
-    const onOk = vi.fn((close?: () => void) => close?.())
-    Modal.confirm({ title: 'Close from ok', onOk })
+  instance.update((prev) => ({ title: `${prev.title} After`, content: 'Updated body' }))
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!)
-    expect(onOk).toHaveBeenCalledTimes(1)
-    expect(document.body).not.toHaveTextContent('Close from ok')
+  expect(document.body).toHaveTextContent('Before After')
+  expect(document.body).toHaveTextContent('Updated body')
+  instance.destroy()
+})
 
-    const onCancel = vi.fn((close?: () => void) => close?.())
-    Modal.confirm({ title: 'Close from cancel', onCancel })
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn:not(.ads-btn-primary)')!)
-    expect(onCancel).toHaveBeenCalledTimes(1)
-    expect(document.body).not.toHaveTextContent('Close from cancel')
-  })
+it('passes close function to static onOk and onCancel handlers', () => {
+  const onOk = vi.fn((close?: () => void) => close?.())
+  Modal.confirm({ title: 'Close from ok', onOk })
+
+  fireEvent.click(
+    document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!,
+  )
+  expect(onOk).toHaveBeenCalledTimes(1)
+  expect(document.body).not.toHaveTextContent('Close from ok')
+
+  const onCancel = vi.fn((close?: () => void) => close?.())
+  Modal.confirm({ title: 'Close from cancel', onCancel })
+  fireEvent.click(
+    document.body.querySelector<HTMLButtonElement>(
+      '.ads-modal-footer .ads-btn:not(.ads-btn-primary)',
+    )!,
+  )
+  expect(onCancel).toHaveBeenCalledTimes(1)
+  expect(document.body).not.toHaveTextContent('Close from cancel')
+})
 ```
 
 - [ ] **Step 2: Run test to verify failures**
@@ -603,6 +628,7 @@ Run the modal test command. Expected: all modal tests pass.
 ## Task 4: Update docs table for Modal P0/P1 APIs
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/modal.tsx`
 
 - [ ] **Step 1: Add documentation rows**
@@ -661,6 +687,7 @@ Expected: pass or show formatting differences only in files touched by this task
 ## Task 5: Full verification
 
 **Files:**
+
 - No new code unless fixing verification failures.
 
 - [ ] **Step 1: Run modal tests**

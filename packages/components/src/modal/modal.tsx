@@ -41,7 +41,9 @@ function isFooterRender(footer: ModalProps['footer']): footer is ModalFooterRend
   return typeof footer === 'function'
 }
 
-function resolveGetContainer(getContainer: ModalProps['getContainer']): HTMLElement | undefined | false {
+function resolveGetContainer(
+  getContainer: ModalProps['getContainer'],
+): HTMLElement | undefined | false {
   if (!canUseDom()) return undefined
   if (getContainer === false) return false
   if (typeof getContainer === 'string') {
@@ -102,7 +104,8 @@ export function ModalBase(props: ModalProps) {
 
   const shouldRender = () =>
     Boolean(local.open || local.forceRender || (hasRendered() && !local.destroyOnHidden))
-  const maskEnabled = () => (isMaskConfig(local.mask) ? local.mask.enabled !== false : local.mask !== false)
+  const maskEnabled = () =>
+    isMaskConfig(local.mask) ? local.mask.enabled !== false : local.mask !== false
   const maskBlur = () => (isMaskConfig(local.mask) ? Boolean(local.mask.blur) : false)
   const maskClosable = () =>
     isMaskConfig(local.mask) && local.mask.closable !== undefined
@@ -219,7 +222,10 @@ export function ModalBase(props: ModalProps) {
         style={{ width: widthStyle(), ...local.styles?.modal }}
         onClick={(event) => event.stopPropagation()}
       >
-        <div class={classNames(`${prefixCls()}-content`, local.classNames?.content)} style={local.styles?.content}>
+        <div
+          class={classNames(`${prefixCls()}-content`, local.classNames?.content)}
+          style={local.styles?.content}
+        >
           <Show when={closeVisible()}>
             <button
               type="button"
@@ -233,19 +239,35 @@ export function ModalBase(props: ModalProps) {
             </button>
           </Show>
           <Show when={local.title}>
-            <div class={classNames(`${prefixCls()}-header`, local.classNames?.header)} style={local.styles?.header}>
-              <div id={titleId} class={classNames(`${prefixCls()}-title`, local.classNames?.title)} style={local.styles?.title}>
+            <div
+              class={classNames(`${prefixCls()}-header`, local.classNames?.header)}
+              style={local.styles?.header}
+            >
+              <div
+                id={titleId}
+                class={classNames(`${prefixCls()}-title`, local.classNames?.title)}
+                style={local.styles?.title}
+              >
                 {local.title}
               </div>
             </div>
           </Show>
-          <div class={classNames(`${prefixCls()}-body`, local.classNames?.body)} style={local.styles?.body}>
-            <Show when={!local.loading} fallback={<div class={`${prefixCls()}-loading`}>Loading...</div>}>
+          <div
+            class={classNames(`${prefixCls()}-body`, local.classNames?.body)}
+            style={local.styles?.body}
+          >
+            <Show
+              when={!local.loading}
+              fallback={<div class={`${prefixCls()}-loading`}>Loading...</div>}
+            >
               {local.children}
             </Show>
           </div>
           <Show when={footerNode() !== null}>
-            <div class={classNames(`${prefixCls()}-footer`, local.classNames?.footer)} style={local.styles?.footer}>
+            <div
+              class={classNames(`${prefixCls()}-footer`, local.classNames?.footer)}
+              style={local.styles?.footer}
+            >
               {footerNode()}
             </div>
           </Show>
@@ -258,7 +280,10 @@ export function ModalBase(props: ModalProps) {
   const content = () => (
     <ZIndexContext.Provider value={contextZIndex}>
       <Show when={shouldRender()}>
-        <div class={classNames(`${prefixCls()}-root`, hashId(), local.classNames?.root)} style={rootStyle()}>
+        <div
+          class={classNames(`${prefixCls()}-root`, hashId(), local.classNames?.root)}
+          style={rootStyle()}
+        >
           <Show when={maskEnabled()}>
             <div
               class={classNames(

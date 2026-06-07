@@ -10,7 +10,7 @@ const modalRows: ApiTableRow[] = [
   {
     property: 'footer',
     description: 'Custom footer content. Set to null to hide the footer.',
-    type: 'JSX.Element | null',
+    type: 'JSX.Element | ((originNode, extra) => JSX.Element) | null',
   },
   {
     property: 'okText',
@@ -32,14 +32,15 @@ const modalRows: ApiTableRow[] = [
   },
   {
     property: 'closable',
-    description: 'Shows the close button in the top corner.',
-    type: 'boolean',
+    description: 'Shows or configures the close button in the top corner.',
+    type: 'boolean | ModalClosableConfig',
     defaultValue: 'true',
   },
+  { property: 'closeIcon', description: 'Custom close icon.', type: 'JSX.Element' },
   {
     property: 'mask',
-    description: 'Shows the background mask.',
-    type: 'boolean',
+    description: 'Shows or configures the background mask.',
+    type: 'boolean | { enabled?: boolean; blur?: boolean; closable?: boolean }',
     defaultValue: 'true',
   },
   {
@@ -62,6 +63,52 @@ const modalRows: ApiTableRow[] = [
   },
   { property: 'width', description: 'Modal width.', type: 'number | string' },
   { property: 'zIndex', description: 'Overrides modal z-index.', type: 'number' },
+  { property: 'okType', description: 'Button type for the default OK button.', type: 'ButtonType' },
+  {
+    property: 'okButtonProps',
+    description: 'Props for the default OK button.',
+    type: 'ButtonProps',
+  },
+  {
+    property: 'cancelButtonProps',
+    description: 'Props for the default Cancel button.',
+    type: 'ButtonProps',
+  },
+  { property: 'className', description: 'Class name for the modal dialog.', type: 'string' },
+  { property: 'wrapClassName', description: 'Class name for the modal wrapper.', type: 'string' },
+  {
+    property: 'classNames',
+    description: 'Semantic DOM class names.',
+    type: 'Partial<Record<ModalSemanticName, string>>',
+  },
+  {
+    property: 'styles',
+    description: 'Semantic DOM inline styles.',
+    type: 'Partial<Record<ModalSemanticName, JSX.CSSProperties>>',
+  },
+  {
+    property: 'destroyOnHidden',
+    description: 'Unmount children when the modal is hidden.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'forceRender',
+    description: 'Render modal content before it is opened.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'getContainer',
+    description: 'Custom mount node, selector, or false for inline rendering.',
+    type: 'HTMLElement | () => HTMLElement | string | false',
+  },
+  {
+    property: 'modalRender',
+    description: 'Custom render wrapper for the modal dialog node.',
+    type: '(node: JSX.Element) => JSX.Element',
+  },
+  { property: 'loading', description: 'Shows a loading body placeholder.', type: 'boolean' },
   {
     property: 'onOk',
     description: 'Called when the default OK button is clicked.',
@@ -77,6 +124,11 @@ const modalRows: ApiTableRow[] = [
     description: 'Called after the modal changes from open to closed.',
     type: '() => void',
   },
+  {
+    property: 'afterOpenChange',
+    description: 'Called when the open state changes.',
+    type: '(open: boolean) => void',
+  },
 ]
 
 const modalFuncRows: ApiTableRow[] = [
@@ -89,16 +141,71 @@ const modalFuncRows: ApiTableRow[] = [
   { property: 'content', description: 'Dialog body content.', type: 'JSX.Element' },
   { property: 'okText', description: 'OK button text.', type: 'JSX.Element' },
   { property: 'cancelText', description: 'Cancel button text.', type: 'JSX.Element' },
-  { property: 'closable', description: 'Shows a close button.', type: 'boolean' },
+  {
+    property: 'closable',
+    description: 'Shows or configures a close button.',
+    type: 'boolean | ModalClosableConfig',
+  },
+  { property: 'closeIcon', description: 'Custom close icon.', type: 'JSX.Element' },
+  {
+    property: 'mask',
+    description: 'Shows or configures the background mask.',
+    type: 'boolean | ModalMaskConfig',
+  },
   { property: 'maskClosable', description: 'Allows closing by clicking outside.', type: 'boolean' },
   { property: 'keyboard', description: 'Allows closing with Escape.', type: 'boolean' },
+  { property: 'centered', description: 'Vertically centers the dialog.', type: 'boolean' },
   { property: 'width', description: 'Dialog width.', type: 'number | string' },
+  { property: 'zIndex', description: 'Overrides modal z-index.', type: 'number' },
+  { property: 'style', description: 'Inline style for the modal root.', type: 'JSX.CSSProperties' },
+  { property: 'className', description: 'Class name for the modal dialog.', type: 'string' },
+  { property: 'wrapClassName', description: 'Class name for the modal wrapper.', type: 'string' },
+  { property: 'classNames', description: 'Semantic DOM class names.', type: 'ModalClassNames' },
+  { property: 'styles', description: 'Semantic DOM inline styles.', type: 'ModalStyles' },
+  { property: 'okType', description: 'Button type for the OK button.', type: 'ButtonType' },
+  { property: 'okButtonProps', description: 'Props for the OK button.', type: 'ButtonProps' },
+  {
+    property: 'cancelButtonProps',
+    description: 'Props for the Cancel button.',
+    type: 'ButtonProps',
+  },
+  {
+    property: 'footer',
+    description: 'Custom footer content.',
+    type: 'JSX.Element | ((originNode, extra) => JSX.Element) | null',
+  },
+  { property: 'icon', description: 'Custom confirm icon.', type: 'JSX.Element' },
+  {
+    property: 'afterClose',
+    description: 'Called after the dialog is destroyed.',
+    type: '() => void',
+  },
+  {
+    property: 'getContainer',
+    description: 'Custom mount node, selector, or false for inline rendering.',
+    type: 'HTMLElement | () => HTMLElement | string | false',
+  },
+  {
+    property: 'modalRender',
+    description: 'Custom render wrapper for the dialog node.',
+    type: '(node: JSX.Element) => JSX.Element',
+  },
+  { property: 'destroyOnHidden', description: 'Unmount children when hidden.', type: 'boolean' },
+  {
+    property: 'forceRender',
+    description: 'Render dialog content before it opens.',
+    type: 'boolean',
+  },
   {
     property: 'onOk',
     description: 'Called when OK is clicked.',
-    type: '() => void | Promise<void>',
+    type: '(close?: () => void) => void | Promise<void>',
   },
-  { property: 'onCancel', description: 'Called when Cancel is clicked.', type: '() => void' },
+  {
+    property: 'onCancel',
+    description: 'Called when Cancel is clicked.',
+    type: '(close?: () => void) => void | Promise<void>',
+  },
 ]
 
 const staticRows: ApiTableRow[] = [

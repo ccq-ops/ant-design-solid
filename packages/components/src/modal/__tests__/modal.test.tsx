@@ -406,7 +406,12 @@ describe('Modal', () => {
   it('supports object mask visibility blur and closable precedence', () => {
     const onCancel = vi.fn()
     render(() => (
-      <Modal open title="Mask" mask={{ enabled: true, blur: true, closable: false }} onCancel={onCancel}>
+      <Modal
+        open
+        title="Mask"
+        mask={{ enabled: true, blur: true, closable: false }}
+        onCancel={onCancel}
+      >
         Body
       </Modal>
     ))
@@ -538,13 +543,19 @@ describe('Modal', () => {
     const onOk = vi.fn((close?: () => void) => close?.())
     Modal.confirm({ title: 'Close from ok', onOk })
 
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!,
+    )
     expect(onOk).toHaveBeenCalledTimes(1)
     expect(document.body).not.toHaveTextContent('Close from ok')
 
     const onCancel = vi.fn((close?: () => void) => close?.())
     Modal.confirm({ title: 'Close from cancel', onCancel })
-    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn:not(.ads-btn-primary)')!)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.ads-modal-footer .ads-btn:not(.ads-btn-primary)',
+      )!,
+    )
     expect(onCancel).toHaveBeenCalledTimes(1)
     expect(document.body).not.toHaveTextContent('Close from cancel')
   })
