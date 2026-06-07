@@ -117,4 +117,115 @@ describe('Pagination', () => {
     expect(onChange).toHaveBeenLastCalledWith(4, 10)
     expect(input).toHaveValue('4')
   })
+  it('shows size changer automatically when total is above the default boundary', () => {
+    render(() => <Pagination total={51} />)
+
+    expect(screen.getByLabelText('Page Size')).toBeInTheDocument()
+  })
+
+  it('respects totalBoundaryShowSizeChanger for automatic size changer visibility', () => {
+    render(() => <Pagination total={80} totalBoundaryShowSizeChanger={100} />)
+
+    expect(screen.queryByLabelText('Page Size')).not.toBeInTheDocument()
+  })
+
+  it('supports custom item rendering for page, prev, and next items', () => {
+    render(() => (
+      <Pagination
+        total={30}
+        itemRender={(page, type, _originalElement) => {
+          if (type === 'prev') return <span>Previous custom</span>
+          if (type === 'next') return <span>Next custom</span>
+          return <span>Page custom {page}</span>
+        }}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: 'Previous Page' })).toHaveTextContent(
+      'Previous custom',
+    )
+    expect(screen.getByRole('button', { name: 'Next Page' })).toHaveTextContent('Next custom')
+    expect(screen.getByRole('button', { name: 'Page 2' })).toHaveTextContent('Page custom 2')
+  })
+
+  it('supports readonly simple mode', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <Pagination
+        simple={{ readOnly: true }}
+        total={50}
+        defaultCurrent={1}
+        pageSize={10}
+        onChange={onChange}
+      />
+    ))
+
+    const input = screen.getByLabelText('Page')
+    expect(input).toHaveAttribute('readonly')
+    fireEvent.input(input, { target: { value: '4' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('supports quick jumper goButton object form', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <Pagination
+        total={100}
+        showQuickJumper={{ goButton: <button type="button">Go now</button> }}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.input(screen.getByLabelText('Quick jump to page'), { target: { value: '6' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Go now' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(6, 10)
+  })
+
+  it('renders fewer page buttons when showLessItems is enabled', () => {
+    const { container: normalContainer } = render(() => (
+      <Pagination total={200} defaultCurrent={10} pageSize={10} />
+    ))
+    const normalPageCount = normalContainer.querySelectorAll('.ads-pagination-item').length
+    cleanup()
+
+    const { container: lessContainer } = render(() => (
+      <Pagination total={200} defaultCurrent={10} pageSize={10} showLessItems />
+    ))
+    const lessPageCount = lessContainer.querySelectorAll('.ads-pagination-item').length
+
+    expect(lessPageCount).toBeLessThan(normalPageCount)
+  })
+
+  it('can disable title attributes on page controls', () => {
+    render(() => <Pagination total={30} showTitle={false} />)
+
+    expect(screen.getByRole('button', { name: 'Page 2' })).not.toHaveAttribute('title')
+    expect(screen.getByRole('button', { name: 'Previous Page' })).not.toHaveAttribute('title')
+    expect(screen.getByRole('button', { name: 'Next Page' })).not.toHaveAttribute('title')
+  })
+
+  it('applies align, size, semantic classNames, and semantic styles', () => {
+    const { container } = render(() => (
+      <Pagination
+        total={30}
+        align="center"
+        size="small"
+        classNames={{ root: 'custom-root', itemButton: 'custom-button' }}
+        styles={{ root: { color: 'red' }, itemButton: { background: 'blue' } }}
+      />
+    ))
+
+    const root = container.querySelector('.ads-pagination')
+    expect(root).toHaveClass('ads-pagination-align-center')
+    expect(root).toHaveClass('ads-pagination-small')
+    expect(root).toHaveClass('custom-root')
+    expect(root).toHaveStyle('color: rgb(255, 0, 0)')
+
+    const pageButton = screen.getByRole('button', { name: 'Page 2' })
+    expect(pageButton).toHaveClass('custom-button')
+    expect(pageButton).toHaveStyle('background: blue')
+  })
 })

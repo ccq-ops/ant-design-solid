@@ -14,6 +14,11 @@ const paginationRows: ApiTableRow[] = [
   },
   { property: 'pageSize', description: 'Controlled items per page.', type: 'number' },
   {
+    property: 'itemRender',
+    description: 'Customizes page, previous, and next item content.',
+    type: "(page: number, type: 'page' | 'prev' | 'next', originalElement: JSX.Element) => JSX.Element",
+  },
+  {
     property: 'defaultPageSize',
     description: 'Initial items per page for uncontrolled usage.',
     type: 'number',
@@ -21,22 +26,37 @@ const paginationRows: ApiTableRow[] = [
   },
   { property: 'total', description: 'Total number of items.', type: 'number', defaultValue: '0' },
   {
+    property: 'totalBoundaryShowSizeChanger',
+    description: 'Shows the size changer automatically when total is larger than this value.',
+    type: 'number',
+    defaultValue: '50',
+  },
+  {
     property: 'disabled',
     description: 'Disables pagination controls.',
     type: 'boolean',
     defaultValue: 'false',
   },
   {
+    property: 'align',
+    description: 'Aligns pagination items.',
+    type: "'start' | 'center' | 'end'",
+  },
+  {
+    property: 'classNames',
+    description: 'Semantic class names for internal slots.',
+    type: 'PaginationSemanticClassNames',
+  },
+  {
     property: 'simple',
-    description: 'Uses the compact simple layout.',
-    type: 'boolean',
+    description: 'Uses the compact simple layout, optionally with a read-only input.',
+    type: 'boolean | { readOnly?: boolean }',
     defaultValue: 'false',
   },
   {
     property: 'showSizeChanger',
-    description: 'Shows page size selection.',
-    type: 'boolean',
-    defaultValue: 'false',
+    description: 'Shows page size selection. Object form is passed to the internal select.',
+    type: 'boolean | SelectHTMLAttributes<HTMLSelectElement>',
   },
   {
     property: 'pageSizeOptions',
@@ -44,10 +64,39 @@ const paginationRows: ApiTableRow[] = [
     type: '(string | number)[]',
   },
   {
-    property: 'showQuickJumper',
-    description: 'Shows quick jump input.',
+    property: 'responsive',
+    description: 'Adds responsive pagination class for responsive styling.',
     type: 'boolean',
     defaultValue: 'false',
+  },
+  {
+    property: 'showLessItems',
+    description: 'Shows fewer page items around the current page.',
+    type: 'boolean',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showQuickJumper',
+    description: 'Shows quick jump input. Object form supports a custom goButton.',
+    type: 'boolean | { goButton?: JSX.Element }',
+    defaultValue: 'false',
+  },
+  {
+    property: 'showTitle',
+    description: 'Shows title attributes on page controls.',
+    type: 'boolean',
+    defaultValue: 'true',
+  },
+  {
+    property: 'size',
+    description: 'Controls pagination size.',
+    type: "'large' | 'medium' | 'small'",
+    defaultValue: "'medium'",
+  },
+  {
+    property: 'styles',
+    description: 'Semantic inline styles for internal slots.',
+    type: 'PaginationSemanticStyles',
   },
   {
     property: 'hideOnSinglePage',
@@ -109,6 +158,20 @@ export default function PaginationPage() {
       </DemoBlock>
       <DemoBlock title="Disabled" code={`<Pagination disabled total={80} defaultCurrent={3} />`}>
         <Pagination disabled total={80} defaultCurrent={3} />
+      </DemoBlock>
+      <DemoBlock
+        title="Customized"
+        code={`<Pagination align="center" size="small" total={120} itemRender={(page, type, originalElement) => type === 'page' ? <strong>{page}</strong> : originalElement} showQuickJumper={{ goButton: <button type="button">Go</button> }} />`}
+      >
+        <Pagination
+          align="center"
+          size="small"
+          total={120}
+          itemRender={(page, type, originalElement) =>
+            type === 'page' ? <strong>{page}</strong> : originalElement
+          }
+          showQuickJumper={{ goButton: <button type="button">Go</button> }}
+        />
       </DemoBlock>
 
       <h2>API</h2>

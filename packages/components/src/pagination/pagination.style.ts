@@ -22,6 +22,26 @@ export function usePaginationStyle(prefixCls: string) {
           'font-family': t.fontFamily,
           'line-height': `${t.lineHeight}`,
         },
+        [`.${prefixCls}-align-start`]: {
+          'justify-content': 'flex-start',
+        },
+        [`.${prefixCls}-align-center`]: {
+          'justify-content': 'center',
+        },
+        [`.${prefixCls}-align-end`]: {
+          'justify-content': 'flex-end',
+        },
+        [`.${prefixCls}-large .${prefixCls}-item-button, .${prefixCls}-large .${prefixCls}-input, .${prefixCls}-large .${prefixCls}-select`]:
+          {
+            'min-width': `${t.controlHeight}px`,
+            height: `${t.controlHeight}px`,
+          },
+        [`.${prefixCls}-small .${prefixCls}-item-button, .${prefixCls}-small .${prefixCls}-input, .${prefixCls}-small .${prefixCls}-select`]:
+          {
+            'min-width': `${t.controlHeightSM}px`,
+            height: `${t.controlHeightSM}px`,
+            'font-size': `${t.fontSize - 2}px`,
+          },
         [`.${prefixCls}-disabled`]: {
           cursor: 'not-allowed',
         },
