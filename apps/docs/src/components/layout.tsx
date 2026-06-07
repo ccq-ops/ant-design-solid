@@ -1,3 +1,4 @@
+import { MoonOutlined, SunOutlined } from '@ant-design-solid/icons'
 import { A, useLocation } from '@solidjs/router'
 import { For, Show, createMemo, type JSX } from 'solid-js'
 import { sideNavGroups, topNavItems } from '../routes'
@@ -43,13 +44,13 @@ export function Layout(props: { children?: JSX.Element }) {
           </a>
           <button
             type="button"
-            class="rounded-full border border-gray-200 px-3 py-1 text-sm transition-colors hover:border-blue-600 hover:text-blue-600"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-base transition-colors hover:border-blue-600 hover:text-blue-600"
             aria-label={
               docsTheme.mode() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'
             }
             onClick={docsTheme.toggleTheme}
           >
-            {docsTheme.mode() === 'light' ? 'Dark mode' : 'Light mode'}
+            {docsTheme.mode() === 'light' ? <MoonOutlined /> : <SunOutlined />}
           </button>
         </nav>
       </header>

@@ -97,7 +97,8 @@ describe('Layout', () => {
     const result = renderLayout()
     const toggle = result.getByRole('button', { name: 'Switch to dark theme' })
 
-    expect(toggle).toHaveTextContent('Dark mode')
+    expect(toggle).not.toHaveTextContent('Dark mode')
+    expect(toggle.querySelector('svg')).toBeInTheDocument()
 
     fireEvent.click(toggle)
 
@@ -109,7 +110,8 @@ describe('Layout', () => {
     const result = renderLayout()
     const toggle = result.getByRole('button', { name: 'Switch to light theme' })
 
-    expect(toggle).toHaveTextContent('Light mode')
+    expect(toggle).not.toHaveTextContent('Light mode')
+    expect(toggle.querySelector('svg')).toBeInTheDocument()
   })
 
   it('renders top navigation from convention-derived page groups', () => {
