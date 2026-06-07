@@ -486,11 +486,7 @@ export default function FormPage() {
         <Space direction="vertical" size="large">
           <Form requiredMark="optional">
             <Space direction="vertical" class="w-90">
-              <Form.Item
-                label="Username"
-                name="markUsername"
-                rules={[{ required: true }]}
-              >
+              <Form.Item label="Username" name="markUsername" rules={[{ required: true }]}>
                 <Input placeholder="Required" />
               </Form.Item>
               <Form.Item label="Nickname" name="markNickname">
@@ -500,11 +496,7 @@ export default function FormPage() {
           </Form>
           <Form requiredMark={false}>
             <Space direction="vertical" class="w-90">
-              <Form.Item
-                label="Email"
-                name="hiddenMarkEmail"
-                rules={[{ required: true }]}
-              >
+              <Form.Item label="Email" name="hiddenMarkEmail" rules={[{ required: true }]}>
                 <Input placeholder="Required mark hidden" />
               </Form.Item>
             </Space>

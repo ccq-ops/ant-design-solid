@@ -23,6 +23,7 @@
 ### Task 1: Prepare docs helper components
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 
 - [ ] **Step 1: Inspect current imports and helper location**
@@ -111,6 +112,7 @@ git commit -m "docs(form): add demo helper components"
 ### Task 2: Add layout and required mark examples
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 
 - [ ] **Step 1: Add Form layout DemoBlock after "Labels and initial values"**
@@ -118,30 +120,30 @@ git commit -m "docs(form): add demo helper components"
 Insert this DemoBlock after the existing `Labels and initial values` DemoBlock:
 
 ```tsx
-      <DemoBlock
-        title="Form layout"
-        code={`<Form layout="vertical">
+<DemoBlock
+  title="Form layout"
+  code={`<Form layout="vertical">
   <Form.Item label="Username" name="username"><Input /></Form.Item>
 </Form>
 <Form layout="inline">
   <Form.Item name="keyword"><Input placeholder="Search" /></Form.Item>
   <Button htmlType="submit">Search</Button>
 </Form>`}
-      >
-        <Space direction="vertical" class="w-100">
-          <Form layout="vertical" initialValues={{ username: 'vertical-user' }}>
-            <Form.Item label="Vertical username" name="username">
-              <Input />
-            </Form.Item>
-          </Form>
-          <Form layout="inline" onFinish={() => message.success('Search submitted')}>
-            <Form.Item name="keyword">
-              <Input placeholder="Search keyword" />
-            </Form.Item>
-            <Button htmlType="submit">Search</Button>
-          </Form>
-        </Space>
-      </DemoBlock>
+>
+  <Space direction="vertical" class="w-100">
+    <Form layout="vertical" initialValues={{ username: 'vertical-user' }}>
+      <Form.Item label="Vertical username" name="username">
+        <Input />
+      </Form.Item>
+    </Form>
+    <Form layout="inline" onFinish={() => message.success('Search submitted')}>
+      <Form.Item name="keyword">
+        <Input placeholder="Search keyword" />
+      </Form.Item>
+      <Button htmlType="submit">Search</Button>
+    </Form>
+  </Space>
+</DemoBlock>
 ```
 
 - [ ] **Step 2: Add Required mark DemoBlock after layout**
@@ -149,30 +151,30 @@ Insert this DemoBlock after the existing `Labels and initial values` DemoBlock:
 Insert this DemoBlock immediately after the layout DemoBlock:
 
 ```tsx
-      <DemoBlock
-        title="Required mark"
-        code={`<Form requiredMark="optional">
+<DemoBlock
+  title="Required mark"
+  code={`<Form requiredMark="optional">
   <Form.Item label="Name" name="name" rules={[{ required: true }]}><Input /></Form.Item>
   <Form.Item label="Bio" name="bio"><Input /></Form.Item>
 </Form>
 <Form requiredMark={false}>...</Form>`}
-      >
-        <Space direction="vertical" class="w-100">
-          <Form requiredMark="optional">
-            <Form.Item label="Name" name="name" rules={[{ required: true }]}> 
-              <Input placeholder="Required" />
-            </Form.Item>
-            <Form.Item label="Bio" name="bio">
-              <Input placeholder="Optional" />
-            </Form.Item>
-          </Form>
-          <Form requiredMark={false}>
-            <Form.Item label="Hidden mark" name="hiddenMark" rules={[{ required: true }]}> 
-              <Input placeholder="Required without mark" />
-            </Form.Item>
-          </Form>
-        </Space>
-      </DemoBlock>
+>
+  <Space direction="vertical" class="w-100">
+    <Form requiredMark="optional">
+      <Form.Item label="Name" name="name" rules={[{ required: true }]}>
+        <Input placeholder="Required" />
+      </Form.Item>
+      <Form.Item label="Bio" name="bio">
+        <Input placeholder="Optional" />
+      </Form.Item>
+    </Form>
+    <Form requiredMark={false}>
+      <Form.Item label="Hidden mark" name="hiddenMark" rules={[{ required: true }]}>
+        <Input placeholder="Required without mark" />
+      </Form.Item>
+    </Form>
+  </Space>
+</DemoBlock>
 ```
 
 After insertion, remove accidental whitespace between `>` and newline in `<Form.Item ...>` if the formatter changes it.
@@ -201,6 +203,7 @@ git commit -m "docs(form): add layout and required mark demos"
 ### Task 3: Add validation behavior examples
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 
 - [ ] **Step 1: Add local form instances in `FormPage`**
@@ -208,69 +211,69 @@ git commit -m "docs(form): add layout and required mark demos"
 In `FormPage`, after:
 
 ```tsx
-  const [instanceForm] = useForm()
+const [instanceForm] = useForm()
 ```
 
 add:
 
 ```tsx
-  const [validateOnlyForm] = useForm()
-  const [scrollForm] = useForm()
+const [validateOnlyForm] = useForm()
+const [scrollForm] = useForm()
 ```
 
 - [ ] **Step 2: Add validate trigger DemoBlock after the existing "Validation" DemoBlock**
 
 ```tsx
-      <DemoBlock
-        title="Validate trigger"
-        code={`<Form.Item name="email" validateTrigger="onBlur" rules={[{ type: 'email' }]}>
+<DemoBlock
+  title="Validate trigger"
+  code={`<Form.Item name="email" validateTrigger="onBlur" rules={[{ type: 'email' }]}>
   <Input placeholder="Validate on blur" />
 </Form.Item>`}
+>
+  <Form onFinish={() => message.success('Blur validation passed')}>
+    <Space direction="vertical" class="w-90">
+      <Form.Item
+        label="Email"
+        name="email"
+        validateTrigger="onBlur"
+        rules={[{ type: 'email', message: 'Enter a valid email after blur' }]}
       >
-        <Form onFinish={() => message.success('Blur validation passed')}>
-          <Space direction="vertical" class="w-90">
-            <Form.Item
-              label="Email"
-              name="email"
-              validateTrigger="onBlur"
-              rules={[{ type: 'email', message: 'Enter a valid email after blur' }]}
-            >
-              <Input placeholder="Blur after typing" />
-            </Form.Item>
-            <Button htmlType="submit">Submit</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+        <Input placeholder="Blur after typing" />
+      </Form.Item>
+      <Button htmlType="submit">Submit</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 3: Add validate only DemoBlock after validate trigger**
 
 ```tsx
-      <DemoBlock
-        title="Validate only"
-        code={`const [form] = useForm()
+<DemoBlock
+  title="Validate only"
+  code={`const [form] = useForm()
 form.validateFields(undefined, { validateOnly: true })`}
-      >
-        <Space direction="vertical" class="w-90">
-          <Form form={validateOnlyForm}>
-            <Form.Item label="Username" name="username" rules={[{ required: true }]}> 
-              <Input placeholder="Required username" />
-            </Form.Item>
-          </Form>
-          <Button
-            onClick={async () => {
-              try {
-                await validateOnlyForm.validateFields(undefined, { validateOnly: true })
-                message.success('Valid without showing errors')
-              } catch {
-                message.error('Invalid, but field UI is unchanged')
-              }
-            }}
-          >
-            Validate only
-          </Button>
-        </Space>
-      </DemoBlock>
+>
+  <Space direction="vertical" class="w-90">
+    <Form form={validateOnlyForm}>
+      <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+        <Input placeholder="Required username" />
+      </Form.Item>
+    </Form>
+    <Button
+      onClick={async () => {
+        try {
+          await validateOnlyForm.validateFields(undefined, { validateOnly: true })
+          message.success('Valid without showing errors')
+        } catch {
+          message.error('Invalid, but field UI is unchanged')
+        }
+      }}
+    >
+      Validate only
+    </Button>
+  </Space>
+</DemoBlock>
 ```
 
 Remove accidental whitespace in the `Form.Item` opening tag if present.
@@ -278,25 +281,25 @@ Remove accidental whitespace in the `Form.Item` opening tag if present.
 - [ ] **Step 4: Add warning only DemoBlock after validate only**
 
 ```tsx
-      <DemoBlock
-        title="Warning only"
-        code={`<Form.Item name="url" rules={[{ type: 'url', warningOnly: true }]}>
+<DemoBlock
+  title="Warning only"
+  code={`<Form.Item name="url" rules={[{ type: 'url', warningOnly: true }]}>
   <Input />
 </Form.Item>`}
+>
+  <Form onFinish={() => message.success('Submitted even with warnings')}>
+    <Space direction="vertical" class="w-90">
+      <Form.Item
+        label="Website"
+        name="url"
+        rules={[{ type: 'url', warningOnly: true, message: 'This looks unlike a URL' }]}
       >
-        <Form onFinish={() => message.success('Submitted even with warnings')}>
-          <Space direction="vertical" class="w-90">
-            <Form.Item
-              label="Website"
-              name="url"
-              rules={[{ type: 'url', warningOnly: true, message: 'This looks unlike a URL' }]}
-            >
-              <Input placeholder="Optional website" />
-            </Form.Item>
-            <Button htmlType="submit">Submit with warning</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+        <Input placeholder="Optional website" />
+      </Form.Item>
+      <Button htmlType="submit">Submit with warning</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 5: Run focused docs typecheck**
@@ -323,59 +326,60 @@ git commit -m "docs(form): add validation behavior demos"
 ### Task 4: Add dynamic rules, dependencies, shouldUpdate, noStyle, and dynamic item examples
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 
 - [ ] **Step 1: Add Dynamic rules DemoBlock after "Watch fields"**
 
 ```tsx
-      <DemoBlock
-        title="Dynamic rules"
-        code={`function DynamicRuleFields() {
+<DemoBlock
+  title="Dynamic rules"
+  code={`function DynamicRuleFields() {
   const required = Form.useWatch('requireNickname')
   return <Form.Item name="nickname" rules={[{ required: Boolean(required()) }]}><Input /></Form.Item>
 }`}
-      >
-        <Form onFinish={() => message.success('Dynamic rule passed')}>
-          <Space direction="vertical" class="w-90">
-            <DynamicRuleFields />
-            <Button htmlType="submit">Submit</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+>
+  <Form onFinish={() => message.success('Dynamic rule passed')}>
+    <Space direction="vertical" class="w-90">
+      <DynamicRuleFields />
+      <Button htmlType="submit">Submit</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 2: Add Dependencies DemoBlock after Dynamic rules**
 
 ```tsx
-      <DemoBlock
-        title="Dependencies"
-        code={`<Form.Item name="confirm" dependencies={['password']} rules={[{ validator: (_rule, value, values) => value === values.password ? undefined : 'Passwords do not match' }]}>
+<DemoBlock
+  title="Dependencies"
+  code={`<Form.Item name="confirm" dependencies={['password']} rules={[{ validator: (_rule, value, values) => value === values.password ? undefined : 'Passwords do not match' }]}>
   <Input />
 </Form.Item>`}
+>
+  <Form onFinish={() => message.success('Passwords match')}>
+    <Space direction="vertical" class="w-90">
+      <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+        <Input type="password" />
+      </Form.Item>
+      <Form.Item
+        label="Confirm"
+        name="confirm"
+        dependencies={['password']}
+        rules={[
+          { required: true, message: 'Please confirm password' },
+          {
+            validator: (_rule, value, values) =>
+              value === values.password ? undefined : 'Passwords do not match',
+          },
+        ]}
       >
-        <Form onFinish={() => message.success('Passwords match')}>
-          <Space direction="vertical" class="w-90">
-            <Form.Item label="Password" name="password" rules={[{ required: true }]}> 
-              <Input type="password" />
-            </Form.Item>
-            <Form.Item
-              label="Confirm"
-              name="confirm"
-              dependencies={['password']}
-              rules={[
-                { required: true, message: 'Please confirm password' },
-                {
-                  validator: (_rule, value, values) =>
-                    value === values.password ? undefined : 'Passwords do not match',
-                },
-              ]}
-            >
-              <Input type="password" />
-            </Form.Item>
-            <Button htmlType="submit">Submit</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+        <Input type="password" />
+      </Form.Item>
+      <Button htmlType="submit">Submit</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 Remove accidental whitespace in the first `Form.Item` opening tag if present.
@@ -383,48 +387,48 @@ Remove accidental whitespace in the first `Form.Item` opening tag if present.
 - [ ] **Step 3: Add shouldUpdate DemoBlock after Dependencies**
 
 ```tsx
-      <DemoBlock
-        title="shouldUpdate"
-        code={`<Form.Item shouldUpdate>
+<DemoBlock
+  title="shouldUpdate"
+  code={`<Form.Item shouldUpdate>
   {(form) => <pre>{JSON.stringify(form.getFieldsValue(true), null, 2)}</pre>}
 </Form.Item>`}
-      >
-        <Form initialValues={{ first: 'Ada' }}>
-          <Space direction="vertical" class="w-90">
-            <Form.Item label="First" name="first">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Last" name="last">
-              <Input />
-            </Form.Item>
-            <Form.Item shouldUpdate>
-              {(form) => <pre>{JSON.stringify(form.getFieldsValue(true), null, 2)}</pre>}
-            </Form.Item>
-          </Space>
-        </Form>
-      </DemoBlock>
+>
+  <Form initialValues={{ first: 'Ada' }}>
+    <Space direction="vertical" class="w-90">
+      <Form.Item label="First" name="first">
+        <Input />
+      </Form.Item>
+      <Form.Item label="Last" name="last">
+        <Input />
+      </Form.Item>
+      <Form.Item shouldUpdate>
+        {(form) => <pre>{JSON.stringify(form.getFieldsValue(true), null, 2)}</pre>}
+      </Form.Item>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 4: Add noStyle nested control DemoBlock after shouldUpdate**
 
 ```tsx
-      <DemoBlock
-        title="noStyle nested control"
-        code={`<Form.Item label="Address">
+<DemoBlock
+  title="noStyle nested control"
+  code={`<Form.Item label="Address">
   <Form.Item name={['address', 'street']} noStyle><Input /></Form.Item>
 </Form.Item>`}
-      >
-        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-          <Space direction="vertical" class="w-90">
-            <Form.Item label="Address">
-              <Form.Item name={['address', 'street']} noStyle rules={[{ required: true }]}> 
-                <Input placeholder="Street" />
-              </Form.Item>
-            </Form.Item>
-            <Button htmlType="submit">Submit address</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+>
+  <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+    <Space direction="vertical" class="w-90">
+      <Form.Item label="Address">
+        <Form.Item name={['address', 'street']} noStyle rules={[{ required: true }]}>
+          <Input placeholder="Street" />
+        </Form.Item>
+      </Form.Item>
+      <Button htmlType="submit">Submit address</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 Remove accidental whitespace in the nested `Form.Item` opening tag if present.
@@ -432,20 +436,20 @@ Remove accidental whitespace in the nested `Form.Item` opening tag if present.
 - [ ] **Step 5: Add Dynamic Form.Item DemoBlock after noStyle**
 
 ```tsx
-      <DemoBlock
-        title="Dynamic Form.Item"
-        code={`function ConditionalCompanyField() {
+<DemoBlock
+  title="Dynamic Form.Item"
+  code={`function ConditionalCompanyField() {
   const business = Form.useWatch('business')
   return business() ? <Form.Item name="company"><Input /></Form.Item> : null
 }`}
-      >
-        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-          <Space direction="vertical" class="w-90">
-            <ConditionalCompanyField />
-            <Button htmlType="submit">Submit</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+>
+  <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+    <Space direction="vertical" class="w-90">
+      <ConditionalCompanyField />
+      <Button htmlType="submit">Submit</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 6: Run focused docs typecheck**
@@ -477,76 +481,77 @@ git commit -m "docs(form): add dynamic form demos"
 ### Task 5: Add advanced list, scroll, normalization, and useStatus examples
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 
 - [ ] **Step 1: Add Advanced Form.List DemoBlock after existing "Dynamic list"**
 
 ```tsx
-      <DemoBlock
-        title="Advanced dynamic list"
-        code={`<Form.List name="users" rules={[{ validator: (_rule, value) => Array.isArray(value) && value.length >= 2 ? undefined : 'Add at least 2 users' }]}>
+<DemoBlock
+  title="Advanced dynamic list"
+  code={`<Form.List name="users" rules={[{ validator: (_rule, value) => Array.isArray(value) && value.length >= 2 ? undefined : 'Add at least 2 users' }]}>
   {(fields, operation, meta) => <Form.ErrorList errors={meta.errors} />}
 </Form.List>`}
-      >
-        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-          <Form.List
-            name="users"
-            initialValue={[{ name: 'Ada' }, { name: 'Grace' }]}
-            rules={[
-              {
-                validator: (_rule, value) =>
-                  Array.isArray(value) && value.length >= 2 ? undefined : 'Add at least 2 users',
-              },
-            ]}
-          >
-            {(fields, operation, meta) => (
-              <Space direction="vertical" class="w-90">
-                <For each={fields()}>
-                  {(field) => (
-                    <Space>
-                      <Form.Item name={[field.name, 'name']} noStyle>
-                        <Input placeholder="User name" />
-                      </Form.Item>
-                      <Button onClick={() => operation.move(field.name, 0)}>Move top</Button>
-                      <Button onClick={() => operation.remove(field.name)}>Remove</Button>
-                    </Space>
-                  )}
-                </For>
-                <Form.ErrorList errors={meta.errors} />
-                <Space>
-                  <Button onClick={() => operation.add({ name: '' })}>Add user</Button>
-                  <Button htmlType="submit">Submit users</Button>
-                </Space>
+>
+  <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+    <Form.List
+      name="users"
+      initialValue={[{ name: 'Ada' }, { name: 'Grace' }]}
+      rules={[
+        {
+          validator: (_rule, value) =>
+            Array.isArray(value) && value.length >= 2 ? undefined : 'Add at least 2 users',
+        },
+      ]}
+    >
+      {(fields, operation, meta) => (
+        <Space direction="vertical" class="w-90">
+          <For each={fields()}>
+            {(field) => (
+              <Space>
+                <Form.Item name={[field.name, 'name']} noStyle>
+                  <Input placeholder="User name" />
+                </Form.Item>
+                <Button onClick={() => operation.move(field.name, 0)}>Move top</Button>
+                <Button onClick={() => operation.remove(field.name)}>Remove</Button>
               </Space>
             )}
-          </Form.List>
-        </Form>
-      </DemoBlock>
+          </For>
+          <Form.ErrorList errors={meta.errors} />
+          <Space>
+            <Button onClick={() => operation.add({ name: '' })}>Add user</Button>
+            <Button htmlType="submit">Submit users</Button>
+          </Space>
+        </Space>
+      )}
+    </Form.List>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 2: Add Scroll to field DemoBlock after Advanced Form.List**
 
 ```tsx
-      <DemoBlock
-        title="Scroll to field"
-        code={`const [form] = useForm()
+<DemoBlock
+  title="Scroll to field"
+  code={`const [form] = useForm()
 form.scrollToField?.('target', { focus: true })`}
-      >
-        <Space direction="vertical" class="w-90">
-          <Form form={scrollForm}>
-            <Form.Item label="First" name="first">
-              <Input />
-            </Form.Item>
-            <div style={{ height: '120px' }} />
-            <Form.Item label="Target" name="target" rules={[{ required: true }]}> 
-              <Input placeholder="Scroll target" />
-            </Form.Item>
-          </Form>
-          <Button onClick={() => scrollForm.scrollToField?.('target', { focus: true })}>
-            Scroll to target
-          </Button>
-        </Space>
-      </DemoBlock>
+>
+  <Space direction="vertical" class="w-90">
+    <Form form={scrollForm}>
+      <Form.Item label="First" name="first">
+        <Input />
+      </Form.Item>
+      <div style={{ height: '120px' }} />
+      <Form.Item label="Target" name="target" rules={[{ required: true }]}>
+        <Input placeholder="Scroll target" />
+      </Form.Item>
+    </Form>
+    <Button onClick={() => scrollForm.scrollToField?.('target', { focus: true })}>
+      Scroll to target
+    </Button>
+  </Space>
+</DemoBlock>
 ```
 
 Remove accidental whitespace in the target `Form.Item` opening tag if present.
@@ -554,50 +559,54 @@ Remove accidental whitespace in the target `Form.Item` opening tag if present.
 - [ ] **Step 3: Add Normalize DemoBlock after Scroll to field**
 
 ```tsx
-      <DemoBlock
-        title="getValueProps and normalize"
-        code={`<Form.Item
+<DemoBlock
+  title="getValueProps and normalize"
+  code={`<Form.Item
   name="code"
   normalize={(value) => String(value ?? '').trim().toUpperCase()}
   getValueProps={(value) => ({ value: String(value ?? '') })}
 >
   <Input />
 </Form.Item>`}
+>
+  <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+    <Space direction="vertical" class="w-90">
+      <Form.Item
+        label="Code"
+        name="code"
+        normalize={(value) =>
+          String(value ?? '')
+            .trim()
+            .toUpperCase()
+        }
+        getValueProps={(value) => ({ value: String(value ?? '') })}
       >
-        <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-          <Space direction="vertical" class="w-90">
-            <Form.Item
-              label="Code"
-              name="code"
-              normalize={(value) => String(value ?? '').trim().toUpperCase()}
-              getValueProps={(value) => ({ value: String(value ?? '') })}
-            >
-              <Input placeholder="Type lowercase code" />
-            </Form.Item>
-            <Button htmlType="submit">Submit normalized</Button>
-          </Space>
-        </Form>
-      </DemoBlock>
+        <Input placeholder="Type lowercase code" />
+      </Form.Item>
+      <Button htmlType="submit">Submit normalized</Button>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 - [ ] **Step 4: Add useStatus DemoBlock after Normalize**
 
 ```tsx
-      <DemoBlock
-        title="Form.Item.useStatus"
-        code={`function StatusInput() {
+<DemoBlock
+  title="Form.Item.useStatus"
+  code={`function StatusInput() {
   const status = Form.Item.useStatus()
   return <Input placeholder={status.status() ?? 'none'} />
 }`}
-      >
-        <Form>
-          <Space direction="vertical" class="w-90">
-            <Form.Item label="Required" name="required" rules={[{ required: true }]}> 
-              <StatusInput />
-            </Form.Item>
-          </Space>
-        </Form>
-      </DemoBlock>
+>
+  <Form>
+    <Space direction="vertical" class="w-90">
+      <Form.Item label="Required" name="required" rules={[{ required: true }]}>
+        <StatusInput />
+      </Form.Item>
+    </Space>
+  </Form>
+</DemoBlock>
 ```
 
 Remove accidental whitespace in the `Form.Item` opening tag if present.
@@ -626,6 +635,7 @@ git commit -m "docs(form): add advanced antd-style demos"
 ### Task 6: Polish code strings, formatting, and full verification
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/form.tsx`
 
 - [ ] **Step 1: Format and inspect the docs page**
