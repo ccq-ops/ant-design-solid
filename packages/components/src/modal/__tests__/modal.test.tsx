@@ -491,4 +491,61 @@ describe('Modal', () => {
     setOpen(false)
     expect(afterOpenChange).toHaveBeenCalledWith(false)
   })
+
+  it('passes static method visual and layout config to ModalBase', () => {
+    const afterClose = vi.fn()
+    const instance = Modal.confirm({
+      title: 'Static config',
+      content: 'Static body',
+      centered: true,
+      zIndex: 1555,
+      style: { top: '12px' },
+      className: 'static-dialog',
+      wrapClassName: 'static-wrap',
+      okType: 'default',
+      okButtonProps: { class: 'static-ok' },
+      cancelButtonProps: { class: 'static-cancel' },
+      closeIcon: <span data-testid="static-close">close</span>,
+      closable: true,
+      icon: <span data-testid="static-icon">!</span>,
+      footer: <button type="button">custom footer</button>,
+      afterClose,
+    })
+
+    expect(document.body.querySelector('.static-dialog')).toBeTruthy()
+    expect(document.body.querySelector('.static-wrap')).toBeTruthy()
+    expect(document.body.querySelector<HTMLElement>('.ads-modal-root')!.style.zIndex).toBe('1555')
+    expect(document.body.querySelector<HTMLElement>('.ads-modal-root')!.style.top).toBe('12px')
+    expect(document.body.querySelector('[data-testid="static-close"]')).toBeTruthy()
+    expect(document.body.querySelector('[data-testid="static-icon"]')).toBeTruthy()
+    expect(document.body).toHaveTextContent('custom footer')
+
+    instance.destroy()
+    expect(afterClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('supports static update function form', () => {
+    const instance = Modal.info({ title: 'Before', content: 'Body' })
+
+    instance.update((prev) => ({ title: `${prev.title} After`, content: 'Updated body' }))
+
+    expect(document.body).toHaveTextContent('Before After')
+    expect(document.body).toHaveTextContent('Updated body')
+    instance.destroy()
+  })
+
+  it('passes close function to static onOk and onCancel handlers', () => {
+    const onOk = vi.fn((close?: () => void) => close?.())
+    Modal.confirm({ title: 'Close from ok', onOk })
+
+    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!)
+    expect(onOk).toHaveBeenCalledTimes(1)
+    expect(document.body).not.toHaveTextContent('Close from ok')
+
+    const onCancel = vi.fn((close?: () => void) => close?.())
+    Modal.confirm({ title: 'Close from cancel', onCancel })
+    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn:not(.ads-btn-primary)')!)
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(document.body).not.toHaveTextContent('Close from cancel')
+  })
 })

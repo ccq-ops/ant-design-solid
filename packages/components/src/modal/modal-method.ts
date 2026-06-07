@@ -3,7 +3,7 @@ import { render } from 'solid-js/web'
 import { ConfigProvider } from '../config-provider'
 import { canUseDom } from '../shared/portal'
 import { ConfirmDialog } from './confirm'
-import type { ModalFuncProps, ModalFuncReturn, ModalFuncType } from './interface'
+import type { ModalFuncProps, ModalFuncReturn, ModalFuncType, ModalFuncUpdate } from './interface'
 
 const instances = new Set<ModalFuncReturn>()
 
@@ -24,17 +24,20 @@ function openConfirm(config: ModalFuncProps): ModalFuncReturn {
   const destroy = () => {
     if (destroyed) return
     destroyed = true
+    const afterClose = currentConfig.afterClose
     disposeRoot?.()
     disposeRoot = undefined
     container.remove()
     instances.delete(instance)
+    afterClose?.()
   }
 
   const instance: ModalFuncReturn = {
     destroy,
-    update: (next) => {
+    update: (next: ModalFuncUpdate) => {
       if (destroyed) return
-      currentConfig = { ...currentConfig, ...next }
+      const patch = typeof next === 'function' ? next(currentConfig) : next
+      currentConfig = { ...currentConfig, ...patch }
       setConfig(currentConfig)
     },
   }
