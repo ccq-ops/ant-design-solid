@@ -4,6 +4,14 @@ import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form/context'
 import { classNames } from '../shared/class-names'
 import { useInputStyle } from './input.style'
+import {
+  applyExceedFormatter,
+  formatCount,
+  getAllowClearConfig,
+  getCount,
+  getMaxLength,
+  shouldShowCount,
+} from './utils'
 import type { JSX } from 'solid-js'
 import type { InputProps } from './interface'
 
@@ -21,6 +29,14 @@ export function Input(props: InputProps) {
     'onInput',
     'onChange',
     'onBlur',
+    'onKeyDown',
+    'onPressEnter',
+    'onClear',
+    'variant',
+    'showCount',
+    'count',
+    'classNames',
+    'styles',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
@@ -34,6 +50,12 @@ export function Input(props: InputProps) {
     return String(local.value ?? innerValue())
   }
   const size = () => local.size ?? config.componentSize()
+  const variant = () => local.variant ?? 'outlined'
+  const allowClearConfig = () => getAllowClearConfig(local.allowClear)
+  const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
+  const maxLength = () => getMaxLength(rest.maxLength, local.count)
+  const characterCount = () => getCount(value(), local.count)
+  const countInfo = () => ({ value: value(), count: characterCount(), maxLength: maxLength() })
   let inputRef: HTMLInputElement | undefined
 
   function syncForm(
@@ -56,6 +78,10 @@ export function Input(props: InputProps) {
     if (matchesValidateTrigger) formItem.validate(handlerName)
   }
 
+  function setNextValue(nextValue: string) {
+    setInnerValue(applyExceedFormatter(nextValue, local.count))
+  }
+
   function clearValue() {
     setInnerValue('')
     if (inputRef) inputRef.value = ''
@@ -63,8 +89,16 @@ export function Input(props: InputProps) {
       currentTarget: inputRef ?? ({} as HTMLInputElement),
       target: inputRef ?? ({} as HTMLInputElement),
     } as Event & { currentTarget: HTMLInputElement; target: HTMLInputElement }
+    local.onClear?.()
     ;(local.onChange as JSX.EventHandler<HTMLInputElement, Event> | undefined)?.(event)
     syncForm(event, 'onChange')
+  }
+
+  function handleKeyDown(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
+    ;(local.onKeyDown as unknown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+    if (event.key === 'Enter') {
+      ;(local.onPressEnter as unknown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+    }
   }
 
   return (
@@ -75,28 +109,40 @@ export function Input(props: InputProps) {
         size() === 'large' && `${prefixCls()}-lg`,
         local.status && `${prefixCls()}-status-${local.status}`,
         local.disabled && `${prefixCls()}-disabled`,
+        `${prefixCls()}-variant-${variant()}`,
+        maxLength() !== undefined &&
+          characterCount() > maxLength()! &&
+          `${prefixCls()}-count-exceed`,
         hashId(),
         local.class,
+        local.classNames?.wrapper,
       )}
+      style={local.styles?.wrapper}
     >
       <Show when={local.prefix}>
-        <span class={`${prefixCls()}-prefix`}>{local.prefix}</span>
+        <span
+          class={classNames(`${prefixCls()}-prefix`, local.classNames?.prefix)}
+          style={local.styles?.prefix}
+        >
+          {local.prefix}
+        </span>
       </Show>
       <input
         {...rest}
         ref={(el) => {
           inputRef = el
         }}
-        class={prefixCls()}
+        class={classNames(prefixCls(), local.classNames?.input)}
+        style={local.styles?.input}
         disabled={local.disabled}
         value={value()}
         onInput={(event) => {
-          setInnerValue(event.currentTarget.value)
+          setNextValue(event.currentTarget.value)
           ;(local.onInput as JSX.EventHandler<HTMLInputElement, InputEvent> | undefined)?.(event)
           syncForm(event, 'onInput')
         }}
         onChange={(event) => {
-          setInnerValue(event.currentTarget.value)
+          setNextValue(event.currentTarget.value)
           ;(local.onChange as JSX.EventHandler<HTMLInputElement, Event> | undefined)?.(event)
           syncForm(event, 'onChange')
         }}
@@ -104,19 +150,34 @@ export function Input(props: InputProps) {
           ;(local.onBlur as JSX.EventHandler<HTMLInputElement, FocusEvent> | undefined)?.(event)
           syncForm(event, 'onBlur')
         }}
+        onKeyDown={handleKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent>}
       />
-      <Show when={local.allowClear && value()}>
+      <Show when={showClear()}>
         <button
           type="button"
           aria-label="clear input"
-          class={`${prefixCls()}-clear`}
+          class={classNames(`${prefixCls()}-clear`, local.classNames?.clear)}
+          style={local.styles?.clear}
           onClick={clearValue}
         >
-          <CloseCircleFilled />
+          {allowClearConfig()?.clearIcon ?? <CloseCircleFilled />}
         </button>
       </Show>
       <Show when={local.suffix}>
-        <span class={`${prefixCls()}-suffix`}>{local.suffix}</span>
+        <span
+          class={classNames(`${prefixCls()}-suffix`, local.classNames?.suffix)}
+          style={local.styles?.suffix}
+        >
+          {local.suffix}
+        </span>
+      </Show>
+      <Show when={shouldShowCount(local.showCount, local.count)}>
+        <span
+          class={classNames(`${prefixCls()}-count`, local.classNames?.count)}
+          style={local.styles?.count}
+        >
+          {formatCount(local.showCount, local.count, countInfo())}
+        </span>
       </Show>
     </span>
   )
