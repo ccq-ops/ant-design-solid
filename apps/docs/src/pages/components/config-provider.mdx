@@ -1,63 +1,44 @@
+# ConfigProvider
+
+### Theme override
+
+```tsx
 import { Button, ConfigProvider } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const configProviderRows = [
-  {
-    property: 'prefixCls',
-    description: 'Global CSS class prefix for components.',
-    type: 'string',
-    defaultValue: "'ads'",
-  },
-  {
-    property: 'componentSize',
-    description: 'Default component size.',
-    type: "'small' | 'middle' | 'large'",
-    defaultValue: "'middle'",
-  },
-  {
-    property: 'direction',
-    description: 'Text and layout direction.',
-    type: "'ltr' | 'rtl'",
-    defaultValue: "'ltr'",
-  },
-  { property: 'theme', description: 'Theme token configuration.', type: 'ThemeConfig' },
-  {
-    property: 'getPopupContainer',
-    description: 'Global popup portal container resolver.',
-    type: '(triggerNode?: HTMLElement) => HTMLElement',
-  },
-  {
-    property: 'children',
-    description: 'Application or subtree receiving the configuration.',
-    type: 'JSX.Element',
-  },
-]
-export default function ConfigProviderPage() {
+const Demo1 = function () {
   return (
-    <>
-      <h1>ConfigProvider</h1>
-      <DemoBlock
-        title="Theme override"
-        code={`<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}><Button type="primary" /></ConfigProvider>`}
-      >
-        <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
-          <Button type="primary">Custom Theme</Button>
-        </ConfigProvider>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Component size"
-        code={`<ConfigProvider componentSize="large"><Button>Large by config</Button></ConfigProvider>`}
-      >
-        <ConfigProvider componentSize="large">
-          <Button>Large by config</Button>
-        </ConfigProvider>
-      </DemoBlock>
-
-      <h2>API</h2>
-      <ApiTable rows={configProviderRows} aria-label="ConfigProvider API" />
-    </>
-
-)
+    <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
+      <Button type="primary">Custom Theme</Button>
+    </ConfigProvider>
+  )
 }
+
+export default Demo1
+```
+
+### Component size
+
+```tsx
+import { Button, ConfigProvider } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return (
+    <ConfigProvider componentSize="large">
+      <Button>Large by config</Button>
+    </ConfigProvider>
+  )
+}
+
+export default Demo2
+```
+
+## API
+
+| Property            | Description                                         | Type                                         | Default    |
+| ------------------- | --------------------------------------------------- | -------------------------------------------- | ---------- |
+| `prefixCls`         | Global CSS class prefix for components.             | `string`                                     | `'ads'`    |
+| `componentSize`     | Default component size.                             | `'small' \| 'middle' \| 'large'`             | `'middle'` |
+| `direction`         | Text and layout direction.                          | `'ltr' \| 'rtl'`                             | `'ltr'`    |
+| `theme`             | Theme token configuration.                          | `ThemeConfig`                                | `-`        |
+| `getPopupContainer` | Global popup portal container resolver.             | `(triggerNode?: HTMLElement) => HTMLElement` | `-`        |
+| `children`          | Application or subtree receiving the configuration. | `JSX.Element`                                | `-`        |

@@ -1,326 +1,287 @@
+# InputNumber
+
+Enter numeric values with optional controls, bounds, precision, and formatting.
+
+Its onChange callback receives the normalized numeric value, not a DOM change event.
+
+### Basic
+
+```tsx
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const inputNumberRows = [
-  {
-    property: 'value',
-    description: 'Controlled value. In stringMode, use a string value for high precision decimals.',
-    type: 'number | string',
-  },
-  {
-    property: 'defaultValue',
-    description: 'Initial value for uncontrolled usage.',
-    type: 'number | string',
-  },
-  { property: 'min', description: 'Minimum allowed value.', type: 'number' },
-  { property: 'max', description: 'Maximum allowed value.', type: 'number' },
-  {
-    property: 'step',
-    description: 'Increment used by controls, keyboard, and wheel stepping.',
-    type: 'number | string',
-    defaultValue: '1',
-  },
-  { property: 'precision', description: 'Number of decimal places to keep.', type: 'number' },
-  { property: 'placeholder', description: 'Input placeholder text.', type: 'string' },
-  {
-    property: 'disabled',
-    description: 'Disables input and controls.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'readOnly',
-    description: 'Makes the input read-only and disables stepping interactions.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'size',
-    description: 'Input size from the theme component size scale.',
-    type: "'small' | 'middle' | 'large'",
-  },
-  { property: 'status', description: 'Validation visual status.', type: "'error' | 'warning'" },
-  {
-    property: 'controls',
-    description: 'Shows increment/decrement controls, or customizes their icons.',
-    type: 'boolean | { upIcon?: JSX.Element; downIcon?: JSX.Element }',
-    defaultValue: 'true',
-  },
-  {
-    property: 'keyboard',
-    description: 'Enables ArrowUp and ArrowDown stepping.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'changeOnBlur',
-    description: 'Commits typed input on blur when enabled, or while typing when disabled.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'changeOnWheel',
-    description: 'Allows mouse wheel stepping.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  { property: 'prefix', description: 'Content rendered before the input.', type: 'JSX.Element' },
-  { property: 'suffix', description: 'Content rendered after the input.', type: 'JSX.Element' },
-  {
-    property: 'variant',
-    description: 'Visual variant of the input.',
-    type: "'outlined' | 'borderless' | 'filled' | 'underlined'",
-    defaultValue: "'outlined'",
-  },
-  {
-    property: 'mode',
-    description: 'Display mode for the input and controls.',
-    type: "'input' | 'spinner'",
-    defaultValue: "'input'",
-  },
-  {
-    property: 'stringMode',
-    description: 'Returns committed values as strings for high precision scenarios.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'decimalSeparator',
-    description: 'Custom decimal separator for parsing and display.',
-    type: 'string',
-  },
-  {
-    property: 'formatter',
-    description: 'Formats the value for display. The info argument indicates typing state.',
-    type: '(value: number | string | undefined, info: { userTyping: boolean; input: string }) => string',
-  },
-  {
-    property: 'parser',
-    description: 'Parses displayed text back into a value.',
-    type: '(displayValue: string) => number | string | undefined',
-  },
-  {
-    property: 'classNames',
-    description: 'Semantic DOM class names for root, prefix, suffix, input, and actions.',
-    type: 'InputNumberSemanticClassNames',
-  },
-  {
-    property: 'styles',
-    description: 'Semantic DOM inline styles for root, prefix, suffix, input, and actions.',
-    type: 'InputNumberSemanticStyles',
-  },
-  {
-    property: 'rootClassName',
-    description: 'Additional class name for the root element.',
-    type: 'string',
-  },
-  { property: 'prefixCls', description: 'Custom component CSS class prefix.', type: 'string' },
-  {
-    property: 'onChange',
-    description: 'Called with the normalized value, not a DOM change event.',
-    type: '(value: number | string | undefined) => void',
-  },
-  {
-    property: 'onPressEnter',
-    description: 'Called when Enter is pressed.',
-    type: '(event: KeyboardEvent) => void',
-  },
-  {
-    property: 'onStep',
-    description: 'Called after stepping by controls, keyboard, or wheel.',
-    type: "(value, info: { offset: number | string; type: 'up' | 'down'; emitter: 'handler' | 'keydown' | 'wheel' }) => void",
-  },
-]
-
-export default function InputNumberPage() {
-  const [value, setValue] = createSignal(3)
-  const [liveValue, setLiveValue] = createSignal()
-  const [stringValue, setStringValue] = createSignal(
-    '0.000000000000000001',
-  )
-  const [stepInfo, setStepInfo] = createSignal('No step yet')
-
-return (
-
-<>
-<h1>InputNumber</h1>
-<p>Enter numeric values with optional controls, bounds, precision, and formatting.</p>
-<p>Its onChange callback receives the normalized numeric value, not a DOM change event.</p>
-
-      <DemoBlock title="Basic" code={`<InputNumber defaultValue={3} />`}>
-        <InputNumber defaultValue={3} />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Min, max, and step"
-        code={`<InputNumber min={0} max={10} step={0.5} defaultValue={2} />`}
-      >
-        <InputNumber min={0} max={10} step={0.5} defaultValue={2} />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Controlled"
-        code={`const [value, setValue] = createSignal(3)\n<InputNumber value={value()} onChange={setValue} />`}
-      >
-        <Space>
-          <InputNumber value={value()} onChange={setValue} />
-          <span>Value: {value() ?? 'empty'}</span>
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock title="Precision" code={`<InputNumber precision={2} defaultValue={1.236} />`}>
-        <InputNumber precision={2} defaultValue={1.236} />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Formatter and parser"
-        code={`<InputNumber formatter={(value, info) => info.userTyping ? info.input : value === undefined ? '' : \`$ ${value}\`} parser={(display) => Number(display.replace(/[$,\\s]/g, ''))} />`}
-      >
-        <InputNumber
-          defaultValue={1000}
-          formatter={(nextValue, info) =>
-            info.userTyping ? info.input : nextValue === undefined ? '' : `$ ${nextValue}`
-          }
-          parser={(displayValue) => {
-            const parsed = Number(displayValue.replace(/[$,\s]/g, ''))
-            return Number.isNaN(parsed) ? undefined : parsed
-          }}
-        />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Sizes and statuses"
-        code={`<InputNumber size="small" defaultValue={1} />
-
-<InputNumber status="warning" defaultValue={2} />
-<InputNumber size="large" status="error" defaultValue={3} />`}
-      >
-        <Space>
-          <InputNumber size="small" defaultValue={1} />
-          <InputNumber defaultValue={2} status="warning" />
-          <InputNumber size="large" defaultValue={3} status="error" />
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Disabled and no controls"
-        code={`<InputNumber defaultValue={4} disabled />
-
-<InputNumber defaultValue={5} controls={false} />`}
-      >
-        <Space>
-          <InputNumber defaultValue={4} disabled />
-          <InputNumber defaultValue={5} controls={false} />
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Prefix, suffix, variants, and custom controls"
-        code={`<InputNumber prefix="$" suffix="USD" variant="filled" />
-
-<InputNumber variant="borderless" controls={{ upIcon: <span>+</span>, downIcon: <span>-</span> }} />
-<InputNumber mode="spinner" variant="underlined" />`}
-      >
-        <Space>
-          <InputNumber prefix={<span>$</span>} suffix={<span>USD</span>} variant="filled" />
-          <InputNumber
-            variant="borderless"
-            controls={{ upIcon: <span>+</span>, downIcon: <span>-</span> }}
-          />
-          <InputNumber mode="spinner" variant="underlined" />
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Keyboard, wheel, and step events"
-        code={`<InputNumber
-
-defaultValue={2}
-step={0.5}
-changeOnWheel
-onStep={(value, info) => console.log(value, info)}
-/>
-
-<InputNumber defaultValue={2} keyboard={false} />`}
-      >
-        <Space>
-          <InputNumber
-            defaultValue={2}
-            step={0.5}
-            changeOnWheel
-            onStep={(nextValue, info) =>
-              setStepInfo(`${info.emitter} ${info.type}: ${nextValue ?? 'empty'}`)
-            }
-          />
-          <InputNumber defaultValue={2} keyboard={false} />
-          <span>{stepInfo()}</span>
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Commit while typing"
-        code={`const [value, setValue] = createSignal()
-
-<InputNumber changeOnBlur={false} onChange={setValue} />`}
-      >
-        <Space>
-          <InputNumber changeOnBlur={false} onChange={setLiveValue} />
-          <span>Live value: {liveValue() ?? 'empty'}</span>
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock
-        title="String mode and decimal separator"
-        code={`const [value, setValue] = createSignal('0.000000000000000001')
-
-<InputNumber stringMode value={value()} step="0.000000000000000001" onChange={setValue} />
-<InputNumber decimalSeparator="," defaultValue={1.5} />`}
-      >
-        <Space>
-          <InputNumber
-            stringMode
-            value={stringValue()}
-            step="0.000000000000000001"
-            onChange={setStringValue}
-          />
-          <InputNumber decimalSeparator="," defaultValue={1.5} />
-          <span>String value: {stringValue() ?? 'empty'}</span>
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Semantic styles"
-        code={`<InputNumber
-
-rootClassName="custom-root"
-classNames={{ input: 'custom-input', actions: 'custom-actions' }}
-styles={{ root: { width: '180px' }, input: { color: '#1677ff' } }}
-/>`} >
-
-<InputNumber
-rootClassName="custom-root"
-classNames={{ input: 'custom-input', actions: 'custom-actions' }}
-styles={{ root: { width: '180px' }, input: { color: '#1677ff' } }}
-/>
-</DemoBlock>
-
-      <DemoBlock
-        title="Form usage"
-        code={`<Form><Form.Item name="amount" label="Amount"><InputNumber min={0} /></Form.Item></Form>`}
-      >
-        <Form onFinish={(values) => console.log(values)}>
-          <Form.Item name="amount" label="Amount">
-            <InputNumber min={0} />
-          </Form.Item>
-          <button type="submit">Submit</button>
-        </Form>
-      </DemoBlock>
-
-      <h2>API</h2>
-      <ApiTable rows={inputNumberRows} aria-label="InputNumber API" />
-    </>
-
-)
+const Demo1 = function () {
+  return <InputNumber defaultValue={3} />
 }
+
+export default Demo1
+```
+
+### Min, max, and step
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return <InputNumber min={0} max={10} step={0.5} defaultValue={2} />
+}
+
+export default Demo2
+```
+
+### Controlled
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Space>
+      <InputNumber value={value()} onChange={setValue} />
+      <span>Value: {value() ?? 'empty'}</span>
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+### Precision
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return <InputNumber precision={2} defaultValue={1.236} />
+}
+
+export default Demo4
+```
+
+### Formatter and parser
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <InputNumber
+      defaultValue={1000}
+      formatter={(nextValue, info) =>
+        info.userTyping ? info.input : nextValue === undefined ? '' : `$ ${nextValue}`
+      }
+      parser={(displayValue) => {
+        const parsed = Number(displayValue.replace(/[$,\s]/g, ''))
+        return Number.isNaN(parsed) ? undefined : parsed
+      }}
+    />
+  )
+}
+
+export default Demo5
+```
+
+### Sizes and statuses
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Space>
+      <InputNumber size="small" defaultValue={1} />
+      <InputNumber defaultValue={2} status="warning" />
+      <InputNumber size="large" defaultValue={3} status="error" />
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+### Disabled and no controls
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Space>
+      <InputNumber defaultValue={4} disabled />
+      <InputNumber defaultValue={5} controls={false} />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+### Prefix, suffix, variants, and custom controls
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Space>
+      <InputNumber prefix={<span>$</span>} suffix={<span>USD</span>} variant="filled" />
+      <InputNumber
+        variant="borderless"
+        controls={{ upIcon: <span>+</span>, downIcon: <span>-</span> }}
+      />
+      <InputNumber mode="spinner" variant="underlined" />
+    </Space>
+  )
+}
+
+export default Demo8
+```
+
+### Keyboard, wheel, and step events
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <Space>
+      <InputNumber
+        defaultValue={2}
+        step={0.5}
+        changeOnWheel
+        onStep={(nextValue, info) =>
+          setStepInfo(`${info.emitter} ${info.type}: ${nextValue ?? 'empty'}`)
+        }
+      />
+      <InputNumber defaultValue={2} keyboard={false} />
+      <span>{stepInfo()}</span>
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+### Commit while typing
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Space>
+      <InputNumber changeOnBlur={false} onChange={setLiveValue} />
+      <span>Live value: {liveValue() ?? 'empty'}</span>
+    </Space>
+  )
+}
+
+export default Demo10
+```
+
+### String mode and decimal separator
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo11 = function () {
+  return (
+    <Space>
+      <InputNumber
+        stringMode
+        value={stringValue()}
+        step="0.000000000000000001"
+        onChange={setStringValue}
+      />
+      <InputNumber decimalSeparator="," defaultValue={1.5} />
+      <span>String value: {stringValue() ?? 'empty'}</span>
+    </Space>
+  )
+}
+
+export default Demo11
+```
+
+### Semantic styles
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo12 = function () {
+  return (
+    <InputNumber
+      rootClassName="custom-root"
+      classNames={{ input: 'custom-input', actions: 'custom-actions' }}
+      styles={{ root: { width: '180px' }, input: { color: '#1677ff' } }}
+    />
+  )
+}
+
+export default Demo12
+```
+
+### Form usage
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo13 = function () {
+  return (
+    <Form onFinish={(values) => console.log(values)}>
+      <Form.Item name="amount" label="Amount">
+        <InputNumber min={0} />
+      </Form.Item>
+      <button type="submit">Submit</button>
+    </Form>
+  )
+}
+
+export default Demo13
+```
+
+## API
+
+| Property           | Description                                                                      | Type                                                                                                                    | Default      |
+| ------------------ | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `value`            | Controlled value. In stringMode, use a string value for high precision decimals. | `number \| string`                                                                                                      | `-`          |
+| `defaultValue`     | Initial value for uncontrolled usage.                                            | `number \| string`                                                                                                      | `-`          |
+| `min`              | Minimum allowed value.                                                           | `number`                                                                                                                | `-`          |
+| `max`              | Maximum allowed value.                                                           | `number`                                                                                                                | `-`          |
+| `step`             | Increment used by controls, keyboard, and wheel stepping.                        | `number \| string`                                                                                                      | `1`          |
+| `precision`        | Number of decimal places to keep.                                                | `number`                                                                                                                | `-`          |
+| `placeholder`      | Input placeholder text.                                                          | `string`                                                                                                                | `-`          |
+| `disabled`         | Disables input and controls.                                                     | `boolean`                                                                                                               | `false`      |
+| `readOnly`         | Makes the input read-only and disables stepping interactions.                    | `boolean`                                                                                                               | `false`      |
+| `size`             | Input size from the theme component size scale.                                  | `'small' \| 'middle' \| 'large'`                                                                                        | `-`          |
+| `status`           | Validation visual status.                                                        | `'error' \| 'warning'`                                                                                                  | `-`          |
+| `controls`         | Shows increment/decrement controls, or customizes their icons.                   | `boolean \| { upIcon?: JSX.Element; downIcon?: JSX.Element }`                                                           | `true`       |
+| `keyboard`         | Enables ArrowUp and ArrowDown stepping.                                          | `boolean`                                                                                                               | `true`       |
+| `changeOnBlur`     | Commits typed input on blur when enabled, or while typing when disabled.         | `boolean`                                                                                                               | `true`       |
+| `changeOnWheel`    | Allows mouse wheel stepping.                                                     | `boolean`                                                                                                               | `false`      |
+| `prefix`           | Content rendered before the input.                                               | `JSX.Element`                                                                                                           | `-`          |
+| `suffix`           | Content rendered after the input.                                                | `JSX.Element`                                                                                                           | `-`          |
+| `variant`          | Visual variant of the input.                                                     | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                                                                | `'outlined'` |
+| `mode`             | Display mode for the input and controls.                                         | `'input' \| 'spinner'`                                                                                                  | `'input'`    |
+| `stringMode`       | Returns committed values as strings for high precision scenarios.                | `boolean`                                                                                                               | `false`      |
+| `decimalSeparator` | Custom decimal separator for parsing and display.                                | `string`                                                                                                                | `-`          |
+| `formatter`        | Formats the value for display. The info argument indicates typing state.         | `(value: number \| string \| undefined, info: { userTyping: boolean; input: string }) => string`                        | `-`          |
+| `parser`           | Parses displayed text back into a value.                                         | `(displayValue: string) => number \| string \| undefined`                                                               | `-`          |
+| `classNames`       | Semantic DOM class names for root, prefix, suffix, input, and actions.           | `InputNumberSemanticClassNames`                                                                                         | `-`          |
+| `styles`           | Semantic DOM inline styles for root, prefix, suffix, input, and actions.         | `InputNumberSemanticStyles`                                                                                             | `-`          |
+| `rootClassName`    | Additional class name for the root element.                                      | `string`                                                                                                                | `-`          |
+| `prefixCls`        | Custom component CSS class prefix.                                               | `string`                                                                                                                | `-`          |
+| `onChange`         | Called with the normalized value, not a DOM change event.                        | `(value: number \| string \| undefined) => void`                                                                        | `-`          |
+| `onPressEnter`     | Called when Enter is pressed.                                                    | `(event: KeyboardEvent) => void`                                                                                        | `-`          |
+| `onStep`           | Called after stepping by controls, keyboard, or wheel.                           | `(value, info: { offset: number \| string; type: 'up' \| 'down'; emitter: 'handler' \| 'keydown' \| 'wheel' }) => void` | `-`          |

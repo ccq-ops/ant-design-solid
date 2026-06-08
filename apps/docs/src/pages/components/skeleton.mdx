@@ -1,135 +1,129 @@
+# Skeleton
+
+Skeleton displays placeholder blocks while content is loading.
+
+### Basic
+
+```tsx
 import { Card, Skeleton, Space } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const skeletonRows = [
-  {
-    property: 'active',
-    description: 'Shows animated loading effect.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'loading',
-    description: 'Controls whether skeleton or children are rendered.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'avatar',
-    description: 'Shows avatar placeholder or configures it.',
-    type: 'boolean | SkeletonAvatarProps',
-  },
-  {
-    property: 'title',
-    description: 'Shows title placeholder or configures it.',
-    type: 'boolean | SkeletonTitleProps',
-  },
-  {
-    property: 'paragraph',
-    description: 'Shows paragraph placeholders or configures them.',
-    type: 'boolean | SkeletonParagraphProps',
-  },
-  {
-    property: 'round',
-    description: 'Uses rounded placeholder corners.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'children',
-    description: 'Content rendered when loading is false.',
-    type: 'JSX.Element',
-  },
-]
-
-export const skeletonAvatarRows = [
-  {
-    property: 'size',
-    description: 'Avatar placeholder size.',
-    type: "'small' | 'default' | 'large' | number",
-  },
-  {
-    property: 'shape',
-    description: 'Avatar placeholder shape.',
-    type: "'circle' | 'square'",
-    defaultValue: "'circle'",
-  },
-]
-
-export const skeletonTitleRows = [
-  { property: 'width', description: 'Title placeholder width.', type: 'number | string' },
-]
-
-export const skeletonParagraphRows = [
-  { property: 'rows', description: 'Number of paragraph rows.', type: 'number' },
-  {
-    property: 'width',
-    description: 'Paragraph row width or widths.',
-    type: 'SkeletonWidth | SkeletonWidth[]',
-  },
-]
-
-export default function SkeletonPage() {
-  const [loaded, setLoaded] = createSignal(false)
-
-return (
-
-<>
-<h1>Skeleton</h1>
-<p>Skeleton displays placeholder blocks while content is loading.</p>
-
-      <DemoBlock title="Basic" code={`<Skeleton />`}>
-        <Skeleton />
-      </DemoBlock>
-
-      <DemoBlock title="Active" code={`<Skeleton active />`}>
-        <Skeleton active />
-      </DemoBlock>
-
-      <DemoBlock title="Avatar" code={`<Skeleton avatar={{ size: 40, shape: 'square' }} active />`}>
-        <Skeleton avatar={{ size: 40, shape: 'square' }} active />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Custom rows"
-        code={`<Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: ['100%', '90%', '70%', '40%'] }} />`}
-      >
-        <Skeleton
-          title={{ width: '50%' }}
-          paragraph={{ rows: 4, width: ['100%', '90%', '70%', '40%'] }}
-        />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Loaded content"
-        code={`<Skeleton loading={loaded()} active><Card title="Loaded">Content is ready.</Card></Skeleton>`}
-      >
-        <Space direction="vertical" class="w-full">
-          <button type="button" onClick={() => setLoaded((value) => !value)}>
-            Toggle loaded
-          </button>
-          <Skeleton loading={!loaded()} active>
-            <Card title="Loaded">Content is ready.</Card>
-          </Skeleton>
-        </Space>
-      </DemoBlock>
-
-      <DemoBlock title="Round" code={`<Skeleton round avatar paragraph={{ rows: 3 }} />`}>
-        <Skeleton round avatar paragraph={{ rows: 3 }} />
-      </DemoBlock>
-
-      <h2>API</h2>
-      <h3>Skeleton</h3>
-      <ApiTable rows={skeletonRows} aria-label="Skeleton API" />
-      <h3>Skeleton avatar</h3>
-      <ApiTable rows={skeletonAvatarRows} aria-label="Skeleton Avatar API" />
-      <h3>Skeleton title</h3>
-      <ApiTable rows={skeletonTitleRows} aria-label="Skeleton Title API" />
-      <h3>Skeleton paragraph</h3>
-      <ApiTable rows={skeletonParagraphRows} aria-label="Skeleton Paragraph API" />
-    </>
-
-)
+const Demo1 = function () {
+  return <Skeleton />
 }
+
+export default Demo1
+```
+
+### Active
+
+```tsx
+import { Card, Skeleton, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const Demo2 = function () {
+  return <Skeleton active />
+}
+
+export default Demo2
+```
+
+### Avatar
+
+```tsx
+import { Card, Skeleton, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const Demo3 = function () {
+  return <Skeleton avatar={{ size: 40, shape: 'square' }} active />
+}
+
+export default Demo3
+```
+
+### Custom rows
+
+```tsx
+import { Card, Skeleton, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const Demo4 = function () {
+  return (
+    <Skeleton
+      title={{ width: '50%' }}
+      paragraph={{ rows: 4, width: ['100%', '90%', '70%', '40%'] }}
+    />
+  )
+}
+
+export default Demo4
+```
+
+### Loaded content
+
+```tsx
+import { Card, Skeleton, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const Demo5 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <button type="button" onClick={() => setLoaded((value) => !value)}>
+        Toggle loaded
+      </button>
+      <Skeleton loading={!loaded()} active>
+        <Card title="Loaded">Content is ready.</Card>
+      </Skeleton>
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+### Round
+
+```tsx
+import { Card, Skeleton, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const Demo6 = function () {
+  return <Skeleton round avatar paragraph={{ rows: 3 }} />
+}
+
+export default Demo6
+```
+
+## API
+
+### Skeleton
+
+| Property    | Description                                         | Type                                | Default |
+| ----------- | --------------------------------------------------- | ----------------------------------- | ------- |
+| `active`    | Shows animated loading effect.                      | `boolean`                           | `false` |
+| `loading`   | Controls whether skeleton or children are rendered. | `boolean`                           | `true`  |
+| `avatar`    | Shows avatar placeholder or configures it.          | `boolean \| SkeletonAvatarProps`    | `-`     |
+| `title`     | Shows title placeholder or configures it.           | `boolean \| SkeletonTitleProps`     | `-`     |
+| `paragraph` | Shows paragraph placeholders or configures them.    | `boolean \| SkeletonParagraphProps` | `-`     |
+| `round`     | Uses rounded placeholder corners.                   | `boolean`                           | `false` |
+| `children`  | Content rendered when loading is false.             | `JSX.Element`                       | `-`     |
+
+### Skeleton avatar
+
+| Property | Description               | Type                                        | Default    |
+| -------- | ------------------------- | ------------------------------------------- | ---------- |
+| `size`   | Avatar placeholder size.  | `'small' \| 'default' \| 'large' \| number` | `-`        |
+| `shape`  | Avatar placeholder shape. | `'circle' \| 'square'`                      | `'circle'` |
+
+### Skeleton title
+
+| Property | Description              | Type               | Default |
+| -------- | ------------------------ | ------------------ | ------- |
+| `width`  | Title placeholder width. | `number \| string` | `-`     |
+
+### Skeleton paragraph
+
+| Property | Description                    | Type                               | Default |
+| -------- | ------------------------------ | ---------------------------------- | ------- |
+| `rows`   | Number of paragraph rows.      | `number`                           | `-`     |
+| `width`  | Paragraph row width or widths. | `SkeletonWidth \| SkeletonWidth[]` | `-`     |

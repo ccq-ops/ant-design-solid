@@ -1,313 +1,36 @@
+# Drawer
+
+Drawer renders a slide-out panel for contextual tasks without leaving the page. It supports antd-style placement, sizing, semantic styling, nested push behavior, loading, custom containers, focus handling, and resizing.
+
+### Basic
+
+```tsx
 import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const drawerRows = [
-  {
-    property: 'open',
-    description: 'Controls whether the drawer is visible.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  { property: 'title', description: 'Drawer title content.', type: 'JSX.Element' },
-  {
-    property: 'placement',
-    description: 'Side of the viewport the drawer slides from.',
-    type: "'left' | 'right' | 'top' | 'bottom'",
-    defaultValue: "'right'",
-  },
-  {
-    property: 'size',
-    description:
-      'Preset or custom drawer size. Takes precedence over width and height when provided.',
-    type: "'default' | 'large' | number | string",
-    defaultValue: "'default'",
-  },
-  {
-    property: 'width',
-    description:
-      'Drawer width for left and right placements. Kept for antd compatibility; prefer size for new code.',
-    type: 'number | string',
-    defaultValue: '378',
-  },
-  {
-    property: 'height',
-    description:
-      'Drawer height for top and bottom placements. Kept for antd compatibility; prefer size for new code.',
-    type: 'number | string',
-    defaultValue: '378',
-  },
-  {
-    property: 'closable',
-    description:
-      'Shows the close button. Object form customizes icon, disabled state, and start/end position.',
-    type: "boolean | { closeIcon?: JSX.Element; disabled?: boolean; placement?: 'start' | 'end' }",
-    defaultValue: 'true',
-  },
-  {
-    property: 'mask',
-    description:
-      'Shows the background mask. Object form configures whether the mask is enabled, blurred, or closable.',
-    type: 'boolean | { enabled?: boolean; blur?: boolean; closable?: boolean }',
-    defaultValue: 'true',
-  },
-  {
-    property: 'maskClosable',
-    description: 'Allows clicking the mask to close the drawer. Prefer mask.closable in new code.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'keyboard',
-    description: 'Allows closing with Escape.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'destroyOnClose',
-    description: 'Unmounts children after close. Prefer destroyOnHidden in new code.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'destroyOnHidden',
-    description: 'Unmounts children after the drawer is hidden.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'forceRender',
-    description: 'Pre-renders Drawer content even when closed.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  { property: 'extra', description: 'Extra header action content.', type: 'JSX.Element' },
-  { property: 'footer', description: 'Footer content.', type: 'JSX.Element' },
-  { property: 'zIndex', description: 'Overrides drawer z-index.', type: 'number' },
-  {
-    property: 'getContainer',
-    description:
-      'Portal mount container. Pass false to render inline instead of portaling to document.body.',
-    type: 'HTMLElement | () => HTMLElement | string | false',
-    defaultValue: 'document.body',
-  },
-  {
-    property: 'rootClassName',
-    description: 'Class name for the root element that contains the mask and drawer panel.',
-    type: 'string',
-  },
-  {
-    property: 'rootStyle',
-    description: 'Inline style for the root element that contains the mask and drawer panel.',
-    type: 'JSX.CSSProperties',
-  },
-  {
-    property: 'classNames',
-    description:
-      'Semantic class names for mask, wrapper, content, header, body, footer, and section.',
-    type: 'Partial<Record<DrawerSemanticDOM, string>> | (info) => Partial<Record<DrawerSemanticDOM, string>>',
-  },
-  {
-    property: 'styles',
-    description:
-      'Semantic inline styles for mask, wrapper, content, header, body, footer, and section.',
-    type: 'Partial<Record<DrawerSemanticDOM, JSX.CSSProperties>> | (info) => Partial<Record<DrawerSemanticDOM, JSX.CSSProperties>>',
-  },
-  {
-    property: 'loading',
-    description: 'Shows a skeleton loading state in the drawer body instead of children.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'push',
-    description:
-      'Pushes the parent drawer when a nested drawer opens. Pass an object to customize distance.',
-    type: 'boolean | { distance: number | string }',
-    defaultValue: '{ distance: 180 }',
-  },
-  {
-    property: 'drawerRender',
-    description: 'Custom render wrapper for the drawer panel node.',
-    type: '(node: JSX.Element) => JSX.Element',
-  },
-  {
-    property: 'focusable',
-    description: 'Focus trap and return-focus configuration.',
-    type: '{ trap?: boolean; focusTriggerAfterClose?: boolean }',
-  },
-  {
-    property: 'resizable',
-    description: 'Enables drag resizing and optional resize lifecycle callbacks.',
-    type: 'boolean | { onResizeStart?: () => void; onResize?: (size: number) => void; onResizeEnd?: () => void }',
-  },
-  { property: 'maxSize', description: 'Maximum width or height while resizing.', type: 'number' },
-  {
-    property: 'onClose',
-    description: 'Called when the drawer requests close from the close button, mask, or keyboard.',
-    type: '(event?: MouseEvent | KeyboardEvent) => void',
-  },
-  {
-    property: 'afterOpenChange',
-    description: 'Called after open state changes.',
-    type: '(open: boolean) => void',
-  },
-  { property: 'children', description: 'Drawer body content.', type: 'JSX.Element' },
-  { property: 'class', description: 'Solid class for the drawer panel.', type: 'string' },
-  {
-    property: 'className',
-    description: 'React-style alias for the drawer panel class.',
-    type: 'string',
-  },
-  {
-    property: 'classList',
-    description: 'Solid classList for conditional drawer panel classes.',
-    type: 'Record<string, boolean | undefined>',
-  },
-  {
-    property: 'style',
-    description: 'Inline style for the drawer panel.',
-    type: 'JSX.CSSProperties',
-  },
-  { property: 'aria-label', description: 'Accessible label for the dialog.', type: 'string' },
-  {
-    property: 'aria-labelledby',
-    description: 'ID of an external element that labels the dialog.',
-    type: 'string',
-  },
-]
-
-export const semanticRows = [
-  { property: 'mask', description: 'Background mask element.', type: 'DrawerSemanticDOM' },
-  { property: 'wrapper', description: 'Drawer panel dialog element.', type: 'DrawerSemanticDOM' },
-  {
-    property: 'content',
-    description: 'Content container inside the panel.',
-    type: 'DrawerSemanticDOM',
-  },
-  {
-    property: 'header',
-    description: 'Header area that contains title, extra, and close.',
-    type: 'DrawerSemanticDOM',
-  },
-  { property: 'body', description: 'Scrollable body content area.', type: 'DrawerSemanticDOM' },
-  { property: 'footer', description: 'Footer action area.', type: 'DrawerSemanticDOM' },
-  {
-    property: 'section',
-    description: 'Alias applied to the drawer panel for antd-style semantic styling.',
-    type: 'DrawerSemanticDOM',
-  },
-]
-
-export const closableRows = [
-  { property: 'closeIcon', description: 'Custom close icon content.', type: 'JSX.Element' },
-  {
-    property: 'disabled',
-    description: 'Disables the close button.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'placement',
-    description: 'Places the close button before or after the title area.',
-    type: "'start' | 'end'",
-    defaultValue: "'end'",
-  },
-]
-
-export const maskRows = [
-  {
-    property: 'enabled',
-    description: 'Whether to render the mask.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'blur',
-    description: 'Adds backdrop blur to the mask.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'closable',
-    description: 'Whether clicking the mask requests close.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-]
-
-export const focusableRows = [
-  {
-    property: 'trap',
-    description: 'Traps Tab focus inside the drawer.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'focusTriggerAfterClose',
-    description: 'Returns focus to the previously focused trigger after close.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-]
-
-export const resizableRows = [
-  { property: 'onResizeStart', description: 'Called when dragging starts.', type: '() => void' },
-  {
-    property: 'onResize',
-    description: 'Called while dragging with the current size.',
-    type: '(size: number) => void',
-  },
-  { property: 'onResizeEnd', description: 'Called when dragging ends.', type: '() => void' },
-]
-
-export default function DrawerPage() {
-  const [basicOpen, setBasicOpen] = createSignal(false)
-  const [placementOpen, setPlacementOpen] = createSignal(false)
-  const [placement, setPlacement] = createSignal('right')
-  const [sizeOpen, setSizeOpen] = createSignal(false)
-  const [customOpen, setCustomOpen] = createSignal(false)
-  const [extraOpen, setExtraOpen] = createSignal(false)
-  const [loadingOpen, setLoadingOpen] = createSignal(false)
-  const [lockedOpen, setLockedOpen] = createSignal(false)
-  const [destroyOpen, setDestroyOpen] = createSignal(false)
-  const [inlineOpen, setInlineOpen] = createSignal(false)
-  const [parentOpen, setParentOpen] = createSignal(false)
-  const [childOpen, setChildOpen] = createSignal(false)
-  const [renderOpen, setRenderOpen] = createSignal(false)
-  const [resizeOpen, setResizeOpen] = createSignal(false)
-  const [resizeValue, setResizeValue] = createSignal(378)
-  const placements = ['left', 'right', 'top', 'bottom']
-
-return (
-
-<>
-<h1>Drawer</h1>
-<p>
-Drawer renders a slide-out panel for contextual tasks without leaving the page. It supports
-antd-style placement, sizing, semantic styling, nested push behavior, loading, custom
-containers, focus handling, and resizing.
-</p>
-
-      <DemoBlock title="Basic" code={`<Drawer open={open()} title="Basic drawer">Content</Drawer>`}>
-        <Button type="primary" onClick={() => setBasicOpen(true)}>
+const Demo1 = function () {
+  return (
+<Button type="primary" onClick={() => setBasicOpen(true)}>
           Open drawer
         </Button>
         <Drawer open={basicOpen()} title="Basic drawer" onClose={() => setBasicOpen(false)}>
           Content displayed inside the drawer body.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Placement"
-        code={`const placements = ['left', 'right', 'top', 'bottom'] as const
+export default Demo1
+```
 
-<Drawer placement={placement()} open={open()} title={placement() + ' drawer'}>
-  Placement controls which side of the viewport the drawer is anchored to.
-</Drawer>`}
-      >
-        <Space>
+### Placement
+
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
+
+const Demo2 = function () {
+  return (
+<Space>
           <For each={placements}>
             {(item) => (
               <Button
@@ -329,21 +52,21 @@ containers, focus handling, and resizing.
         >
           Placement controls which side of the viewport the drawer is anchored to.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Preset and custom size"
-        code={`<Drawer open={open()} title="Large drawer" size="large">
+export default Demo2
+```
 
-Large preset drawers use 736px.
+### Preset and custom size
 
-</Drawer>
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
 
-<Drawer open={open()} placement="bottom" size="45%">
-  Custom string and numeric sizes are also supported.
-</Drawer>`}
-      >
-        <Button type="primary" onClick={() => setSizeOpen(true)}>
+const Demo3 = function () {
+  return (
+<Button type="primary" onClick={() => setSizeOpen(true)}>
           Open large drawer
         </Button>
         <Drawer
@@ -355,22 +78,21 @@ Large preset drawers use 736px.
           The <code>size</code> prop accepts <code>default</code>, <code>large</code>, numbers, and
           CSS length strings. It takes precedence over <code>width</code> and <code>height</code>.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Custom close button and mask"
-        code={`<Drawer
+export default Demo3
+```
 
-open={open()}
-title="Custom close"
-closable={{ closeIcon: 'Close', placement: 'start' }}
-mask={{ blur: true, closable: false }}
+### Custom close button and mask
 
-> The mask is blurred and clicking it will not close the drawer.
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
 
-</Drawer>`}
-      >
-        <Button onClick={() => setCustomOpen(true)}>Open custom drawer</Button>
+const Demo4 = function () {
+  return (
+<Button onClick={() => setCustomOpen(true)}>Open custom drawer</Button>
         <Drawer
           open={customOpen()}
           title="Custom close"
@@ -381,20 +103,21 @@ mask={{ blur: true, closable: false }}
           The close button is rendered at the start of the header. The mask is blurred and does not
           close the drawer when clicked.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Extra and footer"
-        code={`<Drawer
+export default Demo4
+```
 
-extra={<Button>Action</Button>}
-footer={<Button>Close</Button>}
+### Extra and footer
 
-> Use header and footer actions for drawer workflows.
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
 
-</Drawer>`}
-      >
-        <Button type="primary" onClick={() => setExtraOpen(true)}>
+const Demo5 = function () {
+  return (
+<Button type="primary" onClick={() => setExtraOpen(true)}>
           Open with actions
         </Button>
         <Drawer
@@ -413,17 +136,21 @@ footer={<Button>Close</Button>}
         >
           Use extra and footer for actions related to the drawer content.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Loading"
-        code={`<Drawer open={open()} title="Loading drawer" loading>
+export default Demo5
+```
 
-Loaded content will be hidden while loading is true.
+### Loading
 
-</Drawer>`}
-      >
-        <Button onClick={() => setLoadingOpen(true)}>Open loading drawer</Button>
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
+
+const Demo6 = function () {
+  return (
+<Button onClick={() => setLoadingOpen(true)}>Open loading drawer</Button>
         <Drawer
           open={loadingOpen()}
           title="Loading drawer"
@@ -432,26 +159,21 @@ Loaded content will be hidden while loading is true.
         >
           Loaded content will be hidden while loading is true.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Semantic styling"
-        code={`<Drawer
+export default Demo6
+```
 
-open={open()}
-rootClassName="demo-drawer-root"
-rootStyle={{ 'pointer-events': 'auto' }}
-classNames={{ header: 'demo-drawer-header', body: 'demo-drawer-body' }}
-styles={{
-    header: { 'border-bottom': '2px solid #1677ff' },
-    body: { background: 'var(--docs-surface-subtle)' },
-  }}
+### Semantic styling
 
-> Style semantic parts without depending on internal DOM depth.
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
 
-</Drawer>`}
-      >
-        <Button onClick={() => setRenderOpen(true)}>Open styled drawer</Button>
+const Demo7 = function () {
+  return (
+<Button onClick={() => setRenderOpen(true)}>Open styled drawer</Button>
         <Drawer
           open={renderOpen()}
           title="Semantic styling"
@@ -467,17 +189,21 @@ styles={{
           Style semantic parts with <code>classNames</code> and <code>styles</code> instead of
           relying on internal DOM depth.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="No mask close or keyboard close"
-        code={`<Drawer maskClosable={false} keyboard={false} open={open()}>
+export default Demo7
+```
 
-Clicking the mask or pressing Escape will not close this drawer.
+### No mask close or keyboard close
 
-</Drawer>`}
-      >
-        <Button onClick={() => setLockedOpen(true)}>Open locked drawer</Button>
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
+
+const Demo8 = function () {
+  return (
+<Button onClick={() => setLockedOpen(true)}>Open locked drawer</Button>
         <Drawer
           open={lockedOpen()}
           title="Close button only"
@@ -487,21 +213,21 @@ Clicking the mask or pressing Escape will not close this drawer.
         >
           Clicking the mask or pressing Escape will not close this drawer.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Destroy on hidden and force render"
-        code={`<Drawer destroyOnHidden open={open()}>
+export default Demo8
+```
 
-Children are removed from the DOM after the drawer closes.
+### Destroy on hidden and force render
 
-</Drawer>
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
 
-<Drawer forceRender open={false}>
-  Content is pre-rendered while hidden.
-</Drawer>`}
-      >
-        <Button onClick={() => setDestroyOpen(true)}>Open destroy drawer</Button>
+const Demo9 = function () {
+  return (
+<Button onClick={() => setDestroyOpen(true)}>Open destroy drawer</Button>
         <Drawer
           open={destroyOpen()}
           title="Destroy on hidden"
@@ -510,18 +236,21 @@ Children are removed from the DOM after the drawer closes.
         >
           Children are removed from the DOM after the drawer closes.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Render inline"
-        code={`<section class="relative">
+export default Demo9
+```
 
-  <Drawer open={open()} getContainer={false}>
-    This drawer is rendered inline instead of being portaled to document.body.
-  </Drawer>
-</section>`}
-      >
-        <Button onClick={() => setInlineOpen(true)}>Open inline drawer</Button>
+### Render inline
+
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
+
+const Demo10 = function () {
+  return (
+<Button onClick={() => setInlineOpen(true)}>Open inline drawer</Button>
         <div class="relative mt-3 min-h-20 rounded border border-dashed border-gray-300 p-3 text-sm text-gray-500">
           Inline host element
           <Drawer
@@ -533,19 +262,21 @@ Children are removed from the DOM after the drawer closes.
             This drawer is rendered inline instead of being portaled to document.body.
           </Drawer>
         </div>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Nested drawer push"
-        code={`<Drawer open={parentOpen()} title="Parent" push={{ distance: 120 }}>
+export default Demo10
+```
 
-  <Button onClick={() => setChildOpen(true)}>Open child</Button>
-  <Drawer open={childOpen()} title="Child">
-    Opening the child pushes the parent drawer.
-  </Drawer>
-</Drawer>`}
-      >
-        <Button type="primary" onClick={() => setParentOpen(true)}>
+### Nested drawer push
+
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
+
+const Demo11 = function () {
+  return (
+<Button type="primary" onClick={() => setParentOpen(true)}>
           Open parent drawer
         </Button>
         <Drawer
@@ -565,21 +296,21 @@ Children are removed from the DOM after the drawer closes.
             Opening the child pushes the parent drawer by the configured distance.
           </Drawer>
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Custom render and focus return"
-        code={`<Drawer
+export default Demo11
+```
 
-open={open()}
-focusable={{ focusTriggerAfterClose: true }}
-drawerRender={(node) => <div class="rounded-xl ring-4 ring-blue-100">{node}</div>}
+### Custom render and focus return
 
-> The panel is wrapped by drawerRender and focus returns to the trigger after close.
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
 
-</Drawer>`}
-      >
-        <Button onClick={() => setRenderOpen(true)}>Open custom render drawer</Button>
+const Demo12 = function () {
+  return (
+<Button onClick={() => setRenderOpen(true)}>Open custom render drawer</Button>
         <Drawer
           open={renderOpen()}
           title="Custom render"
@@ -590,21 +321,21 @@ drawerRender={(node) => <div class="rounded-xl ring-4 ring-blue-100">{node}</div
           The drawer panel node is wrapped with <code>drawerRender</code>. Focus returns to the
           trigger when the drawer closes.
         </Drawer>
-      </DemoBlock>
+  )
+}
 
-      <DemoBlock
-        title="Resizable"
-        code={`const [size, setSize] = createSignal(378)
+export default Demo12
+```
 
-<Drawer
-  open={open()}
-  resizable={{ onResize: setSize }}
-  maxSize={720}
->
-  Current size: {size()}px
-</Drawer>`}
-      >
-        <Button onClick={() => setResizeOpen(true)}>Open resizable drawer</Button>
+### Resizable
+
+```tsx
+import { Button, Drawer, Space } from '@ant-design-solid/core'
+import { For, createSignal } from 'solid-js'
+
+const Demo13 = function () {
+  return (
+<Button onClick={() => setResizeOpen(true)}>Open resizable drawer</Button>
         <span class="ml-3 text-sm text-gray-500">Current size: {resizeValue()}px</span>
         <Drawer
           open={resizeOpen()}
@@ -615,30 +346,94 @@ drawerRender={(node) => <div class="rounded-xl ring-4 ring-blue-100">{node}</div
         >
           Drag the handle on the drawer edge to resize it. Current size: {resizeValue()}px.
         </Drawer>
-      </DemoBlock>
-
-      <h2>API</h2>
-      <ApiTable rows={drawerRows} aria-label="Drawer API" />
-
-      <h2>Semantic DOM</h2>
-      <p>
-        Use these keys with <code>classNames</code> and <code>styles</code> to customize stable
-        semantic sections of the drawer.
-      </p>
-      <ApiTable rows={semanticRows} aria-label="Drawer semantic DOM API" />
-
-      <h2>ClosableConfig</h2>
-      <ApiTable rows={closableRows} aria-label="Drawer closable config API" />
-
-      <h2>MaskConfig</h2>
-      <ApiTable rows={maskRows} aria-label="Drawer mask config API" />
-
-      <h2>FocusableConfig</h2>
-      <ApiTable rows={focusableRows} aria-label="Drawer focusable config API" />
-
-      <h2>ResizableConfig</h2>
-      <ApiTable rows={resizableRows} aria-label="Drawer resizable config API" />
-    </>
-
-)
+  )
 }
+
+export default Demo13
+```
+
+## API
+
+| Property          | Description                                                                                          | Type                                                                                                                       | Default             |
+| ----------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `open`            | Controls whether the drawer is visible.                                                              | `boolean`                                                                                                                  | `false`             |
+| `title`           | Drawer title content.                                                                                | `JSX.Element`                                                                                                              | `-`                 |
+| `placement`       | Side of the viewport the drawer slides from.                                                         | `'left' \| 'right' \| 'top' \| 'bottom'`                                                                                   | `'right'`           |
+| `size`            | Preset or custom drawer size. Takes precedence over width and height when provided.                  | `'default' \| 'large' \| number \| string`                                                                                 | `'default'`         |
+| `width`           | Drawer width for left and right placements. Kept for antd compatibility; prefer size for new code.   | `number \| string`                                                                                                         | `378`               |
+| `height`          | Drawer height for top and bottom placements. Kept for antd compatibility; prefer size for new code.  | `number \| string`                                                                                                         | `378`               |
+| `closable`        | Shows the close button. Object form customizes icon, disabled state, and start/end position.         | `boolean \| { closeIcon?: JSX.Element; disabled?: boolean; placement?: 'start' \| 'end' }`                                 | `true`              |
+| `mask`            | Shows the background mask. Object form configures whether the mask is enabled, blurred, or closable. | `boolean \| { enabled?: boolean; blur?: boolean; closable?: boolean }`                                                     | `true`              |
+| `maskClosable`    | Allows clicking the mask to close the drawer. Prefer mask.closable in new code.                      | `boolean`                                                                                                                  | `true`              |
+| `keyboard`        | Allows closing with Escape.                                                                          | `boolean`                                                                                                                  | `true`              |
+| `destroyOnClose`  | Unmounts children after close. Prefer destroyOnHidden in new code.                                   | `boolean`                                                                                                                  | `false`             |
+| `destroyOnHidden` | Unmounts children after the drawer is hidden.                                                        | `boolean`                                                                                                                  | `false`             |
+| `forceRender`     | Pre-renders Drawer content even when closed.                                                         | `boolean`                                                                                                                  | `false`             |
+| `extra`           | Extra header action content.                                                                         | `JSX.Element`                                                                                                              | `-`                 |
+| `footer`          | Footer content.                                                                                      | `JSX.Element`                                                                                                              | `-`                 |
+| `zIndex`          | Overrides drawer z-index.                                                                            | `number`                                                                                                                   | `-`                 |
+| `getContainer`    | Portal mount container. Pass false to render inline instead of portaling to document.body.           | `HTMLElement \| () => HTMLElement \| string \| false`                                                                      | `document.body`     |
+| `rootClassName`   | Class name for the root element that contains the mask and drawer panel.                             | `string`                                                                                                                   | `-`                 |
+| `rootStyle`       | Inline style for the root element that contains the mask and drawer panel.                           | `JSX.CSSProperties`                                                                                                        | `-`                 |
+| `classNames`      | Semantic class names for mask, wrapper, content, header, body, footer, and section.                  | `Partial<Record<DrawerSemanticDOM, string>> \| (info) => Partial<Record<DrawerSemanticDOM, string>>`                       | `-`                 |
+| `styles`          | Semantic inline styles for mask, wrapper, content, header, body, footer, and section.                | `Partial<Record<DrawerSemanticDOM, JSX.CSSProperties>> \| (info) => Partial<Record<DrawerSemanticDOM, JSX.CSSProperties>>` | `-`                 |
+| `loading`         | Shows a skeleton loading state in the drawer body instead of children.                               | `boolean`                                                                                                                  | `false`             |
+| `push`            | Pushes the parent drawer when a nested drawer opens. Pass an object to customize distance.           | `boolean \| { distance: number \| string }`                                                                                | `{ distance: 180 }` |
+| `drawerRender`    | Custom render wrapper for the drawer panel node.                                                     | `(node: JSX.Element) => JSX.Element`                                                                                       | `-`                 |
+| `focusable`       | Focus trap and return-focus configuration.                                                           | `{ trap?: boolean; focusTriggerAfterClose?: boolean }`                                                                     | `-`                 |
+| `resizable`       | Enables drag resizing and optional resize lifecycle callbacks.                                       | `boolean \| { onResizeStart?: () => void; onResize?: (size: number) => void; onResizeEnd?: () => void }`                   | `-`                 |
+| `maxSize`         | Maximum width or height while resizing.                                                              | `number`                                                                                                                   | `-`                 |
+| `onClose`         | Called when the drawer requests close from the close button, mask, or keyboard.                      | `(event?: MouseEvent \| KeyboardEvent) => void`                                                                            | `-`                 |
+| `afterOpenChange` | Called after open state changes.                                                                     | `(open: boolean) => void`                                                                                                  | `-`                 |
+| `children`        | Drawer body content.                                                                                 | `JSX.Element`                                                                                                              | `-`                 |
+| `class`           | Solid class for the drawer panel.                                                                    | `string`                                                                                                                   | `-`                 |
+| `className`       | React-style alias for the drawer panel class.                                                        | `string`                                                                                                                   | `-`                 |
+| `classList`       | Solid classList for conditional drawer panel classes.                                                | `Record<string, boolean \| undefined>`                                                                                     | `-`                 |
+| `style`           | Inline style for the drawer panel.                                                                   | `JSX.CSSProperties`                                                                                                        | `-`                 |
+| `aria-label`      | Accessible label for the dialog.                                                                     | `string`                                                                                                                   | `-`                 |
+| `aria-labelledby` | ID of an external element that labels the dialog.                                                    | `string`                                                                                                                   | `-`                 |
+
+## Semantic DOM
+
+Use these keys with `classNames` and `styles` to customize stable semantic sections of the drawer.
+
+| Property  | Description                                                        | Type                | Default |
+| --------- | ------------------------------------------------------------------ | ------------------- | ------- |
+| `mask`    | Background mask element.                                           | `DrawerSemanticDOM` | `-`     |
+| `wrapper` | Drawer panel dialog element.                                       | `DrawerSemanticDOM` | `-`     |
+| `content` | Content container inside the panel.                                | `DrawerSemanticDOM` | `-`     |
+| `header`  | Header area that contains title, extra, and close.                 | `DrawerSemanticDOM` | `-`     |
+| `body`    | Scrollable body content area.                                      | `DrawerSemanticDOM` | `-`     |
+| `footer`  | Footer action area.                                                | `DrawerSemanticDOM` | `-`     |
+| `section` | Alias applied to the drawer panel for antd-style semantic styling. | `DrawerSemanticDOM` | `-`     |
+
+## ClosableConfig
+
+| Property    | Description                                             | Type               | Default |
+| ----------- | ------------------------------------------------------- | ------------------ | ------- |
+| `closeIcon` | Custom close icon content.                              | `JSX.Element`      | `-`     |
+| `disabled`  | Disables the close button.                              | `boolean`          | `false` |
+| `placement` | Places the close button before or after the title area. | `'start' \| 'end'` | `'end'` |
+
+## MaskConfig
+
+| Property   | Description                               | Type      | Default |
+| ---------- | ----------------------------------------- | --------- | ------- |
+| `enabled`  | Whether to render the mask.               | `boolean` | `true`  |
+| `blur`     | Adds backdrop blur to the mask.           | `boolean` | `false` |
+| `closable` | Whether clicking the mask requests close. | `boolean` | `true`  |
+
+## FocusableConfig
+
+| Property                 | Description                                                  | Type      | Default |
+| ------------------------ | ------------------------------------------------------------ | --------- | ------- |
+| `trap`                   | Traps Tab focus inside the drawer.                           | `boolean` | `true`  |
+| `focusTriggerAfterClose` | Returns focus to the previously focused trigger after close. | `boolean` | `false` |
+
+## ResizableConfig
+
+| Property        | Description                                  | Type                     | Default |
+| --------------- | -------------------------------------------- | ------------------------ | ------- |
+| `onResizeStart` | Called when dragging starts.                 | `() => void`             | `-`     |
+| `onResize`      | Called while dragging with the current size. | `(size: number) => void` | `-`     |
+| `onResizeEnd`   | Called when dragging ends.                   | `() => void`             | `-`     |

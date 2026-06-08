@@ -1,20 +1,21 @@
+# Theming
+
+Use ConfigProvider to override seed tokens and component tokens.
+
+### Custom primary color
+
+```tsx
 import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
-import { DemoBlock } from '../../components/demo-block'
-export default function Theming() {
+
+const Demo1 = function () {
   return (
-    <>
-      <h1>Theming</h1>
-      <p>Use ConfigProvider to override seed tokens and component tokens.</p>
-      <DemoBlock
-        title="Custom primary color"
-        code={`<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}><Button type="primary" /></ConfigProvider>`}
-      >
-        <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
-          <Space>
-            <Button type="primary">Purple Button</Button>
-          </Space>
-        </ConfigProvider>
-      </DemoBlock>
-    </>
+    <ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
+      <Space>
+        <Button type="primary">Purple Button</Button>
+      </Space>
+    </ConfigProvider>
   )
 }
+
+export default Demo1
+```

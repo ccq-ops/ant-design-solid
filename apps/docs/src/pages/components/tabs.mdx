@@ -1,84 +1,97 @@
-import { Tabs } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
+# Tabs
 
-export const items = [
+### Basic
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
   { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
   { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
   { key: 'disabled', label: 'Disabled', disabled: true, children: <p>Disabled content</p> },
 ]
 
-export const tabsRows = [
-  { property: 'items', description: 'Tab items rendered as tabs and panes.', type: 'TabsItem[]' },
-  { property: 'activeKey', description: 'Controlled active tab key.', type: 'string' },
-  {
-    property: 'defaultActiveKey',
-    description: 'Initial active tab key for uncontrolled usage.',
-    type: 'string',
-  },
-  {
-    property: 'onChange',
-    description: 'Called when the active tab changes.',
-    type: '(activeKey: string) => void',
-  },
-  {
-    property: 'type',
-    description: 'Tab visual style.',
-    type: "'line' | 'card'",
-    defaultValue: "'line'",
-  },
-  {
-    property: 'size',
-    description: 'Tab size from the theme component size scale.',
-    type: 'ComponentSize',
-  },
-  {
-    property: 'tabPosition',
-    description: 'Tab bar position.',
-    type: "'top' | 'bottom'",
-    defaultValue: "'top'",
-  },
-  {
-    property: 'destroyInactiveTabPane',
-    description: 'Unmounts inactive tab pane content.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-]
-
-export const tabsItemRows = [
-  { property: 'key', description: 'Stable tab key.', type: 'string' },
-  { property: 'label', description: 'Tab label content.', type: 'JSX.Element' },
-  { property: 'children', description: 'Tab pane content.', type: 'JSX.Element' },
-  { property: 'disabled', description: 'Disables this tab.', type: 'boolean' },
-]
-
-export default function TabsPage() {
-  return (
-    <>
-      <h1>Tabs</h1>
-      <DemoBlock title="Basic" code={`<Tabs items={items} />`}>
-        <Tabs items={items} />
-      </DemoBlock>
-      <DemoBlock title="Card" code={`<Tabs type="card" items={items} />`}>
-        <Tabs type="card" items={items} />
-      </DemoBlock>
-      <DemoBlock title="Bottom" code={`<Tabs tabPosition="bottom" items={items} />`}>
-        <Tabs tabPosition="bottom" items={items} />
-      </DemoBlock>
-      <DemoBlock
-        title="Destroy inactive pane"
-        code={`<Tabs destroyInactiveTabPane items={items} />`}
-      >
-        <Tabs destroyInactiveTabPane items={items} />
-      </DemoBlock>
-
-      <h2>API</h2>
-      <h3>Tabs</h3>
-      <ApiTable rows={tabsRows} aria-label="Tabs API" />
-      <h3>TabsItem</h3>
-      <ApiTable rows={tabsItemRows} aria-label="Tabs Item API" />
-    </>
-
-)
+const Demo1 = function () {
+  return <Tabs items={items} />
 }
+
+export default Demo1
+```
+
+### Card
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
+  { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
+  { key: 'disabled', label: 'Disabled', disabled: true, children: <p>Disabled content</p> },
+]
+
+const Demo2 = function () {
+  return <Tabs type="card" items={items} />
+}
+
+export default Demo2
+```
+
+### Bottom
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
+  { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
+  { key: 'disabled', label: 'Disabled', disabled: true, children: <p>Disabled content</p> },
+]
+
+const Demo3 = function () {
+  return <Tabs tabPosition="bottom" items={items} />
+}
+
+export default Demo3
+```
+
+### Destroy inactive pane
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
+  { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
+  { key: 'disabled', label: 'Disabled', disabled: true, children: <p>Disabled content</p> },
+]
+
+const Demo4 = function () {
+  return <Tabs destroyInactiveTabPane items={items} />
+}
+
+export default Demo4
+```
+
+## API
+
+### Tabs
+
+| Property                 | Description                                    | Type                          | Default  |
+| ------------------------ | ---------------------------------------------- | ----------------------------- | -------- |
+| `items`                  | Tab items rendered as tabs and panes.          | `TabsItem[]`                  | `-`      |
+| `activeKey`              | Controlled active tab key.                     | `string`                      | `-`      |
+| `defaultActiveKey`       | Initial active tab key for uncontrolled usage. | `string`                      | `-`      |
+| `onChange`               | Called when the active tab changes.            | `(activeKey: string) => void` | `-`      |
+| `type`                   | Tab visual style.                              | `'line' \| 'card'`            | `'line'` |
+| `size`                   | Tab size from the theme component size scale.  | `ComponentSize`               | `-`      |
+| `tabPosition`            | Tab bar position.                              | `'top' \| 'bottom'`           | `'top'`  |
+| `destroyInactiveTabPane` | Unmounts inactive tab pane content.            | `boolean`                     | `false`  |
+
+### TabsItem
+
+| Property   | Description        | Type          | Default |
+| ---------- | ------------------ | ------------- | ------- |
+| `key`      | Stable tab key.    | `string`      | `-`     |
+| `label`    | Tab label content. | `JSX.Element` | `-`     |
+| `children` | Tab pane content.  | `JSX.Element` | `-`     |
+| `disabled` | Disables this tab. | `boolean`     | `-`     |

@@ -1,64 +1,14 @@
+# Masonry
+
+Display variable-height content in balanced columns.
+
+### Basic
+
+```tsx
 import { createSignal } from 'solid-js'
 import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const masonryRows = [
-  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
-  { property: 'class', description: 'Additional root class.', type: 'string' },
-  {
-    property: 'classList',
-    description: 'Conditional root classes.',
-    type: 'Record<string, boolean | undefined>',
-  },
-  { property: 'style', description: 'Inline root style.', type: 'JSX.CSSProperties | string' },
-  {
-    property: 'columns',
-    description: 'Column count or responsive breakpoint map.',
-    type: 'number | Partial<Record<MasonryBreakpoint, number>>',
-    defaultValue: '4',
-  },
-  {
-    property: 'gutter',
-    description: 'Gap size or responsive breakpoint map.',
-    type: 'number | string | Partial<Record<MasonryBreakpoint, number | string>>',
-    defaultValue: '16',
-  },
-  { property: 'items', description: 'Data items to render.', type: 'T[]' },
-  {
-    property: 'itemRender',
-    description: 'Render function for each data item.',
-    type: '(item: T, index: number) => JSX.Element',
-  },
-  {
-    property: 'children',
-    description: 'Manual masonry children used when items are not provided.',
-    type: 'JSX.Element',
-  },
-  {
-    property: 'fresh',
-    description: 'Refreshes measured layout when item heights update.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'classNames',
-    description: 'Semantic class names for masonry parts.',
-    type: '{ item?: string }',
-  },
-  {
-    property: 'styles',
-    description: 'Semantic inline styles for masonry parts.',
-    type: '{ item?: JSX.CSSProperties | string }',
-  },
-  {
-    property: 'onLayoutChange',
-    description: 'Called with columns, column heights, and item placement after layout changes.',
-    type: '(info: MasonryLayoutInfo<T>) => void',
-  },
-]
-
-export const baseItems = [
+const baseItems = [
   { key: 1, title: 'Mountain', height: 120, color: '#e6f4ff' },
   { key: 2, title: 'Forest', height: 180, color: '#f6ffed' },
   { key: 3, title: 'River', height: 96, color: '#fff7e6' },
@@ -67,7 +17,7 @@ export const baseItems = [
   { key: 6, title: 'Ocean', height: 210, color: '#e6fffb' },
 ]
 
-export function DemoCard(props) {
+function DemoCard(props) {
   return (
     <Card title={props.title} style={{ background: props.color }}>
       <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
@@ -77,106 +27,164 @@ export function DemoCard(props) {
   )
 }
 
-export default function MasonryPage() {
-  const [items, setItems] = createSignal(baseItems)
-
-return (
-
-<>
-<h1>Masonry</h1>
-<p>Display variable-height content in balanced columns.</p>
-
-      <DemoBlock
-        title="Basic"
-        code={`<Masonry
-
-items={items}
-itemRender={(item) => <Card title={item.title}>Content</Card>}
-/>`} >
-
-<Masonry
-items={baseItems}
-itemRender={(item) => (
-<DemoCard title={item.title} height={item.height} color={item.color} />
-)}
-/>
-</DemoBlock>
-
-      <DemoBlock
-        title="Responsive"
-        code={`<Masonry columns={{ xs: 1, sm: 2, lg: 3, xl: 4 }} gutter={{ xs: 8, md: 16 }} />`}
-      >
-        <Masonry
-          columns={{ xs: 1, sm: 2, lg: 3, xl: 4 }}
-          gutter={{ xs: 8, md: 16, xl: 24 }}
-          items={baseItems}
-          itemRender={(item) => (
-            <DemoCard title={item.title} height={item.height} color={item.color} />
-          )}
-        />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Gallery"
-        code={`<Masonry columns={3} gutter={12} items={photos} itemRender={(photo) => <img src={photo.src} />} />`}
-      >
-        <Masonry
-          columns={3}
-          gutter={12}
-          items={baseItems}
-          itemRender={(item) => (
-            <div
-              style={{
-                height: `${item.height + 80}px`,
-                background: `linear-gradient(135deg, ${item.color}, var(--docs-surface-solid))`,
-                border: '1px solid var(--docs-border)',
-                'border-radius': '8px',
-                display: 'flex',
-                'align-items': 'end',
-                padding: '12px',
-                'box-sizing': 'border-box',
-              }}
-            >
-              {item.title}
-            </div>
-          )}
-        />
-      </DemoBlock>
-
-      <DemoBlock
-        title="Dynamic items"
-        code={`<Masonry fresh items={items()} itemRender={(item) => <Card title={item.title}>...</Card>} />`}
-      >
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Button
-            onClick={() =>
-              setItems((previous) => [
-                ...previous,
-                {
-                  key: Date.now(),
-                  title: `New ${previous.length + 1}`,
-                  height: 80 + ((previous.length * 37) % 140),
-                  color: '#f0f5ff',
-                },
-              ])
-            }
-          >
-            Add item
-          </Button>
-          <Masonry
-            fresh
-            columns={{ xs: 1, md: 3 }}
-            items={items()}
-            itemRender={(item) => (
-              <DemoCard title={item.title} height={item.height} color={item.color} />
-            )}
-          />
-        </Space>
-      </DemoBlock>
-
-      <h2>API</h2>
-      <ApiTable rows={masonryRows} aria-label="Masonry API" />
-    </>
-
-)
+const Demo1 = function () {
+  return (
+    <Masonry
+      items={baseItems}
+      itemRender={(item) => <DemoCard title={item.title} height={item.height} color={item.color} />}
+    />
+  )
 }
+
+export default Demo1
+```
+
+### Responsive
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+
+const baseItems = [
+  { key: 1, title: 'Mountain', height: 120, color: '#e6f4ff' },
+  { key: 2, title: 'Forest', height: 180, color: '#f6ffed' },
+  { key: 3, title: 'River', height: 96, color: '#fff7e6' },
+  { key: 4, title: 'City', height: 150, color: '#f9f0ff' },
+  { key: 5, title: 'Desert', height: 110, color: '#fff1f0' },
+  { key: 6, title: 'Ocean', height: 210, color: '#e6fffb' },
+]
+
+function DemoCard(props) {
+  return (
+    <Card title={props.title} style={{ background: props.color }}>
+      <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
+        Variable-height content creates a waterfall layout.
+      </div>
+    </Card>
+  )
+}
+
+const Demo2 = function () {
+  return (
+    <Masonry
+      columns={{ xs: 1, sm: 2, lg: 3, xl: 4 }}
+      gutter={{ xs: 8, md: 16, xl: 24 }}
+      items={baseItems}
+      itemRender={(item) => <DemoCard title={item.title} height={item.height} color={item.color} />}
+    />
+  )
+}
+
+export default Demo2
+```
+
+### Gallery
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+
+const baseItems = [
+  { key: 1, title: 'Mountain', height: 120, color: '#e6f4ff' },
+  { key: 2, title: 'Forest', height: 180, color: '#f6ffed' },
+  { key: 3, title: 'River', height: 96, color: '#fff7e6' },
+  { key: 4, title: 'City', height: 150, color: '#f9f0ff' },
+  { key: 5, title: 'Desert', height: 110, color: '#fff1f0' },
+  { key: 6, title: 'Ocean', height: 210, color: '#e6fffb' },
+]
+
+const Demo3 = function () {
+  return (
+    <Masonry
+      columns={3}
+      gutter={12}
+      items={baseItems}
+      itemRender={(item) => (
+        <div
+          style={{
+            height: `${item.height + 80}px`,
+            background: `linear-gradient(135deg, ${item.color}, var(--docs-surface-solid))`,
+            border: '1px solid var(--docs-border)',
+            'border-radius': '8px',
+            display: 'flex',
+            'align-items': 'end',
+            padding: '12px',
+            'box-sizing': 'border-box',
+          }}
+        >
+          {item.title}
+        </div>
+      )}
+    />
+  )
+}
+
+export default Demo3
+```
+
+### Dynamic items
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+
+function DemoCard(props) {
+  return (
+    <Card title={props.title} style={{ background: props.color }}>
+      <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
+        Variable-height content creates a waterfall layout.
+      </div>
+    </Card>
+  )
+}
+
+const Demo4 = function () {
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Button
+        onClick={() =>
+          setItems((previous) => [
+            ...previous,
+            {
+              key: Date.now(),
+              title: `New ${previous.length + 1}`,
+              height: 80 + ((previous.length * 37) % 140),
+              color: '#f0f5ff',
+            },
+          ])
+        }
+      >
+        Add item
+      </Button>
+      <Masonry
+        fresh
+        columns={{ xs: 1, md: 3 }}
+        items={items()}
+        itemRender={(item) => (
+          <DemoCard title={item.title} height={item.height} color={item.color} />
+        )}
+      />
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+## API
+
+| Property         | Description                                                                   | Type                                                                       | Default |
+| ---------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------- |
+| `prefixCls`      | Custom CSS class prefix.                                                      | `string`                                                                   | `-`     |
+| `class`          | Additional root class.                                                        | `string`                                                                   | `-`     |
+| `classList`      | Conditional root classes.                                                     | `Record<string, boolean \| undefined>`                                     | `-`     |
+| `style`          | Inline root style.                                                            | `JSX.CSSProperties \| string`                                              | `-`     |
+| `columns`        | Column count or responsive breakpoint map.                                    | `number \| Partial<Record<MasonryBreakpoint, number>>`                     | `4`     |
+| `gutter`         | Gap size or responsive breakpoint map.                                        | `number \| string \| Partial<Record<MasonryBreakpoint, number \| string>>` | `16`    |
+| `items`          | Data items to render.                                                         | `T[]`                                                                      | `-`     |
+| `itemRender`     | Render function for each data item.                                           | `(item: T, index: number) => JSX.Element`                                  | `-`     |
+| `children`       | Manual masonry children used when items are not provided.                     | `JSX.Element`                                                              | `-`     |
+| `fresh`          | Refreshes measured layout when item heights update.                           | `boolean`                                                                  | `false` |
+| `classNames`     | Semantic class names for masonry parts.                                       | `{ item?: string }`                                                        | `-`     |
+| `styles`         | Semantic inline styles for masonry parts.                                     | `{ item?: JSX.CSSProperties \| string }`                                   | `-`     |
+| `onLayoutChange` | Called with columns, column heights, and item placement after layout changes. | `(info: MasonryLayoutInfo<T>) => void`                                     | `-`     |

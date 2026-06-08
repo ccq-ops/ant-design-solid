@@ -1,83 +1,82 @@
+# Flex
+
+### Basic
+
+```tsx
 import { Button, Flex } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const flexRows = [
-  {
-    property: 'vertical',
-    description: 'Stacks children vertically.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'wrap',
-    description: 'Controls flex wrapping. Boolean true maps to wrap.',
-    type: "boolean | 'nowrap' | 'wrap' | 'wrap-reverse'",
-  },
-  {
-    property: 'justify',
-    description: 'Maps to CSS justify-content.',
-    type: "'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly'",
-  },
-  {
-    property: 'align',
-    description: 'Maps to CSS align-items.',
-    type: "'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline'",
-  },
-  {
-    property: 'gap',
-    description: 'Horizontal and vertical gap. Presets use Space tokens.',
-    type: "'small' | 'middle' | 'large' | number | [number, number]",
-    defaultValue: "'middle'",
-  },
-  {
-    property: 'component',
-    description: 'HTML element used as the wrapper.',
-    type: 'keyof JSX.IntrinsicElements',
-    defaultValue: "'div'",
-  },
-  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
-]
-
-export default function FlexPage() {
+const Demo1 = function () {
   return (
-    <>
-      <h1>Flex</h1>
-      <DemoBlock
-        title="Basic"
-        code={`<Flex gap="large"><Button>One</Button><Button>Two</Button></Flex>`}
-      >
-        <Flex gap="large" wrap>
-          <Button>One</Button>
-          <Button>Two</Button>
-          <Button>Three</Button>
-        </Flex>
-      </DemoBlock>
-      <DemoBlock
-        title="Vertical"
-        code={`<Flex vertical gap={8}><Button>A</Button><Button>B</Button></Flex>`}
-      >
-        <Flex vertical gap={8} align="flex-start">
-          <Button>A</Button>
-          <Button>B</Button>
-        </Flex>
-      </DemoBlock>
-      <DemoBlock title="Alignment" code={`<Flex justify="space-between" align="center">...</Flex>`}>
-        <Flex justify="space-between" align="center" class="w-full bg-gray-100 p-3">
-          <span>Left</span>
-          <Button type="primary">Right</Button>
-        </Flex>
-      </DemoBlock>
-      <DemoBlock title="Semantic element" code={`<Flex component="section">Section content</Flex>`}>
-        <Flex component="section" gap={[8, 16]} wrap="wrap-reverse">
-          <span>Section</span>
-          <span>content</span>
-        </Flex>
-      </DemoBlock>
-
-      <h2>API</h2>
-      <ApiTable rows={flexRows} aria-label="Flex API" />
-    </>
-
-)
+    <Flex gap="large" wrap>
+      <Button>One</Button>
+      <Button>Two</Button>
+      <Button>Three</Button>
+    </Flex>
+  )
 }
+
+export default Demo1
+```
+
+### Vertical
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return (
+    <Flex vertical gap={8} align="flex-start">
+      <Button>A</Button>
+      <Button>B</Button>
+    </Flex>
+  )
+}
+
+export default Demo2
+```
+
+### Alignment
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Flex justify="space-between" align="center" class="w-full bg-gray-100 p-3">
+      <span>Left</span>
+      <Button type="primary">Right</Button>
+    </Flex>
+  )
+}
+
+export default Demo3
+```
+
+### Semantic element
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Flex component="section" gap={[8, 16]} wrap="wrap-reverse">
+      <span>Section</span>
+      <span>content</span>
+    </Flex>
+  )
+}
+
+export default Demo4
+```
+
+## API
+
+| Property    | Description                                            | Type                                                                                            | Default    |
+| ----------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ---------- |
+| `vertical`  | Stacks children vertically.                            | `boolean`                                                                                       | `false`    |
+| `wrap`      | Controls flex wrapping. Boolean true maps to wrap.     | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'`                                               | `-`        |
+| `justify`   | Maps to CSS justify-content.                           | `'flex-start' \| 'center' \| 'flex-end' \| 'space-between' \| 'space-around' \| 'space-evenly'` | `-`        |
+| `align`     | Maps to CSS align-items.                               | `'flex-start' \| 'center' \| 'flex-end' \| 'stretch' \| 'baseline'`                             | `-`        |
+| `gap`       | Horizontal and vertical gap. Presets use Space tokens. | `'small' \| 'middle' \| 'large' \| number \| [number, number]`                                  | `'middle'` |
+| `component` | HTML element used as the wrapper.                      | `keyof JSX.IntrinsicElements`                                                                   | `'div'`    |
+| `prefixCls` | Custom CSS class prefix.                               | `string`                                                                                        | `-`        |

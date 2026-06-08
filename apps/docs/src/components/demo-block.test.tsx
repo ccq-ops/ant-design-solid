@@ -2,12 +2,12 @@ import { render, waitFor } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
 import { DemoBlock } from './demo-block'
 
+const ButtonDemo = () => <button type="button">Click</button>
+
 describe('DemoBlock', () => {
-  it('renders title, preview, code, and Tailwind structural classes', async () => {
+  it('renders title, preview component, code, and Tailwind structural classes', async () => {
     const result = render(() => (
-      <DemoBlock title="Basic" code="<Button>Click</Button>">
-        <button type="button">Click</button>
-      </DemoBlock>
+      <DemoBlock title="Basic" code="<Button>Click</Button>" component={ButtonDemo} />
     ))
 
     const heading = result.getByRole('heading', { name: 'Basic', level: 3 })
@@ -37,9 +37,7 @@ describe('DemoBlock', () => {
 
   it('collapses code by default and expands it when clicked', async () => {
     const result = render(() => (
-      <DemoBlock title="Expandable" code="<Button>Click</Button>">
-        <button type="button">Click</button>
-      </DemoBlock>
+      <DemoBlock title="Expandable" code="<Button>Click</Button>" component={ButtonDemo} />
     ))
 
     const section = result.getByLabelText('Expandable')
@@ -63,9 +61,11 @@ describe('DemoBlock', () => {
 
   it('highlights TSX code by default with Shiki markup', async () => {
     const result = render(() => (
-      <DemoBlock title="Default language" code={'<Button type="primary">Click</Button>'}>
-        <button type="button">Click</button>
-      </DemoBlock>
+      <DemoBlock
+        title="Default language"
+        code={'<Button type="primary">Click</Button>'}
+        component={ButtonDemo}
+      />
     ))
 
     const section = result.getByLabelText('Default language')
@@ -82,9 +82,12 @@ describe('DemoBlock', () => {
 
   it('uses the requested language for highlighting', async () => {
     const result = render(() => (
-      <DemoBlock title="Shell" language="bash" code="pnpm build">
-        <p>Build command</p>
-      </DemoBlock>
+      <DemoBlock
+        title="Shell"
+        language="bash"
+        code="pnpm build"
+        component={() => <p>Build command</p>}
+      />
     ))
 
     const section = result.getByLabelText('Shell')
@@ -100,9 +103,12 @@ describe('DemoBlock', () => {
 
   it('falls back to plain escaped code when Shiki cannot load the language', async () => {
     const result = render(() => (
-      <DemoBlock title="Unknown" language="not-a-real-language" code={'<x dangerously="true">'}>
-        <p>Unknown language</p>
-      </DemoBlock>
+      <DemoBlock
+        title="Unknown"
+        language="not-a-real-language"
+        code={'<x dangerously="true">'}
+        component={() => <p>Unknown language</p>}
+      />
     ))
 
     const section = result.getByLabelText('Unknown')

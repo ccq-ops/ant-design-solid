@@ -1,11 +1,16 @@
 import { fileURLToPath, URL } from 'node:url'
 import mdx from '@mdx-js/rollup'
+import { demoBlockRemarkPlugin } from './src/mdx-demo-block-remark-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
 export default defineConfig({
-  plugins: [mdx({ jsxImportSource: 'solid-js/h' }), solid(), tailwindcss()],
+  plugins: [
+    mdx({ jsxImportSource: 'solid-js/h', remarkPlugins: [demoBlockRemarkPlugin] }),
+    solid(),
+    tailwindcss(),
+  ],
   resolve: {
     alias: {
       '@ant-design-solid/core': fileURLToPath(

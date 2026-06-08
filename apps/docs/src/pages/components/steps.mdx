@@ -1,141 +1,154 @@
+# Steps
+
+### Basic
+
+```tsx
 import { createSignal } from 'solid-js'
 import { Space, Steps } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const stepsRows = [
-  { property: 'items', description: 'Step items rendered in order.', type: 'StepItem[]' },
-  { property: 'current', description: 'Current step index.', type: 'number', defaultValue: '0' },
-  {
-    property: 'status',
-    description: 'Status for the current step.',
-    type: "'wait' | 'process' | 'finish' | 'error'",
-  },
-  {
-    property: 'direction',
-    description: 'Step layout direction.',
-    type: "'horizontal' | 'vertical'",
-    defaultValue: "'horizontal'",
-  },
-  {
-    property: 'size',
-    description: 'Step size.',
-    type: "'default' | 'small'",
-    defaultValue: "'default'",
-  },
-  {
-    property: 'type',
-    description: 'Step style type.',
-    type: "'default' | 'navigation'",
-    defaultValue: "'default'",
-  },
-  {
-    property: 'onChange',
-    description: 'Called when a clickable step changes current index.',
-    type: '(current: number) => void',
-  },
-]
-
-export const stepItemRows = [
-  { property: 'title', description: 'Step title.', type: 'JSX.Element' },
-  { property: 'description', description: 'Step description.', type: 'JSX.Element' },
-  {
-    property: 'status',
-    description: 'Per-step status override.',
-    type: "'wait' | 'process' | 'finish' | 'error'",
-  },
-  { property: 'icon', description: 'Custom step icon.', type: 'JSX.Element' },
-  { property: 'disabled', description: 'Disables navigation to this step.', type: 'boolean' },
-]
-
-export default function StepsPage() {
-  const [current, setCurrent] = createSignal(0)
-
-return (
-
-<>
-<h1>Steps</h1>
-<DemoBlock
-title="Basic"
-code={`<Steps current={1} items={[{ title: 'Finished' }, { title: 'In Progress' }, { title: 'Waiting' }]} />`} >
-<Steps
-current={1}
-items={[{ title: 'Finished' }, { title: 'In Progress' }, { title: 'Waiting' }]}
-/>
-</DemoBlock>
-<DemoBlock
-title="Small"
-code={`<Steps size="small" current={1} items={[{ title: 'Login' }, { title: 'Verification' }, { title: 'Pay' }, { title: 'Done' }]} />`} >
-<Steps
-size="small"
-current={1}
-items={[
-{ title: 'Login' },
-{ title: 'Verification' },
-{ title: 'Pay' },
-{ title: 'Done' },
-]}
-/>
-</DemoBlock>
-<DemoBlock
-title="Vertical"
-code={`<Steps direction="vertical" current={1} items={[{ title: 'Create project', description: 'Configure the basics.' }, { title: 'Invite teammates', description: 'Add collaborators.' }, { title: 'Launch', description: 'Publish when ready.' }]} />`} >
-<Steps
-direction="vertical"
-current={1}
-items={[
-{ title: 'Create project', description: 'Configure the basics.' },
-{ title: 'Invite teammates', description: 'Add collaborators.' },
-{ title: 'Launch', description: 'Publish when ready.' },
-]}
-/>
-</DemoBlock>
-<DemoBlock
-title="Error status"
-code={`<Steps current={1} status="error" items={[{ title: 'Finished' }, { title: 'Failed' }, { title: 'Waiting' }]} />`} >
-<Steps
-current={1}
-status="error"
-items={[{ title: 'Finished' }, { title: 'Failed' }, { title: 'Waiting' }]}
-/>
-</DemoBlock>
-<DemoBlock
-title="Navigation"
-code={`const [current, setCurrent] = createSignal(0)\n<Steps type="navigation" current={current()} onChange={setCurrent} items={[{ title: 'Start' }, { title: 'Review' }, { title: 'Disabled', disabled: true }, { title: 'Done' }]} />`} >
-<Space direction="vertical">
-<Steps
-type="navigation"
-current={current()}
-onChange={setCurrent}
-items={[
-{ title: 'Start' },
-{ title: 'Review' },
-{ title: 'Disabled', disabled: true },
-{ title: 'Done' },
-]}
-/>
-<span>Current step: {current() + 1}</span>
-</Space>
-</DemoBlock>
-<DemoBlock
-title="Custom icon"
-code={`<Steps current={1} items={[{ title: 'Upload', icon: '↑' }, { title: 'Process', icon: '⚙' }, { title: 'Complete', icon: '✓' }]} />`} >
-<Steps
-current={1}
-items={[
-{ title: 'Upload', icon: '↑' },
-{ title: 'Process', icon: '⚙' },
-{ title: 'Complete', icon: '✓' },
-]}
-/>
-</DemoBlock>
-
-      <h2>API</h2>
-      <h3>Steps</h3>
-      <ApiTable rows={stepsRows} aria-label="Steps API" />
-      <h3>StepItem</h3>
-      <ApiTable rows={stepItemRows} aria-label="Step Item API" />
-    </>
-
-)
+const Demo1 = function () {
+  return (
+    <Steps
+      current={1}
+      items={[{ title: 'Finished' }, { title: 'In Progress' }, { title: 'Waiting' }]}
+    />
+  )
 }
+
+export default Demo1
+```
+
+### Small
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Space, Steps } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return (
+    <Steps
+      size="small"
+      current={1}
+      items={[{ title: 'Login' }, { title: 'Verification' }, { title: 'Pay' }, { title: 'Done' }]}
+    />
+  )
+}
+
+export default Demo2
+```
+
+### Vertical
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Space, Steps } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Steps
+      direction="vertical"
+      current={1}
+      items={[
+        { title: 'Create project', description: 'Configure the basics.' },
+        { title: 'Invite teammates', description: 'Add collaborators.' },
+        { title: 'Launch', description: 'Publish when ready.' },
+      ]}
+    />
+  )
+}
+
+export default Demo3
+```
+
+### Error status
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Space, Steps } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Steps
+      current={1}
+      status="error"
+      items={[{ title: 'Finished' }, { title: 'Failed' }, { title: 'Waiting' }]}
+    />
+  )
+}
+
+export default Demo4
+```
+
+### Navigation
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Space, Steps } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space direction="vertical">
+      <Steps
+        type="navigation"
+        current={current()}
+        onChange={setCurrent}
+        items={[
+          { title: 'Start' },
+          { title: 'Review' },
+          { title: 'Disabled', disabled: true },
+          { title: 'Done' },
+        ]}
+      />
+      <span>Current step: {current() + 1}</span>
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+### Custom icon
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Space, Steps } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Steps
+      current={1}
+      items={[
+        { title: 'Upload', icon: '↑' },
+        { title: 'Process', icon: '⚙' },
+        { title: 'Complete', icon: '✓' },
+      ]}
+    />
+  )
+}
+
+export default Demo6
+```
+
+## API
+
+### Steps
+
+| Property    | Description                                         | Type                                         | Default        |
+| ----------- | --------------------------------------------------- | -------------------------------------------- | -------------- |
+| `items`     | Step items rendered in order.                       | `StepItem[]`                                 | `-`            |
+| `current`   | Current step index.                                 | `number`                                     | `0`            |
+| `status`    | Status for the current step.                        | `'wait' \| 'process' \| 'finish' \| 'error'` | `-`            |
+| `direction` | Step layout direction.                              | `'horizontal' \| 'vertical'`                 | `'horizontal'` |
+| `size`      | Step size.                                          | `'default' \| 'small'`                       | `'default'`    |
+| `type`      | Step style type.                                    | `'default' \| 'navigation'`                  | `'default'`    |
+| `onChange`  | Called when a clickable step changes current index. | `(current: number) => void`                  | `-`            |
+
+### StepItem
+
+| Property      | Description                       | Type                                         | Default |
+| ------------- | --------------------------------- | -------------------------------------------- | ------- |
+| `title`       | Step title.                       | `JSX.Element`                                | `-`     |
+| `description` | Step description.                 | `JSX.Element`                                | `-`     |
+| `status`      | Per-step status override.         | `'wait' \| 'process' \| 'finish' \| 'error'` | `-`     |
+| `icon`        | Custom step icon.                 | `JSX.Element`                                | `-`     |
+| `disabled`    | Disables navigation to this step. | `boolean`                                    | `-`     |

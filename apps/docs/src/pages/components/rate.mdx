@@ -1,90 +1,106 @@
+# Rate
+
+### Basic
+
+```tsx
 import { createSignal } from 'solid-js'
 import { Rate, Space } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const rateRows = [
-  { property: 'value', description: 'Controlled rating value.', type: 'number' },
-  {
-    property: 'defaultValue',
-    description: 'Initial rating value for uncontrolled usage.',
-    type: 'number',
-  },
-  { property: 'count', description: 'Number of rating items.', type: 'number', defaultValue: '5' },
-  {
-    property: 'allowHalf',
-    description: 'Allows selecting half values.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'allowClear',
-    description: 'Allows clearing the rating by clicking the selected value.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'disabled',
-    description: 'Disables user interaction.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'character',
-    description: 'Custom rating character or render function.',
-    type: 'JSX.Element | ((index: number) => JSX.Element)',
-  },
-  { property: 'tooltips', description: 'Tooltip text for each rating item.', type: 'string[]' },
-  {
-    property: 'onChange',
-    description: 'Called when the rating value changes.',
-    type: '(next: number) => void',
-  },
-  {
-    property: 'onHoverChange',
-    description: 'Called when hover value changes.',
-    type: '(next: number) => void',
-  },
-]
-
-export default function RatePage() {
-  const [value, setValue] = createSignal(3)
-
-return (
-
-<>
-<h1>Rate</h1>
-<DemoBlock title="Basic" code={`<Rate defaultValue={3} />`}>
-<Rate defaultValue={3} />
-</DemoBlock>
-<DemoBlock title="Half star" code={`<Rate allowHalf defaultValue={2.5} />`}>
-<Rate allowHalf defaultValue={2.5} />
-</DemoBlock>
-<DemoBlock title="Disable clear" code={`<Rate defaultValue={3} allowClear={false} />`}>
-<Rate defaultValue={3} allowClear={false} />
-</DemoBlock>
-<DemoBlock
-title="Controlled"
-code={`const [value, setValue] = createSignal(3)\n<Rate value={value()} onChange={setValue} />`} >
-<Space direction="vertical">
-<Rate value={value()} onChange={setValue} />
-<span>Current value: {value()}</span>
-</Space>
-</DemoBlock>
-<DemoBlock title="Custom character" code={`<Rate character="♡" defaultValue={4} />`}>
-<Space direction="vertical">
-<Rate character="♡" defaultValue={4} />
-<Rate character={(index) => index + 1} defaultValue={3} />
-</Space>
-</DemoBlock>
-<DemoBlock title="Disabled" code={`<Rate disabled defaultValue={3} />`}>
-<Rate disabled defaultValue={3} />
-</DemoBlock>
-
-      <h2>API</h2>
-      <h3>Rate</h3>
-      <ApiTable rows={rateRows} aria-label="Rate API" />
-    </>
-
-)
+const Demo1 = function () {
+  return <Rate defaultValue={3} />
 }
+
+export default Demo1
+```
+
+### Half star
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return <Rate allowHalf defaultValue={2.5} />
+}
+
+export default Demo2
+```
+
+### Disable clear
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return <Rate defaultValue={3} allowClear={false} />
+}
+
+export default Demo3
+```
+
+### Controlled
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Space direction="vertical">
+      <Rate value={value()} onChange={setValue} />
+      <span>Current value: {value()}</span>
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+### Custom character
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space direction="vertical">
+      <Rate character="♡" defaultValue={4} />
+      <Rate character={(index) => index + 1} defaultValue={3} />
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+### Disabled
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return <Rate disabled defaultValue={3} />
+}
+
+export default Demo6
+```
+
+## API
+
+### Rate
+
+| Property        | Description                                                | Type                                              | Default |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------- | ------- |
+| `value`         | Controlled rating value.                                   | `number`                                          | `-`     |
+| `defaultValue`  | Initial rating value for uncontrolled usage.               | `number`                                          | `-`     |
+| `count`         | Number of rating items.                                    | `number`                                          | `5`     |
+| `allowHalf`     | Allows selecting half values.                              | `boolean`                                         | `false` |
+| `allowClear`    | Allows clearing the rating by clicking the selected value. | `boolean`                                         | `true`  |
+| `disabled`      | Disables user interaction.                                 | `boolean`                                         | `false` |
+| `character`     | Custom rating character or render function.                | `JSX.Element \| ((index: number) => JSX.Element)` | `-`     |
+| `tooltips`      | Tooltip text for each rating item.                         | `string[]`                                        | `-`     |
+| `onChange`      | Called when the rating value changes.                      | `(next: number) => void`                          | `-`     |
+| `onHoverChange` | Called when hover value changes.                           | `(next: number) => void`                          | `-`     |

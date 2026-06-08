@@ -1,76 +1,12 @@
+# Dropdown
+
+### Click
+
+```tsx
 import { createSignal } from 'solid-js'
 import { Button, Dropdown, Space } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const dropdownRows = [
-  {
-    property: 'menu',
-    description: 'Menu configuration rendered in the overlay.',
-    type: 'DropdownMenuProps',
-  },
-  {
-    property: 'trigger',
-    description: 'Interaction that opens the dropdown.',
-    type: "'hover' | 'click'",
-    defaultValue: "'click'",
-  },
-  {
-    property: 'placement',
-    description: 'Overlay placement relative to the trigger.',
-    type: 'DropdownPlacement',
-  },
-  { property: 'open', description: 'Controlled overlay open state.', type: 'boolean' },
-  {
-    property: 'defaultOpen',
-    description: 'Initial overlay open state for uncontrolled usage.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'onOpenChange',
-    description: 'Called when overlay open state changes.',
-    type: '(open: boolean) => void',
-  },
-  { property: 'overlayClass', description: 'Additional class for the overlay.', type: 'string' },
-  {
-    property: 'overlayStyle',
-    description: 'Inline style for the overlay.',
-    type: 'JSX.CSSProperties',
-  },
-  { property: 'zIndex', description: 'Overrides overlay z-index.', type: 'number' },
-  {
-    property: 'getPopupContainer',
-    description: 'Returns the element used to mount the overlay portal.',
-    type: '(triggerNode?: HTMLElement) => HTMLElement',
-  },
-]
-
-export const dropdownMenuRows = [
-  {
-    property: 'items',
-    description: 'Menu items rendered in the dropdown.',
-    type: 'DropdownMenuItem[]',
-  },
-  {
-    property: 'onClick',
-    description: 'Called when an enabled menu item is clicked.',
-    type: '(info: DropdownMenuClickInfo) => void',
-  },
-]
-
-export const dropdownItemRows = [
-  { property: 'key', description: 'Stable menu item key.', type: 'string' },
-  { property: 'label', description: 'Menu item label.', type: 'JSX.Element' },
-  { property: 'disabled', description: 'Disables this item.', type: 'boolean' },
-  {
-    property: 'type',
-    description: 'Renders a normal item or a divider.',
-    type: "'item' | 'divider'",
-  },
-]
-
-export const items = [
+const items = [
   { key: 'edit', label: 'Edit' },
   { key: 'copy', label: 'Copy' },
   { key: 'disabled', label: 'Disabled', disabled: true },
@@ -78,64 +14,135 @@ export const items = [
   { key: 'delete', label: 'Delete' },
 ]
 
-export default function DropdownPage() {
-  const [open, setOpen] = createSignal(false)
-
-return (
-
-<>
-<h1>Dropdown</h1>
-<DemoBlock
-title="Click"
-code={`<Dropdown menu={{ items }}><Button>Actions</Button></Dropdown>`} >
-<Dropdown menu={{ items, onClick: (info) => console.log(info.key) }}>
-<Button>Actions</Button>
-</Dropdown>
-</DemoBlock>
-<DemoBlock
-title="Hover"
-code={`<Dropdown trigger="hover" menu={{ items }}><Button>Hover</Button></Dropdown>`} >
-<Dropdown trigger="hover" menu={{ items }}>
-<Button>Hover</Button>
-</Dropdown>
-</DemoBlock>
-<DemoBlock
-title="Placement"
-code={`<Dropdown placement="topRight" menu={{ items }}><Button>Top right</Button></Dropdown>`} >
-<Space wrap>
-<Dropdown placement="bottomLeft" menu={{ items }}>
-<Button>Bottom left</Button>
-</Dropdown>
-<Dropdown placement="bottomRight" menu={{ items }}>
-<Button>Bottom right</Button>
-</Dropdown>
-<Dropdown placement="topLeft" menu={{ items }}>
-<Button>Top left</Button>
-</Dropdown>
-<Dropdown placement="topRight" menu={{ items }}>
-<Button>Top right</Button>
-</Dropdown>
-</Space>
-</DemoBlock>
-<DemoBlock
-title="Controlled"
-code={`<Dropdown open={open()} onOpenChange={setOpen} menu={{ items }}><Button>Controlled</Button></Dropdown>`} >
-<Space>
-<Dropdown open={open()} onOpenChange={setOpen} menu={{ items }}>
-<Button>Controlled</Button>
-</Dropdown>
-<Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
-</Space>
-</DemoBlock>
-
-      <h2>API</h2>
-      <h3>Dropdown</h3>
-      <ApiTable rows={dropdownRows} aria-label="Dropdown API" />
-      <h3>Dropdown menu</h3>
-      <ApiTable rows={dropdownMenuRows} aria-label="Dropdown Menu API" />
-      <h3>DropdownMenuItem</h3>
-      <ApiTable rows={dropdownItemRows} aria-label="Dropdown Item API" />
-    </>
-
-)
+const Demo1 = function () {
+  return (
+    <Dropdown menu={{ items, onClick: (info) => console.log(info.key) }}>
+      <Button>Actions</Button>
+    </Dropdown>
+  )
 }
+
+export default Demo1
+```
+
+### Hover
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'edit', label: 'Edit' },
+  { key: 'copy', label: 'Copy' },
+  { key: 'disabled', label: 'Disabled', disabled: true },
+  { key: 'divider', type: 'divider' },
+  { key: 'delete', label: 'Delete' },
+]
+
+const Demo2 = function () {
+  return (
+    <Dropdown trigger="hover" menu={{ items }}>
+      <Button>Hover</Button>
+    </Dropdown>
+  )
+}
+
+export default Demo2
+```
+
+### Placement
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'edit', label: 'Edit' },
+  { key: 'copy', label: 'Copy' },
+  { key: 'disabled', label: 'Disabled', disabled: true },
+  { key: 'divider', type: 'divider' },
+  { key: 'delete', label: 'Delete' },
+]
+
+const Demo3 = function () {
+  return (
+    <Space wrap>
+      <Dropdown placement="bottomLeft" menu={{ items }}>
+        <Button>Bottom left</Button>
+      </Dropdown>
+      <Dropdown placement="bottomRight" menu={{ items }}>
+        <Button>Bottom right</Button>
+      </Dropdown>
+      <Dropdown placement="topLeft" menu={{ items }}>
+        <Button>Top left</Button>
+      </Dropdown>
+      <Dropdown placement="topRight" menu={{ items }}>
+        <Button>Top right</Button>
+      </Dropdown>
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+### Controlled
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'edit', label: 'Edit' },
+  { key: 'copy', label: 'Copy' },
+  { key: 'disabled', label: 'Disabled', disabled: true },
+  { key: 'divider', type: 'divider' },
+  { key: 'delete', label: 'Delete' },
+]
+
+const Demo4 = function () {
+  return (
+    <Space>
+      <Dropdown open={open()} onOpenChange={setOpen} menu={{ items }}>
+        <Button>Controlled</Button>
+      </Dropdown>
+      <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+## API
+
+### Dropdown
+
+| Property            | Description                                           | Type                                         | Default   |
+| ------------------- | ----------------------------------------------------- | -------------------------------------------- | --------- |
+| `menu`              | Menu configuration rendered in the overlay.           | `DropdownMenuProps`                          | `-`       |
+| `trigger`           | Interaction that opens the dropdown.                  | `'hover' \| 'click'`                         | `'click'` |
+| `placement`         | Overlay placement relative to the trigger.            | `DropdownPlacement`                          | `-`       |
+| `open`              | Controlled overlay open state.                        | `boolean`                                    | `-`       |
+| `defaultOpen`       | Initial overlay open state for uncontrolled usage.    | `boolean`                                    | `false`   |
+| `onOpenChange`      | Called when overlay open state changes.               | `(open: boolean) => void`                    | `-`       |
+| `overlayClass`      | Additional class for the overlay.                     | `string`                                     | `-`       |
+| `overlayStyle`      | Inline style for the overlay.                         | `JSX.CSSProperties`                          | `-`       |
+| `zIndex`            | Overrides overlay z-index.                            | `number`                                     | `-`       |
+| `getPopupContainer` | Returns the element used to mount the overlay portal. | `(triggerNode?: HTMLElement) => HTMLElement` | `-`       |
+
+### Dropdown menu
+
+| Property  | Description                                  | Type                                    | Default |
+| --------- | -------------------------------------------- | --------------------------------------- | ------- |
+| `items`   | Menu items rendered in the dropdown.         | `DropdownMenuItem[]`                    | `-`     |
+| `onClick` | Called when an enabled menu item is clicked. | `(info: DropdownMenuClickInfo) => void` | `-`     |
+
+### DropdownMenuItem
+
+| Property   | Description                         | Type                  | Default |
+| ---------- | ----------------------------------- | --------------------- | ------- |
+| `key`      | Stable menu item key.               | `string`              | `-`     |
+| `label`    | Menu item label.                    | `JSX.Element`         | `-`     |
+| `disabled` | Disables this item.                 | `boolean`             | `-`     |
+| `type`     | Renders a normal item or a divider. | `'item' \| 'divider'` | `-`     |

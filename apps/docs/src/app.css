@@ -174,3 +174,45 @@ a {
 :root[data-theme='dark'] pre.shiki span {
   background-color: var(--docs-surface-subtle) !important;
 }
+
+main table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+main table th {
+  border-bottom: 1px solid var(--docs-border);
+  background-color: var(--docs-surface-subtle);
+  color: var(--docs-text-secondary);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+main table td {
+  border-bottom: 1px solid var(--docs-border);
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+  color: var(--docs-text-secondary);
+}
+
+main table code {
+  color: var(--docs-text);
+}
+
+main table {
+  display: block;
+  margin: 1rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.5rem;
+}
+
+main table thead,
+main table tbody,
+main table tr {
+  display: table;
+  width: 100%;
+  table-layout: auto;
+}

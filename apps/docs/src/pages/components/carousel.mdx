@@ -1,201 +1,162 @@
+# Carousel
+
+Display a group of content in a carousel with dots, arrows, and autoplay.
+
+### Basic
+
+```tsx
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
-import { ApiTable } from '../../components/api-table'
-import { DemoBlock } from '../../components/demo-block'
 
-export const carouselRows = [
-  {
-    property: 'autoplay',
-    description: 'Automatically advances slides.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'autoplaySpeed',
-    description: 'Autoplay interval in milliseconds.',
-    type: 'number',
-    defaultValue: '3000',
-  },
-  {
-    property: 'dots',
-    description: 'Whether to show dots or dot configuration.',
-    type: 'boolean | { className?: string }',
-    defaultValue: 'true',
-  },
-  {
-    property: 'dotPosition',
-    description: 'Dot navigation position.',
-    type: "'top' | 'bottom' | 'left' | 'right'",
-    defaultValue: "'bottom'",
-  },
-  {
-    property: 'arrows',
-    description: 'Whether to show previous and next arrows.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'effect',
-    description: 'Transition effect.',
-    type: "'scrollx' | 'fade'",
-    defaultValue: "'scrollx'",
-  },
-  {
-    property: 'fade',
-    description: 'Alias that enables fade effect.',
-    type: 'boolean',
-    defaultValue: 'false',
-  },
-  {
-    property: 'easing',
-    description: 'CSS transition easing.',
-    type: 'string',
-    defaultValue: "'ease'",
-  },
-  {
-    property: 'speed',
-    description: 'Transition duration in milliseconds.',
-    type: 'number',
-    defaultValue: '500',
-  },
-  {
-    property: 'infinite',
-    description: 'Whether navigation wraps around at the ends.',
-    type: 'boolean',
-    defaultValue: 'true',
-  },
-  {
-    property: 'initialSlide',
-    description: 'Initial active slide index.',
-    type: 'number',
-    defaultValue: '0',
-  },
-  {
-    property: 'beforeChange',
-    description: 'Called before active slide changes.',
-    type: '(current: number, next: number) => void',
-  },
-  {
-    property: 'afterChange',
-    description: 'Called after active slide changes.',
-    type: '(current: number) => void',
-  },
-  { property: 'prefixCls', description: 'Custom CSS class prefix.', type: 'string' },
-  {
-    property: 'ref',
-    description: 'Receives imperative carousel methods.',
-    type: 'CarouselRef | ((ref: CarouselRef) => void)',
-  },
-]
-
-export const carouselRefRows = [
-  {
-    property: 'goTo',
-    description: 'Switches to the given slide index.',
-    type: '(slide: number, dontAnimate?: boolean) => void',
-  },
-  { property: 'next', description: 'Switches to the next slide.', type: '() => void' },
-  { property: 'prev', description: 'Switches to the previous slide.', type: '() => void' },
-]
-
-export const slideStyle = {
-  height: '160px',
-  color: '#fff',
-  'line-height': '160px',
-  'text-align': 'center',
-  background: '#1677ff',
-  'font-size': '24px',
-}
-
-export function Slide(props) {
+function Slide(props) {
   return <div style={slideStyle}>{props.children}</div>
 }
 
-export default function CarouselPage() {
-  let carousel
-  const [current, setCurrent] = createSignal(0)
-
-return (
-
-<>
-<h1>Carousel</h1>
-<p>Display a group of content in a carousel with dots, arrows, and autoplay.</p>
-
-      <DemoBlock
-        title="Basic"
-        code={`<Carousel>
-
-  <div>1</div>
-  <div>2</div>
-  <div>3</div>
-</Carousel>`}
-      >
-        <Carousel>
-          <Slide>1</Slide>
-          <Slide>2</Slide>
-          <Slide>3</Slide>
-        </Carousel>
-      </DemoBlock>
-
-      <DemoBlock title="Autoplay" code={`<Carousel autoplay autoplaySpeed={2000}>...</Carousel>`}>
-        <Carousel autoplay autoplaySpeed={2000}>
-          <Slide>1</Slide>
-          <Slide>2</Slide>
-          <Slide>3</Slide>
-        </Carousel>
-      </DemoBlock>
-
-      <DemoBlock title="Arrows" code={`<Carousel arrows>...</Carousel>`}>
-        <Carousel arrows>
-          <Slide>1</Slide>
-          <Slide>2</Slide>
-          <Slide>3</Slide>
-        </Carousel>
-      </DemoBlock>
-
-      <DemoBlock title="Fade" code={`<Carousel effect="fade">...</Carousel>`}>
-        <Carousel effect="fade">
-          <Slide>1</Slide>
-          <Slide>2</Slide>
-          <Slide>3</Slide>
-        </Carousel>
-      </DemoBlock>
-
-      <DemoBlock
-        title="Imperative methods"
-        code={`let carousel
-
-<Carousel ref={carousel} afterChange={setCurrent}>...</Carousel>
-<button onClick={() => carousel?.prev()}>Previous</button>
-<button onClick={() => carousel?.next()}>Next</button>`}
-      >
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Carousel
-            ref={(ref) => {
-              carousel = ref
-            }}
-            arrows
-            afterChange={setCurrent}
-          >
-            <Slide>1</Slide>
-            <Slide>2</Slide>
-            <Slide>3</Slide>
-          </Carousel>
-          <Space>
-            <Button onClick={() => carousel?.prev()}>Previous</Button>
-            <Button onClick={() => carousel?.goTo(1)}>Go to 2</Button>
-            <Button onClick={() => carousel?.next()}>Next</Button>
-            <span>Current: {current() + 1}</span>
-          </Space>
-        </Space>
-      </DemoBlock>
-
-      <h2>API</h2>
-      <h3>Carousel</h3>
-      <ApiTable rows={carouselRows} aria-label="Carousel API" />
-      <h3>CarouselRef</h3>
-      <ApiTable rows={carouselRefRows} aria-label="Carousel Ref API" />
-    </>
-
-)
+const Demo1 = function () {
+  return (
+    <Carousel>
+      <Slide>1</Slide>
+      <Slide>2</Slide>
+      <Slide>3</Slide>
+    </Carousel>
+  )
 }
+
+export default Demo1
+```
+
+### Autoplay
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Carousel, Space } from '@ant-design-solid/core'
+
+function Slide(props) {
+  return <div style={slideStyle}>{props.children}</div>
+}
+
+const Demo2 = function () {
+  return (
+    <Carousel autoplay autoplaySpeed={2000}>
+      <Slide>1</Slide>
+      <Slide>2</Slide>
+      <Slide>3</Slide>
+    </Carousel>
+  )
+}
+
+export default Demo2
+```
+
+### Arrows
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Carousel, Space } from '@ant-design-solid/core'
+
+function Slide(props) {
+  return <div style={slideStyle}>{props.children}</div>
+}
+
+const Demo3 = function () {
+  return (
+    <Carousel arrows>
+      <Slide>1</Slide>
+      <Slide>2</Slide>
+      <Slide>3</Slide>
+    </Carousel>
+  )
+}
+
+export default Demo3
+```
+
+### Fade
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Carousel, Space } from '@ant-design-solid/core'
+
+function Slide(props) {
+  return <div style={slideStyle}>{props.children}</div>
+}
+
+const Demo4 = function () {
+  return (
+    <Carousel effect="fade">
+      <Slide>1</Slide>
+      <Slide>2</Slide>
+      <Slide>3</Slide>
+    </Carousel>
+  )
+}
+
+export default Demo4
+```
+
+### Imperative methods
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Carousel, Space } from '@ant-design-solid/core'
+
+function Slide(props) {
+  return <div style={slideStyle}>{props.children}</div>
+}
+
+const Demo5 = function () {
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Carousel
+        ref={(ref) => {
+          carousel = ref
+        }}
+        arrows
+        afterChange={setCurrent}
+      >
+        <Slide>1</Slide>
+        <Slide>2</Slide>
+        <Slide>3</Slide>
+      </Carousel>
+      <Space>
+        <Button onClick={() => carousel?.prev()}>Previous</Button>
+        <Button onClick={() => carousel?.goTo(1)}>Go to 2</Button>
+        <Button onClick={() => carousel?.next()}>Next</Button>
+        <span>Current: {current() + 1}</span>
+      </Space>
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+## API
+
+### Carousel
+
+| Property        | Description                                  | Type                                          | Default     |
+| --------------- | -------------------------------------------- | --------------------------------------------- | ----------- |
+| `autoplay`      | Automatically advances slides.               | `boolean`                                     | `false`     |
+| `autoplaySpeed` | Autoplay interval in milliseconds.           | `number`                                      | `3000`      |
+| `dots`          | Whether to show dots or dot configuration.   | `boolean \| { className?: string }`           | `true`      |
+| `dotPosition`   | Dot navigation position.                     | `'top' \| 'bottom' \| 'left' \| 'right'`      | `'bottom'`  |
+| `arrows`        | Whether to show previous and next arrows.    | `boolean`                                     | `false`     |
+| `effect`        | Transition effect.                           | `'scrollx' \| 'fade'`                         | `'scrollx'` |
+| `fade`          | Alias that enables fade effect.              | `boolean`                                     | `false`     |
+| `easing`        | CSS transition easing.                       | `string`                                      | `'ease'`    |
+| `speed`         | Transition duration in milliseconds.         | `number`                                      | `500`       |
+| `infinite`      | Whether navigation wraps around at the ends. | `boolean`                                     | `true`      |
+| `initialSlide`  | Initial active slide index.                  | `number`                                      | `0`         |
+| `beforeChange`  | Called before active slide changes.          | `(current: number, next: number) => void`     | `-`         |
+| `afterChange`   | Called after active slide changes.           | `(current: number) => void`                   | `-`         |
+| `prefixCls`     | Custom CSS class prefix.                     | `string`                                      | `-`         |
+| `ref`           | Receives imperative carousel methods.        | `CarouselRef \| ((ref: CarouselRef) => void)` | `-`         |
+
+### CarouselRef
+
+| Property | Description                        | Type                                             | Default |
+| -------- | ---------------------------------- | ------------------------------------------------ | ------- |
+| `goTo`   | Switches to the given slide index. | `(slide: number, dontAnimate?: boolean) => void` | `-`     |
+| `next`   | Switches to the next slide.        | `() => void`                                     | `-`     |
+| `prev`   | Switches to the previous slide.    | `() => void`                                     | `-`     |
