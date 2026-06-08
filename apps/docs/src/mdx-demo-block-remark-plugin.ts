@@ -1,4 +1,3 @@
-import path from 'node:path'
 type Parent = { children?: Node[] }
 type Node = {
   type: string
@@ -12,12 +11,7 @@ type Node = {
   data?: Record<string, unknown>
 }
 
-type Plugin = () => (tree: Node, file: VFileLike) => void
-
-type VFileLike = {
-  path?: string
-  history?: string[]
-}
+type Plugin = () => (tree: Node) => void
 
 const demoExportPattern = /(?:^|\n)\s*export\s+default\s+([A-Za-z_$][\w$]*)\s*;?\s*$/
 
@@ -62,22 +56,6 @@ function inferTitle(children: Node[], index: number) {
   }
 
   return 'Example'
-}
-
-function importPathForDemoBlock(file: VFileLike) {
-  const filePath = file.path ?? file.history?.[0]
-
-  if (!filePath) {
-    return '../components/demo-block'
-  }
-
-  const relativePath = path.relative(
-    path.dirname(filePath),
-    path.resolve(process.cwd(), 'src/components/demo-block'),
-  )
-  const normalized = relativePath.split(path.sep).join('/')
-
-  return normalized.startsWith('.') ? normalized : `./${normalized}`
 }
 
 function createDemoBlockNode(title: string, componentName: string, code: string): Node {
@@ -146,9 +124,7 @@ function visitParents(node: Node, visitor: (node: Node, index: number, parent: P
 }
 
 export const demoBlockRemarkPlugin: Plugin = function demoBlockRemarkPlugin() {
-  return (tree: Node, file: VFileLike) => {
-    let hasDemo = false
-
+  return (tree: Node) => {
     visitParents(tree, (node, index, parent) => {
       if (isPureTsxFence(node)) {
         node.meta = null
@@ -166,7 +142,6 @@ export const demoBlockRemarkPlugin: Plugin = function demoBlockRemarkPlugin() {
         return
       }
 
-      hasDemo = true
       parent.children.splice(
         index,
         1,
@@ -178,13 +153,5 @@ export const demoBlockRemarkPlugin: Plugin = function demoBlockRemarkPlugin() {
         createDemoBlockNode(inferTitle(parent.children, index), componentName, code),
       )
     })
-
-    if (hasDemo) {
-      tree.children?.unshift({
-        type: 'mdxjsEsm',
-        value: `import { DemoBlock } from '${importPathForDemoBlock(file as VFileLike)}'`,
-        data: { estree: undefined },
-      })
-    }
   }
 }

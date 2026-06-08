@@ -1,13 +1,18 @@
 import { fileURLToPath, URL } from 'node:url'
 import mdx from '@mdx-js/rollup'
 import { demoBlockRemarkPlugin } from './src/mdx-demo-block-remark-plugin'
+import remarkGfm from 'remark-gfm'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
 export default defineConfig({
   plugins: [
-    mdx({ jsxImportSource: 'solid-js/h', remarkPlugins: [demoBlockRemarkPlugin] }),
+    mdx({
+      jsxImportSource: 'solid-js/h',
+      providerImportSource: '/src/mdx-components',
+      remarkPlugins: [remarkGfm, demoBlockRemarkPlugin],
+    }),
     solid(),
     tailwindcss(),
   ],
