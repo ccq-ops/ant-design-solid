@@ -1,4 +1,4 @@
-import { createResource, createSignal, Show, type Component } from 'solid-js'
+import { createMemo, createResource, createSignal, Show, type Component, type JSX } from 'solid-js'
 import { createHighlighterCore, type HighlighterCore } from 'shiki/core'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import bash from 'shiki/langs/bash.mjs'
@@ -93,6 +93,7 @@ function HighlightedCode(props: HighlightedCodeProps) {
 export function DemoBlock(props: DemoBlockProps) {
   const [codeVisible, setCodeVisible] = createSignal(false)
   const language = () => props.language ?? 'tsx'
+  const preview = createMemo<JSX.Element>(() => props.component as unknown as JSX.Element)
 
   return (
     <section class="docs-border my-4 overflow-hidden rounded-lg border" aria-label={props.title}>
@@ -103,7 +104,7 @@ export function DemoBlock(props: DemoBlockProps) {
         <div class="docs-text-tertiary mb-2 text-[11px] font-medium uppercase tracking-wide">
           Example
         </div>
-        <props.component />
+        {preview()}
       </div>
       <div data-demo-block-code class="docs-border docs-surface-subtle border-t">
         <div class="docs-border docs-text-tertiary flex items-center justify-between border-b px-4 py-1.5 text-[11px] font-medium uppercase tracking-wide">
