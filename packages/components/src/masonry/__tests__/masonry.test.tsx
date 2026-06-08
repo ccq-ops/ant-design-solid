@@ -137,3 +137,16 @@ describe('Masonry', () => {
     expect(layoutItemCount).toBe(2)
   })
 })
+
+it('does not recurse when fresh masonry measures the same height during render', () => {
+  expect(() => {
+    render(() => (
+      <Masonry
+        fresh
+        columns={2}
+        items={[{ key: 'a', title: 'A' }]}
+        itemRender={(item) => <span>{item.title}</span>}
+      />
+    ))
+  }).not.toThrow()
+})

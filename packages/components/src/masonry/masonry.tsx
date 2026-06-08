@@ -170,7 +170,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
   const updateHeight = (key: MasonryItemKey, element: HTMLElement) => {
     const height = element.offsetHeight
     setMeasuredHeights((previous) => {
-      if (!local.fresh && previous.get(key) === height) return previous
+      if (previous.get(key) === height) return previous
       const next = new Map(previous)
       next.set(key, height)
       return next
