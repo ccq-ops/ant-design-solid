@@ -9,6 +9,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo1 = function () {
+  const [basicOpen, setBasicOpen] = createSignal(false)
+
   return (
 <Button type="primary" onClick={() => setBasicOpen(true)}>
           Open drawer
@@ -29,6 +31,12 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo2 = function () {
+  const placements = ['left', 'right', 'top', 'bottom']
+
+  const [placement, setPlacement] = createSignal('right')
+
+  const [placementOpen, setPlacementOpen] = createSignal(false)
+
   return (
 <Space>
           <For each={placements}>
@@ -65,6 +73,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo3 = function () {
+  const [sizeOpen, setSizeOpen] = createSignal(false)
+
   return (
 <Button type="primary" onClick={() => setSizeOpen(true)}>
           Open large drawer
@@ -91,6 +101,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo4 = function () {
+  const [customOpen, setCustomOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setCustomOpen(true)}>Open custom drawer</Button>
         <Drawer
@@ -116,6 +128,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo5 = function () {
+  const [extraOpen, setExtraOpen] = createSignal(false)
+
   return (
 <Button type="primary" onClick={() => setExtraOpen(true)}>
           Open with actions
@@ -149,6 +163,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo6 = function () {
+  const [loadingOpen, setLoadingOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setLoadingOpen(true)}>Open loading drawer</Button>
         <Drawer
@@ -172,6 +188,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo7 = function () {
+  const [renderOpen, setRenderOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setRenderOpen(true)}>Open styled drawer</Button>
         <Drawer
@@ -202,6 +220,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo8 = function () {
+  const [lockedOpen, setLockedOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setLockedOpen(true)}>Open locked drawer</Button>
         <Drawer
@@ -226,6 +246,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo9 = function () {
+  const [destroyOpen, setDestroyOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setDestroyOpen(true)}>Open destroy drawer</Button>
         <Drawer
@@ -249,6 +271,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo10 = function () {
+  const [inlineOpen, setInlineOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setInlineOpen(true)}>Open inline drawer</Button>
         <div class="relative mt-3 min-h-20 rounded border border-dashed border-gray-300 p-3 text-sm text-gray-500">
@@ -275,6 +299,10 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo11 = function () {
+  const [parentOpen, setParentOpen] = createSignal(false)
+
+  const [childOpen, setChildOpen] = createSignal(false)
+
   return (
 <Button type="primary" onClick={() => setParentOpen(true)}>
           Open parent drawer
@@ -309,6 +337,8 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo12 = function () {
+  const [renderOpen, setRenderOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setRenderOpen(true)}>Open custom render drawer</Button>
         <Drawer
@@ -334,6 +364,10 @@ import { Button, Drawer, Space } from '@ant-design-solid/core'
 import { For, createSignal } from 'solid-js'
 
 const Demo13 = function () {
+  const [resizeOpen, setResizeOpen] = createSignal(false)
+
+  const [resizeValue, setResizeValue] = createSignal(378)
+
   return (
 <Button onClick={() => setResizeOpen(true)}>Open resizable drawer</Button>
         <span class="ml-3 text-sm text-gray-500">Current size: {resizeValue()}px</span>

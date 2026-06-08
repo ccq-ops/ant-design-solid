@@ -106,6 +106,8 @@ import { Button, Space, Spin } from '@ant-design-solid/core'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 const Demo6 = function () {
+  const [fullscreen, setFullscreen] = createSignal(false)
+
   return (
 <Button onClick={() => setFullscreen(true)}>Show fullscreen spinner</Button>
         <Spin fullscreen spinning={fullscreen()} tip="Loading fullscreen" />

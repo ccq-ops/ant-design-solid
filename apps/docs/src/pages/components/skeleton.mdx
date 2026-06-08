@@ -66,6 +66,8 @@ import { Card, Skeleton, Space } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
 
 const Demo5 = function () {
+  const [loaded, setLoaded] = createSignal(false)
+
   return (
     <Space direction="vertical" class="w-full">
       <button type="button" onClick={() => setLoaded((value) => !value)}>

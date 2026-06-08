@@ -9,6 +9,8 @@ import { Button, Space, Tour } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
 
 const Demo1 = function () {
+  const [basicOpen, setBasicOpen] = createSignal(false)
+
   return (
 <Button type="primary" onClick={() => setBasicOpen(true)}>
           Start tour
@@ -35,6 +37,10 @@ import { Button, Space, Tour } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
 
 const Demo2 = function () {
+  let targetButton
+
+  const [targetOpen, setTargetOpen] = createSignal(false)
+
   return (
 <Space>
           <Button

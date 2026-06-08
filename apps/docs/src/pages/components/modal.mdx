@@ -9,6 +9,8 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo1 = function () {
+  const [basicOpen, setBasicOpen] = createSignal(false)
+
   return (
 <Button type="primary" onClick={() => setBasicOpen(true)}>
           Open modal
@@ -38,6 +40,8 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo2 = function () {
+  const [footerOpen, setFooterOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setFooterOpen(true)}>Open custom footer</Button>
         <Modal
@@ -70,6 +74,8 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [buttonsOpen, setButtonsOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setButtonsOpen(true)}>Open custom buttons</Button>
         <Modal
@@ -112,6 +118,19 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo4 = function () {
+  const [loadingOpen, setLoadingOpen] = createSignal(false)
+
+  const [loading, setLoading] = createSignal(false)
+
+  function handleLoadingOk() {
+  setLoading(true)
+  window.setTimeout(() => {
+  setLoading(false)
+  setLoadingOpen(false)
+  message.success('Saved')
+  }, 800)
+  }
+
   return (
 <Button onClick={() => setLoadingOpen(true)}>Open async modal</Button>
         <Modal
@@ -138,6 +157,8 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo5 = function () {
+  const [maskOpen, setMaskOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setMaskOpen(true)}>Open locked mask modal</Button>
 <Modal
@@ -163,6 +184,12 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo6 = function () {
+  const [containerOpen, setContainerOpen] = createSignal(false)
+
+  const [inlineOpen, setInlineOpen] = createSignal(false)
+
+  let containerRef
+
   return (
 <Space wrap>
           <Button onClick={() => setContainerOpen(true)}>Mount into container</Button>
@@ -221,6 +248,8 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo7 = function () {
+  const [semanticOpen, setSemanticOpen] = createSignal(false)
+
   return (
 <Button onClick={() => setSemanticOpen(true)}>Open styled modal</Button>
 <Modal
@@ -251,6 +280,12 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo8 = function () {
+  const [forceOpen, setForceOpen] = createSignal(false)
+
+  const [destroyOpen, setDestroyOpen] = createSignal(false)
+
+  const [renderOpen, setRenderOpen] = createSignal(false)
+
   return (
 <Space wrap>
           <Button onClick={() => setForceOpen(true)}>Force rendered modal</Button>
@@ -339,6 +374,26 @@ import { createSignal } from 'solid-js'
 import { Button, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo10 = function () {
+  function openAdvancedConfirm() {
+    const modal = Modal.confirm({
+      title: 'Archive project?',
+      content: 'You can restore it from the archive later.',
+      icon: <span style={{ color: '#faad14' }}>!</span>,
+      okText: 'Archive',
+      okButtonProps: { danger: true },
+      cancelButtonProps: { type: 'text' },
+      afterClose: () => message.info('Confirm closed'),
+      onOk: (close) => {
+        message.success('Archived')
+        close?.()
+      },
+    })
+
+    window.setTimeout(() => {
+      modal.update((prev) => ({ title: `${prev.title} (updated)` }))
+    }, 600)
+  }
+
   return <Button onClick={openAdvancedConfirm}>Open advanced confirm</Button>
 }
 

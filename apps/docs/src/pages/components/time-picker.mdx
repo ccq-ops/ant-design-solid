@@ -35,6 +35,10 @@ import { createSignal } from 'solid-js'
 import { Space, TimePicker } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [value, setValue] = createSignal('09:30:00')
+
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space direction="vertical">
       <TimePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen} />

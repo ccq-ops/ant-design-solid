@@ -43,6 +43,8 @@ import { createSignal } from 'solid-js'
 import { Button, Space, Upload } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [manualFiles, setManualFiles] = createSignal([])
+
   return (
     <Space direction="vertical">
       <Upload

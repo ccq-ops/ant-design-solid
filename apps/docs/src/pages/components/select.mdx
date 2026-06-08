@@ -34,6 +34,8 @@ const options = [
 ]
 
 const Demo2 = function () {
+  const [value, setValue] = createSignal('orange')
+
   return (
     <Space direction="vertical">
       <Select class="w-60" value={value()} onChange={(next) => setValue(next)} options={options} />
@@ -107,6 +109,8 @@ const options = [
 ]
 
 const Demo5 = function () {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space direction="vertical">
       <Select class="w-60" open={open()} onOpenChange={setOpen} options={options} />

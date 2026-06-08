@@ -85,6 +85,8 @@ import { createSignal } from 'solid-js'
 import { Button, Popconfirm, Space, message } from '@ant-design-solid/core'
 
 const Demo4 = function () {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space>
       <Popconfirm

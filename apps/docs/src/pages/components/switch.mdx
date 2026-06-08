@@ -27,6 +27,8 @@ import { createSignal } from 'solid-js'
 import { Form, Space, Switch } from '@ant-design-solid/core'
 
 const Demo2 = function () {
+  const [checked, setChecked] = createSignal(true)
+
   return (
     <Space>
       <Switch checked={checked()} onChange={setChecked} />

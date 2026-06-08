@@ -74,6 +74,8 @@ import { createSignal } from 'solid-js'
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
 
 const Demo4 = function () {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space>
       <Tooltip open={open()} onOpenChange={setOpen} title="Controlled text">

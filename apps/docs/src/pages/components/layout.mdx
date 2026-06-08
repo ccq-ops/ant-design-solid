@@ -76,6 +76,8 @@ const panelStyle = {
 }
 
 const Demo3 = function () {
+  const [collapsed, setCollapsed] = createSignal(false)
+
   return (
 <button type="button" onClick={() => setCollapsed((value) => !value)}>
           Toggle collapsed

@@ -33,6 +33,8 @@ import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [current, setCurrent] = createSignal(2)
+
   return (
     <Space direction="vertical">
       <Pagination current={current()} total={80} onChange={setCurrent} />

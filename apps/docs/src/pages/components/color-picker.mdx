@@ -22,6 +22,8 @@ import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
 
 const Demo2 = function () {
+  const [value, setValue] = createSignal('#1677ff')
+
   return (
     <Space direction="vertical">
       <ColorPicker
@@ -120,6 +122,8 @@ import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
 
 const Demo8 = function () {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space>
       <ColorPicker open={open()} onOpenChange={setOpen} defaultValue="#1677ff" />

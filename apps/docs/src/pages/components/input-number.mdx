@@ -37,6 +37,8 @@ import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [value, setValue] = createSignal(3)
+
   return (
     <Space>
       <InputNumber value={value()} onChange={setValue} />
@@ -151,6 +153,8 @@ import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
 const Demo9 = function () {
+  const [stepInfo, setStepInfo] = createSignal('No step yet')
+
   return (
     <Space>
       <InputNumber
@@ -177,6 +181,8 @@ import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
 const Demo10 = function () {
+  const [liveValue, setLiveValue] = createSignal()
+
   return (
     <Space>
       <InputNumber changeOnBlur={false} onChange={setLiveValue} />
@@ -195,6 +201,8 @@ import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
 const Demo11 = function () {
+  const [stringValue, setStringValue] = createSignal('0.000000000000000001')
+
   return (
     <Space>
       <InputNumber

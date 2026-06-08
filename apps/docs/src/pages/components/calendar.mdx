@@ -53,6 +53,15 @@ import { createSignal } from 'solid-js'
 import { Calendar, Space } from '@ant-design-solid/core'
 
 const Demo4 = function () {
+  const [value, setValue] = createSignal('2026-06-15')
+
+  const [mode, setMode] = createSignal('month')
+
+  const selectedLabel = () => {
+    const selected = value()
+    return selected instanceof Date ? selected.toDateString() : (selected ?? 'none')
+  }
+
   return (
     <Space direction="vertical">
       <Calendar

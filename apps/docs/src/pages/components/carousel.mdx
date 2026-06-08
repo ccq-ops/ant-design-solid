@@ -8,6 +8,15 @@ Display a group of content in a carousel with dots, arrows, and autoplay.
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
 
+const slideStyle = {
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#1677ff',
+  'font-size': '24px',
+}
+
 function Slide(props) {
   return <div style={slideStyle}>{props.children}</div>
 }
@@ -30,6 +39,15 @@ export default Demo1
 ```tsx
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
+
+const slideStyle = {
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#1677ff',
+  'font-size': '24px',
+}
 
 function Slide(props) {
   return <div style={slideStyle}>{props.children}</div>
@@ -54,6 +72,15 @@ export default Demo2
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
 
+const slideStyle = {
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#1677ff',
+  'font-size': '24px',
+}
+
 function Slide(props) {
   return <div style={slideStyle}>{props.children}</div>
 }
@@ -76,6 +103,15 @@ export default Demo3
 ```tsx
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
+
+const slideStyle = {
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#1677ff',
+  'font-size': '24px',
+}
 
 function Slide(props) {
   return <div style={slideStyle}>{props.children}</div>
@@ -100,11 +136,24 @@ export default Demo4
 import { createSignal } from 'solid-js'
 import { Button, Carousel, Space } from '@ant-design-solid/core'
 
+const slideStyle = {
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#1677ff',
+  'font-size': '24px',
+}
+
 function Slide(props) {
   return <div style={slideStyle}>{props.children}</div>
 }
 
 const Demo5 = function () {
+  let carousel
+
+  const [current, setCurrent] = createSignal(0)
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Carousel

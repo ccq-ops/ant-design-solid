@@ -46,6 +46,8 @@ import { createSignal } from 'solid-js'
 import { Rate, Space } from '@ant-design-solid/core'
 
 const Demo4 = function () {
+  const [value, setValue] = createSignal(3)
+
   return (
     <Space direction="vertical">
       <Rate value={value()} onChange={setValue} />

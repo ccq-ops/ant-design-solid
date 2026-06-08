@@ -128,6 +128,15 @@ export default Demo3
 import { createSignal } from 'solid-js'
 import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
 
+const baseItems = [
+  { key: 1, title: 'Mountain', height: 120, color: '#e6f4ff' },
+  { key: 2, title: 'Forest', height: 180, color: '#f6ffed' },
+  { key: 3, title: 'River', height: 96, color: '#fff7e6' },
+  { key: 4, title: 'City', height: 150, color: '#f9f0ff' },
+  { key: 5, title: 'Desert', height: 110, color: '#fff1f0' },
+  { key: 6, title: 'Ocean', height: 210, color: '#e6fffb' },
+]
+
 function DemoCard(props) {
   return (
     <Card title={props.title} style={{ background: props.color }}>
@@ -139,6 +148,8 @@ function DemoCard(props) {
 }
 
 const Demo4 = function () {
+  const [items, setItems] = createSignal(baseItems)
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <Button

@@ -48,6 +48,8 @@ import { createSignal } from 'solid-js'
 import { Checkbox, Form, Space } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [checked, setChecked] = createSignal(true)
+
   return (
     <Space>
       <Checkbox checked={checked()} onChange={(event) => setChecked(event.currentTarget.checked)}>
@@ -74,6 +76,8 @@ const checkboxOptions = [
 ]
 
 const Demo4 = function () {
+  const [fruits, setFruits] = createSignal(['apple'])
+
   return (
     <Space direction="vertical">
       <Checkbox.Group options={checkboxOptions} defaultValue={['apple']} />

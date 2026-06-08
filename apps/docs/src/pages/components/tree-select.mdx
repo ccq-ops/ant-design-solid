@@ -103,6 +103,8 @@ const treeData = [
 ]
 
 const Demo4 = function () {
+  const [value, setValue] = createSignal('europe')
+
   return <TreeSelect value={value()} onChange={(next) => setValue(next)} treeData={treeData} />
 }
 

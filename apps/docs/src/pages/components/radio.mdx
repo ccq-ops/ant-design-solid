@@ -81,6 +81,8 @@ const options = [
 ]
 
 const Demo4 = function () {
+  const [value, setValue] = createSignal('a')
+
   return (
     <Space direction="vertical">
       <Radio.Group value={value()} onChange={setValue} options={options} />

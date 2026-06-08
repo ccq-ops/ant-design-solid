@@ -53,6 +53,8 @@ const peopleOptions = [
 ]
 
 const Demo3 = function () {
+  const [value, setValue] = createSignal('Hello @alice ')
+
   return (
     <Space direction="vertical" class="w-80">
       <Mentions value={value()} onChange={setValue} options={peopleOptions} />

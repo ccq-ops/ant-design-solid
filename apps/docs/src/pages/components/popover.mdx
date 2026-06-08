@@ -76,6 +76,8 @@ import { createSignal } from 'solid-js'
 import { Button, Popover, Space } from '@ant-design-solid/core'
 
 const Demo4 = function () {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space>
       <Popover open={open()} onOpenChange={setOpen} content="Controlled content">

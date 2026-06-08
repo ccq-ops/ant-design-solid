@@ -40,6 +40,12 @@ import {
 import { DatePicker, Space } from '@ant-design-solid/core'
 
 const Demo2 = function () {
+  const [value, setValue] = createSignal(dayjs('2026-06-15'))
+
+  const [open, setOpen] = createSignal(false)
+
+  const selectedLabel = () => value()?.format('YYYY-MM-DD') ?? 'none'
+
   return (
     <Space direction="vertical">
       <DatePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen} />
@@ -316,6 +322,10 @@ import {
 import { DatePicker, Space } from '@ant-design-solid/core'
 
 const Demo11 = function () {
+  const [confirmedValue, setConfirmedValue] = createSignal(dayjs('2026-06-15 09:30'))
+
+  const [confirmedLabel, setConfirmedLabel] = createSignal('2026-06-15 09:30:00')
+
   return (
     <Space direction="vertical">
       <DatePicker
@@ -349,6 +359,13 @@ import {
 import { DatePicker, Space } from '@ant-design-solid/core'
 
 const Demo12 = function () {
+  const [multipleValue, setMultipleValue] = createSignal([dayjs('2026-06-10'), dayjs('2026-06-15')])
+
+  const multipleLabel = () =>
+    multipleValue()
+      .map((date) => date.format('YYYY-MM-DD'))
+      .join(', ') || 'none'
+
   return (
     <Space direction="vertical">
       <DatePicker multiple value={multipleValue()} onChange={setMultipleValue} />
@@ -546,6 +563,8 @@ import {
 import { DatePicker, Space } from '@ant-design-solid/core'
 
 const Demo18 = function () {
+  let pickerRef
+
   return (
     <Space>
       <DatePicker ref={(ref) => (pickerRef = ref)} />

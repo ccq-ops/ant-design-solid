@@ -101,6 +101,8 @@ const items = [
 ]
 
 const Demo4 = function () {
+  const [open, setOpen] = createSignal(false)
+
   return (
     <Space>
       <Dropdown open={open()} onOpenChange={setOpen} menu={{ items }}>

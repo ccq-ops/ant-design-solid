@@ -20,6 +20,8 @@ import { createSignal } from 'solid-js'
 import { Slider, Space } from '@ant-design-solid/core'
 
 const Demo2 = function () {
+  const [value, setValue] = createSignal(30)
+
   return (
     <Space direction="vertical" class="w-80">
       <Slider
