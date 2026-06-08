@@ -1,6 +1,6 @@
 import { MoonOutlined, SunOutlined } from '@ant-design-solid/icons'
 import { A, useLocation } from '@solidjs/router'
-import { For, Show, createMemo, type JSX } from 'solid-js'
+import { For, Show, createEffect, createMemo, type JSX } from 'solid-js'
 import { sideNavGroups, topNavItems } from '../routes'
 import { useDocsTheme } from './theme-context'
 
@@ -21,6 +21,17 @@ export function Layout(props: { children?: JSX.Element }) {
     return group ? (sideNavGroups[group] ?? []) : []
   })
   const showSidebar = createMemo(() => location.pathname !== '/')
+  let sidebarRef: HTMLElement | undefined
+
+  createEffect(() => {
+    if (location.pathname === '/') return
+
+    const activeSidebarLink = sidebarRef?.querySelector<HTMLElement>('[aria-current="page"]')
+
+    if (typeof activeSidebarLink?.scrollIntoView === 'function') {
+      activeSidebarLink.scrollIntoView({ block: 'nearest' })
+    }
+  })
 
   return (
     <div class="min-h-screen">
@@ -66,7 +77,12 @@ export function Layout(props: { children?: JSX.Element }) {
         }
       >
         <Show when={showSidebar()}>
-          <aside class="docs-border sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r p-6">
+          <aside
+            ref={(element) => {
+              sidebarRef = element
+            }}
+            class="docs-border sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r p-6"
+          >
             <Show when={sidebarItems().length > 0}>
               <For each={sidebarItems()}>
                 {(item) => (
@@ -75,7 +91,6 @@ export function Layout(props: { children?: JSX.Element }) {
                     class={sidebarLinkClass}
                     activeClass={sidebarActiveLinkClass}
                     end
-                    noScroll
                   >
                     {item.label}
                   </A>

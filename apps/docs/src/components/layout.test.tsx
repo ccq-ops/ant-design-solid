@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { JSX } from 'solid-js'
 import { Layout } from './layout'
 
@@ -82,6 +82,11 @@ beforeEach(() => {
   resetPath()
   mode.mockReturnValue('light')
   toggleTheme.mockClear()
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 function renderLayout() {
@@ -184,16 +189,30 @@ describe('Layout', () => {
     expect(result.queryByRole('link', { name: 'Theming' })).toBeNull()
   })
 
-  it('keeps the current scroll position when clicking sidebar menu links', async () => {
+  it('scrolls the page to the top when clicking sidebar menu links', async () => {
     setPath('/components/alert')
-    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const scrollTo = vi.mocked(window.scrollTo)
     const result = renderLayout()
     const menuLink = result.getByRole('link', { name: 'Menu' })
 
     fireEvent.click(menuLink)
     await Promise.resolve()
 
-    expect(scrollTo).not.toHaveBeenCalled()
+    expect(scrollTo).toHaveBeenCalledWith(0, 0)
+  })
+
+  it('scrolls the active sidebar item into view after refreshing on a nested page', async () => {
+    setPath('/components/menu')
+    const scrollIntoView = vi.fn()
+    const originalScrollIntoView = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = scrollIntoView
+
+    renderLayout()
+    await Promise.resolve()
+
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' })
+
+    Element.prototype.scrollIntoView = originalScrollIntoView
   })
 
   it('marks the clicked sidebar menu item as selected with Tailwind utilities', async () => {
