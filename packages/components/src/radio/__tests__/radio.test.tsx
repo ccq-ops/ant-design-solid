@@ -333,6 +333,9 @@ describe('Radio.Group', () => {
     )
     expect(wrappers[0]).not.toHaveClass('ads-radio-button-wrapper-checked')
     expect(wrappers[1]).toHaveClass('ads-radio-button-wrapper-checked')
+    expect(document.head.textContent).toContain(
+      '.ads-radio-button-wrapper-checked:not(:first-child)',
+    )
   })
 
   it('keeps child Radio.Button groups compact without external spacing', () => {

@@ -65,8 +65,10 @@ export function useRadioStyle(prefixCls: string) {
       [`.${prefixCls}-button-wrapper-checked`]: {
         color: t.colorPrimary,
         borderColor: t.colorPrimary,
-        'border-inline-start-width': `${t.lineWidth}px`,
         'z-index': 1,
+      },
+      [`.${prefixCls}-button-wrapper-checked:not(:first-child)`]: {
+        'box-shadow': `inset ${t.lineWidth}px 0 0 ${t.colorPrimary}`,
       },
       [`.${prefixCls}-group-solid .${prefixCls}-button-wrapper-checked`]: {
         color: '#fff',
