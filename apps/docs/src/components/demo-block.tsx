@@ -20,6 +20,8 @@ type HighlightedCodeProps = {
   language: string
 }
 
+type MarkdownTableProps = JSX.HTMLAttributes<HTMLTableElement>
+
 const loadedLanguages = new Set([
   'tsx',
   'jsx',
@@ -125,6 +127,15 @@ export function DemoBlock(props: DemoBlockProps) {
     </section>
   )
 }
+
+export function MarkdownTable(props: MarkdownTableProps) {
+  return (
+    <div class="docs-table-scroll" data-mdx-table-scroll>
+      <table {...props} class={['docs-markdown-table', props.class].filter(Boolean).join(' ')} />
+    </div>
+  )
+}
+
 export function useMDXComponents() {
-  return { DemoBlock }
+  return { DemoBlock, table: MarkdownTable }
 }

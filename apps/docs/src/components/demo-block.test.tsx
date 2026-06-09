@@ -1,6 +1,6 @@
 import { render, waitFor } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
-import { DemoBlock } from './demo-block'
+import { DemoBlock, MarkdownTable } from './demo-block'
 
 const ButtonDemo = () => <button type="button">Click</button>
 
@@ -121,5 +121,33 @@ describe('DemoBlock', () => {
       expect(pre).not.toHaveClass('shiki')
       expect(code?.innerHTML).toBe('&lt;x dangerously="true"&gt;')
     })
+  })
+})
+
+describe('MarkdownTable', () => {
+  it('wraps MDX tables in a scroll container while keeping native table layout', () => {
+    const result = render(() => (
+      <MarkdownTable>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>title</td>
+            <td>JSX.Element</td>
+          </tr>
+        </tbody>
+      </MarkdownTable>
+    ))
+
+    const table = result.getByRole('table')
+    const wrapper = table.parentElement
+
+    expect(wrapper).toHaveClass('docs-table-scroll')
+    expect(wrapper).toHaveAttribute('data-mdx-table-scroll')
+    expect(table).toHaveClass('docs-markdown-table')
   })
 })

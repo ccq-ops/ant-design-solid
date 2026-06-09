@@ -175,44 +175,100 @@ a {
   background-color: var(--docs-surface-subtle) !important;
 }
 
-main table {
+main h1,
+main h2,
+main h3,
+main h4 {
+  color: var(--docs-text-strong);
+  letter-spacing: 0;
+}
+
+main h1 {
+  margin: 0 0 1rem;
+  font-size: 2.5rem;
+  line-height: 1.16;
+  font-weight: 800;
+}
+
+main h2 {
+  margin: 2.75rem 0 1rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--docs-border);
+  font-size: 1.625rem;
+  line-height: 1.25;
+  font-weight: 750;
+}
+
+main h3 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+main h4 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.docs-table-scroll {
+  margin: 1.25rem 0;
+  overflow-x: hidden;
+  border: 1px solid var(--docs-border);
+  border-radius: 0.5rem;
+}
+
+.docs-markdown-table {
   width: 100%;
-  border-collapse: collapse;
+  border-spacing: 0;
+  border-collapse: separate;
+  table-layout: fixed;
   text-align: left;
   font-size: 0.875rem;
 }
 
-main table th {
+.docs-markdown-table th:nth-child(1),
+.docs-markdown-table td:nth-child(1) {
+  width: 13rem;
+}
+
+.docs-markdown-table th:nth-child(3),
+.docs-markdown-table td:nth-child(3) {
+  width: 38%;
+}
+
+.docs-markdown-table th:nth-child(4),
+.docs-markdown-table td:nth-child(4) {
+  width: 9rem;
+}
+
+.docs-markdown-table th {
   border-bottom: 1px solid var(--docs-border);
   background-color: var(--docs-surface-subtle);
   color: var(--docs-text-secondary);
   padding: 0.75rem 1rem;
   font-weight: 600;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
-main table td {
+.docs-markdown-table td {
   border-bottom: 1px solid var(--docs-border);
   padding: 0.75rem 1rem;
+  text-align: left;
   vertical-align: top;
   color: var(--docs-text-secondary);
+  overflow-wrap: anywhere;
 }
 
-main table code {
+.docs-markdown-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.docs-markdown-table code {
   color: var(--docs-text);
-}
-
-main table {
-  display: block;
-  margin: 1rem 0;
-  overflow-x: auto;
-  border: 1px solid var(--docs-border);
-  border-radius: 0.5rem;
-}
-
-main table thead,
-main table tbody,
-main table tr {
-  display: table;
-  width: 100%;
-  table-layout: auto;
+  white-space: normal;
 }
