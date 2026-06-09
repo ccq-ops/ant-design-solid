@@ -16,7 +16,7 @@ export function useSelectStyle(prefixCls: string) {
         'line-height': `${t.controlHeight}px`,
       },
       [`.${prefixCls}-selector`]: {
-        display: 'inline-flex',
+        display: 'flex',
         'align-items': 'center',
         gap: 4,
         width: '100%',
@@ -41,6 +41,19 @@ export function useSelectStyle(prefixCls: string) {
         'min-height': t.controlHeightSM,
         'font-size': `${Math.max(t.fontSize - 2, 12)}px`,
         'line-height': `${t.controlHeightSM}px`,
+      },
+      [`.${prefixCls}-multiple .${prefixCls}-selector`]: {
+        height: 'auto',
+        'min-height': t.controlHeight,
+        overflow: 'visible',
+      },
+      [`.${prefixCls}-multiple.${prefixCls}-large .${prefixCls}-selector`]: {
+        height: 'auto',
+        'min-height': t.controlHeightLG,
+      },
+      [`.${prefixCls}-multiple.${prefixCls}-small .${prefixCls}-selector`]: {
+        height: 'auto',
+        'min-height': t.controlHeightSM,
       },
       [`.${prefixCls}-filled .${prefixCls}-selector`]: { background: t.colorFillAlter },
       [`.${prefixCls}-borderless .${prefixCls}-selector`]: { border: '0' },
@@ -138,6 +151,11 @@ export function useSelectStyle(prefixCls: string) {
         'font-size': 'inherit',
         'line-height': 'inherit',
         padding: 0,
+      },
+      [`.${prefixCls}-selection-search-multiple`]: {
+        flex: '0 1 120px',
+        height: 22,
+        'line-height': '20px',
       },
       [`.${prefixCls}-search-input::placeholder`]: {
         color: t.colorTextDisabled,

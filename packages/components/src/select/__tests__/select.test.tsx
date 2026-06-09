@@ -265,6 +265,35 @@ describe('Select', () => {
     )
   })
 
+  it('allows multiple selections to grow vertically without clipping wrapped tags', () => {
+    render(() => <Select mode="multiple" options={options} />)
+
+    const selectStyle = Array.from(document.head.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .find((styleText) => styleText.includes('.ads-select-multiple'))
+
+    const multipleSelectorRule = selectStyle?.match(
+      /\.ads-select-multiple \.ads-select-selector\{[^}]*\}/,
+    )?.[0]
+
+    expect(multipleSelectorRule).toBeDefined()
+    expect(multipleSelectorRule!).toContain('height:auto;')
+    expect(multipleSelectorRule!).toContain('min-height:32px;')
+    expect(multipleSelectorRule!).toContain('overflow:visible;')
+  })
+
+  it('places the multiple search input inside the wrapped selection flow', () => {
+    const result = render(() => <Select mode="multiple" options={options} />)
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+
+    const searchInput = result.getByRole('textbox')
+    const overflow = result.container.querySelector('.ads-select-selection-overflow')
+
+    expect(overflow).toContainElement(searchInput)
+  })
+
   it('supports tags tokenization and labelInValue output', () => {
     const onChange = vi.fn()
     const result = render(() => (
@@ -290,6 +319,26 @@ describe('Select', () => {
     )
     expect(combobox).toHaveTextContent('Gamma')
     expect(combobox).toHaveTextContent('Delta')
+  })
+
+  it('does not create a tag from plain search text until Enter is pressed', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Select mode="tags" tokenSeparators={[',']} onChange={onChange} />)
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+    fireEvent.input(result.getByRole('textbox'), { target: { value: 'G' } })
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(combobox).not.toHaveTextContent('G')
+
+    fireEvent.keyDown(result.getByRole('textbox'), { key: 'Enter' })
+
+    expect(onChange).toHaveBeenCalledWith(
+      ['G'],
+      [expect.objectContaining({ label: 'G', value: 'G' })],
+    )
+    expect(combobox).toHaveTextContent('G')
   })
 
   it('supports grouped options, custom field names, and optionRender', () => {
@@ -405,6 +454,19 @@ describe('Select', () => {
     fireEvent.click(result.getByRole('button', { name: 'clear selection' }))
 
     expect(selector).toHaveTextContent('Pick one')
+  })
+
+  it('keeps the selector from adding inline line-box height to the root', () => {
+    render(() => <Select options={options} />)
+
+    const selectStyle = Array.from(document.head.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .find((styleText) => styleText.includes('.ads-select'))
+
+    const selectorRule = selectStyle?.match(/(?:^|\n)(\.ads-select-selector\{[^}]*\})/)?.[1]
+
+    expect(selectorRule).toContain('display:flex;')
+    expect(selectorRule).toContain('height:32px;')
   })
 })
 

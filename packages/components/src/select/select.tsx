@@ -99,6 +99,10 @@ function splitTokens(value: string, separators: string[] | undefined): string[] 
     .filter(Boolean)
 }
 
+function includesSeparator(value: string, separators: string[] | undefined): boolean {
+  return Boolean(separators?.some((separator) => value.includes(separator)))
+}
+
 function publicOption(option: FlattenOptionData): FlattenOptionData {
   const next = {
     ...option.data,
@@ -309,28 +313,30 @@ function SelectBase(props: SelectProps) {
   function setSearch(nextSearch: string): void {
     if (searchConfig().searchValue === undefined) setInnerSearchValue(nextSearch)
     searchConfig().onSearch?.(nextSearch)
-    if (local.mode === 'tags') {
-      const tokens = splitTokens(nextSearch, local.tokenSeparators)
-      if (tokens.length) {
-        const nextSelected = [...selected()]
-        const nextCreated = [...createdTags()]
-        tokens.forEach((token) => {
-          const existing = findOption(allOptions(), token)
-          const option =
-            existing ??
-            ({
-              label: token,
-              value: token,
-              data: { label: token, value: token },
-            } as FlattenOptionData)
-          if (!nextSelected.some((item) => item.value === option.value)) nextSelected.push(option)
-          if (!existing && !nextCreated.includes(token)) nextCreated.push(token)
-        })
-        setCreatedTags(nextCreated)
-        commitSelection(nextSelected)
-        if (searchConfig().searchValue === undefined) setInnerSearchValue('')
-      }
+    if (local.mode === 'tags' && includesSeparator(nextSearch, local.tokenSeparators)) {
+      commitTags(splitTokens(nextSearch, local.tokenSeparators))
     }
+  }
+
+  function commitTags(tokens: string[]): void {
+    if (!tokens.length) return
+    const nextSelected = [...selected()]
+    const nextCreated = [...createdTags()]
+    tokens.forEach((token) => {
+      const existing = findOption(allOptions(), token)
+      const option =
+        existing ??
+        ({
+          label: token,
+          value: token,
+          data: { label: token, value: token },
+        } as FlattenOptionData)
+      if (!nextSelected.some((item) => item.value === option.value)) nextSelected.push(option)
+      if (!existing && !nextCreated.includes(token)) nextCreated.push(token)
+    })
+    setCreatedTags(nextCreated)
+    commitSelection(nextSelected)
+    if (searchConfig().searchValue === undefined) setInnerSearchValue('')
   }
 
   createRenderEffect(() => {
@@ -416,6 +422,16 @@ function SelectBase(props: SelectProps) {
   function selectFirstEnabled(): void {
     const first = selectableOptions(filteredOptions()).find((option) => !option.disabled)
     if (first) selectOption(first)
+  }
+
+  const handleSearchInputKeyDown: JSX.EventHandler<HTMLInputElement, KeyboardEvent> = (event) => {
+    local.onInputKeyDown?.(event)
+    if (event.key !== 'Enter' || local.mode !== 'tags') return
+    const nextTag = searchValue().trim()
+    if (!nextTag) return
+    event.preventDefault()
+    event.stopPropagation()
+    commitTags([nextTag])
   }
 
   function displayLabel(option: FlattenOptionData): JSX.Element {
@@ -618,7 +634,7 @@ function SelectBase(props: SelectProps) {
                     placeholder={hasValue() ? undefined : String(local.placeholder ?? '')}
                     onClick={(event) => event.stopPropagation()}
                     onInput={(event) => setSearch(event.currentTarget.value)}
-                    onKeyDown={local.onInputKeyDown}
+                    onKeyDown={handleSearchInputKeyDown}
                   />
                 </span>
               }
@@ -676,19 +692,23 @@ function SelectBase(props: SelectProps) {
             <Show when={!selected().length && !(searchEnabled() && open())}>
               <span class={`${prefixCls()}-placeholder`}>{local.placeholder}</span>
             </Show>
+            <Show when={searchEnabled() && open()}>
+              <span
+                class={`${prefixCls()}-selection-search ${prefixCls()}-selection-search-multiple`}
+              >
+                <input
+                  ref={(element) => {
+                    searchInputRef = element
+                  }}
+                  class={`${prefixCls()}-search-input`}
+                  value={searchValue()}
+                  onClick={(event) => event.stopPropagation()}
+                  onInput={(event) => setSearch(event.currentTarget.value)}
+                  onKeyDown={handleSearchInputKeyDown}
+                />
+              </span>
+            </Show>
           </span>
-        </Show>
-        <Show when={multiple() && searchEnabled() && open()}>
-          <input
-            ref={(element) => {
-              searchInputRef = element
-            }}
-            class={`${prefixCls()}-search-input`}
-            value={searchValue()}
-            onClick={(event) => event.stopPropagation()}
-            onInput={(event) => setSearch(event.currentTarget.value)}
-            onKeyDown={local.onInputKeyDown}
-          />
         </Show>
         <Show when={local.allowClear && !disabled() && hasValue()}>
           <button
