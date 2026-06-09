@@ -85,37 +85,238 @@ const columns = [
 ]
 
 const Demo3 = function () {
-  return <Table loading columns={columns} dataSource={[]} emptyText="No users" />
+  return (
+    <Table
+      loading={{ spinning: true, tip: 'Loading users...' }}
+      columns={columns}
+      dataSource={[]}
+      locale={{ emptyText: 'No users' }}
+    />
+  )
 }
 
 export default Demo3
+```
+
+### Pagination
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = Array.from({ length: 12 }, (_, index) => ({
+  key: String(index + 1),
+  name: `User ${index + 1}`,
+  age: 24 + index,
+  role: index % 2 === 0 ? 'Engineer' : 'Designer',
+}))
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+  { title: 'Role', dataIndex: 'role' },
+]
+
+const Demo4 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={{
+        defaultPageSize: 5,
+        showSizeChanger: true,
+        pageSizeOptions: [5, 10, 20],
+      }}
+      onChange={(pagination, filters, sorter, extra) => {
+        console.log(pagination, filters, sorter, extra.action)
+      }}
+    />
+  )
+}
+
+export default Demo4
+```
+
+### Sort and filter
+
+```tsx
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+  { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    sorter: (a, b) => a.name.localeCompare(b.name),
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    align: 'right',
+    sorter: (a, b) => a.age - b.age,
+    defaultSortOrder: 'ascend',
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    filters: [
+      { text: 'Active', value: 'active' },
+      { text: 'Idle', value: 'idle' },
+    ],
+    onFilter: (value, record) => record.status === value,
+    render: (value) =>
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
+  },
+]
+
+const Demo5 = function () {
+  return <Table columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo5
+```
+
+### Nested data
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  {
+    key: '1',
+    name: 'Ada Lovelace',
+    profile: { email: 'ada@example.com', location: 'London' },
+  },
+  {
+    key: '2',
+    name: 'Grace Hopper',
+    profile: { email: 'grace@example.com', location: 'Arlington' },
+  },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Email', dataIndex: ['profile', 'email'] },
+  { title: 'Location', dataIndex: ['profile', 'location'] },
+]
+
+const Demo6 = function () {
+  return <Table columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo6
+```
+
+### Row and cell props
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, priority: 'high' },
+  { key: '2', name: 'Grace Hopper', age: 36, priority: 'normal' },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    className: 'name-column',
+    onHeaderCell: () => ({ title: 'User name' }),
+    onCell: (record) => ({ title: `${record.name} profile` }),
+  },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo7 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      rowClassName={(record) => (record.priority === 'high' ? 'priority-row' : '')}
+      onRow={(record) => ({
+        onClick: () => console.log('row clicked', record.key),
+      })}
+      pagination={false}
+    />
+  )
+}
+
+export default Demo7
 ```
 
 ## API
 
 ### Table
 
-| Property     | Description                               | Type                                                                    | Default                 |
-| ------------ | ----------------------------------------- | ----------------------------------------------------------------------- | ----------------------- |
-| `columns`    | Table column definitions.                 | `TableColumn<T>[]`                                                      | `-`                     |
-| `dataSource` | Data records rendered as rows.            | `T[]`                                                                   | `-`                     |
-| `rowKey`     | Record field or function used as row key. | `keyof T \| ((record: T, index: number) => string \| number)`           | `record.key \|\| index` |
-| `loading`    | Shows the loading indicator.              | `boolean`                                                               | `false`                 |
-| `emptyText`  | Empty state content.                      | `JSX.Element`                                                           | `'No data'`             |
-| `size`       | Table size.                               | `'small' \| 'middle' \| 'large'`                                        | `'middle'`              |
-| `bordered`   | Whether to render bordered table styling. | `boolean`                                                               | `false`                 |
-| `showHeader` | Whether to render the header row.         | `boolean`                                                               | `true`                  |
-| `onRow`      | Returns extra props for each table row.   | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>` | `-`                     |
+| Property       | Description                                      | Type                                                                                                                 | Default                 |
+| -------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `columns`      | Table column definitions.                        | `TableColumn<T>[]`                                                                                                   | `-`                     |
+| `dataSource`   | Data records rendered as rows.                   | `T[]`                                                                                                                | `-`                     |
+| `rowKey`       | Record field or function used as row key.        | `keyof T \| string \| ((record: T, index: number) => string \| number)`                                              | `record.key \|\| index` |
+| `loading`      | Shows the loading indicator.                     | `boolean \| { spinning?: boolean; tip?: JSX.Element }`                                                               | `false`                 |
+| `emptyText`    | Empty state content.                             | `JSX.Element`                                                                                                        | `'No data'`             |
+| `locale`       | Locale text. Currently supports empty text.      | `{ emptyText?: JSX.Element \| (() => JSX.Element) }`                                                                 | `-`                     |
+| `pagination`   | Pagination config, or `false` to disable paging. | `false \| TablePaginationConfig`                                                                                     | `{}`                    |
+| `size`         | Table size.                                      | `'small' \| 'middle' \| 'large'`                                                                                     | `'middle'`              |
+| `bordered`     | Whether to render bordered table styling.        | `boolean`                                                                                                            | `false`                 |
+| `showHeader`   | Whether to render the header row.                | `boolean`                                                                                                            | `true`                  |
+| `className`    | Additional class name for the root wrapper.      | `string`                                                                                                             | `-`                     |
+| `rowClassName` | Row class name.                                  | `string \| ((record: T, index: number) => string)`                                                                   | `-`                     |
+| `onRow`        | Returns extra props for each table row.          | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                              | `-`                     |
+| `onHeaderRow`  | Returns extra props for the header row.          | `(columns: TableColumn<T>[], index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                              | `-`                     |
+| `onChange`     | Called after pagination, sorting, or filtering.  | `(pagination, filters, sorter, extra: { currentDataSource: T[]; action: 'paginate' \| 'sort' \| 'filter' }) => void` | `-`                     |
+
+### TablePaginationConfig
+
+Table pagination reuses the Pagination component API and adds antd-compatible placement fields.
+
+| Property           | Description                                   | Type                                                                                                         | Default             |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------- |
+| `current`          | Controlled current page.                      | `number`                                                                                                     | `-`                 |
+| `defaultCurrent`   | Initial current page.                         | `number`                                                                                                     | `1`                 |
+| `pageSize`         | Controlled page size.                         | `number`                                                                                                     | `-`                 |
+| `defaultPageSize`  | Initial page size.                            | `number`                                                                                                     | `10`                |
+| `total`            | Total item count. Defaults to processed rows. | `number`                                                                                                     | `data.length`       |
+| `showSizeChanger`  | Shows page size selector.                     | `boolean \| SelectProps`                                                                                     | `false`             |
+| `pageSizeOptions`  | Page size options.                            | `(string \| number)[]`                                                                                       | `[10, 20, 50, 100]` |
+| `showQuickJumper`  | Shows quick jumper.                           | `boolean \| { goButton?: JSX.Element }`                                                                      | `false`             |
+| `hideOnSinglePage` | Hides pagination when only one page.          | `boolean`                                                                                                    | `false`             |
+| `showTotal`        | Renders total text.                           | `(total: number, range: [number, number]) => JSX.Element`                                                    | `-`                 |
+| `placement`        | antd-compatible pagination placement values.  | `Array<'topStart' \| 'topCenter' \| 'topEnd' \| 'bottomStart' \| 'bottomCenter' \| 'bottomEnd' \| 'none'>`   | `-`                 |
+| `position`         | Deprecated antd-compatible placement values.  | `Array<'topLeft' \| 'topCenter' \| 'topRight' \| 'bottomLeft' \| 'bottomCenter' \| 'bottomRight' \| 'none'>` | `-`                 |
+| `onChange`         | Called when table pagination changes.         | `(page: number, pageSize: number) => void`                                                                   | `-`                 |
 
 ### TableColumn
 
-| Property    | Description                        | Type                                                        | Default |
-| ----------- | ---------------------------------- | ----------------------------------------------------------- | ------- |
-| `title`     | Column header content.             | `JSX.Element`                                               | `-`     |
-| `dataIndex` | Record field read for this column. | `keyof T \| string`                                         | `-`     |
-| `key`       | Column key.                        | `string`                                                    | `-`     |
-| `render`    | Custom cell renderer.              | `(value: unknown, record: T, index: number) => JSX.Element` | `-`     |
-| `width`     | Column width.                      | `number \| string`                                          | `-`     |
-| `align`     | Cell text alignment.               | `'left' \| 'center' \| 'right'`                             | `-`     |
-| `class`     | Additional cell class.             | `string`                                                    | `-`     |
-| `classList` | Conditional cell classes.          | `Record<string, boolean \| undefined>`                      | `-`     |
+| Property               | Description                                           | Type                                                                                   | Default                       |
+| ---------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------- |
+| `title`                | Column header content.                                | `JSX.Element \| ((props: { sortOrder?: TableSortOrder }) => JSX.Element)`              | `-`                           |
+| `dataIndex`            | Record field read for this column.                    | `keyof T \| string \| readonly (string \| number)[]`                                   | `-`                           |
+| `key`                  | Column key.                                           | `string`                                                                               | `-`                           |
+| `render`               | Custom cell renderer.                                 | `(value: unknown, record: T, index: number) => JSX.Element`                            | `-`                           |
+| `width`                | Column width.                                         | `number \| string`                                                                     | `-`                           |
+| `align`                | Cell text alignment.                                  | `'left' \| 'center' \| 'right'`                                                        | `-`                           |
+| `class`                | Additional cell class.                                | `string`                                                                               | `-`                           |
+| `className`            | Additional cell class name.                           | `string`                                                                               | `-`                           |
+| `classList`            | Conditional cell classes.                             | `Record<string, boolean \| undefined>`                                                 | `-`                           |
+| `sorter`               | Enables local sorting or provides a compare function. | `boolean \| ((a: T, b: T, sortOrder?: TableSortOrder) => number) \| TableColumnSorter` | `-`                           |
+| `sortOrder`            | Controlled sort order.                                | `'ascend' \| 'descend' \| null`                                                        | `-`                           |
+| `defaultSortOrder`     | Initial sort order.                                   | `'ascend' \| 'descend' \| null`                                                        | `-`                           |
+| `sortDirections`       | Sort order cycle.                                     | `TableSortOrder[]`                                                                     | `['ascend', 'descend', null]` |
+| `filters`              | Filter menu items.                                    | `{ text: JSX.Element; value: string \| number \| boolean; children?: FilterItem[] }[]` | `-`                           |
+| `filteredValue`        | Controlled filtered values.                           | `(string \| number \| boolean)[] \| null`                                              | `-`                           |
+| `defaultFilteredValue` | Initial filtered values.                              | `(string \| number \| boolean)[] \| null`                                              | `-`                           |
+| `filterMultiple`       | Allows multiple filter values.                        | `boolean`                                                                              | `true`                        |
+| `filterIcon`           | Custom filter icon.                                   | `JSX.Element \| ((filtered: boolean) => JSX.Element)`                                  | `'Filter'`                    |
+| `onFilter`             | Determines whether a record matches a filter value.   | `(value: string \| number \| boolean, record: T) => boolean`                           | `-`                           |
+| `onCell`               | Returns extra props for each body cell.               | `(record: T, rowIndex: number) => JSX.HTMLAttributes<HTMLTableCellElement>`            | `-`                           |
+| `onHeaderCell`         | Returns extra props for each header cell.             | `(column: TableColumn<T>) => JSX.HTMLAttributes<HTMLTableCellElement>`                 | `-`                           |
