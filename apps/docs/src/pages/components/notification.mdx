@@ -32,12 +32,22 @@ const Demo2 = function () {
         Info
       </Button>
       <Button
-        onClick={() => notification.warning({ message: 'Warning', description: 'Check this' })}
+        onClick={() =>
+          notification.warning({
+            message: 'Warning',
+            description: 'Check this',
+          })
+        }
       >
         Warning
       </Button>
       <Button
-        onClick={() => notification.error({ message: 'Error', description: 'Something failed' })}
+        onClick={() =>
+          notification.error({
+            message: 'Error',
+            description: 'Something failed',
+          })
+        }
       >
         Error
       </Button>

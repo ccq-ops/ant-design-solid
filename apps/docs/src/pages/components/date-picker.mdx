@@ -403,8 +403,14 @@ const Demo13 = function () {
       />
       <DatePicker.RangePicker
         presets={[
-          { label: 'This month', value: [dayjs().startOf('month'), dayjs().endOf('month')] },
-          { label: 'Next 7 days', value: () => [dayjs(), dayjs().add(7, 'day')] },
+          {
+            label: 'This month',
+            value: [dayjs().startOf('month'), dayjs().endOf('month')],
+          },
+          {
+            label: 'Next 7 days',
+            value: () => [dayjs(), dayjs().add(7, 'day')],
+          },
         ]}
       />
     </Space>
@@ -538,7 +544,10 @@ const Demo17 = function () {
   return (
     <DatePicker
       classNames={{ selector: 'shadow-sm', popup: 'date-picker-popup' }}
-      styles={{ selector: { 'border-color': '#1677ff' }, footer: { color: '#1677ff' } }}
+      styles={{
+        selector: { 'border-color': '#1677ff' },
+        footer: { color: '#1677ff' },
+      }}
       renderExtraFooter={() => 'Styled footer'}
     />
   )

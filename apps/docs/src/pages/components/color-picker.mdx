@@ -79,7 +79,12 @@ import { ColorPicker, Space } from '@ant-design-solid/core'
 const Demo5 = function () {
   return (
     <ColorPicker
-      presets={[{ label: 'Recommended', colors: ['#1677ff', '#52c41a', '#faad14', '#ff4d4f'] }]}
+      presets={[
+        {
+          label: 'Recommended',
+          colors: ['#1677ff', '#52c41a', '#faad14', '#ff4d4f'],
+        },
+      ]}
     />
   )
 }
@@ -145,7 +150,13 @@ const Demo9 = function () {
   return (
     <ColorPicker
       panelRender={(panel) => (
-        <div style={{ border: '1px solid #1677ff', padding: '8px', 'border-radius': '8px' }}>
+        <div
+          style={{
+            border: '1px solid #1677ff',
+            padding: '8px',
+            'border-radius': '8px',
+          }}
+        >
           {panel}
         </div>
       )}

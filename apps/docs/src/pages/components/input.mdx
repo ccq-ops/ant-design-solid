@@ -136,7 +136,9 @@ const Demo7 = function () {
     <Space direction="vertical" class="w-80">
       <Input showCount maxLength={20} defaultValue="Count me" />
       <Input
-        showCount={{ formatter: ({ count, maxLength }) => '${count}/${maxLength} chars' }}
+        showCount={{
+          formatter: ({ count, maxLength }) => '${count}/${maxLength} chars',
+        }}
         count={{ max: 10, strategy: (value) => Array.from(value).length }}
         defaultValue="Custom"
       />

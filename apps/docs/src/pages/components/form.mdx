@@ -890,7 +890,9 @@ const Demo21 = function () {
           label="Code"
           name="code"
           normalize={(value) => String(value).trim().toUpperCase()}
-          getValueProps={(value) => ({ value: String(value ?? '').toLowerCase() })}
+          getValueProps={(value) => ({
+            value: String(value ?? '').toLowerCase(),
+          })}
           extra="Stored value is trimmed and uppercased; the input displays it in lowercase."
         >
           {(control) => (

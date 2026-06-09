@@ -79,7 +79,12 @@ const Demo5 = function () {
   return (
     <Button
       onClick={() => {
-        message.open({ key: 'upload', type: 'loading', content: 'Uploading', duration: 0 })
+        message.open({
+          key: 'upload',
+          type: 'loading',
+          content: 'Uploading',
+          duration: 0,
+        })
         window.setTimeout(() => {
           message.open({ key: 'upload', type: 'success', content: 'Uploaded' })
         }, 1000)

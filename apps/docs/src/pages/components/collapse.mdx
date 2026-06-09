@@ -98,9 +98,24 @@ const Demo5 = function () {
   return (
     <Collapse
       items={[
-        { key: '1', label: 'Icon only', collapsible: 'icon', children: <p>{text}</p> },
-        { key: '2', label: 'Header only', collapsible: 'header', children: <p>{text}</p> },
-        { key: '3', label: 'Disabled', disabled: true, children: <p>{text}</p> },
+        {
+          key: '1',
+          label: 'Icon only',
+          collapsible: 'icon',
+          children: <p>{text}</p>,
+        },
+        {
+          key: '2',
+          label: 'Header only',
+          collapsible: 'header',
+          children: <p>{text}</p>,
+        },
+        {
+          key: '3',
+          label: 'Disabled',
+          disabled: true,
+          children: <p>{text}</p>,
+        },
       ]}
     />
   )
