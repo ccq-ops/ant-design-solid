@@ -6,6 +6,7 @@ export interface RadioGroupContextValue {
   disabled: () => boolean
   name: () => string
   isButton: () => boolean
+  registerButton: () => void
   restoreTick: () => number
   updateValue: (
     nextValue: OptionValue,

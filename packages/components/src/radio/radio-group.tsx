@@ -60,8 +60,11 @@ export function RadioGroup(props: RadioGroupProps) {
   const [, hashId] = useRadioStyle(radioPrefixCls())
   const [innerValue, setInnerValue] = createSignal<OptionValue | undefined>(local.defaultValue)
   const [restoreTick, setRestoreTick] = createSignal(0)
+  const [buttonChildCount, setButtonChildCount] = createSignal(0)
   const disabled = () => Boolean(local.disabled)
   const isButton = () => local.optionType === 'button'
+  const hasButtonChildren = () => buttonChildCount() > 0
+  const isButtonCompact = () => isButton() || hasButtonChildren()
   const buttonStyle = () => local.buttonStyle ?? 'outline'
   const orientation = () => local.orientation ?? (local.vertical ? 'vertical' : 'horizontal')
   const semanticClassNames = createMemo(() => resolveClassNames(props))
@@ -108,6 +111,7 @@ export function RadioGroup(props: RadioGroupProps) {
     disabled,
     name: () => local.name ?? fallbackName,
     isButton,
+    registerButton: () => setButtonChildCount((count) => count + 1),
     restoreTick,
     updateValue,
   }
@@ -117,11 +121,12 @@ export function RadioGroup(props: RadioGroupProps) {
       {...rest}
       class={classNames(
         groupPrefixCls(),
-        isButton() && `${groupPrefixCls()}-button`,
+        isButtonCompact() && `${groupPrefixCls()}-button`,
+        isButtonCompact() && `${groupPrefixCls()}-button-compact`,
         local.block && `${groupPrefixCls()}-block`,
         `${groupPrefixCls()}-${orientation()}`,
         local.size && `${groupPrefixCls()}-${local.size}`,
-        isButton() && `${groupPrefixCls()}-${buttonStyle()}`,
+        isButtonCompact() && `${groupPrefixCls()}-${buttonStyle()}`,
         hashId(),
         local.class,
         semanticClassNames().wrapper,

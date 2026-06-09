@@ -5,14 +5,14 @@ Radio lets users choose one option from a mutually exclusive set.
 ### Basic
 
 ```tsx
-import { Radio, Space } from '@ant-design-solid/core'
+import { Radio } from '@ant-design-solid/core'
 
 const Demo1 = function () {
   return (
-    <Space>
-      <Radio defaultChecked>A</Radio>
-      <Radio>B</Radio>
-    </Space>
+    <Radio.Group defaultValue="a">
+      <Radio value="a">A</Radio>
+      <Radio value="b">B</Radio>
+    </Radio.Group>
   )
 }
 
@@ -72,9 +72,15 @@ export default Demo3
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
 
-const options = [
-  { label: 'Outline', value: 'outline' },
-  { label: 'Solid', value: 'solid' },
+const outlineOptions = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Orange', value: 'orange' },
+  { label: 'Disabled', value: 'disabled', disabled: true },
+]
+
+const solidOptions = [
+  { label: 'Hangzhou', value: 'hangzhou' },
+  { label: 'Shanghai', value: 'shanghai' },
   { label: 'Disabled', value: 'disabled', disabled: true },
 ]
 
@@ -84,10 +90,17 @@ const Demo4 = function () {
       <Radio.Group
         optionType="button"
         buttonStyle="outline"
-        options={options}
-        defaultValue="outline"
+        name="button-style-outline"
+        options={outlineOptions}
+        defaultValue="apple"
       />
-      <Radio.Group optionType="button" buttonStyle="solid" options={options} defaultValue="solid" />
+      <Radio.Group
+        name="button-style-solid"
+        optionType="button"
+        buttonStyle="solid"
+        options={solidOptions}
+        defaultValue="shanghai"
+      />
     </Space>
   )
 }
@@ -109,9 +122,27 @@ const options = [
 const Demo5 = function () {
   return (
     <Space direction="vertical">
-      <Radio.Group size="small" optionType="button" options={options} defaultValue="a" />
-      <Radio.Group size="medium" optionType="button" options={options} defaultValue="b" />
-      <Radio.Group size="large" optionType="button" options={options} defaultValue="c" />
+      <Radio.Group
+        name="radio-size-small"
+        size="small"
+        optionType="button"
+        options={options}
+        defaultValue="a"
+      />
+      <Radio.Group
+        name="radio-size-medium"
+        size="medium"
+        optionType="button"
+        options={options}
+        defaultValue="b"
+      />
+      <Radio.Group
+        name="radio-size-large"
+        size="large"
+        optionType="button"
+        options={options}
+        defaultValue="c"
+      />
     </Space>
   )
 }

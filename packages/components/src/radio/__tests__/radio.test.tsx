@@ -76,7 +76,6 @@ describe('Radio', () => {
     expect(onChange).not.toHaveBeenCalled()
     expect(input.checked).toBe(false)
   })
-
   it('supports semantic classNames and styles plus imperative focus and blur', () => {
     // Solid assigns component refs through JSX at runtime.
     // oxlint-disable-next-line no-unassigned-vars
@@ -313,6 +312,39 @@ describe('Radio.Group', () => {
     fireEvent.click(optionB)
     expect(optionB.checked).toBe(false)
     expect(onOptionChange).not.toHaveBeenCalled()
+  })
+
+  it('marks button groups for compact border styling and supports non-first checked borders', () => {
+    const result = render(() => (
+      <Radio.Group
+        optionType="button"
+        defaultValue="b"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+          { label: 'C', value: 'c' },
+        ]}
+      />
+    ))
+    const wrappers = result.container.querySelectorAll('.ads-radio-button-wrapper')
+
+    expect(result.container.querySelector('.ads-radio-group-button')).toHaveClass(
+      'ads-radio-group-button-compact',
+    )
+    expect(wrappers[0]).not.toHaveClass('ads-radio-button-wrapper-checked')
+    expect(wrappers[1]).toHaveClass('ads-radio-button-wrapper-checked')
+  })
+
+  it('keeps child Radio.Button groups compact without external spacing', () => {
+    const result = render(() => (
+      <Radio.Group defaultValue="b">
+        <Radio.Button value="a">A</Radio.Button>
+        <Radio.Button value="b">B</Radio.Button>
+      </Radio.Group>
+    ))
+
+    expect(result.container.querySelector('.ads-radio-group-button-compact')).toBeTruthy()
+    expect(result.container.querySelectorAll('.ads-radio-button-wrapper')).toHaveLength(2)
   })
 
   it('supports optionType button classes', () => {

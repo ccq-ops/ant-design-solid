@@ -27,6 +27,10 @@ export function useRadioStyle(prefixCls: string) {
       [`.${prefixCls}-group-horizontal`]: { 'flex-direction': 'row' },
       [`.${prefixCls}-group-block`]: { display: 'flex', width: '100%' },
       [`.${prefixCls}-group-button`]: { gap: 0 },
+      [`.${prefixCls}-group-button-compact .${prefixCls}-button-wrapper + .${prefixCls}-button-wrapper`]:
+        {
+          'margin-inline-start': `-${t.lineWidth}px`,
+        },
       [`.${prefixCls}-group-button.${prefixCls}-group-block .${prefixCls}-button-wrapper`]: {
         flex: 1,
         'justify-content': 'center',
@@ -61,6 +65,8 @@ export function useRadioStyle(prefixCls: string) {
       [`.${prefixCls}-button-wrapper-checked`]: {
         color: t.colorPrimary,
         borderColor: t.colorPrimary,
+        'border-inline-start-width': `${t.lineWidth}px`,
+        'z-index': 1,
       },
       [`.${prefixCls}-group-solid .${prefixCls}-button-wrapper-checked`]: {
         color: '#fff',

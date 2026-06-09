@@ -113,6 +113,8 @@ export function RadioRoot(props: RadioProps) {
 
 export function RadioButton(props: RadioProps) {
   const config = useConfig()
+  const group = useRadioGroupContext()
+  createEffect(() => group?.registerButton())
   const buttonPrefixCls = () => `${config.prefixCls()}-radio-button-wrapper`
   return <RadioRoot {...props} prefixCls={props.prefixCls ?? buttonPrefixCls()} />
 }
