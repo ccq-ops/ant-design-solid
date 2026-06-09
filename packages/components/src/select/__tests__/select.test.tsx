@@ -210,6 +210,202 @@ describe('Select', () => {
 
     expect(onFinish).toHaveBeenCalledWith({ choice: 'b' })
   })
+
+  it('filters searchable options and controls search text', () => {
+    const onSearch = vi.fn()
+    const result = render(() => (
+      <Select showSearch placeholder="Search" options={options} onSearch={onSearch} />
+    ))
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+    fireEvent.input(result.getByRole('textbox'), { target: { value: 'bet' } })
+
+    expect(onSearch).toHaveBeenCalledWith('bet')
+    expect(screen.queryByRole('option', { name: 'Alpha' })).toBeNull()
+    expect(screen.getByRole('option', { name: 'Beta' })).toBeTruthy()
+  })
+
+  it('supports multiple selection and deselection callbacks', () => {
+    const onChange = vi.fn()
+    const onSelect = vi.fn()
+    const onDeselect = vi.fn()
+    const result = render(() => (
+      <Select
+        mode="multiple"
+        options={options}
+        onChange={onChange}
+        onSelect={onSelect}
+        onDeselect={onDeselect}
+      />
+    ))
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+    fireEvent.click(screen.getAllByRole('option', { name: 'Alpha' }).at(-1)!)
+    fireEvent.click(screen.getAllByRole('option', { name: 'Beta' }).at(-1)!)
+
+    expect(onSelect).toHaveBeenCalledWith('a', { label: 'Alpha', value: 'a' })
+    expect(onChange).toHaveBeenLastCalledWith(
+      ['a', 'b'],
+      [
+        expect.objectContaining({ label: 'Alpha', value: 'a' }),
+        expect.objectContaining({ label: 'Beta', value: 'b' }),
+      ],
+    )
+    expect(combobox).toHaveTextContent('Alpha')
+    expect(combobox).toHaveTextContent('Beta')
+
+    fireEvent.click(result.getByRole('button', { name: 'remove Alpha' }))
+
+    expect(onDeselect).toHaveBeenCalledWith('a', { label: 'Alpha', value: 'a' })
+    expect(onChange).toHaveBeenLastCalledWith(
+      ['b'],
+      [expect.objectContaining({ label: 'Beta', value: 'b' })],
+    )
+  })
+
+  it('supports tags tokenization and labelInValue output', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Select
+        mode="tags"
+        labelInValue
+        tokenSeparators={[',']}
+        options={options}
+        onChange={onChange}
+      />
+    ))
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.click(combobox)
+    fireEvent.input(result.getByRole('textbox'), { target: { value: 'Gamma,Delta' } })
+
+    expect(onChange).toHaveBeenLastCalledWith(
+      [
+        { value: 'Gamma', label: 'Gamma' },
+        { value: 'Delta', label: 'Delta' },
+      ],
+      [expect.objectContaining({ value: 'Gamma' }), expect.objectContaining({ value: 'Delta' })],
+    )
+    expect(combobox).toHaveTextContent('Gamma')
+    expect(combobox).toHaveTextContent('Delta')
+  })
+
+  it('supports grouped options, custom field names, and optionRender', () => {
+    const result = render(() => (
+      <Select
+        open
+        fieldNames={{ label: 'name', value: 'id', options: 'items', groupLabel: 'group' }}
+        options={[
+          {
+            group: 'Letters',
+            items: [
+              { name: 'Alpha', id: 'a' },
+              { name: 'Beta', id: 'b' },
+            ],
+          },
+        ]}
+        optionRender={(option) => <span>Custom {option.label}</span>}
+      />
+    ))
+
+    expect(screen.getByText('Letters')).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Custom Alpha' })).toBeTruthy()
+    expect(result.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('supports popup rendering, appearance props, clear callback, and ref methods', () => {
+    const onClear = vi.fn()
+    const ref: { current?: { focus: () => void; blur: () => void } } = {}
+    const result = render(() => (
+      <Select
+        ref={ref}
+        open
+        allowClear={{ clearIcon: <span>clear</span> }}
+        defaultValue="a"
+        options={options}
+        size="large"
+        status="error"
+        variant="filled"
+        prefix={<span>pre</span>}
+        suffixIcon={<span>suf</span>}
+        popupClassName="popup-extra"
+        dropdownStyle={{ width: '240px' }}
+        popupRender={(origin) => <div data-testid="wrapped-popup">{origin}</div>}
+        onClear={onClear}
+      />
+    ))
+
+    const root = result.container.querySelector('.ads-select')!
+    expect(root).toHaveClass('ads-select-large')
+    expect(root).toHaveClass('ads-select-status-error')
+    expect(root).toHaveClass('ads-select-filled')
+    expect(result.getByText('pre')).toBeTruthy()
+    expect(result.getByText('suf')).toBeTruthy()
+    expect(screen.getByTestId('wrapped-popup')).toBeTruthy()
+    expect(document.body.querySelector('.popup-extra')).toBeTruthy()
+    expect((document.body.querySelector('.popup-extra') as HTMLElement).style.width).toBe('240px')
+
+    ref.current?.focus()
+    expect(document.activeElement).toBe(result.getByRole('combobox'))
+    ref.current?.blur()
+    expect(document.activeElement).not.toBe(result.getByRole('combobox'))
+
+    fireEvent.click(result.getByRole('button', { name: 'clear selection' }))
+    expect(onClear).toHaveBeenCalled()
+  })
+
+  it('uses compact arrow and hides selected label while searching', () => {
+    const result = render(() => (
+      <Select showSearch defaultValue="b" placeholder="Search fruit" options={options} />
+    ))
+    const combobox = result.getByRole('combobox')
+    const arrow = result.container.querySelector('.ads-select-arrow') as HTMLElement
+
+    expect(arrow).toBeTruthy()
+    expect(arrow.querySelector('svg')).toHaveAttribute('width', '0.8em')
+
+    fireEvent.click(combobox)
+
+    expect(result.getByRole('textbox')).toBeTruthy()
+    expect(combobox).not.toHaveTextContent('Beta')
+    expect(arrow).toHaveClass('ads-select-arrow-open')
+  })
+
+  it('keeps placeholder on one line and renders small tag close buttons', () => {
+    const placeholderResult = render(() => (
+      <Select mode="multiple" placeholder="Search without arrow" options={options} />
+    ))
+    const result = render(() => (
+      <Select
+        mode="multiple"
+        placeholder="Search without arrow"
+        defaultValue={['a']}
+        options={options}
+      />
+    ))
+    const placeholder = placeholderResult.container.querySelector(
+      '.ads-select-placeholder',
+    ) as HTMLElement
+    const closeButton = result.getByRole('button', { name: 'remove Alpha' })
+
+    expect(placeholder).toBeTruthy()
+    expect(closeButton).toHaveClass('ads-select-tag-close')
+  })
+
+  it('uses stable selector sizing before and after clearing', () => {
+    const result = render(() => (
+      <Select allowClear defaultValue="a" placeholder="Pick one" options={options} />
+    ))
+    const selector = result.container.querySelector('.ads-select-selector') as HTMLElement
+
+    expect(selector).toBeTruthy()
+    expect(selector.style.height).toBe('')
+    fireEvent.click(result.getByRole('button', { name: 'clear selection' }))
+
+    expect(selector).toHaveTextContent('Pick one')
+  })
 })
 
 it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
