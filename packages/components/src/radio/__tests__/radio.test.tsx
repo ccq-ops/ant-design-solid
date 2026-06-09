@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
@@ -77,6 +77,35 @@ describe('Radio', () => {
     expect(input.checked).toBe(false)
   })
 
+  it('supports semantic classNames and styles plus imperative focus and blur', () => {
+    // Solid assigns component refs through JSX at runtime.
+    // oxlint-disable-next-line no-unassigned-vars
+    const ref: { current?: { focus: () => void; blur: () => void } } = {}
+    render(() => (
+      <Radio
+        ref={ref}
+        classNames={{ wrapper: 'custom-wrapper', input: 'custom-input' }}
+        styles={{ wrapper: { color: 'red' }, input: { margin: '1px' } }}
+      >
+        Styled
+      </Radio>
+    ))
+
+    const input = screen.getByRole('radio', { name: 'Styled' }) as HTMLInputElement
+    const wrapper = input.closest('label')!
+
+    expect(wrapper).toHaveClass('custom-wrapper')
+    expect(wrapper.style.color).toBe('red')
+    expect(input).toHaveClass('custom-input')
+    expect(input).toHaveStyle({ margin: '1px' })
+
+    ref.current?.focus()
+    expect(document.activeElement).toBe(input)
+
+    ref.current?.blur()
+    expect(document.activeElement).not.toBe(input)
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <Radio prefixCls="custom-radio">Prop prefix</Radio>)
     expect(withProp.container.querySelector('.custom-radio')).toBeTruthy()
@@ -87,6 +116,115 @@ describe('Radio', () => {
       </ConfigProvider>
     ))
     expect(withProvider.container.querySelector('.custom-radio')).toBeTruthy()
+  })
+
+  it('supports Radio.Button children with group context and generated input name', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Radio.Group defaultValue="a" onChange={onChange}>
+        <Radio value="a">A</Radio>
+        <Radio.Button value="b">B</Radio.Button>
+      </Radio.Group>
+    ))
+    const a = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
+    const b = result.getByRole('radio', { name: 'B' }) as HTMLInputElement
+
+    expect(a.checked).toBe(true)
+    expect(b.checked).toBe(false)
+    expect(a.name).toBeTruthy()
+    expect(b.name).toBe(a.name)
+    expect(b.closest('label')).toHaveClass('ads-radio-button-wrapper')
+
+    fireEvent.click(b)
+
+    expect(a.checked).toBe(false)
+    expect(b.checked).toBe(true)
+    expect(onChange).toHaveBeenLastCalledWith('b')
+  })
+
+  it('passes group name and disabled state to child radios', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Radio.Group name="choices" disabled onChange={onChange}>
+        <Radio value="a">A</Radio>
+        <Radio.Button value="b">B</Radio.Button>
+      </Radio.Group>
+    ))
+    const a = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
+    const b = result.getByRole('radio', { name: 'B' }) as HTMLInputElement
+
+    expect(a.name).toBe('choices')
+    expect(b.name).toBe('choices')
+    expect(a.disabled).toBe(true)
+    expect(b.disabled).toBe(true)
+
+    fireEvent.click(a)
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('supports block, vertical orientation, size, buttonStyle, semantic classes and semantic styles', () => {
+    const result = render(() => (
+      <Radio.Group
+        block
+        vertical
+        orientation="horizontal"
+        size="large"
+        buttonStyle="solid"
+        optionType="button"
+        classNames={{ wrapper: 'group-wrapper' }}
+        styles={{ wrapper: { width: '100%' } }}
+        options={[{ label: 'A', value: 'a' }]}
+      />
+    ))
+    const group = result.container.querySelector('.ads-radio-group') as HTMLElement
+
+    expect(group).toHaveClass('ads-radio-group-block')
+    expect(group).toHaveClass('ads-radio-group-horizontal')
+    expect(group).not.toHaveClass('ads-radio-group-vertical')
+    expect(group).toHaveClass('ads-radio-group-large')
+    expect(group).toHaveClass('ads-radio-group-solid')
+    expect(group).toHaveClass('group-wrapper')
+    expect(group).toHaveStyle({ width: '100%' })
+  })
+
+  it('supports vertical prop when orientation is omitted', () => {
+    const result = render(() => <Radio.Group vertical options={[{ label: 'A', value: 'a' }]} />)
+
+    expect(result.container.querySelector('.ads-radio-group')).toHaveClass(
+      'ads-radio-group-vertical',
+    )
+  })
+
+  it('passes option style, class, title, id, required, and onChange to option radios', () => {
+    const optionChange = vi.fn()
+    const result = render(() => (
+      <Radio.Group
+        options={[
+          {
+            label: 'A',
+            value: 'a',
+            class: 'option-a',
+            style: { color: 'blue' },
+            title: 'Option A',
+            id: 'option-a-input',
+            required: true,
+            onChange: optionChange,
+          },
+        ]}
+      />
+    ))
+    const input = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
+    const wrapper = input.closest('label')!
+
+    expect(input.id).toBe('option-a-input')
+    expect(input.required).toBe(true)
+    expect(wrapper).toHaveClass('option-a')
+    expect(wrapper.style.color).toBe('blue')
+    expect(wrapper).toHaveAttribute('title', 'Option A')
+
+    fireEvent.click(input)
+
+    expect(optionChange).toHaveBeenCalledOnce()
   })
 })
 

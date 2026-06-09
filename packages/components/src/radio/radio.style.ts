@@ -20,7 +20,27 @@ export function useRadioStyle(prefixCls: string) {
       [`.${prefixCls}-disabled`]: { color: t.colorTextDisabled, cursor: 'not-allowed' },
       [`.${prefixCls}-disabled .${prefixCls}-input`]: { cursor: 'not-allowed' },
       [`.${prefixCls}-group`]: { display: 'inline-flex', gap: '12px', 'align-items': 'center' },
+      [`.${prefixCls}-group-vertical`]: {
+        'flex-direction': 'column',
+        'align-items': 'flex-start',
+      },
+      [`.${prefixCls}-group-horizontal`]: { 'flex-direction': 'row' },
+      [`.${prefixCls}-group-block`]: { display: 'flex', width: '100%' },
       [`.${prefixCls}-group-button`]: { gap: 0 },
+      [`.${prefixCls}-group-button.${prefixCls}-group-block .${prefixCls}-button-wrapper`]: {
+        flex: 1,
+        'justify-content': 'center',
+      },
+      [`.${prefixCls}-group-small .${prefixCls}-button-wrapper`]: {
+        height: t.controlHeightSM,
+        'line-height': t.controlHeightSM,
+        padding: `0 ${t.paddingXS}px`,
+      },
+      [`.${prefixCls}-group-large .${prefixCls}-button-wrapper`]: {
+        height: t.controlHeightLG,
+        'line-height': t.controlHeightLG,
+        padding: `0 ${t.paddingLG}px`,
+      },
       [`.${prefixCls}-button-wrapper`]: {
         padding: `0 ${t.padding}px`,
         height: t.controlHeight,
@@ -40,6 +60,11 @@ export function useRadioStyle(prefixCls: string) {
       },
       [`.${prefixCls}-button-wrapper-checked`]: {
         color: t.colorPrimary,
+        borderColor: t.colorPrimary,
+      },
+      [`.${prefixCls}-group-solid .${prefixCls}-button-wrapper-checked`]: {
+        color: '#fff',
+        background: t.colorPrimary,
         borderColor: t.colorPrimary,
       },
     }

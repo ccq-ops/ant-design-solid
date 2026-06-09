@@ -6,6 +6,12 @@ export interface LabeledOption {
   label: JSX.Element
   value: OptionValue
   disabled?: boolean
+  style?: JSX.CSSProperties
+  class?: string
+  title?: string
+  id?: string
+  required?: boolean
+  onChange?: JSX.EventHandler<HTMLInputElement, Event>
 }
 
 export type OptionInput = OptionValue | LabeledOption

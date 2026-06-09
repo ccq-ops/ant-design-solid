@@ -1,6 +1,6 @@
-import { RadioRoot } from './radio'
+import { RadioButton, RadioRoot } from './radio'
 import { RadioGroup } from './radio-group'
 
-export const Radio = Object.assign(RadioRoot, { Group: RadioGroup })
-export { RadioGroup, RadioRoot }
-export type { RadioGroupProps, RadioProps } from './interface'
+export const Radio = Object.assign(RadioRoot, { Group: RadioGroup, Button: RadioButton })
+export { RadioButton, RadioGroup, RadioRoot }
+export type { RadioGroupProps, RadioProps, RadioRef } from './interface'
