@@ -1,23 +1,10 @@
 import { fileURLToPath, URL } from 'node:url'
-import mdx from '@mdx-js/rollup'
-import { demoBlockMdxPlugin } from './src/mdx-demo-block-vite-plugin'
-import remarkGfm from 'remark-gfm'
-import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
-import solid from 'vite-plugin-solid'
+import { createDocsVitePlugins } from './plugins'
 
 export default defineConfig({
   oxc: { jsx: 'preserve' },
-  plugins: [
-    demoBlockMdxPlugin(),
-    mdx({
-      jsxImportSource: 'solid-js/h',
-      providerImportSource: '/src/mdx-components',
-      remarkPlugins: [remarkGfm],
-    }),
-    solid({ include: [/\.[mc]?[tj]sx$/, /virtual:demo-block/] }),
-    tailwindcss(),
-  ],
+  plugins: createDocsVitePlugins(),
   resolve: {
     alias: {
       '@ant-design-solid/core': fileURLToPath(

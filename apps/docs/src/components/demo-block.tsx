@@ -125,3 +125,6 @@ export function DemoBlock(props: DemoBlockProps) {
     </section>
   )
 }
+export function useMDXComponents() {
+  return { DemoBlock }
+}
