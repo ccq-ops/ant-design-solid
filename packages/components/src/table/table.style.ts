@@ -21,6 +21,9 @@ export function useTableStyle(prefixCls: string) {
         'border-spacing': 0,
         background: t.colorBgContainer,
       },
+      [`.${prefixCls}-container`]: {
+        width: '100%',
+      },
       [`.${prefixCls} th`]: {
         padding: table.cellPadding,
         color: table.headerColor,
@@ -110,6 +113,24 @@ export function useTableStyle(prefixCls: string) {
       },
       [`.${prefixCls}-bordered th:last-child, .${prefixCls}-bordered td:last-child`]: {
         borderInlineEnd: 0,
+      },
+      [`.${prefixCls}-selection-column, .${prefixCls}-expand-column`]: {
+        width: 48,
+        'text-align': 'center !important',
+      },
+      [`.${prefixCls}-expand-icon`]: {
+        width: 22,
+        height: 22,
+        padding: 0,
+        border: `${t.lineWidth}px solid ${t.colorBorder}`,
+        'border-radius': t.borderRadius,
+        color: t.colorText,
+        background: t.colorBgContainer,
+        cursor: 'pointer',
+        'line-height': 1,
+      },
+      [`.${prefixCls}-expanded-row td`]: {
+        background: t.colorFillAlter,
       },
       [`.${prefixCls}-cell-center`]: { 'text-align': 'center !important' },
       [`.${prefixCls}-cell-right`]: { 'text-align': 'right !important' },

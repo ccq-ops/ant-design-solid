@@ -253,6 +253,132 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+### Row selection
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+  { key: '3', name: 'Linus Torvalds', age: 28 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo8 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        getCheckboxProps: (record) => ({ disabled: record.key === '2' }),
+        onChange: (keys, rows) => console.log(keys, rows),
+      }}
+    />
+  )
+}
+
+export default Demo8
+```
+
+### Expandable rows
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, bio: 'Wrote the first algorithm.' },
+  { key: '2', name: 'Grace Hopper', age: 36, bio: 'Popularized machine-independent languages.' },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo9 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      expandable={{
+        defaultExpandedRowKeys: ['1'],
+        expandedRowRender: (record) => <span>{record.bio}</span>,
+      }}
+    />
+  )
+}
+
+export default Demo9
+```
+
+### Summary
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo10 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      summary={(currentData) => (
+        <tr>
+          <td>Total age</td>
+          <td>{currentData.reduce((sum, record) => sum + record.age, 0)}</td>
+        </tr>
+      )}
+    />
+  )
+}
+
+export default Demo10
+```
+
+### Scroll
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = Array.from({ length: 12 }, (_, index) => ({
+  key: String(index + 1),
+  name: `User ${index + 1}`,
+  age: 20 + index,
+  address: `Long address line ${index + 1}`,
+}))
+
+const columns = [
+  { title: 'Name', dataIndex: 'name', width: 180 },
+  { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+  { title: 'Address', dataIndex: 'address', width: 520 },
+]
+
+const Demo11 = function () {
+  return (
+    <Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 260 }} />
+  )
+}
+
+export default Demo11
+```
+
 ## API
 
 ### Table
@@ -266,6 +392,10 @@ export default Demo7
 | `emptyText`    | Empty state content.                             | `JSX.Element`                                                                                                        | `'No data'`             |
 | `locale`       | Locale text. Currently supports empty text.      | `{ emptyText?: JSX.Element \| (() => JSX.Element) }`                                                                 | `-`                     |
 | `pagination`   | Pagination config, or `false` to disable paging. | `false \| TablePaginationConfig`                                                                                     | `{}`                    |
+| `rowSelection` | Row selection config.                            | `TableRowSelection<T>`                                                                                               | `-`                     |
+| `expandable`   | Expandable row config.                           | `TableExpandableConfig<T>`                                                                                           | `-`                     |
+| `summary`      | Summary row renderer for current page data.      | `(currentData: T[]) => JSX.Element`                                                                                  | `-`                     |
+| `scroll`       | Basic horizontal and vertical scroll config.     | `{ x?: string \| number \| true; y?: string \| number; scrollToFirstRowOnChange?: boolean }`                         | `-`                     |
 | `size`         | Table size.                                      | `'small' \| 'middle' \| 'large'`                                                                                     | `'middle'`              |
 | `bordered`     | Whether to render bordered table styling.        | `boolean`                                                                                                            | `false`                 |
 | `showHeader`   | Whether to render the header row.                | `boolean`                                                                                                            | `true`                  |
@@ -274,6 +404,35 @@ export default Demo7
 | `onRow`        | Returns extra props for each table row.          | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                              | `-`                     |
 | `onHeaderRow`  | Returns extra props for the header row.          | `(columns: TableColumn<T>[], index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                              | `-`                     |
 | `onChange`     | Called after pagination, sorting, or filtering.  | `(pagination, filters, sorter, extra: { currentDataSource: T[]; action: 'paginate' \| 'sort' \| 'filter' }) => void` | `-`                     |
+
+### TableRowSelection
+
+| Property                 | Description                                  | Type                                                                                   | Default      |
+| ------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------------- | ------------ |
+| `type`                   | Selection type.                              | `'checkbox' \| 'radio'`                                                                | `'checkbox'` |
+| `selectedRowKeys`        | Controlled selected row keys.                | `(string \| number)[]`                                                                 | `-`          |
+| `defaultSelectedRowKeys` | Initial selected row keys.                   | `(string \| number)[]`                                                                 | `[]`         |
+| `columnTitle`            | Selection column title.                      | `JSX.Element`                                                                          | `-`          |
+| `columnWidth`            | Selection column width.                      | `string \| number`                                                                     | `48`         |
+| `getCheckboxProps`       | Props for each checkbox or radio input.      | `(record: T) => Partial<JSX.InputHTMLAttributes<HTMLInputElement>>`                    | `-`          |
+| `onChange`               | Called when selected rows change.            | `(selectedRowKeys, selectedRows, info: { type: 'all' \| 'none' \| 'single' }) => void` | `-`          |
+| `onSelect`               | Called when a row is selected or deselected. | `(record: T, selected: boolean, selectedRows: T[], nativeEvent: Event) => void`        | `-`          |
+
+### TableExpandableConfig
+
+| Property                 | Description                             | Type                                                                           | Default |
+| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------ | ------- |
+| `columnTitle`            | Expand column title.                    | `JSX.Element`                                                                  | `-`     |
+| `columnWidth`            | Expand column width.                    | `string \| number`                                                             | `48`    |
+| `defaultExpandAllRows`   | Expands all rows initially.             | `boolean`                                                                      | `false` |
+| `defaultExpandedRowKeys` | Initial expanded row keys.              | `(string \| number)[]`                                                         | `[]`    |
+| `expandedRowKeys`        | Controlled expanded row keys.           | `(string \| number)[]`                                                         | `-`     |
+| `expandedRowRender`      | Expanded content renderer.              | `(record: T, index: number, indent: number, expanded: boolean) => JSX.Element` | `-`     |
+| `expandedRowClassName`   | Expanded row class name.                | `string \| ((record: T, index: number, indent: number) => string)`             | `-`     |
+| `expandRowByClick`       | Expands rows by clicking the data row.  | `boolean`                                                                      | `false` |
+| `rowExpandable`          | Whether a record can be expanded.       | `(record: T) => boolean`                                                       | `-`     |
+| `onExpand`               | Called when a row expands or collapses. | `(expanded: boolean, record: T) => void`                                       | `-`     |
+| `onExpandedRowsChange`   | Called when expanded row keys change.   | `(expandedRows: (string \| number)[]) => void`                                 | `-`     |
 
 ### TablePaginationConfig
 

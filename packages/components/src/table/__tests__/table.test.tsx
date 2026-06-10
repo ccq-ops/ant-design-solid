@@ -204,6 +204,207 @@ describe('Table', () => {
     expect(result.getByText('Linus')).toBeInTheDocument()
   })
 
+  it('selects rows with checkboxes and select all', () => {
+    const onChange = vi.fn()
+    const onSelect = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{ onChange, onSelect }}
+      />
+    ))
+    const checkboxes = result.getAllByRole('checkbox')
+
+    fireEvent.click(checkboxes[1])
+
+    expect(onSelect).toHaveBeenCalledWith(data[0], true, [data[0]], expect.any(Event))
+    expect(onChange).toHaveBeenLastCalledWith(['a'], [data[0]], { type: 'single' })
+    expect(checkboxes[1]).toBeChecked()
+
+    fireEvent.click(checkboxes[0])
+
+    expect(onChange).toHaveBeenLastCalledWith(['a', 'b', 'c'], data, { type: 'all' })
+    expect(checkboxes[0]).toBeChecked()
+  })
+
+  it('respects disabled checkbox props for row selection', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{
+          getCheckboxProps: (record) => ({ disabled: record.key === 'b' }),
+          onChange,
+        }}
+      />
+    ))
+    const checkboxes = result.getAllByRole('checkbox')
+
+    expect(checkboxes[2]).toBeDisabled()
+    fireEvent.click(checkboxes[0])
+
+    expect(onChange).toHaveBeenLastCalledWith(['a', 'c'], [data[0], data[2]], { type: 'all' })
+  })
+
+  it('renders custom selection column title', () => {
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{ columnTitle: 'Pick' }}
+      />
+    ))
+
+    expect(result.getByText('Pick')).toBeInTheDocument()
+    expect(result.queryByRole('checkbox', { name: 'Select all rows' })).toBeNull()
+  })
+
+  it('keeps page row indexes when selecting all with disabled rows', () => {
+    const records = [{ name: 'Ada' }, { name: 'Grace' }, { name: 'Linus' }]
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={[{ title: 'Name', dataIndex: 'name' }]}
+        dataSource={records}
+        pagination={false}
+        rowSelection={{
+          getCheckboxProps: (record) => ({ disabled: record.name === 'Grace' }),
+          onChange,
+        }}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('checkbox', { name: 'Select all rows' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(['0', '2'], [records[0], records[2]], {
+      type: 'all',
+    })
+  })
+
+  it('supports radio row selection', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{ type: 'radio', onChange }}
+      />
+    ))
+    const radios = result.getAllByRole('radio')
+
+    fireEvent.click(radios[1])
+    fireEvent.click(radios[2])
+
+    expect(radios[1]).not.toBeChecked()
+    expect(radios[2]).toBeChecked()
+    expect(onChange).toHaveBeenLastCalledWith(['c'], [data[2]], { type: 'single' })
+  })
+
+  it('renders default expanded rows and toggles with expand button', () => {
+    const onExpand = vi.fn()
+    const onExpandedRowsChange = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        expandable={{
+          defaultExpandedRowKeys: ['a'],
+          expandedRowRender: (record) => <span>{record.name} details</span>,
+          onExpand,
+          onExpandedRowsChange,
+        }}
+      />
+    ))
+
+    expect(result.getByText('Ada details')).toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('button', { name: 'Expand row b' }))
+
+    expect(result.getByText('Grace details')).toBeInTheDocument()
+    expect(onExpand).toHaveBeenCalledWith(true, data[1])
+    expect(onExpandedRowsChange).toHaveBeenLastCalledWith(['a', 'b'])
+  })
+
+  it('supports expanding rows by clicking the row', () => {
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        expandable={{
+          expandRowByClick: true,
+          expandedRowRender: (record) => <span>{record.status} panel</span>,
+        }}
+      />
+    ))
+
+    fireEvent.click(result.getByText('Ada').closest('tr')!)
+
+    expect(result.getByText('active panel')).toBeInTheDocument()
+  })
+
+  it('respects controlled expanded row keys', () => {
+    const onExpandedRowsChange = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        expandable={{
+          expandedRowKeys: ['b'],
+          expandedRowRender: (record) => <span>{record.name} info</span>,
+          onExpandedRowsChange,
+        }}
+      />
+    ))
+
+    expect(result.queryByText('Ada info')).toBeNull()
+    expect(result.getByText('Grace info')).toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('button', { name: 'Expand row a' }))
+
+    expect(result.queryByText('Ada info')).toBeNull()
+    expect(onExpandedRowsChange).toHaveBeenLastCalledWith(['b', 'a'])
+  })
+
+  it('renders summary with current page data', () => {
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={{ defaultPageSize: 2 }}
+        summary={(currentData) => (
+          <tr>
+            <td>Total</td>
+            <td>{currentData.reduce((sum, record) => sum + record.age, 0)}</td>
+          </tr>
+        )}
+      />
+    ))
+
+    expect(result.container.querySelector('tfoot')).toBeInTheDocument()
+    expect(result.getByText('Total')).toBeInTheDocument()
+    expect(result.getByText('68')).toBeInTheDocument()
+  })
+
+  it('applies horizontal and vertical scroll styles', () => {
+    const result = render(() => (
+      <Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 800, y: 240 }} />
+    ))
+    const container = result.container.querySelector('.ads-table-container') as HTMLElement
+    const table = result.container.querySelector('table') as HTMLElement
+
+    expect(container).toHaveStyle({ 'overflow-x': 'auto', 'max-height': '240px' })
+    expect(table).toHaveStyle({ 'min-width': '800px' })
+  })
+
   it('sorts by clicking a sortable column header and emits change details', () => {
     const onChange = vi.fn()
     const result = render(() => (

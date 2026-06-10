@@ -12,6 +12,7 @@ import type {
   TableFilterValue,
   TableKey,
   TableProps,
+  TableRowSelectionChangeType,
   TableSorterResult,
   TableSortOrder,
 } from './interface'
@@ -106,6 +107,10 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     'bordered',
     'showHeader',
     'pagination',
+    'rowSelection',
+    'expandable',
+    'scroll',
+    'summary',
     'className',
     'onRow',
     'rowClassName',
@@ -120,10 +125,17 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const data = () => local.dataSource ?? []
   const size = () => local.size ?? 'middle'
   const initialPagination = local.pagination === false ? undefined : local.pagination
+  const initialSelectedKeys =
+    local.rowSelection?.selectedRowKeys ?? local.rowSelection?.defaultSelectedRowKeys ?? []
+  const initialExpandedKeys = local.expandable?.defaultExpandAllRows
+    ? data().map((record, index) => getRowKey(record, index, local.rowKey))
+    : (local.expandable?.expandedRowKeys ?? local.expandable?.defaultExpandedRowKeys ?? [])
   const [innerCurrent, setInnerCurrent] = createSignal(initialPagination?.defaultCurrent ?? 1)
   const [innerPageSize, setInnerPageSize] = createSignal(
     initialPagination?.defaultPageSize ?? DEFAULT_PAGE_SIZE,
   )
+  const [innerSelectedKeys, setInnerSelectedKeys] = createSignal<TableKey[]>(initialSelectedKeys)
+  const [innerExpandedKeys, setInnerExpandedKeys] = createSignal<TableKey[]>(initialExpandedKeys)
   const [innerFilters, setInnerFilters] = createSignal<Record<string, TableFilterValue | null>>({})
   const [innerSorter, setInnerSorter] = createSignal<TableSorterResult<T>>({})
   const [openFilterKey, setOpenFilterKey] = createSignal<string>()
@@ -190,12 +202,60 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     const start = (state.current - 1) * state.pageSize
     return processedData().slice(start, start + state.pageSize)
   }
+  const getRecordIndex = (record: T, fallbackIndex: number) => {
+    const sourceIndex = data().indexOf(record)
+    return sourceIndex >= 0 ? sourceIndex : fallbackIndex
+  }
+  const getRecordKey = (record: T, index: number) =>
+    getRowKey(record, getRecordIndex(record, index), local.rowKey)
+  const renderColumnCount = () =>
+    columns().length + (local.rowSelection ? 1 : 0) + (local.expandable ? 1 : 0)
+  const selectedKeys = () => local.rowSelection?.selectedRowKeys ?? innerSelectedKeys()
+  const selectedKeySet = () => new Set(selectedKeys())
+  const selectablePageRecords = () =>
+    pageData().filter((record) => !local.rowSelection?.getCheckboxProps?.(record)?.disabled)
+  const selectablePageKeys = () =>
+    selectablePageRecords().map((record, index) => getRecordKey(record, index))
+  const selectedRows = (keys = selectedKeys()) => {
+    const keySet = new Set(keys)
+    return data().filter((record, index) => keySet.has(getRowKey(record, index, local.rowKey)))
+  }
+  const allPageSelected = () => {
+    const keys = selectablePageKeys()
+    return keys.length > 0 && keys.every((key) => selectedKeySet().has(key))
+  }
+  const expandedKeys = () => local.expandable?.expandedRowKeys ?? innerExpandedKeys()
+  const expandedKeySet = () => new Set(expandedKeys())
   const controlledPaginationProps = () => {
     const config = paginationConfig()
     if (!config) return {}
     return {
       ...(config.current !== undefined ? { current: paginationState().current } : {}),
       ...(config.pageSize !== undefined ? { pageSize: paginationState().pageSize } : {}),
+    }
+  }
+  const scrollContainerStyle = (): JSX.CSSProperties | undefined => {
+    if (!local.scroll) return undefined
+    return {
+      'overflow-x': local.scroll.x ? 'auto' : undefined,
+      'overflow-y': local.scroll.y ? 'auto' : undefined,
+      'max-height':
+        typeof local.scroll.y === 'number'
+          ? `${local.scroll.y}px`
+          : local.scroll.y == null
+            ? undefined
+            : String(local.scroll.y),
+    }
+  }
+  const tableStyle = (): JSX.CSSProperties | undefined => {
+    if (!local.scroll?.x) return undefined
+    return {
+      'min-width':
+        typeof local.scroll.x === 'number'
+          ? `${local.scroll.x}px`
+          : local.scroll.x === true
+            ? 'max-content'
+            : String(local.scroll.x),
     }
   }
 
@@ -212,6 +272,56 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     if (!paginationConfig()?.pageSize) setInnerPageSize(pageSize)
     paginationConfig()?.onChange?.(page, pageSize)
     emitChange('paginate', pagination)
+  }
+
+  function setSelectedKeys(keys: TableKey[], type: TableRowSelectionChangeType) {
+    if (!local.rowSelection?.selectedRowKeys) setInnerSelectedKeys(keys)
+    local.rowSelection?.onChange?.(keys, selectedRows(keys), { type })
+  }
+
+  function toggleSelectAll(event: Event) {
+    const checked = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked
+    const pageKeys = selectablePageKeys()
+    const current = selectedKeys()
+    const pageKeySet = new Set(pageKeys)
+    const nextKeys = checked
+      ? [...current, ...pageKeys.filter((key) => !current.includes(key))]
+      : current.filter((key) => !pageKeySet.has(key))
+    setSelectedKeys(nextKeys, checked ? 'all' : 'none')
+  }
+
+  function toggleRowSelection(record: T, rowIndex: number, event: Event) {
+    const key = getRecordKey(record, rowIndex)
+    const checked = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked
+    const nextKeys =
+      local.rowSelection?.type === 'radio'
+        ? checked
+          ? [key]
+          : []
+        : checked
+          ? [...selectedKeys(), key].filter((item, index, array) => array.indexOf(item) === index)
+          : selectedKeys().filter((item) => item !== key)
+    const nextRows = selectedRows(nextKeys)
+    if (!local.rowSelection?.selectedRowKeys) setInnerSelectedKeys(nextKeys)
+    local.rowSelection?.onSelect?.(record, checked, nextRows, event)
+    local.rowSelection?.onChange?.(nextKeys, nextRows, { type: 'single' })
+  }
+
+  function canExpand(record: T) {
+    if (!local.expandable?.expandedRowRender) return false
+    return local.expandable.rowExpandable ? local.expandable.rowExpandable(record) : true
+  }
+
+  function toggleExpanded(record: T, rowIndex: number) {
+    if (!canExpand(record)) return
+    const key = getRecordKey(record, rowIndex)
+    const expanded = !expandedKeySet().has(key)
+    const nextKeys = expanded
+      ? [...expandedKeys(), key].filter((item, index, array) => array.indexOf(item) === index)
+      : expandedKeys().filter((item) => item !== key)
+    if (!local.expandable?.expandedRowKeys) setInnerExpandedKeys(nextKeys)
+    local.expandable?.onExpand?.(expanded, record)
+    local.expandable?.onExpandedRowsChange?.(nextKeys)
   }
 
   function toggleSort(column: TableColumn<T>, index: number) {
@@ -262,6 +372,68 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       : null
   }
 
+  function renderSelectionHeader() {
+    if (!local.rowSelection) return null
+    if (local.rowSelection.columnTitle) return local.rowSelection.columnTitle
+    if (local.rowSelection.type === 'radio') return local.rowSelection.columnTitle
+    return (
+      <input
+        type="checkbox"
+        aria-label="Select all rows"
+        checked={allPageSelected()}
+        onChange={toggleSelectAll}
+      />
+    )
+  }
+
+  function renderSelectionCell(record: T, rowIndex: number) {
+    const selection = local.rowSelection
+    if (!selection) return null
+    const key = getRecordKey(record, rowIndex)
+    const checkboxProps = selection.getCheckboxProps?.(record) ?? {}
+    return (
+      <input
+        {...checkboxProps}
+        type={selection.type === 'radio' ? 'radio' : 'checkbox'}
+        aria-label={`Select row ${key}`}
+        checked={selectedKeySet().has(key)}
+        onChange={(event) => toggleRowSelection(record, rowIndex, event)}
+      />
+    )
+  }
+
+  function renderExpandHeader() {
+    if (!local.expandable) return null
+    return local.expandable.columnTitle
+  }
+
+  function renderExpandCell(record: T, rowIndex: number) {
+    if (!local.expandable) return null
+    const key = getRecordKey(record, rowIndex)
+    const expanded = expandedKeySet().has(key)
+    return (
+      <Show when={canExpand(record)}>
+        <button
+          type="button"
+          class={`${prefixCls()}-expand-icon`}
+          aria-label={`${expanded ? 'Collapse' : 'Expand'} row ${key}`}
+          aria-expanded={expanded}
+          onClick={(event) => {
+            event.stopPropagation()
+            toggleExpanded(record, rowIndex)
+          }}
+        >
+          {expanded ? '−' : '+'}
+        </button>
+      </Show>
+    )
+  }
+
+  function expandedRowClass(record: T, index: number) {
+    const className = local.expandable?.expandedRowClassName
+    return typeof className === 'function' ? className(record, index, 0) : className
+  }
+
   return (
     <div
       {...rest}
@@ -275,181 +447,248 @@ export function Table<T extends object = object>(props: TableProps<T>) {
         local.className,
       )}
     >
-      <table class={prefixCls()}>
-        <Show when={local.showHeader !== false}>
-          <thead>
-            <tr {...(local.onHeaderRow?.(columns(), 0) ?? {})}>
-              <For each={columns()}>
-                {(column, index) => (
+      <div class={`${prefixCls()}-container`} style={scrollContainerStyle()}>
+        <table class={prefixCls()} style={tableStyle()}>
+          <Show when={local.showHeader !== false}>
+            <thead>
+              <tr {...(local.onHeaderRow?.(columns(), 0) ?? {})}>
+                <Show when={local.expandable}>
                   <th
-                    {...(column.onHeaderCell?.(column) ?? {})}
-                    class={classNames(
-                      column.align === 'center' && `${prefixCls()}-cell-center`,
-                      column.align === 'right' && `${prefixCls()}-cell-right`,
-                      column.class,
-                      column.className,
-                    )}
-                    classList={column.classList}
+                    class={`${prefixCls()}-expand-column`}
                     style={{
-                      width: typeof column.width === 'number' ? `${column.width}px` : column.width,
+                      width:
+                        typeof local.expandable?.columnWidth === 'number'
+                          ? `${local.expandable.columnWidth}px`
+                          : local.expandable?.columnWidth,
                     }}
-                    data-column-key={getColumnKey(column, index())}
                   >
-                    <span class={`${prefixCls()}-column-title`}>{renderTitle(column)}</span>
-                    <span class={`${prefixCls()}-column-actions`}>
-                      <Show when={column.sorter}>
-                        <button
-                          type="button"
-                          class={classNames(
-                            `${prefixCls()}-column-action`,
-                            `${prefixCls()}-sorter`,
-                            getColumnSortOrder(column, index()) && `${prefixCls()}-sorter-active`,
-                          )}
-                          aria-label={`Sort by ${String(renderTitle(column))}`}
-                          aria-sort={getAriaSort(getColumnSortOrder(column, index()) ?? null)}
-                          onClick={() => toggleSort(column, index())}
-                        >
-                          <span
-                            class={classNames(
-                              `${prefixCls()}-sorter-icon`,
-                              getColumnSortOrder(column, index()) === 'ascend' &&
-                                `${prefixCls()}-sorter-icon-active`,
-                            )}
-                            aria-hidden="true"
-                          >
-                            ▲
-                          </span>
-                          <span
-                            class={classNames(
-                              `${prefixCls()}-sorter-icon`,
-                              getColumnSortOrder(column, index()) === 'descend' &&
-                                `${prefixCls()}-sorter-icon-active`,
-                            )}
-                            aria-hidden="true"
-                          >
-                            ▼
-                          </span>
-                        </button>
-                      </Show>
-                      <Show when={column.filters}>
-                        <button
-                          type="button"
-                          class={classNames(
-                            `${prefixCls()}-column-action`,
-                            `${prefixCls()}-filter-trigger`,
-                            Boolean(filteredValues()[getColumnKey(column, index())]?.length) &&
-                              `${prefixCls()}-filter-trigger-active`,
-                          )}
-                          aria-label={`Filter ${String(renderTitle(column))}`}
-                          onClick={() =>
-                            setOpenFilterKey(
-                              openFilterKey() === getColumnKey(column, index())
-                                ? undefined
-                                : getColumnKey(column, index()),
-                            )
-                          }
-                        >
-                          {column.filterIcon
-                            ? typeof column.filterIcon === 'function'
-                              ? column.filterIcon(
-                                  Boolean(filteredValues()[getColumnKey(column, index())]?.length),
-                                )
-                              : column.filterIcon
-                            : 'Filter'}
-                        </button>
-                        <Show when={openFilterKey() === getColumnKey(column, index())}>
-                          <div class={`${prefixCls()}-filter-dropdown`}>
-                            <For each={column.filters}>
-                              {(filter) => {
-                                const key = getColumnKey(column, index())
-                                const checked = () =>
-                                  Boolean(filteredValues()[key]?.includes(filter.value))
-                                return (
-                                  <label>
-                                    <input
-                                      type={column.filterMultiple === false ? 'radio' : 'checkbox'}
-                                      name={`${prefixCls()}-${key}-filter`}
-                                      checked={checked()}
-                                      aria-label={String(filter.text)}
-                                      onChange={(event) =>
-                                        updateFilter(
-                                          column,
-                                          index(),
-                                          filter.value,
-                                          event.currentTarget.checked,
-                                        )
-                                      }
-                                    />
-                                    {filter.text}
-                                  </label>
-                                )
-                              }}
-                            </For>
-                          </div>
-                        </Show>
-                      </Show>
-                    </span>
+                    {renderExpandHeader()}
                   </th>
-                )}
-              </For>
-            </tr>
-          </thead>
-        </Show>
-        <tbody>
-          <Show
-            when={pageData().length > 0}
-            fallback={
-              <tr>
-                <td class={`${prefixCls()}-empty`} colspan={Math.max(columns().length, 1)}>
-                  {getEmptyText(local)}
-                </td>
-              </tr>
-            }
-          >
-            <For each={pageData()}>
-              {(record, index) => {
-                const rowProps = () => local.onRow?.(record, index()) ?? {}
-                return (
-                  <tr
-                    {...rowProps()}
-                    class={classNames(
-                      rowProps().class,
-                      typeof local.rowClassName === 'function'
-                        ? local.rowClassName(record, index())
-                        : local.rowClassName,
-                    )}
-                    data-row-key={getRowKey(record, index(), local.rowKey)}
+                </Show>
+                <Show when={local.rowSelection}>
+                  <th
+                    class={`${prefixCls()}-selection-column`}
+                    style={{
+                      width:
+                        typeof local.rowSelection?.columnWidth === 'number'
+                          ? `${local.rowSelection.columnWidth}px`
+                          : local.rowSelection?.columnWidth,
+                    }}
                   >
-                    <For each={columns()}>
-                      {(column) => {
-                        const value = () => getValue(record, column.dataIndex)
-                        const cellProps = () => column.onCell?.(record, index()) ?? {}
-                        return (
-                          <td
-                            {...cellProps()}
-                            class={classNames(
-                              column.align === 'center' && `${prefixCls()}-cell-center`,
-                              column.align === 'right' && `${prefixCls()}-cell-right`,
-                              column.class,
-                              column.className,
-                              cellProps().class,
-                            )}
-                            classList={column.classList}
-                          >
-                            {column.render
-                              ? column.render(value(), record, index())
-                              : (value() as JSX.Element)}
-                          </td>
-                        )
+                    {renderSelectionHeader()}
+                  </th>
+                </Show>
+                <For each={columns()}>
+                  {(column, index) => (
+                    <th
+                      {...(column.onHeaderCell?.(column) ?? {})}
+                      class={classNames(
+                        column.align === 'center' && `${prefixCls()}-cell-center`,
+                        column.align === 'right' && `${prefixCls()}-cell-right`,
+                        column.class,
+                        column.className,
+                      )}
+                      classList={column.classList}
+                      style={{
+                        width:
+                          typeof column.width === 'number' ? `${column.width}px` : column.width,
                       }}
-                    </For>
-                  </tr>
-                )
-              }}
-            </For>
+                      data-column-key={getColumnKey(column, index())}
+                    >
+                      <span class={`${prefixCls()}-column-title`}>{renderTitle(column)}</span>
+                      <span class={`${prefixCls()}-column-actions`}>
+                        <Show when={column.sorter}>
+                          <button
+                            type="button"
+                            class={classNames(
+                              `${prefixCls()}-column-action`,
+                              `${prefixCls()}-sorter`,
+                              getColumnSortOrder(column, index()) && `${prefixCls()}-sorter-active`,
+                            )}
+                            aria-label={`Sort by ${String(renderTitle(column))}`}
+                            aria-sort={getAriaSort(getColumnSortOrder(column, index()) ?? null)}
+                            onClick={() => toggleSort(column, index())}
+                          >
+                            <span
+                              class={classNames(
+                                `${prefixCls()}-sorter-icon`,
+                                getColumnSortOrder(column, index()) === 'ascend' &&
+                                  `${prefixCls()}-sorter-icon-active`,
+                              )}
+                              aria-hidden="true"
+                            >
+                              ▲
+                            </span>
+                            <span
+                              class={classNames(
+                                `${prefixCls()}-sorter-icon`,
+                                getColumnSortOrder(column, index()) === 'descend' &&
+                                  `${prefixCls()}-sorter-icon-active`,
+                              )}
+                              aria-hidden="true"
+                            >
+                              ▼
+                            </span>
+                          </button>
+                        </Show>
+                        <Show when={column.filters}>
+                          <button
+                            type="button"
+                            class={classNames(
+                              `${prefixCls()}-column-action`,
+                              `${prefixCls()}-filter-trigger`,
+                              Boolean(filteredValues()[getColumnKey(column, index())]?.length) &&
+                                `${prefixCls()}-filter-trigger-active`,
+                            )}
+                            aria-label={`Filter ${String(renderTitle(column))}`}
+                            onClick={() =>
+                              setOpenFilterKey(
+                                openFilterKey() === getColumnKey(column, index())
+                                  ? undefined
+                                  : getColumnKey(column, index()),
+                              )
+                            }
+                          >
+                            {column.filterIcon
+                              ? typeof column.filterIcon === 'function'
+                                ? column.filterIcon(
+                                    Boolean(
+                                      filteredValues()[getColumnKey(column, index())]?.length,
+                                    ),
+                                  )
+                                : column.filterIcon
+                              : 'Filter'}
+                          </button>
+                          <Show when={openFilterKey() === getColumnKey(column, index())}>
+                            <div class={`${prefixCls()}-filter-dropdown`}>
+                              <For each={column.filters}>
+                                {(filter) => {
+                                  const key = getColumnKey(column, index())
+                                  const checked = () =>
+                                    Boolean(filteredValues()[key]?.includes(filter.value))
+                                  return (
+                                    <label>
+                                      <input
+                                        type={
+                                          column.filterMultiple === false ? 'radio' : 'checkbox'
+                                        }
+                                        name={`${prefixCls()}-${key}-filter`}
+                                        checked={checked()}
+                                        aria-label={String(filter.text)}
+                                        onChange={(event) =>
+                                          updateFilter(
+                                            column,
+                                            index(),
+                                            filter.value,
+                                            event.currentTarget.checked,
+                                          )
+                                        }
+                                      />
+                                      {filter.text}
+                                    </label>
+                                  )
+                                }}
+                              </For>
+                            </div>
+                          </Show>
+                        </Show>
+                      </span>
+                    </th>
+                  )}
+                </For>
+              </tr>
+            </thead>
           </Show>
-        </tbody>
-      </table>
+          <tbody>
+            <Show
+              when={pageData().length > 0}
+              fallback={
+                <tr>
+                  <td class={`${prefixCls()}-empty`} colspan={Math.max(renderColumnCount(), 1)}>
+                    {getEmptyText(local)}
+                  </td>
+                </tr>
+              }
+            >
+              <For each={pageData()}>
+                {(record, index) => {
+                  const rowProps = () => local.onRow?.(record, index()) ?? {}
+                  const key = () => getRecordKey(record, index())
+                  const expanded = () => expandedKeySet().has(key())
+                  return (
+                    <>
+                      <tr
+                        {...rowProps()}
+                        class={classNames(
+                          rowProps().class,
+                          typeof local.rowClassName === 'function'
+                            ? local.rowClassName(record, index())
+                            : local.rowClassName,
+                        )}
+                        data-row-key={key()}
+                        onClick={(event) => {
+                          const onClick = rowProps().onClick
+                          if (typeof onClick === 'function') onClick(event)
+                          if (local.expandable?.expandRowByClick) toggleExpanded(record, index())
+                        }}
+                      >
+                        <Show when={local.expandable}>
+                          <td class={`${prefixCls()}-expand-column`}>
+                            {renderExpandCell(record, index())}
+                          </td>
+                        </Show>
+                        <Show when={local.rowSelection}>
+                          <td class={`${prefixCls()}-selection-column`}>
+                            {renderSelectionCell(record, index())}
+                          </td>
+                        </Show>
+                        <For each={columns()}>
+                          {(column) => {
+                            const value = () => getValue(record, column.dataIndex)
+                            const cellProps = () => column.onCell?.(record, index()) ?? {}
+                            return (
+                              <td
+                                {...cellProps()}
+                                class={classNames(
+                                  column.align === 'center' && `${prefixCls()}-cell-center`,
+                                  column.align === 'right' && `${prefixCls()}-cell-right`,
+                                  column.class,
+                                  column.className,
+                                  cellProps().class,
+                                )}
+                                classList={column.classList}
+                              >
+                                {column.render
+                                  ? column.render(value(), record, index())
+                                  : (value() as JSX.Element)}
+                              </td>
+                            )
+                          }}
+                        </For>
+                      </tr>
+                      <Show when={expanded()}>
+                        <tr
+                          class={classNames(
+                            `${prefixCls()}-expanded-row`,
+                            expandedRowClass(record, index()),
+                          )}
+                        >
+                          <td colspan={Math.max(renderColumnCount(), 1)}>
+                            {local.expandable?.expandedRowRender?.(record, index(), 0, true)}
+                          </td>
+                        </tr>
+                      </Show>
+                    </>
+                  )
+                }}
+              </For>
+            </Show>
+          </tbody>
+          <Show when={local.summary}>
+            <tfoot>{local.summary?.(pageData())}</tfoot>
+          </Show>
+        </table>
+      </div>
       <Show when={paginationConfig() && processedData().length > 0}>
         <div class={`${prefixCls()}-pagination`}>
           <Pagination

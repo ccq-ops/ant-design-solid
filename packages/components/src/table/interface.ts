@@ -46,6 +46,12 @@ export interface TableLoadingConfig {
   tip?: JSX.Element
 }
 
+export interface TableScrollConfig {
+  x?: string | number | true
+  y?: string | number
+  scrollToFirstRowOnChange?: boolean
+}
+
 export interface TableChangePagination {
   current: number
   pageSize: number
@@ -60,10 +66,43 @@ export interface TableSorterResult<T extends object = object> {
 }
 
 export type TableChangeAction = 'paginate' | 'sort' | 'filter'
+export type TableRowSelectionType = 'checkbox' | 'radio'
+export type TableRowSelectionChangeType = 'all' | 'none' | 'invert' | 'single' | 'multiple'
 
 export interface TableCurrentDataSource<T extends object = object> {
   currentDataSource: T[]
   action: TableChangeAction
+}
+
+export interface TableRowSelection<T extends object = object> {
+  type?: TableRowSelectionType
+  selectedRowKeys?: TableKey[]
+  defaultSelectedRowKeys?: TableKey[]
+  columnTitle?: JSX.Element
+  columnWidth?: string | number
+  getCheckboxProps?: (
+    record: T,
+  ) => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type' | 'checked'>>
+  onChange?: (
+    selectedRowKeys: TableKey[],
+    selectedRows: T[],
+    info: { type: TableRowSelectionChangeType },
+  ) => void
+  onSelect?: (record: T, selected: boolean, selectedRows: T[], nativeEvent: Event) => void
+}
+
+export interface TableExpandableConfig<T extends object = object> {
+  columnTitle?: JSX.Element
+  columnWidth?: string | number
+  defaultExpandAllRows?: boolean
+  defaultExpandedRowKeys?: TableKey[]
+  expandedRowKeys?: TableKey[]
+  expandedRowRender?: (record: T, index: number, indent: number, expanded: boolean) => JSX.Element
+  expandedRowClassName?: string | ((record: T, index: number, indent: number) => string)
+  expandRowByClick?: boolean
+  rowExpandable?: (record: T) => boolean
+  onExpand?: (expanded: boolean, record: T) => void
+  onExpandedRowsChange?: (expandedRows: TableKey[]) => void
 }
 
 export interface TableColumn<T extends object = object> {
@@ -104,6 +143,10 @@ export interface TableProps<T extends object = object> extends Omit<
   bordered?: boolean
   showHeader?: boolean
   pagination?: false | TablePaginationConfig
+  rowSelection?: TableRowSelection<T>
+  expandable?: TableExpandableConfig<T>
+  scroll?: TableScrollConfig
+  summary?: (currentData: T[]) => JSX.Element
   className?: string
   onRow?: (record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>
   rowClassName?: string | ((record: T, index: number) => string)
