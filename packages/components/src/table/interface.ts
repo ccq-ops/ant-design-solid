@@ -185,6 +185,7 @@ export interface TableProps<T extends object = object> extends Omit<
   rowSelection?: TableRowSelection<T>
   expandable?: TableExpandableConfig<T>
   scroll?: TableScrollConfig
+  virtual?: boolean
   summary?: (currentData: T[]) => JSX.Element
   title?: (currentData: T[]) => JSX.Element
   footer?: (currentData: T[]) => JSX.Element

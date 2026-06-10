@@ -778,34 +778,68 @@ const Demo21 = function () {
 export default Demo21
 ```
 
+### Virtual list
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = Array.from({ length: 1000 }, (_, index) => ({
+  key: String(index + 1),
+  name: `User ${index + 1}`,
+  age: 20 + (index % 40),
+  address: `Building ${index + 1}, Product Avenue`,
+}))
+
+const columns = [
+  { title: 'Name', dataIndex: 'name', width: 180 },
+  { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+  { title: 'Address', dataIndex: 'address', width: 520 },
+]
+
+const Demo22 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      scroll={{ x: 820, y: 320 }}
+      virtual
+    />
+  )
+}
+
+export default Demo22
+```
+
 ## API
 
 ### Table
 
-| Property       | Description                                      | Type                                                                                                                   | Default                 |
-| -------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `columns`      | Table column definitions.                        | `TableColumn<T>[]`                                                                                                     | `-`                     |
-| `dataSource`   | Data records rendered as rows.                   | `T[]`                                                                                                                  | `-`                     |
-| `rowKey`       | Record field or function used as row key.        | `keyof T \| string \| ((record: T, index: number) => string \| number)`                                                | `record.key \|\| index` |
-| `loading`      | Shows the loading indicator.                     | `boolean \| TableLoadingConfig`                                                                                        | `false`                 |
-| `emptyText`    | Empty state content.                             | `JSX.Element`                                                                                                          | `'No data'`             |
-| `locale`       | Locale text. Currently supports empty text.      | `TableLocale`                                                                                                          | `-`                     |
-| `pagination`   | Pagination config, or `false` to disable paging. | `false \| TablePaginationConfig`                                                                                       | `{}`                    |
-| `rowSelection` | Row selection config.                            | `TableRowSelection<T>`                                                                                                 | `-`                     |
-| `expandable`   | Expandable row config.                           | `TableExpandableConfig<T>`                                                                                             | `-`                     |
-| `summary`      | Summary row renderer for current page data.      | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
-| `scroll`       | Basic horizontal and vertical scroll config.     | `TableScrollConfig`                                                                                                    | `-`                     |
-| `title`        | Table title renderer for current page data.      | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
-| `footer`       | Table footer renderer for current page data.     | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
-| `tableLayout`  | Native table layout mode.                        | `'auto' \| 'fixed'`                                                                                                    | `fixed` with ellipsis   |
-| `size`         | Table size.                                      | `'small' \| 'middle' \| 'large'`                                                                                       | `'middle'`              |
-| `bordered`     | Whether to render bordered table styling.        | `boolean`                                                                                                              | `false`                 |
-| `showHeader`   | Whether to render the header row.                | `boolean`                                                                                                              | `true`                  |
-| `className`    | Additional class name for the root wrapper.      | `string`                                                                                                               | `-`                     |
-| `rowClassName` | Row class name.                                  | `string \| ((record: T, index: number) => string)`                                                                     | `-`                     |
-| `onRow`        | Returns extra props for each table row.          | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                                | `-`                     |
-| `onHeaderRow`  | Returns extra props for the header row.          | `(columns: TableColumn<T>[], index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                | `-`                     |
-| `onChange`     | Called after pagination, sorting, or filtering.  | `(pagination: TableChangePagination, filters, sorter: TableSorterResult<T>, extra: TableCurrentDataSource<T>) => void` | `-`                     |
+| Property       | Description                                                                                     | Type                                                                                                                   | Default                 |
+| -------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `columns`      | Table column definitions.                                                                       | `TableColumn<T>[]`                                                                                                     | `-`                     |
+| `dataSource`   | Data records rendered as rows.                                                                  | `T[]`                                                                                                                  | `-`                     |
+| `rowKey`       | Record field or function used as row key.                                                       | `keyof T \| string \| ((record: T, index: number) => string \| number)`                                                | `record.key \|\| index` |
+| `loading`      | Shows the loading indicator.                                                                    | `boolean \| TableLoadingConfig`                                                                                        | `false`                 |
+| `emptyText`    | Empty state content.                                                                            | `JSX.Element`                                                                                                          | `'No data'`             |
+| `locale`       | Locale text. Currently supports empty text.                                                     | `TableLocale`                                                                                                          | `-`                     |
+| `pagination`   | Pagination config, or `false` to disable paging.                                                | `false \| TablePaginationConfig`                                                                                       | `{}`                    |
+| `rowSelection` | Row selection config.                                                                           | `TableRowSelection<T>`                                                                                                 | `-`                     |
+| `expandable`   | Expandable row config.                                                                          | `TableExpandableConfig<T>`                                                                                             | `-`                     |
+| `summary`      | Summary row renderer for current page data.                                                     | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
+| `scroll`       | Basic horizontal and vertical scroll config.                                                    | `TableScrollConfig`                                                                                                    | `-`                     |
+| `virtual`      | Enables virtual row rendering with fixed header when numeric `scroll.x` and `scroll.y` are set. | `boolean`                                                                                                              | `false`                 |
+| `title`        | Table title renderer for current page data.                                                     | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
+| `footer`       | Table footer renderer for current page data.                                                    | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
+| `tableLayout`  | Native table layout mode.                                                                       | `'auto' \| 'fixed'`                                                                                                    | `fixed` with ellipsis   |
+| `size`         | Table size.                                                                                     | `'small' \| 'middle' \| 'large'`                                                                                       | `'middle'`              |
+| `bordered`     | Whether to render bordered table styling.                                                       | `boolean`                                                                                                              | `false`                 |
+| `showHeader`   | Whether to render the header row.                                                               | `boolean`                                                                                                              | `true`                  |
+| `className`    | Additional class name for the root wrapper.                                                     | `string`                                                                                                               | `-`                     |
+| `rowClassName` | Row class name.                                                                                 | `string \| ((record: T, index: number) => string)`                                                                     | `-`                     |
+| `onRow`        | Returns extra props for each table row.                                                         | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                                | `-`                     |
+| `onHeaderRow`  | Returns extra props for the header row.                                                         | `(columns: TableColumn<T>[], index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                | `-`                     |
+| `onChange`     | Called after pagination, sorting, or filtering.                                                 | `(pagination: TableChangePagination, filters, sorter: TableSorterResult<T>, extra: TableCurrentDataSource<T>) => void` | `-`                     |
 
 ### Basic table types
 

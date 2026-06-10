@@ -1,4 +1,5 @@
 import { createSignal } from 'solid-js'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { fireEvent, render, screen, within } from '@solidjs/testing-library'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -548,10 +549,119 @@ describe('Table', () => {
       <Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 800, y: 240 }} />
     ))
     const container = result.container.querySelector('.ads-table-container') as HTMLElement
-    const table = result.container.querySelector('table') as HTMLElement
+    const body = result.container.querySelector('.ads-table-body') as HTMLElement
+    const headerTable = result.container.querySelector('.ads-table-header table') as HTMLElement
+    const bodyTable = result.container.querySelector('.ads-table-body table') as HTMLElement
 
-    expect(container).toHaveStyle({ 'overflow-x': 'auto', 'max-height': '240px' })
-    expect(table).toHaveStyle({ 'min-width': '800px' })
+    expect(container).toHaveStyle({ 'overflow-x': 'auto' })
+    expect(container.style.maxHeight).toBe('')
+    expect(container).toHaveAttribute('data-fixed-header', 'true')
+    expect(container).not.toHaveAttribute('data-virtual')
+    expect(
+      container.querySelector(':scope > .ads-table-header > table > thead'),
+    ).toBeInTheDocument()
+    expect(container.querySelector(':scope > .ads-table-body > table > tbody')).toBeInTheDocument()
+    expect(body).toHaveAttribute('data-scroll-body', 'true')
+    expect(body).toHaveStyle({ 'overflow-y': 'auto', 'max-height': '240px' })
+    expect(headerTable).toHaveStyle({ 'min-width': '800px', 'table-layout': 'fixed' })
+    expect(bodyTable).toHaveStyle({ 'min-width': '800px', 'table-layout': 'fixed' })
+  })
+
+  it('virtualizes page rows when virtual scrolling is enabled', () => {
+    const cache = createCache()
+    const tableData = Array.from({ length: 100 }, (_, index) => ({
+      key: String(index),
+      name: `User ${index}`,
+      age: index,
+      status: 'active',
+    }))
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          pagination={false}
+          scroll={{ x: 500, y: 120 }}
+          virtual
+        />
+      </StyleProvider>
+    ))
+    const container = result.container.querySelector('.ads-table-container') as HTMLElement
+    const body = result.container.querySelector('.ads-table-body') as HTMLElement
+    const headerTable = result.container.querySelector('.ads-table-header table') as HTMLElement
+    const bodyTable = result.container.querySelector('.ads-table-body table') as HTMLElement
+
+    expect(container).toHaveAttribute('data-virtual', 'true')
+    expect(container).toHaveAttribute('data-fixed-header', 'true')
+    expect(body).toHaveAttribute('data-virtual-scroll', 'true')
+    expect(
+      container.querySelector(':scope > .ads-table-header > table > thead'),
+    ).toBeInTheDocument()
+    expect(container.querySelector(':scope > .ads-table-body > table > tbody')).toBeInTheDocument()
+    expect(headerTable).toHaveStyle({ 'min-width': '500px', 'table-layout': 'fixed' })
+    expect(bodyTable).toHaveStyle({ 'min-width': '500px', 'table-layout': 'fixed' })
+    expect(headerTable.querySelectorAll('colgroup col')).toHaveLength(2)
+    expect(bodyTable.querySelectorAll('colgroup col')).toHaveLength(2)
+    expect(body).toHaveStyle({ 'overflow-y': 'auto', 'max-height': '120px' })
+    expect(extractStyle(cache)).toContain(
+      ".ads-table-container[data-fixed-header='true'] .ads-table-header th",
+    )
+    expect(extractStyle(cache)).toContain('background:#ffffff;')
+    expect(extractStyle(cache)).toContain('z-index:2;')
+    const renderedRows = result.container.querySelectorAll('tbody tr[data-row-key]')
+    const bottomSpacer = result.container.querySelector('.ads-table-virtual-holder') as HTMLElement
+    expect(renderedRows.length).toBeLessThan(100)
+    expect(renderedRows.length * 48 + Number.parseInt(bottomSpacer.style.height || '0', 10)).toBe(
+      100 * 48,
+    )
+  })
+
+  it('requires numeric horizontal and vertical scroll before enabling virtual rows', () => {
+    const tableData = Array.from({ length: 100 }, (_, index) => ({
+      key: String(index),
+      name: `User ${index}`,
+      age: index,
+      status: 'active',
+    }))
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={tableData}
+        pagination={false}
+        scroll={{ y: 120 }}
+        virtual
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-table-container')).not.toHaveAttribute(
+      'data-virtual',
+      'true',
+    )
+    expect(result.container.querySelectorAll('tbody tr[data-row-key]')).toHaveLength(100)
+  })
+
+  it('renders all page rows when virtual scrolling is disabled', () => {
+    const tableData = Array.from({ length: 100 }, (_, index) => ({
+      key: String(index),
+      name: `User ${index}`,
+      age: index,
+      status: 'active',
+    }))
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={tableData}
+        pagination={false}
+        scroll={{ y: 120 }}
+        virtual={false}
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-table-container')).not.toHaveAttribute(
+      'data-virtual',
+      'true',
+    )
+    expect(result.container.querySelectorAll('tbody tr[data-row-key]')).toHaveLength(100)
   })
 
   it('renders title and footer with current page data', () => {

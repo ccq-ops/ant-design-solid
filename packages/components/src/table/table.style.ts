@@ -24,6 +24,17 @@ export function useTableStyle(prefixCls: string) {
       [`.${prefixCls}-container`]: {
         width: '100%',
       },
+      [`.${prefixCls}-container[data-fixed-header='true'] .${prefixCls}-header th`]: {
+        'z-index': 2,
+        background: t.colorBgContainer,
+        'box-shadow': `0 ${t.lineWidth}px 0 ${table.borderColor}`,
+      },
+      [`.${prefixCls}-container[data-virtual='true'] .${prefixCls}-header`]: {
+        overflow: 'hidden',
+      },
+      [`.${prefixCls}-container[data-virtual='true'] .${prefixCls}-header .${prefixCls}`]: {
+        'margin-bottom': `-${t.lineWidth}px`,
+      },
       [`.${prefixCls}-title, .${prefixCls}-footer`]: {
         padding: table.cellPadding,
         background: t.colorBgContainer,

@@ -1,9 +1,11 @@
-import { For, Show, createEffect, createSignal, splitProps } from 'solid-js'
+import { createVirtualizer } from '@tanstack/solid-virtual'
+import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { Pagination } from '../pagination'
 import { classNames } from '../shared/class-names'
 import { useTableStyle } from './table.style'
 import type { JSX } from 'solid-js'
+import type { VirtualItem } from '@tanstack/solid-virtual'
 import type {
   TableChangeAction,
   TableChangePagination,
@@ -24,12 +26,18 @@ import type {
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_SORT_DIRECTIONS: TableSortOrder[] = ['ascend', 'descend', null]
 const DEFAULT_SELECTIONS: TableRowSelectionPreset[] = ['all', 'invert', 'none']
+const DEFAULT_VIRTUAL_ROW_HEIGHT = 48
 
 interface TableHeaderCell<T extends object> {
   column: TableColumn<T>
   colSpan: number
   rowSpan: number
   columnIndex: number
+}
+
+interface TableVirtualRow<T extends object> {
+  record: T
+  index: number
 }
 
 function getValue<T extends object>(record: T, dataIndex: TableDataIndex<T> | undefined) {
@@ -193,6 +201,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     'rowSelection',
     'expandable',
     'scroll',
+    'virtual',
     'summary',
     'title',
     'footer',
@@ -207,6 +216,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-table`
   const [, hashId] = useTableStyle(prefixCls())
+  let scrollBodyRef: HTMLDivElement | undefined
   const columns = () => getVisibleColumns(local.columns ?? [])
   const leafColumns = () => getLeafColumns(columns())
   const headerDepth = () => getColumnDepth(columns())
@@ -300,6 +310,72 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   }
   const getRecordKey = (record: T, index: number) =>
     getRowKey(record, getRecordIndex(record, index), local.rowKey)
+  const virtualEnabled = () =>
+    local.virtual === true &&
+    typeof local.scroll?.x === 'number' &&
+    typeof local.scroll.y === 'number'
+  const fixedHeaderEnabled = () => local.scroll?.y !== undefined || virtualEnabled()
+  const virtualizer = createVirtualizer<HTMLDivElement, HTMLTableRowElement>({
+    get count() {
+      return pageData().length
+    },
+    getScrollElement: () => scrollBodyRef ?? null,
+    estimateSize: () => DEFAULT_VIRTUAL_ROW_HEIGHT,
+    getItemKey: (index) =>
+      String(pageData()[index] ? getRecordKey(pageData()[index], index) : index),
+    overscan: 6,
+    get enabled() {
+      return virtualEnabled()
+    },
+    initialRect: {
+      width: 0,
+      height: typeof local.scroll?.y === 'number' ? local.scroll.y : 0,
+    },
+  })
+  createEffect(() => {
+    if (!virtualEnabled()) return
+    const rowCount = pageData().length
+    if (rowCount < 0) return
+    virtualizer.measure()
+  })
+  const virtualItems = createMemo<VirtualItem[]>(() => {
+    if (!virtualEnabled()) return []
+
+    const rowCount = pageData().length
+    const measuredItems = virtualizer.getVirtualItems().filter((item) => item.index < rowCount)
+    if (measuredItems.length) return measuredItems
+
+    const height = typeof local.scroll?.y === 'number' ? local.scroll.y : 0
+    const fallbackCount = Math.min(rowCount, Math.ceil(height / DEFAULT_VIRTUAL_ROW_HEIGHT) + 12)
+    return Array.from(
+      { length: fallbackCount },
+      (_, index): VirtualItem => ({
+        index,
+        key: String(pageData()[index] ? getRecordKey(pageData()[index], index) : index),
+        start: index * DEFAULT_VIRTUAL_ROW_HEIGHT,
+        size: DEFAULT_VIRTUAL_ROW_HEIGHT,
+        end: (index + 1) * DEFAULT_VIRTUAL_ROW_HEIGHT,
+        lane: 0,
+      }),
+    )
+  })
+  const renderedPageRows = () =>
+    virtualEnabled()
+      ? virtualItems()
+          .map((virtualItem) => ({
+            record: pageData()[virtualItem.index],
+            index: virtualItem.index,
+          }))
+          .filter((item): item is { record: T; index: number } => Boolean(item.record))
+      : pageData().map<TableVirtualRow<T>>((record, index) => ({ record, index }))
+  const virtualTotalHeight = () => pageData().length * DEFAULT_VIRTUAL_ROW_HEIGHT
+  const virtualTopHeight = () => virtualItems()[0]?.start ?? 0
+  const virtualBottomHeight = () => {
+    const items = virtualItems()
+    const lastItem = items[items.length - 1]
+    if (!lastItem) return 0
+    return Math.max(virtualTotalHeight() - lastItem.end, 0)
+  }
   const renderColumnCount = () =>
     leafColumns().length + (local.rowSelection ? 1 : 0) + (local.expandable ? 1 : 0)
   const selectedKeys = () => local.rowSelection?.selectedRowKeys ?? innerSelectedKeys()
@@ -340,18 +416,35 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     if (!local.scroll) return undefined
     return {
       'overflow-x': local.scroll.x ? 'auto' : undefined,
-      'overflow-y': local.scroll.y ? 'auto' : undefined,
-      'max-height':
-        typeof local.scroll.y === 'number'
+      'overflow-y': fixedHeaderEnabled() ? undefined : local.scroll.y ? 'auto' : undefined,
+      'max-height': fixedHeaderEnabled()
+        ? undefined
+        : typeof local.scroll.y === 'number'
           ? `${local.scroll.y}px`
           : local.scroll.y == null
             ? undefined
             : String(local.scroll.y),
     }
   }
+  const scrollBodyStyle = (): JSX.CSSProperties | undefined => {
+    if (!fixedHeaderEnabled()) return undefined
+    return {
+      'overflow-y': 'auto',
+      'overflow-x': 'hidden',
+      'max-height':
+        typeof local.scroll?.y === 'number'
+          ? `${local.scroll.y}px`
+          : local.scroll?.y == null
+            ? undefined
+            : String(local.scroll.y),
+    }
+  }
   const tableStyle = (): JSX.CSSProperties | undefined => {
     const layout =
-      local.tableLayout ?? (leafColumns().some((column) => column.ellipsis) ? 'fixed' : undefined)
+      local.tableLayout ??
+      (fixedHeaderEnabled() || leafColumns().some((column) => column.ellipsis)
+        ? 'fixed'
+        : undefined)
     if (!local.scroll?.x && !layout) return undefined
     return {
       'min-width':
@@ -756,6 +849,219 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     )
   }
 
+  function renderColGroup() {
+    return (
+      <colgroup>
+        <Show when={local.expandable}>
+          <col
+            style={{
+              width:
+                typeof local.expandable?.columnWidth === 'number'
+                  ? `${local.expandable.columnWidth}px`
+                  : (local.expandable?.columnWidth ?? '48px'),
+            }}
+          />
+        </Show>
+        <Show when={local.rowSelection}>
+          <col
+            style={{
+              width:
+                typeof local.rowSelection?.columnWidth === 'number'
+                  ? `${local.rowSelection.columnWidth}px`
+                  : (local.rowSelection?.columnWidth ?? '48px'),
+            }}
+          />
+        </Show>
+        <For each={leafColumns()}>
+          {(column) => (
+            <col
+              style={{
+                width: typeof column.width === 'number' ? `${column.width}px` : column.width,
+              }}
+            />
+          )}
+        </For>
+      </colgroup>
+    )
+  }
+
+  function renderHeader() {
+    return (
+      <Show when={local.showHeader !== false}>
+        <thead>
+          <For each={headerRows()}>
+            {(row, rowIndex) => (
+              <tr {...(local.onHeaderRow?.(leafColumns(), rowIndex()) ?? {})}>
+                <Show when={rowIndex() === 0 && local.expandable}>
+                  <th
+                    class={`${prefixCls()}-expand-column`}
+                    rowspan={headerDepth() > 1 ? headerDepth() : undefined}
+                    style={{
+                      width:
+                        typeof local.expandable?.columnWidth === 'number'
+                          ? `${local.expandable.columnWidth}px`
+                          : local.expandable?.columnWidth,
+                    }}
+                  >
+                    {renderExpandHeader()}
+                  </th>
+                </Show>
+                <Show when={rowIndex() === 0 && local.rowSelection}>
+                  <th
+                    class={`${prefixCls()}-selection-column`}
+                    rowspan={headerDepth() > 1 ? headerDepth() : undefined}
+                    style={{
+                      width:
+                        typeof local.rowSelection?.columnWidth === 'number'
+                          ? `${local.rowSelection.columnWidth}px`
+                          : local.rowSelection?.columnWidth,
+                    }}
+                  >
+                    {renderSelectionHeader()}
+                  </th>
+                </Show>
+                <For each={row}>{(cell) => renderHeaderCell(cell)}</For>
+              </tr>
+            )}
+          </For>
+        </thead>
+      </Show>
+    )
+  }
+
+  function renderBody() {
+    return (
+      <tbody>
+        <Show
+          when={pageData().length > 0}
+          fallback={
+            <tr>
+              <td class={`${prefixCls()}-empty`} colspan={Math.max(renderColumnCount(), 1)}>
+                {getEmptyText(local)}
+              </td>
+            </tr>
+          }
+        >
+          <Show when={virtualEnabled() && virtualTopHeight() > 0}>
+            <tr
+              class={`${prefixCls()}-virtual-spacer`}
+              aria-hidden="true"
+              style={{ height: `${virtualTopHeight()}px` }}
+            >
+              <td
+                colspan={Math.max(renderColumnCount(), 1)}
+                style={{ height: `${virtualTopHeight()}px`, padding: 0, border: 0 }}
+              />
+            </tr>
+          </Show>
+          <For each={renderedPageRows()}>
+            {(row) => {
+              const rowProps = () => local.onRow?.(row.record, row.index) ?? {}
+              const key = () => getRecordKey(row.record, row.index)
+              const expanded = () => expandedKeySet().has(key())
+              const rowStyle = (): JSX.CSSProperties => {
+                const style = rowProps().style
+                return style && typeof style !== 'string' ? style : {}
+              }
+              return (
+                <>
+                  <tr
+                    {...rowProps()}
+                    class={classNames(
+                      rowProps().class,
+                      typeof local.rowClassName === 'function'
+                        ? local.rowClassName(row.record, row.index)
+                        : local.rowClassName,
+                    )}
+                    data-row-key={key()}
+                    style={rowStyle()}
+                    onClick={(event) => {
+                      const onClick = rowProps().onClick
+                      if (typeof onClick === 'function') onClick(event)
+                      if (local.expandable?.expandRowByClick) toggleExpanded(row.record, row.index)
+                    }}
+                  >
+                    <Show when={local.expandable}>
+                      <td class={`${prefixCls()}-expand-column`}>
+                        {renderExpandCell(row.record, row.index)}
+                      </td>
+                    </Show>
+                    <Show when={local.rowSelection}>
+                      <td class={`${prefixCls()}-selection-column`}>
+                        {renderSelectionCell(row.record, row.index)}
+                      </td>
+                    </Show>
+                    <For each={leafColumns()}>
+                      {(column) => {
+                        const cellProps = () => column.onCell?.(row.record, row.index) ?? {}
+                        const rendered = () => renderCellContent(column, row.record, row.index)
+                        const mergedCellProps = () => ({ ...cellProps(), ...rendered().props })
+                        const skipCell = () =>
+                          mergedCellProps().colSpan === 0 || mergedCellProps().rowSpan === 0
+                        const ellipsisShowTitle = () =>
+                          column.ellipsis === true ||
+                          (typeof column.ellipsis === 'object' &&
+                            column.ellipsis.showTitle !== false)
+                        return (
+                          <Show when={!skipCell()}>
+                            <td
+                              {...mergedCellProps()}
+                              scope={column.rowScope}
+                              title={
+                                mergedCellProps().title ??
+                                getEllipsisTitle(rendered().children, ellipsisShowTitle())
+                              }
+                              class={classNames(
+                                column.align === 'center' && `${prefixCls()}-cell-center`,
+                                column.align === 'right' && `${prefixCls()}-cell-right`,
+                                column.ellipsis && `${prefixCls()}-cell-ellipsis`,
+                                column.class,
+                                column.className,
+                                cellProps().class,
+                                rendered().props.class,
+                              )}
+                              classList={column.classList}
+                            >
+                              {rendered().children}
+                            </td>
+                          </Show>
+                        )
+                      }}
+                    </For>
+                  </tr>
+                  <Show when={expanded()}>
+                    <tr
+                      class={classNames(
+                        `${prefixCls()}-expanded-row`,
+                        expandedRowClass(row.record, row.index),
+                      )}
+                    >
+                      <td colspan={Math.max(renderColumnCount(), 1)}>
+                        {local.expandable?.expandedRowRender?.(row.record, row.index, 0, true)}
+                      </td>
+                    </tr>
+                  </Show>
+                </>
+              )
+            }}
+          </For>
+          <Show when={virtualEnabled()}>
+            <tr
+              class={`${prefixCls()}-virtual-holder`}
+              aria-hidden="true"
+              style={{ height: `${virtualBottomHeight()}px` }}
+            >
+              <td
+                colspan={Math.max(renderColumnCount(), 1)}
+                style={{ height: `${virtualBottomHeight()}px`, padding: 0, border: 0 }}
+              />
+            </tr>
+          </Show>
+        </Show>
+      </tbody>
+    )
+  }
+
   return (
     <div
       {...rest}
@@ -772,150 +1078,49 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       <Show when={local.title}>
         <div class={`${prefixCls()}-title`}>{local.title?.(pageData())}</div>
       </Show>
-      <div class={`${prefixCls()}-container`} style={scrollContainerStyle()}>
-        <table class={prefixCls()} style={tableStyle()}>
-          <Show when={local.showHeader !== false}>
-            <thead>
-              <For each={headerRows()}>
-                {(row, rowIndex) => (
-                  <tr {...(local.onHeaderRow?.(leafColumns(), rowIndex()) ?? {})}>
-                    <Show when={rowIndex() === 0 && local.expandable}>
-                      <th
-                        class={`${prefixCls()}-expand-column`}
-                        rowspan={headerDepth() > 1 ? headerDepth() : undefined}
-                        style={{
-                          width:
-                            typeof local.expandable?.columnWidth === 'number'
-                              ? `${local.expandable.columnWidth}px`
-                              : local.expandable?.columnWidth,
-                        }}
-                      >
-                        {renderExpandHeader()}
-                      </th>
-                    </Show>
-                    <Show when={rowIndex() === 0 && local.rowSelection}>
-                      <th
-                        class={`${prefixCls()}-selection-column`}
-                        rowspan={headerDepth() > 1 ? headerDepth() : undefined}
-                        style={{
-                          width:
-                            typeof local.rowSelection?.columnWidth === 'number'
-                              ? `${local.rowSelection.columnWidth}px`
-                              : local.rowSelection?.columnWidth,
-                        }}
-                      >
-                        {renderSelectionHeader()}
-                      </th>
-                    </Show>
-                    <For each={row}>{(cell) => renderHeaderCell(cell)}</For>
-                  </tr>
-                )}
-              </For>
-            </thead>
-          </Show>
-          <tbody>
-            <Show
-              when={pageData().length > 0}
-              fallback={
-                <tr>
-                  <td class={`${prefixCls()}-empty`} colspan={Math.max(renderColumnCount(), 1)}>
-                    {getEmptyText(local)}
-                  </td>
-                </tr>
-              }
-            >
-              <For each={pageData()}>
-                {(record, index) => {
-                  const rowProps = () => local.onRow?.(record, index()) ?? {}
-                  const key = () => getRecordKey(record, index())
-                  const expanded = () => expandedKeySet().has(key())
-                  return (
-                    <>
-                      <tr
-                        {...rowProps()}
-                        class={classNames(
-                          rowProps().class,
-                          typeof local.rowClassName === 'function'
-                            ? local.rowClassName(record, index())
-                            : local.rowClassName,
-                        )}
-                        data-row-key={key()}
-                        onClick={(event) => {
-                          const onClick = rowProps().onClick
-                          if (typeof onClick === 'function') onClick(event)
-                          if (local.expandable?.expandRowByClick) toggleExpanded(record, index())
-                        }}
-                      >
-                        <Show when={local.expandable}>
-                          <td class={`${prefixCls()}-expand-column`}>
-                            {renderExpandCell(record, index())}
-                          </td>
-                        </Show>
-                        <Show when={local.rowSelection}>
-                          <td class={`${prefixCls()}-selection-column`}>
-                            {renderSelectionCell(record, index())}
-                          </td>
-                        </Show>
-                        <For each={leafColumns()}>
-                          {(column) => {
-                            const cellProps = () => column.onCell?.(record, index()) ?? {}
-                            const rendered = () => renderCellContent(column, record, index())
-                            const mergedCellProps = () => ({ ...cellProps(), ...rendered().props })
-                            const skipCell = () =>
-                              mergedCellProps().colSpan === 0 || mergedCellProps().rowSpan === 0
-                            const ellipsisShowTitle = () =>
-                              column.ellipsis === true ||
-                              (typeof column.ellipsis === 'object' &&
-                                column.ellipsis.showTitle !== false)
-                            return (
-                              <Show when={!skipCell()}>
-                                <td
-                                  {...mergedCellProps()}
-                                  scope={column.rowScope}
-                                  title={
-                                    mergedCellProps().title ??
-                                    getEllipsisTitle(rendered().children, ellipsisShowTitle())
-                                  }
-                                  class={classNames(
-                                    column.align === 'center' && `${prefixCls()}-cell-center`,
-                                    column.align === 'right' && `${prefixCls()}-cell-right`,
-                                    column.ellipsis && `${prefixCls()}-cell-ellipsis`,
-                                    column.class,
-                                    column.className,
-                                    cellProps().class,
-                                    rendered().props.class,
-                                  )}
-                                  classList={column.classList}
-                                >
-                                  {rendered().children}
-                                </td>
-                              </Show>
-                            )
-                          }}
-                        </For>
-                      </tr>
-                      <Show when={expanded()}>
-                        <tr
-                          class={classNames(
-                            `${prefixCls()}-expanded-row`,
-                            expandedRowClass(record, index()),
-                          )}
-                        >
-                          <td colspan={Math.max(renderColumnCount(), 1)}>
-                            {local.expandable?.expandedRowRender?.(record, index(), 0, true)}
-                          </td>
-                        </tr>
-                      </Show>
-                    </>
-                  )
-                }}
-              </For>
-            </Show>
-          </tbody>
-          <Show when={local.summary}>
-            <tfoot>{local.summary?.(pageData())}</tfoot>
-          </Show>
-        </table>
+      <div
+        class={`${prefixCls()}-container`}
+        style={scrollContainerStyle()}
+        data-virtual={virtualEnabled() ? 'true' : undefined}
+        data-fixed-header={fixedHeaderEnabled() ? 'true' : undefined}
+      >
+        <Show
+          when={fixedHeaderEnabled()}
+          fallback={
+            <table class={prefixCls()} style={tableStyle()}>
+              {renderColGroup()}
+              {renderHeader()}
+              {renderBody()}
+              <Show when={local.summary}>
+                <tfoot>{local.summary?.(pageData())}</tfoot>
+              </Show>
+            </table>
+          }
+        >
+          <div class={`${prefixCls()}-header`}>
+            <table class={prefixCls()} style={tableStyle()}>
+              {renderColGroup()}
+              {renderHeader()}
+            </table>
+          </div>
+          <div
+            ref={(element) => {
+              scrollBodyRef = element
+            }}
+            class={`${prefixCls()}-body`}
+            style={scrollBodyStyle()}
+            data-scroll-body="true"
+            data-virtual-scroll={virtualEnabled() ? 'true' : undefined}
+          >
+            <table class={prefixCls()} style={tableStyle()}>
+              {renderColGroup()}
+              {renderBody()}
+              <Show when={local.summary}>
+                <tfoot>{local.summary?.(pageData())}</tfoot>
+              </Show>
+            </table>
+          </div>
+        </Show>
       </div>
       <Show when={local.footer}>
         <div class={`${prefixCls()}-footer`}>{local.footer?.(pageData())}</div>
