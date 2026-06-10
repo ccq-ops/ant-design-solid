@@ -19,17 +19,28 @@ describe('Progress docs page', () => {
     const result = renderProgressPage()
 
     expect(result.getByRole('heading', { name: 'Progress', level: 1 })).toBeInTheDocument()
-    expect(result.getByLabelText('Basic line')).toBeInTheDocument()
-    expect(result.getByLabelText('Circle and dashboard')).toBeInTheDocument()
-    expect(result.getByLabelText('Status')).toBeInTheDocument()
-    expect(result.getByLabelText('Custom text format')).toBeInTheDocument()
-    expect(result.getByLabelText('Success segment')).toBeInTheDocument()
-    expect(result.getByLabelText('Steps')).toBeInTheDocument()
-    expect(result.getByLabelText('Progress value position')).toBeInTheDocument()
-    expect(result.getByLabelText('Stroke color and rail color')).toBeInTheDocument()
-    expect(result.getByLabelText('Stroke linecap')).toBeInTheDocument()
-    expect(result.getByLabelText('Size')).toBeInTheDocument()
-    expect(result.getByLabelText('Hidden info')).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Basic line', level: 3 })).toBeInTheDocument()
+    expect(
+      result.getByRole('heading', { name: 'Circle and dashboard', level: 3 }),
+    ).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Status', level: 3 })).toBeInTheDocument()
+    expect(
+      result.getByRole('heading', { name: 'Custom text format', level: 3 }),
+    ).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Success segment', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Steps', level: 3 })).toBeInTheDocument()
+    expect(
+      result.getByRole('heading', { name: 'Progress value position', level: 3 }),
+    ).toBeInTheDocument()
+    expect(
+      result.getByRole('heading', { name: 'Stroke color and rail color', level: 3 }),
+    ).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Stroke linecap', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Size', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Hidden info', level: 3 })).toBeInTheDocument()
     expect(result.getAllByText('Example')).toHaveLength(11)
+    for (const exampleLabel of result.getAllByText('Example')) {
+      expect(exampleLabel.closest('section')).not.toHaveAttribute('aria-label')
+    }
   })
 })

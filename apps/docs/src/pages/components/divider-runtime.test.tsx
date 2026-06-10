@@ -19,10 +19,13 @@ describe('Divider docs page', () => {
     const result = renderDividerPage()
 
     expect(result.getByRole('heading', { name: 'Divider', level: 1 })).toBeInTheDocument()
-    expect(result.getByLabelText('Basic')).toBeInTheDocument()
-    expect(result.getByLabelText('With text')).toBeInTheDocument()
-    expect(result.getByLabelText('Variants')).toBeInTheDocument()
-    expect(result.getByLabelText('Vertical')).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Basic', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'With text', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Variants', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Vertical', level: 3 })).toBeInTheDocument()
     expect(result.getAllByText('Example')).toHaveLength(4)
+    for (const exampleLabel of result.getAllByText('Example')) {
+      expect(exampleLabel.closest('section')).not.toHaveAttribute('aria-label')
+    }
   })
 })

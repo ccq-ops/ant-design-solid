@@ -5,19 +5,16 @@ import { DemoBlock, MarkdownTable } from './demo-block'
 const ButtonDemo = () => <button type="button">Click</button>
 
 describe('DemoBlock', () => {
-  it('renders title, preview component, code, and Tailwind structural classes', async () => {
-    const result = render(() => (
-      <DemoBlock title="Basic" code="<Button>Click</Button>" component={ButtonDemo} />
-    ))
+  it('renders preview component, code, and Tailwind structural classes without a title', async () => {
+    const result = render(() => <DemoBlock code="<Button>Click</Button>" component={ButtonDemo} />)
 
-    const heading = result.getByRole('heading', { name: 'Basic', level: 3 })
-    const block = heading.closest('section')
+    const block = result.container.querySelector('section')
     const button = result.getByRole('button', { name: 'Click' })
 
+    expect(result.queryByRole('heading')).not.toBeInTheDocument()
     expect(block).toHaveClass('my-4')
     expect(block).toHaveClass('overflow-hidden')
-    expect(heading).toHaveClass('px-4')
-    expect(heading).toHaveClass('py-2.5')
+    expect(block).not.toHaveAttribute('aria-label')
     expect(result.getByText('Example')).toHaveClass('uppercase')
     expect(result.getByText('Code').parentElement).toHaveClass('uppercase')
     expect(button.closest('[data-demo-block-preview]')).toHaveClass('docs-demo-preview')
@@ -36,13 +33,11 @@ describe('DemoBlock', () => {
   })
 
   it('collapses code by default and expands it when clicked', async () => {
-    const result = render(() => (
-      <DemoBlock title="Expandable" code="<Button>Click</Button>" component={ButtonDemo} />
-    ))
+    const result = render(() => <DemoBlock code="<Button>Click</Button>" component={ButtonDemo} />)
 
-    const section = result.getByLabelText('Expandable')
+    const section = result.container.querySelector('section')
     const toggle = result.getByRole('button', { name: 'Show code' })
-    const codeBody = section.querySelector('[data-demo-block-code-body]')
+    const codeBody = section?.querySelector('[data-demo-block-code-body]')
 
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     expect(codeBody).toHaveClass('hidden')
@@ -61,17 +56,13 @@ describe('DemoBlock', () => {
 
   it('highlights TSX code by default with Shiki markup', async () => {
     const result = render(() => (
-      <DemoBlock
-        title="Default language"
-        code={'<Button type="primary">Click</Button>'}
-        component={ButtonDemo}
-      />
+      <DemoBlock code={'<Button type="primary">Click</Button>'} component={ButtonDemo} />
     ))
 
-    const section = result.getByLabelText('Default language')
+    const section = result.container.querySelector('section')
 
     await waitFor(() => {
-      const pre = section.querySelector('pre')
+      const pre = section?.querySelector('pre')
 
       expect(pre).toHaveClass('shiki')
       expect(pre).toHaveAttribute('data-language', 'tsx')
@@ -82,18 +73,13 @@ describe('DemoBlock', () => {
 
   it('uses the requested language for highlighting', async () => {
     const result = render(() => (
-      <DemoBlock
-        title="Shell"
-        language="bash"
-        code="pnpm build"
-        component={() => <p>Build command</p>}
-      />
+      <DemoBlock language="bash" code="pnpm build" component={() => <p>Build command</p>} />
     ))
 
-    const section = result.getByLabelText('Shell')
+    const section = result.container.querySelector('section')
 
     await waitFor(() => {
-      const pre = section.querySelector('pre')
+      const pre = section?.querySelector('pre')
 
       expect(pre).toHaveAttribute('data-language', 'bash')
       expect(pre).toHaveClass('shiki')
@@ -104,17 +90,16 @@ describe('DemoBlock', () => {
   it('falls back to plain escaped code when Shiki cannot load the language', async () => {
     const result = render(() => (
       <DemoBlock
-        title="Unknown"
         language="not-a-real-language"
         code={'<x dangerously="true">'}
         component={() => <p>Unknown language</p>}
       />
     ))
 
-    const section = result.getByLabelText('Unknown')
+    const section = result.container.querySelector('section')
 
     await waitFor(() => {
-      const pre = section.querySelector('pre')
+      const pre = section?.querySelector('pre')
       const code = pre?.querySelector('code')
 
       expect(pre).toHaveAttribute('data-language', 'not-a-real-language')

@@ -11,13 +11,6 @@ function hasDefaultExport(code: string) {
   return demoExportPattern.test(code)
 }
 
-function inferTitle(source: string, fenceStart: number) {
-  const beforeFence = source.slice(0, fenceStart)
-  const headingMatches = [...beforeFence.matchAll(/^###\s+(.+)$/gm)]
-
-  return headingMatches.at(-1)?.[1]?.trim() || 'Example'
-}
-
 function hashDemoId(fileId: string, demoIndex: number, code: string) {
   return createHash('sha1').update(fileId).update(String(demoIndex)).update(code).digest('hex')
 }
@@ -118,7 +111,7 @@ export function demoBlockMdxPlugin(): Plugin {
       const imports: string[] = []
       const transformed = source.replace(
         tsxFencePattern,
-        (fullMatch, meta: string, code: string, offset: number) => {
+        (fullMatch, meta: string, code: string) => {
           if (meta.trim() === 'pure' || !hasDefaultExport(code)) {
             return meta.trim() === 'pure' ? `\`\`\`tsx\n${code}\n\`\`\`` : fullMatch
           }
@@ -134,9 +127,7 @@ export function demoBlockMdxPlugin(): Plugin {
           imports.push(`import ${componentName} from ${JSON.stringify(importSource)}`)
           demoIndex += 1
 
-          return `<DemoBlock title=${JSON.stringify(inferTitle(source, offset))} code={${JSON.stringify(
-            code,
-          )}} component={${componentName}} />`
+          return `<DemoBlock code={${JSON.stringify(code)}} component={${componentName}} />`
         },
       )
 

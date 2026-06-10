@@ -19,10 +19,13 @@ describe('Masonry docs page', () => {
     const result = renderMasonryPage()
 
     expect(result.getByRole('heading', { name: 'Masonry', level: 1 })).toBeInTheDocument()
-    expect(result.getByLabelText('Basic')).toBeInTheDocument()
-    expect(result.getByLabelText('Responsive')).toBeInTheDocument()
-    expect(result.getByLabelText('Gallery')).toBeInTheDocument()
-    expect(result.getByLabelText('Dynamic items')).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Basic', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Responsive', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Gallery', level: 3 })).toBeInTheDocument()
+    expect(result.getByRole('heading', { name: 'Dynamic items', level: 3 })).toBeInTheDocument()
     expect(result.getAllByText('Example')).toHaveLength(4)
+    for (const exampleLabel of result.getAllByText('Example')) {
+      expect(exampleLabel.closest('section')).not.toHaveAttribute('aria-label')
+    }
   })
 })

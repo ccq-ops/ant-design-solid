@@ -9,7 +9,6 @@ import typescript from 'shiki/langs/typescript.mjs'
 import githubLight from 'shiki/themes/github-light.mjs'
 
 type DemoBlockProps = {
-  title: string
   code: string
   language?: string
   component: Component
@@ -98,10 +97,7 @@ export function DemoBlock(props: DemoBlockProps) {
   const preview = createMemo<JSX.Element>(() => props.component as unknown as JSX.Element)
 
   return (
-    <section class="docs-border my-4 overflow-hidden rounded-lg border" aria-label={props.title}>
-      <h3 class="docs-border docs-text m-0 border-b px-4 py-2.5 text-base font-semibold">
-        {props.title}
-      </h3>
+    <section class="docs-border my-4 overflow-hidden rounded-lg border">
       <div data-demo-block-preview class="docs-demo-preview px-4 py-4">
         <div class="docs-text-tertiary mb-2 text-[11px] font-medium uppercase tracking-wide">
           Example
