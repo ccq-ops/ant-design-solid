@@ -8,13 +8,10 @@ export function useSwitchStyle(prefixCls: string) {
     const t = token()
     const switchToken = getComponentToken('Switch', t)
     const trackPadding = (switchToken.trackHeight - switchToken.handleSize) / 2
-    const checkedHandleTranslate =
-      switchToken.trackMinWidth - switchToken.handleSize - trackPadding * 2
     const smallTrackHeight = 16
     const smallTrackMinWidth = 28
     const smallHandleSize = 12
     const smallTrackPadding = (smallTrackHeight - smallHandleSize) / 2
-    const smallCheckedHandleTranslate = smallTrackMinWidth - smallHandleSize - smallTrackPadding * 2
 
     return {
       [`.${prefixCls}`]: {
@@ -55,7 +52,7 @@ export function useSwitchStyle(prefixCls: string) {
       },
       [`.${prefixCls}-checked`]: {
         background: t.colorPrimary,
-        '&::after': { transform: `translateX(${checkedHandleTranslate}px)` },
+        '&::after': { left: `calc(100% - ${switchToken.handleSize + trackPadding}px)` },
       },
       [`.${prefixCls}-disabled`]: { cursor: 'not-allowed', opacity: 0.65 },
       [`.${prefixCls}-loading`]: { cursor: 'not-allowed' },
@@ -72,7 +69,7 @@ export function useSwitchStyle(prefixCls: string) {
         },
       },
       [`.${prefixCls}-sm.${prefixCls}-checked::after`]: {
-        transform: `translateX(${smallCheckedHandleTranslate}px)`,
+        left: `calc(100% - ${smallHandleSize + smallTrackPadding}px)`,
       },
       [`.${prefixCls}-inner`]: {
         display: 'block',

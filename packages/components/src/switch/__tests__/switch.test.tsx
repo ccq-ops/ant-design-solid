@@ -71,7 +71,7 @@ describe('Switch', () => {
     expect(css).toContain('.ads-switch::after')
     expect(css).toContain('width:18px;')
     expect(css).toContain('height:18px;')
-    expect(css).toContain('transform:translateX(22px);')
+    expect(css).toContain('left:calc(100% - 20px);')
     expect(css).toContain('.ads-switch-checked .ads-switch-inner')
   })
 
