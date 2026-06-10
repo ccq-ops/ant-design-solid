@@ -405,6 +405,127 @@ describe('Table', () => {
     expect(table).toHaveStyle({ 'min-width': '800px' })
   })
 
+  it('renders title and footer with current page data', () => {
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={{ defaultPageSize: 2 }}
+        title={(currentData) => `Showing ${currentData.length} users`}
+        footer={(currentData) => `Footer ${currentData.map((record) => record.name).join(', ')}`}
+      />
+    ))
+
+    expect(result.getByText('Showing 2 users')).toBeInTheDocument()
+    expect(result.getByText('Footer Ada, Grace')).toBeInTheDocument()
+  })
+
+  it('applies explicit and ellipsis-derived table layout', () => {
+    const fixed = render(() => (
+      <Table columns={[{ title: 'Name', dataIndex: 'name', ellipsis: true }]} dataSource={data} />
+    ))
+    expect(fixed.container.querySelector('table')).toHaveStyle({ 'table-layout': 'fixed' })
+    fixed.unmount()
+
+    const explicit = render(() => (
+      <Table
+        columns={[{ title: 'Name', dataIndex: 'name', ellipsis: true }]}
+        dataSource={data}
+        tableLayout="auto"
+      />
+    ))
+    expect(explicit.container.querySelector('table')).toHaveStyle({ 'table-layout': 'auto' })
+  })
+
+  it('filters hidden and responsive columns', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          { title: 'Name', dataIndex: 'name' },
+          { title: 'Hidden Age', dataIndex: 'age', hidden: true },
+          { title: 'XS Status', dataIndex: 'status', responsive: ['xs'] },
+          { title: 'MD Email', dataIndex: ['profile', 'email'], responsive: ['md'] },
+        ]}
+        dataSource={data}
+        pagination={false}
+      />
+    ))
+
+    expect(result.getByText('Name')).toBeInTheDocument()
+    expect(result.getByText('XS Status')).toBeInTheDocument()
+    expect(result.queryByText('Hidden Age')).toBeNull()
+    expect(result.queryByText('MD Email')).toBeNull()
+    expect(result.queryByText('ada@example.com')).toBeNull()
+  })
+
+  it('applies ellipsis cell metadata and row scope', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          { title: 'Name', dataIndex: 'name', ellipsis: true, rowScope: 'row' },
+          { title: 'Status', dataIndex: 'status', ellipsis: { showTitle: false } },
+        ]}
+        dataSource={data}
+        pagination={false}
+      />
+    ))
+    const nameHeader = result.getByText('Name').closest('th')!
+    const adaCell = result.getByText('Ada').closest('td')!
+    const statusCell = within(result.getByText('Ada').closest('tr') as HTMLElement)
+      .getByText('active')
+      .closest('td')!
+
+    expect(nameHeader).toHaveClass('ads-table-cell-ellipsis')
+    expect(adaCell).toHaveClass('ads-table-cell-ellipsis')
+    expect(adaCell).toHaveAttribute('scope', 'row')
+    expect(adaCell).toHaveAttribute('title', 'Ada')
+    expect(statusCell).toHaveClass('ads-table-cell-ellipsis')
+    expect(statusCell).not.toHaveAttribute('title')
+  })
+
+  it('supports render return props and merged cells', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          {
+            title: 'Name',
+            dataIndex: 'name',
+            render: (value, _record, index) =>
+              index === 0
+                ? { children: `Lead ${value}`, props: { colSpan: 2, class: 'merged-name' } }
+                : String(value),
+          },
+          {
+            title: 'Age',
+            dataIndex: 'age',
+            render: (value, _record, index) =>
+              index === 0 ? { children: String(value), props: { colSpan: 0 } } : String(value),
+          },
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            render: (value, _record, index) =>
+              index === 1
+                ? { children: String(value), props: { rowSpan: 2, class: 'status-span' } }
+                : index === 2
+                  ? { children: String(value), props: { rowSpan: 0 } }
+                  : String(value),
+          },
+        ]}
+        dataSource={data}
+        pagination={false}
+      />
+    ))
+    const rows = result.container.querySelectorAll('tbody tr')
+
+    expect(result.getByText('Lead Ada').closest('td')).toHaveAttribute('colspan', '2')
+    expect(result.getByText('Lead Ada').closest('td')).toHaveClass('merged-name')
+    expect(within(rows[0] as HTMLElement).queryByText('32')).toBeNull()
+    expect(result.getByText('idle').closest('td')).toHaveAttribute('rowspan', '2')
+    expect(result.getByText('idle').closest('td')).toHaveClass('status-span')
+    expect(within(rows[2] as HTMLElement).queryByText('active')).toBeNull()
+  })
+
   it('sorts by clicking a sortable column header and emits change details', () => {
     const onChange = vi.fn()
     const result = render(() => (

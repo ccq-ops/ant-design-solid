@@ -105,16 +105,39 @@ export interface TableExpandableConfig<T extends object = object> {
   onExpandedRowsChange?: (expandedRows: TableKey[]) => void
 }
 
+export type TableBreakpoint = 'xxl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs'
+export type TableLayout = 'auto' | 'fixed'
+
+export interface TableColumnEllipsis {
+  showTitle?: boolean
+}
+
+export interface TableRenderCellProps extends JSX.HTMLAttributes<HTMLTableCellElement> {
+  colSpan?: number
+  rowSpan?: number
+}
+
+export interface TableRenderCellResult {
+  children?: JSX.Element
+  props?: TableRenderCellProps
+}
+
+export type TableRenderCellOutput = JSX.Element | TableRenderCellResult
+
 export interface TableColumn<T extends object = object> {
   title?: JSX.Element | ((props: { sortOrder?: TableSortOrder }) => JSX.Element)
   dataIndex?: TableDataIndex<T>
   key?: string
-  render?: (value: unknown, record: T, index: number) => JSX.Element
+  render?: (value: unknown, record: T, index: number) => TableRenderCellOutput
   width?: number | string
   align?: 'left' | 'center' | 'right'
   class?: string
   className?: string
   classList?: Record<string, boolean | undefined>
+  hidden?: boolean
+  responsive?: TableBreakpoint[]
+  ellipsis?: boolean | TableColumnEllipsis
+  rowScope?: 'row' | 'rowgroup'
   sorter?: boolean | TableCompareFn<T> | TableColumnSorter<T>
   sortOrder?: TableSortOrder
   defaultSortOrder?: TableSortOrder
@@ -131,7 +154,7 @@ export interface TableColumn<T extends object = object> {
 
 export interface TableProps<T extends object = object> extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'children' | 'onChange'
+  'children' | 'onChange' | 'title'
 > {
   columns?: TableColumn<T>[]
   dataSource?: T[]
@@ -147,6 +170,9 @@ export interface TableProps<T extends object = object> extends Omit<
   expandable?: TableExpandableConfig<T>
   scroll?: TableScrollConfig
   summary?: (currentData: T[]) => JSX.Element
+  title?: (currentData: T[]) => JSX.Element
+  footer?: (currentData: T[]) => JSX.Element
+  tableLayout?: TableLayout
   className?: string
   onRow?: (record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>
   rowClassName?: string | ((record: T, index: number) => string)

@@ -12,6 +12,8 @@ import type {
   TableFilterValue,
   TableKey,
   TableProps,
+  TableRenderCellOutput,
+  TableRenderCellProps,
   TableRowSelectionChangeType,
   TableSorterResult,
   TableSortOrder,
@@ -95,6 +97,18 @@ function getAriaSort(order: TableSortOrder) {
   return 'none'
 }
 
+function isRenderCellResult(value: TableRenderCellOutput): value is {
+  children?: JSX.Element
+  props?: TableRenderCellProps
+} {
+  return Boolean(value && typeof value === 'object' && 'props' in value)
+}
+
+function getEllipsisTitle(value: JSX.Element, enabled: boolean) {
+  if (!enabled) return undefined
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined
+}
+
 export function Table<T extends object = object>(props: TableProps<T>) {
   const [local, rest] = splitProps(props, [
     'columns',
@@ -111,6 +125,9 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     'expandable',
     'scroll',
     'summary',
+    'title',
+    'footer',
+    'tableLayout',
     'className',
     'onRow',
     'rowClassName',
@@ -121,7 +138,10 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-table`
   const [, hashId] = useTableStyle(prefixCls())
-  const columns = () => local.columns ?? []
+  const columns = () =>
+    (local.columns ?? []).filter(
+      (column) => !column.hidden && (!column.responsive || column.responsive.includes('xs')),
+    )
   const data = () => local.dataSource ?? []
   const size = () => local.size ?? 'middle'
   const initialPagination = local.pagination === false ? undefined : local.pagination
@@ -248,14 +268,19 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     }
   }
   const tableStyle = (): JSX.CSSProperties | undefined => {
-    if (!local.scroll?.x) return undefined
+    const layout =
+      local.tableLayout ?? (columns().some((column) => column.ellipsis) ? 'fixed' : undefined)
+    if (!local.scroll?.x && !layout) return undefined
     return {
       'min-width':
-        typeof local.scroll.x === 'number'
+        typeof local.scroll?.x === 'number'
           ? `${local.scroll.x}px`
-          : local.scroll.x === true
+          : local.scroll?.x === true
             ? 'max-content'
-            : String(local.scroll.x),
+            : local.scroll?.x == null
+              ? undefined
+              : String(local.scroll.x),
+      'table-layout': layout,
     }
   }
 
@@ -365,6 +390,21 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     return column.title
   }
 
+  function renderCellContent(column: TableColumn<T>, record: T, rowIndex: number) {
+    const value = getValue(record, column.dataIndex)
+    const output = column.render ? column.render(value, record, rowIndex) : (value as JSX.Element)
+    if (isRenderCellResult(output)) {
+      return {
+        children: output.children,
+        props: output.props ?? {},
+      }
+    }
+    return {
+      children: output,
+      props: {},
+    }
+  }
+
   function getColumnSortOrder(column: TableColumn<T>, index: number) {
     const current = sorter()
     return current.column && getColumnKey(current.column, index) === getColumnKey(column, index)
@@ -447,6 +487,9 @@ export function Table<T extends object = object>(props: TableProps<T>) {
         local.className,
       )}
     >
+      <Show when={local.title}>
+        <div class={`${prefixCls()}-title`}>{local.title?.(pageData())}</div>
+      </Show>
       <div class={`${prefixCls()}-container`} style={scrollContainerStyle()}>
         <table class={prefixCls()} style={tableStyle()}>
           <Show when={local.showHeader !== false}>
@@ -485,6 +528,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                       class={classNames(
                         column.align === 'center' && `${prefixCls()}-cell-center`,
                         column.align === 'right' && `${prefixCls()}-cell-right`,
+                        column.ellipsis && `${prefixCls()}-cell-ellipsis`,
                         column.class,
                         column.className,
                       )}
@@ -644,24 +688,38 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                         </Show>
                         <For each={columns()}>
                           {(column) => {
-                            const value = () => getValue(record, column.dataIndex)
                             const cellProps = () => column.onCell?.(record, index()) ?? {}
+                            const rendered = () => renderCellContent(column, record, index())
+                            const mergedCellProps = () => ({ ...cellProps(), ...rendered().props })
+                            const skipCell = () =>
+                              mergedCellProps().colSpan === 0 || mergedCellProps().rowSpan === 0
+                            const ellipsisShowTitle = () =>
+                              column.ellipsis === true ||
+                              (typeof column.ellipsis === 'object' &&
+                                column.ellipsis.showTitle !== false)
                             return (
-                              <td
-                                {...cellProps()}
-                                class={classNames(
-                                  column.align === 'center' && `${prefixCls()}-cell-center`,
-                                  column.align === 'right' && `${prefixCls()}-cell-right`,
-                                  column.class,
-                                  column.className,
-                                  cellProps().class,
-                                )}
-                                classList={column.classList}
-                              >
-                                {column.render
-                                  ? column.render(value(), record, index())
-                                  : (value() as JSX.Element)}
-                              </td>
+                              <Show when={!skipCell()}>
+                                <td
+                                  {...mergedCellProps()}
+                                  scope={column.rowScope}
+                                  title={
+                                    mergedCellProps().title ??
+                                    getEllipsisTitle(rendered().children, ellipsisShowTitle())
+                                  }
+                                  class={classNames(
+                                    column.align === 'center' && `${prefixCls()}-cell-center`,
+                                    column.align === 'right' && `${prefixCls()}-cell-right`,
+                                    column.ellipsis && `${prefixCls()}-cell-ellipsis`,
+                                    column.class,
+                                    column.className,
+                                    cellProps().class,
+                                    rendered().props.class,
+                                  )}
+                                  classList={column.classList}
+                                >
+                                  {rendered().children}
+                                </td>
+                              </Show>
                             )
                           }}
                         </For>
@@ -689,6 +747,9 @@ export function Table<T extends object = object>(props: TableProps<T>) {
           </Show>
         </table>
       </div>
+      <Show when={local.footer}>
+        <div class={`${prefixCls()}-footer`}>{local.footer?.(pageData())}</div>
+      </Show>
       <Show when={paginationConfig() && processedData().length > 0}>
         <div class={`${prefixCls()}-pagination`}>
           <Pagination

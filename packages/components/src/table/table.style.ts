@@ -24,6 +24,14 @@ export function useTableStyle(prefixCls: string) {
       [`.${prefixCls}-container`]: {
         width: '100%',
       },
+      [`.${prefixCls}-title, .${prefixCls}-footer`]: {
+        padding: table.cellPadding,
+        background: t.colorBgContainer,
+        borderBottom: `${t.lineWidth}px solid ${table.borderColor}`,
+      },
+      [`.${prefixCls}-footer`]: {
+        borderBottom: 0,
+      },
       [`.${prefixCls} th`]: {
         padding: table.cellPadding,
         color: table.headerColor,
@@ -134,6 +142,11 @@ export function useTableStyle(prefixCls: string) {
       },
       [`.${prefixCls}-cell-center`]: { 'text-align': 'center !important' },
       [`.${prefixCls}-cell-right`]: { 'text-align': 'right !important' },
+      [`.${prefixCls}-cell-ellipsis`]: {
+        overflow: 'hidden',
+        'white-space': 'nowrap',
+        'text-overflow': 'ellipsis',
+      },
       [`.${prefixCls}-empty`]: { color: table.emptyColor, 'text-align': 'center' },
       [`.${prefixCls}-pagination`]: {
         display: 'flex',
