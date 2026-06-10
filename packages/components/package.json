@@ -25,7 +25,9 @@
     "@ant-design-solid/cssinjs": "workspace:*",
     "@ant-design-solid/icons": "workspace:*",
     "@ant-design-solid/theme": "workspace:*",
-    "dayjs": "^1.11.13"
+    "@tanstack/solid-virtual": "^3.13.28",
+    "dayjs": "^1.11.13",
+    "solid-motionone": "^1.0.4"
   },
   "peerDependencies": {
     "solid-js": ">=1.9.0"

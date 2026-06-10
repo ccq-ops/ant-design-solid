@@ -1,9 +1,28 @@
-export { Tree } from './tree'
+export { DirectoryTree } from './directory-tree'
+export { Tree, TreeNode } from './tree'
 export type {
+  DirectoryTreeExpandAction,
+  DirectoryTreeProps,
   TreeCheckInfo,
+  TreeCheckedKeys,
   TreeDataNode,
+  TreeDragEnterInfo,
+  TreeDragInfo,
+  TreeDraggable,
+  TreeDropInfo,
   TreeExpandInfo,
+  TreeFieldNames,
+  TreeIcon,
   TreeKey,
+  TreeLoadInfo,
+  TreeNodeProps,
+  TreeNodeRenderProps,
   TreeProps,
+  TreeRef,
+  TreeScrollToOptions,
   TreeSelectInfo,
+  TreeSemanticClassNames,
+  TreeSemanticSlot,
+  TreeSemanticStyles,
+  TreeShowLine,
 } from './interface'

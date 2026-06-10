@@ -28,10 +28,15 @@ export function useTreeStyle(prefixCls: string) {
         transition: `background ${t.motionDurationMid} ${t.motionEaseInOut}`,
       },
       [`.${prefixCls}-block-node .${prefixCls}-node`]: { width: '100%' },
-      [`.${prefixCls}-node:hover`]: { background: t.colorFillAlter },
+      [`.${prefixCls}-node:not(.${prefixCls}-node-selected):not(.${prefixCls}-node-disabled):hover`]:
+        { background: t.colorFillAlter },
       [`.${prefixCls}-node-selected`]: { background: tree.nodeSelectedBg, color: t.colorPrimary },
       [`.${prefixCls}-node-disabled`]: { color: t.colorTextDisabled, cursor: 'not-allowed' },
       [`.${prefixCls}-node-disabled:hover`]: { background: 'transparent' },
+      [`.${prefixCls}-node-filtered .${prefixCls}-title`]: {
+        color: t.colorPrimary,
+        'font-weight': 600,
+      },
       [`.${prefixCls}-switcher`]: {
         border: '0',
         padding: '0',
@@ -46,9 +51,24 @@ export function useTreeStyle(prefixCls: string) {
       [`.${prefixCls}-indent`]: { display: 'inline-block', width: '16px', 'flex-shrink': 0 },
       [`.${prefixCls}-checkbox`]: { margin: '0', cursor: 'pointer' },
       [`.${prefixCls}-checkbox:disabled`]: { cursor: 'not-allowed' },
+      [`.${prefixCls}-icon`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        color: t.colorTextSecondary,
+      },
       [`.${prefixCls}-title`]: { 'user-select': 'none' },
       [`.${prefixCls}-line .${prefixCls}-node`]: {
         'border-left': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+      },
+      [`.${prefixCls}-directory`]: {
+        [`& .${prefixCls}-node-selected, & .${prefixCls}-node-selected:hover`]: {
+          background: t.colorPrimary,
+          color: '#fff',
+        },
+        [`& .${prefixCls}-node-selected .${prefixCls}-icon, & .${prefixCls}-node-selected:hover .${prefixCls}-icon`]:
+          {
+            color: 'inherit',
+          },
       },
     }
   })

@@ -19,6 +19,12 @@ export default defineConfig({
       '@ant-design-solid/icons': fileURLToPath(
         new URL('../../packages/icons/src', import.meta.url),
       ),
+      'solid-motionone': fileURLToPath(
+        new URL(
+          '../../packages/components/node_modules/solid-motionone/dist/index.js',
+          import.meta.url,
+        ),
+      ),
     },
   },
   server: { port: 5173 },
