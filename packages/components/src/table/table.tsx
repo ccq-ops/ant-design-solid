@@ -1,4 +1,4 @@
-import { For, Show, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createSignal, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { Pagination } from '../pagination'
 import { classNames } from '../shared/class-names'
@@ -15,12 +15,15 @@ import type {
   TableRenderCellOutput,
   TableRenderCellProps,
   TableRowSelectionChangeType,
+  TableRowSelectionPreset,
+  TableRowSelectionSelection,
   TableSorterResult,
   TableSortOrder,
 } from './interface'
 
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_SORT_DIRECTIONS: TableSortOrder[] = ['ascend', 'descend', null]
+const DEFAULT_SELECTIONS: TableRowSelectionPreset[] = ['all', 'invert', 'none']
 
 interface TableHeaderCell<T extends object> {
   column: TableColumn<T>
@@ -225,6 +228,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const [innerFilters, setInnerFilters] = createSignal<Record<string, TableFilterValue | null>>({})
   const [innerSorter, setInnerSorter] = createSignal<TableSorterResult<T>>({})
   const [openFilterKey, setOpenFilterKey] = createSignal<string>()
+  const [selectionMenuOpen, setSelectionMenuOpen] = createSignal(false)
   const loading = () => isLoading(local.loading)
 
   const filteredValues = () => getFilteredValues(leafColumns(), innerFilters())
@@ -300,6 +304,8 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     leafColumns().length + (local.rowSelection ? 1 : 0) + (local.expandable ? 1 : 0)
   const selectedKeys = () => local.rowSelection?.selectedRowKeys ?? innerSelectedKeys()
   const selectedKeySet = () => new Set(selectedKeys())
+  const allRecordKeys = () => data().map((record, index) => getRowKey(record, index, local.rowKey))
+  const allRecordKeySet = () => new Set(allRecordKeys())
   const selectablePageRecords = () =>
     pageData().filter((record) => !local.rowSelection?.getCheckboxProps?.(record)?.disabled)
   const selectablePageKeys = () =>
@@ -314,6 +320,14 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   }
   const expandedKeys = () => local.expandable?.expandedRowKeys ?? innerExpandedKeys()
   const expandedKeySet = () => new Set(expandedKeys())
+
+  createEffect(() => {
+    const selection = local.rowSelection
+    if (!selection || selection.selectedRowKeys || selection.preserveSelectedRowKeys) return
+    const keySet = allRecordKeySet()
+    const nextKeys = innerSelectedKeys().filter((key) => keySet.has(key))
+    if (nextKeys.length !== innerSelectedKeys().length) setInnerSelectedKeys(nextKeys)
+  })
   const controlledPaginationProps = () => {
     const config = paginationConfig()
     if (!config) return {}
@@ -372,8 +386,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     local.rowSelection?.onChange?.(keys, selectedRows(keys), { type })
   }
 
-  function toggleSelectAll(event: Event) {
-    const checked = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked
+  function updateSelectAll(checked: boolean) {
     const pageKeys = selectablePageKeys()
     const current = selectedKeys()
     const pageKeySet = new Set(pageKeys)
@@ -381,6 +394,12 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       ? [...current, ...pageKeys.filter((key) => !current.includes(key))]
       : current.filter((key) => !pageKeySet.has(key))
     setSelectedKeys(nextKeys, checked ? 'all' : 'none')
+    local.rowSelection?.onSelectAll?.(checked, selectedRows(nextKeys), selectablePageRecords())
+  }
+
+  function toggleSelectAll(event: Event) {
+    const checked = event.currentTarget instanceof HTMLInputElement && event.currentTarget.checked
+    updateSelectAll(checked)
   }
 
   function toggleRowSelection(record: T, rowIndex: number, event: Event) {
@@ -398,6 +417,50 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     if (!local.rowSelection?.selectedRowKeys) setInnerSelectedKeys(nextKeys)
     local.rowSelection?.onSelect?.(record, checked, nextRows, event)
     local.rowSelection?.onChange?.(nextKeys, nextRows, { type: 'single' })
+  }
+
+  function invertSelection() {
+    const pageKeys = selectablePageKeys()
+    const current = selectedKeys()
+    const currentSet = new Set(current)
+    const pageKeySet = new Set(pageKeys)
+    const withoutPageKeys = current.filter((key) => !pageKeySet.has(key))
+    const invertedPageKeys = pageKeys.filter((key) => !currentSet.has(key))
+    const nextKeys = [...withoutPageKeys, ...invertedPageKeys]
+    setSelectedKeys(nextKeys, 'invert')
+    local.rowSelection?.onSelectInvert?.(nextKeys)
+  }
+
+  function clearSelection() {
+    setSelectedKeys([], 'none')
+    local.rowSelection?.onSelectNone?.()
+  }
+
+  function selectionItems():
+    | Array<TableRowSelectionPreset | TableRowSelectionSelection>
+    | undefined {
+    const selections = local.rowSelection?.selections
+    if (!selections) return undefined
+    return selections === true ? DEFAULT_SELECTIONS : selections
+  }
+
+  function selectionActionLabel(item: TableRowSelectionPreset | TableRowSelectionSelection) {
+    if (typeof item !== 'string') return item.text
+    if (item === 'all') return 'Select all'
+    if (item === 'invert') return 'Invert selection'
+    return 'Select none'
+  }
+
+  function triggerSelectionAction(item: TableRowSelectionPreset | TableRowSelectionSelection) {
+    if (typeof item !== 'string') {
+      item.onSelect?.(selectablePageKeys())
+      setSelectionMenuOpen(false)
+      return
+    }
+    if (item === 'all') updateSelectAll(true)
+    if (item === 'invert') invertSelection()
+    if (item === 'none') clearSelection()
+    setSelectionMenuOpen(false)
   }
 
   function canExpand(record: T) {
@@ -484,13 +547,43 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     if (!local.rowSelection) return null
     if (local.rowSelection.columnTitle) return local.rowSelection.columnTitle
     if (local.rowSelection.type === 'radio') return local.rowSelection.columnTitle
+    const checkboxProps = local.rowSelection.getTitleCheckboxProps?.() ?? {}
     return (
-      <input
-        type="checkbox"
-        aria-label="Select all rows"
-        checked={allPageSelected()}
-        onChange={toggleSelectAll}
-      />
+      <span class={`${prefixCls()}-selection-header`}>
+        <Show when={!local.rowSelection.hideSelectAll}>
+          <input
+            {...checkboxProps}
+            type="checkbox"
+            aria-label={checkboxProps['aria-label'] ?? 'Select all rows'}
+            checked={allPageSelected()}
+            onChange={toggleSelectAll}
+          />
+        </Show>
+        <Show when={selectionItems()}>
+          <span class={`${prefixCls()}-selection-menu`}>
+            <button
+              type="button"
+              class={`${prefixCls()}-selection-menu-trigger`}
+              aria-label="Selection actions"
+              aria-expanded={selectionMenuOpen()}
+              onClick={() => setSelectionMenuOpen(!selectionMenuOpen())}
+            >
+              ▾
+            </button>
+            <Show when={selectionMenuOpen()}>
+              <div class={`${prefixCls()}-selection-menu-dropdown`}>
+                <For each={selectionItems()}>
+                  {(item) => (
+                    <button type="button" onClick={() => triggerSelectionAction(item)}>
+                      {selectionActionLabel(item)}
+                    </button>
+                  )}
+                </For>
+              </div>
+            </Show>
+          </span>
+        </Show>
+      </span>
     )
   }
 
@@ -499,15 +592,19 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     if (!selection) return null
     const key = getRecordKey(record, rowIndex)
     const checkboxProps = selection.getCheckboxProps?.(record) ?? {}
-    return (
+    const checked = () => selectedKeySet().has(key)
+    const originNode = () => (
       <input
         {...checkboxProps}
         type={selection.type === 'radio' ? 'radio' : 'checkbox'}
         aria-label={`Select row ${key}`}
-        checked={selectedKeySet().has(key)}
+        checked={checked()}
         onChange={(event) => toggleRowSelection(record, rowIndex, event)}
       />
     )
+    return selection.renderCell
+      ? selection.renderCell(checked(), record, rowIndex, originNode())
+      : originNode()
   }
 
   function renderExpandHeader() {

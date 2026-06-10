@@ -322,6 +322,56 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+### Selection actions and custom cells
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+  { key: '3', name: 'Linus Torvalds', age: 28 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo10 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        preserveSelectedRowKeys: true,
+        selections: [
+          'all',
+          'invert',
+          'none',
+          {
+            key: 'log',
+            text: 'Log changeable keys',
+            onSelect: (changeableRowKeys) => console.log(changeableRowKeys),
+          },
+        ],
+        renderCell: (checked, record, _index, originNode) => (
+          <span data-selected={checked ? 'yes' : 'no'}>
+            {originNode} {record.name}
+          </span>
+        ),
+        onSelectAll: (selected, selectedRows) => console.log(selected, selectedRows),
+        onSelectInvert: (keys) => console.log(keys),
+        onSelectNone: () => console.log('none'),
+      }}
+    />
+  )
+}
+
+export default Demo10
+```
+
 ### Expandable rows
 
 ```tsx
@@ -337,7 +387,7 @@ const columns = [
   { title: 'Age', dataIndex: 'age', align: 'right' },
 ]
 
-const Demo10 = function () {
+const Demo11 = function () {
   return (
     <Table
       columns={columns}
@@ -351,7 +401,7 @@ const Demo10 = function () {
   )
 }
 
-export default Demo10
+export default Demo11
 ```
 
 ### Controlled expandable rows
@@ -367,7 +417,7 @@ const data = [
 
 const columns = [{ title: 'Name', dataIndex: 'name' }]
 
-const Demo11 = function () {
+const Demo12 = function () {
   const [expandedRowKeys, setExpandedRowKeys] = createSignal<(string | number)[]>(['1'])
 
   return (
@@ -384,7 +434,7 @@ const Demo11 = function () {
   )
 }
 
-export default Demo11
+export default Demo12
 ```
 
 ### Summary
@@ -402,7 +452,7 @@ const columns = [
   { title: 'Age', dataIndex: 'age', align: 'right' },
 ]
 
-const Demo12 = function () {
+const Demo13 = function () {
   return (
     <Table
       columns={columns}
@@ -418,7 +468,7 @@ const Demo12 = function () {
   )
 }
 
-export default Demo12
+export default Demo13
 ```
 
 ### Scroll
@@ -439,13 +489,13 @@ const columns = [
   { title: 'Address', dataIndex: 'address', width: 520 },
 ]
 
-const Demo13 = function () {
+const Demo14 = function () {
   return (
     <Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 260 }} />
   )
 }
 
-export default Demo13
+export default Demo14
 ```
 
 ### Title and footer
@@ -464,7 +514,7 @@ const columns = [
   { title: 'Age', dataIndex: 'age', align: 'right' },
 ]
 
-const Demo14 = function () {
+const Demo15 = function () {
   return (
     <Table
       columns={columns}
@@ -478,7 +528,7 @@ const Demo14 = function () {
   )
 }
 
-export default Demo14
+export default Demo15
 ```
 
 ### Column display controls
@@ -508,11 +558,11 @@ const columns = [
   { title: 'XS only', dataIndex: 'status', responsive: ['xs'] },
 ]
 
-const Demo15 = function () {
+const Demo16 = function () {
   return <Table columns={columns} dataSource={data} pagination={false} />
 }
 
-export default Demo15
+export default Demo16
 ```
 
 ### Merged cells
@@ -551,11 +601,11 @@ const columns = [
   },
 ]
 
-const Demo16 = function () {
+const Demo17 = function () {
   return <Table bordered columns={columns} dataSource={data} pagination={false} />
 }
 
-export default Demo16
+export default Demo17
 ```
 
 ### Grouped columns
@@ -586,11 +636,11 @@ const columns = [
   },
 ]
 
-const Demo17 = function () {
+const Demo18 = function () {
   return <Table bordered columns={columns} dataSource={data} pagination={false} />
 }
 
-export default Demo17
+export default Demo18
 ```
 
 ### Controlled sort and filter
@@ -605,7 +655,7 @@ const data = [
   { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
 ]
 
-const Demo18 = function () {
+const Demo19 = function () {
   const [sortOrder, setSortOrder] = createSignal<'ascend' | 'descend' | null>('ascend')
   const [filteredStatus, setFilteredStatus] = createSignal<(string | number | boolean)[]>([
     'active',
@@ -644,7 +694,7 @@ const Demo18 = function () {
   )
 }
 
-export default Demo18
+export default Demo19
 ```
 
 ## API
@@ -710,16 +760,32 @@ export default Demo18
 
 ### TableRowSelection
 
-| Property                 | Description                                  | Type                                                                                   | Default      |
-| ------------------------ | -------------------------------------------- | -------------------------------------------------------------------------------------- | ------------ |
-| `type`                   | Selection type.                              | `'checkbox' \| 'radio'`                                                                | `'checkbox'` |
-| `selectedRowKeys`        | Controlled selected row keys.                | `(string \| number)[]`                                                                 | `-`          |
-| `defaultSelectedRowKeys` | Initial selected row keys.                   | `(string \| number)[]`                                                                 | `[]`         |
-| `columnTitle`            | Selection column title.                      | `JSX.Element`                                                                          | `-`          |
-| `columnWidth`            | Selection column width.                      | `string \| number`                                                                     | `48`         |
-| `getCheckboxProps`       | Props for each checkbox or radio input.      | `(record: T) => Partial<JSX.InputHTMLAttributes<HTMLInputElement>>`                    | `-`          |
-| `onChange`               | Called when selected rows change.            | `(selectedRowKeys, selectedRows, info: { type: 'all' \| 'none' \| 'single' }) => void` | `-`          |
-| `onSelect`               | Called when a row is selected or deselected. | `(record: T, selected: boolean, selectedRows: T[], nativeEvent: Event) => void`        | `-`          |
+| Property                  | Description                                      | Type                                                                                                             | Default      |
+| ------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------ |
+| `type`                    | Selection type.                                  | `'checkbox' \| 'radio'`                                                                                          | `'checkbox'` |
+| `selectedRowKeys`         | Controlled selected row keys.                    | `(string \| number)[]`                                                                                           | `-`          |
+| `defaultSelectedRowKeys`  | Initial selected row keys.                       | `(string \| number)[]`                                                                                           | `[]`         |
+| `columnTitle`             | Selection column title.                          | `JSX.Element`                                                                                                    | `-`          |
+| `columnWidth`             | Selection column width.                          | `string \| number`                                                                                               | `48`         |
+| `hideSelectAll`           | Hides the select-all checkbox.                   | `boolean`                                                                                                        | `false`      |
+| `preserveSelectedRowKeys` | Keeps selected keys when records leave the data. | `boolean`                                                                                                        | `false`      |
+| `selections`              | Shows preset or custom selection menu actions.   | `boolean \| Array<'all' \| 'invert' \| 'none' \| TableRowSelectionSelection<T>>`                                 | `-`          |
+| `getTitleCheckboxProps`   | Props for the select-all checkbox.               | `() => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type'>>`                                         | `-`          |
+| `getCheckboxProps`        | Props for each checkbox or radio input.          | `(record: T) => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type' \| 'checked'>>`                   | `-`          |
+| `renderCell`              | Custom selection cell renderer.                  | `(checked: boolean, record: T, index: number, originNode: JSX.Element) => JSX.Element`                           | `-`          |
+| `onChange`                | Called when selected rows change.                | `(selectedRowKeys, selectedRows, info: { type: 'all' \| 'none' \| 'invert' \| 'single' \| 'multiple' }) => void` | `-`          |
+| `onSelect`                | Called when a row is selected or deselected.     | `(record: T, selected: boolean, selectedRows: T[], nativeEvent: Event) => void`                                  | `-`          |
+| `onSelectAll`             | Called when select-all changes page selection.   | `(selected: boolean, selectedRows: T[], changeRows: T[]) => void`                                                | `-`          |
+| `onSelectInvert`          | Called when the invert preset action runs.       | `(selectedRowKeys: (string \| number)[]) => void`                                                                | `-`          |
+| `onSelectNone`            | Called when selection is cleared.                | `() => void`                                                                                                     | `-`          |
+
+### TableRowSelectionSelection
+
+| Property   | Description                              | Type                                                | Default |
+| ---------- | ---------------------------------------- | --------------------------------------------------- | ------- |
+| `key`      | Custom selection action key.             | `string \| number`                                  | `-`     |
+| `text`     | Custom selection action label.           | `JSX.Element`                                       | `-`     |
+| `onSelect` | Called with current changeable row keys. | `(changeableRowKeys: (string \| number)[]) => void` | `-`     |
 
 ### TableExpandableConfig
 

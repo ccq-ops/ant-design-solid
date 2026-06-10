@@ -1,3 +1,4 @@
+import { createSignal } from 'solid-js'
 import { fireEvent, render, screen, within } from '@solidjs/testing-library'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -262,6 +263,154 @@ describe('Table', () => {
 
     expect(result.getByText('Pick')).toBeInTheDocument()
     expect(result.queryByRole('checkbox', { name: 'Select all rows' })).toBeNull()
+  })
+
+  it('hides select all controls and applies header checkbox props', () => {
+    const hidden = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{ hideSelectAll: true }}
+      />
+    ))
+    expect(hidden.queryByRole('checkbox', { name: 'Select all rows' })).toBeNull()
+    hidden.unmount()
+
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{
+          getTitleCheckboxProps: () => ({ disabled: true, 'aria-label': 'Select available rows' }),
+        }}
+      />
+    ))
+
+    expect(result.getByRole('checkbox', { name: 'Select available rows' })).toBeDisabled()
+  })
+
+  it('renders custom selection cells around the original control', () => {
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{
+          renderCell: (checked, record, _index, originNode) => (
+            <span data-selected={checked ? 'yes' : 'no'}>
+              {originNode}
+              {record.name}
+            </span>
+          ),
+        }}
+      />
+    ))
+
+    const adaSelection = result.container.querySelector('[data-selected]')!
+    expect(adaSelection).toHaveAttribute('data-selected', 'no')
+
+    fireEvent.click(result.getByRole('checkbox', { name: 'Select row a' }))
+
+    expect(result.container.querySelector('[data-selected]')).toHaveAttribute(
+      'data-selected',
+      'yes',
+    )
+  })
+
+  it('supports selection actions for all, invert, none, and custom entries', () => {
+    const onChange = vi.fn()
+    const onSelectAll = vi.fn()
+    const onSelectInvert = vi.fn()
+    const onSelectNone = vi.fn()
+    const custom = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{
+          onChange,
+          onSelectAll,
+          onSelectInvert,
+          onSelectNone,
+          selections: [
+            { key: 'custom', text: 'Pick first two', onSelect: custom },
+            'all',
+            'invert',
+            'none',
+          ],
+        }}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Selection actions' }))
+    fireEvent.click(result.getByRole('button', { name: 'Select all' }))
+    expect(onSelectAll).toHaveBeenLastCalledWith(true, data, data)
+    expect(onChange).toHaveBeenLastCalledWith(['a', 'b', 'c'], data, { type: 'all' })
+
+    fireEvent.click(result.getByRole('button', { name: 'Selection actions' }))
+    fireEvent.click(result.getByRole('button', { name: 'Invert selection' }))
+    expect(onSelectInvert).toHaveBeenLastCalledWith([])
+    expect(onChange).toHaveBeenLastCalledWith([], [], { type: 'invert' })
+
+    fireEvent.click(result.getByRole('button', { name: 'Selection actions' }))
+    fireEvent.click(result.getByRole('button', { name: 'Select none' }))
+    expect(onSelectNone).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenLastCalledWith([], [], { type: 'none' })
+
+    fireEvent.click(result.getByRole('button', { name: 'Selection actions' }))
+    fireEvent.click(result.getByRole('button', { name: 'Pick first two' }))
+    expect(custom).toHaveBeenLastCalledWith(['a', 'b', 'c'])
+  })
+
+  it('drops removed uncontrolled selected keys unless preserveSelectedRowKeys is set', () => {
+    const WithoutPreserve = () => {
+      const [records, setRecords] = createSignal(data)
+      return (
+        <>
+          <button type="button" onClick={() => setRecords([data[1], data[2]])}>
+            Remove Ada
+          </button>
+          <Table
+            columns={columns}
+            dataSource={records()}
+            pagination={false}
+            rowSelection={{ defaultSelectedRowKeys: ['a'] }}
+          />
+        </>
+      )
+    }
+    const withoutPreserve = render(() => <WithoutPreserve />)
+    expect(withoutPreserve.getByRole('checkbox', { name: 'Select row a' })).toBeChecked()
+    fireEvent.click(withoutPreserve.getByRole('button', { name: 'Remove Ada' }))
+    expect(withoutPreserve.getByRole('checkbox', { name: 'Select row b' })).not.toBeChecked()
+    withoutPreserve.unmount()
+
+    const WithPreserve = () => {
+      const [records, setRecords] = createSignal(data)
+      return (
+        <>
+          <button type="button" onClick={() => setRecords([data[1], data[2]])}>
+            Remove Ada
+          </button>
+          <button type="button" onClick={() => setRecords(data)}>
+            Restore Ada
+          </button>
+          <Table
+            columns={columns}
+            dataSource={records()}
+            pagination={false}
+            rowSelection={{ defaultSelectedRowKeys: ['a'], preserveSelectedRowKeys: true }}
+          />
+        </>
+      )
+    }
+    const withPreserve = render(() => <WithPreserve />)
+    fireEvent.click(withPreserve.getByRole('button', { name: 'Remove Ada' }))
+    fireEvent.click(withPreserve.getByRole('button', { name: 'Restore Ada' }))
+    expect(withPreserve.getByRole('checkbox', { name: 'Select row a' })).toBeChecked()
   })
 
   it('keeps page row indexes when selecting all with disabled rows', () => {

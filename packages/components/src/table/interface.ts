@@ -68,6 +68,13 @@ export interface TableSorterResult<T extends object = object> {
 export type TableChangeAction = 'paginate' | 'sort' | 'filter'
 export type TableRowSelectionType = 'checkbox' | 'radio'
 export type TableRowSelectionChangeType = 'all' | 'none' | 'invert' | 'single' | 'multiple'
+export type TableRowSelectionPreset = 'all' | 'invert' | 'none'
+
+export interface TableRowSelectionSelection {
+  key: TableKey
+  text: JSX.Element
+  onSelect?: (changeableRowKeys: TableKey[]) => void
+}
 
 export interface TableCurrentDataSource<T extends object = object> {
   currentDataSource: T[]
@@ -80,15 +87,23 @@ export interface TableRowSelection<T extends object = object> {
   defaultSelectedRowKeys?: TableKey[]
   columnTitle?: JSX.Element
   columnWidth?: string | number
+  hideSelectAll?: boolean
+  preserveSelectedRowKeys?: boolean
+  selections?: boolean | Array<TableRowSelectionPreset | TableRowSelectionSelection>
+  getTitleCheckboxProps?: () => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type'>>
   getCheckboxProps?: (
     record: T,
   ) => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type' | 'checked'>>
+  renderCell?: (checked: boolean, record: T, index: number, originNode: JSX.Element) => JSX.Element
   onChange?: (
     selectedRowKeys: TableKey[],
     selectedRows: T[],
     info: { type: TableRowSelectionChangeType },
   ) => void
   onSelect?: (record: T, selected: boolean, selectedRows: T[], nativeEvent: Event) => void
+  onSelectAll?: (selected: boolean, selectedRows: T[], changeRows: T[]) => void
+  onSelectInvert?: (selectedRowKeys: TableKey[]) => void
+  onSelectNone?: () => void
 }
 
 export interface TableExpandableConfig<T extends object = object> {
