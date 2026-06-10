@@ -372,6 +372,45 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+### Selection column customization
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, locked: false },
+  { key: '2', name: 'Grace Hopper', age: 36, locked: true },
+  { key: '3', name: 'Linus Torvalds', age: 28, locked: false },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo11 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        columnTitle: 'Pick',
+        columnWidth: 72,
+        hideSelectAll: true,
+        getTitleCheckboxProps: () => ({ 'aria-label': 'Select available rows' }),
+        getCheckboxProps: (record) => ({
+          disabled: record.locked,
+          title: record.locked ? 'Locked row' : 'Selectable row',
+        }),
+      }}
+    />
+  )
+}
+
+export default Demo11
+```
+
 ### Expandable rows
 
 ```tsx
@@ -387,7 +426,7 @@ const columns = [
   { title: 'Age', dataIndex: 'age', align: 'right' },
 ]
 
-const Demo11 = function () {
+const Demo12 = function () {
   return (
     <Table
       columns={columns}
@@ -401,7 +440,7 @@ const Demo11 = function () {
   )
 }
 
-export default Demo11
+export default Demo12
 ```
 
 ### Controlled expandable rows
@@ -417,7 +456,7 @@ const data = [
 
 const columns = [{ title: 'Name', dataIndex: 'name' }]
 
-const Demo12 = function () {
+const Demo13 = function () {
   const [expandedRowKeys, setExpandedRowKeys] = createSignal<(string | number)[]>(['1'])
 
   return (
@@ -434,7 +473,49 @@ const Demo12 = function () {
   )
 }
 
-export default Demo12
+export default Demo13
+```
+
+### Expand row controls
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, detail: 'Wrote the first algorithm.' },
+  { key: '2', name: 'Grace Hopper', age: 36, detail: 'Popularized compiler tooling.' },
+  { key: '3', name: 'Linus Torvalds', age: 28, detail: '' },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo14 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      expandable={{
+        columnTitle: 'More',
+        columnWidth: 64,
+        defaultExpandAllRows: true,
+        expandRowByClick: true,
+        rowExpandable: (record) => Boolean(record.detail),
+        expandedRowClassName: (record) => `expanded-${record.key}`,
+        expandedRowRender: (record, _index, _indent, expanded) => (
+          <span>
+            {expanded ? 'Open' : 'Closed'}: {record.detail}
+          </span>
+        ),
+      }}
+    />
+  )
+}
+
+export default Demo14
 ```
 
 ### Summary
@@ -452,7 +533,7 @@ const columns = [
   { title: 'Age', dataIndex: 'age', align: 'right' },
 ]
 
-const Demo13 = function () {
+const Demo15 = function () {
   return (
     <Table
       columns={columns}
@@ -468,7 +549,7 @@ const Demo13 = function () {
   )
 }
 
-export default Demo13
+export default Demo15
 ```
 
 ### Scroll
@@ -489,13 +570,13 @@ const columns = [
   { title: 'Address', dataIndex: 'address', width: 520 },
 ]
 
-const Demo14 = function () {
+const Demo16 = function () {
   return (
     <Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 260 }} />
   )
 }
 
-export default Demo14
+export default Demo16
 ```
 
 ### Title and footer
@@ -514,7 +595,7 @@ const columns = [
   { title: 'Age', dataIndex: 'age', align: 'right' },
 ]
 
-const Demo15 = function () {
+const Demo17 = function () {
   return (
     <Table
       columns={columns}
@@ -528,7 +609,7 @@ const Demo15 = function () {
   )
 }
 
-export default Demo15
+export default Demo17
 ```
 
 ### Column display controls
@@ -558,11 +639,11 @@ const columns = [
   { title: 'XS only', dataIndex: 'status', responsive: ['xs'] },
 ]
 
-const Demo16 = function () {
+const Demo18 = function () {
   return <Table columns={columns} dataSource={data} pagination={false} />
 }
 
-export default Demo16
+export default Demo18
 ```
 
 ### Merged cells
@@ -601,11 +682,11 @@ const columns = [
   },
 ]
 
-const Demo17 = function () {
+const Demo19 = function () {
   return <Table bordered columns={columns} dataSource={data} pagination={false} />
 }
 
-export default Demo17
+export default Demo19
 ```
 
 ### Grouped columns
@@ -636,11 +717,11 @@ const columns = [
   },
 ]
 
-const Demo18 = function () {
+const Demo20 = function () {
   return <Table bordered columns={columns} dataSource={data} pagination={false} />
 }
 
-export default Demo18
+export default Demo20
 ```
 
 ### Controlled sort and filter
@@ -655,7 +736,7 @@ const data = [
   { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
 ]
 
-const Demo19 = function () {
+const Demo21 = function () {
   const [sortOrder, setSortOrder] = createSignal<'ascend' | 'descend' | null>('ascend')
   const [filteredStatus, setFilteredStatus] = createSignal<(string | number | boolean)[]>([
     'active',
@@ -694,7 +775,7 @@ const Demo19 = function () {
   )
 }
 
-export default Demo19
+export default Demo21
 ```
 
 ## API
@@ -706,9 +787,9 @@ export default Demo19
 | `columns`      | Table column definitions.                        | `TableColumn<T>[]`                                                                                                     | `-`                     |
 | `dataSource`   | Data records rendered as rows.                   | `T[]`                                                                                                                  | `-`                     |
 | `rowKey`       | Record field or function used as row key.        | `keyof T \| string \| ((record: T, index: number) => string \| number)`                                                | `record.key \|\| index` |
-| `loading`      | Shows the loading indicator.                     | `boolean \| { spinning?: boolean; tip?: JSX.Element }`                                                                 | `false`                 |
+| `loading`      | Shows the loading indicator.                     | `boolean \| TableLoadingConfig`                                                                                        | `false`                 |
 | `emptyText`    | Empty state content.                             | `JSX.Element`                                                                                                          | `'No data'`             |
-| `locale`       | Locale text. Currently supports empty text.      | `{ emptyText?: JSX.Element \| (() => JSX.Element) }`                                                                   | `-`                     |
+| `locale`       | Locale text. Currently supports empty text.      | `TableLocale`                                                                                                          | `-`                     |
 | `pagination`   | Pagination config, or `false` to disable paging. | `false \| TablePaginationConfig`                                                                                       | `{}`                    |
 | `rowSelection` | Row selection config.                            | `TableRowSelection<T>`                                                                                                 | `-`                     |
 | `expandable`   | Expandable row config.                           | `TableExpandableConfig<T>`                                                                                             | `-`                     |
@@ -725,6 +806,34 @@ export default Demo19
 | `onRow`        | Returns extra props for each table row.          | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                                | `-`                     |
 | `onHeaderRow`  | Returns extra props for the header row.          | `(columns: TableColumn<T>[], index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                | `-`                     |
 | `onChange`     | Called after pagination, sorting, or filtering.  | `(pagination: TableChangePagination, filters, sorter: TableSorterResult<T>, extra: TableCurrentDataSource<T>) => void` | `-`                     |
+
+### Basic table types
+
+| Type                          | Description                          | Definition                                              |
+| ----------------------------- | ------------------------------------ | ------------------------------------------------------- |
+| `TableKey`                    | Row, column, and selection key type. | `string \| number`                                      |
+| `TableDataIndex<T>`           | Column data path type.               | `keyof T \| string \| readonly (string \| number)[]`    |
+| `TableSortOrder`              | Sort order type.                     | `'ascend' \| 'descend' \| null`                         |
+| `TableFilterValue`            | Selected filter values.              | `(string \| number \| boolean)[]`                       |
+| `TableChangeAction`           | Table change trigger type.           | `'paginate' \| 'sort' \| 'filter'`                      |
+| `TableBreakpoint`             | Responsive breakpoint names.         | `'xxl' \| 'xl' \| 'lg' \| 'md' \| 'sm' \| 'xs'`         |
+| `TableLayout`                 | Native table layout mode.            | `'auto' \| 'fixed'`                                     |
+| `TableRowSelectionType`       | Row selection control type.          | `'checkbox' \| 'radio'`                                 |
+| `TableRowSelectionChangeType` | Row selection change trigger type.   | `'all' \| 'none' \| 'invert' \| 'single' \| 'multiple'` |
+| `TableRowSelectionPreset`     | Built-in selection action names.     | `'all' \| 'invert' \| 'none'`                           |
+
+### TableLoadingConfig
+
+| Property   | Description                   | Type          | Default |
+| ---------- | ----------------------------- | ------------- | ------- |
+| `spinning` | Whether the table is loading. | `boolean`     | `false` |
+| `tip`      | Loading indicator content.    | `JSX.Element` | `-`     |
+
+### TableLocale
+
+| Property    | Description          | Type                                 | Default |
+| ----------- | -------------------- | ------------------------------------ | ------- |
+| `emptyText` | Empty state content. | `JSX.Element \| (() => JSX.Element)` | `-`     |
 
 ### TableScrollConfig
 
@@ -846,6 +955,21 @@ Table pagination reuses the Pagination component API and adds antd-compatible pl
 | ---------- | ---------------------- | ----------------------------------------------------------------------------------- | ------- |
 | `children` | Rendered cell content. | `JSX.Element`                                                                       | `-`     |
 | `props`    | Extra body cell props. | `JSX.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number; rowSpan?: number }` | `-`     |
+
+### TableRenderCellProps
+
+| Property  | Description                                   | Type     | Default |
+| --------- | --------------------------------------------- | -------- | ------- |
+| `colSpan` | Body cell colspan. Set to `0` to skip a cell. | `number` | `-`     |
+| `rowSpan` | Body cell rowspan. Set to `0` to skip a cell. | `number` | `-`     |
+
+`TableRenderCellProps` also accepts native `td` HTML attributes.
+
+### TableColumnEllipsis
+
+| Property    | Description                                   | Type      | Default |
+| ----------- | --------------------------------------------- | --------- | ------- |
+| `showTitle` | Sets the cell `title` from text cell content. | `boolean` | `true`  |
 
 ### TableColumn
 
