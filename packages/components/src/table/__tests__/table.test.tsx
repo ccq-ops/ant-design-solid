@@ -526,6 +526,115 @@ describe('Table', () => {
     expect(within(rows[2] as HTMLElement).queryByText('active')).toBeNull()
   })
 
+  it('renders grouped column headers with spans and leaf body cells', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          {
+            title: 'User',
+            children: [
+              { title: 'Name', dataIndex: 'name' },
+              { title: 'Age', dataIndex: 'age' },
+            ],
+          },
+          { title: 'Status', dataIndex: 'status' },
+        ]}
+        dataSource={data}
+        pagination={false}
+      />
+    ))
+    const headerRows = result.container.querySelectorAll('thead tr')
+    const userHeader = result.getByText('User').closest('th')!
+    const statusHeader = result.getByText('Status').closest('th')!
+    const firstBodyRow = result.container.querySelector('tbody tr')!
+
+    expect(headerRows).toHaveLength(2)
+    expect(userHeader).toHaveAttribute('colspan', '2')
+    expect(statusHeader).toHaveAttribute('rowspan', '2')
+    expect(within(headerRows[1] as HTMLElement).getByText('Name')).toBeInTheDocument()
+    expect(firstBodyRow.querySelectorAll('td')).toHaveLength(3)
+    expect(within(firstBodyRow as HTMLElement).getByText('Ada')).toBeInTheDocument()
+    expect(within(firstBodyRow as HTMLElement).getByText('32')).toBeInTheDocument()
+    expect(within(firstBodyRow as HTMLElement).getByText('active')).toBeInTheDocument()
+  })
+
+  it('omits hidden children from grouped column spans', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          {
+            title: 'User',
+            children: [
+              { title: 'Name', dataIndex: 'name' },
+              { title: 'Hidden Age', dataIndex: 'age', hidden: true },
+            ],
+          },
+          { title: 'Status', dataIndex: 'status' },
+        ]}
+        dataSource={data}
+        pagination={false}
+      />
+    ))
+    const userHeader = result.getByText('User').closest('th')!
+    const firstBodyRow = result.container.querySelector('tbody tr')!
+
+    expect(userHeader).toHaveAttribute('colspan', '1')
+    expect(result.queryByText('Hidden Age')).toBeNull()
+    expect(firstBodyRow.querySelectorAll('td')).toHaveLength(2)
+    expect(within(firstBodyRow as HTMLElement).queryByText('32')).toBeNull()
+  })
+
+  it('spans selection and expand headers across grouped header rows', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          {
+            title: 'User',
+            children: [
+              { title: 'Name', dataIndex: 'name' },
+              { title: 'Age', dataIndex: 'age' },
+            ],
+          },
+        ]}
+        dataSource={data}
+        pagination={false}
+        rowSelection={{}}
+        expandable={{ expandedRowRender: (record) => <span>{record.name} details</span> }}
+      />
+    ))
+    const expandHeader = result.container.querySelector('thead .ads-table-expand-column')!
+    const selectionHeader = result.container.querySelector('thead .ads-table-selection-column')!
+    const firstBodyRow = result.container.querySelector('tbody tr')!
+
+    expect(result.container.querySelectorAll('thead tr')).toHaveLength(2)
+    expect(expandHeader).toHaveAttribute('rowspan', '2')
+    expect(selectionHeader).toHaveAttribute('rowspan', '2')
+    expect(firstBodyRow.querySelectorAll('td')).toHaveLength(4)
+  })
+
+  it('sorts leaf columns inside grouped columns', () => {
+    const result = render(() => (
+      <Table
+        columns={[
+          {
+            title: 'User',
+            children: [
+              { title: 'Name', dataIndex: 'name' },
+              { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+            ],
+          },
+        ]}
+        dataSource={data}
+        pagination={false}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Sort by Age' }))
+
+    const firstBodyRow = result.container.querySelector('tbody tr')!
+    expect(within(firstBodyRow as HTMLElement).getByText('Linus')).toBeInTheDocument()
+  })
+
   it('sorts by clicking a sortable column header and emits change details', () => {
     const onChange = vi.fn()
     const result = render(() => (

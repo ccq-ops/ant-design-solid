@@ -126,6 +126,7 @@ export type TableRenderCellOutput = JSX.Element | TableRenderCellResult
 
 export interface TableColumn<T extends object = object> {
   title?: JSX.Element | ((props: { sortOrder?: TableSortOrder }) => JSX.Element)
+  children?: TableColumn<T>[]
   dataIndex?: TableDataIndex<T>
   key?: string
   render?: (value: unknown, record: T, index: number) => TableRenderCellOutput

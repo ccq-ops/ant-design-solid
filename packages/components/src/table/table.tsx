@@ -22,6 +22,13 @@ import type {
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_SORT_DIRECTIONS: TableSortOrder[] = ['ascend', 'descend', null]
 
+interface TableHeaderCell<T extends object> {
+  column: TableColumn<T>
+  colSpan: number
+  rowSpan: number
+  columnIndex: number
+}
+
 function getValue<T extends object>(record: T, dataIndex: TableDataIndex<T> | undefined) {
   if (!dataIndex) return undefined
   if (Array.isArray(dataIndex)) {
@@ -97,6 +104,65 @@ function getAriaSort(order: TableSortOrder) {
   return 'none'
 }
 
+function isColumnVisible<T extends object>(column: TableColumn<T>) {
+  return !column.hidden && (!column.responsive || column.responsive.includes('xs'))
+}
+
+function getVisibleColumns<T extends object>(columns: TableColumn<T>[]): TableColumn<T>[] {
+  return columns
+    .filter(isColumnVisible)
+    .map((column) =>
+      column.children
+        ? {
+            ...column,
+            children: getVisibleColumns(column.children),
+          }
+        : column,
+    )
+    .filter((column) => !column.children || column.children.length > 0)
+}
+
+function getLeafColumns<T extends object>(columns: TableColumn<T>[]): TableColumn<T>[] {
+  return columns.flatMap((column) =>
+    column.children?.length ? getLeafColumns(column.children) : [column],
+  )
+}
+
+function getColumnDepth<T extends object>(columns: TableColumn<T>[]): number {
+  if (columns.length === 0) return 1
+  return Math.max(
+    ...columns.map((column) => (column.children?.length ? 1 + getColumnDepth(column.children) : 1)),
+  )
+}
+
+function getLeafCount<T extends object>(column: TableColumn<T>) {
+  return column.children?.length ? getLeafColumns(column.children).length : 1
+}
+
+function getHeaderRows<T extends object>(
+  columns: TableColumn<T>[],
+  depth: number,
+): TableHeaderCell<T>[][] {
+  let leafIndex = 0
+  const rows: TableHeaderCell<T>[][] = Array.from({ length: depth }, () => [])
+  const visit = (items: TableColumn<T>[], level: number) => {
+    items.forEach((column) => {
+      const hasChildren = Boolean(column.children?.length)
+      const colSpan = hasChildren ? getLeafCount(column) : 1
+      const columnIndex = hasChildren ? leafIndex : leafIndex++
+      rows[level].push({
+        column,
+        colSpan,
+        rowSpan: hasChildren ? 1 : depth - level,
+        columnIndex,
+      })
+      if (column.children?.length) visit(column.children, level + 1)
+    })
+  }
+  visit(columns, 0)
+  return rows
+}
+
 function isRenderCellResult(value: TableRenderCellOutput): value is {
   children?: JSX.Element
   props?: TableRenderCellProps
@@ -138,10 +204,10 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-table`
   const [, hashId] = useTableStyle(prefixCls())
-  const columns = () =>
-    (local.columns ?? []).filter(
-      (column) => !column.hidden && (!column.responsive || column.responsive.includes('xs')),
-    )
+  const columns = () => getVisibleColumns(local.columns ?? [])
+  const leafColumns = () => getLeafColumns(columns())
+  const headerDepth = () => getColumnDepth(columns())
+  const headerRows = () => getHeaderRows(columns(), headerDepth())
   const data = () => local.dataSource ?? []
   const size = () => local.size ?? 'middle'
   const initialPagination = local.pagination === false ? undefined : local.pagination
@@ -161,11 +227,11 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const [openFilterKey, setOpenFilterKey] = createSignal<string>()
   const loading = () => isLoading(local.loading)
 
-  const filteredValues = () => getFilteredValues(columns(), innerFilters())
+  const filteredValues = () => getFilteredValues(leafColumns(), innerFilters())
   const filteredData = () => {
     const filters = filteredValues()
     return data().filter((record) =>
-      columns().every((column, index) => {
+      leafColumns().every((column, index) => {
         if (!column.filters || !column.onFilter) return true
         const values = filters[getColumnKey(column, index)]
         if (!values || values.length === 0) return true
@@ -174,24 +240,26 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     )
   }
   const sorter = () => {
-    const controlledColumn = columns().find((column) => column.sortOrder !== undefined)
+    const controlledColumn = leafColumns().find((column) => column.sortOrder !== undefined)
     if (controlledColumn) {
+      const columnIndex = leafColumns().indexOf(controlledColumn)
       return {
         column: controlledColumn,
         order: controlledColumn.sortOrder,
         field: controlledColumn.dataIndex,
-        columnKey: getColumnKeyValue(controlledColumn, columns().indexOf(controlledColumn)),
+        columnKey: getColumnKeyValue(controlledColumn, columnIndex),
       } satisfies TableSorterResult<T>
     }
     const current = innerSorter()
     if (current.order) return current
-    const defaultColumn = columns().find((column) => column.defaultSortOrder)
+    const defaultColumn = leafColumns().find((column) => column.defaultSortOrder)
     if (!defaultColumn) return current
+    const columnIndex = leafColumns().indexOf(defaultColumn)
     return {
       column: defaultColumn,
       order: defaultColumn.defaultSortOrder,
       field: defaultColumn.dataIndex,
-      columnKey: getColumnKeyValue(defaultColumn, columns().indexOf(defaultColumn)),
+      columnKey: getColumnKeyValue(defaultColumn, columnIndex),
     } satisfies TableSorterResult<T>
   }
   const processedData = () => {
@@ -229,7 +297,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const getRecordKey = (record: T, index: number) =>
     getRowKey(record, getRecordIndex(record, index), local.rowKey)
   const renderColumnCount = () =>
-    columns().length + (local.rowSelection ? 1 : 0) + (local.expandable ? 1 : 0)
+    leafColumns().length + (local.rowSelection ? 1 : 0) + (local.expandable ? 1 : 0)
   const selectedKeys = () => local.rowSelection?.selectedRowKeys ?? innerSelectedKeys()
   const selectedKeySet = () => new Set(selectedKeys())
   const selectablePageRecords = () =>
@@ -269,7 +337,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   }
   const tableStyle = (): JSX.CSSProperties | undefined => {
     const layout =
-      local.tableLayout ?? (columns().some((column) => column.ellipsis) ? 'fixed' : undefined)
+      local.tableLayout ?? (leafColumns().some((column) => column.ellipsis) ? 'fixed' : undefined)
     if (!local.scroll?.x && !layout) return undefined
     return {
       'min-width':
@@ -474,6 +542,123 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     return typeof className === 'function' ? className(record, index, 0) : className
   }
 
+  function renderHeaderCell(cell: TableHeaderCell<T>) {
+    const column = cell.column
+    return (
+      <th
+        {...(column.onHeaderCell?.(column) ?? {})}
+        class={classNames(
+          column.align === 'center' && `${prefixCls()}-cell-center`,
+          column.align === 'right' && `${prefixCls()}-cell-right`,
+          column.ellipsis && `${prefixCls()}-cell-ellipsis`,
+          column.class,
+          column.className,
+        )}
+        classList={column.classList}
+        colspan={column.children?.length ? cell.colSpan : undefined}
+        rowspan={cell.rowSpan > 1 ? cell.rowSpan : undefined}
+        style={{
+          width: typeof column.width === 'number' ? `${column.width}px` : column.width,
+        }}
+        data-column-key={getColumnKey(column, cell.columnIndex)}
+      >
+        <span class={`${prefixCls()}-column-title`}>{renderTitle(column)}</span>
+        <span class={`${prefixCls()}-column-actions`}>
+          <Show when={!column.children?.length && column.sorter}>
+            <button
+              type="button"
+              class={classNames(
+                `${prefixCls()}-column-action`,
+                `${prefixCls()}-sorter`,
+                getColumnSortOrder(column, cell.columnIndex) && `${prefixCls()}-sorter-active`,
+              )}
+              aria-label={`Sort by ${String(renderTitle(column))}`}
+              aria-sort={getAriaSort(getColumnSortOrder(column, cell.columnIndex) ?? null)}
+              onClick={() => toggleSort(column, cell.columnIndex)}
+            >
+              <span
+                class={classNames(
+                  `${prefixCls()}-sorter-icon`,
+                  getColumnSortOrder(column, cell.columnIndex) === 'ascend' &&
+                    `${prefixCls()}-sorter-icon-active`,
+                )}
+                aria-hidden="true"
+              >
+                ▲
+              </span>
+              <span
+                class={classNames(
+                  `${prefixCls()}-sorter-icon`,
+                  getColumnSortOrder(column, cell.columnIndex) === 'descend' &&
+                    `${prefixCls()}-sorter-icon-active`,
+                )}
+                aria-hidden="true"
+              >
+                ▼
+              </span>
+            </button>
+          </Show>
+          <Show when={!column.children?.length && column.filters}>
+            <button
+              type="button"
+              class={classNames(
+                `${prefixCls()}-column-action`,
+                `${prefixCls()}-filter-trigger`,
+                Boolean(filteredValues()[getColumnKey(column, cell.columnIndex)]?.length) &&
+                  `${prefixCls()}-filter-trigger-active`,
+              )}
+              aria-label={`Filter ${String(renderTitle(column))}`}
+              onClick={() =>
+                setOpenFilterKey(
+                  openFilterKey() === getColumnKey(column, cell.columnIndex)
+                    ? undefined
+                    : getColumnKey(column, cell.columnIndex),
+                )
+              }
+            >
+              {column.filterIcon
+                ? typeof column.filterIcon === 'function'
+                  ? column.filterIcon(
+                      Boolean(filteredValues()[getColumnKey(column, cell.columnIndex)]?.length),
+                    )
+                  : column.filterIcon
+                : 'Filter'}
+            </button>
+            <Show when={openFilterKey() === getColumnKey(column, cell.columnIndex)}>
+              <div class={`${prefixCls()}-filter-dropdown`}>
+                <For each={column.filters}>
+                  {(filter) => {
+                    const key = getColumnKey(column, cell.columnIndex)
+                    const checked = () => Boolean(filteredValues()[key]?.includes(filter.value))
+                    return (
+                      <label>
+                        <input
+                          type={column.filterMultiple === false ? 'radio' : 'checkbox'}
+                          name={`${prefixCls()}-${key}-filter`}
+                          checked={checked()}
+                          aria-label={String(filter.text)}
+                          onChange={(event) =>
+                            updateFilter(
+                              column,
+                              cell.columnIndex,
+                              filter.value,
+                              event.currentTarget.checked,
+                            )
+                          }
+                        />
+                        {filter.text}
+                      </label>
+                    )
+                  }}
+                </For>
+              </div>
+            </Show>
+          </Show>
+        </span>
+      </th>
+    )
+  }
+
   return (
     <div
       {...rest}
@@ -494,153 +679,41 @@ export function Table<T extends object = object>(props: TableProps<T>) {
         <table class={prefixCls()} style={tableStyle()}>
           <Show when={local.showHeader !== false}>
             <thead>
-              <tr {...(local.onHeaderRow?.(columns(), 0) ?? {})}>
-                <Show when={local.expandable}>
-                  <th
-                    class={`${prefixCls()}-expand-column`}
-                    style={{
-                      width:
-                        typeof local.expandable?.columnWidth === 'number'
-                          ? `${local.expandable.columnWidth}px`
-                          : local.expandable?.columnWidth,
-                    }}
-                  >
-                    {renderExpandHeader()}
-                  </th>
-                </Show>
-                <Show when={local.rowSelection}>
-                  <th
-                    class={`${prefixCls()}-selection-column`}
-                    style={{
-                      width:
-                        typeof local.rowSelection?.columnWidth === 'number'
-                          ? `${local.rowSelection.columnWidth}px`
-                          : local.rowSelection?.columnWidth,
-                    }}
-                  >
-                    {renderSelectionHeader()}
-                  </th>
-                </Show>
-                <For each={columns()}>
-                  {(column, index) => (
-                    <th
-                      {...(column.onHeaderCell?.(column) ?? {})}
-                      class={classNames(
-                        column.align === 'center' && `${prefixCls()}-cell-center`,
-                        column.align === 'right' && `${prefixCls()}-cell-right`,
-                        column.ellipsis && `${prefixCls()}-cell-ellipsis`,
-                        column.class,
-                        column.className,
-                      )}
-                      classList={column.classList}
-                      style={{
-                        width:
-                          typeof column.width === 'number' ? `${column.width}px` : column.width,
-                      }}
-                      data-column-key={getColumnKey(column, index())}
-                    >
-                      <span class={`${prefixCls()}-column-title`}>{renderTitle(column)}</span>
-                      <span class={`${prefixCls()}-column-actions`}>
-                        <Show when={column.sorter}>
-                          <button
-                            type="button"
-                            class={classNames(
-                              `${prefixCls()}-column-action`,
-                              `${prefixCls()}-sorter`,
-                              getColumnSortOrder(column, index()) && `${prefixCls()}-sorter-active`,
-                            )}
-                            aria-label={`Sort by ${String(renderTitle(column))}`}
-                            aria-sort={getAriaSort(getColumnSortOrder(column, index()) ?? null)}
-                            onClick={() => toggleSort(column, index())}
-                          >
-                            <span
-                              class={classNames(
-                                `${prefixCls()}-sorter-icon`,
-                                getColumnSortOrder(column, index()) === 'ascend' &&
-                                  `${prefixCls()}-sorter-icon-active`,
-                              )}
-                              aria-hidden="true"
-                            >
-                              ▲
-                            </span>
-                            <span
-                              class={classNames(
-                                `${prefixCls()}-sorter-icon`,
-                                getColumnSortOrder(column, index()) === 'descend' &&
-                                  `${prefixCls()}-sorter-icon-active`,
-                              )}
-                              aria-hidden="true"
-                            >
-                              ▼
-                            </span>
-                          </button>
-                        </Show>
-                        <Show when={column.filters}>
-                          <button
-                            type="button"
-                            class={classNames(
-                              `${prefixCls()}-column-action`,
-                              `${prefixCls()}-filter-trigger`,
-                              Boolean(filteredValues()[getColumnKey(column, index())]?.length) &&
-                                `${prefixCls()}-filter-trigger-active`,
-                            )}
-                            aria-label={`Filter ${String(renderTitle(column))}`}
-                            onClick={() =>
-                              setOpenFilterKey(
-                                openFilterKey() === getColumnKey(column, index())
-                                  ? undefined
-                                  : getColumnKey(column, index()),
-                              )
-                            }
-                          >
-                            {column.filterIcon
-                              ? typeof column.filterIcon === 'function'
-                                ? column.filterIcon(
-                                    Boolean(
-                                      filteredValues()[getColumnKey(column, index())]?.length,
-                                    ),
-                                  )
-                                : column.filterIcon
-                              : 'Filter'}
-                          </button>
-                          <Show when={openFilterKey() === getColumnKey(column, index())}>
-                            <div class={`${prefixCls()}-filter-dropdown`}>
-                              <For each={column.filters}>
-                                {(filter) => {
-                                  const key = getColumnKey(column, index())
-                                  const checked = () =>
-                                    Boolean(filteredValues()[key]?.includes(filter.value))
-                                  return (
-                                    <label>
-                                      <input
-                                        type={
-                                          column.filterMultiple === false ? 'radio' : 'checkbox'
-                                        }
-                                        name={`${prefixCls()}-${key}-filter`}
-                                        checked={checked()}
-                                        aria-label={String(filter.text)}
-                                        onChange={(event) =>
-                                          updateFilter(
-                                            column,
-                                            index(),
-                                            filter.value,
-                                            event.currentTarget.checked,
-                                          )
-                                        }
-                                      />
-                                      {filter.text}
-                                    </label>
-                                  )
-                                }}
-                              </For>
-                            </div>
-                          </Show>
-                        </Show>
-                      </span>
-                    </th>
-                  )}
-                </For>
-              </tr>
+              <For each={headerRows()}>
+                {(row, rowIndex) => (
+                  <tr {...(local.onHeaderRow?.(leafColumns(), rowIndex()) ?? {})}>
+                    <Show when={rowIndex() === 0 && local.expandable}>
+                      <th
+                        class={`${prefixCls()}-expand-column`}
+                        rowspan={headerDepth() > 1 ? headerDepth() : undefined}
+                        style={{
+                          width:
+                            typeof local.expandable?.columnWidth === 'number'
+                              ? `${local.expandable.columnWidth}px`
+                              : local.expandable?.columnWidth,
+                        }}
+                      >
+                        {renderExpandHeader()}
+                      </th>
+                    </Show>
+                    <Show when={rowIndex() === 0 && local.rowSelection}>
+                      <th
+                        class={`${prefixCls()}-selection-column`}
+                        rowspan={headerDepth() > 1 ? headerDepth() : undefined}
+                        style={{
+                          width:
+                            typeof local.rowSelection?.columnWidth === 'number'
+                              ? `${local.rowSelection.columnWidth}px`
+                              : local.rowSelection?.columnWidth,
+                        }}
+                      >
+                        {renderSelectionHeader()}
+                      </th>
+                    </Show>
+                    <For each={row}>{(cell) => renderHeaderCell(cell)}</For>
+                  </tr>
+                )}
+              </For>
             </thead>
           </Show>
           <tbody>
@@ -686,7 +759,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                             {renderSelectionCell(record, index())}
                           </td>
                         </Show>
-                        <For each={columns()}>
+                        <For each={leafColumns()}>
                           {(column) => {
                             const cellProps = () => column.onCell?.(record, index()) ?? {}
                             const rendered = () => renderCellContent(column, record, index())

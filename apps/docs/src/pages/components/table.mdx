@@ -489,6 +489,41 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+### Grouped columns
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', firstName: 'Ada', lastName: 'Lovelace', age: 32, status: 'active' },
+  { key: '2', firstName: 'Grace', lastName: 'Hopper', age: 36, status: 'idle' },
+  { key: '3', firstName: 'Linus', lastName: 'Torvalds', age: 28, status: 'active' },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    children: [
+      { title: 'First name', dataIndex: 'firstName' },
+      { title: 'Last name', dataIndex: 'lastName' },
+    ],
+  },
+  {
+    title: 'Details',
+    children: [
+      { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+      { title: 'Status', dataIndex: 'status' },
+    ],
+  },
+]
+
+const Demo15 = function () {
+  return <Table bordered columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo15
+```
+
 ## API
 
 ### Table
@@ -572,6 +607,7 @@ Table pagination reuses the Pagination component API and adds antd-compatible pl
 | Property               | Description                                                                          | Type                                                                                                                                                             | Default                       |
 | ---------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | `title`                | Column header content.                                                               | `JSX.Element \| ((props: { sortOrder?: TableSortOrder }) => JSX.Element)`                                                                                        | `-`                           |
+| `children`             | Child columns for grouped headers.                                                   | `TableColumn<T>[]`                                                                                                                                               | `-`                           |
 | `dataIndex`            | Record field read for this column.                                                   | `keyof T \| string \| readonly (string \| number)[]`                                                                                                             | `-`                           |
 | `key`                  | Column key.                                                                          | `string`                                                                                                                                                         | `-`                           |
 | `render`               | Custom cell renderer. Supports returning cell props.                                 | `(value, record, index) => JSX.Element \| { children?: JSX.Element; props?: JSX.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number; rowSpan?: number } }` | `-`                           |
