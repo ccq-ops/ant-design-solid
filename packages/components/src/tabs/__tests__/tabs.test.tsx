@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { fireEvent, render, screen, waitFor } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -311,6 +311,147 @@ describe('Tabs', () => {
     fireEvent.click(result.getByRole('button', { name: /close/i }))
 
     expect(onEdit).toHaveBeenCalledWith('one', 'remove')
+  })
+
+  it('supports renderTabBar with default tab bar component', () => {
+    const renderTabBar = vi.fn((props, DefaultTabBar) => (
+      <div data-testid="custom-bar">
+        <DefaultTabBar {...props} />
+      </div>
+    ))
+
+    const result = render(() => <Tabs items={items} renderTabBar={renderTabBar} />)
+
+    expect(result.getByTestId('custom-bar')).toBeInTheDocument()
+    expect(result.getByRole('tab', { name: 'One' })).toBeInTheDocument()
+    expect(renderTabBar).toHaveBeenCalled()
+  })
+
+  it('moves overflowing tabs into more menu and activates hidden tabs', async () => {
+    const getBoundingClientRect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('ads-tabs-nav-list')) {
+          return {
+            width: 120,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            right: 120,
+            bottom: 40,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        return {
+          width: 80,
+          height: 32,
+          x: 0,
+          y: 0,
+          top: 0,
+          left: 0,
+          right: 80,
+          bottom: 32,
+          toJSON: () => {},
+        } as DOMRect
+      })
+
+    try {
+      const result = render(() => (
+        <Tabs
+          more={{ icon: <span>More tabs</span>, trigger: 'click' }}
+          classNames={{ popup: { root: 'tabs-popup' } }}
+          styles={{ popup: { root: { width: '240px' } } }}
+          items={[
+            { key: 'one', label: 'One', children: <div>Pane one</div> },
+            { key: 'two', label: 'Two', children: <div>Pane two</div> },
+            { key: 'three', label: 'Three', children: <div>Pane three</div> },
+          ]}
+        />
+      ))
+
+      await waitFor(() => {
+        expect(result.queryByRole('tab', { name: 'Three' })).not.toBeInTheDocument()
+      })
+      fireEvent.click(result.getByRole('button', { name: /more tabs/i }))
+
+      const menuItem = await screen.findByRole('menuitem', { name: 'Three' })
+      expect(document.body.querySelector('.tabs-popup')).toHaveStyle({ width: '240px' })
+
+      fireEvent.click(menuItem)
+
+      await waitFor(() => {
+        expect(result.getByRole('tab', { name: 'Three' })).toHaveAttribute('aria-selected', 'true')
+      })
+      expect(result.getByText('Pane three')).toBeInTheDocument()
+    } finally {
+      getBoundingClientRect.mockRestore()
+    }
+  })
+
+  it('keeps the active tab visible when measuring overflow', async () => {
+    const getBoundingClientRect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('ads-tabs-nav-list')) {
+          return {
+            width: 120,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            right: 120,
+            bottom: 40,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        return {
+          width: 80,
+          height: 32,
+          x: 0,
+          y: 0,
+          top: 0,
+          left: 0,
+          right: 80,
+          bottom: 32,
+          toJSON: () => {},
+        } as DOMRect
+      })
+
+    try {
+      const result = render(() => (
+        <Tabs
+          defaultActiveKey="three"
+          more={{ trigger: 'click' }}
+          items={[
+            { key: 'one', label: 'One', children: <div>Pane one</div> },
+            { key: 'two', label: 'Two', children: <div>Pane two</div> },
+            { key: 'three', label: 'Three', children: <div>Pane three</div> },
+          ]}
+        />
+      ))
+
+      await waitFor(() => {
+        expect(result.getByRole('tab', { name: 'Three' })).toHaveAttribute('aria-selected', 'true')
+        expect(result.queryByRole('tab', { name: 'Two' })).not.toBeInTheDocument()
+      })
+    } finally {
+      getBoundingClientRect.mockRestore()
+    }
+  })
+
+  it('reports tab scroll direction', () => {
+    const onTabScroll = vi.fn()
+    const result = render(() => <Tabs items={items} onTabScroll={onTabScroll} />)
+    const list = result.container.querySelector('.ads-tabs-nav-list') as HTMLElement
+
+    fireEvent.scroll(list, { target: { scrollLeft: 20 } })
+    expect(onTabScroll).toHaveBeenCalledWith({ direction: 'right' })
+
+    fireEvent.scroll(list, { target: { scrollLeft: 0 } })
+    expect(onTabScroll).toHaveBeenLastCalledWith({ direction: 'left' })
   })
 
   it('renders labels and active pane', () => {

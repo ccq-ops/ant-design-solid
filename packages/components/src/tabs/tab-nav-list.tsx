@@ -1,39 +1,12 @@
-import { CloseOutlined, PlusOutlined } from '@ant-design-solid/icons'
-import { For, Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import { CloseOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design-solid/icons'
+import { For, Show, createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { Dropdown } from '../dropdown'
 import { classNames } from '../shared/class-names'
-import type {
-  TabsIndicatorConfig,
-  TabsItem,
-  TabsPlacement,
-  TabsSemanticClassNamesMap,
-  TabsSemanticStylesMap,
-  TabsType,
-} from './interface'
+import type { TabsDefaultTabBarProps, TabsItem } from './interface'
 import { mergeStyle } from './tabs-utils'
 
-export interface TabNavListProps {
-  items: TabsItem[]
-  activeKey: string
-  prefixCls: string
-  type: TabsType
-  tabPlacement: TabsPlacement
-  tabId: (key: string) => string
-  panelId: (key: string) => string
-  renderedPanelKeys: Set<string>
-  classNames: TabsSemanticClassNamesMap
-  styles: TabsSemanticStylesMap
-  centered?: boolean
-  indicator?: TabsIndicatorConfig
-  tabBarExtraContent?: JSX.Element | { left?: JSX.Element; right?: JSX.Element }
-  tabBarGutter?: number
-  tabBarStyle?: JSX.CSSProperties
-  addIcon?: JSX.Element
-  removeIcon?: JSX.Element
-  hideAdd?: boolean
-  onEdit?: (targetKey: string | MouseEvent, action: 'add' | 'remove') => void
-  onTabActivate: (item: TabsItem, event: MouseEvent | KeyboardEvent) => void
-}
+export type TabNavListProps = TabsDefaultTabBarProps
 
 function closeButtonConfig(item: TabsItem, removeIcon?: JSX.Element) {
   if (item.closeIcon === false || item.closeIcon === null) {
@@ -56,9 +29,14 @@ function extraContent(content: TabNavListProps['tabBarExtraContent']) {
 }
 
 export function TabNavList(props: TabNavListProps) {
+  let navListElement: HTMLDivElement | undefined
+  let previousScrollLeft = 0
+  let previousScrollTop = 0
   const [tabElements, setTabElements] = createSignal<Record<string, HTMLButtonElement | undefined>>(
     {},
   )
+  const [tabSizes, setTabSizes] = createSignal<Record<string, number>>({})
+  const [hiddenKeys, setHiddenKeys] = createSignal<Set<string>>(new Set())
   const [indicatorStyles, setIndicatorStyles] = createSignal<
     Record<string, { style?: JSX.CSSProperties; customSize: boolean }>
   >({})
@@ -66,6 +44,11 @@ export function TabNavList(props: TabNavListProps) {
   const editable = () => props.type === 'editable-card'
   const closable = (item: TabsItem) => item.closable !== false && item.closeIcon !== false
   const extras = () => extraContent(props.tabBarExtraContent)
+  const vertical = () => props.tabPlacement === 'start' || props.tabPlacement === 'end'
+  const visibleItems = () => props.items.filter((item) => !hiddenKeys().has(item.key))
+  const hiddenItems = () => props.items.filter((item) => hiddenKeys().has(item.key))
+  const moreIcon = () => props.more?.icon ?? <EllipsisOutlined />
+  const moreTrigger = () => props.more?.trigger ?? 'hover'
   const navStyle = (): JSX.CSSProperties =>
     mergeStyle(
       props.styles.header,
@@ -74,6 +57,52 @@ export function TabNavList(props: TabNavListProps) {
         ? undefined
         : ({ '--ads-tabs-tab-gutter': `${props.tabBarGutter}px` } as JSX.CSSProperties),
     )
+  const updateOverflow = () => {
+    if (!navListElement) return
+    const containerRect = navListElement.getBoundingClientRect()
+    const containerSize = vertical() ? containerRect.height : containerRect.width
+    if (!Number.isFinite(containerSize) || containerSize <= 0) {
+      setHiddenKeys(new Set<string>())
+      return
+    }
+
+    const currentSizes = untrack(tabSizes)
+    const nextSizes: Record<string, number> = { ...currentSizes }
+    for (const item of props.items) {
+      const element = tabElements()[item.key]
+      if (!element) continue
+      const rect = element.getBoundingClientRect()
+      const size = vertical() ? rect.height : rect.width
+      if (Number.isFinite(size) && size > 0) {
+        nextSizes[item.key] = size
+      }
+    }
+    setTabSizes(nextSizes)
+
+    const totalSize = props.items.reduce((sum, item) => sum + (nextSizes[item.key] ?? 0), 0)
+    if (totalSize <= containerSize) {
+      setHiddenKeys(new Set<string>())
+      return
+    }
+
+    const moreSize = 40
+    const availableSize = Math.max(0, containerSize - moreSize)
+    const nextHiddenKeys = new Set<string>()
+    const activeItem = props.items.find((item) => item.key === props.activeKey)
+    let usedSize = activeItem ? (nextSizes[activeItem.key] ?? 0) : 0
+
+    for (const item of props.items) {
+      if (item.key === activeItem?.key) continue
+      const itemSize = nextSizes[item.key] ?? 0
+      if (usedSize + itemSize <= availableSize) {
+        usedSize += itemSize
+      } else {
+        nextHiddenKeys.add(item.key)
+      }
+    }
+
+    setHiddenKeys(nextHiddenKeys)
+  }
   const indicatorHasCustomSize = (item: TabsItem) =>
     Boolean(indicatorStyles()[item.key]?.customSize)
   const updateIndicatorStyle = (item: TabsItem, tab: HTMLButtonElement) => {
@@ -103,9 +132,30 @@ export function TabNavList(props: TabNavListProps) {
     setTabElements((current) =>
       Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
     )
+    setTabSizes((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
+    )
     setIndicatorStyles((current) =>
       Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
     )
+  })
+  createEffect(() => {
+    const items = props.items
+    const activeKey = props.activeKey
+    const tabPlacement = props.tabPlacement
+    void items
+    void activeKey
+    void tabPlacement
+    queueMicrotask(updateOverflow)
+    if (typeof ResizeObserver === 'undefined' || !navListElement) return
+    const resizeObserver = new ResizeObserver(updateOverflow)
+    resizeObserver.observe(navListElement)
+    for (const element of Object.values(tabElements())) {
+      if (element) resizeObserver.observe(element)
+    }
+    onCleanup(() => {
+      resizeObserver.disconnect()
+    })
   })
   createEffect(() => {
     const activeItem = props.items.find((item) => item.key === props.activeKey)
@@ -128,6 +178,21 @@ export function TabNavList(props: TabNavListProps) {
   const handleRemove = (event: MouseEvent, item: TabsItem) => {
     event.stopPropagation()
     props.onEdit?.(item.key, 'remove')
+  }
+  const handleMoreClick = (key: string, event: MouseEvent) => {
+    const item = props.items.find((candidate) => candidate.key === key)
+    if (item) props.onTabActivate(item, event)
+  }
+  const handleScroll = (event: Event) => {
+    const target = event.currentTarget as HTMLDivElement
+    const nextScrollLeft = target.scrollLeft
+    const nextScrollTop = target.scrollTop
+    if (nextScrollLeft > previousScrollLeft) props.onTabScroll?.({ direction: 'right' })
+    if (nextScrollLeft < previousScrollLeft) props.onTabScroll?.({ direction: 'left' })
+    if (nextScrollTop > previousScrollTop) props.onTabScroll?.({ direction: 'bottom' })
+    if (nextScrollTop < previousScrollTop) props.onTabScroll?.({ direction: 'top' })
+    previousScrollLeft = nextScrollLeft
+    previousScrollTop = nextScrollTop
   }
   const focusTab = (item: TabsItem, event: KeyboardEvent) => {
     const element = document.getElementById(props.tabId(item.key))
@@ -168,16 +233,19 @@ export function TabNavList(props: TabNavListProps) {
         </div>
       </Show>
       <div
+        ref={(element) => {
+          navListElement = element
+        }}
         class={classNames(
           `${props.prefixCls}-nav-list`,
           props.centered && `${props.prefixCls}-nav-list-centered`,
         )}
         role="tablist"
+        onScroll={handleScroll}
       >
-        <For each={props.items}>
+        <For each={visibleItems()}>
           {(item) => {
             const active = () => item.key === props.activeKey
-            const closeButton = () => closeButtonConfig(item, props.removeIcon)
             return (
               <span
                 class={classNames(
@@ -231,6 +299,29 @@ export function TabNavList(props: TabNavListProps) {
           }}
         </For>
       </div>
+      <Show when={hiddenItems().length > 0}>
+        <Dropdown
+          trigger={moreTrigger()}
+          overlayClass={props.classNames.popup?.root}
+          overlayStyle={props.styles.popup?.root}
+          menu={{
+            items: hiddenItems().map((item) => ({
+              key: item.key,
+              label: item.label,
+              disabled: item.disabled,
+            })),
+            onClick: (info) => handleMoreClick(info.key, info.domEvent),
+          }}
+        >
+          <button
+            type="button"
+            class={`${props.prefixCls}-more`}
+            aria-label={props.more?.icon ? undefined : 'more'}
+          >
+            {moreIcon()}
+          </button>
+        </Dropdown>
+      </Show>
       <Show when={editable()}>
         <div class={`${props.prefixCls}-remove-list`}>
           <For each={props.items}>

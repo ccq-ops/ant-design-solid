@@ -2,6 +2,7 @@ import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import type { TabNavListProps } from './tab-nav-list'
 import { TabNavList } from './tab-nav-list'
 import { TabPanelList } from './tab-panel-list'
 import { useTabsStyle } from './tabs.style'
@@ -132,30 +133,76 @@ export function Tabs(props: TabsProps) {
       setInnerActiveKey(item.key)
     }
   }
-  const nav = () => (
-    <TabNavList
-      items={items()}
-      activeKey={mergedActiveKey()}
-      prefixCls={prefixCls()}
-      type={type()}
-      tabPlacement={tabPosition()}
-      tabId={tabId}
-      panelId={panelId}
-      renderedPanelKeys={renderedPanelKeys()}
-      classNames={semanticClassNames()}
-      styles={semanticStyles()}
-      centered={local.centered}
-      indicator={local.indicator}
-      tabBarExtraContent={local.tabBarExtraContent}
-      tabBarGutter={local.tabBarGutter}
-      tabBarStyle={local.tabBarStyle}
-      addIcon={local.addIcon}
-      removeIcon={local.removeIcon}
-      hideAdd={local.hideAdd}
-      onEdit={local.onEdit}
-      onTabActivate={handleTabActivate}
-    />
-  )
+  const defaultTabBarProps = (): TabNavListProps => ({
+    get items() {
+      return items()
+    },
+    get activeKey() {
+      return mergedActiveKey()
+    },
+    get prefixCls() {
+      return prefixCls()
+    },
+    get type() {
+      return type()
+    },
+    get tabPlacement() {
+      return tabPosition()
+    },
+    tabId,
+    panelId,
+    get renderedPanelKeys() {
+      return renderedPanelKeys()
+    },
+    get classNames() {
+      return semanticClassNames()
+    },
+    get styles() {
+      return semanticStyles()
+    },
+    get centered() {
+      return local.centered
+    },
+    get indicator() {
+      return local.indicator
+    },
+    get more() {
+      return local.more
+    },
+    get tabBarExtraContent() {
+      return local.tabBarExtraContent
+    },
+    get tabBarGutter() {
+      return local.tabBarGutter
+    },
+    get tabBarStyle() {
+      return local.tabBarStyle
+    },
+    get addIcon() {
+      return local.addIcon
+    },
+    get removeIcon() {
+      return local.removeIcon
+    },
+    get hideAdd() {
+      return local.hideAdd
+    },
+    get onEdit() {
+      return local.onEdit
+    },
+    get onTabScroll() {
+      return local.onTabScroll
+    },
+    onTabActivate: handleTabActivate,
+  })
+  const nav = () => {
+    const tabBarProps = defaultTabBarProps()
+    return local.renderTabBar ? (
+      local.renderTabBar(tabBarProps, TabNavList)
+    ) : (
+      <TabNavList {...tabBarProps} />
+    )
+  }
   const content = () => (
     <TabPanelList
       items={renderedItems()}

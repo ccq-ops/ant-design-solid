@@ -218,7 +218,7 @@ export function useTabsStyle(prefixCls: string) {
         borderLeft: 0,
         'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
       },
-      [`.${prefixCls}-tab-remove, .${prefixCls}-add`]: {
+      [`.${prefixCls}-tab-remove, .${prefixCls}-add, .${prefixCls}-more`]: {
         display: 'inline-flex',
         'align-items': 'center',
         'justify-content': 'center',
@@ -250,6 +250,9 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-add`]: {
         'align-self': 'center',
         border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+      },
+      [`.${prefixCls}-more`]: {
+        'align-self': 'center',
       },
       [`.${prefixCls}-extra-content`]: {
         display: 'inline-flex',

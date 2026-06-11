@@ -75,6 +75,36 @@ export interface TabsItem {
   style?: JSX.CSSProperties
 }
 
+export interface TabsDefaultTabBarProps {
+  items: TabsItem[]
+  activeKey: string
+  prefixCls: string
+  type: TabsType
+  tabPlacement: TabsPlacement
+  tabId: (key: string) => string
+  panelId: (key: string) => string
+  renderedPanelKeys: Set<string>
+  classNames: TabsSemanticClassNamesMap
+  styles: TabsSemanticStylesMap
+  centered?: boolean
+  indicator?: TabsIndicatorConfig
+  more?: TabsMoreConfig
+  tabBarExtraContent?: JSX.Element | { left?: JSX.Element; right?: JSX.Element }
+  tabBarGutter?: number
+  tabBarStyle?: JSX.CSSProperties
+  addIcon?: JSX.Element
+  removeIcon?: JSX.Element
+  hideAdd?: boolean
+  onEdit?: (targetKey: string | MouseEvent, action: 'add' | 'remove') => void
+  onTabScroll?: (info: { direction: TabsScrollDirection }) => void
+  onTabActivate: (item: TabsItem, event: MouseEvent | KeyboardEvent) => void
+}
+
+export type TabsRenderTabBar = (
+  props: TabsDefaultTabBarProps,
+  DefaultTabBar: (props: TabsDefaultTabBarProps) => JSX.Element,
+) => JSX.Element
+
 export interface TabsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   items: TabsItem[]
   activeKey?: string
@@ -90,7 +120,7 @@ export interface TabsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onC
   centered?: boolean
   indicator?: TabsIndicatorConfig
   more?: TabsMoreConfig
-  renderTabBar?: (props: TabsProps, DefaultTabBar: (props: TabsProps) => JSX.Element) => JSX.Element
+  renderTabBar?: TabsRenderTabBar
   tabBarExtraContent?: JSX.Element | { left?: JSX.Element; right?: JSX.Element }
   tabBarGutter?: number
   tabBarStyle?: JSX.CSSProperties
