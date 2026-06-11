@@ -99,6 +99,7 @@ describe('docs route module discovery', () => {
     expect(routes.map((route) => route.path)).toContain('/')
     expect(routes.map((route) => route.path)).toContain('/components/button')
     expect(routes.map((route) => route.path)).toContain('/components/icon')
+    expect(routes.map((route) => route.path)).not.toContain('/components/icon-list')
     expect(routes.map((route) => route.path)).toContain('/docs/getting-started')
   })
 })
