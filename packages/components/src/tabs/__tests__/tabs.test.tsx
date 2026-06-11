@@ -89,7 +89,93 @@ describe('Tabs', () => {
     expect(result.getByText('Left extra')).toBeInTheDocument()
     expect(result.getByText('Right extra')).toBeInTheDocument()
     expect(result.container.querySelector('.ads-tabs-centered')).toBeInTheDocument()
-    expect(result.container.querySelector('.custom-indicator')).toHaveStyle({ width: '20px' })
+    expect(result.container.querySelector('.ads-tabs-nav')).toHaveStyle({
+      '--ads-tabs-tab-gutter': '16px',
+      color: 'rgb(0, 0, 255)',
+    })
+    expect(result.container.querySelector('.custom-indicator')).toHaveClass(
+      'ads-tabs-indicator-end',
+    )
+    expect(result.container.querySelector('.custom-indicator')).toHaveStyle({
+      '--ads-tabs-indicator-size': '20px',
+      width: '20px',
+    })
+  })
+
+  it('keeps the default indicator full-size when indicator size is omitted', () => {
+    const result = render(() => (
+      <Tabs
+        indicator={{ align: 'end' }}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+    const indicator = result.container.querySelector('.ads-tabs-indicator') as HTMLElement
+
+    expect(indicator).toBeInTheDocument()
+    expect(indicator).not.toHaveClass('ads-tabs-indicator-end')
+    expect(indicator.style.getPropertyValue('--ads-tabs-indicator-size')).toBe('')
+  })
+
+  it('passes measured tab size to indicator size callback and applies the result', () => {
+    const getBoundingClientRect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('ads-tabs-tab-active')) {
+          return {
+            width: 72,
+            height: 32,
+            x: 0,
+            y: 0,
+            top: 0,
+            right: 72,
+            bottom: 32,
+            left: 0,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        return {
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          toJSON: () => {},
+        } as DOMRect
+      })
+    const indicatorSize = vi.fn((origin: number) => origin / 2)
+
+    try {
+      const result = render(() => (
+        <Tabs
+          indicator={{ size: indicatorSize, align: 'start' }}
+          items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+        />
+      ))
+
+      const indicator = result.container.querySelector('.ads-tabs-indicator') as HTMLElement
+
+      expect(indicatorSize).toHaveBeenCalledWith(72)
+      expect(indicator).toHaveClass('ads-tabs-indicator-start')
+      expect(indicator).toHaveStyle({ '--ads-tabs-indicator-size': '36px' })
+    } finally {
+      getBoundingClientRect.mockRestore()
+    }
+  })
+
+  it('maps single tabBarExtraContent nodes to the right side', () => {
+    const result = render(() => (
+      <Tabs
+        tabBarExtraContent={<span>Single extra</span>}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+    const rightExtra = result.container.querySelector('.ads-tabs-extra-content-right')
+
+    expect(rightExtra).toHaveTextContent('Single extra')
+    expect(result.container.querySelector('.ads-tabs-extra-content-left')).not.toBeInTheDocument()
   })
 
   it('renders labels and active pane', () => {

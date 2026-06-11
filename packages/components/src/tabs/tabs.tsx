@@ -138,6 +138,7 @@ export function Tabs(props: TabsProps) {
       activeKey={mergedActiveKey()}
       prefixCls={prefixCls()}
       type={type()}
+      tabPlacement={tabPosition()}
       tabId={tabId}
       panelId={panelId}
       renderedPanelKeys={renderedPanelKeys()}

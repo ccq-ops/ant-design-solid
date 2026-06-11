@@ -1,10 +1,11 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design-solid/icons'
-import { For, Show } from 'solid-js'
+import { For, Show, createEffect, createSignal } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { classNames } from '../shared/class-names'
 import type {
   TabsIndicatorConfig,
   TabsItem,
+  TabsPlacement,
   TabsSemanticClassNamesMap,
   TabsSemanticStylesMap,
   TabsType,
@@ -16,6 +17,7 @@ export interface TabNavListProps {
   activeKey: string
   prefixCls: string
   type: TabsType
+  tabPlacement: TabsPlacement
   tabId: (key: string) => string
   panelId: (key: string) => string
   renderedPanelKeys: Set<string>
@@ -40,20 +42,26 @@ function closeButtonConfig(item: TabsItem, removeIcon?: JSX.Element) {
   return { show: true, icon: item.closeIcon ?? removeIcon ?? <CloseOutlined /> }
 }
 
+function isPlainObject(value: unknown): value is Record<PropertyKey, unknown> {
+  if (!value || typeof value !== 'object') return false
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
+}
+
 function extraContent(content: TabNavListProps['tabBarExtraContent']) {
-  const isElement = content && typeof content === 'object' && 'nodeType' in content
-  if (
-    content &&
-    typeof content === 'object' &&
-    !isElement &&
-    ('left' in content || 'right' in content)
-  ) {
+  if (isPlainObject(content) && ('left' in content || 'right' in content)) {
     return content as { left?: JSX.Element; right?: JSX.Element }
   }
   return { right: content as JSX.Element | undefined }
 }
 
 export function TabNavList(props: TabNavListProps) {
+  const [tabElements, setTabElements] = createSignal<Record<string, HTMLButtonElement | undefined>>(
+    {},
+  )
+  const [indicatorStyles, setIndicatorStyles] = createSignal<
+    Record<string, { style?: JSX.CSSProperties; customSize: boolean }>
+  >({})
   const enabledItems = () => props.items.filter((item) => !item.disabled)
   const editable = () => props.type === 'editable-card'
   const closable = (item: TabsItem) => item.closable !== false && item.closeIcon !== false
@@ -66,17 +74,37 @@ export function TabNavList(props: TabNavListProps) {
         ? undefined
         : ({ '--ads-tabs-tab-gutter': `${props.tabBarGutter}px` } as JSX.CSSProperties),
     )
-  const indicatorStyle = (): JSX.CSSProperties | undefined => {
+  const indicatorHasCustomSize = (item: TabsItem) =>
+    Boolean(indicatorStyles()[item.key]?.customSize)
+  const updateIndicatorStyle = (item: TabsItem, tab: HTMLButtonElement) => {
     const size = props.indicator?.size
-    const computedSize = typeof size === 'function' ? size(0) : size
-    if (computedSize === undefined) return props.styles.indicator
-    return mergeStyle(
-      {
-        '--ads-tabs-indicator-size': `${computedSize}px`,
-      } as JSX.CSSProperties,
-      props.styles.indicator,
-    )
+    const rect = tab.getBoundingClientRect()
+    const originSize =
+      props.tabPlacement === 'start' || props.tabPlacement === 'end' ? rect.height : rect.width
+    const computedSize = typeof size === 'function' ? size(originSize) : size
+    const customSize = Number.isFinite(computedSize)
+    setIndicatorStyles((current) => ({
+      ...current,
+      [item.key]: {
+        customSize,
+        style: customSize
+          ? mergeStyle(
+              {
+                '--ads-tabs-indicator-size': `${computedSize}px`,
+              } as JSX.CSSProperties,
+              props.styles.indicator,
+            )
+          : props.styles.indicator,
+      },
+    }))
   }
+  createEffect(() => {
+    const activeItem = props.items.find((item) => item.key === props.activeKey)
+    if (!activeItem) return
+    const tab = tabElements()[activeItem.key]
+    if (!tab) return
+    updateIndicatorStyle(activeItem, tab)
+  })
   const handleAdd = (event: MouseEvent) => {
     props.onEdit?.(event, 'add')
   }
@@ -144,6 +172,9 @@ export function TabNavList(props: TabNavListProps) {
             >
               <button
                 id={props.tabId(item.key)}
+                ref={(element) => {
+                  setTabElements((current) => ({ ...current, [item.key]: element }))
+                }}
                 type="button"
                 role="tab"
                 class={classNames(
@@ -171,10 +202,11 @@ export function TabNavList(props: TabNavListProps) {
                     aria-hidden="true"
                     class={classNames(
                       `${props.prefixCls}-indicator`,
-                      `${props.prefixCls}-indicator-${props.indicator?.align ?? 'center'}`,
+                      indicatorHasCustomSize(item) &&
+                        `${props.prefixCls}-indicator-${props.indicator?.align ?? 'center'}`,
                       props.classNames.indicator,
                     )}
-                    style={indicatorStyle()}
+                    style={indicatorStyles()[item.key]?.style}
                   />
                 </Show>
               </button>
