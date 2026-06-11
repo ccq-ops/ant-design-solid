@@ -35,6 +35,10 @@ export function useTabsStyle(prefixCls: string) {
         'align-items': 'stretch',
         gap: `var(--ads-tabs-tab-gutter, 0)`,
       },
+      [`.${prefixCls}-remove-list`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+      },
       [`.${prefixCls}-nav-list-centered`]: {
         'justify-content': 'center',
         flex: 1,
@@ -50,6 +54,10 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-start .${prefixCls}-nav-list, .${prefixCls}-end .${prefixCls}-nav-list`]: {
         'flex-direction': 'column',
       },
+      [`.${prefixCls}-start .${prefixCls}-remove-list, .${prefixCls}-end .${prefixCls}-remove-list`]:
+        {
+          'flex-direction': 'column',
+        },
       [`.${prefixCls}-tab-wrap`]: {
         display: 'inline-flex',
         'align-items': 'stretch',
@@ -250,6 +258,11 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-extra-content-right`]: {
         'margin-inline-start': 'auto',
       },
+      [`.${prefixCls}-start .${prefixCls}-extra-content-right, .${prefixCls}-end .${prefixCls}-extra-content-right`]:
+        {
+          'margin-block-start': 'auto',
+          'margin-inline-start': 0,
+        },
       [`.${prefixCls}-content`]: {
         padding: `${t.padding}px 0`,
         flex: 1,

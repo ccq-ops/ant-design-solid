@@ -1,5 +1,5 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design-solid/icons'
-import { For, Show, createEffect, createSignal } from 'solid-js'
+import { For, Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { classNames } from '../shared/class-names'
 import type {
@@ -99,11 +99,28 @@ export function TabNavList(props: TabNavListProps) {
     }))
   }
   createEffect(() => {
+    const itemKeys = new Set(props.items.map((item) => item.key))
+    setTabElements((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
+    )
+    setIndicatorStyles((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
+    )
+  })
+  createEffect(() => {
     const activeItem = props.items.find((item) => item.key === props.activeKey)
     if (!activeItem) return
     const tab = tabElements()[activeItem.key]
     if (!tab) return
     updateIndicatorStyle(activeItem, tab)
+    if (typeof ResizeObserver === 'undefined') return
+    const resizeObserver = new ResizeObserver(() => {
+      updateIndicatorStyle(activeItem, tab)
+    })
+    resizeObserver.observe(tab)
+    onCleanup(() => {
+      resizeObserver.disconnect()
+    })
   })
   const handleAdd = (event: MouseEvent) => {
     props.onEdit?.(event, 'add')
@@ -209,7 +226,18 @@ export function TabNavList(props: TabNavListProps) {
                     />
                   </Show>
                 </button>
-                <Show when={editable() && closable(item) && closeButton().show}>
+              </span>
+            )
+          }}
+        </For>
+      </div>
+      <Show when={editable()}>
+        <div class={`${props.prefixCls}-remove-list`}>
+          <For each={props.items}>
+            {(item) => {
+              const closeButton = () => closeButtonConfig(item, props.removeIcon)
+              return (
+                <Show when={closable(item) && closeButton().show}>
                   <button
                     type="button"
                     class={classNames(`${props.prefixCls}-tab-remove`, props.classNames.remove)}
@@ -220,11 +248,11 @@ export function TabNavList(props: TabNavListProps) {
                     {closeButton().icon}
                   </button>
                 </Show>
-              </span>
-            )
-          }}
-        </For>
-      </div>
+              )
+            }}
+          </For>
+        </div>
+      </Show>
       <Show when={editable() && !props.hideAdd}>
         <button type="button" class={`${props.prefixCls}-add`} aria-label="add" onClick={handleAdd}>
           {props.addIcon ?? <PlusOutlined />}

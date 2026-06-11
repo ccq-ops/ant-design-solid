@@ -170,6 +170,62 @@ describe('Tabs', () => {
     }
   })
 
+  it('updates indicator size when ResizeObserver reports active tab layout changes', () => {
+    let observerCallback: ResizeObserverCallback | undefined
+    const observe = vi.fn()
+    const disconnect = vi.fn()
+    const originalResizeObserver = globalThis.ResizeObserver
+    class MockResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        observerCallback = callback
+      }
+
+      observe = observe
+      disconnect = disconnect
+      unobserve = vi.fn()
+    }
+    globalThis.ResizeObserver = MockResizeObserver as typeof ResizeObserver
+    let activeWidth = 72
+    const getBoundingClientRect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        const width = this.classList.contains('ads-tabs-tab-active') ? activeWidth : 0
+        return {
+          width,
+          height: 32,
+          x: 0,
+          y: 0,
+          top: 0,
+          right: width,
+          bottom: 32,
+          left: 0,
+          toJSON: () => {},
+        } as DOMRect
+      })
+    const indicatorSize = vi.fn((origin: number) => origin / 2)
+
+    try {
+      const result = render(() => (
+        <Tabs
+          indicator={{ size: indicatorSize, align: 'center' }}
+          items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+        />
+      ))
+      const indicator = result.container.querySelector('.ads-tabs-indicator') as HTMLElement
+
+      expect(observe).toHaveBeenCalledWith(result.getByRole('tab', { name: 'One' }))
+
+      activeWidth = 120
+      observerCallback?.([], {} as ResizeObserver)
+
+      expect(indicatorSize).toHaveBeenLastCalledWith(120)
+      expect(indicator).toHaveStyle({ '--ads-tabs-indicator-size': '60px' })
+    } finally {
+      getBoundingClientRect.mockRestore()
+      globalThis.ResizeObserver = originalResizeObserver
+    }
+  })
+
   it('maps single tabBarExtraContent nodes to the right side', () => {
     const result = render(() => (
       <Tabs
@@ -218,6 +274,43 @@ describe('Tabs', () => {
     expect(result.container.querySelector('.ads-tabs-extra-content-right')).toHaveStyle({
       'margin-inline-start': 'auto',
     })
+  })
+
+  it('uses block-axis auto margin for right extra content on vertical placements', () => {
+    const result = render(() => (
+      <Tabs
+        tabPlacement="start"
+        tabBarExtraContent={{ right: <span>Right extra</span> }}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-tabs-extra-content-right')).toHaveStyle({
+      'margin-block-start': 'auto',
+      'margin-inline-start': '0px',
+    })
+  })
+
+  it('keeps editable-card non-tab buttons outside the tablist while remove still works', () => {
+    const onEdit = vi.fn()
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        onEdit={onEdit}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+    const tablist = result.getByRole('tablist')
+
+    expect(
+      Array.from(tablist.querySelectorAll('button')).filter(
+        (button) => button.getAttribute('role') !== 'tab',
+      ),
+    ).toHaveLength(0)
+
+    fireEvent.click(result.getByRole('button', { name: /close/i }))
+
+    expect(onEdit).toHaveBeenCalledWith('one', 'remove')
   })
 
   it('renders labels and active pane', () => {
