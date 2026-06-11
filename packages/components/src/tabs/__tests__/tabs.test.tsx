@@ -71,8 +71,40 @@ describe('Tabs', () => {
     expect(result.getByRole('tab', { name: 'Two' })).toBeInTheDocument()
     expect(result.getByRole('tab', { name: 'Disabled' })).toBeInTheDocument()
     expect(result.getByText('Pane one')).toBeInTheDocument()
-    expect(getPane(result.getByText('Pane two'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('renders inactive panes lazily and supports forceRender', () => {
+    const result = render(() => (
+      <Tabs
+        items={[
+          { key: 'one', label: 'One', children: <div>Pane one</div> },
+          { key: 'two', label: 'Two', forceRender: true, children: <div>Pane two</div> },
+          { key: 'three', label: 'Three', children: <div>Pane three</div> },
+        ]}
+      />
+    ))
+
+    expect(result.getByText('Pane one')).toBeInTheDocument()
+    expect(result.getByText('Pane two')).toBeInTheDocument()
+    expect(result.queryByText('Pane three')).not.toBeInTheDocument()
+  })
+
+  it('supports destroyOnHidden globally and per item', () => {
+    const result = render(() => (
+      <Tabs
+        items={[
+          { key: 'one', label: 'One', children: <div>Pane one</div> },
+          { key: 'two', label: 'Two', destroyOnHidden: true, children: <div>Pane two</div> },
+        ]}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+    expect(result.queryByText('Pane one')).toBeInTheDocument()
+    fireEvent.click(result.getByRole('tab', { name: 'One' }))
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
   })
 
   it('uncontrolled switching calls onChange and updates active pane', () => {
@@ -95,7 +127,7 @@ describe('Tabs', () => {
 
     expect(onChange).toHaveBeenCalledWith('two')
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
-    expect(getPane(result.getByText('Pane two'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
   })
 
@@ -120,7 +152,7 @@ describe('Tabs', () => {
 
     expect(onChange).not.toHaveBeenCalled()
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
-    expect(getPane(result.getByText('Disabled pane'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Disabled pane')).not.toBeInTheDocument()
   })
 
   it('destroyInactiveTabPane removes inactive pane from DOM', () => {
@@ -159,7 +191,7 @@ describe('Tabs', () => {
     const result = render(() => <Tabs items={items} defaultActiveKey="two" />)
 
     expect(result.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true')
-    expect(getPane(result.getByText('Pane one'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Pane one')).not.toBeInTheDocument()
     expect(getPane(result.getByText('Pane two'))).not.toHaveClass('ads-tabs-tabpane-hidden')
   })
 
@@ -168,7 +200,7 @@ describe('Tabs', () => {
 
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
-    expect(getPane(result.getByText('Disabled pane'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Disabled pane')).not.toBeInTheDocument()
   })
 
   it('falls back to first non-disabled item when defaultActiveKey is unknown', () => {
@@ -176,7 +208,7 @@ describe('Tabs', () => {
 
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
-    expect(getPane(result.getByText('Pane two'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
   })
 
   it('falls back to first item when all items are disabled', () => {
@@ -189,7 +221,7 @@ describe('Tabs', () => {
     expect(result.getByRole('tab', { name: 'First' })).toHaveAttribute('aria-selected', 'true')
     expect(result.getByRole('tab', { name: 'First' })).toHaveAttribute('aria-disabled', 'true')
     expect(getPane(result.getByText('First pane'))).not.toHaveClass('ads-tabs-tabpane-hidden')
-    expect(getPane(result.getByText('Second pane'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(result.queryByText('Second pane')).not.toBeInTheDocument()
   })
 
   it('renders no tab and no pane for empty items', () => {
@@ -219,8 +251,9 @@ describe('Tabs', () => {
     expect(pane.id).toBeTruthy()
     expect(tab).toHaveAttribute('aria-controls', pane.id)
     expect(pane).toHaveAttribute('aria-labelledby', tab.id)
-    expect(getPane(result.getByText('Pane two'))).toHaveAttribute('hidden')
-    expect(getPane(result.getByText('Pane two'))).toHaveAttribute('aria-hidden', 'true')
+    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+    expect(getPane(result.getByText('Pane one'))).toHaveAttribute('hidden')
+    expect(getPane(result.getByText('Pane one'))).toHaveAttribute('aria-hidden', 'true')
   })
 
   it('supports keyboard navigation and skips disabled tabs', () => {
