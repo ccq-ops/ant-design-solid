@@ -27,6 +27,7 @@
 ### Task 1: Add Failing Route Discovery Test
 
 **Files:**
+
 - Modify: `apps/docs/src/routes/index.test.ts`
 
 - [ ] **Step 1: Update the route discovery test**
@@ -34,12 +35,12 @@
 In `apps/docs/src/routes/index.test.ts`, update the `discovers the migrated docs site from MDX page files without legacy TSX pages` test to include `/components/icon`:
 
 ```ts
-  it('discovers the migrated docs site from MDX page files without legacy TSX pages', () => {
-    expect(routes.map((route) => route.path)).toContain('/')
-    expect(routes.map((route) => route.path)).toContain('/components/button')
-    expect(routes.map((route) => route.path)).toContain('/components/icon')
-    expect(routes.map((route) => route.path)).toContain('/docs/getting-started')
-  })
+it('discovers the migrated docs site from MDX page files without legacy TSX pages', () => {
+  expect(routes.map((route) => route.path)).toContain('/')
+  expect(routes.map((route) => route.path)).toContain('/components/button')
+  expect(routes.map((route) => route.path)).toContain('/components/icon')
+  expect(routes.map((route) => route.path)).toContain('/docs/getting-started')
+})
 ```
 
 - [ ] **Step 2: Run the route test and verify it fails**
@@ -62,6 +63,7 @@ git commit -m "test(docs): expect icon docs route"
 ### Task 2: Add Failing Icon Metadata Tests
 
 **Files:**
+
 - Create: `apps/docs/src/pages/components/icon-list.test.tsx`
 
 - [ ] **Step 1: Create the failing test file**
@@ -129,6 +131,7 @@ git commit -m "test(docs): cover icon docs metadata"
 ### Task 3: Implement Icon Metadata and Grid Helpers
 
 **Files:**
+
 - Create: `apps/docs/src/pages/components/icon-list.tsx`
 
 - [ ] **Step 1: Create `icon-list.tsx`**
@@ -233,6 +236,7 @@ git commit -m "feat(docs): add icon docs metadata"
 ### Task 4: Add Icon MDX Page
 
 **Files:**
+
 - Create: `apps/docs/src/pages/components/icon.mdx`
 
 - [ ] **Step 1: Create `icon.mdx`**
@@ -331,10 +335,7 @@ const Demo3 = function () {
         <HeartTwoTone aria-label="HeartTwoTone" twoToneColor="#eb2f96" />
       </IconSample>
       <IconSample name="AccountBookTwoTone tuple">
-        <AccountBookTwoTone
-          aria-label="AccountBookTwoTone"
-          twoToneColor={['#52c41a', '#f6ffed']}
-        />
+        <AccountBookTwoTone aria-label="AccountBookTwoTone" twoToneColor={['#52c41a', '#f6ffed']} />
       </IconSample>
     </Space>
   )
@@ -353,11 +354,11 @@ export default Demo3
 
 Icon components accept standard Solid SVG props and the common icon props below.
 
-| Property       | Description                                      | Type                                      | Default |
-| -------------- | ------------------------------------------------ | ----------------------------------------- | ------- |
-| `spin`         | Rotates the icon continuously.                   | `boolean`                                 | `false` |
-| `rotate`       | Rotates the icon by degrees.                     | `number`                                  | `-`     |
-| `twoToneColor` | Sets two-tone primary or primary/secondary fill. | `string \| [primary: string, secondary: string]` | `-` |
+| Property       | Description                                      | Type                                             | Default |
+| -------------- | ------------------------------------------------ | ------------------------------------------------ | ------- |
+| `spin`         | Rotates the icon continuously.                   | `boolean`                                        | `false` |
+| `rotate`       | Rotates the icon by degrees.                     | `number`                                         | `-`     |
+| `twoToneColor` | Sets two-tone primary or primary/secondary fill. | `string \| [primary: string, secondary: string]` | `-`     |
 
 Decorative icons are rendered with `aria-hidden="true"` by default. Provide `aria-label` or
 `aria-labelledby` when an icon carries semantic meaning.
@@ -403,6 +404,7 @@ git commit -m "feat(docs): add icon page"
 ### Task 5: Polish, Format, and Full Verification
 
 **Files:**
+
 - Review: `apps/docs/src/pages/components/icon-list.tsx`
 - Review: `apps/docs/src/pages/components/icon.mdx`
 - Review: `apps/docs/src/pages/components/icon-list.test.tsx`
