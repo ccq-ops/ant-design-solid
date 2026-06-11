@@ -83,7 +83,12 @@ export function Tabs(props: TabsProps) {
     if (active || item.forceRender) return true
     return visitedKeys().has(item.key)
   }
-  const renderedPanelKeys = () => new Set(items().filter(shouldRenderPanel).map((item) => item.key))
+  const renderedPanelKeys = () =>
+    new Set(
+      items()
+        .filter(shouldRenderPanel)
+        .map((item) => item.key),
+    )
   const renderedItems = () => items().filter(shouldRenderPanel)
 
   const handleTabActivate = (item: TabsItem) => {
