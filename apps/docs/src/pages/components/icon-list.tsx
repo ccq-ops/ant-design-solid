@@ -55,7 +55,7 @@ export function IconGrid(props: { title: string; icons: IconMeta[] }) {
         <For each={props.icons}>
           {(icon) => (
             <IconSample name={icon.name}>
-              <Dynamic component={icon.component} aria-label={icon.name} />
+              <Dynamic component={icon.component} aria-hidden="true" />
             </IconSample>
           )}
         </For>
