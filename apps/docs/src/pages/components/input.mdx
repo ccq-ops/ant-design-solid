@@ -124,7 +124,7 @@ const Demo6 = function () {
 export default Demo6
 ```
 
-### Character count
+### Suffix with clear
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -132,6 +132,28 @@ import { Form, Input, Space } from '@ant-design-solid/core'
 import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
 
 const Demo7 = function () {
+  return (
+    <Input
+      allowClear
+      class="w-80"
+      defaultValue="Solid UI"
+      suffix={<SearchOutlined />}
+      placeholder="Search"
+    />
+  )
+}
+
+export default Demo7
+```
+
+### Character count
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Input, Space } from '@ant-design-solid/core'
+import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
+
+const Demo8 = function () {
   return (
     <Space direction="vertical" class="w-80">
       <Input showCount maxLength={20} defaultValue="Count me" />
@@ -146,7 +168,7 @@ const Demo7 = function () {
   )
 }
 
-export default Demo7
+export default Demo8
 ```
 
 ### Semantic styles
@@ -156,7 +178,7 @@ import { createSignal } from 'solid-js'
 import { Form, Input, Space } from '@ant-design-solid/core'
 import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
 
-const Demo8 = function () {
+const Demo9 = function () {
   return (
     <Input
       defaultValue="Semantic DOM"
@@ -166,7 +188,7 @@ const Demo8 = function () {
   )
 }
 
-export default Demo8
+export default Demo9
 ```
 
 ### TextArea
@@ -176,7 +198,7 @@ import { createSignal } from 'solid-js'
 import { Form, Input, Space } from '@ant-design-solid/core'
 import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
 
-const Demo9 = function () {
+const Demo10 = function () {
   return (
     <Space direction="vertical" class="w-96">
       <Input.TextArea showCount maxLength={120} defaultValue="Write something" />
@@ -190,7 +212,7 @@ const Demo9 = function () {
   )
 }
 
-export default Demo9
+export default Demo10
 ```
 
 ### Search
@@ -221,11 +243,11 @@ function SearchDemo() {
   )
 }
 
-const Demo10 = function () {
+const Demo11 = function () {
   return <SearchDemo />
 }
 
-export default Demo10
+export default Demo11
 ```
 
 ### Password
@@ -253,11 +275,11 @@ function PasswordDemo() {
   )
 }
 
-const Demo11 = function () {
+const Demo12 = function () {
   return <PasswordDemo />
 }
 
-export default Demo11
+export default Demo12
 ```
 
 ### OTP
@@ -284,11 +306,11 @@ function OTPDemo() {
   )
 }
 
-const Demo12 = function () {
+const Demo13 = function () {
   return <OTPDemo />
 }
 
-export default Demo12
+export default Demo13
 ```
 
 ### In Form
@@ -298,7 +320,7 @@ import { createSignal } from 'solid-js'
 import { Form, Input, Space } from '@ant-design-solid/core'
 import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
 
-const Demo13 = function () {
+const Demo14 = function () {
   return (
     <Form initialValues={{ email: 'hello@example.com', bio: 'Solid user' }}>
       <Form.Item label="Email" name="email">
@@ -311,7 +333,7 @@ const Demo13 = function () {
   )
 }
 
-export default Demo13
+export default Demo14
 ```
 
 ## API

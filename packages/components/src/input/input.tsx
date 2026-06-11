@@ -53,6 +53,7 @@ export function Input(props: InputProps) {
   const variant = () => local.variant ?? 'outlined'
   const allowClearConfig = () => getAllowClearConfig(local.allowClear)
   const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
+  const showSuffixWithClear = () => Boolean(local.suffix && showClear())
   const maxLength = () => getMaxLength(rest.maxLength, local.count)
   const characterCount = () => getCount(value(), local.count)
   const countInfo = () => ({ value: value(), count: characterCount(), maxLength: maxLength() })
@@ -152,23 +153,48 @@ export function Input(props: InputProps) {
         }}
         onKeyDown={handleKeyDown as JSX.EventHandler<HTMLInputElement, KeyboardEvent>}
       />
-      <Show when={showClear()}>
-        <button
-          type="button"
-          aria-label="clear input"
-          class={classNames(`${prefixCls()}-clear`, local.classNames?.clear)}
-          style={local.styles?.clear}
-          onClick={clearValue}
-        >
-          {allowClearConfig()?.clearIcon ?? <CloseCircleFilled />}
-        </button>
-      </Show>
-      <Show when={local.suffix}>
-        <span
-          class={classNames(`${prefixCls()}-suffix`, local.classNames?.suffix)}
-          style={local.styles?.suffix}
-        >
-          {local.suffix}
+      <Show
+        when={showSuffixWithClear()}
+        fallback={
+          <>
+            <Show when={showClear()}>
+              <button
+                type="button"
+                aria-label="clear input"
+                class={classNames(`${prefixCls()}-clear`, local.classNames?.clear)}
+                style={local.styles?.clear}
+                onClick={clearValue}
+              >
+                {allowClearConfig()?.clearIcon ?? <CloseCircleFilled />}
+              </button>
+            </Show>
+            <Show when={local.suffix}>
+              <span
+                class={classNames(`${prefixCls()}-suffix`, local.classNames?.suffix)}
+                style={local.styles?.suffix}
+              >
+                {local.suffix}
+              </span>
+            </Show>
+          </>
+        }
+      >
+        <span class={`${prefixCls()}-suffix-wrapper`}>
+          <span
+            class={classNames(`${prefixCls()}-suffix`, local.classNames?.suffix)}
+            style={local.styles?.suffix}
+          >
+            {local.suffix}
+          </span>
+          <button
+            type="button"
+            aria-label="clear input"
+            class={classNames(`${prefixCls()}-clear`, local.classNames?.clear)}
+            style={local.styles?.clear}
+            onClick={clearValue}
+          >
+            {allowClearConfig()?.clearIcon ?? <CloseCircleFilled />}
+          </button>
         </span>
       </Show>
       <Show when={shouldShowCount(local.showCount, local.count)}>

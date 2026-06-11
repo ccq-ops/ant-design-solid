@@ -49,6 +49,31 @@ export function useInputStyle(prefixCls: string) {
       },
       [`.${prefixCls}-prefix`]: { 'margin-inline-end': 8 },
       [`.${prefixCls}-suffix`]: { 'margin-inline-start': 8 },
+      [`.${prefixCls}-suffix-wrapper`]: {
+        display: 'inline-grid',
+        'align-items': 'center',
+        'justify-items': 'center',
+        'margin-inline-start': 8,
+      },
+      [`.${prefixCls}-suffix-wrapper > .${prefixCls}-suffix, .${prefixCls}-suffix-wrapper > .${prefixCls}-clear`]:
+        {
+          'grid-area': '1 / 1',
+          'margin-inline-start': 0,
+        },
+      [`.${prefixCls}-suffix-wrapper > .${prefixCls}-clear`]: {
+        opacity: 0,
+        'pointer-events': 'none',
+      },
+      [`.${prefixCls}-affix-wrapper:hover .${prefixCls}-suffix-wrapper > .${prefixCls}-suffix, .${prefixCls}-suffix-wrapper:focus-within > .${prefixCls}-suffix`]:
+        {
+          opacity: 0,
+          'pointer-events': 'none',
+        },
+      [`.${prefixCls}-affix-wrapper:hover .${prefixCls}-suffix-wrapper > .${prefixCls}-clear, .${prefixCls}-suffix-wrapper:focus-within > .${prefixCls}-clear`]:
+        {
+          opacity: 1,
+          'pointer-events': 'auto',
+        },
       [`.${prefixCls}-clear, .${prefixCls}-search-icon, .${prefixCls}-password-icon`]: {
         border: 0,
         padding: 0,

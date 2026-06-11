@@ -30,4 +30,21 @@ describe('Input', () => {
     expect((result.container.querySelector('input') as HTMLInputElement).value).toBe('')
     expect(onChange).toHaveBeenCalledOnce()
   })
+
+  it('overlays clear button and suffix in one tail slot when both are present', () => {
+    const result = render(() => <Input suffix="RMB" defaultValue="100" allowClear />)
+    const affixWrapper = result.container.querySelector('.ads-input-affix-wrapper')!
+    const tailSlot = result.container.querySelector('.ads-input-suffix-wrapper')
+    const clearButton = result.getByRole('button', { name: 'clear input' })
+    const suffix = result.getByText('RMB')
+
+    expect(tailSlot).toBeTruthy()
+    expect(tailSlot).toContainElement(clearButton)
+    expect(tailSlot).toContainElement(suffix)
+    expect(clearButton.parentElement).toBe(tailSlot)
+    expect(suffix.parentElement).toBe(tailSlot)
+    expect(Array.from(affixWrapper.children)).toContain(tailSlot)
+    expect(clearButton.parentElement).not.toBe(affixWrapper)
+    expect(suffix).toHaveClass('ads-input-suffix')
+  })
 })
