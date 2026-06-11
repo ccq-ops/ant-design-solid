@@ -39,6 +39,14 @@ describe('Tabs', () => {
     ))
 
     expect(result.container.firstElementChild).toHaveClass('root-class')
+    expect(result.container.firstElementChild).not.toHaveAttribute('tabPlacement')
+    expect(result.container.firstElementChild).not.toHaveAttribute('destroyOnHidden')
+    expect(result.container.firstElementChild).not.toHaveAttribute('animated')
+    expect(result.container.firstElementChild).not.toHaveAttribute('centered')
+    expect(result.container.firstElementChild).not.toHaveAttribute('indicator')
+    expect(result.container.firstElementChild).not.toHaveAttribute('tabBarGutter')
+    expect(result.container.firstElementChild).not.toHaveAttribute('tabBarStyle')
+    expect(result.container.firstElementChild).not.toHaveAttribute('tabBarExtraContent')
     expect(result.getByRole('tab', { name: 'One' })).toBeInTheDocument()
   })
 

@@ -2,18 +2,8 @@ import { For, Show, createEffect, createMemo, createSignal, splitProps } from 's
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useTabsStyle } from './tabs.style'
+import { getDefaultActiveKey, keyToId } from './tabs-utils'
 import type { TabsItem, TabsProps } from './interface'
-
-function getDefaultActiveKey(items: TabsItem[], defaultActiveKey?: string) {
-  if (defaultActiveKey && items.some((item) => item.key === defaultActiveKey && !item.disabled)) {
-    return defaultActiveKey
-  }
-  return items.find((item) => !item.disabled)?.key ?? items[0]?.key ?? ''
-}
-
-function keyToId(key: string) {
-  return key.replace(/[^a-zA-Z0-9_-]/g, '-')
-}
 
 export function Tabs(props: TabsProps) {
   const [local, rest] = splitProps(props, [
@@ -24,7 +14,25 @@ export function Tabs(props: TabsProps) {
     'type',
     'size',
     'tabPosition',
+    'tabPlacement',
     'destroyInactiveTabPane',
+    'destroyOnHidden',
+    'animated',
+    'centered',
+    'indicator',
+    'more',
+    'renderTabBar',
+    'tabBarExtraContent',
+    'tabBarGutter',
+    'tabBarStyle',
+    'onEdit',
+    'onTabClick',
+    'onTabScroll',
+    'addIcon',
+    'removeIcon',
+    'hideAdd',
+    'classNames',
+    'styles',
     'class',
   ])
   const config = useConfig()

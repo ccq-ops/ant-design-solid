@@ -8,7 +8,10 @@ import type {
 } from './interface'
 
 export function getDefaultActiveKey(items: TabsItem[], defaultActiveKey?: string) {
-  if (defaultActiveKey && items.some((item) => item.key === defaultActiveKey && !item.disabled)) {
+  if (
+    defaultActiveKey !== undefined &&
+    items.some((item) => item.key === defaultActiveKey && !item.disabled)
+  ) {
     return defaultActiveKey
   }
   return items.find((item) => !item.disabled)?.key ?? items[0]?.key ?? ''
