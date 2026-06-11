@@ -22,7 +22,8 @@ function getPane(element: HTMLElement) {
 }
 
 describe('Tabs', () => {
-  it('accepts antd 6 props and solid class naming', () => {
+  it('accepts and filters antd 6 tabs-owned props while preserving solid class naming', () => {
+    const onTabClick = vi.fn()
     const result = render(() => (
       <Tabs
         class="root-class"
@@ -37,18 +38,29 @@ describe('Tabs', () => {
         tabBarExtraContent={<span>Extra</span>}
         classNames={{ popup: { root: 'popup-root' } }}
         styles={{ popup: { root: { color: 'red' } } }}
+        more={{ trigger: 'click' }}
+        hideAdd
+        onTabClick={onTabClick}
       />
     ))
 
-    expect(result.container.firstElementChild).toHaveClass('root-class')
-    expect(result.container.firstElementChild).not.toHaveAttribute('tabPlacement')
-    expect(result.container.firstElementChild).not.toHaveAttribute('destroyOnHidden')
-    expect(result.container.firstElementChild).not.toHaveAttribute('animated')
-    expect(result.container.firstElementChild).not.toHaveAttribute('centered')
-    expect(result.container.firstElementChild).not.toHaveAttribute('indicator')
-    expect(result.container.firstElementChild).not.toHaveAttribute('tabBarGutter')
-    expect(result.container.firstElementChild).not.toHaveAttribute('tabBarStyle')
-    expect(result.container.firstElementChild).not.toHaveAttribute('tabBarExtraContent')
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root).toHaveClass('root-class')
+    expect(root).not.toHaveAttribute('tabPlacement')
+    expect(root).not.toHaveAttribute('destroyOnHidden')
+    expect(root).not.toHaveAttribute('animated')
+    expect(root).not.toHaveAttribute('centered')
+    expect(root).not.toHaveAttribute('indicator')
+    expect(root).not.toHaveAttribute('tabBarGutter')
+    expect(root).not.toHaveAttribute('tabBarStyle')
+    expect(root).not.toHaveAttribute('tabBarExtraContent')
+    expect(root).not.toHaveAttribute('classNames')
+    expect(root).not.toHaveAttribute('styles')
+    expect(root).not.toHaveAttribute('more')
+    expect(root).not.toHaveAttribute('hideAdd')
+    expect(root).not.toHaveAttribute('onTabClick')
+    expect(Object.prototype.hasOwnProperty.call(root, 'onTabClick')).toBe(false)
     expect(result.getByRole('tab', { name: 'One' })).toBeInTheDocument()
   })
 
