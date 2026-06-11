@@ -16,6 +16,24 @@ import {
 } from './tabs-utils'
 import type { TabsItem, TabsProps } from './interface'
 
+function parseStyleText(style: string): JSX.CSSProperties {
+  return Object.fromEntries(
+    style
+      .split(';')
+      .map((declaration) => declaration.trim())
+      .filter(Boolean)
+      .map((declaration) => {
+        const separatorIndex = declaration.indexOf(':')
+        if (separatorIndex === -1) return []
+        return [
+          declaration.slice(0, separatorIndex).trim(),
+          declaration.slice(separatorIndex + 1).trim(),
+        ]
+      })
+      .filter((entry) => entry.length === 2),
+  ) as JSX.CSSProperties
+}
+
 export function Tabs(props: TabsProps) {
   const [local, rest] = splitProps(props, [
     'items',
@@ -61,10 +79,13 @@ export function Tabs(props: TabsProps) {
   const destroyOnHidden = () => resolveDestroyOnHidden(local)
   const semanticClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
   const semanticStyles = createMemo(() => resolveSemanticStyles(local.styles, props))
-  const rootStyle = () =>
-    typeof local.style === 'string'
-      ? local.style
-      : mergeStyle(semanticStyles().root, local.style as JSX.CSSProperties | undefined)
+  const rootStyle = () => {
+    const localStyle =
+      typeof local.style === 'string'
+        ? parseStyleText(local.style)
+        : (local.style as JSX.CSSProperties | undefined)
+    return mergeStyle(semanticStyles().root, localStyle)
+  }
   const tabId = (key: string) => `${prefixCls()}-tab-${keyToId(key)}`
   const panelId = (key: string) => `${prefixCls()}-panel-${keyToId(key)}`
   const [visitedKeys, setVisitedKeys] = createSignal<Set<string>>(new Set())

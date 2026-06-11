@@ -258,19 +258,25 @@ describe('Tabs', () => {
   })
 
   it('uses tabPlacement as the placement class and order', () => {
-    const result = render(() => <Tabs items={items} tabPlacement="bottom" />)
-    const root = result.container.firstElementChild as HTMLElement
+    const top = render(() => <Tabs items={items} tabPlacement="top" />)
+    const topRoot = top.container.firstElementChild as HTMLElement
+    expect(topRoot).toHaveClass('ads-tabs-top')
+    expect(topRoot.firstElementChild).toHaveAttribute('role', 'tablist')
 
-    expect(root).toHaveClass('ads-tabs-bottom')
-    expect(root.lastElementChild).toHaveAttribute('role', 'tablist')
-  })
+    const bottom = render(() => <Tabs items={items} tabPlacement="bottom" />)
+    const bottomRoot = bottom.container.firstElementChild as HTMLElement
+    expect(bottomRoot).toHaveClass('ads-tabs-bottom')
+    expect(bottomRoot.lastElementChild).toHaveAttribute('role', 'tablist')
 
-  it('supports tabPlacement start and end', () => {
     const start = render(() => <Tabs items={items} tabPlacement="start" />)
-    expect(start.container.firstElementChild).toHaveClass('ads-tabs-start')
+    const startRoot = start.container.firstElementChild as HTMLElement
+    expect(startRoot).toHaveClass('ads-tabs-start')
+    expect(startRoot.firstElementChild).toHaveAttribute('role', 'tablist')
 
     const end = render(() => <Tabs items={items} tabPlacement="end" />)
-    expect(end.container.firstElementChild).toHaveClass('ads-tabs-end')
+    const endRoot = end.container.firstElementChild as HTMLElement
+    expect(endRoot).toHaveClass('ads-tabs-end')
+    expect(endRoot.lastElementChild).toHaveAttribute('role', 'tablist')
   })
 
   it('applies semantic classNames and styles', () => {
@@ -283,15 +289,38 @@ describe('Tabs', () => {
           item: 'sem-item',
           content: 'sem-content',
         }}
-        styles={{ content: { color: 'red' } }}
+        styles={{
+          root: { color: 'red' },
+          header: { background: 'blue' },
+          item: { margin: '1px' },
+          content: { color: 'green' },
+        }}
+        style={{ width: '123px' }}
       />
     ))
 
-    expect(result.container.firstElementChild).toHaveClass('sem-root')
-    expect(result.container.querySelector('.sem-header')).toBeInTheDocument()
-    expect(result.getByRole('tab', { name: 'One' })).toHaveClass('sem-item')
+    const root = result.container.firstElementChild as HTMLElement
+    const header = result.container.querySelector('.sem-header')
+    const item = result.getByRole('tab', { name: 'One' })
+    const content = result.container.querySelector('.sem-content')
+
+    expect(root).toHaveClass('sem-root')
+    expect(root).toHaveStyle({ color: 'rgb(255, 0, 0)', width: '123px' })
+    expect(header).toBeInTheDocument()
+    expect(header).toHaveStyle({ background: 'rgb(0, 0, 255)' })
+    expect(item).toHaveClass('sem-item')
+    expect(item).toHaveStyle({ margin: '1px' })
     expect(result.getByText('Pane one').closest('[role="tabpanel"]')).toHaveClass('item-pane')
-    expect(result.container.querySelector('.sem-content')).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+    expect(content).toHaveStyle({ color: 'rgb(0, 128, 0)' })
+  })
+
+  it('keeps semantic root styles when root style is a string', () => {
+    const result = render(() => (
+      <Tabs items={items} styles={{ root: { color: 'red' } }} style="width: 123px;" />
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root).toHaveStyle({ color: 'rgb(255, 0, 0)', width: '123px' })
   })
 
   it('uses defaultActiveKey when it matches a non-disabled item', () => {
