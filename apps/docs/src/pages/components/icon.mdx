@@ -19,25 +19,33 @@ import {
   SettingFilled,
   SmileOutlined,
 } from '@ant-design-solid/icons'
-import { IconSample } from './icon-list'
+
+function IconSample(props: { name: string; children: JSX.Element }) {
+  return (
+    <div class="docs-border flex min-h-24 flex-col items-center justify-center gap-2 rounded border px-3 py-3 text-center">
+      <div class="text-2xl leading-none text-blue-600">{props.children}</div>
+      <span class="docs-text-secondary max-w-full break-all text-xs leading-4">{props.name}</span>
+    </div>
+  )
+}
 
 const Demo1 = function () {
   return (
     <Space wrap>
       <IconSample name="HomeOutlined">
-        <HomeOutlined aria-label="HomeOutlined" />
+        <HomeOutlined />
       </IconSample>
       <IconSample name="SmileOutlined">
-        <SmileOutlined aria-label="SmileOutlined" />
+        <SmileOutlined />
       </IconSample>
       <IconSample name="CheckCircleFilled">
-        <CheckCircleFilled aria-label="CheckCircleFilled" />
+        <CheckCircleFilled />
       </IconSample>
       <IconSample name="SettingFilled">
-        <SettingFilled aria-label="SettingFilled" />
+        <SettingFilled />
       </IconSample>
       <IconSample name="AccountBookTwoTone">
-        <AccountBookTwoTone aria-label="AccountBookTwoTone" />
+        <AccountBookTwoTone />
       </IconSample>
     </Space>
   )
@@ -51,19 +59,27 @@ export default Demo1
 ```tsx
 import { Space } from '@ant-design-solid/core'
 import { LoadingOutlined, SmileOutlined, SyncOutlined } from '@ant-design-solid/icons'
-import { IconSample } from './icon-list'
+
+function IconSample(props: { name: string; children: JSX.Element }) {
+  return (
+    <div class="docs-border flex min-h-24 flex-col items-center justify-center gap-2 rounded border px-3 py-3 text-center">
+      <div class="text-2xl leading-none text-blue-600">{props.children}</div>
+      <span class="docs-text-secondary max-w-full break-all text-xs leading-4">{props.name}</span>
+    </div>
+  )
+}
 
 const Demo2 = function () {
   return (
     <Space wrap>
       <IconSample name="LoadingOutlined spin">
-        <LoadingOutlined aria-label="LoadingOutlined" spin />
+        <LoadingOutlined spin />
       </IconSample>
       <IconSample name="SyncOutlined spin">
-        <SyncOutlined aria-label="SyncOutlined" spin />
+        <SyncOutlined spin />
       </IconSample>
       <IconSample name="SmileOutlined rotate">
-        <SmileOutlined aria-label="SmileOutlined" rotate={180} />
+        <SmileOutlined rotate={180} />
       </IconSample>
     </Space>
   )
@@ -77,22 +93,27 @@ export default Demo2
 ```tsx
 import { Space } from '@ant-design-solid/core'
 import { AccountBookTwoTone, HeartTwoTone } from '@ant-design-solid/icons'
-import { IconSample } from './icon-list'
+
+function IconSample(props: { name: string; children: JSX.Element }) {
+  return (
+    <div class="docs-border flex min-h-24 flex-col items-center justify-center gap-2 rounded border px-3 py-3 text-center">
+      <div class="text-2xl leading-none text-blue-600">{props.children}</div>
+      <span class="docs-text-secondary max-w-full break-all text-xs leading-4">{props.name}</span>
+    </div>
+  )
+}
 
 const Demo3 = function () {
   return (
     <Space wrap>
       <IconSample name="HeartTwoTone">
-        <HeartTwoTone aria-label="HeartTwoTone" />
+        <HeartTwoTone />
       </IconSample>
       <IconSample name="HeartTwoTone string">
-        <HeartTwoTone aria-label="HeartTwoTone" twoToneColor="#eb2f96" />
+        <HeartTwoTone twoToneColor="#eb2f96" />
       </IconSample>
       <IconSample name="AccountBookTwoTone tuple">
-        <AccountBookTwoTone
-          aria-label="AccountBookTwoTone"
-          twoToneColor={['#52c41a', '#f6ffed']}
-        />
+        <AccountBookTwoTone twoToneColor={['#52c41a', '#f6ffed']} />
       </IconSample>
     </Space>
   )
