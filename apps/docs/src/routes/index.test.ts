@@ -98,6 +98,7 @@ describe('docs route module discovery', () => {
   it('discovers the migrated docs site from MDX page files without legacy TSX pages', () => {
     expect(routes.map((route) => route.path)).toContain('/')
     expect(routes.map((route) => route.path)).toContain('/components/button')
+    expect(routes.map((route) => route.path)).toContain('/components/icon')
     expect(routes.map((route) => route.path)).toContain('/docs/getting-started')
   })
 })
