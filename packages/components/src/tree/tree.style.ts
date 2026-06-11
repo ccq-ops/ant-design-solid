@@ -1,6 +1,7 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
+import { loadingIconRotateKeyframes, loadingIconRotateStyle } from '../shared/loading-icon-style'
 
 export function useTreeStyle(prefixCls: string) {
   const token = useToken()
@@ -8,6 +9,7 @@ export function useTreeStyle(prefixCls: string) {
     const t = token()
     const tree = getComponentToken('Tree', t)
     return {
+      ...loadingIconRotateKeyframes,
       [`.${prefixCls}`]: {
         margin: '0',
         padding: '0',
@@ -47,6 +49,12 @@ export function useTreeStyle(prefixCls: string) {
         cursor: 'pointer',
         'line-height': '16px',
       },
+      [`.${prefixCls}-switcher-loading-icon`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+      },
+      ...loadingIconRotateStyle(`.${prefixCls}-switcher-loading-icon svg`),
       [`.${prefixCls}-switcher-disabled`]: { cursor: 'not-allowed' },
       [`.${prefixCls}-indent`]: { display: 'inline-block', width: '16px', 'flex-shrink': 0 },
       [`.${prefixCls}-checkbox`]: { margin: '0', cursor: 'pointer' },

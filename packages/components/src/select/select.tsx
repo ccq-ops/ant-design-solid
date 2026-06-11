@@ -721,9 +721,15 @@ function SelectBase(props: SelectProps) {
           </button>
         </Show>
         <Show when={local.loading || local.showArrow !== false || local.suffixIcon !== null}>
-          <span class={classNames(`${prefixCls()}-arrow`, open() && `${prefixCls()}-arrow-open`)}>
+          <span
+            class={classNames(
+              `${prefixCls()}-arrow`,
+              local.loading && `${prefixCls()}-arrow-loading`,
+              open() && !local.loading && `${prefixCls()}-arrow-open`,
+            )}
+          >
             {local.loading
-              ? (local.loadingIcon ?? <LoadingOutlined spin />)
+              ? (local.loadingIcon ?? <LoadingOutlined />)
               : (local.suffixIcon ?? <DownOutlined width="0.8em" height="0.8em" />)}
           </span>
         </Show>

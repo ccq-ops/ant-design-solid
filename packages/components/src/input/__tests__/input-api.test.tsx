@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Input } from '../index'
@@ -142,6 +143,71 @@ describe('Input.Search', () => {
     expect(result.getByRole('button', { name: 'Go' })).toHaveClass('ads-input-search-button')
     expect(result.container.querySelector('.ads-input-search-loading')).toBeTruthy()
     expect(onSearch).toHaveBeenCalledOnce()
+  })
+
+  it('registers search loading icon rotation styles on loading wrappers', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Input.Search enterButton="Search" loading />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('@keyframes adsIconRotate{to{transform:rotate(360deg);}}')
+    expect(css).toContain(
+      '.ads-input-search-loading svg{animation:adsIconRotate 1s linear infinite;',
+    )
+  })
+
+  it('keeps loading enter button content horizontally aligned', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Input.Search enterButton="Search" loading />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    const searchButtonRule = css.match(/\.ads-input-search-button\{[^}]*\}/)?.[0]
+
+    expect(searchButtonRule).toBeDefined()
+    expect(searchButtonRule!).toContain('display:inline-flex;')
+    expect(searchButtonRule!).toContain('align-items:center;')
+    expect(searchButtonRule!).toContain('gap:8px;')
+  })
+
+  it('aligns search and clear icons in the same suffix slot', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Input.Search allowClear defaultValue="solid" />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    const rules = css.split('}').map((rule) => `${rule}}`)
+    const iconButtonRule = rules.find(
+      (rule) =>
+        rule.includes('.ads-input-clear') &&
+        rule.includes('.ads-input-search-icon') &&
+        rule.includes('.ads-input-password-icon'),
+    )
+    const suffixIconRule = rules.find(
+      (rule) =>
+        rule.includes('.ads-input-suffix > .ads-input-search-icon') &&
+        rule.includes('.ads-input-suffix > .ads-input-password-icon'),
+    )
+
+    expect(iconButtonRule).toBeDefined()
+    expect(iconButtonRule!).toContain('display:inline-flex;')
+    expect(iconButtonRule!).toContain('align-items:center;')
+    expect(iconButtonRule!).toContain('justify-content:center;')
+    expect(iconButtonRule!).toContain('width:16px;')
+    expect(iconButtonRule!).toContain('height:16px;')
+    expect(suffixIconRule).toBeDefined()
+    expect(suffixIconRule!).toContain('margin-inline-start:0;')
   })
 })
 

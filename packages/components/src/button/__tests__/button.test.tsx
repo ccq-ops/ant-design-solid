@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { SearchOutlined } from '@ant-design-solid/icons'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -97,6 +98,29 @@ describe('Button', () => {
     expect(iconWrapper?.querySelector('svg')).not.toBeNull()
     expect(result.queryByTestId('search-icon')).toBeNull()
     expect(button.className).toContain('ads-btn-loading')
+  })
+
+  it('renders loading icon through an Ant Design-like loading wrapper', () => {
+    const result = render(() => <Button loading>Save</Button>)
+    const button = result.getByRole('button')
+    const loadingIcon = button.querySelector('.ads-btn-loading-icon')
+
+    expect(loadingIcon).not.toBeNull()
+    expect(loadingIcon?.querySelector('svg')).not.toBeNull()
+  })
+
+  it('registers loading icon rotation styles on the wrapper svg', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Button loading>Save</Button>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('@keyframes adsIconRotate{to{transform:rotate(360deg);}}')
+    expect(css).toContain('.ads-btn-loading-icon svg{animation:adsIconRotate 1s linear infinite;')
   })
 
   it('renders an anchor when href is provided and prevents clicks while disabled', () => {

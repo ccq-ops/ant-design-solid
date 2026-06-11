@@ -109,6 +109,7 @@ export function Button(props: ButtonProps) {
         <span
           class={classNames(
             `${prefixCls()}-icon`,
+            loadingActive() && `${prefixCls()}-loading-icon`,
             !iconOnly() && `${prefixCls()}-icon-${iconPlacement()}`,
           )}
         >

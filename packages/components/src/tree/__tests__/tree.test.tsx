@@ -572,6 +572,22 @@ describe('Tree', () => {
     expect(styles).not.toContain('.ads-tree-node:hover{background:rgba(0, 0, 0, 0.02);')
   })
 
+  it('registers switcher loading icon rotation styles on the loading wrapper svg', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Tree treeData={[{ title: 'Async', key: 'async', isLeaf: false }]} />
+      </StyleProvider>
+    ))
+
+    const styles = extractStyle(cache)
+
+    expect(styles).toContain('@keyframes adsIconRotate{to{transform:rotate(360deg);}}')
+    expect(styles).toContain(
+      '.ads-tree-switcher-loading-icon svg{animation:adsIconRotate 1s linear infinite;',
+    )
+  })
+
   it('supports DirectoryTree ctrl and shift multiple selection', () => {
     const onSelect = vi.fn()
     const result = render(() => (

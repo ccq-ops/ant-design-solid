@@ -438,7 +438,7 @@ export function Tree(props: TreeProps) {
   })
   createEffect(() => {
     if (!virtualEnabled()) return
-    visibleNodes().length
+    visibleNodes()
     virtualizer.measure()
   })
   const virtualItems = createMemo<TreeVirtualItem[]>(() => {
@@ -762,10 +762,17 @@ export function Tree(props: TreeProps) {
             style={mergedStyles().itemSwitcher}
             onClick={(event) => toggleExpand(event, node)}
           >
-            {isLoading(key())
-              ? (local.switcherLoadingIcon ?? <LoadingOutlined />)
-              : (renderIcon(local.switcherIcon, renderProps()) ??
-                (expanded() ? <CaretDownOutlined /> : <CaretRightOutlined />))}
+            <Show
+              when={isLoading(key())}
+              fallback={
+                renderIcon(local.switcherIcon, renderProps()) ??
+                (expanded() ? <CaretDownOutlined /> : <CaretRightOutlined />)
+              }
+            >
+              <span class={`${prefixCls()}-switcher-loading-icon`}>
+                {local.switcherLoadingIcon ?? <LoadingOutlined />}
+              </span>
+            </Show>
           </button>
         </Show>
         <Show when={nodeCheckable()}>

@@ -1,12 +1,14 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
+import { loadingIconRotateKeyframes, loadingIconRotateStyle } from '../shared/loading-icon-style'
 export function useInputStyle(prefixCls: string) {
   const token = useToken()
   return useStyleRegister({ theme: 'default', token: token(), path: ['Input', prefixCls] }, () => {
     const t = token()
     const it = getComponentToken('Input', t)
     return {
+      ...loadingIconRotateKeyframes,
       [`.${prefixCls}-affix-wrapper`]: {
         display: 'inline-flex',
         'align-items': 'center',
@@ -75,13 +77,24 @@ export function useInputStyle(prefixCls: string) {
           'pointer-events': 'auto',
         },
       [`.${prefixCls}-clear, .${prefixCls}-search-icon, .${prefixCls}-password-icon`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+        width: 16,
+        height: 16,
         border: 0,
         padding: 0,
         color: it.clearIconColor,
+        'font-size': t.fontSize,
+        'line-height': 1,
         background: 'transparent',
         cursor: 'pointer',
         'margin-inline-start': 8,
       },
+      [`.${prefixCls}-suffix > .${prefixCls}-search-icon, .${prefixCls}-suffix > .${prefixCls}-password-icon`]:
+        {
+          'margin-inline-start': 0,
+        },
       [`.${prefixCls}-count, .${prefixCls}-textarea-count`]: {
         color: t.colorTextDisabled,
         'font-size': t.fontSize,
@@ -127,12 +140,17 @@ export function useInputStyle(prefixCls: string) {
         cursor: 'not-allowed',
       },
       [`.${prefixCls}-search-button`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+        gap: 8,
         border: 0,
         padding: `0 ${it.paddingInline}px`,
         height: t.controlHeight,
         cursor: 'pointer',
       },
       [`.${prefixCls}-search-loading`]: { opacity: 0.7 },
+      ...loadingIconRotateStyle(`.${prefixCls}-search-loading svg`),
       [`.${prefixCls}-otp`]: { display: 'inline-flex', gap: 8, 'align-items': 'center' },
       [`.${prefixCls}-otp-input`]: {
         width: t.controlHeight,

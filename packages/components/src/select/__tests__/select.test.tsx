@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
@@ -88,6 +89,26 @@ describe('Select', () => {
 
     expect(combobox).not.toHaveTextContent('Alpha')
     expect(onChange).toHaveBeenCalledWith(undefined, undefined)
+  })
+
+  it('registers loading arrow icon rotation styles on the loading wrapper svg', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <Select loading options={options} />
+      </StyleProvider>
+    ))
+
+    const combobox = result.getByRole('combobox')
+    const loadingArrow = combobox.querySelector('.ads-select-arrow-loading')
+    const css = extractStyle(cache)
+
+    expect(loadingArrow).not.toBeNull()
+    expect(loadingArrow?.querySelector('svg')).not.toBeNull()
+    expect(css).toContain('@keyframes adsIconRotate{to{transform:rotate(360deg);}}')
+    expect(css).toContain(
+      '.ads-select-arrow-loading svg{animation:adsIconRotate 1s linear infinite;',
+    )
   })
 
   it('does not open or clear when disabled', () => {

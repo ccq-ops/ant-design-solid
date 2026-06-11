@@ -1,6 +1,7 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
+import { loadingIconRotateKeyframes, loadingIconRotateStyle } from '../shared/loading-icon-style'
 
 const presetColorMap: Record<string, string> = {
   blue: '#1677ff',
@@ -65,6 +66,7 @@ export function useButtonStyle(prefixCls: string) {
       ),
     )
     return {
+      ...loadingIconRotateKeyframes,
       [`.${prefixCls}`]: {
         'box-sizing': 'border-box',
         margin: 0,
@@ -149,6 +151,10 @@ export function useButtonStyle(prefixCls: string) {
       [`.${prefixCls}-dangerous`]: { color: t.colorError, borderColor: t.colorError },
       [`.${prefixCls}-block`]: { width: '100%' },
       [`.${prefixCls}-loading`]: { cursor: 'default' },
+      [`.${prefixCls}-loading-icon`]: {
+        transition: `width ${t.motionDurationMid} ${t.motionEaseInOut}, opacity ${t.motionDurationMid} ${t.motionEaseInOut}, margin ${t.motionDurationMid} ${t.motionEaseInOut}`,
+      },
+      ...loadingIconRotateStyle(`.${prefixCls}-loading-icon svg`),
       [`.${prefixCls}-background-ghost`]: { background: 'transparent' },
       [`.${prefixCls}-icon`]: { display: 'inline-flex' },
       [`.${prefixCls}-icon-start`]: { 'margin-inline-end': 8 },

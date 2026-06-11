@@ -1,11 +1,13 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { useToken } from '../config-provider'
+import { loadingIconRotateKeyframes, loadingIconRotateStyle } from '../shared/loading-icon-style'
 
 export function useSelectStyle(prefixCls: string) {
   const token = useToken()
   return useStyleRegister({ theme: 'default', token: token(), path: ['Select', prefixCls] }, () => {
     const t = token()
     return {
+      ...loadingIconRotateKeyframes,
       [`.${prefixCls}`]: {
         position: 'relative',
         display: 'inline-block',
@@ -133,6 +135,7 @@ export function useSelectStyle(prefixCls: string) {
       [`.${prefixCls}-arrow-open`]: {
         transform: 'rotate(180deg)',
       },
+      ...loadingIconRotateStyle(`.${prefixCls}-arrow-loading svg`),
       [`.${prefixCls}-selection-search`]: {
         flex: 1,
         'min-width': 0,

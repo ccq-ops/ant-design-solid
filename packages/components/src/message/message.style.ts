@@ -1,6 +1,7 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
+import { loadingIconRotateKeyframes, loadingIconRotateStyle } from '../shared/loading-icon-style'
 
 export function useMessageStyle(prefixCls: string) {
   const token = useToken()
@@ -10,6 +11,7 @@ export function useMessageStyle(prefixCls: string) {
       const t = token()
       const mt = getComponentToken('Message', t)
       return {
+        ...loadingIconRotateKeyframes,
         [`.${prefixCls}`]: {
           position: 'fixed',
           top: 8,
@@ -38,6 +40,7 @@ export function useMessageStyle(prefixCls: string) {
         [`.${prefixCls}-icon-error`]: { color: t.colorError },
         [`.${prefixCls}-icon-warning`]: { color: t.colorWarning },
         [`.${prefixCls}-icon-loading`]: { color: t.colorInfo },
+        ...loadingIconRotateStyle(`.${prefixCls}-icon-loading svg`),
       }
     },
   )

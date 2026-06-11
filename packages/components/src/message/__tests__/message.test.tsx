@@ -1,7 +1,9 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { render } from '@solidjs/testing-library'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { message } from '../index'
+import { MessageHolder } from '../holder'
 
 describe('message', () => {
   beforeEach(() => {
@@ -50,6 +52,25 @@ describe('message', () => {
 
     handle.close()
     expect(document.body).not.toHaveTextContent('Loading')
+  })
+
+  it('registers loading icon rotation styles on the loading icon wrapper', () => {
+    const cache = createCache()
+    const [notices] = createSignal([
+      { key: 'loading', type: 'loading' as const, content: 'Loading' },
+    ])
+    render(() => (
+      <StyleProvider cache={cache}>
+        <MessageHolder notices={notices} />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('@keyframes adsIconRotate{to{transform:rotate(360deg);}}')
+    expect(css).toContain(
+      '.ads-message-icon-loading svg{animation:adsIconRotate 1s linear infinite;',
+    )
   })
 
   it('updates existing keyed message', () => {
