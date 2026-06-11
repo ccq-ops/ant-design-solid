@@ -64,6 +64,34 @@ describe('Tabs', () => {
     expect(result.getByRole('tab', { name: 'One' })).toBeInTheDocument()
   })
 
+  it('supports icons, extra content, gutter, style, centered, and indicator', () => {
+    const result = render(() => (
+      <Tabs
+        centered
+        tabBarGutter={16}
+        tabBarStyle={{ color: 'blue' }}
+        indicator={{ size: () => 20, align: 'end' }}
+        tabBarExtraContent={{ left: <span>Left extra</span>, right: <span>Right extra</span> }}
+        items={[
+          {
+            key: 'one',
+            icon: <span>Icon</span>,
+            label: 'One',
+            children: <div>Pane one</div>,
+          },
+        ]}
+        classNames={{ indicator: 'custom-indicator' }}
+        styles={{ indicator: { width: '20px' } }}
+      />
+    ))
+
+    expect(result.getByText('Icon')).toBeInTheDocument()
+    expect(result.getByText('Left extra')).toBeInTheDocument()
+    expect(result.getByText('Right extra')).toBeInTheDocument()
+    expect(result.container.querySelector('.ads-tabs-centered')).toBeInTheDocument()
+    expect(result.container.querySelector('.custom-indicator')).toHaveStyle({ width: '20px' })
+  })
+
   it('renders labels and active pane', () => {
     const result = render(() => <Tabs items={items} />)
 

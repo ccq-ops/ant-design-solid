@@ -3,11 +3,13 @@ import { For, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { classNames } from '../shared/class-names'
 import type {
+  TabsIndicatorConfig,
   TabsItem,
   TabsSemanticClassNamesMap,
   TabsSemanticStylesMap,
   TabsType,
 } from './interface'
+import { mergeStyle } from './tabs-utils'
 
 export interface TabNavListProps {
   items: TabsItem[]
@@ -19,6 +21,11 @@ export interface TabNavListProps {
   renderedPanelKeys: Set<string>
   classNames: TabsSemanticClassNamesMap
   styles: TabsSemanticStylesMap
+  centered?: boolean
+  indicator?: TabsIndicatorConfig
+  tabBarExtraContent?: JSX.Element | { left?: JSX.Element; right?: JSX.Element }
+  tabBarGutter?: number
+  tabBarStyle?: JSX.CSSProperties
   addIcon?: JSX.Element
   removeIcon?: JSX.Element
   hideAdd?: boolean
@@ -33,10 +40,43 @@ function closeButtonConfig(item: TabsItem, removeIcon?: JSX.Element) {
   return { show: true, icon: item.closeIcon ?? removeIcon ?? <CloseOutlined /> }
 }
 
+function extraContent(content: TabNavListProps['tabBarExtraContent']) {
+  const isElement = content && typeof content === 'object' && 'nodeType' in content
+  if (
+    content &&
+    typeof content === 'object' &&
+    !isElement &&
+    ('left' in content || 'right' in content)
+  ) {
+    return content as { left?: JSX.Element; right?: JSX.Element }
+  }
+  return { right: content as JSX.Element | undefined }
+}
+
 export function TabNavList(props: TabNavListProps) {
   const enabledItems = () => props.items.filter((item) => !item.disabled)
   const editable = () => props.type === 'editable-card'
   const closable = (item: TabsItem) => item.closable !== false && item.closeIcon !== false
+  const extras = () => extraContent(props.tabBarExtraContent)
+  const navStyle = (): JSX.CSSProperties =>
+    mergeStyle(
+      props.styles.header,
+      props.tabBarStyle,
+      props.tabBarGutter === undefined
+        ? undefined
+        : ({ '--ads-tabs-tab-gutter': `${props.tabBarGutter}px` } as JSX.CSSProperties),
+    )
+  const indicatorStyle = (): JSX.CSSProperties | undefined => {
+    const size = props.indicator?.size
+    const computedSize = typeof size === 'function' ? size(0) : size
+    if (computedSize === undefined) return props.styles.indicator
+    return mergeStyle(
+      {
+        '--ads-tabs-indicator-size': `${computedSize}px`,
+      } as JSX.CSSProperties,
+      props.styles.indicator,
+    )
+  }
   const handleAdd = (event: MouseEvent) => {
     props.onEdit?.(event, 'add')
   }
@@ -77,10 +117,19 @@ export function TabNavList(props: TabNavListProps) {
 
   return (
     <div
-      class={classNames(`${props.prefixCls}-nav`, props.classNames.header)}
-      style={props.styles.header}
+      class={classNames(
+        `${props.prefixCls}-nav`,
+        props.centered && `${props.prefixCls}-nav-centered`,
+        props.classNames.header,
+      )}
+      style={navStyle()}
       role="tablist"
     >
+      <Show when={extras().left}>
+        <div class={`${props.prefixCls}-extra-content ${props.prefixCls}-extra-content-left`}>
+          {extras().left}
+        </div>
+      </Show>
       <For each={props.items}>
         {(item) => {
           const active = () => item.key === props.activeKey
@@ -113,7 +162,21 @@ export function TabNavList(props: TabNavListProps) {
                 onClick={(event) => props.onTabActivate(item, event)}
                 onKeyDown={(event) => handleKeyDown(event, item)}
               >
+                <Show when={item.icon}>
+                  <span class={`${props.prefixCls}-tab-icon`}>{item.icon}</span>
+                </Show>
                 {item.label}
+                <Show when={active()}>
+                  <span
+                    aria-hidden="true"
+                    class={classNames(
+                      `${props.prefixCls}-indicator`,
+                      `${props.prefixCls}-indicator-${props.indicator?.align ?? 'center'}`,
+                      props.classNames.indicator,
+                    )}
+                    style={indicatorStyle()}
+                  />
+                </Show>
               </button>
               <Show when={editable() && closable(item) && closeButton().show}>
                 <button
@@ -134,6 +197,11 @@ export function TabNavList(props: TabNavListProps) {
         <button type="button" class={`${props.prefixCls}-add`} aria-label="add" onClick={handleAdd}>
           {props.addIcon ?? <PlusOutlined />}
         </button>
+      </Show>
+      <Show when={extras().right}>
+        <div class={`${props.prefixCls}-extra-content ${props.prefixCls}-extra-content-right`}>
+          {extras().right}
+        </div>
       </Show>
     </div>
   )

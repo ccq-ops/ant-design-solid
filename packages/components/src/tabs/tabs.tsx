@@ -143,6 +143,11 @@ export function Tabs(props: TabsProps) {
       renderedPanelKeys={renderedPanelKeys()}
       classNames={semanticClassNames()}
       styles={semanticStyles()}
+      centered={local.centered}
+      indicator={local.indicator}
+      tabBarExtraContent={local.tabBarExtraContent}
+      tabBarGutter={local.tabBarGutter}
+      tabBarStyle={local.tabBarStyle}
       addIcon={local.addIcon}
       removeIcon={local.removeIcon}
       hideAdd={local.hideAdd}
@@ -171,6 +176,7 @@ export function Tabs(props: TabsProps) {
         `${prefixCls()}-${tabPosition()}`,
         `${prefixCls()}-${type()}`,
         `${prefixCls()}-${size()}`,
+        local.centered && `${prefixCls()}-centered`,
         hashId(),
         semanticClassNames().root,
         local.class,
