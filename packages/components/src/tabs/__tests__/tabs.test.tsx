@@ -91,7 +91,20 @@ describe('Tabs', () => {
     expect(result.queryByText('Pane three')).not.toBeInTheDocument()
   })
 
-  it('supports destroyOnHidden globally and per item', () => {
+  it('keeps visited inactive panes mounted and hidden by default', () => {
+    const result = render(() => <Tabs items={items} />)
+
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+    expect(getPane(result.getByText('Pane two'))).not.toHaveClass('ads-tabs-tabpane-hidden')
+
+    fireEvent.click(result.getByRole('tab', { name: 'One' }))
+    expect(getPane(result.getByText('Pane two'))).toHaveClass('ads-tabs-tabpane-hidden')
+    expect(getPane(result.getByText('Pane two'))).toHaveAttribute('hidden')
+  })
+
+  it('supports item destroyOnHidden', () => {
     const result = render(() => (
       <Tabs
         items={[
@@ -167,7 +180,7 @@ describe('Tabs', () => {
     expect(result.getByText('Pane two')).toBeInTheDocument()
   })
 
-  it('destroyOnHidden removes inactive pane from DOM', () => {
+  it('destroyOnHidden removes inactive pane from DOM globally', () => {
     const result = render(() => <Tabs items={items} destroyOnHidden />)
 
     expect(result.getByText('Pane one')).toBeInTheDocument()
@@ -177,6 +190,11 @@ describe('Tabs', () => {
 
     expect(result.queryByText('Pane one')).not.toBeInTheDocument()
     expect(result.getByText('Pane two')).toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('tab', { name: 'One' }))
+
+    expect(result.getByText('Pane one')).toBeInTheDocument()
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
   })
 
   it('uses tabPlacement as the placement class and order', () => {
