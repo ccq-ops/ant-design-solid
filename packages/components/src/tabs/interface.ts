@@ -95,7 +95,7 @@ export interface TabsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onC
   tabBarGutter?: number
   tabBarStyle?: JSX.CSSProperties
   onEdit?: (targetKey: string | MouseEvent, action: 'add' | 'remove') => void
-  onTabClick?: (activeKey: string, event: MouseEvent) => void
+  onTabClick?: (activeKey: string, event: MouseEvent | KeyboardEvent) => void
   onTabScroll?: (info: { direction: TabsScrollDirection }) => void
   addIcon?: JSX.Element
   removeIcon?: JSX.Element

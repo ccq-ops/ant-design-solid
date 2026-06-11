@@ -181,6 +181,15 @@ describe('Tabs', () => {
     expect(onChange).toHaveBeenCalledWith('two')
   })
 
+  it('fires onTabClick with KeyboardEvent for keyboard activation', () => {
+    const onTabClick = vi.fn<(activeKey: string, event: MouseEvent | KeyboardEvent) => void>()
+    const result = render(() => <Tabs items={items} onTabClick={onTabClick} />)
+
+    fireEvent.keyDown(result.getByRole('tab', { name: 'One' }), { key: 'ArrowRight' })
+
+    expect(onTabClick).toHaveBeenCalledWith('two', expect.any(KeyboardEvent))
+  })
+
   it('controlled mode calls onChange without changing active pane by itself', () => {
     const onChange = vi.fn()
     const result = render(() => <Tabs items={items} activeKey="one" onChange={onChange} />)

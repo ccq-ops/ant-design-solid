@@ -104,7 +104,7 @@ export function Tabs(props: TabsProps) {
 
   const handleTabActivate = (item: TabsItem, event: MouseEvent | KeyboardEvent) => {
     if (item.disabled) return
-    local.onTabClick?.(item.key, event as MouseEvent)
+    local.onTabClick?.(item.key, event)
     if (item.key === mergedActiveKey()) return
     local.onChange?.(item.key)
     if (local.activeKey === undefined) {
