@@ -7,8 +7,6 @@ import { useTabsStyle } from './tabs.style'
 import {
   getDefaultActiveKey,
   keyToId,
-  resolveSemanticClassNames,
-  resolveSemanticStyles,
   resolveDestroyOnHidden,
   resolvePlacement,
 } from './tabs-utils'
@@ -56,10 +54,9 @@ export function Tabs(props: TabsProps) {
   const size = () => local.size ?? config.componentSize()
   const tabPosition = () => resolvePlacement(local)
   const destroyOnHidden = () => resolveDestroyOnHidden(local)
-  const semanticClassNames = () => resolveSemanticClassNames(local.classNames, props)
-  const semanticStyles = () => resolveSemanticStyles(local.styles, props)
   const tabId = (key: string) => `${prefixCls()}-tab-${keyToId(key)}`
   const panelId = (key: string) => `${prefixCls()}-panel-${keyToId(key)}`
+  const [visitedKeys, setVisitedKeys] = createSignal<Set<string>>(new Set())
 
   createEffect(() => {
     if (local.activeKey !== undefined) return
@@ -68,9 +65,29 @@ export function Tabs(props: TabsProps) {
     if (!activeItem) setInnerActiveKey(getDefaultActiveKey(items(), local.defaultActiveKey))
   })
 
-  const handleTabClick = (item: TabsItem, event?: MouseEvent) => {
+  createEffect(() => {
+    const itemKeys = new Set(items().map((item) => item.key))
+    const activeKey = mergedActiveKey()
+    setVisitedKeys((previous) => {
+      const next = new Set([...previous].filter((key) => itemKeys.has(key)))
+      if (itemKeys.has(activeKey)) {
+        next.add(activeKey)
+      }
+      return next
+    })
+  })
+
+  const shouldRenderPanel = (item: TabsItem) => {
+    const active = item.key === mergedActiveKey()
+    if (destroyOnHidden() || item.destroyOnHidden) return active
+    if (active || item.forceRender) return true
+    return visitedKeys().has(item.key)
+  }
+  const renderedPanelKeys = () => new Set(items().filter(shouldRenderPanel).map((item) => item.key))
+  const renderedItems = () => items().filter(shouldRenderPanel)
+
+  const handleTabActivate = (item: TabsItem) => {
     if (item.disabled) return
-    if (event) local.onTabClick?.(item.key, event)
     if (item.key === mergedActiveKey()) return
     local.onChange?.(item.key)
     if (local.activeKey === undefined) {
@@ -84,21 +101,17 @@ export function Tabs(props: TabsProps) {
       prefixCls={prefixCls()}
       tabId={tabId}
       panelId={panelId}
-      onTabClick={handleTabClick}
-      classNames={semanticClassNames()}
-      styles={semanticStyles()}
+      renderedPanelKeys={renderedPanelKeys()}
+      onTabActivate={handleTabActivate}
     />
   )
   const content = () => (
     <TabPanelList
-      items={items()}
+      items={renderedItems()}
       activeKey={mergedActiveKey()}
       prefixCls={prefixCls()}
       tabId={tabId}
       panelId={panelId}
-      destroyOnHidden={destroyOnHidden()}
-      classNames={semanticClassNames()}
-      styles={semanticStyles()}
     />
   )
 

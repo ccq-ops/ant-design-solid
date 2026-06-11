@@ -1,6 +1,6 @@
 import { For } from 'solid-js'
 import { classNames } from '../shared/class-names'
-import type { TabsItem, TabsSemanticClassNamesMap, TabsSemanticStylesMap } from './interface'
+import type { TabsItem } from './interface'
 
 export interface TabNavListProps {
   items: TabsItem[]
@@ -8,9 +8,8 @@ export interface TabNavListProps {
   prefixCls: string
   tabId: (key: string) => string
   panelId: (key: string) => string
-  onTabClick: (item: TabsItem, event?: MouseEvent) => void
-  classNames?: TabsSemanticClassNamesMap
-  styles?: TabsSemanticStylesMap
+  renderedPanelKeys: Set<string>
+  onTabActivate: (item: TabsItem) => void
 }
 
 export function TabNavList(props: TabNavListProps) {
@@ -18,7 +17,7 @@ export function TabNavList(props: TabNavListProps) {
   const focusTab = (item: TabsItem) => {
     const element = document.getElementById(props.tabId(item.key))
     element?.focus()
-    props.onTabClick(item)
+    props.onTabActivate(item)
   }
   const handleKeyDown = (event: KeyboardEvent, item: TabsItem) => {
     const candidates = enabledItems()
@@ -47,7 +46,7 @@ export function TabNavList(props: TabNavListProps) {
   }
 
   return (
-    <div class={classNames(`${props.prefixCls}-nav`, props.classNames?.header)} role="tablist">
+    <div class={`${props.prefixCls}-nav`} role="tablist">
       <For each={props.items}>
         {(item) => {
           const active = () => item.key === props.activeKey
@@ -60,14 +59,14 @@ export function TabNavList(props: TabNavListProps) {
                 `${props.prefixCls}-tab`,
                 active() && `${props.prefixCls}-tab-active`,
                 item.disabled && `${props.prefixCls}-tab-disabled`,
-                props.classNames?.item,
               )}
-              style={props.styles?.item}
               tabIndex={active() && !item.disabled ? 0 : -1}
               aria-selected={active() ? 'true' : 'false'}
               aria-disabled={item.disabled ? 'true' : undefined}
-              aria-controls={props.panelId(item.key)}
-              onClick={(event) => props.onTabClick(item, event)}
+              aria-controls={
+                props.renderedPanelKeys.has(item.key) ? props.panelId(item.key) : undefined
+              }
+              onClick={() => props.onTabActivate(item)}
               onKeyDown={(event) => handleKeyDown(event, item)}
             >
               {item.label}

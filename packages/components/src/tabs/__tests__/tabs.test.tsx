@@ -120,6 +120,41 @@ describe('Tabs', () => {
     expect(result.queryByText('Pane two')).not.toBeInTheDocument()
   })
 
+  it('lets destroyOnHidden remove inactive forceRender panes', () => {
+    const result = render(() => (
+      <Tabs
+        destroyOnHidden
+        items={[
+          { key: 'one', label: 'One', children: <div>Pane one</div> },
+          { key: 'two', label: 'Two', forceRender: true, children: <div>Pane two</div> },
+        ]}
+      />
+    ))
+
+    expect(result.getByText('Pane one')).toBeInTheDocument()
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
+  })
+
+  it('lets item destroyOnHidden remove inactive forceRender panes', () => {
+    const result = render(() => (
+      <Tabs
+        items={[
+          { key: 'one', label: 'One', children: <div>Pane one</div> },
+          {
+            key: 'two',
+            label: 'Two',
+            forceRender: true,
+            destroyOnHidden: true,
+            children: <div>Pane two</div>,
+          },
+        ]}
+      />
+    ))
+
+    expect(result.getByText('Pane one')).toBeInTheDocument()
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
+  })
+
   it('uncontrolled switching calls onChange and updates active pane', () => {
     const onChange = vi.fn()
     const result = render(() => <Tabs items={items} onChange={onChange} />)
@@ -262,14 +297,18 @@ describe('Tabs', () => {
 
   it('links tabs and panels with aria attributes', () => {
     const result = render(() => <Tabs items={items} />)
-    const tab = result.getByRole('tab', { name: 'One' })
-    const pane = getPane(result.getByText('Pane one'))
+    const oneTab = result.getByRole('tab', { name: 'One' })
+    const twoTab = result.getByRole('tab', { name: 'Two' })
+    const onePane = getPane(result.getByText('Pane one'))
 
-    expect(tab.id).toBeTruthy()
-    expect(pane.id).toBeTruthy()
-    expect(tab).toHaveAttribute('aria-controls', pane.id)
-    expect(pane).toHaveAttribute('aria-labelledby', tab.id)
-    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+    expect(oneTab.id).toBeTruthy()
+    expect(onePane.id).toBeTruthy()
+    expect(oneTab).toHaveAttribute('aria-controls', onePane.id)
+    expect(onePane).toHaveAttribute('aria-labelledby', oneTab.id)
+    expect(twoTab).not.toHaveAttribute('aria-controls')
+
+    fireEvent.click(twoTab)
+    expect(twoTab).toHaveAttribute('aria-controls', getPane(result.getByText('Pane two')).id)
     expect(getPane(result.getByText('Pane one'))).toHaveAttribute('hidden')
     expect(getPane(result.getByText('Pane one'))).toHaveAttribute('aria-hidden', 'true')
   })
@@ -301,6 +340,25 @@ describe('Tabs', () => {
 
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
     expect(result.getByText('Pane one')).toBeInTheDocument()
+  })
+
+  it('does not keep removed and re-added tabs marked as visited', () => {
+    const [dynamicItems, setDynamicItems] = createSignal(items)
+    const result = render(() => <Tabs items={dynamicItems()} />)
+
+    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+    expect(result.getByText('Pane two')).toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('tab', { name: 'One' }))
+    expect(getPane(result.getByText('Pane two'))).toHaveAttribute('aria-hidden', 'true')
+
+    setDynamicItems([items[0]])
+    expect(result.queryByRole('tab', { name: 'Two' })).not.toBeInTheDocument()
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
+
+    setDynamicItems(items)
+    expect(result.getByRole('tab', { name: 'Two' })).toBeInTheDocument()
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
   })
 
   it('bottom/card/large/custom prefix classes apply', () => {
