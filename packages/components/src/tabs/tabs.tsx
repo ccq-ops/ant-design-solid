@@ -137,11 +137,16 @@ export function Tabs(props: TabsProps) {
       items={items()}
       activeKey={mergedActiveKey()}
       prefixCls={prefixCls()}
+      type={type()}
       tabId={tabId}
       panelId={panelId}
       renderedPanelKeys={renderedPanelKeys()}
       classNames={semanticClassNames()}
       styles={semanticStyles()}
+      addIcon={local.addIcon}
+      removeIcon={local.removeIcon}
+      hideAdd={local.hideAdd}
+      onEdit={local.onEdit}
       onTabActivate={handleTabActivate}
     />
   )

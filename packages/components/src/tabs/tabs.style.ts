@@ -26,6 +26,7 @@ export function useTabsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-nav`]: {
         display: 'flex',
+        'align-items': 'stretch',
         gap: 0,
         margin: 0,
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
@@ -38,6 +39,11 @@ export function useTabsStyle(prefixCls: string) {
         'flex-direction': 'column',
         borderBottom: 0,
       },
+      [`.${prefixCls}-tab-wrap`]: {
+        display: 'inline-flex',
+        'align-items': 'stretch',
+        margin: 0,
+      },
       [`.${prefixCls}-start .${prefixCls}-nav`]: {
         borderRight: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
       },
@@ -46,6 +52,9 @@ export function useTabsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-tab`]: {
         position: 'relative',
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
         margin: 0,
         padding: `${t.paddingSM}px ${tabs.horizontalItemPadding}px`,
         color: tabs.itemColor,
@@ -130,6 +139,65 @@ export function useTabsStyle(prefixCls: string) {
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         borderLeft: 0,
         'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
+      },
+      [`.${prefixCls}-editable-card .${prefixCls}-tab-wrap`]: {
+        background: tabs.cardBg,
+        border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        borderBottom: 0,
+        'border-radius': `${t.borderRadius}px ${t.borderRadius}px 0 0`,
+      },
+      [`.${prefixCls}-editable-card .${prefixCls}-tab`]: {
+        background: 'transparent',
+        border: 0,
+        paddingRight: `${t.paddingXS}px`,
+      },
+      [`.${prefixCls}-editable-card.${prefixCls}-bottom .${prefixCls}-tab-wrap`]: {
+        borderTop: 0,
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        'border-radius': `0 0 ${t.borderRadius}px ${t.borderRadius}px`,
+      },
+      [`.${prefixCls}-editable-card.${prefixCls}-start .${prefixCls}-tab-wrap`]: {
+        borderRight: 0,
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        'border-radius': `${t.borderRadius}px 0 0 ${t.borderRadius}px`,
+      },
+      [`.${prefixCls}-editable-card.${prefixCls}-end .${prefixCls}-tab-wrap`]: {
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        borderLeft: 0,
+        'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
+      },
+      [`.${prefixCls}-tab-remove, .${prefixCls}-add`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+        width: `${t.controlHeightSM}px`,
+        height: `${t.controlHeightSM}px`,
+        margin: 'auto 0',
+        padding: 0,
+        color: tabs.itemColor,
+        'font-size': `${t.fontSize}px`,
+        'font-family': 'inherit',
+        lineHeight: 1,
+        background: 'transparent',
+        border: 0,
+        'border-radius': `${t.borderRadius / 2}px`,
+        cursor: 'pointer',
+        transition: `color ${t.motionDurationMid} ${t.motionEaseInOut}, background ${t.motionDurationMid} ${t.motionEaseInOut}`,
+        '&:hover': {
+          color: tabs.itemHoverColor,
+          background: t.colorFillAlter,
+        },
+        '&:focus-visible': {
+          outline: `${t.lineWidth}px solid ${t.colorPrimary}`,
+          'outline-offset': '2px',
+        },
+      },
+      [`.${prefixCls}-tab-remove`]: {
+        marginRight: `${t.paddingXS}px`,
+      },
+      [`.${prefixCls}-add`]: {
+        'align-self': 'center',
+        border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
       },
       [`.${prefixCls}-content`]: {
         padding: `${t.padding}px 0`,

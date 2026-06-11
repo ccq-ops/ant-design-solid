@@ -190,6 +190,43 @@ describe('Tabs', () => {
     expect(onTabClick).toHaveBeenCalledWith('two', expect.any(KeyboardEvent))
   })
 
+  it('supports editable-card add and remove actions', () => {
+    const onEdit = vi.fn()
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        onEdit={onEdit}
+        addIcon={<span>Add tab</span>}
+        removeIcon={<span>Remove tab</span>}
+        items={[
+          { key: 'one', label: 'One', children: <div>Pane one</div> },
+          { key: 'two', label: 'Two', closable: false, children: <div>Pane two</div> },
+        ]}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: /add tab/i }))
+    expect(onEdit).toHaveBeenCalledWith(expect.any(MouseEvent), 'add')
+
+    fireEvent.click(result.getAllByRole('button', { name: /remove tab/i })[0])
+    expect(onEdit).toHaveBeenCalledWith('one', 'remove')
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+    expect(result.queryAllByRole('button', { name: /remove tab/i })).toHaveLength(1)
+  })
+
+  it('supports hideAdd and item closeIcon false', () => {
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        hideAdd
+        items={[{ key: 'one', label: 'One', closeIcon: false, children: <div>Pane one</div> }]}
+      />
+    ))
+
+    expect(result.queryByRole('button', { name: /add/i })).not.toBeInTheDocument()
+    expect(result.queryByRole('button', { name: /close/i })).not.toBeInTheDocument()
+  })
+
   it('controlled mode calls onChange without changing active pane by itself', () => {
     const onChange = vi.fn()
     const result = render(() => <Tabs items={items} activeKey="one" onChange={onChange} />)
