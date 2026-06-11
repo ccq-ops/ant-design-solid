@@ -8,12 +8,7 @@ import { Tabs } from '@ant-design-solid/core'
 const items = [
   { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
   { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
-  {
-    key: 'disabled',
-    label: 'Disabled',
-    disabled: true,
-    children: <p>Disabled content</p>,
-  },
+  { key: 'disabled', label: 'Disabled', disabled: true, children: <p>Disabled content</p> },
 ]
 
 const Demo1 = function () {
@@ -23,95 +18,212 @@ const Demo1 = function () {
 export default Demo1
 ```
 
-### Card
+### Placement
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
 
 const items = [
-  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
-  { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
-  {
-    key: 'disabled',
-    label: 'Disabled',
-    disabled: true,
-    children: <p>Disabled content</p>,
-  },
+  { key: 'top', label: 'Top', children: <p>Top content</p> },
+  { key: 'bottom', label: 'Bottom', children: <p>Bottom content</p> },
+  { key: 'side', label: 'Side', children: <p>Side content</p> },
 ]
 
 const Demo2 = function () {
-  return <Tabs type="card" items={items} />
+  return <Tabs tabPlacement="start" items={items} />
 }
 
 export default Demo2
 ```
 
-### Bottom
+### Editable Card
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
 
 const items = [
-  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
-  { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
-  {
-    key: 'disabled',
-    label: 'Disabled',
-    disabled: true,
-    children: <p>Disabled content</p>,
-  },
+  { key: 'profile', label: 'Profile', children: <p>Profile content</p> },
+  { key: 'billing', label: 'Billing', children: <p>Billing content</p>, closable: false },
 ]
 
 const Demo3 = function () {
-  return <Tabs tabPosition="bottom" items={items} />
+  return (
+    <Tabs
+      type="editable-card"
+      items={items}
+      onEdit={(targetKey, action) => {
+        console.log(targetKey, action)
+      }}
+    />
+  )
 }
 
 export default Demo3
 ```
 
-### Destroy inactive pane
+### Extra Content
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
 
 const items = [
-  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
-  { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
-  {
-    key: 'disabled',
-    label: 'Disabled',
-    disabled: true,
-    children: <p>Disabled content</p>,
-  },
+  { key: 'daily', label: 'Daily', children: <p>Daily content</p> },
+  { key: 'weekly', label: 'Weekly', children: <p>Weekly content</p> },
 ]
 
 const Demo4 = function () {
-  return <Tabs destroyInactiveTabPane items={items} />
+  return (
+    <Tabs
+      items={items}
+      tabBarExtraContent={{
+        left: <button type="button">Refresh</button>,
+        right: <button type="button">Export</button>,
+      }}
+    />
+  )
 }
 
 export default Demo4
 ```
 
+### Customized Indicator
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'open', label: 'Open', children: <p>Open content</p> },
+  { key: 'closed', label: 'Closed', children: <p>Closed content</p> },
+]
+
+const Demo5 = function () {
+  return <Tabs items={items} indicator={{ size: (origin) => origin - 16, align: 'center' }} />
+}
+
+export default Demo5
+```
+
+### Destroy On Hidden
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'preview', label: 'Preview', children: <p>Preview content</p> },
+  { key: 'settings', label: 'Settings', forceRender: true, children: <p>Settings content</p> },
+]
+
+const Demo6 = function () {
+  return <Tabs destroyOnHidden items={items} />
+}
+
+export default Demo6
+```
+
+### Semantic Styles
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  {
+    key: 'first',
+    label: 'First',
+    class: 'custom-pane',
+    children: <p>First content</p>,
+  },
+]
+
+const Demo7 = function () {
+  return (
+    <Tabs
+      items={items}
+      class="custom-tabs"
+      classNames={{ header: 'custom-tabs-header', item: 'custom-tabs-item' }}
+      styles={{ content: { padding: '24px 0' } }}
+    />
+  )
+}
+
+export default Demo7
+```
+
+### Overflow
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = Array.from({ length: 12 }, (_, index) => ({
+  key: String(index + 1),
+  label: `Tab ${index + 1}`,
+  children: <p>Tab {index + 1} content</p>,
+}))
+
+const Demo8 = function () {
+  return <Tabs items={items} more={{ trigger: 'click' }} />
+}
+
+export default Demo8
+```
+
 ## API
+
+Solid uses `class` for root and item-level custom classes instead of React's `className`.
 
 ### Tabs
 
-| Property                 | Description                                    | Type                          | Default  |
-| ------------------------ | ---------------------------------------------- | ----------------------------- | -------- |
-| `items`                  | Tab items rendered as tabs and panes.          | `TabsItem[]`                  | `-`      |
-| `activeKey`              | Controlled active tab key.                     | `string`                      | `-`      |
-| `defaultActiveKey`       | Initial active tab key for uncontrolled usage. | `string`                      | `-`      |
-| `onChange`               | Called when the active tab changes.            | `(activeKey: string) => void` | `-`      |
-| `type`                   | Tab visual style.                              | `'line' \| 'card'`            | `'line'` |
-| `size`                   | Tab size from the theme component size scale.  | `ComponentSize`               | `-`      |
-| `tabPosition`            | Tab bar position.                              | `'top' \| 'bottom'`           | `'top'`  |
-| `destroyInactiveTabPane` | Unmounts inactive tab pane content.            | `boolean`                     | `false`  |
+| Property             | Description                                                         | Type                                                                                      | Default             |
+| -------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------- |
+| `items`              | Tab items rendered as tabs and panes.                               | `TabsItem[]`                                                                              | `-`                 |
+| `activeKey`          | Controlled active tab key.                                          | `string`                                                                                  | `-`                 |
+| `addIcon`            | Custom add icon for `editable-card`.                                | `JSX.Element`                                                                             | `<PlusOutlined />`  |
+| `animated`           | Configures tab animation.                                           | `boolean \| { inkBar?: boolean; tabPane?: boolean }`                                      | `-`                 |
+| `centered`           | Centers tabs in the tab bar.                                        | `boolean`                                                                                 | `false`             |
+| `class`              | Root element class.                                                 | `string`                                                                                  | `-`                 |
+| `classNames`         | Semantic class names for slots.                                     | `TabsSemanticClassNames`                                                                  | `-`                 |
+| `defaultActiveKey`   | Initial active tab key for uncontrolled usage.                      | `string`                                                                                  | First enabled tab   |
+| `destroyOnHidden`    | Unmounts inactive tab pane content.                                 | `boolean`                                                                                 | `false`             |
+| `hideAdd`            | Hides the add button for `editable-card`.                           | `boolean`                                                                                 | `false`             |
+| `indicator`          | Customizes the active indicator size and alignment.                 | `{ size?: number \| ((origin: number) => number); align?: 'start' \| 'center' \| 'end' }` | `-`                 |
+| `more`               | Configures the overflow more menu.                                  | `{ icon?: JSX.Element; trigger?: 'hover' \| 'click' }`                                    | `-`                 |
+| `onChange`           | Called when the active tab changes.                                 | `(activeKey: string) => void`                                                             | `-`                 |
+| `onEdit`             | Called when adding or removing editable-card tabs.                  | `(targetKey: string \| MouseEvent, action: 'add' \| 'remove') => void`                    | `-`                 |
+| `onTabClick`         | Called when an enabled tab is clicked or activated by keyboard.     | `(activeKey: string, event: MouseEvent \| KeyboardEvent) => void`                         | `-`                 |
+| `onTabScroll`        | Called when the tab bar scrolls.                                    | `({ direction }) => void`                                                                 | `-`                 |
+| `removeIcon`         | Custom remove icon for `editable-card`.                             | `JSX.Element`                                                                             | `<CloseOutlined />` |
+| `renderTabBar`       | Replaces the tab bar while receiving the default tab bar component. | `(props, DefaultTabBar) => JSX.Element`                                                   | `-`                 |
+| `size`               | Tab size from the theme component size scale.                       | `ComponentSize`                                                                           | `middle`            |
+| `styles`             | Semantic styles for slots.                                          | `TabsSemanticStyles`                                                                      | `-`                 |
+| `tabBarExtraContent` | Extra content on the left and/or right side of the tab bar.         | `JSX.Element \| { left?: JSX.Element; right?: JSX.Element }`                              | `-`                 |
+| `tabBarGutter`       | Gap between tabs.                                                   | `number`                                                                                  | `0`                 |
+| `tabBarStyle`        | Style applied to the tab bar wrapper.                               | `JSX.CSSProperties`                                                                       | `-`                 |
+| `tabPlacement`       | Tab bar placement.                                                  | `'top' \| 'bottom' \| 'start' \| 'end'`                                                   | `'top'`             |
+| `type`               | Tab visual style.                                                   | `'line' \| 'card' \| 'editable-card'`                                                     | `'line'`            |
 
 ### TabsItem
 
-| Property   | Description        | Type          | Default |
-| ---------- | ------------------ | ------------- | ------- |
-| `key`      | Stable tab key.    | `string`      | `-`     |
-| `label`    | Tab label content. | `JSX.Element` | `-`     |
-| `children` | Tab pane content.  | `JSX.Element` | `-`     |
-| `disabled` | Disables this tab. | `boolean`     | `-`     |
+| Property          | Description                                         | Type                           | Default |
+| ----------------- | --------------------------------------------------- | ------------------------------ | ------- |
+| `key`             | Stable tab key.                                     | `string`                       | `-`     |
+| `label`           | Tab label content.                                  | `JSX.Element`                  | `-`     |
+| `children`        | Tab pane content.                                   | `JSX.Element`                  | `-`     |
+| `class`           | Tab pane class.                                     | `string`                       | `-`     |
+| `closable`        | Whether the tab can be removed in `editable-card`.  | `boolean`                      | `true`  |
+| `closeIcon`       | Custom remove icon, or `false` / `null` to hide it. | `JSX.Element \| false \| null` | `-`     |
+| `destroyOnHidden` | Unmounts this pane when inactive.                   | `boolean`                      | `false` |
+| `disabled`        | Disables this tab.                                  | `boolean`                      | `false` |
+| `forceRender`     | Renders this pane before it is visited.             | `boolean`                      | `false` |
+| `icon`            | Icon shown before the tab label.                    | `JSX.Element`                  | `-`     |
+| `style`           | Tab pane style.                                     | `JSX.CSSProperties`            | `-`     |
+
+### Semantic Slots
+
+| Slot         | Description                  |
+| ------------ | ---------------------------- |
+| `root`       | Root tabs wrapper.           |
+| `header`     | Tab bar wrapper.             |
+| `item`       | Tab button.                  |
+| `indicator`  | Active indicator.            |
+| `remove`     | Editable-card remove button. |
+| `content`    | Content wrapper.             |
+| `popup.root` | Overflow menu popup root.    |

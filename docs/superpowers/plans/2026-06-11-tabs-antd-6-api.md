@@ -64,7 +64,14 @@ export type TabsType = 'line' | 'card' | 'editable-card'
 export type TabsPlacement = 'top' | 'bottom' | 'start' | 'end'
 export type TabsPosition = 'top' | 'bottom'
 export type TabsScrollDirection = 'left' | 'right' | 'top' | 'bottom'
-export type TabsSemanticSlot = 'root' | 'item' | 'remove' | 'indicator' | 'content' | 'header' | 'popup'
+export type TabsSemanticSlot =
+  | 'root'
+  | 'item'
+  | 'remove'
+  | 'indicator'
+  | 'content'
+  | 'header'
+  | 'popup'
 
 export interface TabsAnimatedConfig {
   inkBar?: boolean
@@ -131,7 +138,9 @@ export function keyToId(key: string) {
   return key.replace(/[^a-zA-Z0-9_-]/g, '-')
 }
 
-export function resolvePlacement(props: Pick<TabsProps, 'tabPlacement' | 'tabPosition'>): TabsPlacement {
+export function resolvePlacement(
+  props: Pick<TabsProps, 'tabPlacement' | 'tabPosition'>,
+): TabsPlacement {
   return props.tabPlacement ?? props.tabPosition ?? 'top'
 }
 
@@ -308,7 +317,12 @@ it('applies semantic classNames and styles', () => {
   const result = render(() => (
     <Tabs
       items={[{ key: 'one', label: 'One', children: <div>Pane one</div>, class: 'item-pane' }]}
-      classNames={{ root: 'sem-root', header: 'sem-header', item: 'sem-item', content: 'sem-content' }}
+      classNames={{
+        root: 'sem-root',
+        header: 'sem-header',
+        item: 'sem-item',
+        content: 'sem-content',
+      }}
       styles={{ content: { color: 'red' } }}
     />
   ))
@@ -570,9 +584,29 @@ it('moves overflowing tabs into more menu and activates hidden tabs', async () =
   try {
     HTMLElement.prototype.getBoundingClientRect = function () {
       if ((this as HTMLElement).classList.contains('ads-tabs-nav-list')) {
-        return { width: 120, height: 40, x: 0, y: 0, top: 0, left: 0, right: 120, bottom: 40, toJSON: () => ({}) }
+        return {
+          width: 120,
+          height: 40,
+          x: 0,
+          y: 0,
+          top: 0,
+          left: 0,
+          right: 120,
+          bottom: 40,
+          toJSON: () => ({}),
+        }
       }
-      return { width: 80, height: 32, x: 0, y: 0, top: 0, left: 0, right: 80, bottom: 32, toJSON: () => ({}) }
+      return {
+        width: 80,
+        height: 32,
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: 80,
+        bottom: 32,
+        toJSON: () => ({}),
+      }
     }
 
     const result = render(() => (

@@ -1,18 +1,38 @@
-import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import type { TabNavListProps } from './tab-nav-list'
+import { TabNavList } from './tab-nav-list'
+import { TabPanelList } from './tab-panel-list'
 import { useTabsStyle } from './tabs.style'
+import {
+  getDefaultActiveKey,
+  keyToId,
+  mergeStyle,
+  resolveDestroyOnHidden,
+  resolvePlacement,
+  resolveSemanticClassNames,
+  resolveSemanticStyles,
+} from './tabs-utils'
 import type { TabsItem, TabsProps } from './interface'
 
-function getDefaultActiveKey(items: TabsItem[], defaultActiveKey?: string) {
-  if (defaultActiveKey && items.some((item) => item.key === defaultActiveKey && !item.disabled)) {
-    return defaultActiveKey
-  }
-  return items.find((item) => !item.disabled)?.key ?? items[0]?.key ?? ''
-}
-
-function keyToId(key: string) {
-  return key.replace(/[^a-zA-Z0-9_-]/g, '-')
+function parseStyleText(style: string): JSX.CSSProperties {
+  return Object.fromEntries(
+    style
+      .split(';')
+      .map((declaration) => declaration.trim())
+      .filter(Boolean)
+      .map((declaration) => {
+        const separatorIndex = declaration.indexOf(':')
+        if (separatorIndex === -1) return []
+        return [
+          declaration.slice(0, separatorIndex).trim(),
+          declaration.slice(separatorIndex + 1).trim(),
+        ]
+      })
+      .filter((entry) => entry.length === 2),
+  ) as JSX.CSSProperties
 }
 
 export function Tabs(props: TabsProps) {
@@ -24,8 +44,27 @@ export function Tabs(props: TabsProps) {
     'type',
     'size',
     'tabPosition',
+    'tabPlacement',
     'destroyInactiveTabPane',
+    'destroyOnHidden',
+    'animated',
+    'centered',
+    'indicator',
+    'more',
+    'renderTabBar',
+    'tabBarExtraContent',
+    'tabBarGutter',
+    'tabBarStyle',
+    'onEdit',
+    'onTabClick',
+    'onTabScroll',
+    'addIcon',
+    'removeIcon',
+    'hideAdd',
+    'classNames',
+    'styles',
     'class',
+    'style',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-tabs`
@@ -37,9 +76,20 @@ export function Tabs(props: TabsProps) {
   const mergedActiveKey = createMemo(() => local.activeKey ?? innerActiveKey())
   const type = () => local.type ?? 'line'
   const size = () => local.size ?? config.componentSize()
-  const tabPosition = () => local.tabPosition ?? 'top'
+  const tabPosition = () => resolvePlacement(local)
+  const destroyOnHidden = () => resolveDestroyOnHidden(local)
+  const semanticClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
+  const semanticStyles = createMemo(() => resolveSemanticStyles(local.styles, props))
+  const rootStyle = () => {
+    const localStyle =
+      typeof local.style === 'string'
+        ? parseStyleText(local.style)
+        : (local.style as JSX.CSSProperties | undefined)
+    return mergeStyle(semanticStyles().root, localStyle)
+  }
   const tabId = (key: string) => `${prefixCls()}-tab-${keyToId(key)}`
   const panelId = (key: string) => `${prefixCls()}-panel-${keyToId(key)}`
+  const [visitedKeys, setVisitedKeys] = createSignal<Set<string>>(new Set())
 
   createEffect(() => {
     if (local.activeKey !== undefined) return
@@ -48,100 +98,123 @@ export function Tabs(props: TabsProps) {
     if (!activeItem) setInnerActiveKey(getDefaultActiveKey(items(), local.defaultActiveKey))
   })
 
-  const handleTabClick = (item: TabsItem) => {
-    if (item.disabled || item.key === mergedActiveKey()) return
+  createEffect(() => {
+    const itemKeys = new Set(items().map((item) => item.key))
+    const activeKey = mergedActiveKey()
+    setVisitedKeys((previous) => {
+      const next = new Set([...previous].filter((key) => itemKeys.has(key)))
+      if (itemKeys.has(activeKey)) {
+        next.add(activeKey)
+      }
+      return next
+    })
+  })
+
+  const shouldRenderPanel = (item: TabsItem) => {
+    const active = item.key === mergedActiveKey()
+    if (destroyOnHidden() || item.destroyOnHidden) return active
+    if (active || item.forceRender) return true
+    return visitedKeys().has(item.key)
+  }
+  const renderedPanelKeys = () =>
+    new Set(
+      items()
+        .filter(shouldRenderPanel)
+        .map((item) => item.key),
+    )
+  const renderedItems = () => items().filter(shouldRenderPanel)
+
+  const handleTabActivate = (item: TabsItem, event: MouseEvent | KeyboardEvent) => {
+    if (item.disabled) return
+    local.onTabClick?.(item.key, event)
+    if (item.key === mergedActiveKey()) return
     local.onChange?.(item.key)
     if (local.activeKey === undefined) {
       setInnerActiveKey(item.key)
     }
   }
-  const enabledItems = () => items().filter((item) => !item.disabled)
-  const focusTab = (item: TabsItem) => {
-    const element = document.getElementById(tabId(item.key))
-    element?.focus()
-    handleTabClick(item)
-  }
-  const handleKeyDown = (event: KeyboardEvent, item: TabsItem) => {
-    const candidates = enabledItems()
-    if (!candidates.length) return
-    const currentIndex = Math.max(
-      candidates.findIndex((candidate) => candidate.key === item.key),
-      candidates.findIndex((candidate) => candidate.key === mergedActiveKey()),
-      0,
-    )
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-      event.preventDefault()
-      focusTab(candidates[(currentIndex + 1) % candidates.length])
-    }
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-      event.preventDefault()
-      focusTab(candidates[(currentIndex - 1 + candidates.length) % candidates.length])
-    }
-    if (event.key === 'Home') {
-      event.preventDefault()
-      focusTab(candidates[0])
-    }
-    if (event.key === 'End') {
-      event.preventDefault()
-      focusTab(candidates[candidates.length - 1])
-    }
-  }
-  const nav = () => (
-    <div class={`${prefixCls()}-nav`} role="tablist">
-      <For each={items()}>
-        {(item) => {
-          const active = () => item.key === mergedActiveKey()
-          return (
-            <button
-              id={tabId(item.key)}
-              type="button"
-              role="tab"
-              class={classNames(
-                `${prefixCls()}-tab`,
-                active() && `${prefixCls()}-tab-active`,
-                item.disabled && `${prefixCls()}-tab-disabled`,
-              )}
-              tabIndex={active() && !item.disabled ? 0 : -1}
-              aria-selected={active() ? 'true' : 'false'}
-              aria-disabled={item.disabled ? 'true' : undefined}
-              aria-controls={panelId(item.key)}
-              onClick={() => handleTabClick(item)}
-              onKeyDown={(event) => handleKeyDown(event, item)}
-            >
-              {item.label}
-            </button>
-          )
-        }}
-      </For>
-    </div>
-  )
-  const pane = (item: TabsItem) => {
-    const active = () => item.key === mergedActiveKey()
-    return (
-      <div
-        id={panelId(item.key)}
-        role="tabpanel"
-        aria-labelledby={tabId(item.key)}
-        hidden={!active()}
-        aria-hidden={active() ? undefined : 'true'}
-        class={classNames(`${prefixCls()}-tabpane`, !active() && `${prefixCls()}-tabpane-hidden`)}
-      >
-        {item.children}
-      </div>
+  const defaultTabBarProps = (): TabNavListProps => ({
+    get items() {
+      return items()
+    },
+    get activeKey() {
+      return mergedActiveKey()
+    },
+    get prefixCls() {
+      return prefixCls()
+    },
+    get type() {
+      return type()
+    },
+    get tabPlacement() {
+      return tabPosition()
+    },
+    tabId,
+    panelId,
+    get renderedPanelKeys() {
+      return renderedPanelKeys()
+    },
+    get classNames() {
+      return semanticClassNames()
+    },
+    get styles() {
+      return semanticStyles()
+    },
+    get centered() {
+      return local.centered
+    },
+    get indicator() {
+      return local.indicator
+    },
+    get more() {
+      return local.more
+    },
+    get tabBarExtraContent() {
+      return local.tabBarExtraContent
+    },
+    get tabBarGutter() {
+      return local.tabBarGutter
+    },
+    get tabBarStyle() {
+      return local.tabBarStyle
+    },
+    get addIcon() {
+      return local.addIcon
+    },
+    get removeIcon() {
+      return local.removeIcon
+    },
+    get hideAdd() {
+      return local.hideAdd
+    },
+    get onEdit() {
+      return local.onEdit
+    },
+    get onTabScroll() {
+      return local.onTabScroll
+    },
+    onTabActivate: handleTabActivate,
+  })
+  const nav = () => {
+    const tabBarProps = defaultTabBarProps()
+    return local.renderTabBar ? (
+      local.renderTabBar(tabBarProps, TabNavList)
+    ) : (
+      <TabNavList {...tabBarProps} />
     )
   }
   const content = () => (
-    <div class={`${prefixCls()}-content`}>
-      <Show
-        when={local.destroyInactiveTabPane}
-        fallback={<For each={items()}>{(item) => pane(item)}</For>}
-      >
-        <For each={items().filter((item) => item.key === mergedActiveKey())}>
-          {(item) => pane(item)}
-        </For>
-      </Show>
-    </div>
+    <TabPanelList
+      items={renderedItems()}
+      activeKey={mergedActiveKey()}
+      prefixCls={prefixCls()}
+      tabId={tabId}
+      panelId={panelId}
+      classNames={semanticClassNames()}
+      styles={semanticStyles()}
+    />
   )
+  const navFirst = () => tabPosition() === 'top' || tabPosition() === 'start'
 
   return (
     <div
@@ -151,21 +224,24 @@ export function Tabs(props: TabsProps) {
         `${prefixCls()}-${tabPosition()}`,
         `${prefixCls()}-${type()}`,
         `${prefixCls()}-${size()}`,
+        local.centered && `${prefixCls()}-centered`,
         hashId(),
+        semanticClassNames().root,
         local.class,
       )}
+      style={rootStyle()}
     >
       <Show
-        when={tabPosition() === 'bottom'}
+        when={navFirst()}
         fallback={
           <>
-            {nav()}
             {content()}
+            {nav()}
           </>
         }
       >
-        {content()}
         {nav()}
+        {content()}
       </Show>
     </div>
   )
