@@ -1,7 +1,13 @@
 import * as Icons from '@ant-design-solid/icons'
 import { render } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
-import { IconGrid, allIcons, filledIcons, outlinedIcons, twoToneIcons } from '../../components/icon-list'
+import {
+  IconGrid,
+  allIcons,
+  filledIcons,
+  outlinedIcons,
+  twoToneIcons,
+} from '../../components/icon-list'
 
 const iconExportNames = Object.keys(Icons)
   .filter(
