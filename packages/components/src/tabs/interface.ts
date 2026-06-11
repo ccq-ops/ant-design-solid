@@ -86,6 +86,7 @@ export interface TabsDefaultTabBarProps {
   renderedPanelKeys: Set<string>
   classNames: TabsSemanticClassNamesMap
   styles: TabsSemanticStylesMap
+  animated?: boolean | TabsAnimatedConfig
   centered?: boolean
   indicator?: TabsIndicatorConfig
   more?: TabsMoreConfig

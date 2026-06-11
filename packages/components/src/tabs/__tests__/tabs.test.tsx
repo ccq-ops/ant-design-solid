@@ -121,6 +121,96 @@ describe('Tabs', () => {
     expect(indicator.style.getPropertyValue('--ads-tabs-indicator-size')).toBe('')
   })
 
+  it('moves a stable indicator element when active tab changes', () => {
+    const [activeKey, setActiveKey] = createSignal('one')
+    const getBoundingClientRect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('ads-tabs-nav-list')) {
+          return {
+            width: 220,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            right: 220,
+            bottom: 40,
+            left: 0,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        if (this.id.endsWith('-tab-one')) {
+          return {
+            width: 72,
+            height: 32,
+            x: 0,
+            y: 0,
+            top: 0,
+            right: 72,
+            bottom: 32,
+            left: 0,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        if (this.id.endsWith('-tab-two')) {
+          return {
+            width: 96,
+            height: 32,
+            x: 72,
+            y: 0,
+            top: 0,
+            right: 168,
+            bottom: 32,
+            left: 72,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        return {
+          width: 0,
+          height: 0,
+          x: 0,
+          y: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          toJSON: () => {},
+        } as DOMRect
+      })
+
+    try {
+      const result = render(() => <Tabs items={items} activeKey={activeKey()} />)
+      const indicator = result.container.querySelector('.ads-tabs-indicator') as HTMLElement
+
+      expect(indicator).toBeInTheDocument()
+      expect(indicator).toHaveStyle({ transform: 'translateX(0px)', width: '72px' })
+
+      setActiveKey('two')
+
+      const nextIndicator = result.container.querySelector('.ads-tabs-indicator') as HTMLElement
+      expect(nextIndicator).toBe(indicator)
+      expect(nextIndicator).toHaveStyle({ transform: 'translateX(72px)', width: '96px' })
+    } finally {
+      getBoundingClientRect.mockRestore()
+    }
+  })
+
+  it('enables indicator motion by default and disables it from animated props', () => {
+    const defaultResult = render(() => <Tabs items={items} />)
+    const disabledBooleanResult = render(() => <Tabs animated={false} items={items} />)
+    const disabledObjectResult = render(() => <Tabs animated={{ inkBar: false }} items={items} />)
+
+    expect(defaultResult.container.querySelector('.ads-tabs-indicator')).not.toHaveClass(
+      'ads-tabs-indicator-no-motion',
+    )
+    expect(disabledBooleanResult.container.querySelector('.ads-tabs-indicator')).toHaveClass(
+      'ads-tabs-indicator-no-motion',
+    )
+    expect(disabledObjectResult.container.querySelector('.ads-tabs-indicator')).toHaveClass(
+      'ads-tabs-indicator-no-motion',
+    )
+  })
+
   it('passes measured tab size to indicator size callback and applies the result', () => {
     const getBoundingClientRect = vi
       .spyOn(HTMLElement.prototype, 'getBoundingClientRect')

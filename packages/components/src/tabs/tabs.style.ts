@@ -31,6 +31,7 @@ export function useTabsStyle(prefixCls: string) {
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
       },
       [`.${prefixCls}-nav-list`]: {
+        position: 'relative',
         display: 'flex',
         'align-items': 'stretch',
         gap: `var(--ads-tabs-tab-gutter, 0)`,
@@ -94,23 +95,17 @@ export function useTabsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-indicator`]: {
         position: 'absolute',
-        right: 0,
+        right: 'auto',
         bottom: 0,
         left: 0,
-        width: 'var(--ads-tabs-indicator-size, auto)',
+        width: '0',
         height: `${t.lineWidth * 2}px`,
         background: tabs.inkBarColor,
+        'pointer-events': 'none',
+        transition: `transform ${t.motionDurationMid} ${t.motionEaseInOut}, width ${t.motionDurationMid} ${t.motionEaseInOut}, height ${t.motionDurationMid} ${t.motionEaseInOut}`,
       },
-      [`.${prefixCls}-indicator-start`]: {
-        right: 'auto',
-      },
-      [`.${prefixCls}-indicator-center`]: {
-        right: 'auto',
-        left: '50%',
-        transform: 'translateX(-50%)',
-      },
-      [`.${prefixCls}-indicator-end`]: {
-        left: 'auto',
+      [`.${prefixCls}-indicator-no-motion`]: {
+        transition: 'none',
       },
       [`.${prefixCls}-bottom .${prefixCls}-indicator`]: {
         top: 0,
@@ -119,33 +114,19 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-start .${prefixCls}-indicator`]: {
         top: 0,
         right: 0,
-        bottom: 0,
+        bottom: 'auto',
         left: 'auto',
         width: `${t.lineWidth * 2}px`,
-        height: 'var(--ads-tabs-indicator-size, auto)',
+        height: '0',
       },
       [`.${prefixCls}-end .${prefixCls}-indicator`]: {
         top: 0,
         right: 'auto',
-        bottom: 0,
+        bottom: 'auto',
         left: 0,
         width: `${t.lineWidth * 2}px`,
-        height: 'var(--ads-tabs-indicator-size, auto)',
+        height: '0',
       },
-      [`.${prefixCls}-start .${prefixCls}-indicator-start, .${prefixCls}-end .${prefixCls}-indicator-start`]:
-        {
-          bottom: 'auto',
-        },
-      [`.${prefixCls}-start .${prefixCls}-indicator-center, .${prefixCls}-end .${prefixCls}-indicator-center`]:
-        {
-          top: '50%',
-          bottom: 'auto',
-          transform: 'translateY(-50%)',
-        },
-      [`.${prefixCls}-start .${prefixCls}-indicator-end, .${prefixCls}-end .${prefixCls}-indicator-end`]:
-        {
-          top: 'auto',
-        },
       [`.${prefixCls}-tab-active`]: {
         color: tabs.itemSelectedColor,
       },

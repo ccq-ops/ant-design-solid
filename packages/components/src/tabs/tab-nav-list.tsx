@@ -37,9 +37,11 @@ export function TabNavList(props: TabNavListProps) {
   )
   const [tabSizes, setTabSizes] = createSignal<Record<string, number>>({})
   const [hiddenKeys, setHiddenKeys] = createSignal<Set<string>>(new Set())
-  const [indicatorStyles, setIndicatorStyles] = createSignal<
-    Record<string, { style?: JSX.CSSProperties; customSize: boolean }>
-  >({})
+  const [indicatorStyles, setIndicatorStyles] = createSignal<{
+    style?: JSX.CSSProperties
+    customSize: boolean
+    visible: boolean
+  }>({ customSize: false, visible: false })
   const enabledItems = () => props.items.filter((item) => !item.disabled)
   const editable = () => props.type === 'editable-card'
   const closable = (item: TabsItem) => item.closable !== false && item.closeIcon !== false
@@ -49,6 +51,11 @@ export function TabNavList(props: TabNavListProps) {
   const hiddenItems = () => props.items.filter((item) => hiddenKeys().has(item.key))
   const moreIcon = () => props.more?.icon ?? <EllipsisOutlined />
   const moreTrigger = () => props.more?.trigger ?? 'hover'
+  const indicatorMotion = () =>
+    props.animated === false ||
+    (typeof props.animated === 'object' && props.animated.inkBar === false)
+      ? false
+      : true
   const navStyle = (): JSX.CSSProperties =>
     mergeStyle(
       props.styles.header,
@@ -103,29 +110,46 @@ export function TabNavList(props: TabNavListProps) {
 
     setHiddenKeys(nextHiddenKeys)
   }
-  const indicatorHasCustomSize = (item: TabsItem) =>
-    Boolean(indicatorStyles()[item.key]?.customSize)
-  const updateIndicatorStyle = (item: TabsItem, tab: HTMLButtonElement) => {
+  const updateIndicatorStyle = (tab: HTMLButtonElement) => {
+    if (!navListElement) return
     const size = props.indicator?.size
     const rect = tab.getBoundingClientRect()
-    const originSize =
-      props.tabPlacement === 'start' || props.tabPlacement === 'end' ? rect.height : rect.width
+    const navRect = navListElement.getBoundingClientRect()
+    const originSize = vertical() ? rect.height : rect.width
     const computedSize = typeof size === 'function' ? size(originSize) : size
     const customSize = Number.isFinite(computedSize)
-    setIndicatorStyles((current) => ({
-      ...current,
-      [item.key]: {
-        customSize,
-        style: customSize
-          ? mergeStyle(
-              {
-                '--ads-tabs-indicator-size': `${computedSize}px`,
-              } as JSX.CSSProperties,
-              props.styles.indicator,
-            )
-          : props.styles.indicator,
-      },
-    }))
+    const indicatorSize = customSize ? Number(computedSize) : originSize
+    const align = props.indicator?.align ?? 'center'
+    const startOffset = vertical() ? rect.top - navRect.top : rect.left - navRect.left
+    const alignOffset =
+      customSize && align === 'center'
+        ? (originSize - indicatorSize) / 2
+        : customSize && align === 'end'
+          ? originSize - indicatorSize
+          : 0
+    const offset = startOffset + alignOffset
+    const placementStyle = vertical()
+      ? {
+          transform: `translateY(${offset}px)`,
+          height: `${indicatorSize}px`,
+        }
+      : {
+          transform: `translateX(${offset}px)`,
+          width: `${indicatorSize}px`,
+        }
+    setIndicatorStyles({
+      customSize,
+      visible: true,
+      style: mergeStyle(
+        placementStyle,
+        customSize
+          ? ({
+              '--ads-tabs-indicator-size': `${indicatorSize}px`,
+            } as JSX.CSSProperties)
+          : undefined,
+        props.styles.indicator,
+      ),
+    })
   }
   createEffect(() => {
     const itemKeys = new Set(props.items.map((item) => item.key))
@@ -133,9 +157,6 @@ export function TabNavList(props: TabNavListProps) {
       Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
     )
     setTabSizes((current) =>
-      Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
-    )
-    setIndicatorStyles((current) =>
       Object.fromEntries(Object.entries(current).filter(([key]) => itemKeys.has(key))),
     )
   })
@@ -159,15 +180,22 @@ export function TabNavList(props: TabNavListProps) {
   })
   createEffect(() => {
     const activeItem = props.items.find((item) => item.key === props.activeKey)
-    if (!activeItem) return
+    if (!activeItem) {
+      setIndicatorStyles((current) => ({ ...current, visible: false }))
+      return
+    }
     const tab = tabElements()[activeItem.key]
-    if (!tab) return
-    updateIndicatorStyle(activeItem, tab)
+    if (!tab) {
+      setIndicatorStyles((current) => ({ ...current, visible: false }))
+      return
+    }
+    updateIndicatorStyle(tab)
     if (typeof ResizeObserver === 'undefined') return
     const resizeObserver = new ResizeObserver(() => {
-      updateIndicatorStyle(activeItem, tab)
+      updateIndicatorStyle(tab)
     })
     resizeObserver.observe(tab)
+    if (navListElement) resizeObserver.observe(navListElement)
     onCleanup(() => {
       resizeObserver.disconnect()
     })
@@ -281,23 +309,24 @@ export function TabNavList(props: TabNavListProps) {
                     <span class={`${props.prefixCls}-tab-icon`}>{item.icon}</span>
                   </Show>
                   {item.label}
-                  <Show when={active()}>
-                    <span
-                      aria-hidden="true"
-                      class={classNames(
-                        `${props.prefixCls}-indicator`,
-                        indicatorHasCustomSize(item) &&
-                          `${props.prefixCls}-indicator-${props.indicator?.align ?? 'center'}`,
-                        props.classNames.indicator,
-                      )}
-                      style={indicatorStyles()[item.key]?.style}
-                    />
-                  </Show>
                 </button>
               </span>
             )
           }}
         </For>
+        <Show when={indicatorStyles().visible}>
+          <span
+            aria-hidden="true"
+            class={classNames(
+              `${props.prefixCls}-indicator`,
+              indicatorStyles().customSize &&
+                `${props.prefixCls}-indicator-${props.indicator?.align ?? 'center'}`,
+              !indicatorMotion() && `${props.prefixCls}-indicator-no-motion`,
+              props.classNames.indicator,
+            )}
+            style={indicatorStyles().style}
+          />
+        </Show>
       </div>
       <Show when={hiddenItems().length > 0}>
         <Dropdown

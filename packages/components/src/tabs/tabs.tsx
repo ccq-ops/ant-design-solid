@@ -160,6 +160,9 @@ export function Tabs(props: TabsProps) {
     get styles() {
       return semanticStyles()
     },
+    get animated() {
+      return local.animated
+    },
     get centered() {
       return local.centered
     },
