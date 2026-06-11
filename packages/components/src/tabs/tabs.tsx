@@ -2,7 +2,12 @@ import { For, Show, createEffect, createMemo, createSignal, splitProps } from 's
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useTabsStyle } from './tabs.style'
-import { getDefaultActiveKey, keyToId } from './tabs-utils'
+import {
+  getDefaultActiveKey,
+  keyToId,
+  resolveDestroyOnHidden,
+  resolvePlacement,
+} from './tabs-utils'
 import type { TabsItem, TabsProps } from './interface'
 
 export function Tabs(props: TabsProps) {
@@ -45,7 +50,8 @@ export function Tabs(props: TabsProps) {
   const mergedActiveKey = createMemo(() => local.activeKey ?? innerActiveKey())
   const type = () => local.type ?? 'line'
   const size = () => local.size ?? config.componentSize()
-  const tabPosition = () => local.tabPosition ?? 'top'
+  const tabPosition = () => resolvePlacement(local)
+  const destroyOnHidden = () => resolveDestroyOnHidden(local)
   const tabId = (key: string) => `${prefixCls()}-tab-${keyToId(key)}`
   const panelId = (key: string) => `${prefixCls()}-panel-${keyToId(key)}`
 
@@ -140,10 +146,7 @@ export function Tabs(props: TabsProps) {
   }
   const content = () => (
     <div class={`${prefixCls()}-content`}>
-      <Show
-        when={local.destroyInactiveTabPane}
-        fallback={<For each={items()}>{(item) => pane(item)}</For>}
-      >
+      <Show when={destroyOnHidden()} fallback={<For each={items()}>{(item) => pane(item)}</For>}>
         <For each={items().filter((item) => item.key === mergedActiveKey())}>
           {(item) => pane(item)}
         </For>

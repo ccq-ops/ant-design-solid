@@ -121,6 +121,26 @@ describe('Tabs', () => {
     expect(result.getByText('Pane two')).toBeInTheDocument()
   })
 
+  it('destroyOnHidden removes inactive pane from DOM', () => {
+    const result = render(() => <Tabs items={items} destroyOnHidden />)
+
+    expect(result.getByText('Pane one')).toBeInTheDocument()
+    expect(result.queryByText('Pane two')).not.toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+
+    expect(result.queryByText('Pane one')).not.toBeInTheDocument()
+    expect(result.getByText('Pane two')).toBeInTheDocument()
+  })
+
+  it('uses tabPlacement as the placement class and order', () => {
+    const result = render(() => <Tabs items={items} tabPlacement="bottom" />)
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root).toHaveClass('ads-tabs-bottom')
+    expect(root.lastElementChild).toHaveAttribute('role', 'tablist')
+  })
+
   it('uses defaultActiveKey when it matches a non-disabled item', () => {
     const result = render(() => <Tabs items={items} defaultActiveKey="two" />)
 
