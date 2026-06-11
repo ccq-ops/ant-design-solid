@@ -90,8 +90,13 @@ describe('Tabs', () => {
     expect(result.getByText('Right extra')).toBeInTheDocument()
     expect(result.container.querySelector('.ads-tabs-centered')).toBeInTheDocument()
     expect(result.container.querySelector('.ads-tabs-nav')).toHaveStyle({
-      '--ads-tabs-tab-gutter': '16px',
       color: 'rgb(0, 0, 255)',
+    })
+    expect(result.container.querySelector('.ads-tabs-nav-list')).toHaveStyle({
+      gap: 'var(--ads-tabs-tab-gutter, 0)',
+    })
+    expect(result.container.querySelector('.ads-tabs-nav') as HTMLElement).toHaveStyle({
+      '--ads-tabs-tab-gutter': '16px',
     })
     expect(result.container.querySelector('.custom-indicator')).toHaveClass(
       'ads-tabs-indicator-end',
@@ -176,6 +181,43 @@ describe('Tabs', () => {
 
     expect(rightExtra).toHaveTextContent('Single extra')
     expect(result.container.querySelector('.ads-tabs-extra-content-left')).not.toBeInTheDocument()
+  })
+
+  it('keeps tabBarExtraContent outside the tablist role structure', () => {
+    const result = render(() => (
+      <Tabs
+        tabBarExtraContent={{
+          left: <button type="button">Left action</button>,
+          right: <button type="button">Right action</button>,
+        }}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+
+    const tablist = result.getByRole('tablist')
+    const leftAction = result.getByRole('button', { name: 'Left action' })
+    const rightAction = result.getByRole('button', { name: 'Right action' })
+
+    expect(result.container.querySelector('.ads-tabs-nav')).not.toHaveAttribute('role')
+    expect(tablist).toHaveClass('ads-tabs-nav-list')
+    expect(tablist.contains(leftAction)).toBe(false)
+    expect(tablist.contains(rightAction)).toBe(false)
+  })
+
+  it('pins right extra content and centers only the tab track', () => {
+    const result = render(() => (
+      <Tabs
+        centered
+        tabBarExtraContent={{ right: <span>Right extra</span> }}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-tabs-nav')).not.toHaveClass('ads-tabs-nav-centered')
+    expect(result.getByRole('tablist')).toHaveClass('ads-tabs-nav-list-centered')
+    expect(result.container.querySelector('.ads-tabs-extra-content-right')).toHaveStyle({
+      'margin-inline-start': 'auto',
+    })
   })
 
   it('renders labels and active pane', () => {
@@ -500,22 +542,26 @@ describe('Tabs', () => {
     const top = render(() => <Tabs items={items} tabPlacement="top" />)
     const topRoot = top.container.firstElementChild as HTMLElement
     expect(topRoot).toHaveClass('ads-tabs-top')
-    expect(topRoot.firstElementChild).toHaveAttribute('role', 'tablist')
+    expect(topRoot.firstElementChild).toHaveClass('ads-tabs-nav')
+    expect(topRoot.firstElementChild?.querySelector('[role="tablist"]')).toBeInTheDocument()
 
     const bottom = render(() => <Tabs items={items} tabPlacement="bottom" />)
     const bottomRoot = bottom.container.firstElementChild as HTMLElement
     expect(bottomRoot).toHaveClass('ads-tabs-bottom')
-    expect(bottomRoot.lastElementChild).toHaveAttribute('role', 'tablist')
+    expect(bottomRoot.lastElementChild).toHaveClass('ads-tabs-nav')
+    expect(bottomRoot.lastElementChild?.querySelector('[role="tablist"]')).toBeInTheDocument()
 
     const start = render(() => <Tabs items={items} tabPlacement="start" />)
     const startRoot = start.container.firstElementChild as HTMLElement
     expect(startRoot).toHaveClass('ads-tabs-start')
-    expect(startRoot.firstElementChild).toHaveAttribute('role', 'tablist')
+    expect(startRoot.firstElementChild).toHaveClass('ads-tabs-nav')
+    expect(startRoot.firstElementChild?.querySelector('[role="tablist"]')).toBeInTheDocument()
 
     const end = render(() => <Tabs items={items} tabPlacement="end" />)
     const endRoot = end.container.firstElementChild as HTMLElement
     expect(endRoot).toHaveClass('ads-tabs-end')
-    expect(endRoot.lastElementChild).toHaveAttribute('role', 'tablist')
+    expect(endRoot.lastElementChild).toHaveClass('ads-tabs-nav')
+    expect(endRoot.lastElementChild?.querySelector('[role="tablist"]')).toBeInTheDocument()
   })
 
   it('applies semantic classNames and styles', () => {
@@ -696,6 +742,7 @@ describe('Tabs', () => {
     expect(root.className).toContain('custom-tabs-card')
     expect(root.className).toContain('custom-tabs-large')
     expect(root.className).toContain('extra-tabs')
-    expect(root.lastElementChild).toHaveAttribute('role', 'tablist')
+    expect(root.lastElementChild).toHaveClass('custom-tabs-nav')
+    expect(root.lastElementChild?.querySelector('[role="tablist"]')).toBeInTheDocument()
   })
 })

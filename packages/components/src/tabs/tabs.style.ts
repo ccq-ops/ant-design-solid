@@ -27,12 +27,17 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-nav`]: {
         display: 'flex',
         'align-items': 'stretch',
-        gap: `var(--ads-tabs-tab-gutter, 0)`,
         margin: 0,
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
       },
-      [`.${prefixCls}-nav-centered`]: {
+      [`.${prefixCls}-nav-list`]: {
+        display: 'flex',
+        'align-items': 'stretch',
+        gap: `var(--ads-tabs-tab-gutter, 0)`,
+      },
+      [`.${prefixCls}-nav-list-centered`]: {
         'justify-content': 'center',
+        flex: 1,
       },
       [`.${prefixCls}-bottom .${prefixCls}-nav`]: {
         borderTop: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
@@ -41,6 +46,9 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-start .${prefixCls}-nav, .${prefixCls}-end .${prefixCls}-nav`]: {
         'flex-direction': 'column',
         borderBottom: 0,
+      },
+      [`.${prefixCls}-start .${prefixCls}-nav-list, .${prefixCls}-end .${prefixCls}-nav-list`]: {
+        'flex-direction': 'column',
       },
       [`.${prefixCls}-tab-wrap`]: {
         display: 'inline-flex',
@@ -146,9 +154,12 @@ export function useTabsStyle(prefixCls: string) {
         'font-size': `${t.fontSize + 2}px`,
       },
       [`.${prefixCls}-card .${prefixCls}-nav`]: {
+        gap: 0,
+      },
+      [`.${prefixCls}-card .${prefixCls}-nav-list`]: {
         gap: `var(--ads-tabs-tab-gutter, ${t.marginXS}px)`,
       },
-      [`.${prefixCls}-card.${prefixCls}-start .${prefixCls}-nav, .${prefixCls}-card.${prefixCls}-end .${prefixCls}-nav`]:
+      [`.${prefixCls}-card.${prefixCls}-start .${prefixCls}-nav-list, .${prefixCls}-card.${prefixCls}-end .${prefixCls}-nav-list`]:
         {
           gap: `var(--ads-tabs-tab-gutter, ${t.marginXS}px)`,
         },
@@ -235,6 +246,9 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-extra-content`]: {
         display: 'inline-flex',
         'align-items': 'center',
+      },
+      [`.${prefixCls}-extra-content-right`]: {
+        'margin-inline-start': 'auto',
       },
       [`.${prefixCls}-content`]: {
         padding: `${t.padding}px 0`,
