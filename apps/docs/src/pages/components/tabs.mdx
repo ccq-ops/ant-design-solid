@@ -36,21 +36,86 @@ const Demo2 = function () {
 export default Demo2
 ```
 
-### Editable Card
+### Card And Size
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
 
 const items = [
-  { key: 'profile', label: 'Profile', children: <p>Profile content</p> },
-  { key: 'billing', label: 'Billing', children: <p>Billing content</p>, closable: false },
+  { key: 'small', label: 'Small', children: <p>Small card content</p> },
+  { key: 'middle', label: 'Middle', children: <p>Middle card content</p> },
+  { key: 'large', label: 'Large', children: <p>Large card content</p> },
 ]
 
 const Demo3 = function () {
+  return <Tabs type="card" size="large" items={items} />
+}
+
+export default Demo3
+```
+
+### Icon
+
+```tsx
+import { FileOutlined, SettingOutlined, UserOutlined } from '@ant-design-solid/icons'
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'profile', icon: <UserOutlined />, label: 'Profile', children: <p>Profile content</p> },
+  { key: 'files', icon: <FileOutlined />, label: 'Files', children: <p>Files content</p> },
+  {
+    key: 'settings',
+    icon: <SettingOutlined />,
+    label: 'Settings',
+    children: <p>Settings content</p>,
+  },
+]
+
+const Demo4 = function () {
+  return <Tabs items={items} />
+}
+
+export default Demo4
+```
+
+### Controlled
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const items = [
+  { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
+  { key: 'activity', label: 'Activity', children: <p>Activity content</p> },
+]
+
+const Demo5 = function () {
+  const [activeKey, setActiveKey] = createSignal('overview')
+
+  return <Tabs activeKey={activeKey()} items={items} onChange={setActiveKey} />
+}
+
+export default Demo5
+```
+
+### Editable Card
+
+```tsx
+import { PlusOutlined } from '@ant-design-solid/icons'
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'profile', label: 'Profile', children: <p>Profile content</p> },
+  { key: 'billing', label: 'Billing', children: <p>Billing content</p>, closable: false },
+  { key: 'logs', label: 'Logs', closeIcon: false, children: <p>Logs content</p> },
+]
+
+const Demo6 = function () {
   return (
     <Tabs
       type="editable-card"
       items={items}
+      addIcon={<PlusOutlined />}
       onEdit={(targetKey, action) => {
         console.log(targetKey, action)
       }}
@@ -58,7 +123,7 @@ const Demo3 = function () {
   )
 }
 
-export default Demo3
+export default Demo6
 ```
 
 ### Extra Content
@@ -71,7 +136,7 @@ const items = [
   { key: 'weekly', label: 'Weekly', children: <p>Weekly content</p> },
 ]
 
-const Demo4 = function () {
+const Demo7 = function () {
   return (
     <Tabs
       items={items}
@@ -83,7 +148,7 @@ const Demo4 = function () {
   )
 }
 
-export default Demo4
+export default Demo7
 ```
 
 ### Customized Indicator
@@ -96,11 +161,37 @@ const items = [
   { key: 'closed', label: 'Closed', children: <p>Closed content</p> },
 ]
 
-const Demo5 = function () {
+const Demo8 = function () {
   return <Tabs items={items} indicator={{ size: (origin) => origin - 16, align: 'center' }} />
 }
 
-export default Demo5
+export default Demo8
+```
+
+### Custom Tab Bar
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'alpha', label: 'Alpha', children: <p>Alpha content</p> },
+  { key: 'beta', label: 'Beta', children: <p>Beta content</p> },
+]
+
+const Demo9 = function () {
+  return (
+    <Tabs
+      items={items}
+      renderTabBar={(props, DefaultTabBar) => (
+        <div class="custom-tab-bar">
+          <DefaultTabBar {...props} />
+        </div>
+      )}
+    />
+  )
+}
+
+export default Demo9
 ```
 
 ### Destroy On Hidden
@@ -113,11 +204,11 @@ const items = [
   { key: 'settings', label: 'Settings', forceRender: true, children: <p>Settings content</p> },
 ]
 
-const Demo6 = function () {
+const Demo10 = function () {
   return <Tabs destroyOnHidden items={items} />
 }
 
-export default Demo6
+export default Demo10
 ```
 
 ### Semantic Styles
@@ -134,18 +225,25 @@ const items = [
   },
 ]
 
-const Demo7 = function () {
+const Demo11 = function () {
   return (
     <Tabs
       items={items}
       class="custom-tabs"
-      classNames={{ header: 'custom-tabs-header', item: 'custom-tabs-item' }}
-      styles={{ content: { padding: '24px 0' } }}
+      classNames={{
+        header: 'custom-tabs-header',
+        item: 'custom-tabs-item',
+        popup: { root: 'custom-tabs-popup' },
+      }}
+      styles={{
+        content: { padding: '24px 0' },
+        popup: { root: { minWidth: '160px' } },
+      }}
     />
   )
 }
 
-export default Demo7
+export default Demo11
 ```
 
 ### Overflow
@@ -159,11 +257,35 @@ const items = Array.from({ length: 12 }, (_, index) => ({
   children: <p>Tab {index + 1} content</p>,
 }))
 
-const Demo8 = function () {
-  return <Tabs items={items} more={{ trigger: 'click' }} />
+const Demo12 = function () {
+  return <Tabs items={items} more={{ icon: <span>More</span>, trigger: 'click' }} />
 }
 
-export default Demo8
+export default Demo12
+```
+
+### Events
+
+```tsx
+import { Tabs } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'one', label: 'One', children: <p>Pane one</p> },
+  { key: 'two', label: 'Two', children: <p>Pane two</p> },
+]
+
+const Demo13 = function () {
+  return (
+    <Tabs
+      items={items}
+      onChange={(activeKey) => console.log('change', activeKey)}
+      onTabClick={(activeKey, event) => console.log('click', activeKey, event.type)}
+      onTabScroll={({ direction }) => console.log('scroll', direction)}
+    />
+  )
+}
+
+export default Demo13
 ```
 
 ## API
@@ -200,6 +322,27 @@ Solid uses `class` for root and item-level custom classes instead of React's `cl
 | `tabPlacement`       | Tab bar placement.                                                  | `'top' \| 'bottom' \| 'start' \| 'end'`                                                   | `'top'`             |
 | `type`               | Tab visual style.                                                   | `'line' \| 'card' \| 'editable-card'`                                                     | `'line'`            |
 
+### TabsAnimatedConfig
+
+| Property  | Description                      | Type      | Default |
+| --------- | -------------------------------- | --------- | ------- |
+| `inkBar`  | Enables active indicator motion. | `boolean` | `-`     |
+| `tabPane` | Enables pane switching motion.   | `boolean` | `-`     |
+
+### TabsIndicatorConfig
+
+| Property | Description                                           | Type                                     | Default |
+| -------- | ----------------------------------------------------- | ---------------------------------------- | ------- |
+| `size`   | Indicator size, or a function of tab width or height. | `number \| ((origin: number) => number)` | `-`     |
+| `align`  | Indicator alignment inside the active tab.            | `'start' \| 'center' \| 'end'`           | `-`     |
+
+### TabsMoreConfig
+
+| Property  | Description                     | Type                 | Default                |
+| --------- | ------------------------------- | -------------------- | ---------------------- |
+| `icon`    | More menu trigger icon/content. | `JSX.Element`        | `<EllipsisOutlined />` |
+| `trigger` | More menu trigger action.       | `'hover' \| 'click'` | `'hover'`              |
+
 ### TabsItem
 
 | Property          | Description                                         | Type                           | Default |
@@ -215,6 +358,42 @@ Solid uses `class` for root and item-level custom classes instead of React's `cl
 | `forceRender`     | Renders this pane before it is visited.             | `boolean`                      | `false` |
 | `icon`            | Icon shown before the tab label.                    | `JSX.Element`                  | `-`     |
 | `style`           | Tab pane style.                                     | `JSX.CSSProperties`            | `-`     |
+
+### TabsRenderTabBar
+
+```ts
+type TabsRenderTabBar = (
+  props: TabsDefaultTabBarProps,
+  DefaultTabBar: (props: TabsDefaultTabBarProps) => JSX.Element,
+) => JSX.Element
+```
+
+### TabsDefaultTabBarProps
+
+| Property             | Description                               | Type                                                                   |
+| -------------------- | ----------------------------------------- | ---------------------------------------------------------------------- |
+| `items`              | Items rendered by the default tab bar.    | `TabsItem[]`                                                           |
+| `activeKey`          | Current active key.                       | `string`                                                               |
+| `prefixCls`          | Component CSS prefix.                     | `string`                                                               |
+| `type`               | Tab visual style.                         | `TabsType`                                                             |
+| `tabPlacement`       | Resolved tab placement.                   | `TabsPlacement`                                                        |
+| `tabId`              | Returns the tab id for a key.             | `(key: string) => string`                                              |
+| `panelId`            | Returns the panel id for a key.           | `(key: string) => string`                                              |
+| `renderedPanelKeys`  | Keys for panes currently mounted.         | `Set<string>`                                                          |
+| `classNames`         | Resolved semantic class names.            | `TabsSemanticClassNamesMap`                                            |
+| `styles`             | Resolved semantic styles.                 | `TabsSemanticStylesMap`                                                |
+| `centered`           | Whether tabs are centered.                | `boolean`                                                              |
+| `indicator`          | Indicator configuration.                  | `TabsIndicatorConfig`                                                  |
+| `more`               | More menu configuration.                  | `TabsMoreConfig`                                                       |
+| `tabBarExtraContent` | Extra tab bar content.                    | `JSX.Element \| { left?: JSX.Element; right?: JSX.Element }`           |
+| `tabBarGutter`       | Gap between tabs.                         | `number`                                                               |
+| `tabBarStyle`        | Tab bar wrapper style.                    | `JSX.CSSProperties`                                                    |
+| `addIcon`            | Editable-card add icon.                   | `JSX.Element`                                                          |
+| `removeIcon`         | Editable-card remove icon.                | `JSX.Element`                                                          |
+| `hideAdd`            | Whether the add button is hidden.         | `boolean`                                                              |
+| `onEdit`             | Editable-card add/remove callback.        | `(targetKey: string \| MouseEvent, action: 'add' \| 'remove') => void` |
+| `onTabScroll`        | Scroll callback.                          | `({ direction }) => void`                                              |
+| `onTabActivate`      | Activates a tab through the default flow. | `(item: TabsItem, event: MouseEvent \| KeyboardEvent) => void`         |
 
 ### Semantic Slots
 
