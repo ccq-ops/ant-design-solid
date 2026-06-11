@@ -1,0 +1,121 @@
+import { IconGrid, filledIcons, outlinedIcons, twoToneIcons } from './icon-list'
+
+# Icon
+
+Semantic vector graphics from `@ant-design-solid/icons`.
+
+```tsx pure
+import { SearchOutlined } from '@ant-design-solid/icons'
+```
+
+### Basic usage
+
+```tsx
+import { Space } from '@ant-design-solid/core'
+import {
+  AccountBookTwoTone,
+  CheckCircleFilled,
+  HomeOutlined,
+  SettingFilled,
+  SmileOutlined,
+} from '@ant-design-solid/icons'
+import { IconSample } from './icon-list'
+
+const Demo1 = function () {
+  return (
+    <Space wrap>
+      <IconSample name="HomeOutlined">
+        <HomeOutlined aria-label="HomeOutlined" />
+      </IconSample>
+      <IconSample name="SmileOutlined">
+        <SmileOutlined aria-label="SmileOutlined" />
+      </IconSample>
+      <IconSample name="CheckCircleFilled">
+        <CheckCircleFilled aria-label="CheckCircleFilled" />
+      </IconSample>
+      <IconSample name="SettingFilled">
+        <SettingFilled aria-label="SettingFilled" />
+      </IconSample>
+      <IconSample name="AccountBookTwoTone">
+        <AccountBookTwoTone aria-label="AccountBookTwoTone" />
+      </IconSample>
+    </Space>
+  )
+}
+
+export default Demo1
+```
+
+### Spin and rotate
+
+```tsx
+import { Space } from '@ant-design-solid/core'
+import { LoadingOutlined, SmileOutlined, SyncOutlined } from '@ant-design-solid/icons'
+import { IconSample } from './icon-list'
+
+const Demo2 = function () {
+  return (
+    <Space wrap>
+      <IconSample name="LoadingOutlined spin">
+        <LoadingOutlined aria-label="LoadingOutlined" spin />
+      </IconSample>
+      <IconSample name="SyncOutlined spin">
+        <SyncOutlined aria-label="SyncOutlined" spin />
+      </IconSample>
+      <IconSample name="SmileOutlined rotate">
+        <SmileOutlined aria-label="SmileOutlined" rotate={180} />
+      </IconSample>
+    </Space>
+  )
+}
+
+export default Demo2
+```
+
+### Two tone color
+
+```tsx
+import { Space } from '@ant-design-solid/core'
+import { AccountBookTwoTone, HeartTwoTone } from '@ant-design-solid/icons'
+import { IconSample } from './icon-list'
+
+const Demo3 = function () {
+  return (
+    <Space wrap>
+      <IconSample name="HeartTwoTone">
+        <HeartTwoTone aria-label="HeartTwoTone" />
+      </IconSample>
+      <IconSample name="HeartTwoTone string">
+        <HeartTwoTone aria-label="HeartTwoTone" twoToneColor="#eb2f96" />
+      </IconSample>
+      <IconSample name="AccountBookTwoTone tuple">
+        <AccountBookTwoTone
+          aria-label="AccountBookTwoTone"
+          twoToneColor={['#52c41a', '#f6ffed']}
+        />
+      </IconSample>
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+## All icons
+
+<IconGrid title="Outlined" icons={outlinedIcons} />
+<IconGrid title="Filled" icons={filledIcons} />
+<IconGrid title="TwoTone" icons={twoToneIcons} />
+
+## API
+
+Icon components accept standard Solid SVG props and the common icon props below.
+
+| Property       | Description                                      | Type                                             | Default |
+| -------------- | ------------------------------------------------ | ------------------------------------------------ | ------- |
+| `spin`         | Rotates the icon continuously.                   | `boolean`                                        | `false` |
+| `rotate`       | Rotates the icon by degrees.                     | `number`                                         | `-`     |
+| `twoToneColor` | Sets two-tone primary or primary/secondary fill. | `string \| [primary: string, secondary: string]` | `-`     |
+
+Decorative icons are rendered with `aria-hidden="true"` by default. Provide `aria-label` or
+`aria-labelledby` when an icon carries semantic meaning.
