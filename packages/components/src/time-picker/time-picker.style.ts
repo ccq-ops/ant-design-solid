@@ -30,21 +30,6 @@ export function useTimePickerStyle(prefixCls: string) {
           cursor: 'pointer',
           'box-sizing': 'border-box',
         },
-        [`.${prefixCls}-input`]: {
-          position: 'absolute',
-          width: '0',
-          height: '0',
-          margin: '0',
-          padding: '0',
-          border: '0',
-          overflow: 'hidden',
-          opacity: '0',
-          'pointer-events': 'none',
-        },
-        [`.${prefixCls}-input-element`]: {
-          width: '0',
-          height: '0',
-        },
         [`.${prefixCls}-open .${prefixCls}-selector`]: {
           'border-color': t.colorPrimary,
           'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,

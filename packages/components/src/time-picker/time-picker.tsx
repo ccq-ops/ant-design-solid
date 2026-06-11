@@ -13,7 +13,6 @@ import {
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
-import { Input } from '../input'
 import { classNames } from '../shared/class-names'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -496,17 +495,13 @@ export function TimePickerBase(props: TimePickerProps) {
       )}
       style={{ ...semanticStyle('root', local.styles), ...(local.style as JSX.CSSProperties) }}
     >
-      <Input
+      <input
         aria-hidden="true"
         tabindex={-1}
         readOnly={local.inputReadOnly}
         value={displayValue()}
         class={`${prefixCls()}-input`}
-        classNames={{ input: `${prefixCls()}-input-element` }}
-        styles={{
-          wrapper: semanticStyle('input', local.styles),
-          input: semanticStyle('input', local.styles),
-        }}
+        style={semanticStyle('input', local.styles)}
       />
       <div
         role="combobox"
@@ -824,17 +819,13 @@ function TimeRangePicker(props: TimeRangePickerProps) {
       )}
       style={{ ...semanticStyle('root', local.styles), ...(local.style as JSX.CSSProperties) }}
     >
-      <Input
+      <input
         aria-hidden="true"
         tabindex={-1}
         readOnly={local.inputReadOnly}
         value={displayValues().join(' - ')}
         class={`${prefixCls()}-input`}
-        classNames={{ input: `${prefixCls()}-input-element` }}
-        styles={{
-          wrapper: semanticStyle('input', local.styles),
-          input: semanticStyle('input', local.styles),
-        }}
+        style={semanticStyle('input', local.styles)}
       />
       <div
         role="combobox"

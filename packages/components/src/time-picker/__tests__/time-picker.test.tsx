@@ -258,9 +258,7 @@ describe('TimePicker', () => {
   it('supports inputReadOnly via an internal input mirror', () => {
     render(() => <TimePicker inputReadOnly />)
 
-    const input = screen.getByRole('textbox', { hidden: true })
-    expect(input).toHaveAttribute('readonly')
-    expect(input.closest('.ads-input-affix-wrapper')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { hidden: true })).toHaveAttribute('readonly')
   })
 
   it('supports changeOnScroll by selecting the scrolled option', () => {
