@@ -13,6 +13,17 @@ export function useTabsStyle(prefixCls: string) {
         'font-size': `${t.fontSize}px`,
         'font-family': t.fontFamily,
       },
+      [`.${prefixCls}-top, .${prefixCls}-bottom`]: {
+        display: 'flex',
+        'flex-direction': 'column',
+      },
+      [`.${prefixCls}-start, .${prefixCls}-end`]: {
+        display: 'flex',
+        'align-items': 'stretch',
+      },
+      [`.${prefixCls}-end`]: {
+        'flex-direction': 'row',
+      },
       [`.${prefixCls}-nav`]: {
         display: 'flex',
         gap: 0,
@@ -22,6 +33,16 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-bottom .${prefixCls}-nav`]: {
         borderTop: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         borderBottom: 0,
+      },
+      [`.${prefixCls}-start .${prefixCls}-nav, .${prefixCls}-end .${prefixCls}-nav`]: {
+        'flex-direction': 'column',
+        borderBottom: 0,
+      },
+      [`.${prefixCls}-start .${prefixCls}-nav`]: {
+        borderRight: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+      },
+      [`.${prefixCls}-end .${prefixCls}-nav`]: {
+        borderLeft: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
       },
       [`.${prefixCls}-tab`]: {
         position: 'relative',
@@ -50,6 +71,22 @@ export function useTabsStyle(prefixCls: string) {
         top: 0,
         bottom: 'auto',
       },
+      [`.${prefixCls}-start .${prefixCls}-tab::after`]: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 'auto',
+        width: `${t.lineWidth * 2}px`,
+        height: 'auto',
+      },
+      [`.${prefixCls}-end .${prefixCls}-tab::after`]: {
+        top: 0,
+        right: 'auto',
+        bottom: 0,
+        left: 0,
+        width: `${t.lineWidth * 2}px`,
+        height: 'auto',
+      },
       [`.${prefixCls}-tab-active`]: {
         color: tabs.itemSelectedColor,
         '&::after': { background: tabs.inkBarColor },
@@ -69,6 +106,10 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-card .${prefixCls}-nav`]: {
         gap: `${t.marginXS}px`,
       },
+      [`.${prefixCls}-card.${prefixCls}-start .${prefixCls}-nav, .${prefixCls}-card.${prefixCls}-end .${prefixCls}-nav`]:
+        {
+          gap: `${t.marginXS}px`,
+        },
       [`.${prefixCls}-card .${prefixCls}-tab`]: {
         background: tabs.cardBg,
         border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
@@ -80,8 +121,25 @@ export function useTabsStyle(prefixCls: string) {
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         'border-radius': `0 0 ${t.borderRadius}px ${t.borderRadius}px`,
       },
+      [`.${prefixCls}-card.${prefixCls}-start .${prefixCls}-tab`]: {
+        borderRight: 0,
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        'border-radius': `${t.borderRadius}px 0 0 ${t.borderRadius}px`,
+      },
+      [`.${prefixCls}-card.${prefixCls}-end .${prefixCls}-tab`]: {
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        borderLeft: 0,
+        'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
+      },
       [`.${prefixCls}-content`]: {
         padding: `${t.padding}px 0`,
+        flex: 1,
+      },
+      [`.${prefixCls}-start .${prefixCls}-content`]: {
+        padding: `0 0 0 ${t.padding}px`,
+      },
+      [`.${prefixCls}-end .${prefixCls}-content`]: {
+        padding: `0 ${t.padding}px 0 0`,
       },
       [`.${prefixCls}-tabpane-hidden`]: {
         display: 'none',

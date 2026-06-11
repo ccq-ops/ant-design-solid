@@ -1,4 +1,5 @@
 import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { TabNavList } from './tab-nav-list'
@@ -7,8 +8,11 @@ import { useTabsStyle } from './tabs.style'
 import {
   getDefaultActiveKey,
   keyToId,
+  mergeStyle,
   resolveDestroyOnHidden,
   resolvePlacement,
+  resolveSemanticClassNames,
+  resolveSemanticStyles,
 } from './tabs-utils'
 import type { TabsItem, TabsProps } from './interface'
 
@@ -41,6 +45,7 @@ export function Tabs(props: TabsProps) {
     'classNames',
     'styles',
     'class',
+    'style',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-tabs`
@@ -54,6 +59,12 @@ export function Tabs(props: TabsProps) {
   const size = () => local.size ?? config.componentSize()
   const tabPosition = () => resolvePlacement(local)
   const destroyOnHidden = () => resolveDestroyOnHidden(local)
+  const semanticClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
+  const semanticStyles = createMemo(() => resolveSemanticStyles(local.styles, props))
+  const rootStyle = () =>
+    typeof local.style === 'string'
+      ? local.style
+      : mergeStyle(semanticStyles().root, local.style as JSX.CSSProperties | undefined)
   const tabId = (key: string) => `${prefixCls()}-tab-${keyToId(key)}`
   const panelId = (key: string) => `${prefixCls()}-panel-${keyToId(key)}`
   const [visitedKeys, setVisitedKeys] = createSignal<Set<string>>(new Set())
@@ -91,8 +102,9 @@ export function Tabs(props: TabsProps) {
     )
   const renderedItems = () => items().filter(shouldRenderPanel)
 
-  const handleTabActivate = (item: TabsItem) => {
+  const handleTabActivate = (item: TabsItem, event: MouseEvent | KeyboardEvent) => {
     if (item.disabled) return
+    local.onTabClick?.(item.key, event as MouseEvent)
     if (item.key === mergedActiveKey()) return
     local.onChange?.(item.key)
     if (local.activeKey === undefined) {
@@ -107,6 +119,8 @@ export function Tabs(props: TabsProps) {
       tabId={tabId}
       panelId={panelId}
       renderedPanelKeys={renderedPanelKeys()}
+      classNames={semanticClassNames()}
+      styles={semanticStyles()}
       onTabActivate={handleTabActivate}
     />
   )
@@ -117,8 +131,11 @@ export function Tabs(props: TabsProps) {
       prefixCls={prefixCls()}
       tabId={tabId}
       panelId={panelId}
+      classNames={semanticClassNames()}
+      styles={semanticStyles()}
     />
   )
+  const navFirst = () => tabPosition() === 'top' || tabPosition() === 'start'
 
   return (
     <div
@@ -129,20 +146,22 @@ export function Tabs(props: TabsProps) {
         `${prefixCls()}-${type()}`,
         `${prefixCls()}-${size()}`,
         hashId(),
+        semanticClassNames().root,
         local.class,
       )}
+      style={rootStyle()}
     >
       <Show
-        when={tabPosition() === 'bottom'}
+        when={navFirst()}
         fallback={
           <>
-            {nav()}
             {content()}
+            {nav()}
           </>
         }
       >
-        {content()}
         {nav()}
+        {content()}
       </Show>
     </div>
   )

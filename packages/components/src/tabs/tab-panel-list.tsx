@@ -1,6 +1,7 @@
 import { For } from 'solid-js'
 import { classNames } from '../shared/class-names'
-import type { TabsItem } from './interface'
+import { mergeStyle } from './tabs-utils'
+import type { TabsItem, TabsSemanticClassNamesMap, TabsSemanticStylesMap } from './interface'
 
 export interface TabPanelListProps {
   items: TabsItem[]
@@ -8,11 +9,16 @@ export interface TabPanelListProps {
   prefixCls: string
   tabId: (key: string) => string
   panelId: (key: string) => string
+  classNames: TabsSemanticClassNamesMap
+  styles: TabsSemanticStylesMap
 }
 
 export function TabPanelList(props: TabPanelListProps) {
   return (
-    <div class={`${props.prefixCls}-content`}>
+    <div
+      class={classNames(`${props.prefixCls}-content`, props.classNames.content)}
+      style={props.styles.content}
+    >
       <For each={props.items}>
         {(item) => {
           const active = () => item.key === props.activeKey
@@ -26,7 +32,9 @@ export function TabPanelList(props: TabPanelListProps) {
               class={classNames(
                 `${props.prefixCls}-tabpane`,
                 !active() && `${props.prefixCls}-tabpane-hidden`,
+                item.class,
               )}
+              style={mergeStyle(item.style)}
             >
               {item.children}
             </div>

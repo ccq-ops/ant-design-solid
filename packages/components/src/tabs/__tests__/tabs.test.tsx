@@ -167,6 +167,20 @@ describe('Tabs', () => {
     expect(result.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true')
   })
 
+  it('fires onTabClick for active tabs and onChange only when active changes', () => {
+    const onTabClick = vi.fn()
+    const onChange = vi.fn()
+    const result = render(() => <Tabs items={items} onTabClick={onTabClick} onChange={onChange} />)
+
+    fireEvent.click(result.getByRole('tab', { name: 'One' }))
+    expect(onTabClick).toHaveBeenCalledWith('one', expect.any(MouseEvent))
+    expect(onChange).not.toHaveBeenCalled()
+
+    fireEvent.click(result.getByRole('tab', { name: 'Two' }))
+    expect(onTabClick).toHaveBeenLastCalledWith('two', expect.any(MouseEvent))
+    expect(onChange).toHaveBeenCalledWith('two')
+  })
+
   it('controlled mode calls onChange without changing active pane by itself', () => {
     const onChange = vi.fn()
     const result = render(() => <Tabs items={items} activeKey="one" onChange={onChange} />)
@@ -192,13 +206,15 @@ describe('Tabs', () => {
 
   it('disabled tab does not activate', () => {
     const onChange = vi.fn()
-    const result = render(() => <Tabs items={items} onChange={onChange} />)
+    const onTabClick = vi.fn()
+    const result = render(() => <Tabs items={items} onChange={onChange} onTabClick={onTabClick} />)
     const disabledTab = result.getByRole('tab', { name: 'Disabled' })
 
     expect(disabledTab).toHaveAttribute('aria-disabled', 'true')
     fireEvent.click(disabledTab)
 
     expect(onChange).not.toHaveBeenCalled()
+    expect(onTabClick).not.toHaveBeenCalled()
     expect(getPane(result.getByText('Pane one'))).not.toHaveClass('ads-tabs-tabpane-hidden')
     expect(result.queryByText('Disabled pane')).not.toBeInTheDocument()
   })
@@ -238,6 +254,35 @@ describe('Tabs', () => {
 
     expect(root).toHaveClass('ads-tabs-bottom')
     expect(root.lastElementChild).toHaveAttribute('role', 'tablist')
+  })
+
+  it('supports tabPlacement start and end', () => {
+    const start = render(() => <Tabs items={items} tabPlacement="start" />)
+    expect(start.container.firstElementChild).toHaveClass('ads-tabs-start')
+
+    const end = render(() => <Tabs items={items} tabPlacement="end" />)
+    expect(end.container.firstElementChild).toHaveClass('ads-tabs-end')
+  })
+
+  it('applies semantic classNames and styles', () => {
+    const result = render(() => (
+      <Tabs
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div>, class: 'item-pane' }]}
+        classNames={{
+          root: 'sem-root',
+          header: 'sem-header',
+          item: 'sem-item',
+          content: 'sem-content',
+        }}
+        styles={{ content: { color: 'red' } }}
+      />
+    ))
+
+    expect(result.container.firstElementChild).toHaveClass('sem-root')
+    expect(result.container.querySelector('.sem-header')).toBeInTheDocument()
+    expect(result.getByRole('tab', { name: 'One' })).toHaveClass('sem-item')
+    expect(result.getByText('Pane one').closest('[role="tabpanel"]')).toHaveClass('item-pane')
+    expect(result.container.querySelector('.sem-content')).toHaveStyle({ color: 'rgb(255, 0, 0)' })
   })
 
   it('uses defaultActiveKey when it matches a non-disabled item', () => {
