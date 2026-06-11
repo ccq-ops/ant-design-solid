@@ -1,4 +1,4 @@
-import { CloseOutlined, EllipsisOutlined, PlusOutlined } from '@ant-design-solid/icons'
+import { CloseOutlined, EllipsisOutlined, PlusSquareOutlined } from '@ant-design-solid/icons'
 import { For, Show, createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dropdown } from '../dropdown'
@@ -30,6 +30,7 @@ function extraContent(content: TabNavListProps['tabBarExtraContent']) {
 
 export function TabNavList(props: TabNavListProps) {
   let navListElement: HTMLDivElement | undefined
+  let moreElement: HTMLButtonElement | undefined
   let previousScrollLeft = 0
   let previousScrollTop = 0
   const [tabElements, setTabElements] = createSignal<Record<string, HTMLButtonElement | undefined>>(
@@ -92,7 +93,10 @@ export function TabNavList(props: TabNavListProps) {
       return
     }
 
-    const moreSize = 40
+    const moreRect = moreElement?.getBoundingClientRect()
+    const measuredMoreSize = moreRect ? (vertical() ? moreRect.height : moreRect.width) : 0
+    const moreSize =
+      Number.isFinite(measuredMoreSize) && measuredMoreSize > 0 ? measuredMoreSize : 40
     const availableSize = Math.max(0, containerSize - moreSize)
     const nextHiddenKeys = new Set<string>()
     const activeItem = props.items.find((item) => item.key === props.activeKey)
@@ -171,6 +175,7 @@ export function TabNavList(props: TabNavListProps) {
     if (typeof ResizeObserver === 'undefined' || !navListElement) return
     const resizeObserver = new ResizeObserver(updateOverflow)
     resizeObserver.observe(navListElement)
+    if (moreElement) resizeObserver.observe(moreElement)
     for (const element of Object.values(tabElements())) {
       if (element) resizeObserver.observe(element)
     }
@@ -310,6 +315,19 @@ export function TabNavList(props: TabNavListProps) {
                   </Show>
                   {item.label}
                 </button>
+                <Show when={editable() && closable(item) && closeButtonConfig(item).show}>
+                  <button
+                    type="button"
+                    class={classNames(`${props.prefixCls}-tab-remove`, props.classNames.remove)}
+                    style={props.styles.remove}
+                    aria-label="close"
+                    onClick={(event) => handleRemove(event, item)}
+                  >
+                    <span aria-hidden="true" class={`${props.prefixCls}-editable-icon`}>
+                      {closeButtonConfig(item, props.removeIcon).icon}
+                    </span>
+                  </button>
+                </Show>
               </span>
             )
           }}
@@ -330,6 +348,7 @@ export function TabNavList(props: TabNavListProps) {
       </div>
       <Show when={hiddenItems().length > 0}>
         <Dropdown
+          class={`${props.prefixCls}-more-wrap`}
           trigger={moreTrigger()}
           overlayClass={props.classNames.popup?.root}
           overlayStyle={props.styles.popup?.root}
@@ -344,6 +363,10 @@ export function TabNavList(props: TabNavListProps) {
         >
           <button
             type="button"
+            ref={(element) => {
+              moreElement = element
+              queueMicrotask(updateOverflow)
+            }}
             class={`${props.prefixCls}-more`}
             aria-label={props.more?.icon ? undefined : 'more'}
           >
@@ -351,31 +374,11 @@ export function TabNavList(props: TabNavListProps) {
           </button>
         </Dropdown>
       </Show>
-      <Show when={editable()}>
-        <div class={`${props.prefixCls}-remove-list`}>
-          <For each={props.items}>
-            {(item) => {
-              const closeButton = () => closeButtonConfig(item, props.removeIcon)
-              return (
-                <Show when={closable(item) && closeButton().show}>
-                  <button
-                    type="button"
-                    class={classNames(`${props.prefixCls}-tab-remove`, props.classNames.remove)}
-                    style={props.styles.remove}
-                    aria-label="close"
-                    onClick={(event) => handleRemove(event, item)}
-                  >
-                    {closeButton().icon}
-                  </button>
-                </Show>
-              )
-            }}
-          </For>
-        </div>
-      </Show>
       <Show when={editable() && !props.hideAdd}>
         <button type="button" class={`${props.prefixCls}-add`} aria-label="add" onClick={handleAdd}>
-          {props.addIcon ?? <PlusOutlined />}
+          <span aria-hidden="true" class={`${props.prefixCls}-editable-icon`}>
+            {props.addIcon ?? <PlusSquareOutlined />}
+          </span>
         </button>
       </Show>
       <Show when={extras().right}>

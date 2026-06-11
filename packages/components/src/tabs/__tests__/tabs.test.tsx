@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { fireEvent, render, screen, waitFor } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
@@ -381,7 +382,7 @@ describe('Tabs', () => {
     })
   })
 
-  it('keeps editable-card non-tab buttons outside the tablist while remove still works', () => {
+  it('keeps editable-card remove controls attached to their tab while remove still works', () => {
     const onEdit = vi.fn()
     const result = render(() => (
       <Tabs
@@ -390,17 +391,40 @@ describe('Tabs', () => {
         items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
       />
     ))
-    const tablist = result.getByRole('tablist')
 
+    expect(result.container.querySelector('.ads-tabs-remove-list')).not.toBeInTheDocument()
     expect(
-      Array.from(tablist.querySelectorAll('button')).filter(
-        (button) => button.getAttribute('role') !== 'tab',
-      ),
-    ).toHaveLength(0)
+      result
+        .getByRole('button', { name: /close/i })
+        .closest('.ads-tabs-tab-wrap')
+        ?.querySelector('[role="tab"]'),
+    ).toBe(result.getByRole('tab', { name: 'One' }))
 
     fireEvent.click(result.getByRole('button', { name: /close/i }))
 
     expect(onEdit).toHaveBeenCalledWith('one', 'remove')
+  })
+
+  it('keeps vertical start nav line and active indicator on the right edge', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Tabs
+          tabPlacement="start"
+          items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+        />
+      </StyleProvider>
+    ))
+
+    const styles = extractStyle(cache)
+
+    expect(styles).toContain('.ads-tabs-start .ads-tabs-nav{border-right:')
+    expect(styles).toContain('.ads-tabs-start .ads-tabs-tab-wrap, .ads-tabs-end .ads-tabs-tab-wrap')
+    expect(styles).toContain('align-items:stretch;display:flex;')
+    expect(styles).toContain('.ads-tabs-start .ads-tabs-tab, .ads-tabs-end .ads-tabs-tab')
+    expect(styles).toContain('flex:1;')
+    expect(styles).toContain('.ads-tabs-start .ads-tabs-indicator{')
+    expect(styles).toContain('right:-1px;top:0;width:2px;')
   })
 
   it('supports renderTabBar with default tab bar component', () => {
@@ -530,6 +554,125 @@ describe('Tabs', () => {
     } finally {
       getBoundingClientRect.mockRestore()
     }
+  })
+
+  it('allows the nav list to shrink before measuring overflow', () => {
+    const cache = createCache()
+
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Tabs
+          items={Array.from({ length: 12 }, (_, index) => ({
+            key: String(index + 1),
+            label: `Tab ${index + 1}`,
+            children: <div>Pane {index + 1}</div>,
+          }))}
+        />
+      </StyleProvider>
+    ))
+
+    const styles = extractStyle(cache)
+
+    expect(styles).toContain('.ads-tabs-nav-list{')
+    expect(styles).toContain('flex:1;')
+    expect(styles).toContain('min-width:0;')
+    expect(styles).toContain('overflow:hidden;')
+  })
+
+  it('remeasures overflow after rendering a custom more trigger', async () => {
+    const getBoundingClientRect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('ads-tabs-nav-list')) {
+          return {
+            width: 170,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            right: 170,
+            bottom: 40,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        if (this.classList.contains('ads-tabs-more')) {
+          return {
+            width: 80,
+            height: 32,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            right: 80,
+            bottom: 32,
+            toJSON: () => {},
+          } as DOMRect
+        }
+        return {
+          width: 60,
+          height: 32,
+          x: 0,
+          y: 0,
+          top: 0,
+          left: 0,
+          right: 60,
+          bottom: 32,
+          toJSON: () => {},
+        } as DOMRect
+      })
+
+    try {
+      const result = render(() => (
+        <Tabs
+          more={{ icon: <span>More</span>, trigger: 'click' }}
+          items={[
+            { key: 'one', label: 'One', children: <div>Pane one</div> },
+            { key: 'two', label: 'Two', children: <div>Pane two</div> },
+            { key: 'three', label: 'Three', children: <div>Pane three</div> },
+          ]}
+        />
+      ))
+
+      await waitFor(() => {
+        expect(result.getByRole('button', { name: 'More' })).toBeInTheDocument()
+        expect(result.queryByRole('tab', { name: 'Two' })).not.toBeInTheDocument()
+      })
+    } finally {
+      getBoundingClientRect.mockRestore()
+    }
+  })
+
+  it('styles overflow more trigger with a collapse shadow edge', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Tabs
+          more={{ trigger: 'click' }}
+          items={[
+            { key: 'one', label: 'One', children: <div>Pane one</div> },
+            { key: 'two', label: 'Two', children: <div>Pane two</div> },
+          ]}
+        />
+      </StyleProvider>
+    ))
+
+    const styles = extractStyle(cache)
+
+    expect(styles).toContain('.ads-tabs-more-wrap{')
+    expect(styles).toContain('position:relative;')
+    expect(styles).toContain('.ads-tabs-nav .ads-tabs-more-wrap{')
+    expect(styles).toContain('align-items:center;')
+    expect(styles).toContain('display:inline-flex;')
+    expect(styles).toContain('justify-content:center;')
+    expect(styles).toContain('min-width:46px;')
+    expect(styles).toContain('.ads-tabs-more-wrap::before{')
+    expect(styles).toContain('box-shadow:-8px 0 8px -8px')
+    expect(styles).toContain('pointer-events:none;')
+    expect(styles).not.toContain('linear-gradient(to right, rgba(255, 255, 255, 0),')
+    expect(styles).toContain('.ads-tabs-more{')
+    expect(styles).toContain('height:100%;')
+    expect(styles).toContain('background:')
   })
 
   it('reports tab scroll direction', () => {
@@ -685,13 +828,44 @@ describe('Tabs', () => {
       />
     ))
 
-    fireEvent.click(result.getByRole('button', { name: /add/i }))
+    fireEvent.click(result.getByRole('button', { name: 'add' }))
     expect(onEdit).toHaveBeenCalledWith(expect.any(MouseEvent), 'add')
 
-    fireEvent.click(result.getAllByRole('button', { name: /close/i })[0])
+    fireEvent.click(result.getAllByRole('button', { name: 'close' })[0])
     expect(onEdit).toHaveBeenCalledWith('one', 'remove')
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
-    expect(result.queryAllByRole('button', { name: /close/i })).toHaveLength(1)
+    expect(result.queryAllByRole('button', { name: 'close' })).toHaveLength(1)
+  })
+
+  it('styles editable-card add as a tab control and close as a borderless icon button', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Tabs
+          type="editable-card"
+          items={[
+            { key: 'one', label: 'One', children: <div>Pane one</div> },
+            { key: 'two', label: 'Two', children: <div>Pane two</div> },
+          ]}
+        />
+      </StyleProvider>
+    ))
+
+    const styles = extractStyle(cache)
+    const removeRule = styles.match(/\.ads-tabs-editable-card \.ads-tabs-tab-remove\{([^}]*)\}/)
+
+    expect(removeRule?.[1]).toContain('border:0;')
+    expect(removeRule?.[1]).toContain('height:auto;')
+    expect(removeRule?.[1]).toContain('width:auto;')
+    expect(removeRule?.[1]).toContain('background:transparent;')
+    expect(removeRule?.[1]).not.toContain('border:1px solid')
+    expect(styles).toContain(
+      '.ads-tabs-editable-card .ads-tabs-tab-remove:hover{background:transparent;',
+    )
+    expect(styles).toContain('.ads-tabs-editable-card .ads-tabs-add{')
+    expect(styles).toContain('background:rgba(0, 0, 0, 0.02);')
+    expect(styles).toContain('border-radius:6px 6px 0 0;')
+    expect(styles).toContain('border-bottom:0;')
   })
 
   it('supports hideAdd and item closeIcon false', () => {

@@ -33,12 +33,11 @@ export function useTabsStyle(prefixCls: string) {
       [`.${prefixCls}-nav-list`]: {
         position: 'relative',
         display: 'flex',
+        flex: 1,
+        'min-width': 0,
         'align-items': 'stretch',
+        overflow: 'hidden',
         gap: `var(--ads-tabs-tab-gutter, 0)`,
-      },
-      [`.${prefixCls}-remove-list`]: {
-        display: 'inline-flex',
-        'align-items': 'center',
       },
       [`.${prefixCls}-nav-list-centered`]: {
         'justify-content': 'center',
@@ -54,11 +53,16 @@ export function useTabsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-start .${prefixCls}-nav-list, .${prefixCls}-end .${prefixCls}-nav-list`]: {
         'flex-direction': 'column',
+        'min-width': 'auto',
+        'min-height': 0,
       },
-      [`.${prefixCls}-start .${prefixCls}-remove-list, .${prefixCls}-end .${prefixCls}-remove-list`]:
-        {
-          'flex-direction': 'column',
-        },
+      [`.${prefixCls}-start .${prefixCls}-tab-wrap, .${prefixCls}-end .${prefixCls}-tab-wrap`]: {
+        display: 'flex',
+        'align-items': 'stretch',
+      },
+      [`.${prefixCls}-start .${prefixCls}-tab, .${prefixCls}-end .${prefixCls}-tab`]: {
+        flex: 1,
+      },
       [`.${prefixCls}-tab-wrap`]: {
         display: 'inline-flex',
         'align-items': 'stretch',
@@ -113,7 +117,7 @@ export function useTabsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-start .${prefixCls}-indicator`]: {
         top: 0,
-        right: 0,
+        right: `-${t.lineWidth}px`,
         bottom: 'auto',
         left: 'auto',
         width: `${t.lineWidth * 2}px`,
@@ -123,7 +127,7 @@ export function useTabsStyle(prefixCls: string) {
         top: 0,
         right: 'auto',
         bottom: 'auto',
-        left: 0,
+        left: `-${t.lineWidth}px`,
         width: `${t.lineWidth * 2}px`,
         height: '0',
       },
@@ -174,17 +178,44 @@ export function useTabsStyle(prefixCls: string) {
         'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
       },
       [`.${prefixCls}-editable-card .${prefixCls}-tab-wrap`]: {
+        'align-items': 'center',
         background: tabs.cardBg,
         border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         borderBottom: 0,
         'border-radius': `${t.borderRadius}px ${t.borderRadius}px 0 0`,
+      },
+      [`.${prefixCls}-editable-card .${prefixCls}-tab-wrap-active`]: {
+        background: t.colorBgContainer,
       },
       [`.${prefixCls}-editable-card .${prefixCls}-tab`]: {
         background: 'transparent',
         border: 0,
         paddingRight: `${t.paddingXS}px`,
       },
+      [`.${prefixCls}-editable-card .${prefixCls}-tab-remove`]: {
+        width: 'auto',
+        height: 'auto',
+        marginRight: `${t.paddingXS}px`,
+        color: t.colorTextSecondary,
+        background: 'transparent',
+        border: 0,
+        '&:hover': {
+          color: tabs.itemHoverColor,
+          background: 'transparent',
+        },
+      },
+      [`.${prefixCls}-editable-card .${prefixCls}-add`]: {
+        background: tabs.cardBg,
+        border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        borderBottom: 0,
+        'border-radius': `${t.borderRadius}px ${t.borderRadius}px 0 0`,
+      },
       [`.${prefixCls}-editable-card.${prefixCls}-bottom .${prefixCls}-tab-wrap`]: {
+        borderTop: 0,
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        'border-radius': `0 0 ${t.borderRadius}px ${t.borderRadius}px`,
+      },
+      [`.${prefixCls}-editable-card.${prefixCls}-bottom .${prefixCls}-add`]: {
         borderTop: 0,
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         'border-radius': `0 0 ${t.borderRadius}px ${t.borderRadius}px`,
@@ -194,7 +225,17 @@ export function useTabsStyle(prefixCls: string) {
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         'border-radius': `${t.borderRadius}px 0 0 ${t.borderRadius}px`,
       },
+      [`.${prefixCls}-editable-card.${prefixCls}-start .${prefixCls}-add`]: {
+        borderRight: 0,
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        'border-radius': `${t.borderRadius}px 0 0 ${t.borderRadius}px`,
+      },
       [`.${prefixCls}-editable-card.${prefixCls}-end .${prefixCls}-tab-wrap`]: {
+        borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
+        borderLeft: 0,
+        'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
+      },
+      [`.${prefixCls}-editable-card.${prefixCls}-end .${prefixCls}-add`]: {
         borderBottom: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
         borderLeft: 0,
         'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
@@ -232,8 +273,35 @@ export function useTabsStyle(prefixCls: string) {
         'align-self': 'center',
         border: `${t.lineWidth}px solid ${tabs.cardBorderColor}`,
       },
+      [`.${prefixCls}-more-wrap`]: {
+        position: 'relative',
+        background: t.colorBgContainer,
+        'z-index': 1,
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          width: 1,
+          'box-shadow': `-${t.paddingXS}px 0 ${t.paddingXS}px -${t.paddingXS}px ${t.colorBorderSecondary}`,
+          'pointer-events': 'none',
+        },
+      },
+      [`.${prefixCls}-nav .${prefixCls}-more-wrap`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+        'align-self': 'stretch',
+        'min-width': `${tabs.horizontalItemPadding * 2 + t.fontSize}px`,
+      },
       [`.${prefixCls}-more`]: {
-        'align-self': 'center',
+        'align-self': 'stretch',
+        width: 'auto',
+        'min-width': `${t.controlHeightSM}px`,
+        height: '100%',
+        padding: `0 ${t.paddingXS}px`,
+        background: t.colorBgContainer,
       },
       [`.${prefixCls}-extra-content`]: {
         display: 'inline-flex',

@@ -101,8 +101,8 @@ export default Demo5
 ### Editable Card
 
 ```tsx
-import { PlusOutlined } from '@ant-design-solid/icons'
 import { Tabs } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
 
 const items = [
   { key: 'profile', label: 'Profile', children: <p>Profile content</p> },
@@ -111,14 +111,46 @@ const items = [
 ]
 
 const Demo6 = function () {
+  const [activeKey, setActiveKey] = createSignal('profile')
+  const [editableItems, setEditableItems] = createSignal(items)
+  const [nextIndex, setNextIndex] = createSignal(1)
+
+  const onEdit = (targetKey, action) => {
+    if (action === 'add') {
+      const nextKey = `new-${nextIndex()}`
+      const nextItem = {
+        key: nextKey,
+        label: `New Tab ${nextIndex()}`,
+        children: <p>New Tab {nextIndex()} content</p>,
+      }
+
+      setEditableItems((current) => [...current, nextItem])
+      setActiveKey(nextKey)
+      setNextIndex((index) => index + 1)
+      return
+    }
+
+    if (action === 'remove' && typeof targetKey === 'string') {
+      const currentItems = editableItems()
+      const targetIndex = currentItems.findIndex((item) => item.key === targetKey)
+      const nextItems = currentItems.filter((item) => item.key !== targetKey)
+
+      if (targetKey === activeKey()) {
+        const nextActiveItem = nextItems[targetIndex] ?? nextItems[targetIndex - 1]
+        if (nextActiveItem) setActiveKey(nextActiveItem.key)
+      }
+
+      setEditableItems(nextItems)
+    }
+  }
+
   return (
     <Tabs
       type="editable-card"
-      items={items}
-      addIcon={<PlusOutlined />}
-      onEdit={(targetKey, action) => {
-        console.log(targetKey, action)
-      }}
+      activeKey={activeKey()}
+      items={editableItems()}
+      onChange={setActiveKey}
+      onEdit={onEdit}
     />
   )
 }
@@ -251,7 +283,7 @@ export default Demo11
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
 
-const items = Array.from({ length: 12 }, (_, index) => ({
+const items = Array.from({ length: 24 }, (_, index) => ({
   key: String(index + 1),
   label: `Tab ${index + 1}`,
   children: <p>Tab {index + 1} content</p>,
