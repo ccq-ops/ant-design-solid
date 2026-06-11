@@ -1,2 +1,15 @@
 export { Tabs } from './tabs'
-export type { TabsItem, TabsPosition, TabsProps, TabsType } from './interface'
+export type {
+  TabsAnimatedConfig,
+  TabsIndicatorConfig,
+  TabsItem,
+  TabsMoreConfig,
+  TabsPlacement,
+  TabsPosition,
+  TabsProps,
+  TabsScrollDirection,
+  TabsSemanticClassNames,
+  TabsSemanticSlot,
+  TabsSemanticStyles,
+  TabsType,
+} from './interface'

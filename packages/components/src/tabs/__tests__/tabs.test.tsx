@@ -22,6 +22,26 @@ function getPane(element: HTMLElement) {
 }
 
 describe('Tabs', () => {
+  it('accepts antd 6 props and solid class naming', () => {
+    const result = render(() => (
+      <Tabs
+        class="root-class"
+        items={[{ key: 'one', label: 'One', class: 'pane-class', style: { color: 'red' } }]}
+        tabPlacement="start"
+        destroyOnHidden
+        animated={{ inkBar: true, tabPane: false }}
+        centered
+        indicator={{ size: 12, align: 'center' }}
+        tabBarGutter={8}
+        tabBarStyle={{ color: 'blue' }}
+        tabBarExtraContent={<span>Extra</span>}
+      />
+    ))
+
+    expect(result.container.firstElementChild).toHaveClass('root-class')
+    expect(result.getByRole('tab', { name: 'One' })).toBeInTheDocument()
+  })
+
   it('renders labels and active pane', () => {
     const result = render(() => <Tabs items={items} />)
 
