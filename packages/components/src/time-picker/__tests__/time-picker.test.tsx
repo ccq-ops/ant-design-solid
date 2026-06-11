@@ -159,6 +159,34 @@ describe('TimePicker', () => {
     expect(screen.getByRole('option', { name: '12 hours' })).toBeInTheDocument()
   })
 
+  it('shows clear by default when a single picker has a value', () => {
+    const onChange = vi.fn()
+    render(() => <TimePicker defaultValue={dayjs('2026-06-11 12:00:00')} onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear time' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(null, '')
+    expect(screen.getByRole('combobox')).toHaveTextContent('Select time')
+  })
+
+  it('does not show default clear when allowClear is false', () => {
+    render(() => <TimePicker defaultValue={dayjs('2026-06-11 12:00:00')} allowClear={false} />)
+
+    expect(screen.queryByRole('button', { name: 'Clear time' })).not.toBeInTheDocument()
+  })
+
+  it('stacks clear and suffix icons in the single picker selector', () => {
+    const result = render(() => (
+      <TimePicker defaultValue={dayjs('2026-06-11 12:00:00')} suffixIcon={<span>UTC</span>} />
+    ))
+
+    const stack = result.container.querySelector('.ads-time-picker-icon-stack')
+
+    expect(stack).toBeInTheDocument()
+    expect(stack).toContainElement(result.container.querySelector('.ads-time-picker-suffix'))
+    expect(stack).toContainElement(result.container.querySelector('.ads-time-picker-clear'))
+  })
+
   it('exposes focus and blur ref methods', () => {
     let ref: TimePickerRef | undefined
     render(() => <TimePicker ref={(next) => (ref = next)} />)

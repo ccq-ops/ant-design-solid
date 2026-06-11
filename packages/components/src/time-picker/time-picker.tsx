@@ -335,9 +335,11 @@ export function TimePickerBase(props: TimePickerProps) {
   const hourStep = () => normalizeStep(local.hourStep)
   const minuteStep = () => normalizeStep(local.minuteStep)
   const secondStep = () => normalizeStep(local.secondStep)
+  const allowClearEnabled = () => local.allowClear !== false
   const selectedParts = createMemo(() =>
     isValueControlled() ? valueToParts(local.value) : innerValue(),
   )
+  const showClear = () => allowClearEnabled() && !disabled() && Boolean(displayValue())
   const completeDraftParts = (): TimeParts | undefined => {
     const parts = draftParts()
     if (!isComplete(parts)) return undefined
@@ -527,19 +529,26 @@ export function TimePickerBase(props: TimePickerProps) {
         >
           {displayValue() || local.placeholder || 'Select time'}
         </span>
-        <Show when={local.allowClear && !disabled() && displayValue()}>
-          <button
-            type="button"
-            aria-label="Clear time"
-            class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
-            style={semanticStyle('clear', local.styles)}
-            onClick={clearValue}
-          >
-            {allowClearIcon(local.allowClear)}
-          </button>
-        </Show>
-        <span class={semanticClass('suffix', local.classNames, `${prefixCls()}-suffix`)}>
-          {local.suffixIcon ?? <ClockCircleOutlined />}
+        <span
+          class={classNames(
+            `${prefixCls()}-icon-stack`,
+            showClear() && `${prefixCls()}-icon-stack-has-clear`,
+          )}
+        >
+          <span class={semanticClass('suffix', local.classNames, `${prefixCls()}-suffix`)}>
+            {local.suffixIcon ?? <ClockCircleOutlined />}
+          </span>
+          <Show when={showClear()}>
+            <button
+              type="button"
+              aria-label="Clear time"
+              class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
+              style={semanticStyle('clear', local.styles)}
+              onClick={clearValue}
+            >
+              {allowClearIcon(local.allowClear)}
+            </button>
+          </Show>
         </span>
       </div>
       <Show when={open()}>

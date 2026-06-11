@@ -45,7 +45,31 @@ export function useTimePickerStyle(prefixCls: string) {
         [`.${prefixCls}-selection-item`]: {
           color: t.colorText,
         },
+        [`.${prefixCls}-icon-stack`]: {
+          position: 'relative',
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          flex: '0 0 1em',
+          width: '1em',
+          height: '1em',
+          color: t.colorTextSecondary,
+        },
+        [`.${prefixCls}-icon-stack .${prefixCls}-suffix`]: {
+          position: 'absolute',
+          inset: '0',
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          color: 'inherit',
+          transition: 'opacity 0.2s',
+        },
         [`.${prefixCls}-clear`]: {
+          position: 'absolute',
+          inset: '0',
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
           border: '0',
           padding: '0',
           background: 'transparent',
@@ -53,7 +77,19 @@ export function useTimePickerStyle(prefixCls: string) {
           cursor: 'pointer',
           'font-size': `${t.fontSize}px`,
           'line-height': '1',
+          opacity: '0',
+          'pointer-events': 'none',
+          transition: 'opacity 0.2s, color 0.2s',
         },
+        [`.${prefixCls}-selector:hover .${prefixCls}-clear, .${prefixCls}-selector:focus-within .${prefixCls}-clear`]:
+          {
+            opacity: '1',
+            'pointer-events': 'auto',
+          },
+        [`.${prefixCls}-selector:hover .${prefixCls}-icon-stack-has-clear .${prefixCls}-suffix, .${prefixCls}-selector:focus-within .${prefixCls}-icon-stack-has-clear .${prefixCls}-suffix`]:
+          {
+            opacity: '0',
+          },
         [`.${prefixCls}-clear:hover`]: {
           color: t.colorText,
         },
