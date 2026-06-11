@@ -29,13 +29,37 @@ export interface TabsMoreConfig {
   trigger?: 'hover' | 'click'
 }
 
+export interface TabsSemanticClassNamesMap {
+  root?: string
+  item?: string
+  remove?: string
+  indicator?: string
+  content?: string
+  header?: string
+  popup?: {
+    root?: string
+  }
+}
+
+export interface TabsSemanticStylesMap {
+  root?: JSX.CSSProperties
+  item?: JSX.CSSProperties
+  remove?: JSX.CSSProperties
+  indicator?: JSX.CSSProperties
+  content?: JSX.CSSProperties
+  header?: JSX.CSSProperties
+  popup?: {
+    root?: JSX.CSSProperties
+  }
+}
+
 export type TabsSemanticClassNames =
-  | Partial<Record<TabsSemanticSlot, string>>
-  | ((info: { props: TabsProps }) => Partial<Record<TabsSemanticSlot, string>>)
+  | TabsSemanticClassNamesMap
+  | ((info: { props: TabsProps }) => TabsSemanticClassNamesMap)
 
 export type TabsSemanticStyles =
-  | Partial<Record<TabsSemanticSlot, JSX.CSSProperties>>
-  | ((info: { props: TabsProps }) => Partial<Record<TabsSemanticSlot, JSX.CSSProperties>>)
+  | TabsSemanticStylesMap
+  | ((info: { props: TabsProps }) => TabsSemanticStylesMap)
 
 export interface TabsItem {
   key: string

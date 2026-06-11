@@ -26,7 +26,7 @@ describe('Tabs', () => {
     const result = render(() => (
       <Tabs
         class="root-class"
-        items={[{ key: 'one', label: 'One', class: 'pane-class', style: { color: 'red' } }]}
+        items={[{ key: 'one', label: 'One' }]}
         tabPlacement="start"
         destroyOnHidden
         animated={{ inkBar: true, tabPane: false }}
@@ -35,6 +35,8 @@ describe('Tabs', () => {
         tabBarGutter={8}
         tabBarStyle={{ color: 'blue' }}
         tabBarExtraContent={<span>Extra</span>}
+        classNames={{ popup: { root: 'popup-root' } }}
+        styles={{ popup: { root: { color: 'red' } } }}
       />
     ))
 
