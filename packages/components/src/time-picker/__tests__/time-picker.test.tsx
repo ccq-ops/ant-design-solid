@@ -1,6 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
+import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { TimePickerRef } from '../interface'
 import { TimePicker } from '../time-picker'
 
 afterEach(() => {
@@ -9,7 +12,14 @@ afterEach(() => {
 })
 
 describe('TimePicker', () => {
-  it('selects an uncontrolled time and calls onChange', () => {
+  it('shows Now and OK actions by default', () => {
+    render(() => <TimePicker defaultOpen />)
+
+    expect(screen.getByRole('button', { name: 'Now' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'OK' })).toBeInTheDocument()
+  })
+
+  it('commits draft selection only after OK by default', () => {
     const onChange = vi.fn()
     render(() => <TimePicker defaultOpen onChange={onChange} />)
 
@@ -17,7 +27,270 @@ describe('TimePicker', () => {
     fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
     fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
 
-    expect(onChange).toHaveBeenLastCalledWith('09:05:07')
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
+
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm:ss')).toBe('09:05:07')
+    expect(timeString).toBe('09:05:07')
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
+  })
+
+  it('previews draft selection while open and restores selected value when closed without OK', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <TimePicker defaultOpen defaultValue={dayjs('2026-06-11 01:02:03')} onChange={onChange} />
+    ))
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
+
+    fireEvent.pointerDown(document.body)
+
+    expect(screen.queryByRole('listbox', { name: 'hours' })).not.toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toHaveTextContent('01:02:03')
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('closes the panel after OK confirmation', () => {
+    const onOpenChange = vi.fn()
+    render(() => <TimePicker defaultOpen onOpenChange={onOpenChange} />)
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    expect(screen.queryByRole('listbox', { name: 'hours' })).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
+  it('commits and closes from the Now action without OK', () => {
+    const now = dayjs('2026-06-11 15:16:17')
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(now.valueOf())
+    const onChange = vi.fn()
+    const onOpenChange = vi.fn()
+
+    render(() => <TimePicker defaultOpen onChange={onChange} onOpenChange={onOpenChange} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Now' }))
+
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm:ss')).toBe('15:16:17')
+    expect(timeString).toBe('15:16:17')
+    expect(screen.queryByRole('listbox', { name: 'hours' })).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+
+    nowSpy.mockRestore()
+  })
+
+  it('hides the Now action when showNow is false', () => {
+    render(() => <TimePicker defaultOpen showNow={false} />)
+
+    expect(screen.queryByRole('button', { name: 'Now' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'OK' })).toBeInTheDocument()
+  })
+
+  it('emits dayjs values and formatted strings for uncontrolled selection', () => {
+    const onChange = vi.fn()
+    render(() => <TimePicker defaultOpen onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(dayjs.isDayjs(time)).toBe(true)
+    expect(time.format('HH:mm:ss')).toBe('09:05:07')
+    expect(timeString).toBe('09:05:07')
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
+  })
+
+  it('supports dayjs controlled values', () => {
+    function Demo() {
+      const [value, setValue] = createSignal(dayjs('2026-06-11 01:02:03'))
+      return (
+        <TimePicker
+          value={value()}
+          defaultOpen
+          onChange={(next) => {
+            if (next) setValue(next)
+          }}
+        />
+      )
+    }
+
+    render(() => <Demo />)
+    expect(screen.getByRole('combobox')).toHaveTextContent('01:02:03')
+    fireEvent.click(screen.getByRole('option', { name: '04 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '06 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+    expect(screen.getByRole('combobox')).toHaveTextContent('04:05:06')
+  })
+
+  it('supports v6 time option props', () => {
+    const clearIcon = <span data-testid="custom-clear">x</span>
+    render(() => (
+      <TimePicker
+        defaultOpen
+        defaultValue={dayjs('2026-06-11 12:00:00')}
+        allowClear={{ clearIcon }}
+        hourStep={3}
+        hideDisabledOptions
+        disabledTime={() => ({
+          disabledHours: () => [9],
+          disabledMinutes: (hour) => (hour === 12 ? [15] : []),
+        })}
+      />
+    ))
+
+    expect(screen.getByTestId('custom-clear')).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: '01 hours' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: '09 hours' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: '15 minutes' })).not.toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '12 hours' })).toBeInTheDocument()
+  })
+
+  it('exposes focus and blur ref methods', () => {
+    let ref: TimePickerRef | undefined
+    render(() => <TimePicker ref={(next) => (ref = next)} />)
+
+    ref?.focus()
+    expect(document.activeElement).toBe(screen.getByRole('combobox'))
+    ref?.blur()
+    expect(document.activeElement).not.toBe(screen.getByRole('combobox'))
+    expect(ref?.nativeElement).toBeTruthy()
+  })
+
+  it('supports range picker selection with order', () => {
+    const onChange = vi.fn()
+    render(() => <TimePicker.RangePicker defaultOpen onChange={onChange} />)
+
+    fireEvent.click(screen.getAllByRole('option', { name: '18 hours' })[0])
+    fireEvent.click(screen.getAllByRole('option', { name: '30 minutes' })[0])
+    fireEvent.click(screen.getAllByRole('option', { name: '00 seconds' })[0])
+    fireEvent.click(screen.getAllByRole('option', { name: '09 hours' })[1])
+    fireEvent.click(screen.getAllByRole('option', { name: '15 minutes' })[1])
+    fireEvent.click(screen.getAllByRole('option', { name: '00 seconds' })[1])
+
+    const [times, timeStrings] = onChange.mock.lastCall as [[Dayjs, Dayjs], [string, string]]
+    expect(times[0].format('HH:mm:ss')).toBe('09:15:00')
+    expect(times[1].format('HH:mm:ss')).toBe('18:30:00')
+    expect(timeStrings).toEqual(['09:15:00', '18:30:00'])
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:15:00')
+    expect(screen.getByRole('combobox')).toHaveTextContent('18:30:00')
+  })
+
+  it('delays single value changes until OK when needConfirm is true', () => {
+    const onChange = vi.fn()
+    render(() => <TimePicker defaultOpen needConfirm onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
+
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm:ss')).toBe('09:05:07')
+    expect(timeString).toBe('09:05:07')
+    expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
+  })
+
+  it('supports cellRender and semantic classNames/styles', () => {
+    const result = render(() => (
+      <TimePicker
+        defaultOpen
+        popupClassName="legacy-popup"
+        popupStyle={{ width: '320px' }}
+        classNames={{
+          root: 'custom-root',
+          selector: 'custom-selector',
+          popup: 'custom-popup',
+          cell: 'custom-cell',
+          footer: 'custom-footer',
+        }}
+        styles={{
+          root: { width: '180px' },
+          selector: { 'border-color': 'red' },
+          popup: { color: 'blue' },
+          cell: { 'font-weight': 700 },
+          footer: { 'text-align': 'right' },
+        }}
+        renderExtraFooter={() => <span>Footer</span>}
+        cellRender={(current, info) => (
+          <span data-testid={`${info.subType}-${current}`}>{info.originNode}</span>
+        )}
+      />
+    ))
+
+    const root = result.container.firstElementChild as HTMLElement
+    const selector = result.container.querySelector('.ads-time-picker-selector') as HTMLElement
+    const popup = document.body.querySelector('.ads-time-picker-dropdown') as HTMLElement
+    const cell = screen.getByTestId('hour-0').closest('.ads-time-picker-cell') as HTMLElement
+    const footer = document.body.querySelector('.ads-time-picker-footer') as HTMLElement
+
+    expect(root).toHaveClass('custom-root')
+    expect(root.style.width).toBe('180px')
+    expect(selector).toHaveClass('custom-selector')
+    expect(selector.style.borderColor).toBe('red')
+    expect(popup).toHaveClass('custom-popup')
+    expect(popup).toHaveClass('legacy-popup')
+    expect(popup.style.width).toBe('320px')
+    expect(popup.style.color).toBe('blue')
+    expect(cell).toHaveClass('custom-cell')
+    expect(cell.style.fontWeight).toBe('700')
+    expect(footer).toHaveClass('custom-footer')
+    expect(footer.style.textAlign).toBe('right')
+  })
+
+  it('supports inputReadOnly via an internal input mirror', () => {
+    render(() => <TimePicker inputReadOnly />)
+
+    const input = screen.getByRole('textbox', { hidden: true })
+    expect(input).toHaveAttribute('readonly')
+    expect(input.closest('.ads-input-affix-wrapper')).toBeInTheDocument()
+  })
+
+  it('supports changeOnScroll by selecting the scrolled option', () => {
+    const onChange = vi.fn()
+    render(() => <TimePicker defaultOpen changeOnScroll onChange={onChange} />)
+
+    fireEvent.scroll(screen.getByRole('listbox', { name: 'hours' }), {
+      target: { scrollTop: 9 * 32 },
+    })
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm:ss')).toBe('09:05:07')
+    expect(timeString).toBe('09:05:07')
+  })
+
+  it('selects an uncontrolled time and calls onChange', () => {
+    const onChange = vi.fn()
+    render(() => <TimePicker defaultOpen onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm:ss')).toBe('09:05:07')
+    expect(timeString).toBe('09:05:07')
     expect(screen.getByRole('combobox')).toHaveTextContent('09:05:07')
   })
 
@@ -27,14 +300,17 @@ describe('TimePicker', () => {
 
     fireEvent.click(screen.getByRole('option', { name: '10 hours' }))
     fireEvent.click(screen.getByRole('option', { name: '30 minutes' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
-    expect(onChange).toHaveBeenLastCalledWith('10:30')
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm')).toBe('10:30')
+    expect(timeString).toBe('10:30')
     expect(screen.queryByText('seconds')).not.toBeInTheDocument()
   })
 
   it('supports controlled value', () => {
     function Demo() {
-      const [value, setValue] = createSignal('01:02:03')
+      const [value, setValue] = createSignal(dayjs('2026-06-11 01:02:03'))
       return <TimePicker value={value()} defaultOpen onChange={(next) => next && setValue(next)} />
     }
 
@@ -43,6 +319,7 @@ describe('TimePicker', () => {
     fireEvent.click(screen.getByRole('option', { name: '04 hours' }))
     fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
     fireEvent.click(screen.getByRole('option', { name: '06 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
     expect(screen.getByRole('combobox')).toHaveTextContent('04:05:06')
   })
 
@@ -61,7 +338,7 @@ describe('TimePicker', () => {
     render(() => (
       <TimePicker
         defaultOpen
-        defaultValue="12:00:00"
+        defaultValue={dayjs('2026-06-11 12:00:00')}
         allowClear
         onChange={onChange}
         onOpenChange={onOpenChange}
@@ -69,7 +346,7 @@ describe('TimePicker', () => {
     ))
 
     fireEvent.click(screen.getByRole('button', { name: 'Clear time' }))
-    expect(onChange).toHaveBeenLastCalledWith(undefined)
+    expect(onChange).toHaveBeenLastCalledWith(null, '')
 
     fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Escape' })
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
@@ -107,8 +384,11 @@ describe('TimePicker', () => {
     fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
     fireEvent.click(screen.getByRole('option', { name: '05 minutes' }))
     fireEvent.click(screen.getByRole('option', { name: '07 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
-    expect(onChange).toHaveBeenLastCalledWith('09:05:07')
+    const [time, timeString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(time.format('HH:mm:ss')).toBe('09:05:07')
+    expect(timeString).toBe('09:05:07')
     expect(screen.getByRole('combobox')).toHaveTextContent('Select time')
   })
 
@@ -116,7 +396,7 @@ describe('TimePicker', () => {
     const onChange = vi.fn()
 
     function Demo() {
-      const [value, setValue] = createSignal<string | undefined>('01:02:03')
+      const [value, setValue] = createSignal<Dayjs | undefined>(dayjs('2026-06-11 01:02:03'))
       return (
         <>
           <button type="button" onClick={() => setValue(undefined)}>

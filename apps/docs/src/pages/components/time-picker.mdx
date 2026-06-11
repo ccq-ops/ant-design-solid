@@ -32,17 +32,18 @@ export default Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
+import dayjs from 'dayjs'
 import { Space, TimePicker } from '@ant-design-solid/core'
 
 const Demo3 = function () {
-  const [value, setValue] = createSignal('09:30:00')
+  const [value, setValue] = createSignal(dayjs('2026-06-11 09:30:00'))
 
   const [open, setOpen] = createSignal(false)
 
   return (
     <Space direction="vertical">
       <TimePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen} />
-      <span>Selected time: {value() ?? 'none'}</span>
+      <span>Selected time: {value()?.format('HH:mm:ss') ?? 'none'}</span>
     </Space>
   )
 }
@@ -59,8 +60,10 @@ import { Space, TimePicker } from '@ant-design-solid/core'
 const Demo4 = function () {
   return (
     <TimePicker
-      disabledHours={() => [0, 1, 2, 3, 4, 5, 6]}
-      disabledMinutes={(hour) => (hour === 12 ? [0, 15, 30, 45] : [])}
+      disabledTime={() => ({
+        disabledHours: () => [0, 1, 2, 3, 4, 5, 6],
+        disabledMinutes: (hour) => (hour === 12 ? [0, 15, 30, 45] : []),
+      })}
     />
   )
 }
@@ -72,10 +75,11 @@ export default Demo4
 
 ```tsx
 import { createSignal } from 'solid-js'
+import dayjs from 'dayjs'
 import { Space, TimePicker } from '@ant-design-solid/core'
 
 const Demo5 = function () {
-  return <TimePicker allowClear defaultValue="12:00:00" />
+  return <TimePicker allowClear defaultValue={dayjs('2026-06-11 12:00:00')} />
 }
 
 export default Demo5
@@ -85,34 +89,288 @@ export default Demo5
 
 ```tsx
 import { createSignal } from 'solid-js'
+import dayjs from 'dayjs'
 import { Space, TimePicker } from '@ant-design-solid/core'
 
 const Demo6 = function () {
-  return <TimePicker disabled defaultValue="08:30:00" />
+  return <TimePicker disabled defaultValue={dayjs('2026-06-11 08:30:00')} />
 }
 
 export default Demo6
 ```
 
+### RangePicker
+
+```tsx
+import dayjs from 'dayjs'
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <TimePicker.RangePicker
+      defaultValue={[dayjs('2026-06-11 09:00:00'), dayjs('2026-06-11 18:00:00')]}
+    />
+  )
+}
+
+export default Demo7
+```
+
+### Steps and hidden disabled options
+
+```tsx
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <TimePicker
+      hourStep={2}
+      minuteStep={15}
+      secondStep={10}
+      hideDisabledOptions
+      disabledTime={() => ({
+        disabledHours: () => [0, 2, 4],
+        disabledMinutes: (hour) => (hour === 12 ? [0, 15, 30, 45] : []),
+      })}
+    />
+  )
+}
+
+export default Demo8
+```
+
+### 12-hour format
+
+```tsx
+import dayjs from 'dayjs'
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return <TimePicker use12Hours defaultValue={dayjs('2026-06-11 13:30:00')} format="h:mm:ss a" />
+}
+
+export default Demo9
+```
+
+### Confirm, Now, and footer
+
+```tsx
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <TimePicker
+      renderExtraFooter={() => <span style={{ 'margin-right': '8px' }}>Pick carefully</span>}
+    />
+  )
+}
+
+export default Demo10
+```
+
+### Custom icons and cell render
+
+```tsx
+import { ClockCircleOutlined, CloseCircleOutlined } from '@ant-design-solid/icons'
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo11 = function () {
+  return (
+    <TimePicker
+      allowClear={{ clearIcon: <CloseCircleOutlined /> }}
+      prefix={<ClockCircleOutlined />}
+      suffixIcon={<span>UTC</span>}
+      cellRender={(current, info) => (
+        <span>
+          {info.originNode}
+          {info.subType === 'hour' && current < 12 ? ' am' : ''}
+        </span>
+      )}
+    />
+  )
+}
+
+export default Demo11
+```
+
+### Size, status, and variant
+
+```tsx
+import { Space, TimePicker } from '@ant-design-solid/core'
+
+const Demo12 = function () {
+  return (
+    <Space direction="vertical">
+      <Space wrap>
+        <TimePicker size="small" />
+        <TimePicker />
+        <TimePicker size="large" />
+      </Space>
+      <Space wrap>
+        <TimePicker status="error" />
+        <TimePicker status="warning" />
+      </Space>
+      <Space wrap>
+        <TimePicker variant="outlined" />
+        <TimePicker variant="filled" />
+        <TimePicker variant="borderless" />
+        <TimePicker variant="underlined" />
+      </Space>
+    </Space>
+  )
+}
+
+export default Demo12
+```
+
+### Semantic styles
+
+```tsx
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo13 = function () {
+  return (
+    <TimePicker
+      defaultOpen
+      classNames={{ popup: 'custom-time-popup', cell: 'custom-time-cell' }}
+      styles={{
+        root: { width: '180px' },
+        selector: { 'border-color': '#1677ff' },
+        popup: { width: '320px' },
+        cell: { 'font-weight': 600 },
+      }}
+      popupClassName="legacy-popup-class"
+      popupStyle={{ color: '#0958d9' }}
+    />
+  )
+}
+
+export default Demo13
+```
+
+### RangePicker disabled time
+
+```tsx
+import { TimePicker } from '@ant-design-solid/core'
+
+const Demo14 = function () {
+  return (
+    <TimePicker.RangePicker
+      order={false}
+      placeholder={['Shift start', 'Shift end']}
+      disabledTime={(_, type) => ({
+        disabledHours: () => (type === 'start' ? [0, 1, 2, 3, 4, 5] : [22, 23]),
+      })}
+    />
+  )
+}
+
+export default Demo14
+```
+
 ## API
 
-| Property            | Description                                                  | Type                                                                                   | Default         |
-| ------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- | --------------- |
-| `value`             | Controlled time value.                                       | `string`                                                                               | `-`             |
-| `defaultValue`      | Initial time value for uncontrolled usage.                   | `string`                                                                               | `-`             |
-| `format`            | Time display and emitted value format.                       | `'HH:mm:ss' \| 'HH:mm'`                                                                | `'HH:mm:ss'`    |
-| `placeholder`       | Placeholder text when no time is selected.                   | `string`                                                                               | `'Select time'` |
-| `disabled`          | Disables the picker.                                         | `boolean`                                                                              | `false`         |
-| `allowClear`        | Shows a clear button when a value is selected.               | `boolean`                                                                              | `false`         |
-| `open`              | Controlled popup open state.                                 | `boolean`                                                                              | `-`             |
-| `defaultOpen`       | Initial popup open state.                                    | `boolean`                                                                              | `false`         |
-| `minuteStep`        | Minute option interval.                                      | `number`                                                                               | `1`             |
-| `secondStep`        | Second option interval.                                      | `number`                                                                               | `1`             |
-| `disabledHours`     | Returns disabled hour values.                                | `() => number[]`                                                                       | `-`             |
-| `disabledMinutes`   | Returns disabled minute values for selected hour.            | `(selectedHour: number \| undefined) => number[]`                                      | `-`             |
-| `disabledSeconds`   | Returns disabled second values for selected hour and minute. | `(selectedHour: number \| undefined, selectedMinute: number \| undefined) => number[]` | `-`             |
-| `onChange`          | Called when selection changes.                               | `(value: string \| undefined) => void`                                                 | `-`             |
-| `onOpenChange`      | Called when popup open state changes.                        | `(open: boolean) => void`                                                              | `-`             |
-| `prefixCls`         | Custom CSS class prefix.                                     | `string`                                                                               | `-`             |
-| `zIndex`            | Custom popup z-index.                                        | `number`                                                                               | `-`             |
-| `getPopupContainer` | Returns popup portal container.                              | `(triggerNode?: HTMLElement) => HTMLElement`                                           | `-`             |
+TimePicker values are `dayjs` objects. String values are accepted for compatibility, but callbacks emit `dayjs` values and formatted strings.
+
+| Property              | Description                                                                    | Type                                                               | Default                   |
+| --------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------- |
+| `value`               | Controlled time value.                                                         | `Dayjs \| string \| null`                                          | `-`                       |
+| `defaultValue`        | Initial time value for uncontrolled usage.                                     | `Dayjs \| string`                                                  | `-`                       |
+| `format`              | Time display and emitted string format.                                        | `string`                                                           | `'HH:mm:ss'`              |
+| `placeholder`         | Placeholder text when no time is selected.                                     | `string`                                                           | `'Select time'`           |
+| `disabled`            | Disables the picker.                                                           | `boolean`                                                          | `false`                   |
+| `allowClear`          | Shows or customizes the clear button.                                          | `boolean \| { clearIcon?: JSX.Element }`                           | `false`                   |
+| `open`                | Controlled popup open state.                                                   | `boolean`                                                          | `-`                       |
+| `defaultOpen`         | Initial popup open state.                                                      | `boolean`                                                          | `false`                   |
+| `hourStep`            | Hour option interval.                                                          | `number`                                                           | `1`                       |
+| `minuteStep`          | Minute option interval.                                                        | `number`                                                           | `1`                       |
+| `secondStep`          | Second option interval.                                                        | `number`                                                           | `1`                       |
+| `hideDisabledOptions` | Hides disabled time options.                                                   | `boolean`                                                          | `false`                   |
+| `changeOnScroll`      | Selects the nearest option when a column scrolls.                              | `boolean`                                                          | `false`                   |
+| `disabledTime`        | Returns disabled hour, minute, or second values.                               | `(now: Dayjs) => DisabledTimeConfig`                               | `-`                       |
+| `disabledHours`       | Returns disabled hour values.                                                  | `() => number[]`                                                   | `-`                       |
+| `disabledMinutes`     | Returns disabled minute values for selected hour.                              | `(selectedHour: number) => number[]`                               | `-`                       |
+| `disabledSeconds`     | Returns disabled second values.                                                | `(selectedHour: number, selectedMinute: number) => number[]`       | `-`                       |
+| `placement`           | Popup placement.                                                               | `'bottomLeft' \| 'bottomRight' \| 'topLeft' \| 'topRight'`         | `'bottomLeft'`            |
+| `inputReadOnly`       | Sets the internal input mirror to read-only.                                   | `boolean`                                                          | `false`                   |
+| `prefix`              | Custom prefix content.                                                         | `JSX.Element`                                                      | `-`                       |
+| `suffixIcon`          | Custom suffix icon.                                                            | `JSX.Element`                                                      | `<ClockCircleOutlined />` |
+| `cellRender`          | Custom rendering function for time cells.                                      | `(current: number, info: TimePickerCellRenderInfo) => JSX.Element` | `-`                       |
+| `renderExtraFooter`   | Renders extra footer content.                                                  | `() => JSX.Element`                                                | `-`                       |
+| `needConfirm`         | Compatibility prop; single picker selections are confirmed with OK by default. | `boolean`                                                          | `true`                    |
+| `showNow`             | Shows a Now button in the panel.                                               | `boolean`                                                          | `true`                    |
+| `use12Hours`          | Uses a 12-hour display format by default.                                      | `boolean`                                                          | `false`                   |
+| `size`                | Picker size class.                                                             | `'large' \| 'medium' \| 'small'`                                   | `-`                       |
+| `status`              | Validation status class.                                                       | `'error' \| 'warning' \| 'success' \| 'validating'`                | `-`                       |
+| `variant`             | Visual variant class.                                                          | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`           | `-`                       |
+| `onChange`            | Called when selection changes.                                                 | `(time: Dayjs \| null, timeString: string) => void`                | `-`                       |
+| `onOpenChange`        | Called when popup open state changes.                                          | `(open: boolean) => void`                                          | `-`                       |
+| `classNames`          | Semantic class names.                                                          | `Partial<Record<TimePickerSemanticSlot, string>>`                  | `-`                       |
+| `styles`              | Semantic inline styles.                                                        | `Partial<Record<TimePickerSemanticSlot, JSX.CSSProperties>>`       | `-`                       |
+| `popupClassName`      | Legacy popup class name.                                                       | `string`                                                           | `-`                       |
+| `dropdownClassName`   | Legacy popup class name alias.                                                 | `string`                                                           | `-`                       |
+| `popupStyle`          | Legacy popup inline style.                                                     | `JSX.CSSProperties`                                                | `-`                       |
+| `prefixCls`           | Custom CSS class prefix.                                                       | `string`                                                           | `-`                       |
+| `zIndex`              | Custom popup z-index.                                                          | `number`                                                           | `-`                       |
+| `getPopupContainer`   | Returns popup portal container.                                                | `(triggerNode?: HTMLElement) => HTMLElement`                       | `-`                       |
+
+### DisabledTime
+
+```ts
+interface DisabledTimeConfig {
+  disabledHours?: () => number[]
+  disabledMinutes?: (selectedHour: number) => number[]
+  disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[]
+  disabledMilliseconds?: (
+    selectedHour: number,
+    selectedMinute: number,
+    selectedSecond: number,
+  ) => number[]
+}
+
+type DisabledTime = (now: Dayjs) => DisabledTimeConfig
+```
+
+### CellRender Info
+
+| Property     | Description                          | Type                                           |
+| ------------ | ------------------------------------ | ---------------------------------------------- |
+| `originNode` | Default cell node.                   | `JSX.Element`                                  |
+| `today`      | Current dayjs value.                 | `Dayjs`                                        |
+| `range`      | Range side when used in RangePicker. | `'start' \| 'end'`                             |
+| `subType`    | Time column kind.                    | `'hour' \| 'minute' \| 'second' \| 'meridiem'` |
+
+### Semantic DOM
+
+| Slot       | Description                     |
+| ---------- | ------------------------------- |
+| `root`     | Root wrapper.                   |
+| `selector` | Clickable selector surface.     |
+| `input`    | Hidden input mirror.            |
+| `clear`    | Clear button.                   |
+| `suffix`   | Suffix icon wrapper.            |
+| `popup`    | Popup container.                |
+| `panel`    | Time columns panel.             |
+| `column`   | Hour, minute, or second column. |
+| `cell`     | Time option cell.               |
+| `footer`   | Popup footer.                   |
+
+### Methods
+
+| Name      | Description   |
+| --------- | ------------- |
+| `focus()` | Focus picker. |
+| `blur()`  | Blur picker.  |
+
+## RangePicker API
+
+`TimePicker.RangePicker` supports the common TimePicker props above and the following range-specific props.
+
+| Property       | Description                       | Type                                                         | Default                      |
+| -------------- | --------------------------------- | ------------------------------------------------------------ | ---------------------------- |
+| `value`        | Controlled time range.            | `[Dayjs \| null, Dayjs \| null] \| null`                     | `-`                          |
+| `defaultValue` | Initial time range.               | `[Dayjs \| null, Dayjs \| null] \| null`                     | `-`                          |
+| `placeholder`  | Range placeholders.               | `[string, string]`                                           | `['Start time', 'End time']` |
+| `disabledTime` | Returns disabled values per side. | `(now: Dayjs, type: 'start' \| 'end') => DisabledTimeConfig` | `-`                          |
+| `order`        | Orders start and end time values. | `boolean`                                                    | `true`                       |
+| `onChange`     | Called when either side changes.  | `(times, timeStrings: [string, string]) => void`             | `-`                          |
