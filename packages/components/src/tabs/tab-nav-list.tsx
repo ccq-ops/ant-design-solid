@@ -26,15 +26,17 @@ export interface TabNavListProps {
   onTabActivate: (item: TabsItem, event: MouseEvent | KeyboardEvent) => void
 }
 
+function closeButtonConfig(item: TabsItem, removeIcon?: JSX.Element) {
+  if (item.closeIcon === false || item.closeIcon === null) {
+    return { show: false, icon: null }
+  }
+  return { show: true, icon: item.closeIcon ?? removeIcon ?? <CloseOutlined /> }
+}
+
 export function TabNavList(props: TabNavListProps) {
   const enabledItems = () => props.items.filter((item) => !item.disabled)
   const editable = () => props.type === 'editable-card'
   const closable = (item: TabsItem) => item.closable !== false && item.closeIcon !== false
-  const hasCustomCloseIcon = (item: TabsItem) =>
-    item.closeIcon !== undefined && item.closeIcon !== null
-      ? item.closeIcon !== false
-      : !!props.removeIcon
-  const closeIcon = (item: TabsItem) => item.closeIcon ?? props.removeIcon ?? <CloseOutlined />
   const handleAdd = (event: MouseEvent) => {
     props.onEdit?.(event, 'add')
   }
@@ -82,6 +84,7 @@ export function TabNavList(props: TabNavListProps) {
       <For each={props.items}>
         {(item) => {
           const active = () => item.key === props.activeKey
+          const closeButton = () => closeButtonConfig(item, props.removeIcon)
           return (
             <span
               class={classNames(
@@ -112,15 +115,15 @@ export function TabNavList(props: TabNavListProps) {
               >
                 {item.label}
               </button>
-              <Show when={editable() && closable(item)}>
+              <Show when={editable() && closable(item) && closeButton().show}>
                 <button
                   type="button"
                   class={classNames(`${props.prefixCls}-tab-remove`, props.classNames.remove)}
                   style={props.styles.remove}
-                  aria-label={hasCustomCloseIcon(item) ? undefined : 'close'}
+                  aria-label="close"
                   onClick={(event) => handleRemove(event, item)}
                 >
-                  {closeIcon(item)}
+                  {closeButton().icon}
                 </button>
               </Show>
             </span>
@@ -128,12 +131,7 @@ export function TabNavList(props: TabNavListProps) {
         }}
       </For>
       <Show when={editable() && !props.hideAdd}>
-        <button
-          type="button"
-          class={`${props.prefixCls}-add`}
-          aria-label={props.addIcon ? undefined : 'add'}
-          onClick={handleAdd}
-        >
+        <button type="button" class={`${props.prefixCls}-add`} aria-label="add" onClick={handleAdd}>
           {props.addIcon ?? <PlusOutlined />}
         </button>
       </Show>

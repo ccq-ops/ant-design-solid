@@ -205,13 +205,13 @@ describe('Tabs', () => {
       />
     ))
 
-    fireEvent.click(result.getByRole('button', { name: /add tab/i }))
+    fireEvent.click(result.getByRole('button', { name: /add/i }))
     expect(onEdit).toHaveBeenCalledWith(expect.any(MouseEvent), 'add')
 
-    fireEvent.click(result.getAllByRole('button', { name: /remove tab/i })[0])
+    fireEvent.click(result.getAllByRole('button', { name: /close/i })[0])
     expect(onEdit).toHaveBeenCalledWith('one', 'remove')
     expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
-    expect(result.queryAllByRole('button', { name: /remove tab/i })).toHaveLength(1)
+    expect(result.queryAllByRole('button', { name: /close/i })).toHaveLength(1)
   })
 
   it('supports hideAdd and item closeIcon false', () => {
@@ -225,6 +225,94 @@ describe('Tabs', () => {
 
     expect(result.queryByRole('button', { name: /add/i })).not.toBeInTheDocument()
     expect(result.queryByRole('button', { name: /close/i })).not.toBeInTheDocument()
+  })
+
+  it('hides editable-card remove button when item closeIcon is null', () => {
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        removeIcon={<span>Remove tab</span>}
+        items={[{ key: 'one', label: 'One', closeIcon: null, children: <div>Pane one</div> }]}
+      />
+    ))
+
+    expect(result.queryByRole('button', { name: /close/i })).not.toBeInTheDocument()
+    expect(result.queryByRole('button', { name: /remove tab/i })).not.toBeInTheDocument()
+  })
+
+  it('keeps custom icon-only editable-card controls accessible', () => {
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        addIcon={<span aria-hidden="true" data-testid="custom-add-icon" />}
+        removeIcon={<span aria-hidden="true" data-testid="custom-remove-icon" />}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+
+    expect(result.getByRole('button', { name: /add/i })).toBeInTheDocument()
+    expect(result.getByRole('button', { name: /close/i })).toBeInTheDocument()
+    expect(result.getByTestId('custom-add-icon')).toBeInTheDocument()
+    expect(result.getByTestId('custom-remove-icon')).toBeInTheDocument()
+  })
+
+  it('lets item closeIcon override editable-card removeIcon', () => {
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        removeIcon={<span>Global remove</span>}
+        items={[
+          {
+            key: 'one',
+            label: 'One',
+            closeIcon: <span>Item remove</span>,
+            children: <div>Pane one</div>,
+          },
+        ]}
+      />
+    ))
+
+    expect(result.getByText('Item remove')).toBeInTheDocument()
+    expect(result.queryByText('Global remove')).not.toBeInTheDocument()
+    expect(result.getByRole('button', { name: /close/i })).toBeInTheDocument()
+  })
+
+  it('does not activate a tab when removing it from editable-card', () => {
+    const onChange = vi.fn()
+    const onTabClick = vi.fn()
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        onChange={onChange}
+        onTabClick={onTabClick}
+        items={[
+          { key: 'one', label: 'One', children: <div>Pane one</div> },
+          { key: 'two', label: 'Two', children: <div>Pane two</div> },
+        ]}
+      />
+    ))
+
+    fireEvent.click(result.getAllByRole('button', { name: /close/i })[1])
+
+    expect(onTabClick).not.toHaveBeenCalled()
+    expect(onChange).not.toHaveBeenCalled()
+    expect(result.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('applies editable-card remove semantic classNames and styles to remove button', () => {
+    const result = render(() => (
+      <Tabs
+        type="editable-card"
+        classNames={{ remove: 'sem-remove' }}
+        styles={{ remove: { color: 'red' } }}
+        items={[{ key: 'one', label: 'One', children: <div>Pane one</div> }]}
+      />
+    ))
+
+    const removeButton = result.getByRole('button', { name: /close/i })
+
+    expect(removeButton).toHaveClass('sem-remove')
+    expect(removeButton).toHaveStyle({ color: 'rgb(255, 0, 0)' })
   })
 
   it('controlled mode calls onChange without changing active pane by itself', () => {
