@@ -49,14 +49,15 @@ describe('List', () => {
     expect(container.querySelector('.ads-list-empty')).toHaveTextContent('No Data')
   })
 
-  it('renders loading placeholder instead of items', () => {
+  it('renders Spin when loading while keeping items mounted', () => {
     const { container } = render(() => (
       <List dataSource={['Alpha']} loading renderItem={(item) => <List.Item>{item}</List.Item>} />
     ))
 
-    expect(container.querySelector('.ads-list-loading')).toHaveTextContent('Loading...')
-    expect(screen.queryByText('Alpha')).not.toBeInTheDocument()
-    expect(container.querySelectorAll('.ads-list-item')).toHaveLength(0)
+    expect(container.querySelector('.ads-spin-nested-loading')).toBeInTheDocument()
+    expect(container.querySelector('.ads-spin-overlay')).toBeInTheDocument()
+    expect(screen.getByText('Alpha')).toBeInTheDocument()
+    expect(container.querySelectorAll('.ads-list-item')).toHaveLength(1)
   })
 
   it('applies bordered, split, size, class, classList, and style variants', () => {
@@ -131,5 +132,157 @@ describe('List', () => {
     expect(container.querySelector('.ads-list-item-meta-description')).toHaveTextContent(
       'Meta description',
     )
+  })
+
+  it('renders locale empty text before emptyText fallback', () => {
+    const { container } = render(() => (
+      <List dataSource={[]} emptyText="Fallback" locale={{ emptyText: 'Localized empty' }} />
+    ))
+
+    expect(container.querySelector('.ads-list-empty')).toHaveTextContent('Localized empty')
+  })
+
+  it('wraps content with Spin when loading receives config', () => {
+    const { container } = render(() => (
+      <List
+        loading={{ spinning: true, tip: 'Fetching rows' }}
+        dataSource={['Alpha']}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+      />
+    ))
+
+    expect(container.querySelector('.ads-spin-nested-loading')).toBeInTheDocument()
+    expect(container.querySelector('.ads-spin-description')).toHaveTextContent('Fetching rows')
+    expect(screen.getByText('Alpha')).toBeInTheDocument()
+  })
+
+  it('renders loadMore after list content', () => {
+    const { container } = render(() => (
+      <List
+        dataSource={['Alpha']}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+        loadMore={<button type="button">Load more</button>}
+      />
+    ))
+
+    expect(container.querySelector('.ads-list-load-more')).toHaveTextContent('Load more')
+    expect(screen.getByText('Alpha')).toBeInTheDocument()
+  })
+
+  it('paginates dataSource and renders pagination positions', () => {
+    const { container } = render(() => (
+      <List
+        dataSource={['Alpha', 'Beta', 'Gamma']}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+        pagination={{ pageSize: 1, position: 'both' }}
+      />
+    ))
+
+    expect(screen.getByText('Alpha')).toBeInTheDocument()
+    expect(screen.queryByText('Beta')).not.toBeInTheDocument()
+    expect(container.querySelectorAll('.ads-list-pagination')).toHaveLength(2)
+    expect(container.querySelectorAll('.ads-pagination')).toHaveLength(2)
+  })
+
+  it('supports boolean pagination with default settings', () => {
+    const { container } = render(() => (
+      <List
+        dataSource={Array.from({ length: 12 }, (_, index) => `Item ${index + 1}`)}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+        pagination
+      />
+    ))
+
+    expect(screen.getByText('Item 1')).toBeInTheDocument()
+    expect(screen.queryByText('Item 11')).not.toBeInTheDocument()
+    expect(container.querySelectorAll('.ads-list-pagination')).toHaveLength(1)
+  })
+
+  it('uses rowKey values on rendered data items', () => {
+    const { container } = render(() => (
+      <List
+        dataSource={[
+          { id: 'one', label: 'Alpha' },
+          { id: 'two', label: 'Beta' },
+        ]}
+        rowKey="id"
+        renderItem={(item) => <List.Item>{item.label}</List.Item>}
+      />
+    ))
+
+    expect(container.querySelector('[data-row-key="one"]')).toHaveTextContent('Alpha')
+    expect(container.querySelector('[data-row-key="two"]')).toHaveTextContent('Beta')
+  })
+
+  it('renders grid items with responsive column width', () => {
+    const { container } = render(() => (
+      <List
+        grid={{ gutter: 12, column: 2 }}
+        dataSource={['Alpha', 'Beta']}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+      />
+    ))
+
+    expect(container.querySelector('.ads-list')).toHaveClass('ads-list-grid')
+    expect(container.querySelector('.ads-list-grid-row')).toBeInTheDocument()
+    const columns = container.querySelectorAll('.ads-list-grid-column')
+    expect(columns).toHaveLength(2)
+    expect(columns[0]).toHaveStyle({ width: '50%', 'max-width': '50%' })
+  })
+
+  it('supports vertical item layout with actions and extra placement', () => {
+    const { container } = render(() => (
+      <List itemLayout="vertical">
+        <List.Item actions={[<button type="button">Edit</button>]} extra={<span>Extra</span>}>
+          Body
+        </List.Item>
+      </List>
+    ))
+
+    expect(container.querySelector('.ads-list')).toHaveClass('ads-list-vertical')
+    expect(container.querySelector('.ads-list-item')).toHaveClass('ads-list-item-vertical')
+    expect(container.querySelector('.ads-list-item-main .ads-list-item-actions')).toHaveTextContent(
+      'Edit',
+    )
+    expect(container.querySelector('.ads-list-item-extra')).toHaveTextContent('Extra')
+  })
+
+  it('applies item semantic classes and styles', () => {
+    const { container } = render(() => (
+      <List>
+        <List.Item
+          actions={[<button type="button">Edit</button>]}
+          extra={<span>Extra</span>}
+          classNames={{ actions: 'custom-actions', extra: 'custom-extra' }}
+          styles={{ actions: { color: 'red' }, extra: { color: 'blue' } }}
+        >
+          Body
+        </List.Item>
+      </List>
+    ))
+
+    expect(container.querySelector('.ads-list-item-actions')).toHaveClass('custom-actions')
+    expect(container.querySelector('.ads-list-item-actions')).toHaveStyle({
+      color: 'rgb(255, 0, 0)',
+    })
+    expect(container.querySelector('.ads-list-item-extra')).toHaveClass('custom-extra')
+    expect(container.querySelector('.ads-list-item-extra')).toHaveStyle({
+      color: 'rgb(0, 0, 255)',
+    })
+  })
+
+  it('supports custom prefixCls and rootClass', () => {
+    const { container } = render(() => (
+      <List
+        prefixCls="custom-list"
+        rootClass="root-extra"
+        dataSource={['Alpha']}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+      />
+    ))
+
+    expect(container.querySelector('.custom-list')).toBeInTheDocument()
+    expect(container.querySelector('.custom-list')).toHaveClass('root-extra')
+    expect(container.querySelector('.custom-list-item')).toHaveTextContent('Alpha')
   })
 })

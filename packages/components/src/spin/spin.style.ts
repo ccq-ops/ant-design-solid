@@ -1,10 +1,30 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { useToken } from '../config-provider'
 
+function toThemeMaskBackground(color: string, alpha = 0.72) {
+  const hexMatch = /^#([\da-f]{3}|[\da-f]{6})$/i.exec(color.trim())
+  if (!hexMatch) return color
+
+  const raw = hexMatch[1]
+  const normalized =
+    raw.length === 3
+      ? raw
+          .split('')
+          .map((char) => `${char}${char}`)
+          .join('')
+      : raw
+  const r = Number.parseInt(normalized.slice(0, 2), 16)
+  const g = Number.parseInt(normalized.slice(2, 4), 16)
+  const b = Number.parseInt(normalized.slice(4, 6), 16)
+
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
 export function useSpinStyle(prefixCls: string) {
   const token = useToken()
   return useStyleRegister({ theme: 'default', token: token(), path: ['Spin', prefixCls] }, () => {
     const t = token()
+    const maskBackground = toThemeMaskBackground(t.colorBgContainer)
     return {
       '@keyframes adsSpinRotate': {
         to: {
@@ -159,7 +179,7 @@ export function useSpinStyle(prefixCls: string) {
         'align-items': 'center',
         'justify-content': 'center',
         'z-index': '4',
-        background: 'rgba(255, 255, 255, 0.72)',
+        background: maskBackground,
         'border-radius': `${t.borderRadius}px`,
       },
       [`.${prefixCls}-fullscreen`]: {
@@ -169,7 +189,7 @@ export function useSpinStyle(prefixCls: string) {
         'align-items': 'center',
         'justify-content': 'center',
         'z-index': '1000',
-        background: 'rgba(255, 255, 255, 0.72)',
+        background: maskBackground,
       },
       [`.${prefixCls}-fullscreen .${prefixCls}`]: {
         display: 'inline-flex',

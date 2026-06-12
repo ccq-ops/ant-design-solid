@@ -23,6 +23,13 @@ export function useListStyle(prefixCls: string) {
         padding: 0,
         'list-style': 'none',
       },
+      [`.${prefixCls}-grid-row`]: {
+        display: 'flex',
+        'flex-wrap': 'wrap',
+      },
+      [`.${prefixCls}-grid-column`]: {
+        'box-sizing': 'border-box',
+      },
       [`.${prefixCls}-item`]: {
         display: 'flex',
         'align-items': 'center',
@@ -39,6 +46,16 @@ export function useListStyle(prefixCls: string) {
       [`.${prefixCls}-item-extra`]: {
         'margin-inline-start': `${t.margin}px`,
       },
+      [`.${prefixCls}-item-vertical`]: {
+        'align-items': 'flex-start',
+      },
+      [`.${prefixCls}-item-vertical .${prefixCls}-item-main`]: {
+        display: 'block',
+      },
+      [`.${prefixCls}-item-vertical .${prefixCls}-item-actions`]: {
+        'margin-inline-start': 0,
+        'margin-top': `${t.marginSM}px`,
+      },
       [`.${prefixCls}-item-actions`]: {
         display: 'flex',
         'align-items': 'center',
@@ -52,6 +69,13 @@ export function useListStyle(prefixCls: string) {
       [`.${prefixCls}-item-action`]: {
         display: 'inline-flex',
         'align-items': 'center',
+      },
+      [`.${prefixCls}-item-action-split`]: {
+        display: 'inline-block',
+        width: `${t.lineWidth}px`,
+        height: `${t.fontSize}px`,
+        'margin-inline-start': `${t.marginSM}px`,
+        'background-color': t.colorBorderSecondary,
       },
       [`.${prefixCls}-item-meta`]: {
         display: 'flex',
@@ -75,9 +99,16 @@ export function useListStyle(prefixCls: string) {
       [`.${prefixCls}-item-meta-description`]: {
         color: t.colorTextSecondary,
       },
-      [`.${prefixCls}-empty, .${prefixCls}-loading`]: {
+      [`.${prefixCls}-empty`]: {
         padding: `${t.padding}px 0`,
         color: t.colorTextSecondary,
+        'text-align': 'center',
+      },
+      [`.${prefixCls}-pagination`]: {
+        'margin-block': `${t.margin}px`,
+      },
+      [`.${prefixCls}-load-more`]: {
+        'margin-top': `${t.margin}px`,
         'text-align': 'center',
       },
       [`.${prefixCls}-split .${prefixCls}-item`]: {
@@ -90,7 +121,7 @@ export function useListStyle(prefixCls: string) {
         border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         'border-radius': `${t.borderRadius}px`,
       },
-      [`.${prefixCls}-bordered .${prefixCls}-header, .${prefixCls}-bordered .${prefixCls}-footer, .${prefixCls}-bordered .${prefixCls}-empty, .${prefixCls}-bordered .${prefixCls}-loading`]:
+      [`.${prefixCls}-bordered .${prefixCls}-header, .${prefixCls}-bordered .${prefixCls}-footer, .${prefixCls}-bordered .${prefixCls}-empty`]:
         {
           padding: `${t.padding}px ${t.padding}px`,
         },
@@ -103,19 +134,19 @@ export function useListStyle(prefixCls: string) {
       [`.${prefixCls}-bordered .${prefixCls}-footer`]: {
         'border-top': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
       },
-      [`.${prefixCls}-large .${prefixCls}-header, .${prefixCls}-large .${prefixCls}-footer, .${prefixCls}-large .${prefixCls}-item, .${prefixCls}-large .${prefixCls}-empty, .${prefixCls}-large .${prefixCls}-loading`]:
+      [`.${prefixCls}-large .${prefixCls}-header, .${prefixCls}-large .${prefixCls}-footer, .${prefixCls}-large .${prefixCls}-item, .${prefixCls}-large .${prefixCls}-empty`]:
         {
           padding: `${t.paddingLG}px ${t.padding}px`,
         },
-      [`.${prefixCls}-small .${prefixCls}-header, .${prefixCls}-small .${prefixCls}-footer, .${prefixCls}-small .${prefixCls}-item, .${prefixCls}-small .${prefixCls}-empty, .${prefixCls}-small .${prefixCls}-loading`]:
+      [`.${prefixCls}-small .${prefixCls}-header, .${prefixCls}-small .${prefixCls}-footer, .${prefixCls}-small .${prefixCls}-item, .${prefixCls}-small .${prefixCls}-empty`]:
         {
           padding: `${t.paddingXS}px ${t.padding}px`,
         },
-      [`.${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-header, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-footer, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-item, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-empty, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-loading`]:
+      [`.${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-header, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-footer, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-item, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-large .${prefixCls}-empty`]:
         {
           padding: `${t.paddingLG}px 0`,
         },
-      [`.${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-header, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-footer, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-item, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-empty, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-loading`]:
+      [`.${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-header, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-footer, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-item, .${prefixCls}:not(.${prefixCls}-bordered).${prefixCls}-small .${prefixCls}-empty`]:
         {
           padding: `${t.paddingXS}px 0`,
         },

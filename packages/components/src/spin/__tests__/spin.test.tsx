@@ -1,4 +1,6 @@
 import { cleanup, render, screen } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createSignal } from 'solid-js'
 import { ConfigProvider } from '../../config-provider'
@@ -112,6 +114,26 @@ describe('Spin', () => {
 
     expect(container.querySelector('.ads-spin-fullscreen')).toBeInTheDocument()
     expect(screen.getByText('Loading custom')).toBeInTheDocument()
+  })
+
+  it('uses theme-aware backgrounds for nested and fullscreen masks', () => {
+    const cache = createCache()
+
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+          <Spin spinning fullscreen />
+          <Spin spinning>
+            <div>Content</div>
+          </Spin>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('background:rgba(20,20,20,0.72);')
+    expect(css).not.toContain('background:rgba(255, 255, 255, 0.72);')
   })
 
   it('renders size, tip, and custom prefix classes', () => {
