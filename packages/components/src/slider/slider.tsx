@@ -53,7 +53,7 @@ function assignRef(ref: SliderProps['ref'], value: SliderRef) {
     ref(value)
     return
   }
-  ref.current = value
+  if (!('focus' in ref)) ref.current = value
   Object.assign(ref as object, value)
 }
 

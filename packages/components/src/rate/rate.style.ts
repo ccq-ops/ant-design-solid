@@ -18,9 +18,20 @@ export function useRateStyle(prefixCls: string) {
         'line-height': '1',
         outline: 'none',
       },
+      [`.${prefixCls}-small`]: {
+        'font-size': `${t.fontSize + 2}px`,
+      },
+      [`.${prefixCls}-large`]: {
+        'font-size': `${t.fontSize + 10}px`,
+      },
       [`.${prefixCls}:focus-visible`]: {
         'border-radius': t.borderRadius,
         'box-shadow': `0 0 0 2px ${t.colorPrimaryHover}`,
+      },
+      [`.${prefixCls}-item:focus-visible`]: {
+        'border-radius': t.borderRadius,
+        'box-shadow': `0 0 0 2px ${t.colorPrimaryHover}`,
+        outline: 'none',
       },
       [`.${prefixCls}-disabled`]: {
         cursor: 'not-allowed',

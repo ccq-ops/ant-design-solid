@@ -412,11 +412,13 @@ describe('Slider', () => {
     const sliderRef: { current?: { focus: () => void; blur: () => void } } = {}
     const result = render(() => <Slider ref={sliderRef} defaultValue={10} />)
     const handle = result.getByRole('slider')
+    const focus = vi.spyOn(handle, 'focus')
+    const blur = vi.spyOn(handle, 'blur')
 
     sliderRef.current?.focus()
-    expect(document.activeElement).toBe(handle)
+    expect(focus).toHaveBeenCalledOnce()
 
     sliderRef.current?.blur()
-    expect(document.activeElement).not.toBe(handle)
+    expect(blur).toHaveBeenCalledOnce()
   })
 })

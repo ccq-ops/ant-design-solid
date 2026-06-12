@@ -1,9 +1,13 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Rate } from '../index'
 
 describe('Rate', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
   it('changes uncontrolled value and clears when selecting the current value', () => {
     const onChange = vi.fn()
     const result = render(() => <Rate defaultValue={2} onChange={onChange} />)
@@ -64,6 +68,30 @@ describe('Rate', () => {
 
     expect(radios[1]).toHaveAttribute('aria-checked', 'true')
     expect(onChange).toHaveBeenLastCalledWith(2)
+  })
+
+  it('handles keyboard events from focused rating items', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Rate defaultValue={2} onChange={onChange} />)
+    const radios = result.getAllByRole('radio')
+
+    radios[1].focus()
+    fireEvent.keyDown(radios[1], { key: 'ArrowRight' })
+
+    expect(radios[2]).toHaveAttribute('aria-checked', 'true')
+    expect(onChange).toHaveBeenLastCalledWith(3)
+  })
+
+  it('does not change from keyboard events when keyboard is false', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Rate defaultValue={2} keyboard={false} onChange={onChange} />)
+    const radiogroup = result.getByRole('radiogroup')
+    const radios = result.getAllByRole('radio')
+
+    fireEvent.keyDown(radiogroup, { key: 'ArrowRight' })
+
+    expect(radios[1]).toHaveAttribute('aria-checked', 'true')
+    expect(onChange).not.toHaveBeenCalled()
   })
 
   it('supports half selection from pointer position', () => {
@@ -138,5 +166,47 @@ describe('Rate', () => {
 
     expect(onHoverChange).toHaveBeenNthCalledWith(1, 2)
     expect(onHoverChange).toHaveBeenNthCalledWith(2, 0)
+  })
+
+  it('applies size classes', () => {
+    const result = render(() => <Rate size="large" />)
+
+    expect(result.getByRole('radiogroup')).toHaveClass('ads-rate-large')
+  })
+
+  it('supports tooltip props for items', () => {
+    const result = render(() => (
+      <Rate tooltips={['bad', { title: 'great', placement: 'bottom', open: true }]} count={2} />
+    ))
+
+    expect(result.getByTitle('bad')).toBeTruthy()
+    expect(document.body.querySelector('.ads-tooltip-bottom')).toHaveTextContent('great')
+  })
+
+  it('passes rate item props to custom character render functions', () => {
+    const result = render(() => (
+      <Rate
+        defaultValue={2}
+        character={({ index, value, count }) => `${index}:${value}/${count}`}
+      />
+    ))
+
+    expect(result.getAllByText('1:2/5')).toHaveLength(2)
+  })
+
+  it('supports focus and blur through ref', () => {
+    const ref: {
+      current?: { focus: () => void; blur: () => void; nativeElement?: HTMLDivElement }
+    } = {}
+    const result = render(() => <Rate ref={ref} />)
+    const radiogroup = result.getByRole('radiogroup')
+    const first = result.getAllByRole('radio')[0]
+
+    ref.current?.focus()
+    expect(document.activeElement).toBe(first)
+
+    ref.current?.blur()
+    expect(document.activeElement).not.toBe(first)
+    expect(ref.current?.nativeElement).toBe(radiogroup)
   })
 })

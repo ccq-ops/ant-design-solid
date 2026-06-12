@@ -62,14 +62,13 @@ export default Demo4
 ### Custom character
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { Rate, Space } from '@ant-design-solid/core'
 
 const Demo5 = function () {
   return (
     <Space direction="vertical">
       <Rate character="♡" defaultValue={4} />
-      <Rate character={(index) => index + 1} defaultValue={3} />
+      <Rate character={({ index }) => index + 1} defaultValue={3} />
     </Space>
   )
 }
@@ -77,32 +76,129 @@ const Demo5 = function () {
 export default Demo5
 ```
 
-### Disabled
+### Tooltips
+
+```tsx
+import { Rate } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Rate
+      tooltips={[
+        'terrible',
+        'bad',
+        'normal',
+        { title: 'good', placement: 'bottom' },
+        { title: 'wonderful', color: '#1677ff' },
+      ]}
+    />
+  )
+}
+
+export default Demo6
+```
+
+### Sizes
+
+```tsx
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Space direction="vertical">
+      <Rate size="small" defaultValue={3} />
+      <Rate defaultValue={3} />
+      <Rate size="large" defaultValue={3} />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+### Keyboard
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Rate, Space } from '@ant-design-solid/core'
 
-const Demo6 = function () {
+const Demo8 = function () {
+  const [value, setValue] = createSignal(3)
+
+  return (
+    <Space direction="vertical">
+      <Rate value={value()} onChange={setValue} />
+      <span>Current value: {value()}</span>
+      <Rate defaultValue={3} keyboard={false} />
+    </Space>
+  )
+}
+
+export default Demo8
+```
+
+### Focus
+
+```tsx
+import { Rate, Space, Button } from '@ant-design-solid/core'
+import type { RateRef } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  const rateRef: { current?: RateRef } = {}
+
+  return (
+    <Space>
+      <Button onClick={() => rateRef.current?.focus()}>Focus</Button>
+      <Button onClick={() => rateRef.current?.blur()}>Blur</Button>
+      <Rate ref={rateRef} defaultValue={3} />
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+### Disabled
+
+```tsx
+import { Rate } from '@ant-design-solid/core'
+
+const Demo10 = function () {
   return <Rate disabled defaultValue={3} />
 }
 
-export default Demo6
+export default Demo10
 ```
 
 ## API
 
 ### Rate
 
-| Property        | Description                                                | Type                                              | Default |
-| --------------- | ---------------------------------------------------------- | ------------------------------------------------- | ------- |
-| `value`         | Controlled rating value.                                   | `number`                                          | `-`     |
-| `defaultValue`  | Initial rating value for uncontrolled usage.               | `number`                                          | `-`     |
-| `count`         | Number of rating items.                                    | `number`                                          | `5`     |
-| `allowHalf`     | Allows selecting half values.                              | `boolean`                                         | `false` |
-| `allowClear`    | Allows clearing the rating by clicking the selected value. | `boolean`                                         | `true`  |
-| `disabled`      | Disables user interaction.                                 | `boolean`                                         | `false` |
-| `character`     | Custom rating character or render function.                | `JSX.Element \| ((index: number) => JSX.Element)` | `-`     |
-| `tooltips`      | Tooltip text for each rating item.                         | `string[]`                                        | `-`     |
-| `onChange`      | Called when the rating value changes.                      | `(next: number) => void`                          | `-`     |
-| `onHoverChange` | Called when hover value changes.                           | `(next: number) => void`                          | `-`     |
+| Property        | Description                                                | Type                                                                | Default  |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------------------------- | -------- |
+| `value`         | Controlled rating value.                                   | `number`                                                            | `-`      |
+| `defaultValue`  | Initial rating value for uncontrolled usage.               | `number`                                                            | `0`      |
+| `count`         | Number of rating items.                                    | `number`                                                            | `5`      |
+| `allowHalf`     | Allows selecting half values.                              | `boolean`                                                           | `false`  |
+| `allowClear`    | Allows clearing the rating by clicking the selected value. | `boolean`                                                           | `true`   |
+| `disabled`      | Disables user interaction.                                 | `boolean`                                                           | `false`  |
+| `keyboard`      | Enables keyboard interaction.                              | `boolean`                                                           | `true`   |
+| `size`          | Rating item size.                                          | `'small' \| 'medium' \| 'large'`                                    | `medium` |
+| `character`     | Custom rating character or render function.                | `JSX.Element \| ((props: RateCharacterRenderProps) => JSX.Element)` | `-`      |
+| `tooltips`      | Tooltip config for each rating item.                       | `(string \| Omit<TooltipProps, 'children'>)[]`                      | `-`      |
+| `ref`           | Imperative methods and native root element.                | `RateRef \| { current?: RateRef } \| ((ref: RateRef) => void)`      | `-`      |
+| `class`         | Custom root class.                                         | `string`                                                            | `-`      |
+| `style`         | Custom root style.                                         | `JSX.CSSProperties`                                                 | `-`      |
+| `onChange`      | Called when the rating value changes.                      | `(next: number) => void`                                            | `-`      |
+| `onHoverChange` | Called when hover value changes.                           | `(next: number) => void`                                            | `-`      |
+| `onFocus`       | Called when the root receives focus.                       | `JSX.FocusEventHandlerUnion<HTMLDivElement, FocusEvent>`            | `-`      |
+| `onBlur`        | Called when the root loses focus.                          | `JSX.FocusEventHandlerUnion<HTMLDivElement, FocusEvent>`            | `-`      |
+| `onKeyDown`     | Called before internal keyboard handling.                  | `JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent>`              | `-`      |
+
+### RateRef
+
+| Method          | Description                   |
+| --------------- | ----------------------------- |
+| `focus()`       | Focuses the Rate root node.   |
+| `blur()`        | Blurs the Rate root node.     |
+| `nativeElement` | Native Rate root DOM element. |
