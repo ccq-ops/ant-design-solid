@@ -33,6 +33,8 @@ import type {
 } from './interface'
 import { useTooltipStyle } from './tooltip.style'
 
+const noopHashId = () => undefined
+
 function hasTitle(title: TooltipProps['title']) {
   return title !== undefined && title !== null && title !== ''
 }
@@ -87,6 +89,9 @@ const uniqueTooltipControllers = new WeakMap<object, Set<(source: symbol) => voi
 
 export function Tooltip(props: TooltipProps) {
   const [local, rest] = splitProps(props, [
+    'prefixCls',
+    'skipStyle',
+    'skipConfig',
     'ref',
     'title',
     'overlay',
@@ -132,9 +137,10 @@ export function Tooltip(props: TooltipProps) {
     'onContextMenu',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-tooltip`
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-tooltip`
   const watermarkPanelRef = useWatermarkPanelRef()
-  const [, hashId] = useTooltipStyle(prefixCls())
+  const tooltipStyle = local.skipStyle ? undefined : useTooltipStyle(prefixCls())
+  const hashId = tooltipStyle?.[1] ?? noopHashId
   const [zIndex, contextZIndex] = useZIndex('Tooltip', local.zIndex)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [hasBeenOpen, setHasBeenOpen] = createSignal(
@@ -151,6 +157,7 @@ export function Tooltip(props: TooltipProps) {
   let leaveTimer: ReturnType<typeof setTimeout> | undefined
   let previousOpen = Boolean(local.open ?? innerOpen())
   const uniqueId = Symbol('tooltip')
+  const tooltipConfig = () => (local.skipConfig ? {} : config.tooltip())
   const uniqueScope = config.tooltip
   const closeForUnique = (source: symbol) => {
     if (source !== uniqueId && open()) setOpen(false, { fromUnique: true })
@@ -162,7 +169,7 @@ export function Tooltip(props: TooltipProps) {
     trigger: triggers(),
   })
   const configClassNames = () => {
-    const classNames = config.tooltip().classNames
+    const classNames = tooltipConfig().classNames
     return typeof classNames === 'function'
       ? classNames({ props: semanticProps() })
       : (classNames ?? {})
@@ -176,7 +183,7 @@ export function Tooltip(props: TooltipProps) {
     ...localClassNames(),
   })
   const configStyles = () => {
-    const styles = config.tooltip().styles
+    const styles = tooltipConfig().styles
     return typeof styles === 'function' ? styles({ props: semanticProps() }) : (styles ?? {})
   }
   const localStyles = () =>
@@ -188,13 +195,13 @@ export function Tooltip(props: TooltipProps) {
     ...localStyles(),
   })
   const placement = () => local.placement ?? 'top'
-  const triggers = createMemo(() => normalizeTriggers(local.trigger ?? config.tooltip().trigger))
+  const triggers = createMemo(() => normalizeTriggers(local.trigger ?? tooltipConfig().trigger))
   const titleSource = () => local.title ?? local.overlay
   const titleAvailable = () => hasTitle(titleSource())
   const open = () => Boolean((local.open ?? innerOpen()) && titleAvailable())
   const destroyOnHidden = () => local.destroyOnHidden ?? Boolean(local.destroyTooltipOnHide)
   const shouldRenderPopup = () => open() || (hasBeenOpen() && !destroyOnHidden())
-  const showArrow = () => local.arrow ?? config.tooltip().arrow ?? true
+  const showArrow = () => local.arrow ?? tooltipConfig().arrow ?? true
   const pointAtCenter = () => {
     const arrow = showArrow()
     return typeof arrow === 'object' && Boolean(arrow.pointAtCenter)
@@ -221,7 +228,7 @@ export function Tooltip(props: TooltipProps) {
   }
 
   const notifyUnique = () => {
-    if (!config.tooltip().unique) return
+    if (!tooltipConfig().unique) return
     const scope = uniqueScope
     const controllers = uniqueTooltipControllers.get(scope)
     controllers?.forEach((controller) => controller(uniqueId))
@@ -248,7 +255,7 @@ export function Tooltip(props: TooltipProps) {
   })
 
   createEffect(() => {
-    if (!config.tooltip().unique) return
+    if (!tooltipConfig().unique) return
     const scope = uniqueScope
     const controllers = uniqueTooltipControllers.get(scope) ?? new Set()
     controllers.add(closeForUnique)
@@ -359,7 +366,7 @@ export function Tooltip(props: TooltipProps) {
     'z-index': zIndex,
     'background-color': local.color,
     color: local.color ? textColorForBackground(local.color) : undefined,
-    ...config.tooltip().style,
+    ...tooltipConfig().style,
     ...mergedStyles().root,
     ...local.overlayStyle,
   })
@@ -384,7 +391,7 @@ export function Tooltip(props: TooltipProps) {
       !open() && `${prefixCls()}-hidden`,
       pointAtCenter() && `${prefixCls()}-arrow-point-at-center`,
       hashId(),
-      config.tooltip().class,
+      tooltipConfig().class,
       local.rootClass,
       local.rootClassName,
       local.overlayClass,

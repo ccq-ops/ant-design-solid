@@ -31,6 +31,12 @@ export interface TooltipRef {
 }
 
 export interface TooltipProps extends Omit<JSX.HTMLAttributes<HTMLSpanElement>, 'title' | 'ref'> {
+  /** @internal Used by Popover and related tooltip-based components. */
+  prefixCls?: string
+  /** @internal Allows tooltip-based components to provide their own styles. */
+  skipStyle?: boolean
+  /** @internal Prevents tooltip ConfigProvider defaults from leaking into composed components. */
+  skipConfig?: boolean
   ref?: TooltipRef | { current?: TooltipRef } | ((ref: TooltipRef) => void)
   title?: JSX.Element | TooltipRender
   overlay?: JSX.Element | TooltipRender

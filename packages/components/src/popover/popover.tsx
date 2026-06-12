@@ -1,205 +1,149 @@
-import {
-  Show,
-  createEffect,
-  createRenderEffect,
-  createSignal,
-  onCleanup,
-  splitProps,
-} from 'solid-js'
+import { Show, splitProps, type JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import {
-  addDocumentKeydown,
-  addDocumentPointerDown,
-  addPositionUpdateListeners,
-} from '../shared/overlay'
-import { getTooltipPosition, type OverlayPosition } from '../shared/placement'
-import { InternalPortal, canUseDom } from '../shared/portal'
-import { ZIndexContext, useZIndex } from '../shared/z-index'
-import { useWatermarkPanelRef } from '../watermark/context'
-import type { PopoverProps } from './interface'
+import { Tooltip, type TooltipSemanticClassNames, type TooltipSemanticStyles } from '../tooltip'
+import type { PopoverProps, PopoverSemanticClassNames, PopoverSemanticStyles } from './interface'
 import { usePopoverStyle } from './popover.style'
 
 function hasNode(node: PopoverProps['title'] | PopoverProps['content']) {
   return node !== undefined && node !== null && node !== ''
 }
 
+function isRenderFunction(value: PopoverProps['title']): value is () => JSX.Element {
+  return typeof value === 'function'
+}
+
+function resolveContent(value: PopoverProps['title'] | PopoverProps['content']) {
+  return isRenderFunction(value) ? value() : value
+}
+
 function hasOverlayContent(title: PopoverProps['title'], content: PopoverProps['content']) {
   return hasNode(title) || hasNode(content)
 }
 
+function textColorForBackground(color: string): string | undefined {
+  if (!color.startsWith('#')) return undefined
+  const value = color.slice(1)
+  const normalized =
+    value.length === 3
+      ? value
+          .split('')
+          .map((part) => part + part)
+          .join('')
+      : value
+  if (normalized.length !== 6) return undefined
+  const red = Number.parseInt(normalized.slice(0, 2), 16)
+  const green = Number.parseInt(normalized.slice(2, 4), 16)
+  const blue = Number.parseInt(normalized.slice(4, 6), 16)
+  if ([red, green, blue].some((part) => Number.isNaN(part))) return undefined
+  const luminance = (red * 299 + green * 587 + blue * 114) / 1000
+  return luminance > 160 ? 'rgba(0, 0, 0, 0.88)' : '#ffffff'
+}
+
 export function Popover(props: PopoverProps) {
   const [local, rest] = splitProps(props, [
+    'prefixCls',
     'title',
     'content',
-    'placement',
-    'trigger',
-    'open',
-    'defaultOpen',
-    'onOpenChange',
-    'mouseEnterDelay',
-    'mouseLeaveDelay',
-    'overlayClass',
-    'overlayStyle',
-    'zIndex',
-    'getPopupContainer',
-    'children',
-    'class',
-    'classList',
-    'style',
-    'onMouseEnter',
-    'onMouseLeave',
-    'onClick',
-    'onFocus',
-    'onBlur',
+    'color',
+    'classNames',
+    'styles',
+    'overlayInnerStyle',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-popover`
-  const watermarkPanelRef = useWatermarkPanelRef()
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-popover`
   const [, hashId] = usePopoverStyle(prefixCls())
-  const [zIndex, contextZIndex] = useZIndex('Popover', local.zIndex)
-  const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
-  const [position, setPosition] = createSignal<OverlayPosition>({ top: '0px', left: '0px' })
-  let triggerRef: HTMLSpanElement | undefined
-  let overlayRef: HTMLDivElement | undefined
-  let enterTimer: ReturnType<typeof setTimeout> | undefined
-  let leaveTimer: ReturnType<typeof setTimeout> | undefined
 
-  const placement = () => local.placement ?? 'top'
-  const trigger = () => local.trigger ?? 'hover'
-  const contentAvailable = () => hasOverlayContent(local.title, local.content)
-  const open = () => Boolean((local.open ?? innerOpen()) && contentAvailable())
+  const semanticProps = (): PopoverProps => ({ ...props })
+  const resolvedClassNames = (): PopoverSemanticClassNames =>
+    typeof local.classNames === 'function'
+      ? local.classNames({ props: semanticProps() })
+      : (local.classNames ?? {})
+  const resolvedStyles = (): PopoverSemanticStyles =>
+    typeof local.styles === 'function'
+      ? local.styles({ props: semanticProps() })
+      : (local.styles ?? {})
 
-  const clearTimer = (timer: ReturnType<typeof setTimeout> | undefined) => {
-    if (timer) clearTimeout(timer)
+  const tooltipClassNames = (): TooltipSemanticClassNames => {
+    const classNames = resolvedClassNames()
+    return {
+      root: classNames.root,
+      container: classNames.container,
+      arrow: classNames.arrow,
+    }
   }
 
-  const updatePosition = () => {
-    if (!canUseDom() || !triggerRef) return
-    setPosition(getTooltipPosition(triggerRef.getBoundingClientRect(), placement(), 8))
+  const tooltipStyles = (): TooltipSemanticStyles => {
+    const styles = resolvedStyles()
+    const colorStyles = local.color
+      ? {
+          'background-color': local.color,
+          color: textColorForBackground(local.color),
+        }
+      : undefined
+    const arrowColorStyles = local.color ? { 'background-color': local.color } : undefined
+
+    return {
+      root: { ...colorStyles, ...styles.root },
+      container: { ...colorStyles, ...styles.container },
+      arrow: { ...arrowColorStyles, ...styles.arrow },
+    }
   }
 
-  const setOpen = (nextOpen: boolean) => {
-    if (nextOpen && !contentAvailable()) return
-    if (nextOpen) updatePosition()
-    if (local.open === undefined) setInnerOpen(nextOpen)
-    local.onOpenChange?.(nextOpen)
+  const overlayInnerStyle = () => {
+    const colorStyles = local.color
+      ? {
+          'background-color': local.color,
+          color: textColorForBackground(local.color),
+        }
+      : undefined
+
+    return {
+      ...colorStyles,
+      ...local.overlayInnerStyle,
+    }
   }
 
-  const containsTarget = (target: EventTarget | null) =>
-    Boolean(
-      target instanceof Node && (triggerRef?.contains(target) || overlayRef?.contains(target)),
+  const overlay = () => {
+    const semanticClassNames = resolvedClassNames()
+    const styles = resolvedStyles()
+    const title = resolveContent(local.title)
+    const content = resolveContent(local.content)
+
+    return (
+      <>
+        <Show when={hasNode(title)}>
+          <div
+            class={classNames(`${prefixCls()}-title`, semanticClassNames.title)}
+            style={styles.title}
+          >
+            {title}
+          </div>
+        </Show>
+        <Show when={hasNode(content)}>
+          <div
+            class={classNames(`${prefixCls()}-content`, semanticClassNames.content)}
+            style={styles.content}
+          >
+            {content}
+          </div>
+        </Show>
+      </>
     )
-
-  const cleanupPointerDown = addDocumentPointerDown((event) => {
-    if (trigger() !== 'click' || !open()) return
-    if (containsTarget(event.target)) return
-    setOpen(false)
-  })
-  const cleanupKeydown = addDocumentKeydown((event) => {
-    if (event.key === 'Escape' && trigger() === 'click' && open()) setOpen(false)
-  })
-
-  createRenderEffect(() => {
-    if (open()) updatePosition()
-  })
-
-  createEffect(() => {
-    if (!open()) return
-    const removeListeners = addPositionUpdateListeners(updatePosition)
-    onCleanup(removeListeners)
-  })
-
-  onCleanup(() => {
-    clearTimer(enterTimer)
-    clearTimer(leaveTimer)
-    cleanupPointerDown()
-    cleanupKeydown()
-  })
-
-  const handleMouseEnter = (
-    event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element },
-  ) => {
-    ;(local.onMouseEnter as ((event: MouseEvent) => void) | undefined)?.(event)
-    if (trigger() !== 'hover') return
-    clearTimer(leaveTimer)
-    enterTimer = setTimeout(() => setOpen(true), (local.mouseEnterDelay ?? 0) * 1000)
-  }
-
-  const handleMouseLeave = (
-    event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element },
-  ) => {
-    ;(local.onMouseLeave as ((event: MouseEvent) => void) | undefined)?.(event)
-    if (trigger() !== 'hover') return
-    clearTimer(enterTimer)
-    leaveTimer = setTimeout(() => setOpen(false), (local.mouseLeaveDelay ?? 0.1) * 1000)
-  }
-
-  const handleClick = (event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element }) => {
-    ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
-    if (trigger() !== 'click') return
-    setOpen(!open())
-  }
-
-  const handleFocus = (event: FocusEvent & { currentTarget: HTMLSpanElement; target: Element }) => {
-    ;(local.onFocus as ((event: FocusEvent) => void) | undefined)?.(event)
-    if (trigger() === 'focus') setOpen(true)
-  }
-
-  const handleBlur = (event: FocusEvent & { currentTarget: HTMLSpanElement; target: Element }) => {
-    ;(local.onBlur as ((event: FocusEvent) => void) | undefined)?.(event)
-    if (trigger() === 'focus') setOpen(false)
   }
 
   return (
-    <ZIndexContext.Provider value={contextZIndex}>
-      <span
-        {...rest}
-        ref={(element) => {
-          triggerRef = element
-        }}
-        class={classNames(`${prefixCls()}-trigger`, hashId(), local.class)}
-        classList={local.classList}
-        style={local.style}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-      >
-        {local.children}
-      </span>
-      <Show when={open()}>
-        <InternalPortal
-          mount={() =>
-            local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)
-          }
-        >
-          <div
-            ref={(element) => {
-              overlayRef = element
-              watermarkPanelRef(element)
-            }}
-            role="tooltip"
-            class={classNames(
-              prefixCls(),
-              `${prefixCls()}-${placement()}`,
-              hashId(),
-              local.overlayClass,
-            )}
-            style={{ ...position(), 'z-index': zIndex, ...local.overlayStyle }}
-          >
-            <div class={`${prefixCls()}-inner`}>
-              <Show when={local.title}>
-                <div class={`${prefixCls()}-title`}>{local.title}</div>
-              </Show>
-              <Show when={local.content}>
-                <div class={`${prefixCls()}-content`}>{local.content}</div>
-              </Show>
-            </div>
-          </div>
-        </InternalPortal>
-      </Show>
-    </ZIndexContext.Provider>
+    <Tooltip
+      {...rest}
+      color={local.color}
+      title={hasOverlayContent(local.title, local.content) ? overlay : undefined}
+      rootClass={classNames(hashId(), rest.rootClass)}
+      classNames={tooltipClassNames()}
+      styles={tooltipStyles()}
+      prefixCls={prefixCls()}
+      skipStyle
+      skipConfig
+      overlayInnerStyle={overlayInnerStyle()}
+    />
   )
 }
