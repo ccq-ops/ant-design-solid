@@ -16,6 +16,8 @@ export function useResultStyle(prefixCls: string) {
         'text-align': 'center',
       },
       [`.${prefixCls}-icon`]: {
+        display: 'flex',
+        'justify-content': 'center',
         'margin-bottom': `${t.margin}px`,
         'font-size': '48px',
         'line-height': 1,
@@ -28,6 +30,13 @@ export function useResultStyle(prefixCls: string) {
         {
           color: t.colorTextSecondary,
         },
+      [`.${prefixCls}-image`]: {
+        'font-size': 0,
+      },
+      [`.${prefixCls}-image svg`]: {
+        'max-width': '100%',
+        height: 'auto',
+      },
       [`.${prefixCls}-title`]: {
         color: t.colorText,
         'font-size': '24px',
@@ -40,7 +49,7 @@ export function useResultStyle(prefixCls: string) {
       [`.${prefixCls}-extra`]: {
         'margin-top': `${t.marginLG}px`,
       },
-      [`.${prefixCls}-content`]: {
+      [`.${prefixCls}-body, .${prefixCls}-content`]: {
         'margin-top': `${t.marginLG}px`,
         padding: `${t.padding}px`,
         background: t.colorFillAlter,
