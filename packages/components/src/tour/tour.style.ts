@@ -31,9 +31,33 @@ export function useTourStyle(prefixCls: string) {
         'box-shadow': tt.boxShadow,
         outline: 0,
       },
+      [`.${prefixCls}-primary`]: {
+        color: '#fff',
+        background: t.colorPrimary,
+      },
+      [`.${prefixCls}-primary .${prefixCls}-title`]: {
+        color: '#fff',
+      },
+      [`.${prefixCls}-primary .${prefixCls}-description`]: {
+        color: 'rgba(255, 255, 255, 0.85)',
+      },
+      [`.${prefixCls}-primary .${prefixCls}-indicators`]: {
+        color: 'rgba(255, 255, 255, 0.75)',
+      },
+      [`.${prefixCls}-primary .${prefixCls}-close`]: {
+        color: 'rgba(255, 255, 255, 0.85)',
+      },
       [`.${prefixCls}-inner`]: {
         position: 'relative',
         padding: `${tt.padding}px`,
+      },
+      [`.${prefixCls}-cover`]: {
+        'margin-bottom': t.margin,
+      },
+      [`.${prefixCls}-cover img, .${prefixCls}-cover video`]: {
+        display: 'block',
+        width: '100%',
+        'border-radius': t.borderRadius,
       },
       [`.${prefixCls}-close`]: {
         position: 'absolute',
@@ -70,20 +94,6 @@ export function useTourStyle(prefixCls: string) {
       [`.${prefixCls}-buttons`]: {
         display: 'flex',
         gap: t.marginSM,
-      },
-      [`.${prefixCls}-btn`]: {
-        height: t.controlHeightSM,
-        padding: `0 ${t.paddingSM}px`,
-        border: `${t.lineWidth}px solid ${t.colorBorder}`,
-        background: t.colorBgContainer,
-        color: t.colorText,
-        'border-radius': t.borderRadius,
-        cursor: 'pointer',
-      },
-      [`.${prefixCls}-primary-btn`]: {
-        border: `${t.lineWidth}px solid ${t.colorPrimary}`,
-        background: t.colorPrimary,
-        color: '#fff',
       },
       [`.${prefixCls}-arrow`]: {
         position: 'absolute',
