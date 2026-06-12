@@ -1,23 +1,27 @@
 # Typography
 
-Typography provides title, text, and paragraph primitives for readable content.
+Typography provides article, title, text, link, and paragraph primitives for readable content.
 
-### Title
+### Root and title
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
 
 const Demo1 = function () {
   return (
-<Typography.Title level={2}>Title level 2</Typography.Title>
-        <Typography.Title level={4}>Title level 4</Typography.Title>
+    <Typography component="section">
+      <Typography.Title level={2}>Typography</Typography.Title>
+      <Typography.Paragraph>
+        Compose dense product copy with Solid-style props and Ant Design semantics.
+      </Typography.Paragraph>
+    </Typography>
   )
 }
 
 export default Demo1
 ```
 
-### Text types
+### Text types and decorations
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -30,6 +34,13 @@ const Demo2 = function () {
       <Typography.Text type="success">Success</Typography.Text>
       <Typography.Text type="warning">Warning</Typography.Text>
       <Typography.Text type="danger">Danger</Typography.Text>
+      <Typography.Text code>code</Typography.Text>
+      <Typography.Text mark>mark</Typography.Text>
+      <Typography.Text keyboard>⌘ K</Typography.Text>
+      <Typography.Text underline>underline</Typography.Text>
+      <Typography.Text delete>delete</Typography.Text>
+      <Typography.Text strong>strong</Typography.Text>
+      <Typography.Text italic>italic</Typography.Text>
     </div>
   )
 }
@@ -37,24 +48,67 @@ const Demo2 = function () {
 export default Demo2
 ```
 
-### Paragraph
+### Link
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
 
 const Demo3 = function () {
   return (
-<Typography.Paragraph>
-          Ant Design Solid helps teams build product interfaces with SolidJS, design tokens, and
-          familiar component semantics.
-        </Typography.Paragraph>
-        <Typography.Paragraph type="secondary">
-          Use paragraphs for prose and supporting copy inside dense application pages.
-        </Typography.Paragraph>
+    <Typography.Link href="https://ant.design" target="_blank">
+      Ant Design
+    </Typography.Link>
   )
 }
 
 export default Demo3
+```
+
+### Copyable
+
+```tsx
+import { Typography } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <div class="flex flex-col gap-3">
+      <Typography.Text copyable>Copy this text</Typography.Text>
+      <Typography.Text copyable={{ text: () => Promise.resolve('Async copy text') }}>
+        Copy async text
+      </Typography.Text>
+      <Typography.Paragraph actions={{ placement: 'start' }} copyable={{ tooltips: false }}>
+        Put the copy action before the content.
+      </Typography.Paragraph>
+    </div>
+  )
+}
+
+export default Demo4
+```
+
+### Editable
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Typography } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  const [value, setValue] = createSignal('Click the edit action to change this paragraph.')
+  return (
+    <Typography.Paragraph
+      editable={{
+        text: value(),
+        onChange: setValue,
+        onEnd: () => console.log('edit finished'),
+        autoSize: { minRows: 2, maxRows: 4 },
+      }}
+    >
+      {value()}
+    </Typography.Paragraph>
+  )
+}
+
+export default Demo5
 ```
 
 ### Ellipsis
@@ -62,45 +116,141 @@ export default Demo3
 ```tsx
 import { Typography } from '@ant-design-solid/core'
 
-const Demo4 = function () {
+const Demo6 = function () {
   return (
-<Typography.Text ellipsis class="block w-64">
-          This is a very long line of text that will be truncated when it exceeds the available
-          width.
-        </Typography.Text>
-        <Typography.Paragraph ellipsis class="w-80">
-          Paragraph ellipsis uses the same single-line truncation class for compact previews in
-          lists and cards.
-        </Typography.Paragraph>
+    <div class="flex flex-col gap-3">
+      <Typography.Text ellipsis class="block w-64">
+        This is a very long line of text that will be truncated when it exceeds the available width.
+      </Typography.Text>
+      <Typography.Paragraph
+        class="w-96"
+        ellipsis={{
+          rows: 2,
+          expandable: 'collapsible',
+          suffix: '...',
+          symbol: (expanded) => (expanded ? 'Collapse' : 'More'),
+        }}
+      >
+        Multi-line ellipsis supports rows, suffix text, expandable controls, and controlled expanded
+        state. Text ellipsis intentionally ignores rows and expandable options to match Ant Design.
+      </Typography.Paragraph>
+    </div>
   )
 }
 
-export default Demo4
+export default Demo6
+```
+
+### Semantic slots
+
+```tsx
+import { Typography } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Typography.Text
+      copyable
+      editable
+      classNames={{
+        root: 'rounded border border-dashed px-2 py-1',
+        actions: 'ml-3',
+        action: 'text-blue-600',
+      }}
+      styles={{ textarea: { width: '260px' } }}
+    >
+      Slot classes and styles target the root, action wrapper, action button, and textarea.
+    </Typography.Text>
+  )
+}
+
+export default Demo7
 ```
 
 ## API
 
+### Typography
+
+| Property     | Description                                                                  | Type                                                                                                                  | Default     |
+| ------------ | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `component`  | Root element to render.                                                      | `'article' \| 'section' \| 'div' \| 'span' \| 'p' \| 'a' \| 'h1'...'h5'`                                              | `'article'` |
+| `class`      | Root class.                                                                  | `string`                                                                                                              | `-`         |
+| `rootClass`  | Additional root class, matching antd root class semantics with Solid naming. | `string`                                                                                                              | `-`         |
+| `classNames` | Semantic class slots.                                                        | `{ root?: string; actions?: string; action?: string; textarea?: string }`                                             | `-`         |
+| `styles`     | Semantic style slots.                                                        | `{ root?: JSX.CSSProperties; actions?: JSX.CSSProperties; action?: JSX.CSSProperties; textarea?: JSX.CSSProperties }` | `-`         |
+| `children`   | Typography content.                                                          | `JSX.Element`                                                                                                         | `-`         |
+
+### Shared block props
+
+Applied to `Typography.Text`, `Typography.Link`, `Typography.Title`, and `Typography.Paragraph` unless noted.
+
+| Property     | Description                                              | Type                                                | Default                |
+| ------------ | -------------------------------------------------------- | --------------------------------------------------- | ---------------------- |
+| `actions`    | Placement for editable/copyable actions.                 | `{ placement?: 'start' \| 'end' }`                  | `{ placement: 'end' }` |
+| `type`       | Semantic text color style.                               | `'secondary' \| 'success' \| 'warning' \| 'danger'` | `-`                    |
+| `disabled`   | Disabled visual and action state.                        | `boolean`                                           | `false`                |
+| `copyable`   | Show copy action.                                        | `boolean \| CopyConfig`                             | `false`                |
+| `editable`   | Show edit action or controlled editing surface.          | `boolean \| EditConfig`                             | `false`                |
+| `ellipsis`   | Enable truncation.                                       | `boolean \| EllipsisConfig`                         | `false`                |
+| `code`       | Render content as code.                                  | `boolean`                                           | `false`                |
+| `mark`       | Render content as marked text.                           | `boolean`                                           | `false`                |
+| `underline`  | Render content as underlined text.                       | `boolean`                                           | `false`                |
+| `delete`     | Render content as deleted text.                          | `boolean`                                           | `false`                |
+| `strong`     | Render content as strong text. Not available on `Title`. | `boolean`                                           | `false`                |
+| `keyboard`   | Render content as keyboard input.                        | `boolean`                                           | `false`                |
+| `italic`     | Render content as italic text.                           | `boolean`                                           | `false`                |
+| `title`      | Native title attribute.                                  | `string`                                            | `-`                    |
+| `classNames` | Semantic class slots.                                    | `TypographySemanticClassNames`                      | `-`                    |
+| `styles`     | Semantic style slots.                                    | `TypographySemanticStyles`                          | `-`                    |
+
+### CopyConfig
+
+| Property   | Description                                              | Type                                          | Default             |
+| ---------- | -------------------------------------------------------- | --------------------------------------------- | ------------------- |
+| `text`     | Text to copy. If omitted, string children are copied.    | `string \| (() => string \| Promise<string>)` | `-`                 |
+| `onCopy`   | Called after copy resolves.                              | `(event?: MouseEvent) => void`                | `-`                 |
+| `icon`     | Custom copy icon.                                        | `JSX.Element`                                 | `-`                 |
+| `tooltips` | Tooltip content, or `false` to disable tooltip wrapping. | `JSX.Element \| false`                        | `'Copy' / 'Copied'` |
+| `format`   | Clipboard format.                                        | `'text/plain' \| 'text/html'`                 | `'text/plain'`      |
+| `tabIndex` | Copy action tab index.                                   | `number`                                      | `-`                 |
+
+### EditConfig
+
+| Property      | Description                                              | Type                                                | Default         |
+| ------------- | -------------------------------------------------------- | --------------------------------------------------- | --------------- |
+| `text`        | Text loaded into the textarea.                           | `string`                                            | string children |
+| `editing`     | Controlled editing state.                                | `boolean`                                           | `-`             |
+| `icon`        | Custom edit icon.                                        | `JSX.Element`                                       | `-`             |
+| `tooltip`     | Tooltip content, or `false` to disable tooltip wrapping. | `JSX.Element \| false`                              | `'Edit'`        |
+| `onStart`     | Called when editing starts.                              | `() => void`                                        | `-`             |
+| `onChange`    | Called when textarea input changes.                      | `(value: string) => void`                           | `-`             |
+| `onCancel`    | Called when Escape cancels editing.                      | `() => void`                                        | `-`             |
+| `onEnd`       | Called when Enter or the finish action ends editing.     | `() => void`                                        | `-`             |
+| `maxLength`   | Textarea max length.                                     | `number`                                            | `-`             |
+| `autoSize`    | Textarea auto-size constraints.                          | `boolean \| { minRows?: number; maxRows?: number }` | `false`         |
+| `triggerType` | Edit triggers.                                           | `('icon' \| 'text')[]`                              | `['icon']`      |
+| `enterIcon`   | Finish action icon.                                      | `JSX.Element`                                       | `EnterOutlined` |
+| `tabIndex`    | Edit action tab index.                                   | `number`                                            | `-`             |
+
+### EllipsisConfig
+
+| Property          | Description                                                 | Type                                                       | Default               |
+| ----------------- | ----------------------------------------------------------- | ---------------------------------------------------------- | --------------------- |
+| `rows`            | Maximum visible rows. Supported by `Paragraph` and `Title`. | `number`                                                   | `1`                   |
+| `expandable`      | Show expand control. `collapsible` also shows collapse.     | `boolean \| 'collapsible'`                                 | `false`               |
+| `suffix`          | Suffix rendered after content.                              | `string`                                                   | `-`                   |
+| `symbol`          | Expand/collapse symbol.                                     | `JSX.Element \| ((expanded: boolean) => JSX.Element)`      | `'more' / 'collapse'` |
+| `defaultExpanded` | Initial expanded state.                                     | `boolean`                                                  | `false`               |
+| `expanded`        | Controlled expanded state.                                  | `boolean`                                                  | `-`                   |
+| `onExpand`        | Called when expand/collapse is clicked.                     | `(event: MouseEvent, info: { expanded: boolean }) => void` | `-`                   |
+| `onEllipsis`      | Called when ellipsis mode is active.                        | `(ellipsis: boolean) => void`                              | `-`                   |
+| `tooltip`         | Reserved for tooltip content parity.                        | `JSX.Element \| false`                                     | `-`                   |
+
 ### Typography.Title
 
-| Property   | Description                              | Type                                                | Default |
-| ---------- | ---------------------------------------- | --------------------------------------------------- | ------- |
-| `level`    | Heading level rendered as h1 through h5. | `1 \| 2 \| 3 \| 4 \| 5`                             | `1`     |
-| `type`     | Semantic text color style.               | `'secondary' \| 'success' \| 'warning' \| 'danger'` | `-`     |
-| `ellipsis` | Applies single-line truncation styling.  | `boolean`                                           | `false` |
-| `children` | Typography content.                      | `JSX.Element`                                       | `-`     |
+| Property | Description                              | Type                    | Default |
+| -------- | ---------------------------------------- | ----------------------- | ------- |
+| `level`  | Heading level rendered as h1 through h5. | `1 \| 2 \| 3 \| 4 \| 5` | `1`     |
 
-### Typography.Text
+### Typography.Link
 
-| Property   | Description                             | Type                                                | Default |
-| ---------- | --------------------------------------- | --------------------------------------------------- | ------- |
-| `type`     | Semantic text color style.              | `'secondary' \| 'success' \| 'warning' \| 'danger'` | `-`     |
-| `ellipsis` | Applies single-line truncation styling. | `boolean`                                           | `false` |
-| `children` | Typography content.                     | `JSX.Element`                                       | `-`     |
-
-### Typography.Paragraph
-
-| Property   | Description                             | Type                                                | Default |
-| ---------- | --------------------------------------- | --------------------------------------------------- | ------- |
-| `type`     | Semantic text color style.              | `'secondary' \| 'success' \| 'warning' \| 'danger'` | `-`     |
-| `ellipsis` | Applies single-line truncation styling. | `boolean`                                           | `false` |
-| `children` | Typography content.                     | `JSX.Element`                                       | `-`     |
+`Typography.Link` supports shared block props, anchor attributes, and boolean-only `ellipsis`. When `target="_blank"` and `rel` is omitted, `rel="noopener noreferrer"` is added.

@@ -1,2 +1,19 @@
 export { Typography } from './typography'
-export type { TextType, TitleLevel, TitleProps, TypographyBaseProps } from './interface'
+export type {
+  ActionsConfig,
+  CopyConfig,
+  EditAutoSizeConfig,
+  EditConfig,
+  EllipsisConfig,
+  LinkProps,
+  ParagraphProps,
+  TextProps,
+  TextType,
+  TitleLevel,
+  TitleProps,
+  TypographyBaseProps,
+  TypographyComponent,
+  TypographyProps,
+  TypographySemanticClassNames,
+  TypographySemanticStyles,
+} from './interface'
