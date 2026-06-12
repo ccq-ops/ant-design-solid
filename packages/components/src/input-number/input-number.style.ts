@@ -122,6 +122,9 @@ export function useInputNumberStyle(prefixCls: string) {
           'flex-direction': 'column',
           width: `${inputNumber.handleWidth}px`,
           'border-left': `${t.lineWidth}px solid ${inputNumber.handleBorderColor}`,
+          overflow: 'hidden',
+          'border-start-end-radius': `${t.borderRadius}px`,
+          'border-end-end-radius': `${t.borderRadius}px`,
         },
         [`.${prefixCls}-handler`]: {
           flex: '1 1 0',
@@ -153,6 +156,10 @@ export function useInputNumberStyle(prefixCls: string) {
         },
         [`.${prefixCls}-handler-up`]: {
           'border-bottom': `${t.lineWidth}px solid ${inputNumber.handleBorderColor}`,
+          'border-start-end-radius': `${t.borderRadius}px`,
+        },
+        [`.${prefixCls}-handler-down`]: {
+          'border-end-end-radius': `${t.borderRadius}px`,
         },
         [`.${prefixCls}-sm`]: {
           width: '100px',

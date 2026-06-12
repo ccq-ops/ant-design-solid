@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
@@ -110,6 +111,26 @@ describe('InputNumber', () => {
     expect(decreaseButton.querySelector('svg')).toBeInTheDocument()
     expect(increaseButton).not.toHaveTextContent('▲')
     expect(decreaseButton).not.toHaveTextContent('▼')
+  })
+
+  it('clips control backgrounds to the input number right corners', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <InputNumber defaultValue={2} />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('.ads-input-number-controls{')
+    expect(css).toContain('overflow:hidden;')
+    expect(css).toContain('border-start-end-radius:6px;')
+    expect(css).toContain('border-end-end-radius:6px;')
+    expect(css).toContain('.ads-input-number-handler-up{')
+    expect(css).toContain('border-start-end-radius:6px;')
+    expect(css).toContain('.ads-input-number-handler-down{')
+    expect(css).toContain('border-end-end-radius:6px;')
   })
 
   it('disables arrow key stepping when keyboard is false', () => {
