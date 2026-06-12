@@ -117,6 +117,7 @@ const SpinRoot = (props: SpinProps) => {
     'classList',
     'style',
   ])
+  const initialDefaultIndicator = defaultIndicator
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-spin`
   const [, hashId] = useSpinStyle(prefixCls())
@@ -185,7 +186,7 @@ const SpinRoot = (props: SpinProps) => {
   })
 
   const indicator = () => {
-    const customIndicator = local.indicator ?? defaultIndicator
+    const customIndicator = local.indicator ?? initialDefaultIndicator
     if (customIndicator) return customIndicator
 
     return (

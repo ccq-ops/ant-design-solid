@@ -55,6 +55,22 @@ describe('Spin', () => {
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
+  it('keeps delayed indicators isolated from later global default changes', async () => {
+    vi.useFakeTimers()
+    Spin.setDefaultIndicator(undefined)
+    try {
+      const { container } = render(() => <Spin delay={100} />)
+
+      Spin.setDefaultIndicator(<span>Default indicator</span>)
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(screen.queryByText('Default indicator')).toBeNull()
+      expect(container.querySelector('.ads-spin-dot')).toBeInTheDocument()
+    } finally {
+      Spin.setDefaultIndicator(undefined)
+    }
+  })
+
   it('does not restart omitted-spinning delay when children change', async () => {
     vi.useFakeTimers()
     let setContent: (value: string) => void = () => undefined
