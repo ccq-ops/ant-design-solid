@@ -133,6 +133,37 @@ describe('InputNumber', () => {
     expect(css).toContain('border-end-end-radius:6px;')
   })
 
+  it('renders spinner mode with side controls and centered input styles', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <InputNumber mode="spinner" defaultValue={12} />
+      </StyleProvider>
+    ))
+    const root = result.container.querySelector('.ads-input-number')!
+    const controls = result.container.querySelector('.ads-input-number-controls')!
+    const decreaseButton = result.getByRole('button', { name: 'decrease value' })
+    const input = result.getByRole('spinbutton')
+    const increaseButton = result.getByRole('button', { name: 'increase value' })
+    const css = extractStyle(cache)
+
+    expect(root.className).toContain('ads-input-number-mode-spinner')
+    expect(root.children[0]).toBe(controls)
+    expect(controls.children[0]).toBe(increaseButton)
+    expect(controls.children[1]).toBe(decreaseButton)
+    expect(root.children[1]).toBe(input)
+    expect(css).toContain('.ads-input-number-mode-spinner{')
+    expect(css).toContain('width:auto;')
+    expect(css).toContain('.ads-input-number-mode-spinner .ads-input-number-controls{')
+    expect(css).toContain('display:contents;')
+    expect(css).toContain('.ads-input-number-mode-spinner .ads-input-number-input{')
+    expect(css).toContain('text-align:center;')
+    expect(css).toContain('.ads-input-number-mode-spinner .ads-input-number-handler-down{')
+    expect(css).toContain('order:1;')
+    expect(css).toContain('.ads-input-number-mode-spinner .ads-input-number-handler-up{')
+    expect(css).toContain('order:3;')
+  })
+
   it('disables arrow key stepping when keyboard is false', () => {
     const onChange = vi.fn()
     const result = render(() => (

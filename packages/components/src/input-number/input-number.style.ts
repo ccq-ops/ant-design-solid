@@ -161,6 +161,40 @@ export function useInputNumberStyle(prefixCls: string) {
         [`.${prefixCls}-handler-down`]: {
           'border-end-end-radius': `${t.borderRadius}px`,
         },
+        [`.${prefixCls}-mode-spinner`]: {
+          width: 'auto',
+        },
+        [`.${prefixCls}-mode-spinner .${prefixCls}-controls`]: {
+          display: 'contents',
+          width: 'auto',
+          border: 0,
+          overflow: 'visible',
+        },
+        [`.${prefixCls}-mode-spinner .${prefixCls}-input`]: {
+          order: 2,
+          'text-align': 'center',
+          width: '72px',
+        },
+        [`.${prefixCls}-mode-spinner .${prefixCls}-handler`]: {
+          flex: '0 0 auto',
+          width: `${inputNumber.handleWidth}px`,
+          padding: `0 ${inputNumber.paddingInlineSM}px`,
+        },
+        [`.${prefixCls}-mode-spinner .${prefixCls}-handler-down`]: {
+          order: 1,
+          'border-inline-end': `${t.lineWidth}px solid ${inputNumber.handleBorderColor}`,
+          'border-start-start-radius': `${t.borderRadius}px`,
+          'border-end-start-radius': `${t.borderRadius}px`,
+          'border-start-end-radius': 0,
+          'border-end-end-radius': 0,
+        },
+        [`.${prefixCls}-mode-spinner .${prefixCls}-handler-up`]: {
+          order: 3,
+          'border-bottom': 0,
+          'border-inline-start': `${t.lineWidth}px solid ${inputNumber.handleBorderColor}`,
+          'border-start-end-radius': `${t.borderRadius}px`,
+          'border-end-end-radius': `${t.borderRadius}px`,
+        },
         [`.${prefixCls}-sm`]: {
           width: '100px',
           'font-size': `${inputNumber.inputFontSizeSM}px`,

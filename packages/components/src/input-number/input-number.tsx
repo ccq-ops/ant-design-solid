@@ -266,6 +266,37 @@ export function InputNumber(props: InputNumberProps) {
     commitValue(parseDisplay(input), trigger)
   }
 
+  function renderControls() {
+    return (
+      <Show when={controls()}>
+        <span
+          class={classNames(`${prefixCls()}-controls`, semanticClassNames().actions)}
+          style={semanticStyles().actions}
+          aria-disabled={disabled() ? 'true' : undefined}
+        >
+          <button
+            type="button"
+            aria-label="increase value"
+            class={classNames(`${prefixCls()}-handler`, `${prefixCls()}-handler-up`)}
+            disabled={disabled()}
+            onClick={() => stepValue(1, 'handler')}
+          >
+            {renderUpIcon()}
+          </button>
+          <button
+            type="button"
+            aria-label="decrease value"
+            class={classNames(`${prefixCls()}-handler`, `${prefixCls()}-handler-down`)}
+            disabled={disabled()}
+            onClick={() => stepValue(-1, 'handler')}
+          >
+            {renderDownIcon()}
+          </button>
+        </span>
+      </Show>
+    )
+  }
+
   function focus(options?: InputNumberFocusOptions): void {
     inputRef?.focus({ preventScroll: options?.preventScroll })
     if (!inputRef || !options?.cursor) return
@@ -315,6 +346,7 @@ export function InputNumber(props: InputNumberProps) {
           {local.prefix}
         </span>
       </Show>
+      <Show when={local.mode === 'spinner'}>{renderControls()}</Show>
       <input
         {...rest}
         ref={(el) => {
@@ -387,32 +419,7 @@ export function InputNumber(props: InputNumberProps) {
           {local.suffix}
         </span>
       </Show>
-      <Show when={controls()}>
-        <span
-          class={classNames(`${prefixCls()}-controls`, semanticClassNames().actions)}
-          style={semanticStyles().actions}
-          aria-disabled={disabled() ? 'true' : undefined}
-        >
-          <button
-            type="button"
-            aria-label="increase value"
-            class={classNames(`${prefixCls()}-handler`, `${prefixCls()}-handler-up`)}
-            disabled={disabled()}
-            onClick={() => stepValue(1, 'handler')}
-          >
-            {renderUpIcon()}
-          </button>
-          <button
-            type="button"
-            aria-label="decrease value"
-            class={classNames(`${prefixCls()}-handler`, `${prefixCls()}-handler-down`)}
-            disabled={disabled()}
-            onClick={() => stepValue(-1, 'handler')}
-          >
-            {renderDownIcon()}
-          </button>
-        </span>
-      </Show>
+      <Show when={local.mode !== 'spinner'}>{renderControls()}</Show>
     </span>
   )
 
