@@ -36,6 +36,63 @@ describe('Splitter', () => {
     expect(panels[1]).toHaveStyle({ flexBasis: '120px' })
   })
 
+  it('supports orientation and vertical direction props', () => {
+    const result = render(() => (
+      <>
+        <Splitter vertical data-testid="vertical">
+          <Splitter.Panel>Top</Splitter.Panel>
+          <Splitter.Panel>Bottom</Splitter.Panel>
+        </Splitter>
+        <Splitter vertical orientation="horizontal" data-testid="horizontal">
+          <Splitter.Panel>Left</Splitter.Panel>
+          <Splitter.Panel>Right</Splitter.Panel>
+        </Splitter>
+      </>
+    ))
+
+    expect(result.getByTestId('vertical').className).toContain('ads-splitter-vertical')
+    expect(result.getByTestId('horizontal').className).toContain('ads-splitter-horizontal')
+  })
+
+  it('supports semantic classNames and styles', () => {
+    const result = render(() => (
+      <Splitter
+        data-testid="splitter"
+        classNames={{
+          root: 'custom-root',
+          panel: 'custom-panel',
+          dragger: { default: 'custom-dragger', active: 'custom-dragger-active' },
+        }}
+        styles={{
+          root: { '--splitter-root': '1' },
+          panel: { '--splitter-panel': '1' },
+          dragger: {
+            default: { '--splitter-dragger': '1' },
+            active: { '--splitter-dragger-active': '1' },
+          },
+        }}
+      >
+        <Splitter.Panel>Left</Splitter.Panel>
+        <Splitter.Panel>Right</Splitter.Panel>
+      </Splitter>
+    ))
+
+    const splitter = result.getByTestId('splitter')
+    const panel = splitter.querySelector('.ads-splitter-panel') as HTMLElement
+    const dragger = result.getByRole('separator') as HTMLElement
+    expect(splitter.className).toContain('custom-root')
+    expect(splitter.style.getPropertyValue('--splitter-root')).toBe('1')
+    expect(panel.className).toContain('custom-panel')
+    expect(panel.style.getPropertyValue('--splitter-panel')).toBe('1')
+    expect(dragger.className).toContain('custom-dragger')
+    expect(dragger.style.getPropertyValue('--splitter-dragger')).toBe('1')
+
+    dragger.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, bubbles: true }))
+    expect(dragger.className).toContain('custom-dragger-active')
+    expect(dragger.style.getPropertyValue('--splitter-dragger-active')).toBe('1')
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 100, bubbles: true }))
+  })
+
   it('resizes adjacent panels by dragging a horizontal splitter bar', () => {
     const onResizeStart = vi.fn()
     const onResize = vi.fn()
@@ -75,6 +132,30 @@ describe('Splitter', () => {
     expect(onResizeEnd).toHaveBeenCalledWith([140, 60])
   })
 
+  it('defers panel size updates while dragging in lazy mode', () => {
+    const onResize = vi.fn()
+    const result = render(() => (
+      <Splitter data-testid="splitter" lazy onResize={onResize}>
+        <Splitter.Panel defaultSize={100}>Left</Splitter.Panel>
+        <Splitter.Panel defaultSize={100}>Right</Splitter.Panel>
+      </Splitter>
+    ))
+
+    const bar = result.getByRole('separator')
+    bar.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, bubbles: true }))
+    document.dispatchEvent(new PointerEvent('pointermove', { clientX: 140, bubbles: true }))
+
+    const panels = result.getByTestId('splitter').querySelectorAll('.ads-splitter-panel')
+    expect((panels[0] as HTMLElement).style.flexBasis).toBe('100px')
+    expect((panels[1] as HTMLElement).style.flexBasis).toBe('100px')
+    expect(onResize).not.toHaveBeenCalled()
+
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 140, bubbles: true }))
+    expect((panels[0] as HTMLElement).style.flexBasis).toBe('140px')
+    expect((panels[1] as HTMLElement).style.flexBasis).toBe('60px')
+    expect(onResize).toHaveBeenCalledWith([140, 60])
+  })
+
   it('clamps dragging by panel min and max constraints', () => {
     const result = render(() => (
       <Splitter data-testid="splitter">
@@ -112,6 +193,69 @@ describe('Splitter', () => {
     ))
 
     expect(result.queryAllByRole('separator')).toHaveLength(0)
+  })
+
+  it('supports dragger icons and double click callbacks', () => {
+    const onDraggerDoubleClick = vi.fn()
+    const result = render(() => (
+      <Splitter
+        draggerIcon={<span data-testid="icon">||</span>}
+        onDraggerDoubleClick={onDraggerDoubleClick}
+      >
+        <Splitter.Panel>Left</Splitter.Panel>
+        <Splitter.Panel>Right</Splitter.Panel>
+      </Splitter>
+    ))
+
+    const bar = result.getByRole('separator')
+    expect(result.getByTestId('icon')).toHaveTextContent('||')
+    fireEvent.dblClick(bar)
+    expect(onDraggerDoubleClick).toHaveBeenCalledWith(0)
+  })
+
+  it('collapses and restores panels from collapsible icons', () => {
+    const onCollapse = vi.fn()
+    const result = render(() => (
+      <Splitter
+        data-testid="splitter"
+        collapsible={{ icon: { start: <span>start</span>, end: <span>end</span> } }}
+        onCollapse={onCollapse}
+      >
+        <Splitter.Panel defaultSize={100} collapsible={{ end: true }}>
+          Left
+        </Splitter.Panel>
+        <Splitter.Panel defaultSize={100} collapsible={{ start: true }}>
+          Right
+        </Splitter.Panel>
+      </Splitter>
+    ))
+
+    const collapsePrevious = result.getByRole('button', { name: 'Collapse previous panel' })
+    fireEvent.click(collapsePrevious)
+
+    const panels = result.getByTestId('splitter').querySelectorAll('.ads-splitter-panel')
+    expect((panels[0] as HTMLElement).style.flexBasis).toBe('0px')
+    expect((panels[1] as HTMLElement).style.flexBasis).toBe('200px')
+    expect(onCollapse).toHaveBeenCalledWith([true, false], [0, 200])
+
+    const restorePrevious = result.getByRole('button', { name: 'Expand previous panel' })
+    fireEvent.click(restorePrevious)
+    expect((panels[0] as HTMLElement).style.flexBasis).toBe('100px')
+    expect((panels[1] as HTMLElement).style.flexBasis).toBe('100px')
+    expect(onCollapse).toHaveBeenLastCalledWith([false, false], [100, 100])
+  })
+
+  it('destroys hidden panel content when requested', () => {
+    const result = render(() => (
+      <Splitter destroyOnHidden>
+        <Splitter.Panel size={0}>
+          <span data-testid="hidden-content">Hidden</span>
+        </Splitter.Panel>
+        <Splitter.Panel>Visible</Splitter.Panel>
+      </Splitter>
+    ))
+
+    expect(result.queryByTestId('hidden-content')).toBeNull()
   })
 
   it('supports controlled panel sizes', () => {
