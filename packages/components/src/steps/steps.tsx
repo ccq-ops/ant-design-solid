@@ -1,9 +1,11 @@
 import { For, Show, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 import { CheckOutlined, CloseOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useStepsStyle } from './steps.style'
-import type { StepItem, StepsProps, StepsStatus } from './interface'
+import type { StepItem, StepsProps, StepsSemanticKey, StepsStatus } from './interface'
 
 const DEFAULT_CURRENT = 0
 const DEFAULT_STATUS: StepsStatus = 'process'
@@ -38,27 +40,85 @@ function textContent(value: unknown): string {
   return ''
 }
 
+function mergeSlotClass(
+  key: StepsSemanticKey,
+  propsClasses: StepsProps['classNames'],
+  itemClasses?: StepItem['classNames'],
+): string | undefined {
+  const itemSlotClasses = itemClasses as Partial<Record<StepsSemanticKey, string>> | undefined
+  return classNames(propsClasses?.[key], itemSlotClasses?.[key])
+}
+
+function mergeSlotStyle(
+  key: StepsSemanticKey,
+  propsStyles: StepsProps['styles'],
+  itemStyles?: StepItem['styles'],
+): JSX.CSSProperties | undefined {
+  const itemSlotStyles = itemStyles as
+    | Partial<Record<StepsSemanticKey, JSX.CSSProperties>>
+    | undefined
+  const merged = { ...propsStyles?.[key], ...itemSlotStyles?.[key] }
+  return Object.keys(merged).length > 0 ? merged : undefined
+}
+
 export function Steps(props: StepsProps) {
   const [local, rest] = splitProps(props, [
     'items',
     'current',
     'status',
     'direction',
+    'orientation',
     'size',
     'type',
+    'variant',
+    'prefixCls',
+    'className',
     'onChange',
     'class',
+    'classNames',
+    'styles',
+    'style',
+    'rootComponent',
+    'itemComponent',
+    'ref',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-steps`
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-steps`
   const [, hashId] = useStepsStyle(prefixCls())
 
   const items = () => local.items ?? []
   const current = () => normalizeCurrent(local.current, items().length)
-  const direction = () => local.direction ?? 'horizontal'
+  const direction = () => local.orientation ?? local.direction ?? 'horizontal'
   const size = () => local.size ?? 'default'
   const type = () => local.type ?? 'default'
+  const variant = () => local.variant ?? 'outlined'
   const currentStatus = () => local.status ?? DEFAULT_STATUS
+  const RootComponent = () => local.rootComponent ?? 'div'
+  const listComponent = () => (RootComponent() === 'ol' ? 'div' : 'ol')
+  const itemComponent = () => local.itemComponent ?? 'li'
+  const rootClass = () =>
+    classNames(
+      prefixCls(),
+      `${prefixCls()}-${direction()}`,
+      size() === 'small' && `${prefixCls()}-small`,
+      type() === 'navigation' && `${prefixCls()}-navigation`,
+      type() === 'dot' && `${prefixCls()}-dot`,
+      `${prefixCls()}-variant-${variant()}`,
+      hashId(),
+      local.class,
+      local.className,
+      local.classNames?.root,
+    )
+  const rootStyle = () => ({
+    ...local.styles?.root,
+    ...(local.style as JSX.CSSProperties | undefined),
+  })
+  const commonRootProps = () => ({
+    id: rest.id,
+    role: rest.role,
+    tabIndex: rest.tabIndex,
+    title: rest.title,
+  })
 
   function handleChange(index: number, item: StepItem): void {
     if (type() !== 'navigation' || item.disabled) return
@@ -70,68 +130,142 @@ export function Steps(props: StepsProps) {
     return title ? `Go to step ${index + 1}: ${title}` : `Go to step ${index + 1}`
   }
 
-  return (
-    <div
-      {...rest}
-      class={classNames(
-        prefixCls(),
-        `${prefixCls()}-${direction()}`,
-        size() === 'small' && `${prefixCls()}-small`,
-        type() === 'navigation' && `${prefixCls()}-navigation`,
-        hashId(),
-        local.class,
-      )}
-    >
-      <ol class={`${prefixCls()}-list`}>
-        <For each={items()}>
-          {(item, index) => {
-            const status = () => getItemStatus(item, index(), current(), currentStatus())
-            const isCurrent = () => index() === current()
-            const clickable = () => type() === 'navigation' && !item.disabled
-            const content = () => (
-              <>
-                <span class={`${prefixCls()}-item-icon`} aria-hidden="true">
-                  {item.icon ?? defaultIcon(status(), index())}
-                </span>
-                <span class={`${prefixCls()}-item-content`}>
-                  <span class={`${prefixCls()}-item-title`}>{item.title}</span>
-                  <Show when={item.description}>
-                    <span class={`${prefixCls()}-item-description`}>{item.description}</span>
-                  </Show>
-                </span>
-              </>
-            )
-
-            return (
-              <li
+  const renderItems = () => (
+    <For each={items()}>
+      {(item, index) => {
+        const status = () => getItemStatus(item, index(), current(), currentStatus())
+        const isCurrent = () => index() === current()
+        const clickable = () => type() === 'navigation' && !item.disabled
+        const iconContent = () =>
+          item.icon ??
+          (type() === 'dot' ? (
+            <span class={`${prefixCls()}-item-dot`} />
+          ) : (
+            defaultIcon(status(), index())
+          ))
+        const content = () => (
+          <span
+            class={classNames(
+              `${prefixCls()}-item-wrapper`,
+              mergeSlotClass('itemWrapper', local.classNames, item.classNames),
+            )}
+            style={mergeSlotStyle('itemWrapper', local.styles, item.styles)}
+          >
+            <span
+              class={classNames(
+                `${prefixCls()}-item-section`,
+                mergeSlotClass('itemSection', local.classNames, item.classNames),
+              )}
+              style={mergeSlotStyle('itemSection', local.styles, item.styles)}
+            >
+              <span
                 class={classNames(
-                  `${prefixCls()}-item`,
-                  `${prefixCls()}-item-${status()}`,
-                  item.disabled && `${prefixCls()}-item-disabled`,
+                  `${prefixCls()}-item-header`,
+                  mergeSlotClass('itemHeader', local.classNames, item.classNames),
                 )}
-                aria-current={isCurrent() ? 'step' : undefined}
-                aria-disabled={item.disabled || undefined}
+                style={mergeSlotStyle('itemHeader', local.styles, item.styles)}
               >
-                <span class={`${prefixCls()}-item-tail`} aria-hidden="true" />
-                <Show
-                  when={clickable()}
-                  fallback={<span class={`${prefixCls()}-item-container`}>{content()}</span>}
+                <span
+                  class={classNames(
+                    `${prefixCls()}-item-icon`,
+                    mergeSlotClass('itemIcon', local.classNames, item.classNames),
+                  )}
+                  style={mergeSlotStyle('itemIcon', local.styles, item.styles)}
+                  aria-hidden="true"
                 >
-                  <button
-                    type="button"
-                    class={`${prefixCls()}-item-container`}
-                    aria-label={itemLabel(index(), item)}
-                    aria-current={isCurrent() ? 'step' : undefined}
-                    onClick={() => handleChange(index(), item)}
-                  >
-                    {content()}
-                  </button>
-                </Show>
-              </li>
-            )
-          }}
-        </For>
+                  {iconContent()}
+                </span>
+                <span
+                  class={classNames(
+                    `${prefixCls()}-item-title`,
+                    mergeSlotClass('itemTitle', local.classNames, item.classNames),
+                  )}
+                  style={mergeSlotStyle('itemTitle', local.styles, item.styles)}
+                >
+                  {item.title}
+                </span>
+              </span>
+              <Show when={item.description}>
+                <span
+                  class={classNames(
+                    `${prefixCls()}-item-content`,
+                    mergeSlotClass('itemContent', local.classNames, item.classNames),
+                  )}
+                  style={mergeSlotStyle('itemContent', local.styles, item.styles)}
+                >
+                  {item.description}
+                </span>
+              </Show>
+            </span>
+          </span>
+        )
+
+        return (
+          <Dynamic
+            component={itemComponent()}
+            class={classNames(
+              `${prefixCls()}-item`,
+              `${prefixCls()}-item-${status()}`,
+              item.disabled && `${prefixCls()}-item-disabled`,
+              mergeSlotClass('item', local.classNames, item.classNames),
+              item.class,
+              item.className,
+            )}
+            style={item.style}
+            aria-current={isCurrent() ? 'step' : undefined}
+            aria-disabled={item.disabled || undefined}
+          >
+            <span
+              class={classNames(
+                `${prefixCls()}-item-rail`,
+                `${prefixCls()}-item-tail`,
+                mergeSlotClass('itemRail', local.classNames, item.classNames),
+              )}
+              style={mergeSlotStyle('itemRail', local.styles, item.styles)}
+              aria-hidden="true"
+            />
+            <Show
+              when={clickable()}
+              fallback={<span class={`${prefixCls()}-item-container`}>{content()}</span>}
+            >
+              <button
+                type="button"
+                class={`${prefixCls()}-item-container`}
+                aria-label={itemLabel(index(), item)}
+                aria-current={isCurrent() ? 'step' : undefined}
+                onClick={() => handleChange(index(), item)}
+              >
+                {content()}
+              </button>
+            </Show>
+          </Dynamic>
+        )
+      }}
+    </For>
+  )
+
+  const wrappedItems = () => (
+    <Dynamic
+      component={listComponent()}
+      class={classNames(`${prefixCls()}-list`, local.classNames?.list)}
+      style={local.styles?.list}
+    >
+      {renderItems()}
+    </Dynamic>
+  )
+
+  return (
+    <Show
+      when={RootComponent() === 'ol'}
+      fallback={
+        <div {...rest} class={rootClass()} style={rootStyle()}>
+          {wrappedItems()}
+        </div>
+      }
+    >
+      <ol {...commonRootProps()} class={rootClass()} style={rootStyle()}>
+        {renderItems()}
       </ol>
-    </div>
+    </Show>
   )
 }

@@ -58,6 +58,20 @@ export function useStepsStyle(prefixCls: string) {
         'line-height': 'inherit',
         'text-align': 'start',
       },
+      [`.${prefixCls}-item-wrapper`]: {
+        position: 'relative',
+        display: 'flex',
+        width: '100%',
+      },
+      [`.${prefixCls}-item-section`]: {
+        display: 'flex',
+        'min-width': 0,
+      },
+      [`.${prefixCls}-item-header`]: {
+        display: 'inline-flex',
+        'align-items': 'flex-start',
+        'min-width': 0,
+      },
       [`.${prefixCls}-navigation .${prefixCls}-item-container`]: {
         cursor: 'pointer',
       },
@@ -102,6 +116,9 @@ export function useStepsStyle(prefixCls: string) {
         'min-width': 0,
         'padding-top': '4px',
       },
+      [`.${prefixCls}-item-section > .${prefixCls}-item-content`]: {
+        'padding-top': '4px',
+      },
       [`.${prefixCls}-small .${prefixCls}-item-content`]: {
         'padding-top': '1px',
       },
@@ -124,13 +141,27 @@ export function useStepsStyle(prefixCls: string) {
         position: 'absolute',
         background: tailColor,
       },
+      [`.${prefixCls}-item-rail`]: {
+        position: 'absolute',
+        background: tailColor,
+      },
       [`.${prefixCls}-horizontal .${prefixCls}-item-tail`]: {
         top: `${iconSize / 2}px`,
         inset: `0 ${t.padding}px auto ${iconSize + t.marginSM}px`,
         height: `${t.lineWidth}px`,
         transform: 'translateY(-50%)',
       },
+      [`.${prefixCls}-horizontal .${prefixCls}-item-rail`]: {
+        top: `${iconSize / 2}px`,
+        inset: `0 ${t.padding}px auto ${iconSize + t.marginSM}px`,
+        height: `${t.lineWidth}px`,
+        transform: 'translateY(-50%)',
+      },
       [`.${prefixCls}-small.${prefixCls}-horizontal .${prefixCls}-item-tail`]: {
+        top: `${smallIconSize / 2}px`,
+        inset: `0 ${t.padding}px auto ${smallIconSize + t.marginXS}px`,
+      },
+      [`.${prefixCls}-small.${prefixCls}-horizontal .${prefixCls}-item-rail`]: {
         top: `${smallIconSize / 2}px`,
         inset: `0 ${t.padding}px auto ${smallIconSize + t.marginXS}px`,
       },
@@ -141,11 +172,25 @@ export function useStepsStyle(prefixCls: string) {
         width: `${t.lineWidth}px`,
         transform: 'translateX(-50%)',
       },
+      [`.${prefixCls}-vertical .${prefixCls}-item-rail`]: {
+        top: `${iconSize + t.marginXS / 2}px`,
+        bottom: `${t.marginXS / 2}px`,
+        inset: `${iconSize + t.marginXS / 2}px auto ${t.marginXS / 2}px ${iconSize / 2}px`,
+        width: `${t.lineWidth}px`,
+        transform: 'translateX(-50%)',
+      },
       [`.${prefixCls}-small.${prefixCls}-vertical .${prefixCls}-item-tail`]: {
         top: `${smallIconSize + t.marginXS / 2}px`,
         inset: `${smallIconSize + t.marginXS / 2}px auto ${t.marginXS / 2}px ${smallIconSize / 2}px`,
       },
+      [`.${prefixCls}-small.${prefixCls}-vertical .${prefixCls}-item-rail`]: {
+        top: `${smallIconSize + t.marginXS / 2}px`,
+        inset: `${smallIconSize + t.marginXS / 2}px auto ${t.marginXS / 2}px ${smallIconSize / 2}px`,
+      },
       [`.${prefixCls}-item:last-child .${prefixCls}-item-tail`]: {
+        display: 'none',
+      },
+      [`.${prefixCls}-item:last-child .${prefixCls}-item-rail`]: {
         display: 'none',
       },
       [`.${prefixCls}-item-finish .${prefixCls}-item-icon`]: {
@@ -185,6 +230,36 @@ export function useStepsStyle(prefixCls: string) {
         border: `${t.lineWidth}px solid ${t.colorBorder}`,
         color: t.colorTextDisabled,
         background: t.colorFillAlter,
+      },
+      [`.${prefixCls}-dot .${prefixCls}-item-icon`]: {
+        width: '10px',
+        height: '10px',
+        'margin-inline-end': `${t.marginSM}px`,
+        border: `${t.lineWidth * 2}px solid ${t.colorPrimary}`,
+        background: t.colorBgContainer,
+        color: t.colorPrimary,
+        'font-size': 0,
+      },
+      [`.${prefixCls}-dot .${prefixCls}-item-dot`]: {
+        display: 'block',
+        width: '100%',
+        height: '100%',
+        'border-radius': '50%',
+      },
+      [`.${prefixCls}-dot.${prefixCls}-variant-filled .${prefixCls}-item-icon`]: {
+        background: t.colorPrimary,
+        color: t.colorBgContainer,
+      },
+      [`.${prefixCls}-dot.${prefixCls}-variant-outlined .${prefixCls}-item-icon`]: {
+        background: t.colorBgContainer,
+      },
+      [`.${prefixCls}-dot .${prefixCls}-item-process .${prefixCls}-item-icon`]: {
+        background: t.colorPrimary,
+        color: t.colorBgContainer,
+      },
+      [`.${prefixCls}-dot .${prefixCls}-item-wait .${prefixCls}-item-icon`]: {
+        border: `${t.lineWidth * 2}px solid ${t.colorBorder}`,
+        color: t.colorTextDisabled,
       },
     }
   })

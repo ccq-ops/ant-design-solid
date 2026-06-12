@@ -95,4 +95,80 @@ describe('Steps', () => {
     expect(result.getByText('First step')).toBeInTheDocument()
     expect(result.getByTestId('custom-icon')).toBeInTheDocument()
   })
+
+  it('renders dot steps with semantic classNames and styles', () => {
+    const result = render(() => (
+      <Steps
+        type="dot"
+        orientation="vertical"
+        variant="filled"
+        classNames={{
+          root: 'custom-root',
+          list: 'custom-list',
+          item: 'custom-item',
+          itemIcon: 'custom-icon',
+          itemTitle: 'custom-title',
+          itemContent: 'custom-content',
+          itemRail: 'custom-rail',
+          itemWrapper: 'custom-wrapper',
+          itemSection: 'custom-section',
+          itemHeader: 'custom-header',
+        }}
+        styles={{
+          root: { width: '320px' },
+          itemIcon: { color: 'rgb(255, 0, 0)' },
+          itemTitle: { color: 'rgb(0, 0, 255)' },
+        }}
+        items={[
+          {
+            title: 'Queued',
+            description: 'Waiting',
+            className: 'first-step',
+            style: { margin: '1px' },
+            classNames: { itemContent: 'first-content' },
+            styles: { itemContent: { color: 'rgb(0, 128, 0)' } },
+          },
+        ]}
+      />
+    ))
+
+    const root = result.container.firstElementChild as HTMLElement
+    const item = result.getByRole('listitem')
+    const icon = result.container.querySelector('.ads-steps-item-icon') as HTMLElement
+    const title = result.getByText('Queued')
+    const content = result.container.querySelector('.ads-steps-item-content') as HTMLElement
+
+    expect(root).toHaveClass('ads-steps-dot')
+    expect(root).toHaveClass('ads-steps-vertical')
+    expect(root).toHaveClass('ads-steps-variant-filled')
+    expect(root).toHaveClass('custom-root')
+    expect(root).toHaveStyle({ width: '320px' })
+    expect(result.container.querySelector('.ads-steps-list')).toHaveClass('custom-list')
+    expect(item).toHaveClass('custom-item')
+    expect(item).toHaveClass('first-step')
+    expect(item).toHaveStyle({ margin: '1px' })
+    expect(icon).toHaveClass('custom-icon')
+    expect(icon).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+    expect(title).toHaveClass('custom-title')
+    expect(title).toHaveStyle({ color: 'rgb(0, 0, 255)' })
+    expect(content).toHaveClass('custom-content')
+    expect(content).toHaveClass('first-content')
+    expect(content).toHaveStyle({ color: 'rgb(0, 128, 0)' })
+    expect(result.container.querySelector('.ads-steps-item-rail')).toHaveClass('custom-rail')
+    expect(result.container.querySelector('.ads-steps-item-wrapper')).toHaveClass('custom-wrapper')
+    expect(result.container.querySelector('.ads-steps-item-section')).toHaveClass('custom-section')
+    expect(result.container.querySelector('.ads-steps-item-header')).toHaveClass('custom-header')
+  })
+
+  it('can render ordered-list semantics for internal consumers', () => {
+    const result = render(() => (
+      <Steps rootComponent="ol" itemComponent="li" items={[{ title: 'One' }, { title: 'Two' }]} />
+    ))
+
+    expect(result.container.firstElementChild?.tagName).toBe('OL')
+    expect(
+      Array.from(result.container.firstElementChild?.children ?? []).map((node) => node.tagName),
+    ).toEqual(['LI', 'LI'])
+    expect(result.getAllByRole('listitem')).toHaveLength(2)
+  })
 })
