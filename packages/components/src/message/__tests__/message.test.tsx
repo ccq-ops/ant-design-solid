@@ -74,6 +74,25 @@ describe('message', () => {
     )
   })
 
+  it('registers consistent spacing styles for stacked messages', () => {
+    const cache = createCache()
+    const [notices] = createSignal([
+      { key: 'first', type: 'info' as const, content: 'First' },
+      { key: 'second', type: 'success' as const, content: 'Second' },
+      { key: 'third', type: 'warning' as const, content: 'Third' },
+    ])
+    render(() => (
+      <StyleProvider cache={cache}>
+        <MessageHolder notices={notices} config={() => ({ stack: { threshold: 2 } })} />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('.ads-message-stack .ads-message-notice:not(:first-child)')
+    expect(css).not.toContain('.ads-message-stack .ads-message-notice-stacked:not(:first-child)')
+  })
+
   it('updates existing keyed message', () => {
     message.open({ key: 'save', type: 'info', content: 'Saving', duration: 0 })
     message.open({ key: 'save', type: 'success', content: 'Saved', duration: 0 })

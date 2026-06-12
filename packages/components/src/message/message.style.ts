@@ -28,7 +28,7 @@ export function useMessageStyle(prefixCls: string) {
           transform: 'scale(0.96)',
           opacity: 0.72,
         },
-        [`.${prefixCls}-stack .${prefixCls}-notice-stacked:not(:first-child)`]: {
+        [`.${prefixCls}-stack .${prefixCls}-notice:not(:first-child)`]: {
           'margin-top': -t.margin,
         },
         [`.${prefixCls}-notice-content`]: {
