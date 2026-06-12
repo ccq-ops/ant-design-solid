@@ -16,6 +16,9 @@ export function useTimePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
         },
+        [`.${prefixCls}-range`]: {
+          width: '240px',
+        },
         [`.${prefixCls}-selector`]: {
           display: 'inline-flex',
           'align-items': 'center',
@@ -43,6 +46,18 @@ export function useTimePickerStyle(prefixCls: string) {
           color: t.colorTextDisabled,
         },
         [`.${prefixCls}-selection-item`]: {
+          color: t.colorText,
+        },
+        [`.${prefixCls}-range .${prefixCls}-placeholder, .${prefixCls}-range .${prefixCls}-selection-item`]:
+          {
+            flex: '1 1 0',
+            minWidth: '0',
+            overflow: 'hidden',
+            'text-overflow': 'ellipsis',
+            'white-space': 'nowrap',
+          },
+        [`.${prefixCls}-range-separator`]: {
+          flex: '0 0 auto',
           color: t.colorText,
         },
         [`.${prefixCls}-icon-stack`]: {

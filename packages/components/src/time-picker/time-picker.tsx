@@ -639,6 +639,27 @@ function orderRange(parts: [TimeParts | undefined, TimeParts | undefined]) {
   ]
 }
 
+function completePartsFromDraft(
+  parts: NullableTimeParts,
+  format: TimePickerFormat,
+): TimeParts | undefined {
+  const needsSeconds = format.includes('s')
+  if (
+    parts.hour === undefined ||
+    parts.minute === undefined ||
+    (needsSeconds && parts.second === undefined)
+  ) {
+    return undefined
+  }
+  const second = needsSeconds ? parts.second : 0
+  if (second === undefined) return undefined
+  return {
+    hour: parts.hour,
+    minute: parts.minute,
+    second,
+  }
+}
+
 function TimeRangePicker(props: TimeRangePickerProps) {
   const [local, rest] = splitProps(props, [
     'value',
@@ -711,12 +732,23 @@ function TimeRangePicker(props: TimeRangePickerProps) {
   const selectedRange = createMemo(() =>
     isValueControlled() ? rangeValueToParts(local.value) : innerValue(),
   )
+  const open = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
+  const displayRange = createMemo(() => {
+    if (!open()) return selectedRange()
+    const draft = draftRange()
+    return [
+      completePartsFromDraft(draft[0], format()) ?? selectedRange()[0],
+      completePartsFromDraft(draft[1], format()) ?? selectedRange()[1],
+    ] as [TimeParts | undefined, TimeParts | undefined]
+  })
   const displayValues = () =>
-    [formatParts(selectedRange()[0], format()), formatParts(selectedRange()[1], format())] as [
+    [formatParts(displayRange()[0], format()), formatParts(displayRange()[1], format())] as [
       string,
       string,
     ]
-  const open = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
+  const allowClearEnabled = () => local.allowClear !== false
+  const showClear = () =>
+    allowClearEnabled() && !local.disabled && Boolean(displayValues()[0] || displayValues()[1])
 
   createEffect(() => {
     const selected = selectedRange()
@@ -749,7 +781,13 @@ function TimeRangePicker(props: TimeRangePickerProps) {
 
   function setOpen(nextOpen: boolean): void {
     if (local.disabled && nextOpen) return
-    if (nextOpen) updateDropdownPosition()
+    if (nextOpen) {
+      setActiveSide('start')
+      updateDropdownPosition()
+    } else {
+      const selected = selectedRange()
+      setDraftRange([selected[0] ?? {}, selected[1] ?? {}])
+    }
     if (local.open === undefined) setInnerOpen(nextOpen)
     local.onOpenChange?.(nextOpen)
   }
@@ -770,14 +808,6 @@ function TimeRangePicker(props: TimeRangePickerProps) {
     })
   })
 
-  function isComplete(parts: NullableTimeParts): parts is TimeParts {
-    return (
-      parts.hour !== undefined &&
-      parts.minute !== undefined &&
-      (!format().includes('s') || parts.second !== undefined)
-    )
-  }
-
   function changeRange(nextRange: [TimeParts | undefined, TimeParts | undefined]): void {
     const orderedRange = local.order === false ? nextRange : orderRange(nextRange)
     if (!isValueControlled()) setInnerValue(orderedRange)
@@ -792,16 +822,41 @@ function TimeRangePicker(props: TimeRangePickerProps) {
     const nextDraft = [...draftRange()] as [NullableTimeParts, NullableTimeParts]
     nextDraft[sideIndex] = { ...nextDraft[sideIndex], [type]: optionValue }
     setDraftRange(nextDraft)
-    if (!isComplete(nextDraft[sideIndex])) return
-    const completeParts: TimeParts = {
-      hour: nextDraft[sideIndex].hour,
-      minute: nextDraft[sideIndex].minute,
-      second: format().includes('s') ? nextDraft[sideIndex].second : 0,
+  }
+
+  function confirmValue(): void {
+    const side = activeSide()
+    const sideIndex = side === 'start' ? 0 : 1
+    const nextDraft = [...draftRange()] as [NullableTimeParts, NullableTimeParts]
+    const completeParts = completePartsFromDraft(nextDraft[sideIndex], format())
+    if (!completeParts) return
+
+    nextDraft[sideIndex] = completeParts
+    setDraftRange(nextDraft)
+
+    if (side === 'start') {
+      setActiveSide('end')
+      return
     }
-    const nextSelected = [...selectedRange()] as [TimeParts | undefined, TimeParts | undefined]
-    nextSelected[sideIndex] = completeParts
-    changeRange(nextSelected)
-    setActiveSide(side === 'start' ? 'end' : 'start')
+
+    changeRange([
+      completePartsFromDraft(nextDraft[0], format()),
+      completePartsFromDraft(nextDraft[1], format()),
+    ])
+    setOpen(false)
+  }
+
+  function selectNow(event: MouseEvent): void {
+    event.stopPropagation()
+    const now = dayjs(Date.now())
+    const sideIndex = activeSide() === 'start' ? 0 : 1
+    const nextDraft = [...draftRange()] as [NullableTimeParts, NullableTimeParts]
+    nextDraft[sideIndex] = {
+      hour: now.hour(),
+      minute: now.minute(),
+      second: now.second(),
+    }
+    setDraftRange(nextDraft)
   }
 
   function clearValue(event: MouseEvent): void {
@@ -867,19 +922,27 @@ function TimeRangePicker(props: TimeRangePickerProps) {
         >
           {displayValues()[1] || endPlaceholder()}
         </span>
-        <Show
-          when={local.allowClear && !local.disabled && (displayValues()[0] || displayValues()[1])}
+        <span
+          class={classNames(
+            `${prefixCls()}-icon-stack`,
+            showClear() && `${prefixCls()}-icon-stack-has-clear`,
+          )}
         >
-          <button
-            type="button"
-            aria-label="Clear time"
-            class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
-            style={semanticStyle('clear', local.styles)}
-            onClick={clearValue}
-          >
-            {allowClearIcon(local.allowClear)}
-          </button>
-        </Show>
+          <span class={semanticClass('suffix', local.classNames, `${prefixCls()}-suffix`)}>
+            {local.suffixIcon ?? <ClockCircleOutlined />}
+          </span>
+          <Show when={showClear()}>
+            <button
+              type="button"
+              aria-label="Clear time"
+              class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
+              style={semanticStyle('clear', local.styles)}
+              onClick={clearValue}
+            >
+              {allowClearIcon(local.allowClear)}
+            </button>
+          </Show>
+        </span>
       </div>
       <Show when={open()}>
         <InternalPortal
@@ -905,46 +968,55 @@ function TimeRangePicker(props: TimeRangePickerProps) {
               ...local.popupStyle,
             }}
           >
-            <For each={['start', 'end'] as RangeSide[]}>
-              {(side, index) => (
-                <div
-                  role="group"
-                  aria-label={`${side} time selection`}
-                  class={semanticClass(
-                    'panel',
-                    local.classNames,
-                    `${prefixCls()}-panel`,
-                    activeSide() === side && `${prefixCls()}-panel-active`,
-                  )}
-                  style={semanticStyle('panel', local.styles)}
-                  onPointerDown={() => setActiveSide(side)}
-                >
-                  <TimeColumns
-                    prefixCls={prefixCls()}
-                    format={format()}
-                    parts={draftRange()[index()]}
-                    hourStep={normalizeStep(local.hourStep)}
-                    minuteStep={normalizeStep(local.minuteStep)}
-                    secondStep={normalizeStep(local.secondStep)}
-                    hideDisabledOptions={local.hideDisabledOptions}
-                    changeOnScroll={local.changeOnScroll}
-                    classNames={local.classNames}
-                    styles={local.styles}
-                    cellRender={local.cellRender}
-                    range={side}
-                    disabledConfig={
-                      local.disabledTime?.(
-                        selectedRange()[index()]
-                          ? partsToDayjs(selectedRange()[index()] as TimeParts)
-                          : dayjs(),
-                        side,
-                      ) ?? {}
-                    }
-                    onSelect={(type, optionValue) => selectValue(side, type, optionValue)}
-                  />
-                </div>
+            <div
+              role="group"
+              aria-label={`${activeSide()} time selection`}
+              class={semanticClass(
+                'panel',
+                local.classNames,
+                `${prefixCls()}-panel`,
+                `${prefixCls()}-panel-active`,
               )}
-            </For>
+              style={semanticStyle('panel', local.styles)}
+            >
+              <TimeColumns
+                prefixCls={prefixCls()}
+                format={format()}
+                parts={draftRange()[activeSide() === 'start' ? 0 : 1]}
+                hourStep={normalizeStep(local.hourStep)}
+                minuteStep={normalizeStep(local.minuteStep)}
+                secondStep={normalizeStep(local.secondStep)}
+                hideDisabledOptions={local.hideDisabledOptions}
+                changeOnScroll={local.changeOnScroll}
+                classNames={local.classNames}
+                styles={local.styles}
+                cellRender={local.cellRender}
+                range={activeSide()}
+                disabledConfig={
+                  local.disabledTime?.(
+                    displayRange()[activeSide() === 'start' ? 0 : 1]
+                      ? partsToDayjs(displayRange()[activeSide() === 'start' ? 0 : 1] as TimeParts)
+                      : dayjs(),
+                    activeSide(),
+                  ) ?? {}
+                }
+                onSelect={(type, optionValue) => selectValue(activeSide(), type, optionValue)}
+              />
+            </div>
+            <div
+              class={semanticClass('footer', local.classNames, `${prefixCls()}-footer`)}
+              style={semanticStyle('footer', local.styles)}
+            >
+              <Show when={local.showNow !== false}>
+                <button type="button" class={`${prefixCls()}-now-btn`} onClick={selectNow}>
+                  Now
+                </button>
+              </Show>
+              {local.renderExtraFooter?.()}
+              <button type="button" class={`${prefixCls()}-ok-btn`} onClick={confirmValue}>
+                OK
+              </button>
+            </div>
           </div>
         </InternalPortal>
       </Show>

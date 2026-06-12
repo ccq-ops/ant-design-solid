@@ -187,6 +187,42 @@ describe('TimePicker', () => {
     expect(stack).toContainElement(result.container.querySelector('.ads-time-picker-clear'))
   })
 
+  it('stacks clear and suffix icons in the range picker selector', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <TimePicker.RangePicker
+        defaultValue={[dayjs('2026-06-11 09:00:00'), dayjs('2026-06-11 18:00:00')]}
+        suffixIcon={<span>UTC</span>}
+        onChange={onChange}
+      />
+    ))
+
+    const stack = result.container.querySelector('.ads-time-picker-icon-stack')
+
+    expect(stack).toBeInTheDocument()
+    expect(stack).toContainElement(result.container.querySelector('.ads-time-picker-suffix'))
+    expect(stack).toContainElement(result.container.querySelector('.ads-time-picker-clear'))
+    expect(screen.getByText('UTC')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear time' }))
+
+    expect(onChange).toHaveBeenLastCalledWith([null, null], ['', ''])
+    expect(screen.getByRole('combobox')).toHaveTextContent('Start time')
+    expect(screen.getByRole('combobox')).toHaveTextContent('End time')
+  })
+
+  it('does not show range clear when allowClear is false', () => {
+    const result = render(() => (
+      <TimePicker.RangePicker
+        defaultValue={[dayjs('2026-06-11 09:00:00'), dayjs('2026-06-11 18:00:00')]}
+        allowClear={false}
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-time-picker-suffix')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Clear time' })).not.toBeInTheDocument()
+  })
+
   it('exposes focus and blur ref methods', () => {
     let ref: TimePickerRef | undefined
     render(() => <TimePicker ref={(next) => (ref = next)} />)
@@ -198,16 +234,35 @@ describe('TimePicker', () => {
     expect(ref?.nativeElement).toBeTruthy()
   })
 
-  it('supports range picker selection with order', () => {
+  it('confirms range picker sides one at a time before committing the range', () => {
     const onChange = vi.fn()
-    render(() => <TimePicker.RangePicker defaultOpen onChange={onChange} />)
+    const onOpenChange = vi.fn()
+    render(() => (
+      <TimePicker.RangePicker defaultOpen onChange={onChange} onOpenChange={onOpenChange} />
+    ))
 
-    fireEvent.click(screen.getAllByRole('option', { name: '18 hours' })[0])
-    fireEvent.click(screen.getAllByRole('option', { name: '30 minutes' })[0])
-    fireEvent.click(screen.getAllByRole('option', { name: '00 seconds' })[0])
-    fireEvent.click(screen.getAllByRole('option', { name: '09 hours' })[1])
-    fireEvent.click(screen.getAllByRole('option', { name: '15 minutes' })[1])
-    fireEvent.click(screen.getAllByRole('option', { name: '00 seconds' })[1])
+    expect(screen.getAllByRole('listbox')).toHaveLength(3)
+    expect(screen.getByRole('group', { name: 'start time selection' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('option', { name: '18 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '30 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '00 seconds' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('combobox')).toHaveTextContent('18:30:00')
+    expect(screen.getByRole('combobox')).toHaveTextContent('End time')
+
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getAllByRole('listbox')).toHaveLength(3)
+    expect(screen.getByRole('group', { name: 'end time selection' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toHaveTextContent('18:30:00')
+
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '15 minutes' }))
+    fireEvent.click(screen.getByRole('option', { name: '00 seconds' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
     const [times, timeStrings] = onChange.mock.lastCall as [[Dayjs, Dayjs], [string, string]]
     expect(times[0].format('HH:mm:ss')).toBe('09:15:00')
@@ -215,6 +270,71 @@ describe('TimePicker', () => {
     expect(timeStrings).toEqual(['09:15:00', '18:30:00'])
     expect(screen.getByRole('combobox')).toHaveTextContent('09:15:00')
     expect(screen.getByRole('combobox')).toHaveTextContent('18:30:00')
+    expect(screen.queryByRole('listbox', { name: 'hours' })).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
+  it('keeps range placeholders on one line with enough default width', () => {
+    const result = render(() => (
+      <TimePicker.RangePicker placeholder={['Shift start', 'Shift end']} />
+    ))
+
+    const root = result.container.firstElementChild as HTMLElement
+    const placeholders = result.container.querySelectorAll('.ads-time-picker-placeholder')
+    const separator = result.container.querySelector('.ads-time-picker-range-separator')
+
+    expect(root).toHaveClass('ads-time-picker-range')
+    expect(getComputedStyle(root).width).toBe('240px')
+    expect(placeholders).toHaveLength(2)
+    for (const placeholder of placeholders) {
+      expect(getComputedStyle(placeholder).whiteSpace).toBe('nowrap')
+      expect(getComputedStyle(placeholder).overflow).toBe('hidden')
+      expect(getComputedStyle(placeholder).textOverflow).toBe('ellipsis')
+    }
+    expect(getComputedStyle(separator as Element).flex).toBe('0 0 auto')
+  })
+
+  it('supports Now in range picker confirmation flow', () => {
+    const firstNow = dayjs('2026-06-11 08:09:10')
+    const secondNow = dayjs('2026-06-11 18:19:20')
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(firstNow.valueOf())
+    const onChange = vi.fn()
+    const onOpenChange = vi.fn()
+
+    render(() => (
+      <TimePicker.RangePicker defaultOpen onChange={onChange} onOpenChange={onOpenChange} />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Now' }))
+
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole('combobox')).toHaveTextContent('08:09:10')
+    expect(screen.getByRole('combobox')).toHaveTextContent('End time')
+
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    expect(screen.getByRole('group', { name: 'end time selection' })).toBeInTheDocument()
+    expect(onChange).not.toHaveBeenCalled()
+
+    nowSpy.mockReturnValue(secondNow.valueOf())
+    fireEvent.click(screen.getByRole('button', { name: 'Now' }))
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
+
+    const [times, timeStrings] = onChange.mock.lastCall as [[Dayjs, Dayjs], [string, string]]
+    expect(times[0].format('HH:mm:ss')).toBe('08:09:10')
+    expect(times[1].format('HH:mm:ss')).toBe('18:19:20')
+    expect(timeStrings).toEqual(['08:09:10', '18:19:20'])
+    expect(screen.queryByRole('listbox', { name: 'hours' })).not.toBeInTheDocument()
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+
+    nowSpy.mockRestore()
+  })
+
+  it('hides Now in range picker when showNow is false', () => {
+    render(() => <TimePicker.RangePicker defaultOpen showNow={false} />)
+
+    expect(screen.queryByRole('button', { name: 'Now' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'OK' })).toBeInTheDocument()
   })
 
   it('delays single value changes until OK when needConfirm is true', () => {
