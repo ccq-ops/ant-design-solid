@@ -5,7 +5,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Pagination } from '../pagination'
 
 describe('Pagination', () => {
-  afterEach(() => cleanup())
+  const originalMatchMedia = window.matchMedia
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia
+    cleanup()
+  })
 
   it('changes uncontrolled page and calls onChange', () => {
     const onChange = vi.fn()
@@ -249,5 +254,180 @@ describe('Pagination', () => {
     const pageButton = screen.getByRole('button', { name: 'Page 2' })
     expect(pageButton).toHaveClass('custom-button')
     expect(pageButton).toHaveStyle('background: blue')
+  })
+
+  it('supports function semantic classNames and styles with the merged props', () => {
+    const { container } = render(() => (
+      <Pagination
+        total={30}
+        size="small"
+        classNames={({ props }) => ({
+          root: props.size === 'small' ? 'small-root' : 'normal-root',
+          itemButton: 'fn-button',
+        })}
+        styles={({ props }) => ({
+          root: { color: props.size === 'small' ? 'rgb(255, 0, 0)' : 'rgb(0, 0, 255)' },
+          itemButton: { background: 'rgb(0, 128, 0)' },
+        })}
+      />
+    ))
+
+    const root = container.querySelector('.ads-pagination')
+    expect(root).toHaveClass('small-root')
+    expect(root).toHaveStyle('color: rgb(255, 0, 0)')
+    expect(screen.getByRole('button', { name: 'Page 2' })).toHaveClass('fn-button')
+    expect(screen.getByRole('button', { name: 'Page 2' })).toHaveStyle('background: rgb(0, 128, 0)')
+  })
+
+  it('supports locale text for labels, quick jumper, page size, and item options', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <Pagination
+        total={100}
+        showQuickJumper={{ goButton: <button type="button">Confirmar</button> }}
+        showSizeChanger
+        pageSizeOptions={[10, 20]}
+        locale={{
+          items_per_page: '/ pagina',
+          jump_to: 'Ir a',
+          page: 'Pagina',
+          prev_page: 'Pagina anterior',
+          next_page: 'Pagina siguiente',
+          page_size: 'Tamano de pagina',
+        }}
+        onChange={onChange}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: 'Pagina anterior' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Pagina siguiente' })).toBeInTheDocument()
+    expect(screen.getByText('Ir a')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tamano de pagina')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Tamano de pagina' }))
+    expect(screen.getByRole('option', { name: '20 / pagina' })).toBeInTheDocument()
+
+    fireEvent.input(screen.getByLabelText('Pagina'), { target: { value: '5' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar' }))
+    expect(onChange).toHaveBeenLastCalledWith(5, 10)
+  })
+
+  it('supports jump prev and next controls with itemRender and visibility control', () => {
+    const onChange = vi.fn()
+    const { container } = render(() => (
+      <Pagination
+        total={300}
+        defaultCurrent={15}
+        itemRender={(page, type, originalElement) => {
+          if (type === 'jump-prev') return <span>Back to {page}</span>
+          if (type === 'jump-next') return <span>Forward to {page}</span>
+          return originalElement
+        }}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Jump Previous 5 Pages' }))
+    expect(onChange).toHaveBeenLastCalledWith(10, 10)
+    cleanup()
+
+    render(() => (
+      <Pagination
+        total={300}
+        current={15}
+        itemRender={(page, type, originalElement) => {
+          if (type === 'jump-prev') return <span>Back to {page}</span>
+          if (type === 'jump-next') return <span>Forward to {page}</span>
+          return originalElement
+        }}
+      />
+    ))
+
+    expect(screen.getByRole('button', { name: 'Jump Previous 5 Pages' })).toHaveTextContent(
+      'Back to 10',
+    )
+    expect(screen.getByRole('button', { name: 'Jump Next 5 Pages' })).toHaveTextContent(
+      'Forward to 20',
+    )
+
+    cleanup()
+
+    const hiddenJumpers = render(() => (
+      <Pagination total={300} defaultCurrent={15} showPrevNextJumpers={false} />
+    ))
+    expect(
+      hiddenJumpers.container.querySelector('.ads-pagination-jump-prev'),
+    ).not.toBeInTheDocument()
+    expect(
+      hiddenJumpers.container.querySelector('.ads-pagination-jump-next'),
+    ).not.toBeInTheDocument()
+    expect(container).toBeTruthy()
+  })
+
+  it('supports custom icons, rootClass, prefixCls, and selectPrefixCls', () => {
+    const { container } = render(() => (
+      <Pagination
+        total={100}
+        defaultCurrent={5}
+        showSizeChanger
+        rootClass="custom-root-class"
+        prefixCls="custom-pagination"
+        selectPrefixCls="custom-select"
+        prevIcon={<span>Prev icon</span>}
+        nextIcon={<span>Next icon</span>}
+        jumpPrevIcon={<span>Jump prev icon</span>}
+        jumpNextIcon={<span>Jump next icon</span>}
+      />
+    ))
+
+    expect(container.querySelector('.custom-pagination')).toHaveClass('custom-root-class')
+    expect(container.querySelector('.custom-select')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Previous Page' })).toHaveTextContent('Prev icon')
+    expect(screen.getByRole('button', { name: 'Next Page' })).toHaveTextContent('Next icon')
+    expect(screen.getByRole('button', { name: 'Jump Previous 5 Pages' })).toHaveTextContent(
+      'Jump prev icon',
+    )
+    expect(screen.getByRole('button', { name: 'Jump Next 5 Pages' })).toHaveTextContent(
+      'Jump next icon',
+    )
+  })
+
+  it('supports custom size changer rendering', () => {
+    const onShowSizeChange = vi.fn()
+    render(() => (
+      <Pagination
+        total={100}
+        defaultPageSize={10}
+        pageSizeOptions={[10, 25]}
+        showSizeChanger
+        onShowSizeChange={onShowSizeChange}
+        sizeChangerRender={({ pageSize, options, onSizeChange }) => (
+          <button type="button" onClick={() => onSizeChange(25)}>
+            {pageSize} of {options.map((option) => option.value).join(',')}
+          </button>
+        )}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '10 of 10,25' }))
+
+    expect(onShowSizeChange).toHaveBeenLastCalledWith(1, 25)
+  })
+
+  it('uses small size responsively below the xs breakpoint when size is not set', () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('max-width: 575'),
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+
+    const { container } = render(() => <Pagination total={30} responsive />)
+
+    expect(container.querySelector('.ads-pagination')).toHaveClass('ads-pagination-small')
   })
 })

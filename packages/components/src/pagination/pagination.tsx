@@ -1,23 +1,43 @@
-import { For, Show, createEffect, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { Select } from '../select'
 import { classNames } from '../shared/class-names'
 import { usePaginationStyle } from './pagination.style'
 import type {
   PaginationItemType,
+  PaginationLocale,
   PaginationPageSizeOption,
   PaginationProps,
+  PaginationSemanticClassNames,
+  PaginationSemanticStyles,
   PaginationShowSizeChangerConfig,
   PaginationShowQuickJumper,
+  PaginationSizeChangerOption,
 } from './interface'
 
 const DEFAULT_PAGE_SIZE = 10
 const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100]
 const DEFAULT_TOTAL_BOUNDARY_SHOW_SIZE_CHANGER = 50
-const ELLIPSIS = 'ellipsis'
+const DEFAULT_JUMP_STEP = 5
+const ELLIPSIS_TEXT = '•••'
 
-type PageItem = number | typeof ELLIPSIS
+type PageItem = number | 'jump-prev' | 'jump-next'
+
+const DEFAULT_LOCALE: Required<PaginationLocale> = {
+  items_per_page: '/ page',
+  jump_to: 'Go to',
+  jump_to_confirm: 'confirm',
+  page: 'Page',
+  prev_page: 'Previous Page',
+  next_page: 'Next Page',
+  prev_5: 'Jump Previous 5 Pages',
+  next_5: 'Jump Next 5 Pages',
+  prev_3: 'Jump Previous 3 Pages',
+  next_3: 'Jump Next 3 Pages',
+  page_size: 'Page Size',
+}
 
 function toPositiveInteger(value: unknown, fallback: number): number {
   const numeric = Number(value)
@@ -55,7 +75,10 @@ function getPageItems(current: number, pageCount: number, showLessItems = false)
   const items: PageItem[] = []
   for (const page of sorted) {
     const previous = items[items.length - 1]
-    if (typeof previous === 'number' && page - previous > 1) items.push(ELLIPSIS)
+    if (typeof previous === 'number' && page - previous > 1) {
+      const jumpType = page < current ? 'jump-prev' : 'jump-next'
+      items.push(jumpType)
+    }
     items.push(page)
   }
   return items
@@ -73,8 +96,24 @@ function renderOriginalElement(content: JSX.Element): JSX.Element {
   return content
 }
 
+function resolveSemantic<T>(
+  value: T | ((info: { props: PaginationProps }) => T) | undefined,
+  props: PaginationProps,
+): T | undefined {
+  if (typeof value === 'function')
+    return (value as (info: { props: PaginationProps }) => T)({ props })
+  return value
+}
+
+function canUseDom(): boolean {
+  return !isServer && typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+}
+
 export function Pagination(props: PaginationProps) {
   const [local, rest] = splitProps(props, [
+    'prefixCls',
+    'selectPrefixCls',
+    'rootClass',
     'current',
     'defaultCurrent',
     'pageSize',
@@ -90,9 +129,16 @@ export function Pagination(props: PaginationProps) {
     'align',
     'responsive',
     'showLessItems',
+    'showPrevNextJumpers',
     'showTitle',
     'size',
     'totalBoundaryShowSizeChanger',
+    'locale',
+    'prevIcon',
+    'nextIcon',
+    'jumpPrevIcon',
+    'jumpNextIcon',
+    'sizeChangerRender',
     'itemRender',
     'classNames',
     'styles',
@@ -102,13 +148,15 @@ export function Pagination(props: PaginationProps) {
     'style',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-pagination`
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-pagination`
   const [, hashId] = usePaginationStyle(prefixCls())
   const [innerCurrent, setInnerCurrent] = createSignal(local.defaultCurrent ?? 1)
   const [innerPageSize, setInnerPageSize] = createSignal(local.defaultPageSize ?? DEFAULT_PAGE_SIZE)
+  const [responsiveSmall, setResponsiveSmall] = createSignal(false)
   const [simpleInput, setSimpleInput] = createSignal('')
   const [quickInput, setQuickInput] = createSignal('')
 
+  const locale = (): Required<PaginationLocale> => ({ ...DEFAULT_LOCALE, ...local.locale })
   const total = () => Math.max(0, Math.floor(Number(local.total) || 0))
   const mergedPageSize = () =>
     toPositiveInteger(local.pageSize ?? innerPageSize(), DEFAULT_PAGE_SIZE)
@@ -121,7 +169,14 @@ export function Pagination(props: PaginationProps) {
   const simple = () => Boolean(local.simple)
   const simpleReadOnly = () => isObject(local.simple) && Boolean(local.simple.readOnly)
   const showTitle = () => local.showTitle !== false
-  const size = () => local.size ?? 'medium'
+  const size = () => local.size ?? (local.responsive && responsiveSmall() ? 'small' : 'medium')
+  const mergedProps = createMemo<PaginationProps>(() => ({ ...props, size: size() }))
+  const semanticClassNames = createMemo<PaginationSemanticClassNames>(
+    () => resolveSemantic(local.classNames, mergedProps()) ?? {},
+  )
+  const semanticStyles = createMemo<PaginationSemanticStyles>(
+    () => resolveSemantic(local.styles, mergedProps()) ?? {},
+  )
   const showSizeChangerConfig = (): PaginationShowSizeChangerConfig | undefined =>
     isObject(local.showSizeChanger) ? local.showSizeChanger : undefined
   const shouldShowSizeChanger = () => {
@@ -129,6 +184,7 @@ export function Pagination(props: PaginationProps) {
     const boundary = local.totalBoundaryShowSizeChanger ?? DEFAULT_TOTAL_BOUNDARY_SHOW_SIZE_CHANGER
     return total() > boundary
   }
+  const showJumpers = () => local.showPrevNextJumpers !== false
   const showQuickJumperConfig = (): Extract<PaginationShowQuickJumper, object> | undefined =>
     isObject(local.showQuickJumper) ? local.showQuickJumper : undefined
   const range = (): [number, number] => {
@@ -137,6 +193,28 @@ export function Pagination(props: PaginationProps) {
     const end = Math.min(total(), mergedCurrent() * mergedPageSize())
     return [start, end]
   }
+  const sizeChangerOptions = (): PaginationSizeChangerOption[] =>
+    pageSizeOptions().map((option: PaginationPageSizeOption) => ({
+      value: option,
+      label: `${String(option)} ${locale().items_per_page}`,
+    }))
+
+  createEffect(() => {
+    if (!local.responsive || local.size || !canUseDom()) {
+      setResponsiveSmall(false)
+      return
+    }
+
+    const matcher = window.matchMedia('(max-width: 575px)')
+    const update = () => setResponsiveSmall(matcher.matches)
+    update()
+    matcher.addEventListener?.('change', update)
+    matcher.addListener?.(update)
+    onCleanup(() => {
+      matcher.removeEventListener?.('change', update)
+      matcher.removeListener?.(update)
+    })
+  })
 
   createEffect(() => {
     const current = mergedCurrent()
@@ -190,15 +268,15 @@ export function Pagination(props: PaginationProps) {
         class={classNames(
           `${prefixCls()}-item`,
           active() && `${prefixCls()}-item-active`,
-          local.classNames?.item,
+          semanticClassNames().item,
         )}
-        style={local.styles?.item}
+        style={semanticStyles().item}
       >
         <button
           type="button"
-          class={classNames(`${prefixCls()}-item-button`, local.classNames?.itemButton)}
-          style={local.styles?.itemButton}
-          aria-label={`Page ${page}`}
+          class={classNames(`${prefixCls()}-item-button`, semanticClassNames().itemButton)}
+          style={semanticStyles().itemButton}
+          aria-label={`${locale().page} ${page}`}
           aria-current={active() ? 'page' : undefined}
           title={showTitle() ? String(page) : undefined}
           disabled={disabled()}
@@ -214,25 +292,46 @@ export function Pagination(props: PaginationProps) {
     const selectConfig = showSizeChangerConfig()
     return (
       <Show when={shouldShowSizeChanger()}>
-        <Select
-          {...selectConfig}
-          class={classNames(`${prefixCls()}-select`, selectConfig?.class, local.classNames?.select)}
-          style={{
-            ...(selectConfig?.style as JSX.CSSProperties | undefined),
-            ...local.styles?.select,
-          }}
-          aria-label={selectConfig?.['aria-label'] ?? 'Page Size'}
-          value={String(mergedPageSize())}
-          disabled={disabled() || Boolean(selectConfig?.disabled)}
-          options={pageSizeOptions().map((option: PaginationPageSizeOption) => ({
-            value: String(option),
-            label: `${String(option)} / page`,
-          }))}
-          onChange={(value, option) => {
-            selectConfig?.onChange?.(value, option)
-            changePageSize(Number(value))
-          }}
-        />
+        <Show
+          when={local.sizeChangerRender}
+          fallback={
+            <Select
+              {...selectConfig}
+              prefixCls={local.selectPrefixCls ?? selectConfig?.prefixCls}
+              class={classNames(
+                `${prefixCls()}-select`,
+                selectConfig?.class,
+                semanticClassNames().select,
+              )}
+              style={{
+                ...(selectConfig?.style as JSX.CSSProperties | undefined),
+                ...semanticStyles().select,
+              }}
+              aria-label={selectConfig?.['aria-label'] ?? locale().page_size}
+              value={String(mergedPageSize())}
+              disabled={disabled() || Boolean(selectConfig?.disabled)}
+              options={sizeChangerOptions().map((option) => ({
+                value: String(option.value),
+                label: option.label,
+              }))}
+              onChange={(value, option) => {
+                selectConfig?.onChange?.(value, option)
+                changePageSize(Number(value))
+              }}
+            />
+          }
+        >
+          {(render) =>
+            render()({
+              disabled: disabled(),
+              pageSize: mergedPageSize(),
+              options: sizeChangerOptions(),
+              class: classNames(`${prefixCls()}-select`, semanticClassNames().select),
+              'aria-label': locale().page_size,
+              onSizeChange: (nextSize) => changePageSize(Number(nextSize)),
+            })
+          }
+        </Show>
       </Show>
     )
   }
@@ -240,14 +339,16 @@ export function Pagination(props: PaginationProps) {
   function renderNavigationButton(type: 'prev' | 'next') {
     const isPrev = type === 'prev'
     const targetPage = () => (isPrev ? mergedCurrent() - 1 : mergedCurrent() + 1)
-    const label = isPrev ? 'Previous Page' : 'Next Page'
-    const title = isPrev ? 'Previous Page' : 'Next Page'
-    const originalElement = renderOriginalElement(isPrev ? '‹' : '›')
+    const label = isPrev ? locale().prev_page : locale().next_page
+    const title = label
+    const originalElement = renderOriginalElement(
+      isPrev ? (local.prevIcon ?? '‹') : (local.nextIcon ?? '›'),
+    )
     return (
       <button
         type="button"
-        class={classNames(`${prefixCls()}-item-button`, local.classNames?.itemButton)}
-        style={local.styles?.itemButton}
+        class={classNames(`${prefixCls()}-item-button`, semanticClassNames().itemButton)}
+        style={semanticStyles().itemButton}
         aria-label={label}
         title={showTitle() ? title : undefined}
         disabled={disabled() || (isPrev ? mergedCurrent() <= 1 : mergedCurrent() >= pageCount())}
@@ -255,6 +356,34 @@ export function Pagination(props: PaginationProps) {
       >
         {renderItemContent(targetPage(), type, originalElement)}
       </button>
+    )
+  }
+
+  function renderJumpItem(type: 'jump-prev' | 'jump-next') {
+    const isPrev = type === 'jump-prev'
+    const targetPage = () =>
+      clamp(mergedCurrent() + (isPrev ? -DEFAULT_JUMP_STEP : DEFAULT_JUMP_STEP), 1, pageCount())
+    const label = isPrev ? locale().prev_5 : locale().next_5
+    const originalElement = renderOriginalElement(
+      isPrev ? (local.jumpPrevIcon ?? ELLIPSIS_TEXT) : (local.jumpNextIcon ?? ELLIPSIS_TEXT),
+    )
+    return (
+      <li
+        class={classNames(`${prefixCls()}-${type}`, semanticClassNames().ellipsis)}
+        style={semanticStyles().ellipsis}
+      >
+        <button
+          type="button"
+          class={classNames(`${prefixCls()}-item-button`, semanticClassNames().itemButton)}
+          style={semanticStyles().itemButton}
+          aria-label={label}
+          title={showTitle() ? label : undefined}
+          disabled={disabled()}
+          onClick={() => setCurrent(targetPage())}
+        >
+          {renderItemContent(targetPage(), type, originalElement)}
+        </button>
+      </li>
     )
   }
 
@@ -272,16 +401,17 @@ export function Pagination(props: PaginationProps) {
           local.responsive && `${prefixCls()}-responsive`,
           `${prefixCls()}-${size()}`,
           hashId(),
+          local.rootClass,
           local.class,
-          local.classNames?.root,
+          semanticClassNames().root,
         )}
-        style={{ ...local.styles?.root, ...(local.style as JSX.CSSProperties | undefined) }}
+        style={{ ...semanticStyles().root, ...(local.style as JSX.CSSProperties | undefined) }}
       >
         <Show when={local.showTotal}>
           {(showTotal) => (
             <span
-              class={classNames(`${prefixCls()}-total-text`, local.classNames?.totalText)}
-              style={local.styles?.totalText}
+              class={classNames(`${prefixCls()}-total-text`, semanticClassNames().totalText)}
+              style={semanticStyles().totalText}
             >
               {showTotal()(total(), range())}
             </span>
@@ -291,27 +421,37 @@ export function Pagination(props: PaginationProps) {
           when={simple()}
           fallback={
             <ul
-              class={classNames(`${prefixCls()}-list`, local.classNames?.list)}
-              style={local.styles?.list}
+              class={classNames(`${prefixCls()}-list`, semanticClassNames().list)}
+              style={semanticStyles().list}
             >
               <li
-                class={classNames(`${prefixCls()}-prev`, local.classNames?.prev)}
-                style={local.styles?.prev}
+                class={classNames(`${prefixCls()}-prev`, semanticClassNames().prev)}
+                style={semanticStyles().prev}
               >
                 {renderNavigationButton('prev')}
               </li>
               <For each={getPageItems(mergedCurrent(), pageCount(), local.showLessItems)}>
                 {(item) => (
                   <Show
-                    when={item !== ELLIPSIS}
+                    when={typeof item === 'number'}
                     fallback={
-                      <li
-                        class={classNames(`${prefixCls()}-ellipsis`, local.classNames?.ellipsis)}
-                        style={local.styles?.ellipsis}
-                        aria-hidden="true"
+                      <Show
+                        when={showJumpers()}
+                        fallback={
+                          <li
+                            class={classNames(
+                              `${prefixCls()}-ellipsis`,
+                              semanticClassNames().ellipsis,
+                            )}
+                            style={semanticStyles().ellipsis}
+                            aria-hidden="true"
+                          >
+                            {ELLIPSIS_TEXT}
+                          </li>
+                        }
                       >
-                        •••
-                      </li>
+                        {renderJumpItem(item as 'jump-prev' | 'jump-next')}
+                      </Show>
                     }
                   >
                     {renderPageButton(item as number)}
@@ -319,8 +459,8 @@ export function Pagination(props: PaginationProps) {
                 )}
               </For>
               <li
-                class={classNames(`${prefixCls()}-next`, local.classNames?.next)}
-                style={local.styles?.next}
+                class={classNames(`${prefixCls()}-next`, semanticClassNames().next)}
+                style={semanticStyles().next}
               >
                 {renderNavigationButton('next')}
               </li>
@@ -329,13 +469,13 @@ export function Pagination(props: PaginationProps) {
         >
           {renderNavigationButton('prev')}
           <span
-            class={classNames(`${prefixCls()}-simple-pager`, local.classNames?.simplePager)}
-            style={local.styles?.simplePager}
+            class={classNames(`${prefixCls()}-simple-pager`, semanticClassNames().simplePager)}
+            style={semanticStyles().simplePager}
           >
             <input
-              class={classNames(`${prefixCls()}-input`, local.classNames?.input)}
-              style={local.styles?.input}
-              aria-label="Page"
+              class={classNames(`${prefixCls()}-input`, semanticClassNames().input)}
+              style={semanticStyles().input}
+              aria-label={locale().page}
               inputMode="numeric"
               value={simpleInput()}
               disabled={disabled()}
@@ -364,14 +504,14 @@ export function Pagination(props: PaginationProps) {
         {renderPageSizeSelect()}
         <Show when={local.showQuickJumper && !simple()}>
           <span
-            class={classNames(`${prefixCls()}-quick-jumper`, local.classNames?.quickJumper)}
-            style={local.styles?.quickJumper}
+            class={classNames(`${prefixCls()}-quick-jumper`, semanticClassNames().quickJumper)}
+            style={semanticStyles().quickJumper}
           >
-            <span>Go to</span>
+            <span>{locale().jump_to}</span>
             <input
-              class={classNames(`${prefixCls()}-input`, local.classNames?.input)}
-              style={local.styles?.input}
-              aria-label="Quick jump to page"
+              class={classNames(`${prefixCls()}-input`, semanticClassNames().input)}
+              style={semanticStyles().input}
+              aria-label={local.locale?.page ?? 'Quick jump to page'}
               inputMode="numeric"
               value={quickInput()}
               disabled={disabled()}
@@ -386,8 +526,8 @@ export function Pagination(props: PaginationProps) {
                 const button = goButton()
                 return (
                   <span
-                    class={classNames(`${prefixCls()}-go-button`, local.classNames?.goButton)}
-                    style={local.styles?.goButton}
+                    class={classNames(`${prefixCls()}-go-button`, semanticClassNames().goButton)}
+                    style={semanticStyles().goButton}
                     onClick={() => commitInput(quickInput(), () => setQuickInput(''))}
                   >
                     {button}

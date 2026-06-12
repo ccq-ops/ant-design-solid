@@ -125,13 +125,37 @@ const Demo7 = function () {
 export default Demo7
 ```
 
-### Quick jumper
+### Custom size changer
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
 const Demo8 = function () {
+  return (
+    <Pagination
+      total={200}
+      showSizeChanger
+      pageSizeOptions={[10, 25, 50]}
+      sizeChangerRender={({ pageSize, options, onSizeChange }) => (
+        <button type="button" onClick={() => onSizeChange(25)}>
+          {pageSize} per page ({options.map((option) => option.value).join(', ')})
+        </button>
+      )}
+    />
+  )
+}
+
+export default Demo8
+```
+
+### Quick jumper
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Pagination, Space } from '@ant-design-solid/core'
+
+const Demo9 = function () {
   return (
     <Space direction="vertical">
       <Pagination total={200} showQuickJumper />
@@ -140,7 +164,7 @@ const Demo8 = function () {
   )
 }
 
-export default Demo8
+export default Demo9
 ```
 
 ### Total number
@@ -149,7 +173,7 @@ export default Demo8
 import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
-const Demo9 = function () {
+const Demo10 = function () {
   return (
     <Pagination
       total={200}
@@ -158,7 +182,7 @@ const Demo9 = function () {
   )
 }
 
-export default Demo9
+export default Demo10
 ```
 
 ### Less items and hidden title
@@ -167,7 +191,7 @@ export default Demo9
 import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
-const Demo10 = function () {
+const Demo11 = function () {
   return (
     <Space direction="vertical">
       <Pagination total={500} defaultCurrent={25} showLessItems />
@@ -176,7 +200,7 @@ const Demo10 = function () {
   )
 }
 
-export default Demo10
+export default Demo11
 ```
 
 ### Custom item render
@@ -185,39 +209,17 @@ export default Demo10
 import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
-const Demo11 = function () {
-  return (
-    <Pagination
-      total={120}
-      itemRender={(page, type, originalElement) => {
-        if (type === 'prev') return <span>Previous</span>
-        if (type === 'next') return <span>Next</span>
-        return <strong>{page}</strong>
-      }}
-    />
-  )
-}
-
-export default Demo11
-```
-
-### Semantic styles
-
-```tsx
-import { createSignal } from 'solid-js'
-import { Pagination, Space } from '@ant-design-solid/core'
-
 const Demo12 = function () {
   return (
     <Pagination
-      total={80}
-      classNames={{
-        root: 'custom-pagination',
-        itemButton: 'custom-page-button',
-      }}
-      styles={{
-        root: { 'justify-content': 'center' },
-        itemButton: { 'border-radius': '999px' },
+      total={300}
+      defaultCurrent={15}
+      itemRender={(page, type, originalElement) => {
+        if (type === 'prev') return <span>Previous</span>
+        if (type === 'next') return <span>Next</span>
+        if (type === 'jump-prev') return <span>Back {page}</span>
+        if (type === 'jump-next') return <span>Forward {page}</span>
+        return <strong>{page}</strong>
       }}
     />
   )
@@ -226,17 +228,109 @@ const Demo12 = function () {
 export default Demo12
 ```
 
-### Disabled
+### Custom icons and jumpers
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
 const Demo13 = function () {
-  return <Pagination disabled total={80} defaultCurrent={3} />
+  return (
+    <Space direction="vertical">
+      <Pagination
+        total={300}
+        defaultCurrent={15}
+        prevIcon={<span>Prev</span>}
+        nextIcon={<span>Next</span>}
+        jumpPrevIcon={<span>-5</span>}
+        jumpNextIcon={<span>+5</span>}
+      />
+      <Pagination total={300} defaultCurrent={15} showPrevNextJumpers={false} />
+    </Space>
+  )
 }
 
 export default Demo13
+```
+
+### Locale
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Pagination, Space } from '@ant-design-solid/core'
+
+const Demo14 = function () {
+  return (
+    <Pagination
+      total={120}
+      showQuickJumper={{ goButton: <button type="button">Ir</button> }}
+      showSizeChanger
+      locale={{
+        items_per_page: '/ pagina',
+        jump_to: 'Ir a',
+        page: 'Pagina',
+        prev_page: 'Pagina anterior',
+        next_page: 'Pagina siguiente',
+        prev_5: 'Retroceder 5 paginas',
+        next_5: 'Avanzar 5 paginas',
+        page_size: 'Tamano de pagina',
+      }}
+    />
+  )
+}
+
+export default Demo14
+```
+
+### Semantic styles
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Pagination, Space } from '@ant-design-solid/core'
+
+const Demo15 = function () {
+  return (
+    <Space direction="vertical">
+      <Pagination
+        total={80}
+        rootClass="custom-pagination-root"
+        classNames={{
+          root: 'custom-pagination',
+          itemButton: 'custom-page-button',
+        }}
+        styles={{
+          root: { 'justify-content': 'center' },
+          itemButton: { 'border-radius': '999px' },
+        }}
+      />
+      <Pagination
+        total={80}
+        size="small"
+        classNames={({ props }) => ({
+          root: props.size === 'small' ? 'compact-pagination' : 'default-pagination',
+        })}
+        styles={({ props }) => ({
+          root: { color: props.size === 'small' ? 'red' : 'blue' },
+        })}
+      />
+    </Space>
+  )
+}
+
+export default Demo15
+```
+
+### Disabled
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Pagination, Space } from '@ant-design-solid/core'
+
+const Demo16 = function () {
+  return <Pagination disabled total={80} defaultCurrent={3} />
+}
+
+export default Demo16
 ```
 
 ### Hide on single page
@@ -245,42 +339,73 @@ export default Demo13
 import { createSignal } from 'solid-js'
 import { Pagination, Space } from '@ant-design-solid/core'
 
-const Demo14 = function () {
+const Demo17 = function () {
   return <Pagination total={5} hideOnSinglePage />
 }
 
-export default Demo14
+export default Demo17
+```
+
+### Prefix
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Pagination, Space } from '@ant-design-solid/core'
+
+const Demo18 = function () {
+  return (
+    <Pagination
+      total={100}
+      showSizeChanger
+      prefixCls="custom-pagination"
+      selectPrefixCls="custom-select"
+      rootClass="custom-root"
+    />
+  )
+}
+
+export default Demo18
 ```
 
 ## API
 
-| Property                       | Description                                                                | Type                                                                                            | Default             |
-| ------------------------------ | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------- |
-| `align`                        | Aligns pagination items within the container.                              | `'start' \| 'center' \| 'end'`                                                                  | `-`                 |
-| `class`                        | Additional class name for the root pagination element.                     | `string`                                                                                        | `-`                 |
-| `classNames`                   | Semantic class names for internal slots.                                   | `Partial<Record<PaginationSemanticSlot, string>>`                                               | `-`                 |
-| `current`                      | Controlled current page.                                                   | `number`                                                                                        | `-`                 |
-| `defaultCurrent`               | Initial current page for uncontrolled usage.                               | `number`                                                                                        | `1`                 |
-| `defaultPageSize`              | Initial items per page for uncontrolled usage.                             | `number`                                                                                        | `10`                |
-| `disabled`                     | Disables pagination controls.                                              | `boolean`                                                                                       | `false`             |
-| `hideOnSinglePage`             | Hides pagination when total fits on one page.                              | `boolean`                                                                                       | `false`             |
-| `itemRender`                   | Customizes page, previous, and next item content.                          | `(page: number, type: 'page' \| 'prev' \| 'next', originalElement: JSX.Element) => JSX.Element` | `-`                 |
-| `pageSize`                     | Controlled items per page.                                                 | `number`                                                                                        | `-`                 |
-| `pageSizeOptions`              | Options for page size selection.                                           | `(string \| number)[]`                                                                          | `[10, 20, 50, 100]` |
-| `responsive`                   | Adds a responsive class for responsive pagination styling.                 | `boolean`                                                                                       | `false`             |
-| `showLessItems`                | Shows fewer page items around the current page.                            | `boolean`                                                                                       | `false`             |
-| `showQuickJumper`              | Shows quick jump input. Object form supports a custom goButton.            | `boolean \| { goButton?: JSX.Element }`                                                         | `false`             |
-| `showSizeChanger`              | Shows page size selection. Object form is passed to the internal select.   | `boolean \| SelectHTMLAttributes<HTMLSelectElement>`                                            | `-`                 |
-| `showTitle`                    | Shows title attributes on page controls.                                   | `boolean`                                                                                       | `true`              |
-| `showTotal`                    | Renders custom total text.                                                 | `(total: number, range: [number, number]) => JSX.Element`                                       | `-`                 |
-| `simple`                       | Uses the compact simple layout, optionally with a read-only input.         | `boolean \| { readOnly?: boolean }`                                                             | `false`             |
-| `size`                         | Controls pagination size.                                                  | `'large' \| 'medium' \| 'small'`                                                                | `'medium'`          |
-| `style`                        | Inline style for the root pagination element.                              | `JSX.CSSProperties`                                                                             | `-`                 |
-| `styles`                       | Semantic inline styles for internal slots.                                 | `Partial<Record<PaginationSemanticSlot, JSX.CSSProperties>>`                                    | `-`                 |
-| `total`                        | Total number of items.                                                     | `number`                                                                                        | `0`                 |
-| `totalBoundaryShowSizeChanger` | Shows the size changer automatically when total is larger than this value. | `number`                                                                                        | `50`                |
-| `onChange`                     | Called when page or page size changes.                                     | `(page: number, pageSize: number) => void`                                                      | `-`                 |
-| `onShowSizeChange`             | Called when page size changes.                                             | `(current: number, size: number) => void`                                                       | `-`                 |
+| Property                       | Description                                                                  | Type                                                                                                                                                     | Default             |
+| ------------------------------ | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `align`                        | Aligns pagination items within the container.                                | `'start' \| 'center' \| 'end'`                                                                                                                           | `-`                 |
+| `class`                        | Additional class name for the root pagination element.                       | `string`                                                                                                                                                 | `-`                 |
+| `classNames`                   | Semantic class names for internal slots. Supports object or function form.   | `PaginationSemanticClassNames \| ((info: { props: PaginationProps }) => PaginationSemanticClassNames)`                                                   | `-`                 |
+| `current`                      | Controlled current page.                                                     | `number`                                                                                                                                                 | `-`                 |
+| `defaultCurrent`               | Initial current page for uncontrolled usage.                                 | `number`                                                                                                                                                 | `1`                 |
+| `defaultPageSize`              | Initial items per page for uncontrolled usage.                               | `number`                                                                                                                                                 | `10`                |
+| `disabled`                     | Disables pagination controls.                                                | `boolean`                                                                                                                                                | `false`             |
+| `hideOnSinglePage`             | Hides pagination when total fits on one page.                                | `boolean`                                                                                                                                                | `false`             |
+| `itemRender`                   | Customizes page, previous, next, and jump item content.                      | `(page: number, type: 'page' \| 'prev' \| 'next' \| 'jump-prev' \| 'jump-next', originalElement: JSX.Element) => JSX.Element`                            | `-`                 |
+| `jumpNextIcon`                 | Custom next jump control content.                                            | `JSX.Element`                                                                                                                                            | `•••`               |
+| `jumpPrevIcon`                 | Custom previous jump control content.                                        | `JSX.Element`                                                                                                                                            | `•••`               |
+| `locale`                       | Localized labels for pager controls, quick jumper, and size changer.         | `PaginationLocale`                                                                                                                                       | built-in English    |
+| `nextIcon`                     | Custom next page control content.                                            | `JSX.Element`                                                                                                                                            | `›`                 |
+| `pageSize`                     | Controlled items per page.                                                   | `number`                                                                                                                                                 | `-`                 |
+| `pageSizeOptions`              | Options for page size selection.                                             | `(string \| number)[]`                                                                                                                                   | `[10, 20, 50, 100]` |
+| `prefixCls`                    | Custom CSS class prefix for Pagination.                                      | `string`                                                                                                                                                 | `ads-pagination`    |
+| `prevIcon`                     | Custom previous page control content.                                        | `JSX.Element`                                                                                                                                            | `‹`                 |
+| `responsive`                   | Uses small size below the xs breakpoint when `size` is not set.              | `boolean`                                                                                                                                                | `false`             |
+| `rootClass`                    | Additional root class, Solid-style equivalent of antd's root class override. | `string`                                                                                                                                                 | `-`                 |
+| `selectPrefixCls`              | Custom CSS class prefix for the internal Select.                             | `string`                                                                                                                                                 | `ads-select`        |
+| `showLessItems`                | Shows fewer page items around the current page.                              | `boolean`                                                                                                                                                | `false`             |
+| `showPrevNextJumpers`          | Shows jump previous and jump next controls when page ranges are collapsed.   | `boolean`                                                                                                                                                | `true`              |
+| `showQuickJumper`              | Shows quick jump input. Object form supports a custom goButton.              | `boolean \| { goButton?: JSX.Element }`                                                                                                                  | `false`             |
+| `showSizeChanger`              | Shows page size selection. Object form is passed to the internal Select.     | `boolean \| Omit<SelectProps, 'children' \| 'value' \| 'defaultValue' \| 'options'>`                                                                     | `-`                 |
+| `showTitle`                    | Shows title attributes on page controls.                                     | `boolean`                                                                                                                                                | `true`              |
+| `showTotal`                    | Renders custom total text.                                                   | `(total: number, range: [number, number]) => JSX.Element`                                                                                                | `-`                 |
+| `simple`                       | Uses the compact simple layout, optionally with a read-only input.           | `boolean \| { readOnly?: boolean }`                                                                                                                      | `false`             |
+| `size`                         | Controls pagination size.                                                    | `'large' \| 'medium' \| 'small'`                                                                                                                         | `'medium'`          |
+| `sizeChangerRender`            | Custom render function for the page size changer.                            | `(info: { disabled: boolean; pageSize: number; options: PaginationSizeChangerOption[]; onSizeChange: (size: string \| number) => void }) => JSX.Element` | `-`                 |
+| `style`                        | Inline style for the root pagination element.                                | `JSX.CSSProperties`                                                                                                                                      | `-`                 |
+| `styles`                       | Semantic inline styles for internal slots. Supports object or function form. | `PaginationSemanticStyles \| ((info: { props: PaginationProps }) => PaginationSemanticStyles)`                                                           | `-`                 |
+| `total`                        | Total number of items.                                                       | `number`                                                                                                                                                 | `0`                 |
+| `totalBoundaryShowSizeChanger` | Shows the size changer automatically when total is larger than this value.   | `number`                                                                                                                                                 | `50`                |
+| `onChange`                     | Called when page or page size changes.                                       | `(page: number, pageSize: number) => void`                                                                                                               | `-`                 |
+| `onShowSizeChange`             | Called when page size changes.                                               | `(current: number, size: number) => void`                                                                                                                | `-`                 |
 
 ## Semantic DOM
 
