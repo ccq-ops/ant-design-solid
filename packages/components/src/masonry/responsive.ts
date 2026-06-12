@@ -1,4 +1,4 @@
-import type { MasonryBreakpoint, MasonryResponsiveValue } from './interface'
+import type { MasonryBreakpoint, MasonryGutter, MasonryResponsiveValue } from './interface'
 
 export const MASONRY_BREAKPOINTS: Record<MasonryBreakpoint, number> = {
   xs: 0,
@@ -33,6 +33,12 @@ export function resolveResponsiveValue<T>(
   return resolved
 }
 
-export function formatMasonryGap(value: number | string): string {
-  return typeof value === 'number' ? `${value}px` : value
+export function resolveMasonryGutter(
+  gutter: MasonryGutter | undefined,
+  width: number,
+): [horizontal: string, vertical: string, verticalSize: number] {
+  const [horizontalInput, verticalInput] = Array.isArray(gutter) ? gutter : [gutter, gutter]
+  const horizontal = resolveResponsiveValue(horizontalInput, 0, width) ?? 0
+  const vertical = resolveResponsiveValue(verticalInput, horizontal, width) ?? 0
+  return [`${horizontal}px`, `${vertical}px`, vertical]
 }

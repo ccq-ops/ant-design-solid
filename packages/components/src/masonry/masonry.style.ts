@@ -9,14 +9,14 @@ export function useMasonryStyle(prefixCls: string) {
       [`.${prefixCls}`]: {
         display: 'grid',
         'grid-template-columns': 'repeat(var(--ads-masonry-columns, auto-fit), minmax(0, 1fr))',
-        gap: 'var(--ads-masonry-gutter, 16px)',
+        'column-gap': 'var(--ads-masonry-horizontal-gutter, 0px)',
         width: '100%',
         'box-sizing': 'border-box',
       },
       [`.${prefixCls}-column`]: {
         display: 'flex',
         'flex-direction': 'column',
-        gap: 'var(--ads-masonry-gutter, 16px)',
+        gap: 'var(--ads-masonry-vertical-gutter, 0px)',
         'min-width': 0,
       },
       [`.${prefixCls}-item`]: {
