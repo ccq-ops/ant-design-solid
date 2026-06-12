@@ -4,6 +4,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { Popconfirm } from '../index'
 
+beforeEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
+
+afterEach(() => {
+  cleanup()
+  document.body.innerHTML = ''
+})
+
 describe('Popconfirm', () => {
   beforeEach(() => {
     cleanup()
@@ -25,7 +35,7 @@ describe('Popconfirm', () => {
 
     fireEvent.click(result.getByRole('button', { name: 'Delete' }))
     expect(document.body).toHaveTextContent('Delete?')
-    expect(document.body.querySelector('.ads-popconfirm')).toHaveClass('ads-popconfirm-top')
+    expect(document.body.querySelector('.ads-popconfirm')).toHaveClass('ads-popconfirm-bottom')
 
     fireEvent.click(
       document.body.querySelector<HTMLButtonElement>('.ads-popconfirm-buttons .ads-btn-primary')!,
@@ -229,7 +239,7 @@ describe('Popconfirm', () => {
     const popup = document.body.querySelector<HTMLElement>('.ads-popconfirm')!
     expect(popup).toHaveClass('ads-popconfirm-bottom')
     expect(popup.style.top).toBe('68px')
-    expect(popup.style.left).toBe('10px')
+    expect(popup.style.left).toBe('60px')
     rectSpy.mockRestore()
   })
 })
@@ -246,4 +256,138 @@ it('uses explicit zIndex and custom popup container', () => {
   const overlay = popupContainer.querySelector<HTMLElement>('.ads-popconfirm')!
   expect(overlay).toHaveTextContent('Delete?')
   expect(overlay.style.zIndex).toBe('1236')
+})
+
+it('passes click events and button props to action callbacks', async () => {
+  const onConfirm = vi.fn()
+  const onCancel = vi.fn()
+  render(() => (
+    <Popconfirm
+      title="Delete?"
+      open
+      okText="Remove"
+      cancelText="Back"
+      okButtonProps={{ danger: true, class: 'ok-extra', 'aria-label': 'confirm removal' }}
+      cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
+      onConfirm={onConfirm}
+      onCancel={onCancel}
+    >
+      <button>trigger</button>
+    </Popconfirm>
+  ))
+
+  const cancelButton = document.body.querySelector<HTMLButtonElement>(
+    '.ads-popconfirm-buttons .cancel-extra',
+  )!
+  const okButton = document.body.querySelector<HTMLButtonElement>(
+    '.ads-popconfirm-buttons .ok-extra',
+  )!
+
+  expect(cancelButton).toBeDisabled()
+  expect(okButton).toHaveClass('ads-btn-dangerous')
+  expect(okButton).toHaveAttribute('aria-label', 'confirm removal')
+
+  fireEvent.click(okButton)
+  await waitFor(() => expect(onConfirm).toHaveBeenCalledTimes(1))
+  expect(onConfirm.mock.calls[0][0]).toBeInstanceOf(MouseEvent)
+})
+
+it('supports okType, showCancel, icon, function content, and popup click callback', async () => {
+  const onPopupClick = vi.fn()
+  const onConfirm = vi.fn()
+  render(() => (
+    <Popconfirm
+      title={() => 'Archive item?'}
+      description={() => 'This can be restored later.'}
+      open
+      okType="dashed"
+      showCancel={false}
+      icon={<span data-testid="archive-icon">!</span>}
+      onPopupClick={onPopupClick}
+      onConfirm={onConfirm}
+    >
+      <button>trigger</button>
+    </Popconfirm>
+  ))
+
+  const popup = document.body.querySelector<HTMLElement>('.ads-popconfirm')!
+  expect(popup).toHaveTextContent('Archive item?')
+  expect(popup).toHaveTextContent('This can be restored later.')
+  expect(popup.querySelector('[data-testid="archive-icon"]')).toBeInTheDocument()
+  expect(popup.querySelectorAll('.ads-popconfirm-buttons .ads-btn')).toHaveLength(1)
+
+  fireEvent.click(popup.querySelector<HTMLElement>('[role="dialog"]')!)
+  expect(onPopupClick).toHaveBeenCalledTimes(1)
+
+  const okButton = popup.querySelector<HTMLButtonElement>('.ads-popconfirm-buttons .ads-btn')!
+  expect(okButton).toHaveClass('ads-btn-dashed')
+  fireEvent.click(okButton)
+  await waitFor(() => expect(onConfirm).toHaveBeenCalledTimes(1))
+})
+
+it('inherits popover shared placement, trigger, arrow, and semantic style APIs', async () => {
+  const result = render(() => (
+    <Popconfirm
+      title="Shared APIs"
+      description="From Popover"
+      placement="bottomRight"
+      trigger={['hover', 'contextMenu']}
+      mouseEnterDelay={0}
+      mouseLeaveDelay={0}
+      arrow={{ pointAtCenter: true }}
+      autoAdjustOverflow={false}
+      align={{ offset: [4, 6] }}
+      class="trigger-extra"
+      rootClass="root-extra"
+      overlayClass="overlay-extra"
+      overlayStyle={{ width: '320px' }}
+      overlayInnerStyle={{ padding: '12px' }}
+      classNames={{
+        root: 'semantic-root',
+        container: 'semantic-container',
+        arrow: 'semantic-arrow',
+        icon: 'semantic-icon',
+        title: 'semantic-title',
+        description: 'semantic-description',
+        buttons: 'semantic-buttons',
+      }}
+      styles={{
+        root: { border: '1px solid rgb(1, 2, 3)' },
+        container: { color: 'rgb(4, 5, 6)' },
+        arrow: { background: 'rgb(7, 8, 9)' },
+        icon: { color: 'rgb(10, 11, 12)' },
+        title: { 'font-weight': 700 },
+        description: { 'margin-top': '6px' },
+        buttons: { gap: '6px' },
+      }}
+    >
+      <Button>Hover me</Button>
+    </Popconfirm>
+  ))
+
+  const trigger = result.getByText('Hover me').parentElement!
+  expect(trigger).toHaveClass('trigger-extra')
+
+  fireEvent.mouseEnter(trigger)
+  await waitFor(() => expect(document.body).toHaveTextContent('Shared APIs'))
+
+  const popup = document.body.querySelector<HTMLElement>('.ads-popconfirm')!
+  expect(popup).toHaveClass(
+    'ads-popconfirm-bottomRight',
+    'ads-popconfirm-arrow-point-at-center',
+    'root-extra',
+    'overlay-extra',
+    'semantic-root',
+  )
+  expect(popup.style.width).toBe('320px')
+  expect(popup.style.border).toBe('1px solid rgb(1, 2, 3)')
+  expect(popup.querySelector('.ads-popconfirm-arrow')).toHaveClass('semantic-arrow')
+  expect(popup.querySelector('.ads-popconfirm-inner')).toHaveClass('semantic-container')
+  expect(popup.querySelector('.ads-popconfirm-icon')).toHaveClass('semantic-icon')
+  expect(popup.querySelector('.ads-popconfirm-title')).toHaveClass('semantic-title')
+  expect(popup.querySelector('.ads-popconfirm-description')).toHaveClass('semantic-description')
+  expect(popup.querySelector('.ads-popconfirm-buttons')).toHaveClass('semantic-buttons')
+
+  fireEvent.contextMenu(trigger)
+  expect(document.body).toHaveTextContent('Shared APIs')
 })

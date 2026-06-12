@@ -1,140 +1,233 @@
-import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup, splitProps, type JSX } from 'solid-js'
+import { ExclamationCircleFilled } from '@ant-design-solid/icons'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
+import { Popover, type PopoverSemanticClassNames, type PopoverSemanticStyles } from '../popover'
 import { classNames } from '../shared/class-names'
-import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
-import { InternalPortal, canUseDom } from '../shared/portal'
-import { ZIndexContext, useZIndex } from '../shared/z-index'
-import { useWatermarkPanelRef } from '../watermark/context'
-import type { PopconfirmProps } from './interface'
+import { addDocumentKeydown, addDocumentPointerDown } from '../shared/overlay'
+import type {
+  PopconfirmProps,
+  PopconfirmRef,
+  PopconfirmSemanticClassNames,
+  PopconfirmSemanticStyles,
+} from './interface'
 import { usePopconfirmStyle } from './popconfirm.style'
 
-const POPUP_GAP = 8
+function isRenderFunction(value: PopconfirmProps['title']): value is () => JSX.Element {
+  return typeof value === 'function'
+}
+
+function resolveContent(value: PopconfirmProps['title'] | PopconfirmProps['description']) {
+  return isRenderFunction(value) ? value() : value
+}
+
+function assignRef(ref: PopconfirmProps['ref'], value: PopconfirmRef) {
+  if (!ref) return
+  if (typeof ref === 'function') {
+    ref(value)
+    return
+  }
+  if ('current' in ref) ref.current = value
+  else Object.assign(ref, value)
+}
 
 export function Popconfirm(props: PopconfirmProps) {
-  const [innerOpen, setInnerOpen] = createSignal(props.defaultOpen ?? false)
-  const [trigger, setTrigger] = createSignal<HTMLElement>()
-  const [popup, setPopup] = createSignal<HTMLDivElement>()
+  const [local, rest] = splitProps(props, [
+    'ref',
+    'title',
+    'description',
+    'disabled',
+    'trigger',
+    'okText',
+    'okType',
+    'okButtonProps',
+    'cancelText',
+    'cancelButtonProps',
+    'showCancel',
+    'icon',
+    'onConfirm',
+    'onCancel',
+    'onOpenChange',
+    'onPopupClick',
+    'classNames',
+    'styles',
+    'onClick',
+  ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-popconfirm`
-  const watermarkPanelRef = useWatermarkPanelRef()
   const [, hashId] = usePopconfirmStyle(prefixCls())
-  const [zIndex, contextZIndex] = useZIndex('Popconfirm', props.zIndex)
-  const mergedOpen = () => props.open ?? innerOpen()
-  const placement = () => props.placement ?? 'top'
+  const [innerOpen, setInnerOpen] = createSignal(rest.defaultOpen ?? false)
+  const [popoverRef, setPopoverRef] = createSignal<PopconfirmRef>()
+  const mergedOpen = () => (local.disabled ? false : (rest.open ?? innerOpen()))
+  const destroyOnHidden = () =>
+    rest.destroyOnHidden ??
+    (rest.destroyTooltipOnHide !== undefined ? Boolean(rest.destroyTooltipOnHide) : true)
 
-  const setOpen = (next: boolean) => {
-    if (props.disabled && next) return
-    if (props.open === undefined) setInnerOpen(next)
-    props.onOpenChange?.(next)
-  }
+  const semanticProps = (): PopconfirmProps => ({ ...props })
+  const resolvedClassNames = (): PopconfirmSemanticClassNames =>
+    typeof local.classNames === 'function'
+      ? local.classNames({ props: semanticProps() })
+      : (local.classNames ?? {})
+  const resolvedStyles = (): PopconfirmSemanticStyles =>
+    typeof local.styles === 'function'
+      ? local.styles({ props: semanticProps() })
+      : (local.styles ?? {})
 
-  function containsPopupTarget(target: EventTarget | null): boolean {
-    return Boolean(
-      target instanceof Node && (trigger()?.contains(target) || popup()?.contains(target)),
-    )
-  }
-
-  const getPosition = (element = trigger()) => {
-    if (!canUseDom()) return { top: '0px', left: '0px' }
-
-    const rect = element?.getBoundingClientRect()
-    if (!rect) return { top: '0px', left: '0px' }
-
-    if (placement() === 'bottom') {
-      return { top: `${rect.bottom + POPUP_GAP}px`, left: `${rect.left}px` }
-    }
-    if (placement() === 'left') {
-      return { top: `${rect.top}px`, left: `${rect.left - 288}px` }
-    }
-    if (placement() === 'right') {
-      return { top: `${rect.top}px`, left: `${rect.right + POPUP_GAP}px` }
-    }
+  const popoverClassNames = (): PopoverSemanticClassNames => {
+    const classNames = resolvedClassNames()
     return {
-      top: `${rect.top - POPUP_GAP}px`,
-      left: `${rect.left}px`,
-      transform: 'translateY(-100%)',
+      root: classNames.root,
+      container: classNames.container,
+      arrow: classNames.arrow,
     }
   }
-  const [position, setPosition] = createSignal(getPosition())
-
-  function updatePosition(): void {
-    setPosition(getPosition())
+  const popoverStyles = (): PopoverSemanticStyles => {
+    const styles = resolvedStyles()
+    return {
+      root: styles.root,
+      container: styles.container,
+      arrow: styles.arrow,
+    }
   }
 
-  createEffect(() => {
-    if (!mergedOpen()) return
-    const removeListeners = addPositionUpdateListeners(updatePosition)
-    onCleanup(removeListeners)
-  })
-
-  createEffect(() => {
-    if (!mergedOpen()) return
-    const removePointerDown = addDocumentPointerDown((event) => {
-      if (!containsPopupTarget(event.target)) setOpen(false)
-    })
-    onCleanup(removePointerDown)
-  })
-
-  const confirm = async (event?: MouseEvent) => {
+  const confirm = async (event: MouseEvent) => {
     event?.stopPropagation()
     try {
-      await props.onConfirm?.()
+      await local.onConfirm?.(event)
       setOpen(false)
     } catch {
       setOpen(true)
     }
   }
 
-  const cancel = (event?: MouseEvent) => {
+  const cancel = (event: MouseEvent) => {
     event?.stopPropagation()
-    props.onCancel?.()
     setOpen(false)
+    local.onCancel?.(event)
+  }
+
+  const setOpen = (nextOpen: boolean) => {
+    if (local.disabled && nextOpen) return
+    if (rest.open === undefined) setInnerOpen(nextOpen)
+    local.onOpenChange?.(nextOpen)
+  }
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (local.disabled && nextOpen) return
+    setOpen(nextOpen)
+  }
+
+  const handleClick = (event: MouseEvent & { currentTarget: HTMLSpanElement; target: Element }) => {
+    ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
+    if ((local.trigger ?? 'click') !== 'click') return
+    if (local.disabled) return
+    setOpen(true)
+  }
+
+  createEffect(() => {
+    const ref = popoverRef()
+    if (ref) assignRef(local.ref, ref)
+  })
+
+  const containsTarget = (target: EventTarget | null) => {
+    const ref = popoverRef()
+    return Boolean(
+      target instanceof Node &&
+      (ref?.nativeElement?.contains(target) || ref?.popupElement?.contains(target)),
+    )
+  }
+
+  const cleanupPointerDown = addDocumentPointerDown((event) => {
+    if (!mergedOpen()) return
+    if (containsTarget(event.target)) return
+    setOpen(false)
+  })
+  const cleanupKeydown = addDocumentKeydown((event) => {
+    if (event.key === 'Escape' && mergedOpen()) setOpen(false)
+  })
+
+  onCleanup(() => {
+    cleanupPointerDown()
+    cleanupKeydown()
+  })
+
+  const overlay = () => {
+    const semanticClassNames = resolvedClassNames()
+    const semanticStyles = resolvedStyles()
+    const icon = local.icon ?? <ExclamationCircleFilled />
+
+    return (
+      <div
+        class={`${prefixCls()}-body`}
+        role="dialog"
+        on:click={(event) => {
+          event.stopPropagation()
+          local.onPopupClick?.(event)
+        }}
+      >
+        <div class={`${prefixCls()}-message`}>
+          <Show when={icon}>
+            <span
+              class={classNames(`${prefixCls()}-icon`, semanticClassNames.icon)}
+              style={semanticStyles.icon}
+            >
+              {icon}
+            </span>
+          </Show>
+          <div class={`${prefixCls()}-text`}>
+            <div
+              class={classNames(`${prefixCls()}-title`, semanticClassNames.title)}
+              style={semanticStyles.title}
+            >
+              {resolveContent(local.title)}
+            </div>
+            <Show when={local.description}>
+              <div
+                class={classNames(`${prefixCls()}-description`, semanticClassNames.description)}
+                style={semanticStyles.description}
+              >
+                {resolveContent(local.description)}
+              </div>
+            </Show>
+          </div>
+        </div>
+        <div
+          class={classNames(`${prefixCls()}-buttons`, semanticClassNames.buttons)}
+          style={semanticStyles.buttons}
+        >
+          <Show when={local.showCancel ?? true}>
+            <Button size="small" {...local.cancelButtonProps} on:click={cancel}>
+              {local.cancelText ?? 'Cancel'}
+            </Button>
+          </Show>
+          <Button
+            size="small"
+            type={local.okType ?? 'primary'}
+            {...local.okButtonProps}
+            on:click={confirm}
+          >
+            {local.okText ?? 'OK'}
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <ZIndexContext.Provider value={contextZIndex}>
-      <span
-        ref={setTrigger}
-        onClick={(event) => {
-          if (props.disabled) return
-          setPosition(getPosition(event.currentTarget))
-          setOpen(true)
-        }}
-      >
-        {props.children}
-      </span>
-      <Show when={mergedOpen()}>
-        <InternalPortal
-          mount={() =>
-            props.getPopupContainer?.(trigger()) ?? config.getPopupContainer?.(trigger())
-          }
-        >
-          <div
-            ref={(element) => {
-              setPopup(element)
-              watermarkPanelRef(element)
-            }}
-            class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
-            style={{ ...position(), 'z-index': zIndex }}
-            role="dialog"
-            on:click={(event) => event.stopPropagation()}
-          >
-            <div class={`${prefixCls()}-title`}>{props.title}</div>
-            <Show when={props.description}>
-              <div class={`${prefixCls()}-description`}>{props.description}</div>
-            </Show>
-            <div class={`${prefixCls()}-buttons`}>
-              <Button size="small" on:click={cancel}>
-                {props.cancelText ?? 'Cancel'}
-              </Button>
-              <Button size="small" type="primary" on:click={confirm}>
-                {props.okText ?? 'OK'}
-              </Button>
-            </div>
-          </div>
-        </InternalPortal>
-      </Show>
-    </ZIndexContext.Provider>
+    <Popover
+      {...rest}
+      ref={setPopoverRef}
+      open={mergedOpen()}
+      destroyOnHidden={destroyOnHidden()}
+      content={overlay}
+      trigger={(local.trigger ?? 'click') === 'click' ? [] : local.trigger}
+      onOpenChange={handleOpenChange}
+      onClick={handleClick}
+      classNames={popoverClassNames()}
+      styles={popoverStyles()}
+      rootClass={classNames(hashId(), rest.rootClass)}
+      overlayClass={classNames(rest.overlayClass, prefixCls())}
+      prefixCls={prefixCls()}
+    />
   )
 }
