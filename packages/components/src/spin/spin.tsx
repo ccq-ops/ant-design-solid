@@ -136,6 +136,7 @@ const SpinRoot = (props: SpinProps) => {
   const shouldSpin = createMemo(() => delayedSpinning())
   const [autoPercent, setAutoPercent] = createSignal(0)
   const mergedPercent = createMemo(() => (local.percent === 'auto' ? autoPercent() : local.percent))
+  const shouldShowProgress = createMemo(() => (mergedPercent() ?? 0) > 0)
   const hasChildren = createMemo(() => {
     const value = child()
     return value !== undefined && value !== null && value !== false
@@ -194,7 +195,7 @@ const SpinRoot = (props: SpinProps) => {
         <span
           class={classNames(
             `${prefixCls()}-dot-holder`,
-            mergedPercent() !== undefined && `${prefixCls()}-dot-holder-hidden`,
+            shouldShowProgress() && `${prefixCls()}-dot-holder-hidden`,
           )}
         >
           <span class={classNames(`${prefixCls()}-dot`, `${prefixCls()}-dot-spin`)}>
@@ -208,9 +209,7 @@ const SpinRoot = (props: SpinProps) => {
             </For>
           </span>
         </span>
-        <Show when={mergedPercent() !== undefined}>
-          {renderProgress(prefixCls(), mergedPercent() ?? 0)}
-        </Show>
+        <Show when={shouldShowProgress()}>{renderProgress(prefixCls(), mergedPercent() ?? 0)}</Show>
       </>
     )
   }

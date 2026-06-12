@@ -162,6 +162,16 @@ describe('Spin', () => {
     expect(container.querySelector('.ads-spin-dot-progress')).toBeInTheDocument()
   })
 
+  it('shows the regular dot before percent becomes positive', () => {
+    const { container } = render(() => <Spin percent={-50} />)
+
+    expect(container.querySelector('.ads-spin-dot')).toBeInTheDocument()
+    expect(container.querySelector('.ads-spin-dot-holder')).not.toHaveClass(
+      'ads-spin-dot-holder-hidden',
+    )
+    expect(screen.queryByRole('progressbar')).toBeNull()
+  })
+
   it('advances auto percent while spinning', async () => {
     vi.useFakeTimers()
     render(() => <Spin percent="auto" />)
