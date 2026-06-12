@@ -14,7 +14,14 @@ export function useSegmentedStyle(prefixCls: string) {
         gap: '2px',
       },
       [`.${prefixCls}-block`]: { display: 'flex', width: '100%' },
+      [`.${prefixCls}-vertical`]: {
+        'flex-direction': 'column',
+        'align-items': 'stretch',
+      },
       [`.${prefixCls}-disabled`]: { opacity: 0.6, cursor: 'not-allowed' },
+      [`.${prefixCls}-shape-round`]: {
+        'border-radius': '999px',
+      },
       [`.${prefixCls}-item`]: {
         border: 0,
         margin: 0,
@@ -30,6 +37,9 @@ export function useSegmentedStyle(prefixCls: string) {
         'justify-content': 'center',
         gap: `${token().marginXS}px`,
         flex: '0 0 auto',
+      },
+      [`.${prefixCls}-shape-round .${prefixCls}-item`]: {
+        'border-radius': '999px',
       },
       [`.${prefixCls}-block .${prefixCls}-item`]: { flex: '1 1 0' },
       [`.${prefixCls}-item:hover`]: { color: token().colorPrimaryHover },

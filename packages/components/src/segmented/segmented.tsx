@@ -1,15 +1,26 @@
 import { For, createMemo, createSignal, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import type { SegmentedOption, SegmentedProps, SegmentedValue } from './interface'
+import { Tooltip } from '../tooltip'
+import type {
+  SegmentedOption,
+  SegmentedOrientation,
+  SegmentedProps,
+  SegmentedSemanticClassNames,
+  SegmentedSemanticStyles,
+  SegmentedTooltip,
+  SegmentedValue,
+} from './interface'
 import { useSegmentedStyle } from './segmented.style'
 
 interface NormalizedOption {
-  label: SegmentedOption extends infer _ ? import('solid-js').JSX.Element : never
+  label?: JSX.Element
   value: SegmentedValue
   disabled?: boolean
-  icon?: import('solid-js').JSX.Element
+  icon?: JSX.Element
   class?: string
+  tooltip?: SegmentedTooltip
 }
 
 function normalizeOption(option: SegmentedOption): NormalizedOption {
@@ -23,6 +34,28 @@ function valuesEqual(a: SegmentedValue | undefined, b: SegmentedValue | undefine
   return a === b
 }
 
+function resolveOrientation(props: { orientation?: SegmentedOrientation; vertical?: boolean }) {
+  return props.orientation ?? (props.vertical ? 'vertical' : 'horizontal')
+}
+
+function resolveSemanticClassNames(
+  value: SegmentedProps['classNames'],
+  props: SegmentedProps,
+): SegmentedSemanticClassNames {
+  return typeof value === 'function' ? value({ props }) : (value ?? {})
+}
+
+function resolveSemanticStyles(
+  value: SegmentedProps['styles'],
+  props: SegmentedProps,
+): SegmentedSemanticStyles {
+  return typeof value === 'function' ? value({ props }) : (value ?? {})
+}
+
+function tooltipProps(tooltip: SegmentedTooltip) {
+  return typeof tooltip === 'string' ? { title: tooltip } : tooltip
+}
+
 export function Segmented(props: SegmentedProps) {
   const [local, rest] = splitProps(props, [
     'options',
@@ -31,9 +64,17 @@ export function Segmented(props: SegmentedProps) {
     'disabled',
     'block',
     'size',
+    'orientation',
+    'vertical',
+    'shape',
+    'name',
     'prefixCls',
+    'rootClass',
+    'classNames',
+    'styles',
     'onChange',
     'class',
+    'style',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-segmented`
@@ -49,6 +90,20 @@ export function Segmented(props: SegmentedProps) {
   const [innerValue, setInnerValue] = createSignal<SegmentedValue | undefined>(validDefaultValue())
   const selectedValue = () => (local.value !== undefined ? local.value : innerValue())
   const size = () => local.size ?? config.componentSize()
+  const orientation = () => resolveOrientation(local)
+  const shape = () => local.shape ?? 'default'
+  const semanticProps = (): SegmentedProps => ({
+    ...props,
+    options: local.options ?? [],
+    orientation: orientation(),
+    vertical: orientation() === 'vertical',
+    shape: shape(),
+    size: size(),
+  })
+  const semanticClassNames = createMemo(() =>
+    resolveSemanticClassNames(local.classNames, semanticProps()),
+  )
+  const semanticStyles = createMemo(() => resolveSemanticStyles(local.styles, semanticProps()))
 
   function selectValue(nextValue: SegmentedValue): void {
     const option = options().find((item) => valuesEqual(item.value, nextValue))
@@ -105,37 +160,58 @@ export function Segmented(props: SegmentedProps) {
         local.disabled && `${prefixCls()}-disabled`,
         size() === 'small' && `${prefixCls()}-sm`,
         size() === 'large' && `${prefixCls()}-lg`,
+        orientation() === 'vertical' && `${prefixCls()}-vertical`,
+        shape() === 'round' && `${prefixCls()}-shape-round`,
         hashId(),
+        local.rootClass,
         local.class,
+        semanticClassNames().root,
       )}
+      style={{ ...(local.style as JSX.CSSProperties | undefined), ...semanticStyles().root }}
     >
       <For each={options()}>
         {(option) => {
           const selected = () => valuesEqual(option.value, selectedValue())
           const disabled = () => Boolean(local.disabled || option.disabled)
-          return (
+          const item = (
             <button
               type="button"
               role="radio"
               aria-checked={selected() ? 'true' : 'false'}
+              name={local.name}
               disabled={disabled()}
               class={classNames(
                 `${prefixCls()}-item`,
                 selected() && `${prefixCls()}-item-selected`,
                 disabled() && `${prefixCls()}-item-disabled`,
                 option.class,
+                semanticClassNames().item,
               )}
+              style={semanticStyles().item}
               onClick={() => selectValue(option.value)}
               onKeyDown={(event) => handleKeyDown(event, option)}
             >
               {option.icon ? (
-                <span class={`${prefixCls()}-item-icon`} aria-hidden="true">
+                <span
+                  class={classNames(`${prefixCls()}-item-icon`, semanticClassNames().icon)}
+                  style={semanticStyles().icon}
+                  aria-hidden="true"
+                >
                   {option.icon}
                 </span>
               ) : null}
-              <span class={`${prefixCls()}-item-label`}>{option.label}</span>
+              {option.label ? (
+                <span
+                  class={classNames(`${prefixCls()}-item-label`, semanticClassNames().label)}
+                  style={semanticStyles().label}
+                >
+                  {option.label}
+                </span>
+              ) : null}
             </button>
           )
+          if (!option.tooltip) return item
+          return <Tooltip {...tooltipProps(option.tooltip)}>{item}</Tooltip>
         }}
       </For>
     </div>

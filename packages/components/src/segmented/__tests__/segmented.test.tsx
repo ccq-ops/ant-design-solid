@@ -1,10 +1,15 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Segmented } from '../index'
 
 describe('Segmented', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+    document.body.innerHTML = ''
+  })
+
   it('renders primitive and object options', () => {
     const result = render(() => (
       <Segmented
@@ -97,6 +102,84 @@ describe('Segmented', () => {
     expect(root.className).toContain('custom-segmented')
     expect(root.className).toContain('custom-segmented-block')
     expect(root.className).toContain('custom-segmented-lg')
+  })
+
+  it('supports orientation, vertical, shape, name, rootClass and medium size', () => {
+    const result = render(() => (
+      <Segmented
+        rootClass="root-extra"
+        orientation="vertical"
+        vertical={false}
+        shape="round"
+        size="medium"
+        name="period"
+        options={['Daily', 'Weekly']}
+      />
+    ))
+    const root = result.getByRole('radiogroup')
+    expect(root).toHaveClass('ads-segmented-vertical')
+    expect(root).toHaveClass('ads-segmented-shape-round')
+    expect(root).toHaveClass('root-extra')
+    expect(root).not.toHaveClass('ads-segmented-sm')
+    expect(root).not.toHaveClass('ads-segmented-lg')
+    expect(result.getByRole('radio', { name: 'Daily' })).toHaveAttribute('name', 'period')
+  })
+
+  it('lets vertical fall back to vertical orientation', () => {
+    const result = render(() => <Segmented vertical options={['A', 'B']} />)
+    expect(result.getByRole('radiogroup')).toHaveClass('ads-segmented-vertical')
+  })
+
+  it('supports semantic classes and styles as objects or functions', () => {
+    const objectResult = render(() => (
+      <Segmented
+        options={[{ label: 'List', value: 'list', icon: <span>icon</span> }]}
+        classNames={{
+          root: 'root-slot',
+          item: 'item-slot',
+          icon: 'icon-slot',
+          label: 'label-slot',
+        }}
+        styles={{ root: { color: 'red' }, item: { color: 'blue' }, icon: { color: 'green' } }}
+      />
+    ))
+    expect(objectResult.getByRole('radiogroup')).toHaveClass('root-slot')
+    expect(objectResult.getByRole('radio', { name: 'List' })).toHaveClass('item-slot')
+    expect(objectResult.getByText('icon').closest('.ads-segmented-item-icon')).toHaveClass(
+      'icon-slot',
+    )
+    expect(objectResult.getByText('List')).toHaveClass('label-slot')
+    expect(objectResult.getByRole('radiogroup').style.color).toBe('red')
+    expect(objectResult.getByRole('radio', { name: 'List' }).style.color).toBe('blue')
+    expect(
+      (objectResult.getByText('icon').closest('.ads-segmented-item-icon') as HTMLElement).style
+        .color,
+    ).toBe('green')
+
+    const functionResult = render(() => (
+      <Segmented
+        block
+        options={['A']}
+        classNames={({ props }) => ({ root: props.block ? 'block-root' : undefined })}
+        styles={({ props }) => ({ label: { color: props.block ? 'purple' : 'black' } })}
+      />
+    ))
+    expect(functionResult.getByRole('radiogroup')).toHaveClass('block-root')
+    expect(functionResult.getByText('A').style.color).toBe('purple')
+  })
+
+  it('supports option class and tooltip', () => {
+    vi.useFakeTimers()
+    const result = render(() => (
+      <Segmented
+        options={[{ label: 'Map', value: 'map', class: 'map-option', tooltip: 'Map view' }]}
+      />
+    ))
+    const item = result.getByRole('radio', { name: 'Map' })
+    expect(item).toHaveClass('map-option')
+    fireEvent.mouseEnter(result.container.querySelector('.ads-tooltip-trigger')!)
+    vi.advanceTimersByTime(100)
+    expect(document.body.querySelector('[role="tooltip"]')).toHaveTextContent('Map view')
   })
 
   it('uses ConfigProvider prefix', () => {

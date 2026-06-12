@@ -63,28 +63,96 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+### Vertical and round
+
+```tsx
+import { Segmented, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space>
+      <Segmented shape="round" options={['Day', 'Week', 'Month']} />
+      <Segmented vertical options={['List', 'Calendar', 'Timeline']} />
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+### Tooltips
+
+```tsx
+import { Segmented } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Segmented
+      options={[
+        { label: 'List', value: 'list', icon: '☰', tooltip: 'Compact list view' },
+        { label: 'Grid', value: 'grid', icon: '▦', tooltip: { title: 'Visual grid view' } },
+        { label: 'Map', value: 'map', tooltip: 'Map view' },
+      ]}
+    />
+  )
+}
+
+export default Demo6
+```
+
+### Semantic styles
+
+```tsx
+import { Segmented } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Segmented
+      options={['Open', 'Closed', 'Archived']}
+      rootClass="demo-segmented-root"
+      classNames={{ item: 'demo-segmented-item', label: 'demo-segmented-label' }}
+      styles={{ root: { maxWidth: '360px' }, item: { minWidth: '96px' } }}
+    />
+  )
+}
+
+export default Demo7
+```
+
 ## API
 
 ### Segmented
 
-| Property       | Description                                            | Type                              | Default |
-| -------------- | ------------------------------------------------------ | --------------------------------- | ------- |
-| `options`      | Options rendered by the segmented control.             | `SegmentedOption[]`               | `-`     |
-| `value`        | Controlled selected value.                             | `string \| number`                | `-`     |
-| `defaultValue` | Initial selected value for uncontrolled usage.         | `string \| number`                | `-`     |
-| `disabled`     | Disables the whole control.                            | `boolean`                         | `false` |
-| `block`        | Makes the segmented control fill its container width.  | `boolean`                         | `false` |
-| `size`         | Control size.                                          | `'small' \| 'middle' \| 'large'`  | `-`     |
-| `prefixCls`    | Custom CSS class prefix.                               | `string`                          | `-`     |
-| `onChange`     | Called with the selected value after user interaction. | `(value: SegmentedValue) => void` | `-`     |
+| Property       | Description                                                                         | Type                                                                   | Default        |
+| -------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------- |
+| `options`      | Options rendered by the segmented control.                                          | `SegmentedOption[]`                                                    | `[]`           |
+| `value`        | Controlled selected value.                                                          | `string \| number`                                                     | `-`            |
+| `defaultValue` | Initial selected value for uncontrolled usage.                                      | `string \| number`                                                     | `-`            |
+| `disabled`     | Disables the whole control.                                                         | `boolean`                                                              | `false`        |
+| `block`        | Makes the segmented control fill its container width.                               | `boolean`                                                              | `false`        |
+| `size`         | Control size. `medium` is the antd v6 spelling; `middle` is kept for compatibility. | `'small' \| 'medium' \| 'middle' \| 'large'`                           | `-`            |
+| `orientation`  | Arrangement direction. Takes priority over `vertical`.                              | `'horizontal' \| 'vertical'`                                           | `'horizontal'` |
+| `vertical`     | Vertical arrangement shorthand.                                                     | `boolean`                                                              | `false`        |
+| `shape`        | Segmented shape.                                                                    | `'default' \| 'round'`                                                 | `'default'`    |
+| `name`         | Name attribute applied to each radio-like item.                                     | `string`                                                               | `-`            |
+| `prefixCls`    | Custom CSS class prefix.                                                            | `string`                                                               | `-`            |
+| `rootClass`    | Additional class on the root element. Solid alias for antd `rootClassName`.         | `string`                                                               | `-`            |
+| `classNames`   | Semantic classes for internal slots. Supports object or function.                   | `SegmentedSemanticClassNames \| (info) => SegmentedSemanticClassNames` | `-`            |
+| `styles`       | Semantic inline styles for internal slots. Supports object or function.             | `SegmentedSemanticStyles \| (info) => SegmentedSemanticStyles`         | `-`            |
+| `onChange`     | Called with the selected value after user interaction.                              | `(value: SegmentedValue) => void`                                      | `-`            |
 
 ### SegmentedOption
 
-| Property           | Description                                    | Type               | Default |
-| ------------------ | ---------------------------------------------- | ------------------ | ------- |
-| `string \| number` | Primitive option used as both label and value. | `SegmentedOption`  | `-`     |
-| `label`            | Option label content for object options.       | `JSX.Element`      | `-`     |
-| `value`            | Option value.                                  | `string \| number` | `-`     |
-| `disabled`         | Disables this option.                          | `boolean`          | `-`     |
-| `icon`             | Icon rendered before the label.                | `JSX.Element`      | `-`     |
-| `class`            | Additional class for this option.              | `string`           | `-`     |
+| Property           | Description                                                               | Type                                       | Default |
+| ------------------ | ------------------------------------------------------------------------- | ------------------------------------------ | ------- |
+| `string \| number` | Primitive option used as both label and value.                            | `SegmentedOption`                          | `-`     |
+| `label`            | Option label content for object options. Optional when `icon` is present. | `JSX.Element`                              | `-`     |
+| `value`            | Option value.                                                             | `string \| number`                         | `-`     |
+| `disabled`         | Disables this option.                                                     | `boolean`                                  | `-`     |
+| `icon`             | Icon rendered before the label.                                           | `JSX.Element`                              | `-`     |
+| `class`            | Additional class for this option.                                         | `string`                                   | `-`     |
+| `tooltip`          | Tooltip for this option.                                                  | `string \| Omit<TooltipProps, 'children'>` | `-`     |
+
+### Semantic DOM
+
+`classNames` and `styles` support these slots: `root`, `item`, `icon`, `label`.
