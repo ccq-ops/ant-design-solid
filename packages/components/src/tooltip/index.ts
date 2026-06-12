@@ -1,2 +1,14 @@
 export { Tooltip } from './tooltip'
-export type { TooltipPlacement, TooltipProps, TooltipTrigger } from './interface'
+export type {
+  TooltipAlignConfig,
+  TooltipArrow,
+  TooltipOverflowConfig,
+  TooltipPlacement,
+  TooltipProps,
+  TooltipRef,
+  TooltipSemanticClassNames,
+  TooltipSemanticSlot,
+  TooltipSemanticStyles,
+  TooltipTrigger,
+  TooltipTriggerInput,
+} from './interface'

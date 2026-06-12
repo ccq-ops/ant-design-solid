@@ -20,7 +20,6 @@ export default Demo1
 ### Triggers
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
 
 const Demo2 = function () {
@@ -32,6 +31,12 @@ const Demo2 = function () {
       <Tooltip trigger="focus" title="Focused">
         <Button>Focus</Button>
       </Tooltip>
+      <Tooltip trigger="contextMenu" title="Context menu">
+        <Button>Context menu</Button>
+      </Tooltip>
+      <Tooltip trigger={['hover', 'focus']} title="Hover or focus">
+        <Button>Multiple</Button>
+      </Tooltip>
     </Space>
   )
 }
@@ -42,24 +47,31 @@ export default Demo2
 ### Placement
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const placements = [
+    'topLeft',
+    'top',
+    'topRight',
+    'leftTop',
+    'left',
+    'leftBottom',
+    'rightTop',
+    'right',
+    'rightBottom',
+    'bottomLeft',
+    'bottom',
+    'bottomRight',
+  ] as const
+
   return (
     <Space wrap>
-      <Tooltip placement="top" title="Top">
-        <Button>Top</Button>
-      </Tooltip>
-      <Tooltip placement="bottom" title="Bottom">
-        <Button>Bottom</Button>
-      </Tooltip>
-      <Tooltip placement="left" title="Left">
-        <Button>Left</Button>
-      </Tooltip>
-      <Tooltip placement="right" title="Right">
-        <Button>Right</Button>
-      </Tooltip>
+      {placements.map((placement) => (
+        <Tooltip placement={placement} title={placement}>
+          <Button>{placement}</Button>
+        </Tooltip>
+      ))}
     </Space>
   )
 }
@@ -89,19 +101,222 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+### Semantic Slots
+
+```tsx
+import { Button, Tooltip } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Tooltip
+      title="Styled text"
+      color="#1677ff"
+      arrow={{ pointAtCenter: true }}
+      classNames={{ root: 'demo-tooltip-root', container: 'demo-tooltip-container' }}
+      styles={{ container: { 'font-weight': 600 } }}
+    >
+      <Button>Styled</Button>
+    </Tooltip>
+  )
+}
+
+export default Demo5
+```
+
+### Arrow And Color
+
+```tsx
+import { Button, Space, Tooltip } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Space wrap>
+      <Tooltip title="Custom color" color="#1677ff">
+        <Button>Blue</Button>
+      </Tooltip>
+      <Tooltip title="No arrow" arrow={false}>
+        <Button>No arrow</Button>
+      </Tooltip>
+      <Tooltip title="Point at center" arrow={{ pointAtCenter: true }} placement="bottomRight">
+        <Button>Centered arrow</Button>
+      </Tooltip>
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+### Fresh Content
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Space, Tooltip } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  const [open, setOpen] = createSignal(false)
+  const [count, setCount] = createSignal(0)
+
+  return (
+    <Space>
+      <Tooltip open={open()} onOpenChange={setOpen} fresh title={() => `Count: ${count()}`}>
+        <Button>Fresh tooltip</Button>
+      </Tooltip>
+      <Button onClick={() => setCount((value) => value + 1)}>Update</Button>
+      <Button onClick={() => setOpen((value) => !value)}>{open() ? 'Close' : 'Open'}</Button>
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+### Destroy On Hidden
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Space, Tooltip } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  const [open, setOpen] = createSignal(false)
+
+  return (
+    <Space>
+      <Tooltip open={open()} onOpenChange={setOpen} destroyOnHidden title="Unmounts when hidden">
+        <Button>Destroy on hidden</Button>
+      </Tooltip>
+      <Button onClick={() => setOpen((value) => !value)}>{open() ? 'Close' : 'Open'}</Button>
+    </Space>
+  )
+}
+
+export default Demo8
+```
+
+### Global Tooltip Config
+
+```tsx
+import { Button, ConfigProvider, Space, Tooltip } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <ConfigProvider tooltip={{ unique: true, trigger: 'click', arrow: false }}>
+      <Space>
+        <Tooltip title="First tooltip">
+          <Button>First</Button>
+        </Tooltip>
+        <Tooltip title="Second tooltip">
+          <Button>Second</Button>
+        </Tooltip>
+      </Space>
+    </ConfigProvider>
+  )
+}
+
+export default Demo9
+```
+
+### Custom Container And Ref
+
+```tsx
+import { Button, Space, Tooltip, type TooltipRef } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  let container: HTMLDivElement | undefined
+  let tooltip: TooltipRef | undefined
+
+  return (
+    <Space>
+      <div ref={container} />
+      <Tooltip
+        ref={(ref) => {
+          tooltip = ref
+        }}
+        title="Mounted into a custom container"
+        getPopupContainer={() => container ?? document.body}
+      >
+        <Button>Custom container</Button>
+      </Tooltip>
+      <Button onClick={() => tooltip?.forceAlign()}>Align</Button>
+    </Space>
+  )
+}
+
+export default Demo10
+```
+
 ## API
 
-| Property            | Description                                           | Type                                         | Default   |
-| ------------------- | ----------------------------------------------------- | -------------------------------------------- | --------- |
-| `title`             | Tooltip content.                                      | `JSX.Element`                                | `-`       |
-| `placement`         | Overlay placement relative to the trigger.            | `TooltipPlacement`                           | `-`       |
-| `trigger`           | Interaction that opens the overlay.                   | `'hover' \| 'click' \| 'focus'`              | `'hover'` |
-| `open`              | Controlled overlay open state.                        | `boolean`                                    | `-`       |
-| `defaultOpen`       | Initial overlay open state for uncontrolled usage.    | `boolean`                                    | `false`   |
-| `onOpenChange`      | Called when overlay open state changes.               | `(open: boolean) => void`                    | `-`       |
-| `mouseEnterDelay`   | Delay before opening on hover.                        | `number`                                     | `-`       |
-| `mouseLeaveDelay`   | Delay before closing after hover leaves.              | `number`                                     | `-`       |
-| `overlayClass`      | Additional class for the overlay.                     | `string`                                     | `-`       |
-| `overlayStyle`      | Inline style for the overlay.                         | `JSX.CSSProperties`                          | `-`       |
-| `zIndex`            | Overrides overlay z-index.                            | `number`                                     | `-`       |
-| `getPopupContainer` | Returns the element used to mount the overlay portal. | `(triggerNode?: HTMLElement) => HTMLElement` | `-`       |
+| Property               | Description                                                             | Type                                                                                                                                                             | Default   |
+| ---------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `ref`                  | Imperative Tooltip ref.                                                 | `TooltipRef \| { current?: TooltipRef } \| ((ref: TooltipRef) => void)`                                                                                          | `-`       |
+| `title`                | Tooltip content.                                                        | `JSX.Element \| () => JSX.Element`                                                                                                                               | `-`       |
+| `overlay`              | Tooltip content alias.                                                  | `JSX.Element \| () => JSX.Element`                                                                                                                               | `-`       |
+| `color`                | Overlay background color. Text color adapts for hex colors.             | `string`                                                                                                                                                         | `-`       |
+| `placement`            | Overlay placement relative to the trigger.                              | `'top' \| 'left' \| 'right' \| 'bottom' \| 'topLeft' \| 'topRight' \| 'bottomLeft' \| 'bottomRight' \| 'leftTop' \| 'leftBottom' \| 'rightTop' \| 'rightBottom'` | `'top'`   |
+| `builtinPlacements`    | Per-placement alignment config overrides.                               | `Partial<Record<TooltipPlacement, TooltipAlignConfig>>`                                                                                                          | `-`       |
+| `trigger`              | Interaction that opens the overlay. Arrays combine multiple triggers.   | `'hover' \| 'click' \| 'focus' \| 'contextMenu' \| TooltipTrigger[]`                                                                                             | `'hover'` |
+| `open`                 | Controlled overlay open state.                                          | `boolean`                                                                                                                                                        | `-`       |
+| `defaultOpen`          | Initial overlay open state for uncontrolled usage.                      | `boolean`                                                                                                                                                        | `false`   |
+| `onOpenChange`         | Called when overlay open state changes.                                 | `(open: boolean) => void`                                                                                                                                        | `-`       |
+| `afterOpenChange`      | Called after the open state changes.                                    | `(open: boolean) => void`                                                                                                                                        | `-`       |
+| `mouseEnterDelay`      | Delay before opening on hover, in seconds.                              | `number`                                                                                                                                                         | `0.1`     |
+| `mouseLeaveDelay`      | Delay before closing after hover leaves, in seconds.                    | `number`                                                                                                                                                         | `0.1`     |
+| `align`                | Additional positioning offset/alignment options.                        | `TooltipAlignConfig`                                                                                                                                             | `-`       |
+| `arrow`                | Shows the arrow and optionally points it at the trigger center.         | `boolean \| { pointAtCenter?: boolean }`                                                                                                                         | `true`    |
+| `autoAdjustOverflow`   | Flips placement when the overlay would leave the viewport.              | `boolean \| { adjustX?: boolean; adjustY?: boolean }`                                                                                                            | `true`    |
+| `fresh`                | Updates hidden cached content while the tooltip is closed.              | `boolean`                                                                                                                                                        | `false`   |
+| `destroyOnHidden`      | Unmounts the overlay DOM when closed.                                   | `boolean`                                                                                                                                                        | `false`   |
+| `destroyTooltipOnHide` | Legacy alias for `destroyOnHidden`.                                     | `boolean \| { keepParent?: boolean }`                                                                                                                            | `false`   |
+| `rootClass`            | Additional class for the overlay root.                                  | `string`                                                                                                                                                         | `-`       |
+| `rootClassName`        | Legacy React-style alias for `rootClass`. Prefer `rootClass`.           | `string`                                                                                                                                                         | `-`       |
+| `openClass`            | Additional class for the trigger while open.                            | `string`                                                                                                                                                         | `-`       |
+| `openClassName`        | Legacy React-style alias for `openClass`. Prefer `openClass`.           | `string`                                                                                                                                                         | `-`       |
+| `classNames`           | Semantic class names for `root`, `container`, and `arrow`.              | `Partial<Record<'root' \| 'container' \| 'arrow', string>> \| (info) => Partial<Record<'root' \| 'container' \| 'arrow', string>>`                               | `-`       |
+| `styles`               | Semantic styles for `root`, `container`, and `arrow`.                   | `Partial<Record<'root' \| 'container' \| 'arrow', JSX.CSSProperties>> \| (info) => Partial<Record<'root' \| 'container' \| 'arrow', JSX.CSSProperties>>`         | `-`       |
+| `overlayClass`         | Legacy additional class for the overlay root. Prefer `classNames.root`. | `string`                                                                                                                                                         | `-`       |
+| `overlayClassName`     | Legacy React-style alias for `overlayClass`. Prefer `classNames.root`.  | `string`                                                                                                                                                         | `-`       |
+| `overlayStyle`         | Legacy inline style for the overlay root. Prefer `styles.root`.         | `JSX.CSSProperties`                                                                                                                                              | `-`       |
+| `overlayInnerStyle`    | Legacy inline style for the inner content. Prefer `styles.container`.   | `JSX.CSSProperties`                                                                                                                                              | `-`       |
+| `zIndex`               | Overrides overlay z-index.                                              | `number`                                                                                                                                                         | `-`       |
+| `getPopupContainer`    | Returns the element used to mount the overlay portal.                   | `(triggerNode?: HTMLElement) => HTMLElement`                                                                                                                     | `-`       |
+
+### TooltipRef
+
+| Property        | Description                            | Type             |
+| --------------- | -------------------------------------- | ---------------- |
+| `forceAlign`    | Recalculates popup position.           | `() => void`     |
+| `nativeElement` | Wrapped trigger element.               | `HTMLElement`    |
+| `popupElement`  | Popup root element when it is mounted. | `HTMLDivElement` |
+
+### Semantic DOM
+
+| Slot        | Description                  |
+| ----------- | ---------------------------- |
+| `root`      | Popup root element.          |
+| `container` | Popup inner content element. |
+| `arrow`     | Popup arrow element.         |
+
+### TooltipAlignConfig
+
+| Property          | Description                               | Type                                       |
+| ----------------- | ----------------------------------------- | ------------------------------------------ |
+| `points`          | Alignment points for compatibility.       | `[string, string]`                         |
+| `offset`          | Extra x/y offset applied after placement. | `[number \| string, number \| string]`     |
+| `targetOffset`    | Target offset for compatibility.          | `[number \| string, number \| string]`     |
+| `overflow`        | Overflow adjustment flags.                | `{ adjustX?: boolean; adjustY?: boolean }` |
+| `useCssRight`     | Compatibility flag.                       | `boolean`                                  |
+| `useCssBottom`    | Compatibility flag.                       | `boolean`                                  |
+| `useCssTransform` | Compatibility flag.                       | `boolean`                                  |
+
+### ConfigProvider
+
+| Property             | Description                                                  | Type                                                                 | Default |
+| -------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------- | ------- |
+| `tooltip.unique`     | Keeps only one visible tooltip under the provider at a time. | `boolean`                                                            | `false` |
+| `tooltip.arrow`      | Default arrow setting for tooltips under the provider.       | `boolean \| { pointAtCenter?: boolean }`                             | `true`  |
+| `tooltip.trigger`    | Default trigger for tooltips under the provider.             | `'hover' \| 'click' \| 'focus' \| 'contextMenu' \| TooltipTrigger[]` | `-`     |
+| `tooltip.class`      | Default root class for tooltips under the provider.          | `string`                                                             | `-`     |
+| `tooltip.style`      | Default root style for tooltips under the provider.          | `JSX.CSSProperties`                                                  | `-`     |
+| `tooltip.classNames` | Default semantic class names.                                | `TooltipSemanticClassNames \| (info) => TooltipSemanticClassNames`   | `-`     |
+| `tooltip.styles`     | Default semantic styles.                                     | `TooltipSemanticStyles \| (info) => TooltipSemanticStyles`           | `-`     |
