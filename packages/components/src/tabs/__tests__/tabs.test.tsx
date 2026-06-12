@@ -863,7 +863,7 @@ describe('Tabs', () => {
       '.ads-tabs-editable-card .ads-tabs-tab-remove:hover{background:transparent;',
     )
     expect(styles).toContain('.ads-tabs-editable-card .ads-tabs-add{')
-    expect(styles).toContain('background:rgba(0, 0, 0, 0.02);')
+    expect(styles).toContain('background:rgba(0,0,0,0.02);')
     expect(styles).toContain('border-radius:6px 6px 0 0;')
     expect(styles).toContain('border-bottom:0;')
   })

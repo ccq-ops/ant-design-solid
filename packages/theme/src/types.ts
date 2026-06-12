@@ -1,55 +1,274 @@
 export type ComponentSize = 'small' | 'middle' | 'large'
 
-export interface SeedToken {
+export type TokenValue = string | number | boolean | undefined
+
+export interface TokenRecord {
+  [key: string]: TokenValue
+}
+
+export interface PresetColorToken {
+  blue: string
+  purple: string
+  cyan: string
+  green: string
+  magenta: string
+  pink: string
+  red: string
+  orange: string
+  yellow: string
+  volcano: string
+  geekblue: string
+  lime: string
+  gold: string
+}
+
+export interface SeedToken extends PresetColorToken, TokenRecord {
   colorPrimary: string
   colorSuccess: string
   colorWarning: string
   colorError: string
   colorInfo: string
+  colorLink: string
   colorTextBase: string
   colorBgBase: string
   fontFamily: string
+  fontFamilyCode: string
   fontSize: number
-  lineHeight: number
+  lineWidth: number
+  lineType: string
+  motionUnit: number
+  motionBase: number
+  motionEaseOutCirc: string
+  motionEaseInOutCirc: string
+  motionEaseOut: string
+  motionEaseInOut: string
+  motionEaseOutBack: string
+  motionEaseInBack: string
+  motionEaseInQuint: string
+  motionEaseOutQuint: string
   borderRadius: number
   sizeUnit: number
   sizeStep: number
+  sizePopupArrow: number
   controlHeight: number
-  motionDurationFast: string
-  motionDurationMid: string
-  motionEaseInOut: string
-  boxShadow: string
+  zIndexBase: number
+  zIndexPopupBase: number
+  opacityImage: number
+  wireframe: boolean
+  motion: boolean
 }
 
 export interface AliasToken extends SeedToken {
+  colorPrimaryBg: string
+  colorPrimaryBgHover: string
+  colorPrimaryBorder: string
+  colorPrimaryBorderHover: string
   colorPrimaryHover: string
   colorPrimaryActive: string
+  colorPrimaryTextHover: string
+  colorPrimaryText: string
+  colorPrimaryTextActive: string
+  colorSuccessBg: string
+  colorSuccessBgHover: string
+  colorSuccessBorder: string
+  colorSuccessBorderHover: string
+  colorSuccessHover: string
+  colorSuccessActive: string
+  colorSuccessTextHover: string
+  colorSuccessText: string
+  colorSuccessTextActive: string
+  colorErrorBg: string
+  colorErrorBgHover: string
+  colorErrorBgFilledHover: string
+  colorErrorBgActive: string
+  colorErrorBorder: string
+  colorErrorBorderHover: string
+  colorErrorHover: string
+  colorErrorActive: string
+  colorErrorTextHover: string
+  colorErrorText: string
+  colorErrorTextActive: string
+  colorWarningBg: string
+  colorWarningBgHover: string
+  colorWarningBorder: string
+  colorWarningBorderHover: string
+  colorWarningHover: string
+  colorWarningActive: string
+  colorWarningTextHover: string
+  colorWarningText: string
+  colorWarningTextActive: string
+  colorInfoBg: string
+  colorInfoBgHover: string
+  colorInfoBorder: string
+  colorInfoBorderHover: string
+  colorInfoHover: string
+  colorInfoActive: string
+  colorInfoTextHover: string
+  colorInfoText: string
+  colorInfoTextActive: string
+  colorLinkHover: string
+  colorLinkActive: string
   colorText: string
   colorTextSecondary: string
+  colorTextTertiary: string
+  colorTextQuaternary: string
   colorTextDisabled: string
-  colorBorder: string
-  colorBorderSecondary: string
+  colorTextPlaceholder: string
+  colorTextHeading: string
+  colorTextLabel: string
+  colorTextDescription: string
+  colorTextLightSolid: string
+  colorIcon: string
+  colorIconHover: string
+  colorBgLayout: string
   colorBgContainer: string
   colorBgElevated: string
+  colorBgSpotlight: string
+  colorBgMask: string
+  colorBgBlur: string
+  colorBgSolid: string
+  colorBgSolidHover: string
+  colorBgSolidActive: string
+  colorBgContainerDisabled: string
+  colorBorder: string
+  colorBorderDisabled: string
+  colorBorderSecondary: string
+  colorBorderBg: string
+  colorSplit: string
+  colorFill: string
+  colorFillSecondary: string
+  colorFillTertiary: string
+  colorFillQuaternary: string
   colorFillAlter: string
-  lineWidth: number
+  colorFillContent: string
+  colorFillContentHover: string
+  colorHighlight: string
+  colorErrorOutline: string
+  colorWarningOutline: string
+  colorErrorAffix: string
+  colorWarningAffix: string
+  colorWhite: string
+  colorShadow: string
+  fontSizeSM: number
+  fontSizeLG: number
+  fontSizeXL: number
+  fontSizeHeading1: number
+  fontSizeHeading2: number
+  fontSizeHeading3: number
+  fontSizeHeading4: number
+  fontSizeHeading5: number
+  fontSizeIcon: number
+  lineHeight: number
+  lineHeightSM: number
+  lineHeightLG: number
+  lineHeightHeading1: number
+  lineHeightHeading2: number
+  lineHeightHeading3: number
+  lineHeightHeading4: number
+  lineHeightHeading5: number
+  fontHeight: number
+  fontHeightSM: number
+  fontHeightLG: number
+  fontWeightStrong: number
+  lineWidthBold: number
+  lineWidthFocus: number
+  controlOutlineWidth: number
+  controlInteractiveSize: number
+  controlItemBgHover: string
+  controlItemBgActive: string
+  controlItemBgActiveHover: string
+  controlItemBgActiveDisabled: string
+  controlTmpOutline: string
+  controlOutline: string
+  controlPaddingHorizontal: number
+  controlPaddingHorizontalSM: number
+  controlHeightXS: number
   controlHeightSM: number
   controlHeightLG: number
+  sizeXXS: number
+  sizeXS: number
+  sizeSM: number
+  size: number
+  sizeMS: number
+  sizeMD: number
+  sizeLG: number
+  sizeXL: number
+  sizeXXL: number
+  paddingXXS: number
   paddingXS: number
   paddingSM: number
   padding: number
+  paddingMD: number
   paddingLG: number
+  paddingXL: number
+  paddingContentHorizontalLG: number
+  paddingContentVerticalLG: number
+  paddingContentHorizontal: number
+  paddingContentVertical: number
+  paddingContentHorizontalSM: number
+  paddingContentVerticalSM: number
+  marginXXS: number
   marginXS: number
   marginSM: number
   margin: number
+  marginMD: number
   marginLG: number
+  marginXL: number
+  marginXXL: number
+  borderRadiusXS: number
+  borderRadiusSM: number
+  borderRadiusLG: number
+  borderRadiusOuter: number
+  motionDurationFast: string
+  motionDurationMid: string
+  motionDurationSlow: string
+  opacityLoading: number
+  linkDecoration: string
+  linkHoverDecoration: string
+  linkFocusDecoration: string
+  boxShadow: string
+  boxShadowSecondary: string
+  boxShadowTertiary: string
+  boxShadowPopoverArrow: string
+  dropShadowPopover: string
+  boxShadowCard: string
+  boxShadowDrawerRight: string
+  boxShadowDrawerLeft: string
+  boxShadowDrawerUp: string
+  boxShadowDrawerDown: string
+  boxShadowTabsOverflowLeft: string
+  boxShadowTabsOverflowRight: string
+  boxShadowTabsOverflowTop: string
+  boxShadowTabsOverflowBottom: string
+  screenXS: number
+  screenXSMin: number
+  screenXSMax: number
+  screenSM: number
+  screenSMMin: number
+  screenSMMax: number
+  screenMD: number
+  screenMDMin: number
+  screenMDMax: number
+  screenLG: number
+  screenLGMin: number
+  screenLGMax: number
+  screenXL: number
+  screenXLMin: number
+  screenXLMax: number
+  screenXXL: number
+  screenXXLMin: number
+  screenXXLMax: number
+  screenXXXL: number
+  screenXXXLMin: number
 }
 
 export type GlobalToken = AliasToken
 
-export type ThemeAlgorithm = (seed: SeedToken) => AliasToken
+export type ThemeAlgorithm = (seed: SeedToken, mapToken?: AliasToken) => AliasToken
 
-export interface ButtonComponentToken {
+export interface ComponentTokenBase extends TokenRecord {}
+
+export interface ButtonComponentToken extends ComponentTokenBase {
   borderRadius: number
   fontWeight: number
   primaryColor: string
@@ -57,28 +276,28 @@ export interface ButtonComponentToken {
   paddingInline: number
 }
 
-export interface InputComponentToken {
+export interface InputComponentToken extends ComponentTokenBase {
   activeBorderColor: string
   hoverBorderColor: string
   clearIconColor: string
   paddingInline: number
 }
 
-export interface SpaceComponentToken {
+export interface SpaceComponentToken extends ComponentTokenBase {
   gapSmall: number
   gapMiddle: number
   gapLarge: number
 }
-export interface TypographyComponentToken {
+export interface TypographyComponentToken extends ComponentTokenBase {
   titleMarginBottom: number
   titleFontWeight: number
   paragraphMarginBottom: number
 }
-export interface GridComponentToken {
+export interface GridComponentToken extends ComponentTokenBase {
   columns: number
 }
 
-export interface FormComponentToken {
+export interface FormComponentToken extends ComponentTokenBase {
   labelColor: string
   labelRequiredMarkColor: string
   itemMarginBottom: number
@@ -86,7 +305,7 @@ export interface FormComponentToken {
   explainColor: string
 }
 
-export interface SelectComponentToken {
+export interface SelectComponentToken extends ComponentTokenBase {
   optionHeight: number
   optionPadding: number
   optionSelectedBg: string
@@ -94,24 +313,24 @@ export interface SelectComponentToken {
   clearIconColor: string
 }
 
-export interface CheckboxComponentToken {
+export interface CheckboxComponentToken extends ComponentTokenBase {
   size: number
   borderRadius: number
   checkColor: string
 }
 
-export interface RadioComponentToken {
+export interface RadioComponentToken extends ComponentTokenBase {
   size: number
   dotSize: number
 }
 
-export interface SwitchComponentToken {
+export interface SwitchComponentToken extends ComponentTokenBase {
   trackHeight: number
   trackMinWidth: number
   handleSize: number
 }
 
-export interface AlertComponentToken {
+export interface AlertComponentToken extends ComponentTokenBase {
   padding: number
   borderRadius: number
   withDescriptionPadding: number
@@ -126,14 +345,14 @@ export interface AlertComponentToken {
   errorBorderColor: string
 }
 
-export interface MessageComponentToken {
+export interface MessageComponentToken extends ComponentTokenBase {
   noticePadding: number
   noticeBorderRadius: number
   contentBg: string
   contentShadow: string
 }
 
-export interface NotificationComponentToken {
+export interface NotificationComponentToken extends ComponentTokenBase {
   width: number
   padding: number
   borderRadius: number
@@ -141,7 +360,7 @@ export interface NotificationComponentToken {
   boxShadow: string
 }
 
-export interface ModalComponentToken {
+export interface ModalComponentToken extends ComponentTokenBase {
   contentBg: string
   headerBg: string
   titleColor: string
@@ -151,7 +370,7 @@ export interface ModalComponentToken {
   maskBg: string
 }
 
-export interface PopconfirmComponentToken {
+export interface PopconfirmComponentToken extends ComponentTokenBase {
   width: number
   padding: number
   borderRadius: number
@@ -159,7 +378,7 @@ export interface PopconfirmComponentToken {
   boxShadow: string
 }
 
-export interface TableComponentToken {
+export interface TableComponentToken extends ComponentTokenBase {
   headerBg: string
   headerColor: string
   rowHoverBg: string
@@ -171,7 +390,7 @@ export interface TableComponentToken {
   emptyColor: string
 }
 
-export interface TagComponentToken {
+export interface TagComponentToken extends ComponentTokenBase {
   defaultBg: string
   defaultColor: string
   borderColor: string
@@ -190,7 +409,7 @@ export interface TagComponentToken {
   processingBorderColor: string
 }
 
-export interface BadgeComponentToken {
+export interface BadgeComponentToken extends ComponentTokenBase {
   overflowIndicatorHeight: number
   overflowIndicatorHeightSm: number
   dotSize: number
@@ -201,7 +420,7 @@ export interface BadgeComponentToken {
   statusSize: number
 }
 
-export interface TabsComponentToken {
+export interface TabsComponentToken extends ComponentTokenBase {
   itemColor: string
   itemSelectedColor: string
   itemHoverColor: string
@@ -214,7 +433,7 @@ export interface TabsComponentToken {
   horizontalItemPaddingLg: number
 }
 
-export interface PopoverComponentToken {
+export interface PopoverComponentToken extends ComponentTokenBase {
   bg: string
   borderRadius: number
   boxShadow: string
@@ -224,7 +443,7 @@ export interface PopoverComponentToken {
   paddingInline: number
 }
 
-export interface TooltipComponentToken {
+export interface TooltipComponentToken extends ComponentTokenBase {
   bg: string
   color: string
   borderRadius: number
@@ -234,7 +453,7 @@ export interface TooltipComponentToken {
   maxWidth: number
 }
 
-export interface DropdownComponentToken {
+export interface DropdownComponentToken extends ComponentTokenBase {
   bg: string
   boxShadow: string
   borderRadius: number
@@ -246,11 +465,11 @@ export interface DropdownComponentToken {
   minWidth: number
 }
 
-export interface TreeComponentToken {
+export interface TreeComponentToken extends ComponentTokenBase {
   nodeSelectedBg: string
 }
 
-export interface TourComponentToken {
+export interface TourComponentToken extends ComponentTokenBase {
   width: number
   padding: number
   borderRadius: number
@@ -262,34 +481,78 @@ export interface TourComponentToken {
 }
 
 export interface ComponentTokenMap {
-  Button: ButtonComponentToken
-  Input: InputComponentToken
-  Space: SpaceComponentToken
-  Typography: TypographyComponentToken
-  Grid: GridComponentToken
-  Form: FormComponentToken
-  Select: SelectComponentToken
-  Checkbox: CheckboxComponentToken
-  Radio: RadioComponentToken
-  Switch: SwitchComponentToken
+  Affix?: ComponentTokenBase
+  Addon?: ComponentTokenBase
   Alert: AlertComponentToken
-  Message: MessageComponentToken
-  Notification: NotificationComponentToken
-  Modal: ModalComponentToken
-  Popconfirm: PopconfirmComponentToken
-  Table: TableComponentToken
-  Tag: TagComponentToken
+  Anchor?: ComponentTokenBase
+  Avatar?: ComponentTokenBase
+  BackTop?: ComponentTokenBase
   Badge: BadgeComponentToken
-  Tabs: TabsComponentToken
-  Tooltip: TooltipComponentToken
-  Popover: PopoverComponentToken
+  BorderBeam?: ComponentTokenBase
+  Button: ButtonComponentToken
+  Breadcrumb?: ComponentTokenBase
+  Calendar?: ComponentTokenBase
+  Card?: ComponentTokenBase
+  Carousel?: ComponentTokenBase
+  Cascader?: ComponentTokenBase
+  Checkbox: CheckboxComponentToken
+  ColorPicker?: ComponentTokenBase
+  Collapse?: ComponentTokenBase
+  DatePicker?: ComponentTokenBase
+  Descriptions?: ComponentTokenBase
+  Divider?: ComponentTokenBase
+  Drawer?: ComponentTokenBase
   Dropdown: DropdownComponentToken
-  Tree: TreeComponentToken
+  Empty?: ComponentTokenBase
+  Flex?: ComponentTokenBase
+  FloatButton?: ComponentTokenBase
+  Form: FormComponentToken
+  Grid: GridComponentToken
+  Image?: ComponentTokenBase
+  Input: InputComponentToken
+  InputNumber?: ComponentTokenBase
+  Layout?: ComponentTokenBase
+  List?: ComponentTokenBase
+  Masonry?: ComponentTokenBase
+  Mentions?: ComponentTokenBase
+  Menu?: ComponentTokenBase
+  Message: MessageComponentToken
+  Modal: ModalComponentToken
+  Notification: NotificationComponentToken
+  Pagination?: ComponentTokenBase
+  Popconfirm: PopconfirmComponentToken
+  Popover: PopoverComponentToken
+  Progress?: ComponentTokenBase
+  QRCode?: ComponentTokenBase
+  Radio: RadioComponentToken
+  Rate?: ComponentTokenBase
+  Result?: ComponentTokenBase
+  Segmented?: ComponentTokenBase
+  Select: SelectComponentToken
+  Skeleton?: ComponentTokenBase
+  Slider?: ComponentTokenBase
+  Space: SpaceComponentToken
+  Spin?: ComponentTokenBase
+  Splitter?: ComponentTokenBase
+  Statistic?: ComponentTokenBase
+  Steps?: ComponentTokenBase
+  Switch: SwitchComponentToken
+  Table: TableComponentToken
+  Tabs: TabsComponentToken
+  Tag: TagComponentToken
+  Timeline?: ComponentTokenBase
+  Tooltip: TooltipComponentToken
   Tour: TourComponentToken
+  Transfer?: ComponentTokenBase
+  Tree: TreeComponentToken
+  TreeSelect?: ComponentTokenBase
+  Typography: TypographyComponentToken
+  Upload?: ComponentTokenBase
+  Wave?: ComponentTokenBase
 }
 
 export interface ThemeConfig {
   algorithm?: ThemeAlgorithm | ThemeAlgorithm[]
-  token?: Partial<SeedToken>
+  token?: Partial<SeedToken & AliasToken>
   components?: { [K in keyof ComponentTokenMap]?: Partial<ComponentTokenMap[K]> }
 }

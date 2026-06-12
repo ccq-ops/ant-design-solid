@@ -567,9 +567,9 @@ describe('Tree', () => {
     const styles = extractStyle(cache)
 
     expect(styles).toContain(
-      '.ads-tree-node:not(.ads-tree-node-selected):not(.ads-tree-node-disabled):hover{background:rgba(0, 0, 0, 0.02);',
+      '.ads-tree-node:not(.ads-tree-node-selected):not(.ads-tree-node-disabled):hover{background:rgba(0,0,0,0.02);',
     )
-    expect(styles).not.toContain('.ads-tree-node:hover{background:rgba(0, 0, 0, 0.02);')
+    expect(styles).not.toContain('.ads-tree-node:hover{background:rgba(0,0,0,0.02);')
   })
 
   it('registers switcher loading icon rotation styles on the loading wrapper svg', () => {

@@ -58,7 +58,7 @@ describe('ConfigProvider', () => {
     ))
 
     expect(inheritedBg).toBe('#141414')
-    expect(inheritedPrimary).toBe('#722ed1')
+    expect(inheritedPrimary).toBe('#642ab5')
   })
 
   it('allows child theme algorithm to override parent algorithm', () => {

@@ -8,33 +8,192 @@ import {
   type ThemeConfig,
 } from '../index'
 
+function expectTokenEntries(token: unknown, expected: Record<string, unknown>) {
+  const tokenRecord = token as Record<string, unknown>
+
+  for (const [key, value] of Object.entries(expected)) {
+    expect(tokenRecord[key]).toBe(value)
+  }
+}
+
 describe('@ant-design-solid/theme', () => {
+  it('matches antd 6.4.4 default global token values', () => {
+    const token = mergeTheme()
+
+    expectTokenEntries(token, {
+      blue: '#1677FF',
+      purple: '#722ED1',
+      colorPrimary: '#1677ff',
+      colorPrimaryBg: '#e6f4ff',
+      colorPrimaryHover: '#4096ff',
+      colorPrimaryActive: '#0958d9',
+      colorPrimaryText: '#1677ff',
+      colorSuccessBg: '#f6ffed',
+      colorErrorBg: '#fff2f0',
+      colorWarningBg: '#fffbe6',
+      colorInfoBg: '#e6f4ff',
+      colorLink: '#1677ff',
+      colorLinkHover: '#69b1ff',
+      colorLinkActive: '#0958d9',
+      colorText: 'rgba(0,0,0,0.88)',
+      colorTextSecondary: 'rgba(0,0,0,0.65)',
+      colorTextTertiary: 'rgba(0,0,0,0.45)',
+      colorTextQuaternary: 'rgba(0,0,0,0.25)',
+      colorTextDisabled: 'rgba(0,0,0,0.25)',
+      colorTextPlaceholder: 'rgba(0,0,0,0.25)',
+      colorTextHeading: 'rgba(0,0,0,0.88)',
+      colorTextLabel: 'rgba(0,0,0,0.65)',
+      colorTextDescription: 'rgba(0,0,0,0.45)',
+      colorIcon: 'rgba(0,0,0,0.45)',
+      colorIconHover: 'rgba(0,0,0,0.88)',
+      colorBgBase: '#fff',
+      colorBgLayout: '#f5f5f5',
+      colorBgContainer: '#ffffff',
+      colorBgElevated: '#ffffff',
+      colorBgSpotlight: 'rgba(0,0,0,0.85)',
+      colorBgMask: 'rgba(0,0,0,0.45)',
+      colorBorder: '#d9d9d9',
+      colorBorderSecondary: '#f0f0f0',
+      colorSplit: 'rgba(5,5,5,0.06)',
+      colorFill: 'rgba(0,0,0,0.15)',
+      colorFillSecondary: 'rgba(0,0,0,0.06)',
+      colorFillTertiary: 'rgba(0,0,0,0.04)',
+      colorFillQuaternary: 'rgba(0,0,0,0.02)',
+      colorFillAlter: 'rgba(0,0,0,0.02)',
+      colorFillContent: 'rgba(0,0,0,0.06)',
+      colorFillContentHover: 'rgba(0,0,0,0.15)',
+      colorBgContainerDisabled: 'rgba(0,0,0,0.04)',
+      fontFamilyCode: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace",
+      fontSize: 14,
+      fontSizeSM: 12,
+      fontSizeLG: 16,
+      fontSizeHeading1: 38,
+      lineHeight: 1.5714285714285714,
+      lineHeightSM: 1.6666666666666667,
+      lineHeightLG: 1.5,
+      lineWidth: 1,
+      lineWidthBold: 2,
+      lineWidthFocus: 3,
+      lineType: 'solid',
+      borderRadius: 6,
+      borderRadiusXS: 2,
+      borderRadiusSM: 4,
+      borderRadiusLG: 8,
+      borderRadiusOuter: 4,
+      sizeUnit: 4,
+      sizeStep: 4,
+      sizeXXS: 4,
+      sizeXS: 8,
+      sizeSM: 12,
+      size: 16,
+      sizeMS: 16,
+      sizeMD: 20,
+      sizeLG: 24,
+      sizeXL: 32,
+      sizeXXL: 48,
+      controlHeight: 32,
+      controlHeightXS: 16,
+      controlHeightSM: 24,
+      controlHeightLG: 40,
+      controlInteractiveSize: 16,
+      controlOutlineWidth: 2,
+      controlPaddingHorizontal: 12,
+      controlPaddingHorizontalSM: 8,
+      paddingXXS: 4,
+      paddingXS: 8,
+      paddingSM: 12,
+      padding: 16,
+      paddingMD: 20,
+      paddingLG: 24,
+      paddingXL: 32,
+      marginXXS: 4,
+      marginXS: 8,
+      marginSM: 12,
+      margin: 16,
+      marginMD: 20,
+      marginLG: 24,
+      marginXL: 32,
+      marginXXL: 48,
+      motionDurationFast: '0.1s',
+      motionDurationMid: '0.2s',
+      motionDurationSlow: '0.3s',
+      screenXS: 480,
+      screenSM: 576,
+      screenMD: 768,
+      screenLG: 992,
+      screenXL: 1200,
+      screenXXL: 1600,
+      zIndexBase: 0,
+      zIndexPopupBase: 1000,
+      opacityImage: 1,
+    })
+  })
+
+  it('matches antd 6.4.4 dark and override global token values', () => {
+    const dark = mergeTheme({ algorithm: darkAlgorithm })
+    const custom = mergeTheme({
+      token: { colorPrimary: '#722ed1', borderRadius: 8, motion: false },
+    })
+
+    expectTokenEntries(dark, {
+      colorPrimary: '#1668dc',
+      colorPrimaryBg: '#15325b',
+      colorPrimaryHover: '#3c89e8',
+      colorPrimaryActive: '#1554ad',
+      colorSuccessBg: '#162312',
+      colorErrorBg: '#2c1618',
+      colorWarningBg: '#2b2111',
+      colorInfoBg: '#111a2c',
+      colorText: 'rgba(255,255,255,0.85)',
+      colorBgBase: '#000',
+      colorBgContainer: '#141414',
+      colorBgElevated: '#1f1f1f',
+      colorBorder: '#424242',
+      colorBorderSecondary: '#303030',
+      colorFillAlter: 'rgba(255,255,255,0.04)',
+    })
+
+    expectTokenEntries(custom, {
+      colorPrimary: '#722ed1',
+      colorPrimaryBg: '#f9f0ff',
+      colorPrimaryHover: '#9254de',
+      colorPrimaryActive: '#531dab',
+      borderRadius: 8,
+      borderRadiusSM: 6,
+      borderRadiusLG: 10,
+      borderRadiusOuter: 6,
+      motionDurationFast: '0s',
+      motionDurationMid: '0s',
+      motionDurationSlow: '0s',
+    })
+  })
+
   it('derives alias tokens from seed tokens', () => {
     const token = defaultAlgorithm({ ...defaultSeedToken, colorPrimary: '#1677ff' })
 
     expect(token.colorPrimary).toBe('#1677ff')
     expect(token.colorPrimaryHover).toBe('#4096ff')
     expect(token.colorPrimaryActive).toBe('#0958d9')
-    expect(token.colorText).toBe('#1f1f1f')
+    expect(token.colorText).toBe('rgba(0,0,0,0.88)')
     expect(token.controlHeight).toBe(32)
   })
 
   it('derives dark alias tokens from seed tokens', () => {
     const token = darkAlgorithm({ ...defaultSeedToken, colorPrimary: '#1677ff' })
 
-    expect(token.colorPrimary).toBe('#1677ff')
-    expect(token.colorPrimaryHover).toBe('#4096ff')
-    expect(token.colorPrimaryActive).toBe('#0958d9')
-    expect(token.colorBgBase).toBe('#141414')
-    expect(token.colorTextBase).toBe('#ffffff')
+    expect(token.colorPrimary).toBe('#1668dc')
+    expect(token.colorPrimaryHover).toBe('#3c89e8')
+    expect(token.colorPrimaryActive).toBe('#1554ad')
+    expect(token.colorBgBase).toBe('#000')
+    expect(token.colorTextBase).toBe('#fff')
     expect(token.colorBgContainer).toBe('#141414')
     expect(token.colorBgElevated).toBe('#1f1f1f')
-    expect(token.colorText).toBe('rgba(255, 255, 255, 0.88)')
-    expect(token.colorTextSecondary).toBe('rgba(255, 255, 255, 0.65)')
-    expect(token.colorTextDisabled).toBe('rgba(255, 255, 255, 0.25)')
+    expect(token.colorText).toBe('rgba(255,255,255,0.85)')
+    expect(token.colorTextSecondary).toBe('rgba(255,255,255,0.65)')
+    expect(token.colorTextDisabled).toBe('rgba(255,255,255,0.25)')
     expect(token.colorBorder).toBe('#424242')
     expect(token.colorBorderSecondary).toBe('#303030')
-    expect(token.colorFillAlter).toBe('rgba(255, 255, 255, 0.04)')
+    expect(token.colorFillAlter).toBe('rgba(255,255,255,0.04)')
   })
 
   it('merges global and component token overrides', () => {
@@ -57,13 +216,13 @@ describe('@ant-design-solid/theme', () => {
       token: { colorPrimary: '#722ed1', borderRadius: 8 },
     })
 
-    expect(merged.colorPrimary).toBe('#722ed1')
-    expect(merged.colorPrimaryHover).toBe('#9254de')
-    expect(merged.colorPrimaryActive).toBe('#531dab')
+    expect(merged.colorPrimary).toBe('#642ab5')
+    expect(merged.colorPrimaryHover).toBe('#854eca')
+    expect(merged.colorPrimaryActive).toBe('#51258f')
     expect(merged.borderRadius).toBe(8)
     expect(merged.colorBgContainer).toBe('#141414')
     expect(merged.colorBgElevated).toBe('#1f1f1f')
-    expect(merged.colorText).toBe('rgba(255, 255, 255, 0.88)')
+    expect(merged.colorText).toBe('rgba(255,255,255,0.85)')
   })
 
   it('derives form component token defaults and applies overrides', () => {

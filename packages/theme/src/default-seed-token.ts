@@ -1,24 +1,59 @@
 import type { SeedToken } from './types'
 
+export const defaultPresetColors = {
+  blue: '#1677FF',
+  purple: '#722ED1',
+  cyan: '#13C2C2',
+  green: '#52C41A',
+  magenta: '#EB2F96',
+  pink: '#EB2F96',
+  red: '#F5222D',
+  orange: '#FA8C16',
+  yellow: '#FADB14',
+  volcano: '#FA541C',
+  geekblue: '#2F54EB',
+  lime: '#A0D911',
+  gold: '#FAAD14',
+} as const
+
+export const presetColorKeys = Object.keys(defaultPresetColors) as Array<
+  keyof typeof defaultPresetColors
+>
+
 export const defaultSeedToken: SeedToken = {
+  ...defaultPresetColors,
   colorPrimary: '#1677ff',
   colorSuccess: '#52c41a',
   colorWarning: '#faad14',
   colorError: '#ff4d4f',
   colorInfo: '#1677ff',
-  colorTextBase: '#000000',
-  colorBgBase: '#ffffff',
+  colorLink: '',
+  colorTextBase: '',
+  colorBgBase: '',
   fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,\n'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',\n'Noto Color Emoji'",
+  fontFamilyCode: "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace",
   fontSize: 14,
-  lineHeight: 1.5714285714285714,
+  lineWidth: 1,
+  lineType: 'solid',
+  motionUnit: 0.1,
+  motionBase: 0,
+  motionEaseOutCirc: 'cubic-bezier(0.08, 0.82, 0.17, 1)',
+  motionEaseInOutCirc: 'cubic-bezier(0.78, 0.14, 0.15, 0.86)',
+  motionEaseOut: 'cubic-bezier(0.215, 0.61, 0.355, 1)',
+  motionEaseInOut: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
+  motionEaseOutBack: 'cubic-bezier(0.12, 0.4, 0.29, 1.46)',
+  motionEaseInBack: 'cubic-bezier(0.71, -0.46, 0.88, 0.6)',
+  motionEaseInQuint: 'cubic-bezier(0.755, 0.05, 0.855, 0.06)',
+  motionEaseOutQuint: 'cubic-bezier(0.23, 1, 0.32, 1)',
   borderRadius: 6,
   sizeUnit: 4,
   sizeStep: 4,
+  sizePopupArrow: 16,
   controlHeight: 32,
-  motionDurationFast: '0.1s',
-  motionDurationMid: '0.2s',
-  motionEaseInOut: 'cubic-bezier(0.645, 0.045, 0.355, 1)',
-  boxShadow:
-    '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+  zIndexBase: 0,
+  zIndexPopupBase: 1000,
+  opacityImage: 1,
+  wireframe: false,
+  motion: true,
 }
