@@ -283,6 +283,30 @@ export interface InputComponentToken extends ComponentTokenBase {
   paddingInline: number
 }
 
+export interface InputNumberComponentToken extends ComponentTokenBase {
+  activeBorderColor: string
+  activeShadow: string
+  addonBg: string
+  filledHandleBg: string
+  handleActiveBg: string
+  handleBg: string
+  handleBorderColor: string
+  handleFontSize: number
+  handleHoverColor: string
+  handleVisible: boolean
+  handleWidth: number
+  hoverBorderColor: string
+  inputFontSize: number
+  inputFontSizeLG: number
+  inputFontSizeSM: number
+  paddingBlock: number
+  paddingBlockLG: number
+  paddingBlockSM: number
+  paddingInline: number
+  paddingInlineLG: number
+  paddingInlineSM: number
+}
+
 export interface SpaceComponentToken extends ComponentTokenBase {
   gapSmall: number
   gapMiddle: number
@@ -510,7 +534,7 @@ export interface ComponentTokenMap {
   Grid: GridComponentToken
   Image?: ComponentTokenBase
   Input: InputComponentToken
-  InputNumber?: ComponentTokenBase
+  InputNumber: InputNumberComponentToken
   Layout?: ComponentTokenBase
   List?: ComponentTokenBase
   Masonry?: ComponentTokenBase

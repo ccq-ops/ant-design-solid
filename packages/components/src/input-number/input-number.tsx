@@ -4,7 +4,15 @@ import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
-import type { InputNumberChangeValue, InputNumberProps, InputNumberStepEmitter } from './interface'
+import type {
+  InputNumberChangeValue,
+  InputNumberFocusOptions,
+  InputNumberProps,
+  InputNumberRef,
+  InputNumberSemanticClassNames,
+  InputNumberSemanticStyles,
+  InputNumberStepEmitter,
+} from './interface'
 import { useInputNumberStyle } from './input-number.style'
 
 const MAX_PRECISION = 20
@@ -44,14 +52,11 @@ function addByStep(value: number, step: number): number {
   return (Math.round(value * factor) + Math.round(step * factor)) / factor
 }
 
-function defaultParser(
-  displayValue: string,
-  decimalSeparator: string | undefined,
-): number | undefined {
+function defaultParser(displayValue: string, decimalSeparator: string | undefined): number | null {
   const normalized = decimalSeparator ? displayValue.replace(decimalSeparator, '.') : displayValue
-  if (normalized.trim() === '') return undefined
+  if (normalized.trim() === '') return null
   const parsed = Number(normalized)
-  return Number.isFinite(parsed) ? parsed : undefined
+  return Number.isFinite(parsed) ? parsed : null
 }
 
 function applyDecimalSeparator(value: string, decimalSeparator: string | undefined): string {
@@ -60,14 +65,28 @@ function applyDecimalSeparator(value: string, decimalSeparator: string | undefin
 }
 
 function toNumber(value: InputNumberChangeValue): number | undefined {
-  if (value === undefined) return undefined
+  if (value === null) return undefined
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
 function toOutputValue(value: number | undefined, stringMode: boolean): InputNumberChangeValue {
-  if (value === undefined) return undefined
+  if (value === undefined) return null
   return stringMode ? String(value) : value
+}
+
+function mergeStyles(...values: Array<JSX.CSSProperties | string | undefined>) {
+  return Object.assign({}, ...values.filter((value) => value && typeof value !== 'string'))
+}
+
+function assignRef(ref: InputNumberProps['ref'], value: InputNumberRef) {
+  if (!ref) return
+  if (typeof ref === 'function') {
+    ref(value)
+    return
+  }
+  if (!('focus' in ref)) ref.current = value
+  Object.assign(ref as object, value)
 }
 
 export function InputNumber(props: InputNumberProps) {
@@ -94,6 +113,7 @@ export function InputNumber(props: InputNumberProps) {
     'onPressEnter',
     'onWheel',
     'onStep',
+    'ref',
     'class',
     'style',
     'keyboard',
@@ -109,20 +129,27 @@ export function InputNumber(props: InputNumberProps) {
     'styles',
     'rootClassName',
     'prefixCls',
+    'addonBefore',
+    'addonAfter',
+    'bordered',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-input-number`
   const [, hashId] = useInputNumberStyle(prefixCls())
-  const [innerValue, setInnerValue] = createSignal<InputNumberChangeValue>(local.defaultValue)
-  const [draftValue, setDraftValue] = createSignal<InputNumberChangeValue>()
+  const [innerValue, setInnerValue] = createSignal<InputNumberChangeValue>(
+    local.defaultValue ?? null,
+  )
+  const [draftValue, setDraftValue] = createSignal<InputNumberChangeValue | undefined>()
   const [displayValue, setDisplayValue] = createSignal('')
   const [focused, setFocused] = createSignal(false)
+  let rootRef: HTMLSpanElement | undefined
+  let inputRef: HTMLInputElement | undefined
   const controls = () => local.controls !== false && !local.readOnly
   const disabled = () => Boolean(local.disabled)
   const readOnly = () => Boolean(local.readOnly)
   const size = () => local.size ?? config.componentSize()
-  const variant = () => local.variant ?? 'outlined'
+  const variant = () => local.variant ?? (local.bordered === false ? 'borderless' : 'outlined')
   const keyboard = () => local.keyboard !== false
   const changeOnBlur = () => local.changeOnBlur !== false
   const stringMode = () => Boolean(local.stringMode)
@@ -136,20 +163,37 @@ export function InputNumber(props: InputNumberProps) {
   }
 
   const sourceValue = createMemo<InputNumberChangeValue>(() => {
-    if (isFormOwned()) return formItem?.value() as InputNumberChangeValue
-    if (isValueControlled()) return local.value
+    if (isFormOwned()) return (formItem?.value() as InputNumberChangeValue | undefined) ?? null
+    if (isValueControlled()) return local.value ?? null
     return innerValue()
   })
 
   const mergedValue = createMemo<InputNumberChangeValue>(() => {
-    if (isFormBlurTrigger()) return draftValue() ?? sourceValue()
+    if (isFormBlurTrigger()) return draftValue() !== undefined ? draftValue()! : sourceValue()
     return sourceValue()
   })
 
+  const semanticProps = (): InputNumberProps => ({
+    ...props,
+    value: sourceValue(),
+    size: size(),
+    variant: variant(),
+  })
+  const semanticClassNames = createMemo<InputNumberSemanticClassNames>(() =>
+    typeof local.classNames === 'function'
+      ? local.classNames({ props: semanticProps() })
+      : (local.classNames ?? {}),
+  )
+  const semanticStyles = createMemo<InputNumberSemanticStyles>(() =>
+    typeof local.styles === 'function'
+      ? local.styles({ props: semanticProps() })
+      : (local.styles ?? {}),
+  )
+
   function formatValue(value: InputNumberChangeValue, userTyping = false, input?: string): string {
-    const displayInput = input ?? (value === undefined ? '' : String(value))
+    const displayInput = input ?? (value === null ? '' : String(value))
     if (local.formatter) return local.formatter(value, { userTyping, input: displayInput })
-    return value === undefined ? '' : applyDecimalSeparator(String(value), local.decimalSeparator)
+    return value === null ? '' : applyDecimalSeparator(String(value), local.decimalSeparator)
   }
 
   createEffect(() => {
@@ -167,7 +211,7 @@ export function InputNumber(props: InputNumberProps) {
 
   function normalize(value: InputNumberChangeValue): InputNumberChangeValue {
     const numeric = toNumber(value)
-    if (!isFiniteNumber(numeric)) return undefined
+    if (!isFiniteNumber(numeric)) return null
     return toOutputValue(
       roundByPrecision(clamp(numeric, local.min, local.max), local.precision),
       stringMode(),
@@ -222,8 +266,29 @@ export function InputNumber(props: InputNumberProps) {
     commitValue(parseDisplay(input), trigger)
   }
 
-  return (
+  function focus(options?: InputNumberFocusOptions): void {
+    inputRef?.focus({ preventScroll: options?.preventScroll })
+    if (!inputRef || !options?.cursor) return
+    const length = inputRef.value.length
+    if (options.cursor === 'start') inputRef.setSelectionRange(0, 0)
+    if (options.cursor === 'end') inputRef.setSelectionRange(length, length)
+    if (options.cursor === 'all') inputRef.setSelectionRange(0, length)
+  }
+
+  const inputNumberRef: InputNumberRef = {
+    focus,
+    blur: () => inputRef?.blur(),
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  assignRef(local.ref, inputNumberRef)
+
+  const inputNumberNode = () => (
     <span
+      ref={(el) => {
+        rootRef = el
+      }}
       class={classNames(
         prefixCls(),
         focused() && `${prefixCls()}-focused`,
@@ -238,24 +303,27 @@ export function InputNumber(props: InputNumberProps) {
         hashId(),
         local.rootClassName,
         local.class,
-        local.classNames?.root,
+        semanticClassNames().root,
       )}
-      style={{ ...local.styles?.root, ...(local.style as JSX.CSSProperties | undefined) }}
+      style={mergeStyles(semanticStyles().root, local.style as JSX.CSSProperties | undefined)}
     >
       <Show when={local.prefix}>
         <span
-          class={classNames(`${prefixCls()}-prefix`, local.classNames?.prefix)}
-          style={local.styles?.prefix}
+          class={classNames(`${prefixCls()}-prefix`, semanticClassNames().prefix)}
+          style={semanticStyles().prefix}
         >
           {local.prefix}
         </span>
       </Show>
       <input
         {...rest}
+        ref={(el) => {
+          inputRef = el
+        }}
         role="spinbutton"
         type="text"
-        class={classNames(`${prefixCls()}-input`, local.classNames?.input)}
-        style={local.styles?.input}
+        class={classNames(`${prefixCls()}-input`, semanticClassNames().input)}
+        style={semanticStyles().input}
         value={displayValue()}
         placeholder={local.placeholder}
         disabled={disabled()}
@@ -272,7 +340,7 @@ export function InputNumber(props: InputNumberProps) {
           const input = event.currentTarget.value
           setDisplayValue(local.formatter ? formatValue(parseDisplay(input), true, input) : input)
           if (!changeOnBlur()) commitInputValue(input, 'onChange')
-          ;(local.onInput as JSX.EventHandler<HTMLInputElement, InputEvent> | undefined)?.(event)
+          local.onInput?.(input)
         }}
         onFocus={(event) => {
           setFocused(true)
@@ -313,16 +381,16 @@ export function InputNumber(props: InputNumberProps) {
       />
       <Show when={local.suffix}>
         <span
-          class={classNames(`${prefixCls()}-suffix`, local.classNames?.suffix)}
-          style={local.styles?.suffix}
+          class={classNames(`${prefixCls()}-suffix`, semanticClassNames().suffix)}
+          style={semanticStyles().suffix}
         >
           {local.suffix}
         </span>
       </Show>
       <Show when={controls()}>
         <span
-          class={classNames(`${prefixCls()}-controls`, local.classNames?.actions)}
-          style={local.styles?.actions}
+          class={classNames(`${prefixCls()}-controls`, semanticClassNames().actions)}
+          style={semanticStyles().actions}
           aria-disabled={disabled() ? 'true' : undefined}
         >
           <button
@@ -346,5 +414,19 @@ export function InputNumber(props: InputNumberProps) {
         </span>
       </Show>
     </span>
+  )
+
+  return (
+    <Show when={local.addonBefore || local.addonAfter} fallback={inputNumberNode()}>
+      <span class={classNames(`${prefixCls()}-group-wrapper`, hashId())}>
+        <Show when={local.addonBefore}>
+          <span class={`${prefixCls()}-group-addon`}>{local.addonBefore}</span>
+        </Show>
+        {inputNumberNode()}
+        <Show when={local.addonAfter}>
+          <span class={`${prefixCls()}-group-addon`}>{local.addonAfter}</span>
+        </Show>
+      </span>
+    </Show>
   )
 }

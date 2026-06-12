@@ -3,6 +3,7 @@
 Enter numeric values with optional controls, bounds, precision, and formatting.
 
 Its onChange callback receives the normalized numeric value, not a DOM change event.
+Empty committed values are reported as `null`, matching Ant Design's InputNumber behavior.
 
 ### Basic
 
@@ -74,11 +75,11 @@ const Demo5 = function () {
     <InputNumber
       defaultValue={1000}
       formatter={(nextValue, info) =>
-        info.userTyping ? info.input : nextValue === undefined ? '' : `$ ${nextValue}`
+        info.userTyping ? info.input : nextValue === null ? '' : `$ ${nextValue}`
       }
       parser={(displayValue) => {
-        const parsed = Number(displayValue.replace(/[$,\s]/g, ''))
-        return Number.isNaN(parsed) ? undefined : parsed
+        const parsed = Number((displayValue ?? '').replace(/[$,\s]/g, ''))
+        return Number.isNaN(parsed) ? null : parsed
       }}
     />
   )
@@ -239,13 +240,108 @@ const Demo12 = function () {
 export default Demo12
 ```
 
-### Form usage
+### Semantic function styles
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
 const Demo13 = function () {
+  return (
+    <InputNumber
+      size="large"
+      classNames={({ props }) => ({
+        root: props.size === 'large' ? 'large-number' : 'number',
+        input: 'number-input',
+      })}
+      styles={({ props }) => ({
+        root: { width: props.size === 'large' ? '220px' : '160px' },
+      })}
+    />
+  )
+}
+
+export default Demo13
+```
+
+### Addons and bordered compatibility
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo14 = function () {
+  return (
+    <Space>
+      <InputNumber addonBefore="$" addonAfter="USD" defaultValue={100} />
+      <InputNumber bordered={false} defaultValue={8} />
+    </Space>
+  )
+}
+
+export default Demo14
+```
+
+### Ref
+
+```tsx
+import type { InputNumberRef } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo15 = function () {
+  let inputNumberRef: InputNumberRef | undefined
+
+  return (
+    <Space>
+      <InputNumber ref={(ref) => (inputNumberRef = ref)} defaultValue={18} />
+      <button type="button" onClick={() => inputNumberRef?.focus({ cursor: 'all' })}>
+        Focus
+      </button>
+      <button type="button" onClick={() => inputNumberRef?.blur()}>
+        Blur
+      </button>
+    </Space>
+  )
+}
+
+export default Demo15
+```
+
+### Design token
+
+```tsx
+import { createSignal } from 'solid-js'
+import { ConfigProvider, Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo16 = function () {
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          InputNumber: {
+            handleWidth: 30,
+            activeBorderColor: '#722ed1',
+            handleHoverColor: '#722ed1',
+          },
+        },
+      }}
+    >
+      <InputNumber defaultValue={6} />
+    </ConfigProvider>
+  )
+}
+
+export default Demo16
+```
+
+### Form usage
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space } from '@ant-design-solid/core'
+
+const Demo17 = function () {
   return (
     <Form onFinish={(values) => console.log(values)}>
       <Form.Item name="amount" label="Amount">
@@ -256,40 +352,88 @@ const Demo13 = function () {
   )
 }
 
-export default Demo13
+export default Demo17
 ```
 
 ## API
 
-| Property           | Description                                                                      | Type                                                                                                                    | Default      |
-| ------------------ | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `value`            | Controlled value. In stringMode, use a string value for high precision decimals. | `number \| string`                                                                                                      | `-`          |
-| `defaultValue`     | Initial value for uncontrolled usage.                                            | `number \| string`                                                                                                      | `-`          |
-| `min`              | Minimum allowed value.                                                           | `number`                                                                                                                | `-`          |
-| `max`              | Maximum allowed value.                                                           | `number`                                                                                                                | `-`          |
-| `step`             | Increment used by controls, keyboard, and wheel stepping.                        | `number \| string`                                                                                                      | `1`          |
-| `precision`        | Number of decimal places to keep.                                                | `number`                                                                                                                | `-`          |
-| `placeholder`      | Input placeholder text.                                                          | `string`                                                                                                                | `-`          |
-| `disabled`         | Disables input and controls.                                                     | `boolean`                                                                                                               | `false`      |
-| `readOnly`         | Makes the input read-only and disables stepping interactions.                    | `boolean`                                                                                                               | `false`      |
-| `size`             | Input size from the theme component size scale.                                  | `'small' \| 'middle' \| 'large'`                                                                                        | `-`          |
-| `status`           | Validation visual status.                                                        | `'error' \| 'warning'`                                                                                                  | `-`          |
-| `controls`         | Shows increment/decrement controls, or customizes their icons.                   | `boolean \| { upIcon?: JSX.Element; downIcon?: JSX.Element }`                                                           | `true`       |
-| `keyboard`         | Enables ArrowUp and ArrowDown stepping.                                          | `boolean`                                                                                                               | `true`       |
-| `changeOnBlur`     | Commits typed input on blur when enabled, or while typing when disabled.         | `boolean`                                                                                                               | `true`       |
-| `changeOnWheel`    | Allows mouse wheel stepping.                                                     | `boolean`                                                                                                               | `false`      |
-| `prefix`           | Content rendered before the input.                                               | `JSX.Element`                                                                                                           | `-`          |
-| `suffix`           | Content rendered after the input.                                                | `JSX.Element`                                                                                                           | `-`          |
-| `variant`          | Visual variant of the input.                                                     | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                                                                | `'outlined'` |
-| `mode`             | Display mode for the input and controls.                                         | `'input' \| 'spinner'`                                                                                                  | `'input'`    |
-| `stringMode`       | Returns committed values as strings for high precision scenarios.                | `boolean`                                                                                                               | `false`      |
-| `decimalSeparator` | Custom decimal separator for parsing and display.                                | `string`                                                                                                                | `-`          |
-| `formatter`        | Formats the value for display. The info argument indicates typing state.         | `(value: number \| string \| undefined, info: { userTyping: boolean; input: string }) => string`                        | `-`          |
-| `parser`           | Parses displayed text back into a value.                                         | `(displayValue: string) => number \| string \| undefined`                                                               | `-`          |
-| `classNames`       | Semantic DOM class names for root, prefix, suffix, input, and actions.           | `InputNumberSemanticClassNames`                                                                                         | `-`          |
-| `styles`           | Semantic DOM inline styles for root, prefix, suffix, input, and actions.         | `InputNumberSemanticStyles`                                                                                             | `-`          |
-| `rootClassName`    | Additional class name for the root element.                                      | `string`                                                                                                                | `-`          |
-| `prefixCls`        | Custom component CSS class prefix.                                               | `string`                                                                                                                | `-`          |
-| `onChange`         | Called with the normalized value, not a DOM change event.                        | `(value: number \| string \| undefined) => void`                                                                        | `-`          |
-| `onPressEnter`     | Called when Enter is pressed.                                                    | `(event: KeyboardEvent) => void`                                                                                        | `-`          |
-| `onStep`           | Called after stepping by controls, keyboard, or wheel.                           | `(value, info: { offset: number \| string; type: 'up' \| 'down'; emitter: 'handler' \| 'keydown' \| 'wheel' }) => void` | `-`          |
+| Property           | Description                                                                                                | Type                                                                                                                    | Default      |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `value`            | Controlled value. In stringMode, use a string value for high precision decimals.                           | `number \| string \| null`                                                                                              | `-`          |
+| `defaultValue`     | Initial value for uncontrolled usage.                                                                      | `number \| string \| null`                                                                                              | `-`          |
+| `min`              | Minimum allowed value.                                                                                     | `number`                                                                                                                | `-`          |
+| `max`              | Maximum allowed value.                                                                                     | `number`                                                                                                                | `-`          |
+| `step`             | Increment used by controls, keyboard, and wheel stepping.                                                  | `number \| string`                                                                                                      | `1`          |
+| `precision`        | Number of decimal places to keep.                                                                          | `number`                                                                                                                | `-`          |
+| `placeholder`      | Input placeholder text.                                                                                    | `string`                                                                                                                | `-`          |
+| `disabled`         | Disables input and controls.                                                                               | `boolean`                                                                                                               | `false`      |
+| `readOnly`         | Makes the input read-only and disables stepping interactions.                                              | `boolean`                                                                                                               | `false`      |
+| `size`             | Input size from the theme component size scale.                                                            | `'small' \| 'middle' \| 'large'`                                                                                        | `-`          |
+| `status`           | Validation visual status.                                                                                  | `'error' \| 'warning'`                                                                                                  | `-`          |
+| `controls`         | Shows increment/decrement controls, or customizes their icons.                                             | `boolean \| { upIcon?: JSX.Element; downIcon?: JSX.Element }`                                                           | `true`       |
+| `addonBefore`      | Deprecated compatibility addon rendered before the input number.                                           | `JSX.Element`                                                                                                           | `-`          |
+| `addonAfter`       | Deprecated compatibility addon rendered after the input number.                                            | `JSX.Element`                                                                                                           | `-`          |
+| `bordered`         | Deprecated compatibility prop. Use `variant` instead.                                                      | `boolean`                                                                                                               | `true`       |
+| `keyboard`         | Enables ArrowUp and ArrowDown stepping.                                                                    | `boolean`                                                                                                               | `true`       |
+| `changeOnBlur`     | Commits typed input on blur when enabled, or while typing when disabled.                                   | `boolean`                                                                                                               | `true`       |
+| `changeOnWheel`    | Allows mouse wheel stepping.                                                                               | `boolean`                                                                                                               | `false`      |
+| `prefix`           | Content rendered before the input.                                                                         | `JSX.Element`                                                                                                           | `-`          |
+| `suffix`           | Content rendered after the input.                                                                          | `JSX.Element`                                                                                                           | `-`          |
+| `variant`          | Visual variant of the input.                                                                               | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                                                                | `'outlined'` |
+| `mode`             | Display mode for the input and controls.                                                                   | `'input' \| 'spinner'`                                                                                                  | `'input'`    |
+| `stringMode`       | Returns committed values as strings for high precision scenarios.                                          | `boolean`                                                                                                               | `false`      |
+| `decimalSeparator` | Custom decimal separator for parsing and display.                                                          | `string`                                                                                                                | `-`          |
+| `formatter`        | Formats the value for display. The info argument indicates typing state.                                   | `(value: number \| string \| null, info: { userTyping: boolean; input: string }) => string`                             | `-`          |
+| `parser`           | Parses displayed text back into a value.                                                                   | `(displayValue: string \| undefined) => number \| string \| null`                                                       | `-`          |
+| `classNames`       | Semantic DOM class names for root, prefix, suffix, input, and actions. Supports object or function form.   | `InputNumberSemanticClassNames \| ((info: { props }) => InputNumberSemanticClassNames)`                                 | `-`          |
+| `styles`           | Semantic DOM inline styles for root, prefix, suffix, input, and actions. Supports object or function form. | `InputNumberSemanticStyles \| ((info: { props }) => InputNumberSemanticStyles)`                                         | `-`          |
+| `rootClassName`    | Additional class name for the root element.                                                                | `string`                                                                                                                | `-`          |
+| `prefixCls`        | Custom component CSS class prefix.                                                                         | `string`                                                                                                                | `-`          |
+| `onInput`          | Called with the typed display text.                                                                        | `(text: string) => void`                                                                                                | `-`          |
+| `onChange`         | Called with the normalized value, not a DOM change event.                                                  | `(value: number \| string \| null) => void`                                                                             | `-`          |
+| `onPressEnter`     | Called when Enter is pressed.                                                                              | `(event: KeyboardEvent) => void`                                                                                        | `-`          |
+| `onStep`           | Called after stepping by controls, keyboard, or wheel.                                                     | `(value, info: { offset: number \| string; type: 'up' \| 'down'; emitter: 'handler' \| 'keydown' \| 'wheel' }) => void` | `-`          |
+
+## Ref
+
+| Name             | Description                   | Type                                                                                  |
+| ---------------- | ----------------------------- | ------------------------------------------------------------------------------------- |
+| `focus(options)` | Focuses the input.            | `(options?: { preventScroll?: boolean; cursor?: 'start' \| 'end' \| 'all' }) => void` |
+| `blur()`         | Removes focus from the input. | `() => void`                                                                          |
+| `nativeElement`  | Root InputNumber DOM element. | `HTMLElement \| undefined`                                                            |
+
+## Semantic DOM
+
+| Slot      | Description                           |
+| --------- | ------------------------------------- |
+| `root`    | Root InputNumber element.             |
+| `prefix`  | Prefix slot.                          |
+| `suffix`  | Suffix slot.                          |
+| `input`   | Native input element.                 |
+| `actions` | Increment/decrement controls wrapper. |
+
+## Design Token
+
+| Token               | Description                            |
+| ------------------- | -------------------------------------- |
+| `activeBorderColor` | Border color when focused.             |
+| `activeShadow`      | Focus shadow.                          |
+| `addonBg`           | Addon background.                      |
+| `filledHandleBg`    | Handle background in filled contexts.  |
+| `handleActiveBg`    | Handle hover/active background.        |
+| `handleBg`          | Handle background.                     |
+| `handleBorderColor` | Handle separator border color.         |
+| `handleFontSize`    | Handle icon font size.                 |
+| `handleHoverColor`  | Handle hover color.                    |
+| `handleVisible`     | Whether handlers are visually visible. |
+| `handleWidth`       | Handle column width.                   |
+| `hoverBorderColor`  | Border color on hover.                 |
+| `inputFontSize`     | Default input font size.               |
+| `inputFontSizeLG`   | Large input font size.                 |
+| `inputFontSizeSM`   | Small input font size.                 |
+| `paddingBlock`      | Default vertical input padding.        |
+| `paddingBlockLG`    | Large vertical input padding.          |
+| `paddingBlockSM`    | Small vertical input padding.          |
+| `paddingInline`     | Default horizontal input padding.      |
+| `paddingInlineLG`   | Large horizontal input padding.        |
+| `paddingInlineSM`   | Small horizontal input padding.        |

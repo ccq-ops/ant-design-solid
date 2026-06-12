@@ -1,3 +1,4 @@
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { useToken } from '../config-provider'
 
@@ -7,19 +8,54 @@ export function useInputNumberStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['InputNumber', prefixCls] },
     () => {
       const t = token()
+      const inputNumber = getComponentToken('InputNumber', t)
       return {
         [`.${prefixCls}`]: {
           display: 'inline-flex',
           'align-items': 'stretch',
           width: '120px',
           color: t.colorText,
-          'font-size': `${t.fontSize}px`,
+          'font-size': `${inputNumber.inputFontSize}px`,
           'font-family': t.fontFamily,
           background: t.colorBgContainer,
           border: `${t.lineWidth}px solid ${t.colorBorder}`,
           'border-radius': `${t.borderRadius}px`,
           transition: `border-color ${t.motionDurationMid} ${t.motionEaseInOut}`,
-          '&:hover': { 'border-color': t.colorPrimaryHover },
+          '&:hover': { 'border-color': inputNumber.hoverBorderColor },
+        },
+        [`.${prefixCls}-group-wrapper`]: {
+          display: 'inline-flex',
+          'align-items': 'stretch',
+        },
+        [`.${prefixCls}-group-wrapper .${prefixCls}`]: {
+          width: 'auto',
+          'border-radius': 0,
+        },
+        [`.${prefixCls}-group-wrapper .${prefixCls}:first-child`]: {
+          'border-start-start-radius': `${t.borderRadius}px`,
+          'border-end-start-radius': `${t.borderRadius}px`,
+        },
+        [`.${prefixCls}-group-wrapper .${prefixCls}:last-child`]: {
+          'border-start-end-radius': `${t.borderRadius}px`,
+          'border-end-end-radius': `${t.borderRadius}px`,
+        },
+        [`.${prefixCls}-group-addon`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          padding: `0 ${inputNumber.paddingInline}px`,
+          color: t.colorText,
+          background: inputNumber.addonBg,
+          border: `${t.lineWidth}px solid ${t.colorBorder}`,
+        },
+        [`.${prefixCls}-group-addon:first-child`]: {
+          'border-inline-end': 0,
+          'border-start-start-radius': `${t.borderRadius}px`,
+          'border-end-start-radius': `${t.borderRadius}px`,
+        },
+        [`.${prefixCls}-group-addon:last-child`]: {
+          'border-inline-start': 0,
+          'border-start-end-radius': `${t.borderRadius}px`,
+          'border-end-end-radius': `${t.borderRadius}px`,
         },
         [`.${prefixCls}-variant-borderless`]: {
           border: 0,
@@ -28,6 +64,9 @@ export function useInputNumberStyle(prefixCls: string) {
         [`.${prefixCls}-variant-filled`]: {
           background: t.colorFillAlter,
         },
+        [`.${prefixCls}-variant-filled .${prefixCls}-handler`]: {
+          background: inputNumber.filledHandleBg,
+        },
         [`.${prefixCls}-variant-underlined`]: {
           'border-top': 0,
           'border-left': 0,
@@ -35,8 +74,8 @@ export function useInputNumberStyle(prefixCls: string) {
           'border-radius': 0,
         },
         [`.${prefixCls}-focused`]: {
-          'border-color': t.colorPrimary,
-          'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
+          'border-color': inputNumber.activeBorderColor,
+          'box-shadow': inputNumber.activeShadow,
         },
         [`.${prefixCls}-disabled`]: {
           color: t.colorTextDisabled,
@@ -60,7 +99,7 @@ export function useInputNumberStyle(prefixCls: string) {
           flex: '1 1 auto',
           width: '100%',
           minWidth: 0,
-          padding: `${t.paddingXS}px ${t.paddingXS}px`,
+          padding: `${inputNumber.paddingBlock}px ${inputNumber.paddingInline}px`,
           color: 'inherit',
           'font-size': 'inherit',
           'font-family': 'inherit',
@@ -81,8 +120,8 @@ export function useInputNumberStyle(prefixCls: string) {
         [`.${prefixCls}-controls`]: {
           display: 'inline-flex',
           'flex-direction': 'column',
-          width: '22px',
-          'border-left': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          width: `${inputNumber.handleWidth}px`,
+          'border-left': `${t.lineWidth}px solid ${inputNumber.handleBorderColor}`,
         },
         [`.${prefixCls}-handler`]: {
           flex: '1 1 0',
@@ -91,12 +130,16 @@ export function useInputNumberStyle(prefixCls: string) {
           'justify-content': 'center',
           padding: 0,
           color: t.colorTextSecondary,
-          'font-size': '10px',
+          'font-size': `${inputNumber.handleFontSize}px`,
           'line-height': '1',
-          background: 'transparent',
+          background: inputNumber.handleBg,
           border: 0,
           cursor: 'pointer',
-          '&:hover': { color: t.colorPrimary },
+          opacity: inputNumber.handleVisible ? 1 : 0,
+          '&:hover': {
+            color: inputNumber.handleHoverColor,
+            background: inputNumber.handleActiveBg,
+          },
           '&:disabled': {
             color: t.colorTextDisabled,
             cursor: 'not-allowed',
@@ -109,21 +152,21 @@ export function useInputNumberStyle(prefixCls: string) {
           display: 'block',
         },
         [`.${prefixCls}-handler-up`]: {
-          'border-bottom': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-bottom': `${t.lineWidth}px solid ${inputNumber.handleBorderColor}`,
         },
         [`.${prefixCls}-sm`]: {
           width: '100px',
-          'font-size': `${Math.max(t.fontSize - 2, 12)}px`,
+          'font-size': `${inputNumber.inputFontSizeSM}px`,
         },
         [`.${prefixCls}-sm .${prefixCls}-input`]: {
-          padding: `1px ${t.paddingXS}px`,
+          padding: `${inputNumber.paddingBlockSM}px ${inputNumber.paddingInlineSM}px`,
         },
         [`.${prefixCls}-lg`]: {
           width: '140px',
-          'font-size': `${t.fontSize + 2}px`,
+          'font-size': `${inputNumber.inputFontSizeLG}px`,
         },
         [`.${prefixCls}-lg .${prefixCls}-input`]: {
-          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          padding: `${inputNumber.paddingBlockLG}px ${inputNumber.paddingInlineLG}px`,
         },
       }
     },

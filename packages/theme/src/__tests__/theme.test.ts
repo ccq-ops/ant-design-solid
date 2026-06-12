@@ -233,6 +233,7 @@ describe('@ant-design-solid/theme', () => {
         Checkbox: { checkColor: '#111111' },
         Radio: { dotSize: 10 },
         Switch: { handleSize: 16 },
+        InputNumber: { handleWidth: 28, activeBorderColor: '#722ed1' },
       },
     })
 
@@ -246,6 +247,10 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Radio', token).size).toBe(16)
     expect(getComponentToken('Switch', token).handleSize).toBe(16)
     expect(getComponentToken('Switch', token).trackMinWidth).toBe(44)
+    expect(getComponentToken('InputNumber', token).handleWidth).toBe(28)
+    expect(getComponentToken('InputNumber', token).activeBorderColor).toBe('#722ed1')
+    expect(getComponentToken('InputNumber', token).inputFontSize).toBe(token.fontSize)
+    expect(getComponentToken('InputNumber', token).paddingInline).toBe(token.paddingSM)
   })
 
   it('derives feedback component token defaults and applies overrides', () => {

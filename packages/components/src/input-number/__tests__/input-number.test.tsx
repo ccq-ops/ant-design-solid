@@ -247,7 +247,7 @@ describe('InputNumber', () => {
 
   it('passes userTyping info to formatter', () => {
     const formatter = vi.fn(
-      (value: number | string | undefined, info: { userTyping: boolean; input: string }) =>
+      (value: number | string | null, info: { userTyping: boolean; input: string }) =>
         info.userTyping ? info.input : `#${value ?? ''}`,
     )
     const result = render(() => <InputNumber defaultValue={3} formatter={formatter} />)
@@ -354,7 +354,7 @@ describe('InputNumber', () => {
     expect(negativeInput).toHaveValue('2.678')
   })
 
-  it('commits empty input as undefined', () => {
+  it('commits empty input as null', () => {
     const onChange = vi.fn()
     const result = render(() => <InputNumber defaultValue={3} onChange={onChange} />)
     const input = result.getByRole('spinbutton') as HTMLInputElement
@@ -362,8 +362,91 @@ describe('InputNumber', () => {
     fireEvent.input(input, { target: { value: '' } })
     fireEvent.blur(input)
 
-    expect(onChange).toHaveBeenLastCalledWith(undefined)
+    expect(onChange).toHaveBeenLastCalledWith(null)
     expect(input).toHaveValue('')
+  })
+
+  it('calls onInput with the typed text instead of a DOM event', () => {
+    const onInput = vi.fn()
+    const result = render(() => <InputNumber onInput={onInput} />)
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    fireEvent.input(input, { target: { value: '42' } })
+
+    expect(onInput).toHaveBeenCalledWith('42')
+    expect(onInput.mock.calls[0][0]).not.toHaveProperty('currentTarget')
+  })
+
+  it('exposes focus, blur, and nativeElement through ref', () => {
+    let ref:
+      | {
+          focus: (options?: { preventScroll?: boolean; cursor?: 'start' | 'end' | 'all' }) => void
+          blur: () => void
+          nativeElement?: HTMLElement
+        }
+      | undefined
+    const result = render(() => <InputNumber ref={(next) => (ref = next)} defaultValue={5} />)
+    const root = result.container.firstElementChild as HTMLElement
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    ref?.focus({ cursor: 'all' })
+    expect(document.activeElement).toBe(input)
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(input.value.length)
+
+    ref?.blur()
+    expect(document.activeElement).not.toBe(input)
+    expect(ref?.nativeElement).toBe(root)
+  })
+
+  it('renders addonBefore and addonAfter around the input number', () => {
+    const result = render(() => (
+      <InputNumber addonBefore={<span data-testid="before">$</span>} addonAfter="USD" />
+    ))
+    const wrapper = result.container.firstElementChild as HTMLElement
+
+    expect(wrapper.className).toContain('ads-input-number-group-wrapper')
+    expect(result.getByTestId('before')).toBeInTheDocument()
+    expect(wrapper).toHaveTextContent('USD')
+    expect(wrapper.querySelector('.ads-input-number')).toBeInTheDocument()
+  })
+
+  it('maps bordered false to the borderless variant when variant is not provided', () => {
+    const result = render(() => <InputNumber bordered={false} />)
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root.className).toContain('ads-input-number-variant-borderless')
+  })
+
+  it('lets variant override bordered false', () => {
+    const result = render(() => <InputNumber bordered={false} variant="filled" />)
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root.className).toContain('ads-input-number-variant-filled')
+    expect(root.className).not.toContain('ads-input-number-variant-borderless')
+  })
+
+  it('supports function semantic classNames and styles', () => {
+    const result = render(() => (
+      <InputNumber
+        size="large"
+        classNames={({ props }) => ({
+          root: props.size === 'large' ? 'large-root-slot' : 'root-slot',
+          input: 'fn-input-slot',
+        })}
+        styles={({ props }) => ({
+          root: { width: props.size === 'large' ? '244px' : '122px' },
+          input: { color: 'green' },
+        })}
+      />
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+    const input = result.getByRole('spinbutton') as HTMLInputElement
+
+    expect(root.className).toContain('large-root-slot')
+    expect(root).toHaveStyle({ width: '244px' })
+    expect(input.className).toContain('fn-input-slot')
+    expect(input).toHaveStyle({ color: 'rgb(0, 128, 0)' })
   })
 
   it('supports formatter and parser', () => {
@@ -371,10 +454,10 @@ describe('InputNumber', () => {
     const result = render(() => (
       <InputNumber
         defaultValue={1000}
-        formatter={(value) => (value === undefined ? '' : `$ ${value}`)}
+        formatter={(value) => (value === null ? '' : `$ ${value}`)}
         parser={(display) => {
-          const parsed = Number(display.replace(/[$,\s]/g, ''))
-          return Number.isNaN(parsed) ? undefined : parsed
+          const parsed = Number((display ?? '').replace(/[$,\s]/g, ''))
+          return Number.isNaN(parsed) ? null : parsed
         }}
         onChange={onChange}
       />

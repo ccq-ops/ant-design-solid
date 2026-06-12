@@ -2,11 +2,12 @@ import type { ComponentSize } from '@ant-design-solid/theme'
 import type { JSX } from 'solid-js'
 
 export type InputNumberValue = number | string
-export type InputNumberChangeValue = InputNumberValue | undefined
+export type InputNumberChangeValue = InputNumberValue | null
 export type InputNumberVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
 export type InputNumberMode = 'input' | 'spinner'
 export type InputNumberStepEmitter = 'handler' | 'keydown' | 'wheel'
 export type InputNumberStepType = 'up' | 'down'
+export type InputNumberSemanticKey = 'root' | 'prefix' | 'suffix' | 'input' | 'actions'
 
 export interface InputNumberFormatterInfo {
   userTyping: boolean
@@ -24,28 +25,41 @@ export interface InputNumberControlsConfig {
   downIcon?: JSX.Element
 }
 
-export interface InputNumberSemanticClassNames {
-  root?: string
-  prefix?: string
-  suffix?: string
-  input?: string
-  actions?: string
+export type InputNumberSemanticClassNames = Partial<Record<InputNumberSemanticKey, string>>
+export type InputNumberSemanticStyles = Partial<Record<InputNumberSemanticKey, JSX.CSSProperties>>
+export type InputNumberSemanticInfo = { props: InputNumberProps }
+export type InputNumberSemanticClassNamesConfig =
+  | InputNumberSemanticClassNames
+  | ((info: InputNumberSemanticInfo) => InputNumberSemanticClassNames)
+export type InputNumberSemanticStylesConfig =
+  | InputNumberSemanticStyles
+  | ((info: InputNumberSemanticInfo) => InputNumberSemanticStyles)
+
+export interface InputNumberFocusOptions {
+  preventScroll?: boolean
+  cursor?: 'start' | 'end' | 'all'
 }
 
-export interface InputNumberSemanticStyles {
-  root?: JSX.CSSProperties
-  prefix?: JSX.CSSProperties
-  suffix?: JSX.CSSProperties
-  input?: JSX.CSSProperties
-  actions?: JSX.CSSProperties
+export interface InputNumberRef {
+  focus: (options?: InputNumberFocusOptions) => void
+  blur: () => void
+  nativeElement?: HTMLElement
 }
 
 export interface InputNumberProps extends Omit<
   JSX.InputHTMLAttributes<HTMLInputElement>,
-  'size' | 'value' | 'defaultValue' | 'onChange' | 'prefix' | 'onKeyDown' | 'onWheel'
+  | 'size'
+  | 'value'
+  | 'defaultValue'
+  | 'onInput'
+  | 'onChange'
+  | 'prefix'
+  | 'onKeyDown'
+  | 'onWheel'
+  | 'ref'
 > {
-  value?: InputNumberValue
-  defaultValue?: InputNumberValue
+  value?: InputNumberValue | null
+  defaultValue?: InputNumberValue | null
   min?: number
   max?: number
   step?: number | string
@@ -57,7 +71,8 @@ export interface InputNumberProps extends Omit<
   status?: 'error' | 'warning'
   controls?: boolean | InputNumberControlsConfig
   formatter?: (value: InputNumberChangeValue, info: InputNumberFormatterInfo) => string
-  parser?: (displayValue: string) => InputNumberChangeValue
+  parser?: (displayValue: string | undefined) => InputNumberChangeValue
+  onInput?: (text: string) => void
   onChange?: (value: InputNumberChangeValue) => void
   keyboard?: boolean
   changeOnBlur?: boolean
@@ -72,8 +87,13 @@ export interface InputNumberProps extends Omit<
   mode?: InputNumberMode
   stringMode?: boolean
   decimalSeparator?: string
-  classNames?: InputNumberSemanticClassNames
-  styles?: InputNumberSemanticStyles
+  classNames?: InputNumberSemanticClassNamesConfig
+  styles?: InputNumberSemanticStylesConfig
   rootClassName?: string
   prefixCls?: string
+  addonBefore?: JSX.Element
+  addonAfter?: JSX.Element
+  /** @deprecated Please use `variant` instead. */
+  bordered?: boolean
+  ref?: InputNumberRef | { current?: InputNumberRef } | ((ref: InputNumberRef) => void)
 }
