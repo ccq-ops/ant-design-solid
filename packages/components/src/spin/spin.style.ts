@@ -60,15 +60,38 @@ export function useSpinStyle(prefixCls: string) {
         display: 'inline-block',
         width: '20px',
         height: '20px',
-        'border-radius': '50%',
-        border: `2px solid ${t.colorBorderSecondary}`,
-        'border-top-color': t.colorPrimary,
+        position: 'relative',
         animation: `adsSpinRotate ${t.motionDurationMid} linear infinite`,
       },
-      [`.${prefixCls}-dot-item-1, .${prefixCls}-dot-item-2, .${prefixCls}-dot-item-3, .${prefixCls}-dot-item-4`]:
-        {
-          display: 'none',
-        },
+      [`.${prefixCls}-dot-item`]: {
+        position: 'absolute',
+        display: 'block',
+        width: '9px',
+        height: '9px',
+        'border-radius': '50%',
+        background: t.colorPrimary,
+        transform: 'scale(0.75)',
+        opacity: 0.3,
+      },
+      [`.${prefixCls}-dot-item-1`]: {
+        top: 0,
+        left: 0,
+      },
+      [`.${prefixCls}-dot-item-2`]: {
+        top: 0,
+        right: 0,
+        opacity: 0.5,
+      },
+      [`.${prefixCls}-dot-item-3`]: {
+        right: 0,
+        bottom: 0,
+        opacity: 0.8,
+      },
+      [`.${prefixCls}-dot-item-4`]: {
+        bottom: 0,
+        left: 0,
+        opacity: 1,
+      },
       [`.${prefixCls}-dot-progress`]: {
         position: 'absolute',
         inset: 0,
@@ -93,12 +116,18 @@ export function useSpinStyle(prefixCls: string) {
       [`.${prefixCls}-sm .${prefixCls}-indicator, .${prefixCls}-sm .${prefixCls}-dot`]: {
         width: '14px',
         height: '14px',
-        'border-width': '2px',
+      },
+      [`.${prefixCls}-sm .${prefixCls}-dot-item`]: {
+        width: '6px',
+        height: '6px',
       },
       [`.${prefixCls}-lg .${prefixCls}-indicator, .${prefixCls}-lg .${prefixCls}-dot`]: {
         width: '32px',
         height: '32px',
-        'border-width': '3px',
+      },
+      [`.${prefixCls}-lg .${prefixCls}-dot-item`]: {
+        width: '14px',
+        height: '14px',
       },
       [`.${prefixCls}-text, .${prefixCls}-description`]: {
         color: t.colorPrimary,

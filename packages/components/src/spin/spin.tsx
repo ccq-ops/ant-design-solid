@@ -198,7 +198,12 @@ const SpinRoot = (props: SpinProps) => {
         >
           <span class={classNames(`${prefixCls()}-dot`, `${prefixCls()}-dot-spin`)}>
             <For each={[1, 2, 3, 4]}>
-              {(item) => <i class={`${prefixCls()}-dot-item-${item}`} aria-hidden="true" />}
+              {(item) => (
+                <i
+                  class={classNames(`${prefixCls()}-dot-item`, `${prefixCls()}-dot-item-${item}`)}
+                  aria-hidden="true"
+                />
+              )}
             </For>
           </span>
         </span>

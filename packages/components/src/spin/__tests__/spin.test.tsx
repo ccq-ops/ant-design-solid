@@ -110,6 +110,14 @@ describe('Spin', () => {
     expect(container.querySelector('.ads-spin')).toBeNull()
   })
 
+  it('renders the default indicator as four dot items when size is configured', () => {
+    const { container } = render(() => <Spin size="large" />)
+
+    expect(container.querySelector('.ads-spin-dot')).toBeInTheDocument()
+    expect(container.querySelectorAll('.ads-spin-dot-item')).toHaveLength(4)
+    expect(screen.queryByRole('progressbar')).toBeNull()
+  })
+
   it('prefers description over deprecated tip', () => {
     render(() => <Spin tip="Legacy tip" description="Loading description" />)
 
