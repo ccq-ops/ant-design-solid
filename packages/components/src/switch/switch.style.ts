@@ -37,22 +37,12 @@ export function useSwitchStyle(prefixCls: string) {
         '&:focus-visible': {
           'box-shadow': `0 0 0 2px ${t.colorPrimaryHover}`,
         },
-        '&::after': {
-          position: 'absolute',
-          top: trackPadding,
-          left: trackPadding,
-          width: switchToken.handleSize,
-          height: switchToken.handleSize,
-          'border-radius': '50%',
-          background: t.colorBgContainer,
-          'box-shadow': '0 2px 4px 0 rgba(0, 35, 11, 0.2)',
-          transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
-          content: '""',
-        },
       },
       [`.${prefixCls}-checked`]: {
         background: t.colorPrimary,
-        '&::after': { left: `calc(100% - ${switchToken.handleSize + trackPadding}px)` },
+        [`.${prefixCls}-handle`]: {
+          left: `calc(100% - ${switchToken.handleSize + trackPadding}px)`,
+        },
       },
       [`.${prefixCls}-disabled`]: { cursor: 'not-allowed', opacity: 0.65 },
       [`.${prefixCls}-loading`]: { cursor: 'not-allowed' },
@@ -61,15 +51,27 @@ export function useSwitchStyle(prefixCls: string) {
         height: smallTrackHeight,
         'font-size': `${t.fontSize - 2}px`,
         'line-height': `${smallTrackHeight}px`,
-        '&::after': {
+        [`.${prefixCls}-handle`]: {
           top: smallTrackPadding,
           left: smallTrackPadding,
           width: smallHandleSize,
           height: smallHandleSize,
         },
       },
-      [`.${prefixCls}-sm.${prefixCls}-checked::after`]: {
+      [`.${prefixCls}-sm.${prefixCls}-checked .${prefixCls}-handle`]: {
         left: `calc(100% - ${smallHandleSize + smallTrackPadding}px)`,
+      },
+      [`.${prefixCls}-handle`]: {
+        position: 'absolute',
+        top: trackPadding,
+        left: trackPadding,
+        width: switchToken.handleSize,
+        height: switchToken.handleSize,
+        'border-radius': '50%',
+        background: t.colorBgContainer,
+        'box-shadow': '0 2px 4px 0 rgba(0, 35, 11, 0.2)',
+        transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
+        'pointer-events': 'none',
       },
       [`.${prefixCls}-inner`]: {
         display: 'block',

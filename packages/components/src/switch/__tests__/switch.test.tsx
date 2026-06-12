@@ -35,6 +35,41 @@ describe('Switch', () => {
     expect(onChange).toHaveBeenCalledWith(false, expect.any(MouseEvent))
   })
 
+  it('supports value and defaultValue aliases', () => {
+    const [value, setValue] = createSignal(true)
+    const onChange = vi.fn((next: boolean) => setValue(next))
+    const controlled = render(() => <Switch value={value()} onChange={onChange} />)
+    const controlledButton = controlled.getByRole('switch')
+
+    expect(controlledButton).toHaveAttribute('aria-checked', 'true')
+
+    fireEvent.click(controlledButton)
+
+    expect(onChange).toHaveBeenCalledWith(false, expect.any(MouseEvent))
+    expect(controlledButton).toHaveAttribute('aria-checked', 'false')
+
+    const uncontrolled = render(() => <Switch defaultValue />)
+    const uncontrolledButton = uncontrolled.getByRole('switch')
+
+    expect(uncontrolledButton).toHaveAttribute('aria-checked', 'true')
+
+    fireEvent.click(uncontrolledButton)
+
+    expect(uncontrolledButton).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('calls onClick with the next checked state and event', () => {
+    const onClick = vi.fn()
+    const onChange = vi.fn()
+    const result = render(() => <Switch onClick={onClick} onChange={onChange} />)
+    const button = result.getByRole('switch')
+
+    fireEvent.click(button)
+
+    expect(onClick).toHaveBeenCalledWith(true, expect.any(MouseEvent))
+    expect(onChange).toHaveBeenCalledWith(true, expect.any(MouseEvent))
+  })
+
   it('does not toggle or fire onChange when disabled or loading', () => {
     const disabledChange = vi.fn()
     const disabledResult = render(() => (
@@ -68,7 +103,7 @@ describe('Switch', () => {
 
     const css = extractStyle(cache)
 
-    expect(css).toContain('.ads-switch::after')
+    expect(css).toContain('.ads-switch-handle')
     expect(css).toContain('width:18px;')
     expect(css).toContain('height:18px;')
     expect(css).toContain('left:calc(100% - 20px);')
@@ -87,6 +122,57 @@ describe('Switch', () => {
     fireEvent.click(button)
 
     expect(button).toHaveTextContent('On')
+  })
+
+  it('supports medium size alias and semantic classNames/styles', () => {
+    const result = render(() => (
+      <Switch
+        size="medium"
+        checkedChildren="On"
+        unCheckedChildren="Off"
+        class="root-class"
+        style={{ margin: '4px' }}
+        classNames={{
+          root: 'semantic-root',
+          content: 'semantic-content',
+          indicator: 'semantic-indicator',
+        }}
+        styles={{
+          root: { color: 'red' },
+          content: { color: 'green' },
+          indicator: { color: 'blue' },
+        }}
+      />
+    ))
+    const button = result.getByRole('switch') as HTMLButtonElement
+    const content = result.container.querySelector<HTMLElement>('.semantic-content')
+    const indicator = result.container.querySelector<HTMLElement>('.semantic-indicator')
+
+    expect(button).toHaveClass('root-class')
+    expect(button).toHaveClass('semantic-root')
+    expect(button).not.toHaveClass('ads-switch-sm')
+    expect(button.style.margin).toBe('4px')
+    expect(button.style.color).toBe('red')
+    expect(content).toBeTruthy()
+    expect(content?.style.color).toBe('green')
+    expect(indicator).toBeTruthy()
+    expect(indicator?.style.color).toBe('blue')
+  })
+
+  it('exposes focus, blur, and nativeElement through ref', () => {
+    const ref: {
+      current?: { focus: () => void; blur: () => void; nativeElement?: HTMLButtonElement }
+    } = {}
+    const result = render(() => <Switch ref={ref} />)
+    const button = result.getByRole('switch') as HTMLButtonElement
+
+    expect(ref.current?.nativeElement).toBe(button)
+
+    ref.current?.focus()
+    expect(document.activeElement).toBe(button)
+
+    ref.current?.blur()
+    expect(document.activeElement).not.toBe(button)
   })
 
   it('integrates with Form.Item checked semantics', () => {

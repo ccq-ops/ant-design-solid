@@ -4,12 +4,23 @@ import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
 import { useSwitchStyle } from './switch.style'
-import type { SwitchProps } from './interface'
+import type { SwitchProps, SwitchRef } from './interface'
+
+function assignRef(ref: SwitchProps['ref'], value: SwitchRef) {
+  if (!ref) return
+  if (typeof ref === 'function') {
+    ref(value)
+    return
+  }
+  ref.current = value
+}
 
 export function Switch(props: SwitchProps) {
   const [local, rest] = splitProps(props, [
     'checked',
+    'value',
     'defaultChecked',
+    'defaultValue',
     'disabled',
     'loading',
     'size',
@@ -18,25 +29,41 @@ export function Switch(props: SwitchProps) {
     'prefixCls',
     'class',
     'style',
+    'classNames',
+    'styles',
+    'ref',
     'onChange',
+    'onClick',
     'onBlur',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-switch`
   const [, hashId] = useSwitchStyle(prefixCls())
-  const [innerChecked, setInnerChecked] = createSignal(Boolean(local.defaultChecked))
+  const [innerChecked, setInnerChecked] = createSignal(
+    Boolean(local.defaultChecked ?? local.defaultValue),
+  )
   const [pendingBlurChecked, setPendingBlurChecked] = createSignal<boolean>()
+  let buttonRef: HTMLButtonElement | undefined
 
   const disabled = () => Boolean(local.disabled || local.loading)
   const size = () => local.size ?? config.componentSize()
+  const controlledChecked = () => local.checked ?? local.value
   const checked = () => {
     if (formItem?.valuePropName() === 'checked' && formItem.trigger() === 'onBlur')
       return pendingBlurChecked() ?? Boolean(formItem.value())
     if (formItem?.valuePropName() === 'checked') return Boolean(formItem.value())
-    if (local.checked !== undefined) return Boolean(local.checked)
+    if (controlledChecked() !== undefined) return Boolean(controlledChecked())
     return innerChecked()
   }
+  const switchRef = {
+    focus: () => buttonRef?.focus(),
+    blur: () => buttonRef?.blur(),
+    get nativeElement() {
+      return buttonRef
+    },
+  }
+  assignRef(local.ref, switchRef)
 
   createEffect(
     on(
@@ -52,8 +79,9 @@ export function Switch(props: SwitchProps) {
   function setNextChecked(nextChecked: boolean, event: MouseEvent): void {
     if (formItem?.valuePropName() === 'checked' && formItem.trigger() === 'onBlur')
       setPendingBlurChecked(nextChecked)
-    else if (local.checked === undefined && formItem?.valuePropName() !== 'checked')
+    else if (controlledChecked() === undefined && formItem?.valuePropName() !== 'checked')
       setInnerChecked(nextChecked)
+    local.onClick?.(nextChecked, event)
     local.onChange?.(nextChecked, event)
     if (formItem?.valuePropName() === 'checked' && formItem.trigger() === 'onChange')
       formItem.setFieldValueFromControl(nextChecked)
@@ -62,6 +90,9 @@ export function Switch(props: SwitchProps) {
   return (
     <button
       {...rest}
+      ref={(element) => {
+        buttonRef = element
+      }}
       type="button"
       role="switch"
       aria-checked={checked()}
@@ -74,8 +105,12 @@ export function Switch(props: SwitchProps) {
         size() === 'small' && `${prefixCls()}-sm`,
         hashId(),
         local.class,
+        local.classNames?.root,
       )}
-      style={local.style}
+      style={{
+        ...(local.style as JSX.CSSProperties | undefined),
+        ...local.styles?.root,
+      }}
       onClick={(event) => {
         if (disabled()) return
         setNextChecked(!checked(), event)
@@ -86,7 +121,14 @@ export function Switch(props: SwitchProps) {
           formItem.setFieldValueFromControl(checked())
       }}
     >
-      <span class={`${prefixCls()}-inner`}>
+      <span
+        class={classNames(`${prefixCls()}-handle`, local.classNames?.indicator)}
+        style={local.styles?.indicator}
+      />
+      <span
+        class={classNames(`${prefixCls()}-inner`, local.classNames?.content)}
+        style={local.styles?.content}
+      >
         {checked() ? local.checkedChildren : local.unCheckedChildren}
       </span>
     </button>

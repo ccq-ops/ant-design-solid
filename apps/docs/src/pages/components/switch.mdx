@@ -86,6 +86,7 @@ const Demo5 = function () {
   return (
     <Space align="center">
       <Switch size="small" defaultChecked />
+      <Switch size="medium" defaultChecked />
       <Switch defaultChecked />
     </Space>
   )
@@ -94,13 +95,111 @@ const Demo5 = function () {
 export default Demo5
 ```
 
-### In Form
+### Value aliases
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Form, Space, Switch } from '@ant-design-solid/core'
 
 const Demo6 = function () {
+  const [enabled, setEnabled] = createSignal(true)
+
+  return (
+    <Space>
+      <Switch
+        value={enabled()}
+        onChange={setEnabled}
+        checkedChildren="On"
+        unCheckedChildren="Off"
+      />
+      <Switch defaultValue checkedChildren="On" unCheckedChildren="Off" />
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+### Click callback
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  const [message, setMessage] = createSignal('Ready')
+
+  return (
+    <Space>
+      <Switch
+        onClick={(checked) => setMessage(`Clicked ${checked ? 'on' : 'off'}`)}
+        onChange={(checked) => setMessage(`Changed ${checked ? 'on' : 'off'}`)}
+      />
+      <span>{message()}</span>
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+### Semantic styles
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Switch
+      defaultChecked
+      checkedChildren="Open"
+      unCheckedChildren="Closed"
+      classNames={{
+        root: 'custom-switch',
+        content: 'custom-switch-content',
+        indicator: 'custom-switch-indicator',
+      }}
+      styles={{
+        root: { minWidth: '72px' },
+        content: { fontWeight: 600 },
+        indicator: { boxShadow: '0 0 0 2px rgba(22, 119, 255, 0.2)' },
+      }}
+    />
+  )
+}
+
+export default Demo8
+```
+
+### Focus and blur
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Form, Space, Switch, type SwitchRef } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  let switchRef: SwitchRef | undefined
+
+  return (
+    <Space>
+      <Switch ref={(ref) => (switchRef = ref)} defaultChecked />
+      <Button onClick={() => switchRef?.focus()}>Focus</Button>
+      <Button onClick={() => switchRef?.blur()}>Blur</Button>
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+### In Form
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo10 = function () {
   return (
     <Form initialValues={{ enabled: true }}>
       <Form.Item label="Enabled" name="enabled" valuePropName="checked">
@@ -110,19 +209,44 @@ const Demo6 = function () {
   )
 }
 
-export default Demo6
+export default Demo10
 ```
 
 ## API
 
-| Property            | Description                                                | Type                                            | Default    |
-| ------------------- | ---------------------------------------------------------- | ----------------------------------------------- | ---------- |
-| `checked`           | Controlled checked state.                                  | `boolean`                                       | `-`        |
-| `defaultChecked`    | Initial checked state for uncontrolled usage.              | `boolean`                                       | `false`    |
-| `disabled`          | Disables user interaction.                                 | `boolean`                                       | `false`    |
-| `loading`           | Displays loading state and disables interaction.           | `boolean`                                       | `false`    |
-| `size`              | Switch size.                                               | `'small' \| 'middle'`                           | `'middle'` |
-| `checkedChildren`   | Content displayed when checked.                            | `JSX.Element`                                   | `-`        |
-| `unCheckedChildren` | Content displayed when unchecked.                          | `JSX.Element`                                   | `-`        |
-| `prefixCls`         | Custom CSS class prefix.                                   | `string`                                        | `-`        |
-| `onChange`          | Called with the next checked state after user interaction. | `(checked: boolean, event: MouseEvent) => void` | `-`        |
+| Property            | Description                                                                                                     | Type                                                    | Default                                                |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| `checked`           | Controlled checked state.                                                                                       | `boolean`                                               | `-`                                                    |
+| `value`             | Alias for `checked`, matching antd v6 value semantics.                                                          | `boolean`                                               | `-`                                                    |
+| `defaultChecked`    | Initial checked state for uncontrolled usage.                                                                   | `boolean`                                               | `false`                                                |
+| `defaultValue`      | Alias for `defaultChecked`, matching antd v6 value semantics.                                                   | `boolean`                                               | `false`                                                |
+| `disabled`          | Disables user interaction.                                                                                      | `boolean`                                               | `false`                                                |
+| `loading`           | Displays loading state and disables interaction.                                                                | `boolean`                                               | `false`                                                |
+| `size`              | Switch size. `medium` is supported for antd v6 compatibility; `middle` follows the shared Solid component size. | `'small' \| 'medium' \| 'middle'`                       | ConfigProvider `componentSize` (`'middle'` by default) |
+| `checkedChildren`   | Content displayed when checked.                                                                                 | `JSX.Element`                                           | `-`                                                    |
+| `unCheckedChildren` | Content displayed when unchecked.                                                                               | `JSX.Element`                                           | `-`                                                    |
+| `class`             | Additional root class. Solid-style replacement for React `className`.                                           | `string`                                                | `-`                                                    |
+| `style`             | Additional root inline style.                                                                                   | `JSX.CSSProperties`                                     | `-`                                                    |
+| `classNames`        | Semantic class names for `root`, `content`, and `indicator`.                                                    | `Partial<Record<SwitchSemanticDOM, string>>`            | `-`                                                    |
+| `styles`            | Semantic inline styles for `root`, `content`, and `indicator`.                                                  | `Partial<Record<SwitchSemanticDOM, JSX.CSSProperties>>` | `-`                                                    |
+| `prefixCls`         | Custom CSS class prefix.                                                                                        | `string`                                                | `-`                                                    |
+| `ref`               | Exposes focus, blur, and native button access.                                                                  | `SwitchRef \| (ref: SwitchRef) => void`                 | `-`                                                    |
+| `onChange`          | Called with the next checked state after user interaction.                                                      | `(checked: boolean, event: MouseEvent) => void`         | `-`                                                    |
+| `onClick`           | Called when the switch is clicked with the next checked state.                                                  | `(checked: boolean, event: MouseEvent) => void`         | `-`                                                    |
+
+## Methods
+
+| Name      | Description                           |
+| --------- | ------------------------------------- |
+| `focus()` | Focuses the underlying switch button. |
+| `blur()`  | Blurs the underlying switch button.   |
+
+## Semantic DOM
+
+Use these keys with `classNames` and `styles` to customize stable Switch parts.
+
+| Key         | Description                         |
+| ----------- | ----------------------------------- |
+| `root`      | Root switch button.                 |
+| `content`   | Text/content area inside the track. |
+| `indicator` | Movable switch handle.              |
