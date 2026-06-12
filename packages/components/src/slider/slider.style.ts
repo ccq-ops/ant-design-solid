@@ -53,11 +53,38 @@ export function useSliderStyle(prefixCls: string) {
         background: t.colorPrimary,
         transition: `background ${t.motionDurationMid} ${t.motionEaseInOut}`,
       },
+      [`.${prefixCls}-tracks`]: {
+        position: 'absolute',
+        inset: 0,
+        'pointer-events': 'none',
+      },
+      [`.${prefixCls}-tracks .${prefixCls}-track`]: {
+        'pointer-events': 'auto',
+      },
       [`.${prefixCls}-vertical .${prefixCls}-track`]: {
         top: 'auto',
         left: `${(t.controlHeight - railSize) / 2}px`,
         width: `${railSize}px`,
         height: 'auto',
+      },
+      [`.${prefixCls}-step`]: {
+        position: 'absolute',
+        inset: 0,
+      },
+      [`.${prefixCls}-dot`]: {
+        position: 'absolute',
+        top: '50%',
+        width: '8px',
+        height: '8px',
+        border: `${t.lineWidth}px solid ${t.colorBorder}`,
+        'border-radius': '50%',
+        background: t.colorBgContainer,
+        transform: 'translate(-50%, -50%)',
+      },
+      [`.${prefixCls}-vertical .${prefixCls}-dot`]: {
+        top: 'auto',
+        left: '50%',
+        transform: 'translate(-50%, 50%)',
       },
       [`.${prefixCls}-handle`]: {
         position: 'absolute',
@@ -128,6 +155,23 @@ export function useSliderStyle(prefixCls: string) {
         'line-height': '1.4',
         'white-space': 'nowrap',
         'pointer-events': 'none',
+      },
+      [`.${prefixCls}-tooltip-bottom`]: {
+        top: `calc(100% + ${t.marginXS}px)`,
+        bottom: 'auto',
+      },
+      [`.${prefixCls}-tooltip-left`]: {
+        top: '50%',
+        right: `calc(100% + ${t.marginXS}px)`,
+        bottom: 'auto',
+        left: 'auto',
+        transform: 'translateY(-50%)',
+      },
+      [`.${prefixCls}-tooltip-right`]: {
+        top: '50%',
+        bottom: 'auto',
+        left: `calc(100% + ${t.marginXS}px)`,
+        transform: 'translateY(-50%)',
       },
       [`.${prefixCls}-vertical .${prefixCls}-tooltip`]: {
         bottom: '50%',

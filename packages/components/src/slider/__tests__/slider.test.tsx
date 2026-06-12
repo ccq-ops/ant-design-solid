@@ -2,6 +2,7 @@ import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { Slider } from '../index'
+import type { SliderValue } from '../interface'
 
 function mockRect(element: Element, rect: Partial<DOMRect>) {
   vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({
@@ -33,9 +34,37 @@ describe('Slider', () => {
     expect(result.getByRole('slider')).toHaveAttribute('aria-valuenow', '65')
   })
 
+  it('changes value when clicking the rendered track area', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Slider defaultValue={30} onChange={onChange} />)
+    const rail = result.container.querySelector('.ads-slider-rail')!
+    const track = result.container.querySelector('.ads-slider-track')!
+    mockRect(rail, { left: 0, right: 100, width: 100 })
+
+    fireEvent.pointerDown(track, { clientX: 70, pointerId: 11 })
+    fireEvent.pointerUp(document, { clientX: 70, pointerId: 11 })
+
+    expect(onChange).toHaveBeenLastCalledWith(70)
+    expect(result.getByRole('slider')).toHaveAttribute('aria-valuenow', '70')
+  })
+
+  it('changes value when clicking an uncovered root area', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Slider defaultValue={30} onChange={onChange} />)
+    const root = result.container.querySelector('.ads-slider')!
+    const rail = result.container.querySelector('.ads-slider-rail')!
+    mockRect(rail, { left: 0, right: 100, width: 100 })
+
+    fireEvent.pointerDown(root, { clientX: 80, pointerId: 12 })
+    fireEvent.pointerUp(document, { clientX: 80, pointerId: 12 })
+
+    expect(onChange).toHaveBeenLastCalledWith(80)
+    expect(result.getByRole('slider')).toHaveAttribute('aria-valuenow', '80')
+  })
+
   it('supports controlled single value', () => {
     const [value, setValue] = createSignal(20)
-    const onChange = vi.fn((next: number | [number, number]) => {
+    const onChange = vi.fn((next: SliderValue) => {
       if (typeof next === 'number') setValue(next)
     })
     const result = render(() => <Slider value={value()} onChange={onChange} />)
@@ -235,5 +264,159 @@ describe('Slider', () => {
     const result = render(() => <Slider defaultValue={42} tooltipVisible />)
 
     expect(result.getByText('42')).toHaveClass('ads-slider-tooltip')
+  })
+
+  it('supports onChangeComplete, keyboard toggle, orientation priority, and reverse', () => {
+    const onChange = vi.fn()
+    const onChangeComplete = vi.fn()
+    const result = render(() => (
+      <Slider
+        defaultValue={20}
+        keyboard={false}
+        vertical
+        orientation="horizontal"
+        reverse
+        onChange={onChange}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+    const slider = result.getByRole('slider')
+    const rail = result.container.querySelector('.ads-slider-rail')!
+    mockRect(rail, { left: 0, right: 100, width: 100 })
+
+    expect(slider).toHaveAttribute('aria-orientation', 'horizontal')
+    fireEvent.keyDown(slider, { key: 'ArrowRight' })
+    expect(onChange).not.toHaveBeenCalled()
+
+    fireEvent.pointerDown(rail, { clientX: 25, pointerId: 7 })
+    fireEvent.pointerUp(document, { clientX: 25, pointerId: 7 })
+
+    expect(onChange).toHaveBeenLastCalledWith(75)
+    expect(onChangeComplete).toHaveBeenLastCalledWith(75)
+  })
+
+  it('supports step null, dots, included false, semantic classNames, and styles', () => {
+    const result = render(() => (
+      <Slider
+        defaultValue={33}
+        step={null}
+        dots
+        included={false}
+        marks={{ 0: '0', 25: '25', 75: '75', 100: '100' }}
+        classNames={{
+          root: 'semantic-root',
+          rail: 'semantic-rail',
+          track: 'semantic-track',
+          handle: 'semantic-handle',
+          step: 'semantic-step',
+          dot: 'semantic-dot',
+          mark: 'semantic-mark',
+          markText: 'semantic-mark-text',
+        }}
+        styles={{ root: { margin: '9px' }, track: { background: 'red' } }}
+      />
+    ))
+    const rail = result.container.querySelector('.ads-slider-rail')!
+    mockRect(rail, { left: 0, right: 100, width: 100 })
+
+    expect(result.container.firstElementChild).toHaveClass('semantic-root')
+    expect(result.container.firstElementChild).toHaveStyle('margin: 9px')
+    expect(rail).toHaveClass('semantic-rail')
+    expect(result.container.querySelector('.ads-slider-track')).toHaveStyle('width: 0%')
+    expect(result.container.querySelector('.ads-slider-track')).toHaveClass('semantic-track')
+    expect(result.getByRole('slider')).toHaveAttribute('aria-valuenow', '25')
+    expect(result.getByRole('slider')).toHaveClass('semantic-handle')
+    expect(result.container.querySelector('.ads-slider-step')).toHaveClass('semantic-step')
+    expect(result.container.querySelectorAll('.semantic-dot')).toHaveLength(4)
+    expect(result.getByText('25')).toHaveClass('semantic-mark-text')
+
+    fireEvent.pointerDown(rail, { clientX: 60, pointerId: 8 })
+    fireEvent.pointerUp(document, { clientX: 60, pointerId: 8 })
+
+    expect(result.getByRole('slider')).toHaveAttribute('aria-valuenow', '75')
+  })
+
+  it('supports tooltip options', () => {
+    const result = render(() => (
+      <Slider
+        defaultValue={30}
+        tooltip={{
+          open: true,
+          formatter: (value) => `${value}%`,
+          placement: 'bottom',
+          class: 'tooltip-class',
+          style: { color: 'yellow' },
+        }}
+      />
+    ))
+
+    expect(result.getByText('30%')).toHaveClass('ads-slider-tooltip')
+    expect(result.getByText('30%')).toHaveClass('tooltip-class')
+    expect(result.getByText('30%')).toHaveClass('ads-slider-tooltip-bottom')
+    expect(result.getByText('30%')).toHaveStyle('color: rgb(255, 255, 0)')
+  })
+
+  it('supports range object draggable track', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Slider range={{ draggableTrack: true }} defaultValue={[20, 40]} onChange={onChange} />
+    ))
+    const track = result.container.querySelector('.ads-slider-track')!
+    const rail = result.container.querySelector('.ads-slider-rail')!
+    mockRect(rail, { left: 0, right: 100, width: 100 })
+
+    fireEvent.pointerDown(track, { clientX: 30, pointerId: 9 })
+    fireEvent.pointerMove(document, { clientX: 50, pointerId: 9 })
+    fireEvent.pointerUp(document, { clientX: 50, pointerId: 9 })
+
+    expect(onChange).toHaveBeenLastCalledWith([40, 60])
+    expect(result.getByRole('slider', { name: 'Minimum value' })).toHaveAttribute(
+      'aria-valuenow',
+      '40',
+    )
+    expect(result.getByRole('slider', { name: 'Maximum value' })).toHaveAttribute(
+      'aria-valuenow',
+      '60',
+    )
+  })
+
+  it('supports editable range nodes with minCount and maxCount', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Slider
+        range={{ editable: true, minCount: 1, maxCount: 3 }}
+        defaultValue={[20, 80]}
+        onChange={onChange}
+      />
+    ))
+    const rail = result.container.querySelector('.ads-slider-rail')!
+    mockRect(rail, { left: 0, right: 100, width: 100 })
+
+    fireEvent.pointerDown(rail, { clientX: 50, pointerId: 10 })
+    fireEvent.pointerUp(document, { clientX: 50, pointerId: 10 })
+
+    expect(onChange).toHaveBeenLastCalledWith([20, 50, 80])
+    expect(result.getAllByRole('slider')).toHaveLength(3)
+
+    fireEvent.dblClick(result.getByRole('slider', { name: 'Value 2' }))
+    expect(onChange).toHaveBeenLastCalledWith([20, 80])
+
+    fireEvent.dblClick(result.getByRole('slider', { name: 'Value 1' }))
+    expect(onChange).toHaveBeenLastCalledWith([80])
+
+    fireEvent.dblClick(result.getByRole('slider', { name: 'Value 1' }))
+    expect(onChange).toHaveBeenLastCalledWith([80])
+  })
+
+  it('exposes imperative focus and blur methods', () => {
+    const sliderRef: { current?: { focus: () => void; blur: () => void } } = {}
+    const result = render(() => <Slider ref={sliderRef} defaultValue={10} />)
+    const handle = result.getByRole('slider')
+
+    sliderRef.current?.focus()
+    expect(document.activeElement).toBe(handle)
+
+    sliderRef.current?.blur()
+    expect(document.activeElement).not.toBe(handle)
   })
 })

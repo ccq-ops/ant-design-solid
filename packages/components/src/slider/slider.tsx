@@ -1,16 +1,27 @@
-import { For, Show, createSignal, onCleanup, splitProps } from 'solid-js'
+import { For, Show, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useSliderStyle } from './slider.style'
-import type { SliderMark, SliderMarkObject, SliderProps, SliderValue } from './interface'
+import type {
+  SliderMark,
+  SliderMarkObject,
+  SliderProps,
+  SliderRangeConfig,
+  SliderRef,
+  SliderSemanticClassNames,
+  SliderSemanticStyles,
+  SliderValue,
+} from './interface'
 
 const DEFAULT_MIN = 0
 const DEFAULT_MAX = 100
 const DEFAULT_STEP = 1
-const DEFAULT_RANGE_VALUE: [number, number] = [25, 75]
+const DEFAULT_RANGE_VALUE = [0, 0]
 
-type HandleIndex = 0 | 1
+type DragState =
+  | { type: 'handle'; index: number }
+  | { type: 'track'; startPointerValue: number; startValues: number[] }
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
@@ -23,49 +34,35 @@ function getPrecision(value: number): number {
   return decimal ? decimal.length : 0
 }
 
-function snapValue(value: number, min: number, max: number, step: number): number {
-  const clamped = clamp(value, min, max)
-  if (!(step > 0)) return clamped
-
-  const steps = Math.round((clamped - min) / step)
-  const precision = Math.max(getPrecision(step), getPrecision(min), getPrecision(max))
-  return clamp(Number((min + steps * step).toFixed(precision)), min, max)
-}
-
-function normalizeSingle(
-  value: SliderValue | undefined,
-  min: number,
-  max: number,
-  step: number,
-): number {
-  const raw = Array.isArray(value) ? value[0] : value
-  const numeric = Number(raw)
-  return snapValue(Number.isFinite(numeric) ? numeric : min, min, max, step)
-}
-
-function normalizeRange(
-  value: SliderValue | undefined,
-  min: number,
-  max: number,
-  step: number,
-): [number, number] {
-  const raw = Array.isArray(value) ? value : DEFAULT_RANGE_VALUE
-  const first = snapValue(Number.isFinite(Number(raw[0])) ? Number(raw[0]) : min, min, max, step)
-  const second = snapValue(Number.isFinite(Number(raw[1])) ? Number(raw[1]) : max, min, max, step)
-  return first <= second ? [first, second] : [second, first]
-}
-
-function percentOf(value: number, min: number, max: number): number {
-  if (max <= min) return 0
-  return ((value - min) / (max - min)) * 100
-}
-
 function isMarkObject(mark: SliderMark): mark is SliderMarkObject {
   return typeof mark === 'object' && mark !== null && 'label' in mark
 }
 
+function numeric(value: unknown, fallback: number): number {
+  const next = Number(value)
+  return Number.isFinite(next) ? next : fallback
+}
+
+function sortedUnique(values: number[]): number[] {
+  return [...new Set(values)].sort((a, b) => a - b)
+}
+
+function assignRef(ref: SliderProps['ref'], value: SliderRef) {
+  if (!ref) return
+  if (typeof ref === 'function') {
+    ref(value)
+    return
+  }
+  ref.current = value
+  Object.assign(ref as object, value)
+}
+
 function eventTargetElement(event: Pick<Event, 'currentTarget'>): HTMLElement | undefined {
   return event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined
+}
+
+function mergeStyles(...values: Array<JSX.CSSProperties | string | undefined>) {
+  return Object.assign({}, ...values.filter((value) => value && typeof value !== 'string'))
 }
 
 export function Slider(props: SliderProps) {
@@ -76,13 +73,24 @@ export function Slider(props: SliderProps) {
     'max',
     'step',
     'disabled',
+    'keyboard',
+    'dots',
+    'included',
     'range',
     'marks',
+    'orientation',
     'vertical',
+    'reverse',
+    'tooltip',
     'tooltipVisible',
-    'onChange',
-    'onAfterChange',
+    'classNames',
+    'styles',
+    'ref',
     'class',
+    'style',
+    'onChange',
+    'onChangeComplete',
+    'onAfterChange',
     'onKeyDown',
   ])
   const config = useConfig()
@@ -91,71 +99,138 @@ export function Slider(props: SliderProps) {
   const [innerValue, setInnerValue] = createSignal<SliderValue>(
     local.defaultValue ?? (local.range ? DEFAULT_RANGE_VALUE : DEFAULT_MIN),
   )
-  const [draggingHandle, setDraggingHandle] = createSignal<HandleIndex | undefined>()
+  const [dragState, setDragState] = createSignal<DragState>()
   let railRef: HTMLDivElement | undefined
+  let rootRef: HTMLDivElement | undefined
   let activePointerId: number | undefined
+  const handleRefs: Array<HTMLButtonElement | undefined> = []
 
-  const min = () => (Number.isFinite(Number(local.min)) ? Number(local.min) : DEFAULT_MIN)
+  const min = () => numeric(local.min, DEFAULT_MIN)
   const max = () => {
-    const next = Number.isFinite(Number(local.max)) ? Number(local.max) : DEFAULT_MAX
+    const next = numeric(local.max, DEFAULT_MAX)
     return next > min() ? next : min()
   }
-  const step = () => (Number.isFinite(Number(local.step)) ? Number(local.step) : DEFAULT_STEP)
-  const disabled = () => Boolean(local.disabled)
+  const rangeConfig = (): SliderRangeConfig =>
+    typeof local.range === 'object' && local.range !== null ? local.range : {}
   const isRange = () => Boolean(local.range)
-  const mergedValue = (): SliderValue =>
-    isRange()
-      ? normalizeRange(local.value ?? innerValue(), min(), max(), step())
-      : normalizeSingle(local.value ?? innerValue(), min(), max(), step())
-  const values = (): [number, number] => {
-    const value = mergedValue()
-    return Array.isArray(value) ? value : [min(), value]
-  }
-  const marks = () => {
-    const entries = Object.entries(local.marks ?? {})
-      .map(([key, mark]) => ({ value: Number(key), mark }))
-      .filter(({ value }) => Number.isFinite(value))
-      .map(({ value, mark }) => ({ value: snapValue(value, min(), max(), step()), mark }))
-      .sort((a, b) => a.value - b.value)
-    return entries
+  const isEditable = () => Boolean(isRange() && rangeConfig().editable)
+  const orientation = () => local.orientation ?? (local.vertical ? 'vertical' : 'horizontal')
+  const isVertical = () => orientation() === 'vertical'
+  const isReverse = () => Boolean(local.reverse)
+  const disabled = () => Boolean(local.disabled)
+  const keyboard = () => local.keyboard !== false
+  const included = () => local.included !== false
+  const semanticProps = (): SliderProps => ({
+    ...props,
+    orientation: orientation(),
+    vertical: isVertical(),
+  })
+  const semanticClassNames = createMemo<SliderSemanticClassNames>(() =>
+    typeof local.classNames === 'function'
+      ? local.classNames({ props: semanticProps() })
+      : (local.classNames ?? {}),
+  )
+  const semanticStyles = createMemo<SliderSemanticStyles>(() =>
+    typeof local.styles === 'function'
+      ? local.styles({ props: semanticProps() })
+      : (local.styles ?? {}),
+  )
+  const markPoints = createMemo(() =>
+    sortedUnique(
+      Object.entries(local.marks ?? {})
+        .map(([key]) => Number(key))
+        .filter((value) => Number.isFinite(value) && value >= min() && value <= max()),
+    ),
+  )
+  const stepValue = () => (Number.isFinite(Number(local.step)) ? Number(local.step) : DEFAULT_STEP)
+  const snapPoints = () => {
+    const points = markPoints()
+    return sortedUnique([min(), max(), ...points])
   }
 
-  function emitValue(nextValue: SliderValue, commit = false): void {
-    const normalized = isRange()
-      ? normalizeRange(nextValue, min(), max(), step())
-      : normalizeSingle(nextValue, min(), max(), step())
+  function snapValue(value: number): number {
+    const clamped = clamp(value, min(), max())
+    const points = local.step === null || local.dots ? snapPoints() : []
+    if (points.length > 0) {
+      return points.reduce((nearest, point) =>
+        Math.abs(point - clamped) < Math.abs(nearest - clamped) ? point : nearest,
+      )
+    }
 
+    const step = stepValue()
+    if (!(step > 0)) return clamped
+    const steps = Math.round((clamped - min()) / step)
+    const precision = Math.max(getPrecision(step), getPrecision(min()), getPrecision(max()))
+    return clamp(Number((min() + steps * step).toFixed(precision)), min(), max())
+  }
+
+  function normalizeValues(value: SliderValue | undefined): number[] {
+    const raw = value ?? (isRange() ? DEFAULT_RANGE_VALUE : DEFAULT_MIN)
+    const values = Array.isArray(raw) ? raw : [raw]
+    const normalized = values.map((item) => snapValue(numeric(item, min())))
+    if (!isRange()) return [normalized[0] ?? min()]
+    return sortedUnique(normalized.length > 0 ? normalized : DEFAULT_RANGE_VALUE.map(snapValue))
+  }
+
+  const values = () => normalizeValues(local.value ?? innerValue())
+  const rangeValue = () => {
+    const current = values()
+    return current.length > 0 ? current : DEFAULT_RANGE_VALUE.map(snapValue)
+  }
+
+  function percentOf(value: number): number {
+    if (max() <= min()) return 0
+    return ((value - min()) / (max() - min())) * 100
+  }
+
+  function positionPercent(value: number): number {
+    const percent = percentOf(value)
+    return isReverse() ? 100 - percent : percent
+  }
+
+  function emitValue(nextValues: number[], commit = false): void {
+    const normalizedValues = isRange()
+      ? sortedUnique(nextValues.map(snapValue))
+      : [snapValue(nextValues[0])]
+    const normalized = isRange() ? normalizedValues : normalizedValues[0]
     if (local.value === undefined) setInnerValue(normalized)
     local.onChange?.(normalized)
-    if (commit) local.onAfterChange?.(normalized)
+    if (commit) {
+      local.onChangeComplete?.(normalized)
+      local.onAfterChange?.(normalized)
+    }
   }
 
-  function updateHandle(handle: HandleIndex, next: number, commit = false): void {
+  function updateHandle(index: number, next: number, commit = false): void {
     if (disabled()) return
     if (!isRange()) {
-      emitValue(next, commit)
+      emitValue([next], commit)
       return
     }
 
-    const current = normalizeRange(mergedValue(), min(), max(), step())
-    current[handle] = snapValue(next, min(), max(), step())
-    emitValue(current[0] <= current[1] ? current : [current[1], current[0]], commit)
+    const current = rangeValue()
+    current[index] = snapValue(next)
+    emitValue(current, commit)
   }
 
   function valueFromPointer(event: PointerEvent): number {
     const rect = railRef?.getBoundingClientRect()
     if (!rect) return min()
 
-    const ratio = local.vertical
+    const rawRatio = isVertical()
       ? 1 - (event.clientY - rect.top) / (rect.height || 1)
       : (event.clientX - rect.left) / (rect.width || 1)
-    return snapValue(min() + clamp(ratio, 0, 1) * (max() - min()), min(), max(), step())
+    const ratio = isReverse() ? 1 - rawRatio : rawRatio
+    return snapValue(min() + clamp(ratio, 0, 1) * (max() - min()))
   }
 
-  function nearestHandle(next: number): HandleIndex {
-    if (!isRange()) return 0
-    const [start, end] = normalizeRange(mergedValue(), min(), max(), step())
-    return Math.abs(next - start) <= Math.abs(next - end) ? 0 : 1
+  function nearestHandle(next: number): number {
+    const current = values()
+    let nearest = 0
+    current.forEach((value, index) => {
+      if (Math.abs(value - next) < Math.abs(current[nearest] - next)) nearest = index
+    })
+    return nearest
   }
 
   function removeDocumentListeners(): void {
@@ -166,25 +241,44 @@ export function Slider(props: SliderProps) {
 
   function handleDocumentPointerMove(event: PointerEvent): void {
     if (activePointerId !== undefined && event.pointerId !== activePointerId) return
-    const handle = draggingHandle()
-    if (handle === undefined) return
-    updateHandle(handle, valueFromPointer(event))
+    const state = dragState()
+    if (!state) return
+    if (state.type === 'handle') {
+      updateHandle(state.index, valueFromPointer(event))
+      return
+    }
+
+    const delta = valueFromPointer(event) - state.startPointerValue
+    const start = state.startValues[0]
+    const end = state.startValues[state.startValues.length - 1]
+    const safeDelta = clamp(delta, min() - start, max() - end)
+    emitValue(state.startValues.map((value) => value + safeDelta))
   }
 
   function handleDocumentPointerUp(event: PointerEvent): void {
     if (activePointerId !== undefined && event.pointerId !== activePointerId) return
-    const handle = draggingHandle()
-    if (handle !== undefined) updateHandle(handle, valueFromPointer(event), true)
-    setDraggingHandle(undefined)
+    const state = dragState()
+    if (state?.type === 'handle') updateHandle(state.index, valueFromPointer(event), true)
+    if (state?.type === 'track') {
+      const delta = valueFromPointer(event) - state.startPointerValue
+      const start = state.startValues[0]
+      const end = state.startValues[state.startValues.length - 1]
+      const safeDelta = clamp(delta, min() - start, max() - end)
+      emitValue(
+        state.startValues.map((value) => value + safeDelta),
+        true,
+      )
+    }
+    setDragState(undefined)
     activePointerId = undefined
     removeDocumentListeners()
   }
 
-  function startDrag(handle: HandleIndex, event: PointerEvent): void {
+  function startDrag(state: DragState, event: PointerEvent): void {
     if (disabled()) return
     event.preventDefault()
     activePointerId = event.pointerId
-    setDraggingHandle(handle)
+    setDragState(state)
     const target = eventTargetElement(event)
     target?.setPointerCapture?.(event.pointerId)
     document.addEventListener('pointermove', handleDocumentPointerMove)
@@ -192,148 +286,285 @@ export function Slider(props: SliderProps) {
     document.addEventListener('pointercancel', handleDocumentPointerUp)
   }
 
-  function handleRailPointerDown(event: PointerEvent): void {
+  function handleRootPointerDown(event: PointerEvent): void {
     if (disabled()) return
     const next = valueFromPointer(event)
-    const handle = nearestHandle(next)
-    updateHandle(handle, next)
-    startDrag(handle, event)
+    if (
+      isEditable() &&
+      rangeValue().length < (rangeConfig().maxCount ?? Number.POSITIVE_INFINITY)
+    ) {
+      emitValue([...rangeValue(), next])
+      startDrag({ type: 'handle', index: nearestHandle(next) }, event)
+      return
+    }
+
+    const index = nearestHandle(next)
+    updateHandle(index, next)
+    startDrag({ type: 'handle', index }, event)
   }
 
-  function handleHandlePointerDown(handle: HandleIndex, event: PointerEvent): void {
+  function handleTrackPointerDown(event: PointerEvent): void {
+    if (!isRange() || !rangeConfig().draggableTrack || disabled()) return
+    event.stopPropagation()
+    startDrag(
+      { type: 'track', startPointerValue: valueFromPointer(event), startValues: rangeValue() },
+      event,
+    )
+  }
+
+  function handleHandlePointerDown(index: number, event: PointerEvent): void {
     if (disabled()) return
     event.stopPropagation()
-    startDrag(handle, event)
+    startDrag({ type: 'handle', index }, event)
   }
 
-  function keyboardNextValue(handle: HandleIndex, key: string): number | undefined {
-    const current = isRange()
-      ? normalizeRange(mergedValue(), min(), max(), step())[handle]
-      : (mergedValue() as number)
-    const smallStep = step() > 0 ? step() : 1
-    const largeStep = smallStep * 10
+  function handleHandleDoubleClick(index: number): void {
+    if (!isEditable() || disabled()) return
+    const current = rangeValue()
+    const minCount = rangeConfig().minCount ?? 0
+    if (current.length <= minCount) return
+    emitValue(
+      current.filter((_, itemIndex) => itemIndex !== index),
+      true,
+    )
+  }
+
+  function keyboardNextValue(index: number, key: string): number | undefined {
+    const current = values()[index] ?? min()
+    const smallStep =
+      local.step === null || local.dots ? undefined : stepValue() > 0 ? stepValue() : 1
+    const orderedPoints = snapPoints()
+    const pointIndex = orderedPoints.findIndex((point) => point === current)
+
     switch (key) {
       case 'ArrowRight':
       case 'ArrowUp':
-        return current + smallStep
+        if (smallStep === undefined)
+          return orderedPoints[Math.min(orderedPoints.length - 1, Math.max(0, pointIndex) + 1)]
+        return current + (isReverse() ? -smallStep : smallStep)
       case 'ArrowLeft':
       case 'ArrowDown':
-        return current - smallStep
+        if (smallStep === undefined) return orderedPoints[Math.max(0, pointIndex - 1)]
+        return current + (isReverse() ? smallStep : -smallStep)
       case 'PageUp':
-        return current + largeStep
+        return current + (isReverse() ? -1 : 1) * (smallStep ?? stepValue()) * 10
       case 'PageDown':
-        return current - largeStep
+        return current - (isReverse() ? -1 : 1) * (smallStep ?? stepValue()) * 10
       case 'Home':
-        return min()
+        return isReverse() ? max() : min()
       case 'End':
-        return max()
+        return isReverse() ? min() : max()
       default:
         return undefined
     }
   }
 
-  function handleKeyDown(handle: HandleIndex, event: KeyboardEvent): void {
+  function handleKeyDown(index: number, event: KeyboardEvent): void {
     ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
-    if (event.defaultPrevented || disabled()) return
+    if (event.defaultPrevented || disabled() || !keyboard()) return
 
-    const next = keyboardNextValue(handle, event.key)
+    const next = keyboardNextValue(index, event.key)
     if (next === undefined) return
 
     event.preventDefault()
-    updateHandle(handle, next, true)
+    updateHandle(index, next, true)
+  }
+
+  function tooltipOpen(): boolean {
+    return Boolean(local.tooltip?.open ?? local.tooltipVisible)
   }
 
   function renderTooltip(value: number) {
+    const content = () => local.tooltip?.formatter?.(value) ?? value
     return (
-      <Show when={local.tooltipVisible}>
-        <span class={`${prefixCls()}-tooltip`}>{value}</span>
+      <Show when={tooltipOpen() && content() !== null}>
+        <span
+          class={classNames(
+            `${prefixCls()}-tooltip`,
+            local.tooltip?.placement && `${prefixCls()}-tooltip-${local.tooltip.placement}`,
+            semanticClassNames().tooltip,
+            local.tooltip?.class,
+          )}
+          style={mergeStyles(semanticStyles().tooltip, local.tooltip?.style)}
+        >
+          {content()}
+        </span>
       </Show>
     )
   }
 
   function handleStyle(value: number): JSX.CSSProperties {
-    const percent = `${percentOf(value, min(), max())}%`
-    return local.vertical ? { bottom: percent } : { left: percent }
+    const percent = `${positionPercent(value)}%`
+    return isVertical() ? { bottom: percent } : { left: percent }
   }
 
-  function trackStyle(): JSX.CSSProperties {
-    const [start, end] = values()
-    const startPercent = percentOf(start, min(), max())
-    const endPercent = percentOf(end, min(), max())
-    return local.vertical
-      ? { bottom: `${startPercent}%`, height: `${endPercent - startPercent}%` }
-      : { left: `${startPercent}%`, width: `${endPercent - startPercent}%` }
+  function activeSegments(): Array<[number, number]> {
+    const current = values()
+    if (!included()) return [[current[0] ?? min(), current[0] ?? min()]]
+    if (!isRange()) return [[min(), current[0]]]
+    if (current.length < 2) return []
+    const segments: Array<[number, number]> = []
+    for (let index = 0; index < current.length - 1; index += 1) {
+      segments.push([current[index], current[index + 1]])
+    }
+    return segments
   }
 
-  function renderHandle(handle: HandleIndex, value: number, label: string) {
+  function segmentStyle(start: number, end: number): JSX.CSSProperties {
+    const startPercent = positionPercent(start)
+    const endPercent = positionPercent(end)
+    const low = Math.min(startPercent, endPercent)
+    const high = Math.max(startPercent, endPercent)
+    return isVertical()
+      ? { bottom: `${low}%`, height: `${high - low}%` }
+      : { left: `${low}%`, width: `${high - low}%` }
+  }
+
+  function renderHandle(value: number, index: number) {
+    const dragging = () => {
+      const state = dragState()
+      return state?.type === 'handle' && state.index === index
+    }
+    const label = () =>
+      isRange()
+        ? isEditable()
+          ? `Value ${index + 1}`
+          : values().length === 2
+            ? index === 0
+              ? 'Minimum value'
+              : 'Maximum value'
+            : `Value ${index + 1}`
+        : 'Value'
     return (
       <button
+        ref={(el) => {
+          handleRefs[index] = el
+        }}
         type="button"
         role="slider"
-        aria-label={label}
+        aria-label={label()}
         aria-valuemin={min()}
         aria-valuemax={max()}
         aria-valuenow={value}
-        aria-orientation={local.vertical ? 'vertical' : undefined}
+        aria-orientation={orientation()}
+        aria-disabled={disabled() ? 'true' : 'false'}
         disabled={disabled()}
         class={classNames(
           `${prefixCls()}-handle`,
-          draggingHandle() === handle && `${prefixCls()}-handle-dragging`,
+          `${prefixCls()}-handle-${index + 1}`,
+          dragging() && `${prefixCls()}-handle-dragging`,
+          semanticClassNames().handle,
         )}
-        style={handleStyle(value)}
-        onPointerDown={(event) => handleHandlePointerDown(handle, event)}
-        onKeyDown={(event) => handleKeyDown(handle, event)}
+        style={mergeStyles(handleStyle(value), semanticStyles().handle)}
+        onPointerDown={(event) => handleHandlePointerDown(index, event)}
+        onDblClick={() => handleHandleDoubleClick(index)}
+        onKeyDown={(event) => handleKeyDown(index, event)}
       >
         {renderTooltip(value)}
       </button>
     )
   }
 
+  const sliderRef: SliderRef = {
+    focus: () => handleRefs[0]?.focus(),
+    blur: () => handleRefs.find((handle) => handle === document.activeElement)?.blur(),
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  assignRef(local.ref, sliderRef)
   onCleanup(removeDocumentListeners)
 
   return (
     <div
       {...rest}
+      ref={(el) => {
+        rootRef = el
+      }}
       class={classNames(
         prefixCls(),
-        local.vertical && `${prefixCls()}-vertical`,
+        `${prefixCls()}-${orientation()}`,
+        isVertical() && `${prefixCls()}-vertical`,
+        isReverse() && `${prefixCls()}-reverse`,
         disabled() && `${prefixCls()}-disabled`,
         hashId(),
         local.class,
+        semanticClassNames().root,
       )}
+      style={mergeStyles(semanticStyles().root, local.style)}
       aria-disabled={disabled() || undefined}
+      onPointerDown={handleRootPointerDown}
     >
       <div
         ref={(el) => {
           railRef = el
         }}
-        class={`${prefixCls()}-rail`}
-        onPointerDown={handleRailPointerDown}
+        class={classNames(`${prefixCls()}-rail`, semanticClassNames().rail)}
+        style={semanticStyles().rail}
         aria-hidden="true"
       />
-      <div class={`${prefixCls()}-track`} style={trackStyle()} aria-hidden="true" />
-      <Show
-        when={isRange()}
-        fallback={renderHandle(0, normalizeSingle(mergedValue(), min(), max(), step()), 'Value')}
+      <div
+        class={classNames(`${prefixCls()}-tracks`, semanticClassNames().tracks)}
+        style={semanticStyles().tracks}
+        aria-hidden="true"
       >
-        {renderHandle(0, values()[0], 'Minimum value')}
-        {renderHandle(1, values()[1], 'Maximum value')}
+        <For each={activeSegments()}>
+          {([start, end], index) => (
+            <div
+              class={classNames(
+                `${prefixCls()}-track`,
+                `${prefixCls()}-track-${index() + 1}`,
+                semanticClassNames().track,
+              )}
+              style={mergeStyles(segmentStyle(start, end), semanticStyles().track)}
+              onPointerDown={handleTrackPointerDown}
+            />
+          )}
+        </For>
+      </div>
+      <Show when={markPoints().length > 0 || local.dots}>
+        <div
+          class={classNames(`${prefixCls()}-step`, semanticClassNames().step)}
+          style={semanticStyles().step}
+          aria-hidden="true"
+        >
+          <For each={snapPoints()}>
+            {(point) => (
+              <span
+                class={classNames(`${prefixCls()}-dot`, semanticClassNames().dot)}
+                style={mergeStyles(handleStyle(point), semanticStyles().dot)}
+              />
+            )}
+          </For>
+        </div>
       </Show>
-      <Show when={marks().length > 0}>
-        <div class={`${prefixCls()}-marks`} aria-hidden="true">
-          <For each={marks()}>
-            {({ value, mark }) => {
-              const markStyle = () => {
-                const percent = `${percentOf(value, min(), max())}%`
-                const position = local.vertical ? { bottom: percent } : { left: percent }
-                return { ...position, ...(isMarkObject(mark) ? mark.style : undefined) }
-              }
-              return (
-                <span class={`${prefixCls()}-mark-text`} style={markStyle()}>
-                  {isMarkObject(mark) ? mark.label : mark}
-                </span>
-              )
-            }}
+      <For each={values().map((value, index) => ({ value, index }))}>
+        {({ value, index }) => renderHandle(value, index)}
+      </For>
+      <Show when={markPoints().length > 0}>
+        <div
+          class={classNames(`${prefixCls()}-marks`, semanticClassNames().mark)}
+          style={semanticStyles().mark}
+          aria-hidden="true"
+        >
+          <For
+            each={Object.entries(local.marks ?? {})
+              .map(([key, mark]) => ({ value: Number(key), mark }))
+              .filter(({ value }) => Number.isFinite(value) && value >= min() && value <= max())
+              .sort((a, b) => a.value - b.value)}
+          >
+            {({ value, mark }) => (
+              <span
+                class={classNames(`${prefixCls()}-mark-text`, semanticClassNames().markText)}
+                style={mergeStyles(
+                  handleStyle(value),
+                  isMarkObject(mark) ? mark.style : undefined,
+                  semanticStyles().markText,
+                )}
+              >
+                {isMarkObject(mark) ? mark.label : mark}
+              </span>
+            )}
           </For>
         </div>
       </Show>
