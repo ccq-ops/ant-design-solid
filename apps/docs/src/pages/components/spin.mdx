@@ -34,14 +34,14 @@ const Demo2 = function () {
 export default Demo2
 ```
 
-### Tip
+### Description
 
 ```tsx
 import { Button, Space, Spin } from '@ant-design-solid/core'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 const Demo3 = function () {
-  return <Spin tip="Loading data" />
+  return <Spin description="Loading data" />
 }
 
 export default Demo3
@@ -55,7 +55,7 @@ import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 const Demo4 = function () {
   return (
-    <Spin spinning tip="Loading content">
+    <Spin spinning description="Loading content">
       <div
         style={{
           padding: '24px',
@@ -81,7 +81,7 @@ import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 const Demo5 = function () {
   return (
-    <Spin spinning delay={500} tip="Loading after delay">
+    <Spin spinning delay={500} description="Loading after delay">
       <div
         style={{
           padding: '24px',
@@ -109,12 +109,60 @@ const Demo6 = function () {
   const [fullscreen, setFullscreen] = createSignal(false)
 
   return (
-<Button onClick={() => setFullscreen(true)}>Show fullscreen spinner</Button>
-        <Spin fullscreen spinning={fullscreen()} tip="Loading fullscreen" />
+    <>
+      <Button onClick={() => setFullscreen(true)}>Show fullscreen spinner</Button>
+      <Spin fullscreen spinning={fullscreen()} description="Loading fullscreen" />
+    </>
   )
 }
 
 export default Demo6
+```
+
+### Progress
+
+```tsx
+import { Button, Space, Spin } from '@ant-design-solid/core'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
+
+const Demo7 = function () {
+  return (
+    <Space align="center">
+      <Spin percent={45} />
+      <Spin percent="auto" description="Uploading" />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+### Semantic styles
+
+```tsx
+import { Button, Space, Spin } from '@ant-design-solid/core'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
+
+const Demo8 = function () {
+  return (
+    <Spin
+      description="Loading profile"
+      class="profile-spin"
+      classNames={{
+        section: 'profile-spin-section',
+        indicator: 'profile-spin-indicator',
+        description: 'profile-spin-description',
+      }}
+      styles={{
+        root: { color: '#722ed1' },
+        section: { gap: '12px' },
+        description: { color: '#722ed1' },
+      }}
+    />
+  )
+}
+
+export default Demo8
 ```
 
 ### Custom indicator
@@ -123,21 +171,62 @@ export default Demo6
 import { Button, Space, Spin } from '@ant-design-solid/core'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 
-const Demo7 = function () {
+const Demo9 = function () {
   return <Spin indicator={<span style={{ color: '#1677ff' }}>Loading custom</span>} />
 }
 
-export default Demo7
+export default Demo9
+```
+
+### Default indicator
+
+```tsx
+import { Button, Space, Spin } from '@ant-design-solid/core'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
+
+const Demo10 = function () {
+  createEffect(() => {
+    Spin.setDefaultIndicator(<span style={{ color: '#1677ff' }}>Default loading</span>)
+    onCleanup(() => Spin.setDefaultIndicator(undefined))
+  })
+
+  return <Spin description="Using global default indicator" />
+}
+
+export default Demo10
 ```
 
 ## API
 
-| Property     | Description                                       | Type                              | Default     |
-| ------------ | ------------------------------------------------- | --------------------------------- | ----------- |
-| `spinning`   | Controls whether the spinner is active.           | `boolean`                         | `true`      |
-| `size`       | Spinner size.                                     | `'small' \| 'default' \| 'large'` | `'default'` |
-| `tip`        | Loading text displayed with the spinner.          | `JSX.Element`                     | `-`         |
-| `delay`      | Delay in milliseconds before showing the spinner. | `number`                          | `-`         |
-| `fullscreen` | Renders the spinner as a fullscreen overlay.      | `boolean`                         | `false`     |
-| `indicator`  | Custom indicator content.                         | `JSX.Element`                     | `-`         |
-| `children`   | Nested content covered by loading overlay.        | `JSX.Element`                     | `-`         |
+| Property       | Description                                        | Type                                                                            | Default    |
+| -------------- | -------------------------------------------------- | ------------------------------------------------------------------------------- | ---------- |
+| `spinning`     | Controls whether the spinner is active.            | `boolean`                                                                       | `true`     |
+| `size`         | Spinner size. `default` is kept for compatibility. | `'small' \| 'medium' \| 'large' \| 'default'`                                   | `'medium'` |
+| `description`  | Loading description displayed with the spinner.    | `JSX.Element`                                                                   | `-`        |
+| `tip`          | Deprecated loading text. Use `description`.        | `JSX.Element`                                                                   | `-`        |
+| `delay`        | Delay in milliseconds before showing the spinner.  | `number`                                                                        | `-`        |
+| `fullscreen`   | Renders the spinner as a fullscreen overlay.       | `boolean`                                                                       | `false`    |
+| `indicator`    | Custom indicator content.                          | `JSX.Element`                                                                   | `-`        |
+| `percent`      | Progress percent, or automatic simulated progress. | `number \| 'auto'`                                                              | `-`        |
+| `wrapperClass` | Class applied to the nested loading wrapper.       | `string`                                                                        | `-`        |
+| `classNames`   | Semantic DOM class names.                          | `Partial<Record<SpinSemanticSlot, string>> \| ((info) => Record...)`            | `-`        |
+| `styles`       | Semantic DOM styles.                               | `Partial<Record<SpinSemanticSlot, JSX.CSSProperties>> \| ((info) => Record...)` | `-`        |
+| `children`     | Nested content covered by loading overlay.         | `JSX.Element`                                                                   | `-`        |
+
+## Static methods
+
+| Method                | Description                             | Type                                            |
+| --------------------- | --------------------------------------- | ----------------------------------------------- |
+| `setDefaultIndicator` | Sets the global default Spin indicator. | `(indicator: JSX.Element \| undefined) => void` |
+
+## Semantic DOM
+
+| Slot          | Description                                |
+| ------------- | ------------------------------------------ |
+| `root`        | Root Spin node, or nested loading wrapper. |
+| `section`     | Indicator and description section.         |
+| `indicator`   | Indicator wrapper.                         |
+| `description` | Description content.                       |
+| `container`   | Nested children container.                 |
+| `tip`         | Deprecated alias for `description`.        |
+| `mask`        | Fullscreen or nested overlay mask.         |

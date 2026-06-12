@@ -109,4 +109,117 @@ describe('Spin', () => {
     expect(screen.getByText('Loading data')).toBeInTheDocument()
     expect(container.querySelector('.ads-spin')).toBeNull()
   })
+
+  it('prefers description over deprecated tip', () => {
+    render(() => <Spin tip="Legacy tip" description="Loading description" />)
+
+    expect(screen.getByText('Loading description')).toBeInTheDocument()
+    expect(screen.queryByText('Legacy tip')).toBeNull()
+  })
+
+  it('renders percent progress and clamps aria value', () => {
+    const { container } = render(() => <Spin percent={120} />)
+    const progress = screen.getByRole('progressbar')
+
+    expect(progress).toHaveAttribute('aria-valuenow', '100')
+    expect(container.querySelector('.ads-spin-dot-progress')).toBeInTheDocument()
+  })
+
+  it('advances auto percent while spinning', async () => {
+    vi.useFakeTimers()
+    render(() => <Spin percent="auto" />)
+
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(Number(screen.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeGreaterThan(0)
+  })
+
+  it('applies semantic classes and styles', () => {
+    const { container } = render(() => (
+      <Spin
+        description="Styled loading"
+        class="outer-class"
+        classNames={{
+          root: 'root-slot',
+          section: 'section-slot',
+          indicator: 'indicator-slot',
+          description: 'description-slot',
+        }}
+        styles={{
+          root: { color: 'rgb(1, 2, 3)' },
+          section: { padding: '4px' },
+          indicator: { margin: '2px' },
+          description: { color: 'rgb(4, 5, 6)' },
+        }}
+      />
+    ))
+
+    expect(container.querySelector('.root-slot')).toHaveClass('outer-class')
+    expect(container.querySelector<HTMLElement>('.root-slot')!.style.color).toBe('rgb(1, 2, 3)')
+    expect(container.querySelector<HTMLElement>('.section-slot')!.style.padding).toBe('4px')
+    expect(container.querySelector<HTMLElement>('.indicator-slot')!.style.margin).toBe('2px')
+    expect(container.querySelector('.description-slot')).toHaveTextContent('Styled loading')
+    expect(container.querySelector<HTMLElement>('.description-slot')!.style.color).toBe(
+      'rgb(4, 5, 6)',
+    )
+  })
+
+  it('applies wrapperClass and container semantic slot for nested content', () => {
+    const { container } = render(() => (
+      <Spin wrapperClass="wrapper-slot" classNames={{ container: 'container-slot' }}>
+        <div>Nested</div>
+      </Spin>
+    ))
+
+    expect(container.querySelector('.ads-spin-nested-loading')).toHaveClass('wrapper-slot')
+    expect(container.querySelector('.container-slot')).toHaveTextContent('Nested')
+  })
+
+  it('resolves semantic classes and styles from functions', () => {
+    const { container } = render(() => (
+      <Spin
+        size="large"
+        classNames={({ props }) => ({ root: props.size === 'large' ? 'large-root' : undefined })}
+        styles={({ props }) => ({
+          root: { color: props.size === 'large' ? 'rgb(7, 8, 9)' : undefined },
+        })}
+      />
+    ))
+
+    expect(container.querySelector('.large-root')).toBeInTheDocument()
+    expect(container.querySelector<HTMLElement>('.large-root')!.style.color).toBe('rgb(7, 8, 9)')
+  })
+
+  it('keeps nested root semantic class on the wrapper only', () => {
+    const { container } = render(() => (
+      <Spin classNames={{ root: 'nested-root' }}>
+        <div>Nested</div>
+      </Spin>
+    ))
+
+    expect(container.querySelector('.ads-spin-nested-loading')).toHaveClass('nested-root')
+    expect(container.querySelector('.ads-spin')).not.toHaveClass('nested-root')
+  })
+
+  it('supports medium size and default size compatibility', () => {
+    const { container } = render(() => (
+      <>
+        <Spin size="medium" />
+        <Spin size="default" />
+      </>
+    ))
+
+    expect(container.querySelectorAll('.ads-spin-sm')).toHaveLength(0)
+    expect(container.querySelectorAll('.ads-spin-lg')).toHaveLength(0)
+    expect(screen.getAllByRole('status')).toHaveLength(2)
+  })
+
+  it('uses a global default indicator when provided', () => {
+    Spin.setDefaultIndicator(<span>Default indicator</span>)
+
+    render(() => <Spin />)
+
+    expect(screen.getByText('Default indicator')).toBeInTheDocument()
+    Spin.setDefaultIndicator(undefined)
+  })
 })
