@@ -17,6 +17,14 @@ import {
 } from './tabs-utils'
 import type { TabsItem, TabsProps } from './interface'
 
+function sameSet(left: Set<string>, right: Set<string>) {
+  if (left.size !== right.size) return false
+  for (const value of left) {
+    if (!right.has(value)) return false
+  }
+  return true
+}
+
 function parseStyleText(style: string): JSX.CSSProperties {
   return Object.fromEntries(
     style
@@ -106,7 +114,7 @@ export function Tabs(props: TabsProps) {
       if (itemKeys.has(activeKey)) {
         next.add(activeKey)
       }
-      return next
+      return sameSet(previous, next) ? previous : next
     })
   })
 

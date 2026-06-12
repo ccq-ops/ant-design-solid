@@ -457,6 +457,23 @@ export interface TabsComponentToken extends ComponentTokenBase {
   horizontalItemPaddingLg: number
 }
 
+export interface CardComponentToken extends ComponentTokenBase {
+  headerBg: string
+  headerFontSize: number
+  headerFontSizeSM: number
+  headerHeight: number
+  headerHeightSM: number
+  actionsBg: string
+  actionsLiMargin: number
+  tabsMarginBottom: number
+  extraColor: string
+  bodyPadding: number
+  bodyPaddingSM: number
+  headerPadding: number
+  headerPaddingSM: number
+  headerBorderBottom: string
+}
+
 export interface PopoverComponentToken extends ComponentTokenBase {
   bg: string
   borderRadius: number
@@ -516,7 +533,7 @@ export interface ComponentTokenMap {
   Button: ButtonComponentToken
   Breadcrumb?: ComponentTokenBase
   Calendar?: ComponentTokenBase
-  Card?: ComponentTokenBase
+  Card: CardComponentToken
   Carousel?: ComponentTokenBase
   Cascader?: ComponentTokenBase
   Checkbox: CheckboxComponentToken

@@ -120,6 +120,15 @@ a {
   background-color: var(--docs-primary-soft) !important;
 }
 
+.docs-demo-cover {
+  color: var(--docs-text-strong) !important;
+  background: linear-gradient(
+    135deg,
+    var(--docs-primary-soft),
+    var(--docs-surface-subtle)
+  ) !important;
+}
+
 .docs-hero {
   background: var(--docs-hero-bg);
   box-shadow: var(--docs-hero-shadow);
