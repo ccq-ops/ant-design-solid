@@ -1,2 +1,13 @@
 export { Space } from './space'
-export type { SpaceProps, SpaceSize } from './interface'
+export type {
+  SpaceAddonProps,
+  SpaceCompactProps,
+  SpaceComponent,
+  SpaceOrientation,
+  SpaceProps,
+  SpaceSemanticClassNames,
+  SpaceSemanticSlot,
+  SpaceSemanticStyles,
+  SpaceSingleSize,
+  SpaceSize,
+} from './interface'

@@ -3,14 +3,31 @@ import { getComponentToken, type GlobalToken } from '@ant-design-solid/theme'
 import { useConfig, useToken } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useSpaceStyle } from './space.style'
-import type { SpaceProps, SpaceSize } from './interface'
-function resolveGap(size: SpaceSize | undefined, token: GlobalToken): [number, number] {
+import type {
+  SpaceAddonProps,
+  SpaceCompactProps,
+  SpaceOrientation,
+  SpaceProps,
+  SpaceSemanticClassNames,
+  SpaceSemanticStyles,
+  SpaceSingleSize,
+  SpaceSize,
+} from './interface'
+import type { JSX } from 'solid-js'
+
+function resolveSingleGap(size: SpaceSingleSize | undefined, token: GlobalToken): number {
   const ct = getComponentToken('Space', token)
-  if (Array.isArray(size)) return size
-  if (typeof size === 'number') return [size, size]
-  if (size === 'small') return [ct.gapSmall, ct.gapSmall]
-  if (size === 'large') return [ct.gapLarge, ct.gapLarge]
-  return [ct.gapMiddle, ct.gapMiddle]
+  if (typeof size === 'number') return size
+  if (size === 'middle') return ct.gapMiddle
+  if (size === 'large') return ct.gapLarge
+  return ct.gapSmall
+}
+
+function resolveGap(size: SpaceSize | undefined, token: GlobalToken): [number, number] {
+  if (Array.isArray(size))
+    return [resolveSingleGap(size[0], token), resolveSingleGap(size[1], token)]
+  const gap = resolveSingleGap(size, token)
+  return [gap, gap]
 }
 
 function isRenderableItem(item: unknown) {
@@ -19,14 +36,53 @@ function isRenderableItem(item: unknown) {
   return true
 }
 
-export function Space(props: SpaceProps) {
+function mergeStyle(
+  ...styles: Array<string | JSX.CSSProperties | undefined>
+): string | JSX.CSSProperties {
+  const stringStyle = styles.find((style): style is string => typeof style === 'string')
+  if (stringStyle) return stringStyle
+  return Object.assign({}, ...styles.filter(Boolean))
+}
+
+function resolveSemanticClassNames(
+  classNames: SpaceSemanticClassNames | undefined,
+  props: SpaceProps,
+) {
+  return typeof classNames === 'function' ? classNames({ props }) : (classNames ?? {})
+}
+
+function resolveSemanticStyles(styles: SpaceSemanticStyles | undefined, props: SpaceProps) {
+  return typeof styles === 'function' ? styles({ props }) : (styles ?? {})
+}
+
+function resolveOrientation(props: {
+  orientation?: SpaceOrientation
+  direction?: SpaceOrientation
+  vertical?: boolean
+}): SpaceOrientation {
+  return props.orientation ?? (props.vertical ? 'vertical' : props.direction) ?? 'horizontal'
+}
+
+function compactSizeClass(prefixCls: string, size: SpaceCompactProps['size']) {
+  if (size === 'small') return `${prefixCls}-compact-sm`
+  if (size === 'large') return `${prefixCls}-compact-lg`
+  return false
+}
+
+export function SpaceRoot(props: SpaceProps) {
   const [local, rest] = splitProps(props, [
     'size',
     'direction',
+    'orientation',
+    'vertical',
     'align',
     'wrap',
     'split',
+    'separator',
+    'classNames',
+    'styles',
     'class',
+    'style',
     'children',
   ])
   const config = useConfig()
@@ -36,28 +92,45 @@ export function Space(props: SpaceProps) {
   const resolved = children(() => local.children)
   const items = () => resolved.toArray().filter(isRenderableItem)
   const gap = () => resolveGap(local.size, token())
+  const orientation = () => resolveOrientation(local)
+  const separator = () => local.separator ?? local.split
+  const semanticClassNames = () => resolveSemanticClassNames(local.classNames, props)
+  const semanticStyles = () => resolveSemanticStyles(local.styles, props)
   return (
     <div
       {...rest}
       class={classNames(
         prefixCls(),
-        (local.direction ?? 'horizontal') === 'vertical' && `${prefixCls()}-vertical`,
+        orientation() === 'vertical' && `${prefixCls()}-vertical`,
         local.wrap && `${prefixCls()}-wrap`,
         hashId(),
         local.class,
       )}
-      style={{
-        'row-gap': `${gap()[1]}px`,
-        'column-gap': `${gap()[0]}px`,
-        'align-items': local.align,
-      }}
+      style={mergeStyle(
+        {
+          'row-gap': `${gap()[1]}px`,
+          'column-gap': `${gap()[0]}px`,
+          'align-items': local.align,
+        },
+        local.style,
+      )}
     >
       <For each={items()}>
         {(item, index) => (
           <>
-            <span class={`${prefixCls()}-item`}>{item}</span>
-            {local.split && index() < items().length - 1 ? (
-              <span class={`${prefixCls()}-split`}>{local.split}</span>
+            <span
+              class={classNames(`${prefixCls()}-item`, semanticClassNames().item)}
+              style={semanticStyles().item}
+            >
+              {item}
+            </span>
+            {separator() && index() < items().length - 1 ? (
+              <span
+                class={classNames(`${prefixCls()}-split`, semanticClassNames().split)}
+                style={semanticStyles().split}
+              >
+                {separator()}
+              </span>
             ) : null}
           </>
         )}
@@ -65,3 +138,49 @@ export function Space(props: SpaceProps) {
     </div>
   )
 }
+
+export function SpaceCompact(props: SpaceCompactProps) {
+  const [local, rest] = splitProps(props, [
+    'block',
+    'direction',
+    'orientation',
+    'vertical',
+    'size',
+    'class',
+    'children',
+  ])
+  const config = useConfig()
+  const prefixCls = () => `${config.prefixCls()}-space`
+  const [, hashId] = useSpaceStyle(prefixCls())
+  const orientation = () => resolveOrientation(local)
+  const size = () => local.size ?? 'medium'
+  return (
+    <div
+      {...rest}
+      class={classNames(
+        `${prefixCls()}-compact`,
+        orientation() === 'vertical' && `${prefixCls()}-compact-vertical`,
+        local.block && `${prefixCls()}-compact-block`,
+        compactSizeClass(prefixCls(), size()),
+        hashId(),
+        local.class,
+      )}
+    >
+      {local.children}
+    </div>
+  )
+}
+
+export function SpaceAddon(props: SpaceAddonProps) {
+  const [local, rest] = splitProps(props, ['class', 'children'])
+  const config = useConfig()
+  const prefixCls = () => `${config.prefixCls()}-space`
+  const [, hashId] = useSpaceStyle(prefixCls())
+  return (
+    <span {...rest} class={classNames(`${prefixCls()}-compact-addon`, hashId(), local.class)}>
+      {local.children}
+    </span>
+  )
+}
+
+export const Space = Object.assign(SpaceRoot, { Compact: SpaceCompact, Addon: SpaceAddon })
