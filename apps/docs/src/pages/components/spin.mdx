@@ -169,10 +169,15 @@ export default Demo8
 
 ```tsx
 import { Button, Space, Spin } from '@ant-design-solid/core'
+import { LoadingOutlined } from '@ant-design-solid/icons'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 
+const LoadingIcon = function () {
+  return <LoadingOutlined spin style={{ color: '#1677ff', 'font-size': '24px' }} />
+}
+
 const Demo9 = function () {
-  return <Spin indicator={<span style={{ color: '#1677ff' }}>Loading custom</span>} />
+  return <Spin indicator={<LoadingIcon />} />
 }
 
 export default Demo9
