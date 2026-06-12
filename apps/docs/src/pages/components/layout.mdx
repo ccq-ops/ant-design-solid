@@ -124,7 +124,7 @@ const footerStyle = {
 const Demo2 = function () {
   return (
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
-      <Layout.Sider theme="light">
+      <Layout.Sider>
         <div style={logoStyle} />
         <Menu mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
@@ -189,7 +189,6 @@ const Demo3 = function () {
   return (
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
       <Layout.Sider
-        theme="light"
         collapsible
         collapsed={collapsed()}
         onCollapse={(nextCollapsed) => setCollapsed(nextCollapsed)}
@@ -262,7 +261,7 @@ const Demo4 = function () {
 
   return (
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
-      <Layout.Sider theme="light" collapsible collapsed={collapsed()} trigger={null}>
+      <Layout.Sider collapsible collapsed={collapsed()} trigger={null}>
         <div style={logoStyle} />
         <Menu
           mode="inline"
@@ -328,7 +327,6 @@ const Demo5 = function () {
   return (
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
       <Layout.Sider
-        theme="light"
         breakpoint="lg"
         collapsedWidth={broken() ? 0 : 80}
         onBreakpoint={(nextBroken) => setBroken(nextBroken)}
@@ -379,7 +377,7 @@ const panelStyle = {
 const Demo6 = function () {
   return (
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
-      <Layout.Sider theme="light" collapsible defaultCollapsed collapsedWidth={0}>
+      <Layout.Sider collapsible defaultCollapsed collapsedWidth={0}>
         <div style={logoStyle} />
         <Menu mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
