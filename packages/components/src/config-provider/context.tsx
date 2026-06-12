@@ -1,8 +1,15 @@
 import { createContext, createMemo, useContext } from 'solid-js'
 import { mergeTheme, type ComponentSize, type ThemeConfig } from '@ant-design-solid/theme'
 import type { ConfigContextValue, TooltipConfig } from './interface'
+import type { NotificationConfig } from '../notification/interface'
+import type { MessageConfigOptions } from '../message/interface'
 const emptyTheme: ThemeConfig = {}
 const emptyTooltip: TooltipConfig = {}
+const emptyNotification: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'> = {}
+const emptyMessage: Pick<
+  MessageConfigOptions,
+  'class' | 'className' | 'style' | 'classNames' | 'styles'
+> = {}
 export const defaultConfigContext: ConfigContextValue = {
   prefixCls: () => 'ads',
   componentSize: () => 'middle' as ComponentSize,
@@ -10,6 +17,8 @@ export const defaultConfigContext: ConfigContextValue = {
   theme: () => emptyTheme,
   token: () => mergeTheme(emptyTheme),
   tooltip: () => emptyTooltip,
+  notification: () => emptyNotification,
+  message: () => emptyMessage,
 }
 export const ConfigContext = createContext<ConfigContextValue>(defaultConfigContext)
 export function useConfig(): ConfigContextValue {
@@ -34,10 +43,14 @@ export function createConfigValue(
     theme?: ThemeConfig
     getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
     tooltip?: TooltipConfig
+    notification?: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>
+    message?: Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
   },
 ): ConfigContextValue {
   const theme = createMemo(() => mergeThemeConfig(parent.theme(), props.theme ?? {}))
   const tooltip = createMemo(() => ({ ...parent.tooltip(), ...props.tooltip }))
+  const notification = createMemo(() => ({ ...parent.notification(), ...props.notification }))
+  const message = createMemo(() => ({ ...parent.message(), ...props.message }))
   return {
     prefixCls: createMemo(() => props.prefixCls ?? parent.prefixCls()),
     componentSize: createMemo(() => props.componentSize ?? parent.componentSize()),
@@ -46,5 +59,7 @@ export function createConfigValue(
     token: createMemo(() => mergeTheme(theme())),
     getPopupContainer: props.getPopupContainer ?? parent.getPopupContainer,
     tooltip,
+    notification,
+    message,
   }
 }

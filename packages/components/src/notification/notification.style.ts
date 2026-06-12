@@ -37,6 +37,20 @@ export function useNotificationStyle(prefixCls: string) {
           'border-radius': nt.borderRadius,
           'box-shadow': nt.boxShadow,
         },
+        [`.${prefixCls}-notice-wrapper`]: {
+          transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
+        },
+        [`.${prefixCls}-stack .${prefixCls}-notice-wrapper:not(:last-child)`]: {
+          'margin-bottom': -48,
+        },
+        [`.${prefixCls}-notice-stacked`]: {
+          transform: 'scale(0.96)',
+          opacity: 0.88,
+        },
+        [`.${prefixCls}-stack .${prefixCls}-notice-wrapper:last-child .${prefixCls}-notice`]: {
+          transform: 'scale(1)',
+          opacity: 1,
+        },
         [`.${prefixCls}-notice-message`]: {
           display: 'flex',
           'align-items': 'center',

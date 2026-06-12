@@ -6,6 +6,8 @@ import type {
   TooltipSemanticStylesConfig,
   TooltipTriggerInput,
 } from '../tooltip/interface'
+import type { NotificationConfig } from '../notification/interface'
+import type { MessageConfigOptions } from '../message/interface'
 
 export interface TooltipConfig {
   unique?: boolean
@@ -24,6 +26,8 @@ export interface ConfigProviderProps {
   theme?: ThemeConfig
   getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   tooltip?: TooltipConfig
+  notification?: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>
+  message?: Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
   children?: JSX.Element
 }
 export interface ConfigContextValue {
@@ -34,4 +38,8 @@ export interface ConfigContextValue {
   token: Accessor<AliasToken>
   getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
   tooltip: Accessor<TooltipConfig>
+  notification: Accessor<Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>>
+  message: Accessor<
+    Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
+  >
 }

@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { notification } from '../index'
+import { createRoot } from 'solid-js'
+import { render } from 'solid-js/web'
+import { ConfigProvider, notification } from '../..'
 
 describe('notification', () => {
   beforeEach(() => {
@@ -100,13 +102,13 @@ describe('notification', () => {
     )
   })
 
-  it('applies className style props and onClick to the notice element', () => {
+  it('applies class style props and onClick to the notice element', () => {
     const onClick = vi.fn()
 
     notification.open({
       message: 'Clickable',
       duration: 0,
-      className: 'custom-notice',
+      class: 'custom-notice',
       style: { width: '333px' },
       props: { 'data-testid': 'notice-a', 'aria-label': 'custom notification' },
       onClick,
@@ -119,6 +121,12 @@ describe('notification', () => {
     expect(notice?.getAttribute('aria-label')).toBe('custom notification')
     notice?.click()
     expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('still accepts deprecated className for compatibility', () => {
+    notification.open({ message: 'Legacy class', duration: 0, className: 'legacy-notice' })
+
+    expect(document.body.querySelector('.legacy-notice')).toHaveTextContent('Legacy class')
   })
 
   it('aligns icon and title in one centered row', () => {
@@ -189,6 +197,42 @@ describe('notification', () => {
     expect(document.body).not.toHaveTextContent('Configured')
   })
 
+  it('applies global props closable classNames and styles defaults', () => {
+    notification.config({
+      props: { 'data-testid': 'global-notice', role: 'status' },
+      closable: false,
+      classNames: { title: 'global-title', root: 'global-root' },
+      styles: { title: { color: 'blue' } },
+    })
+
+    notification.open({ title: 'Global defaults', duration: 0 })
+
+    const notice = document.body.querySelector<HTMLElement>('[data-testid="global-notice"]')
+    const title = document.body.querySelector<HTMLElement>('.global-title')
+
+    expect(document.body.querySelector('.global-root')).toBeTruthy()
+    expect(notice).toHaveTextContent('Global defaults')
+    expect(notice?.getAttribute('role')).toBe('status')
+    expect(title?.style.color).toBe('blue')
+    expect(document.body.querySelector('[aria-label="close notification"]')).toBeFalsy()
+  })
+
+  it('supports function semantic classNames and styles with notice props info', () => {
+    notification.open({
+      title: 'Function semantic',
+      duration: 0,
+      props: { 'data-kind': 'sync' },
+      classNames: ({ props }) => ({ title: `title-${props?.['data-kind']}` }),
+      styles: ({ props }) => ({
+        title: { color: props?.['data-kind'] === 'sync' ? 'green' : 'red' },
+      }),
+    })
+
+    const title = document.body.querySelector<HTMLElement>('.title-sync')
+    expect(title).toHaveTextContent('Function semantic')
+    expect(title?.style.color).toBe('green')
+  })
+
   it('mounts into configured container', () => {
     const container = document.createElement('section')
     document.body.appendChild(container)
@@ -209,6 +253,31 @@ describe('notification', () => {
     expect(document.body).not.toHaveTextContent('One')
     expect(document.body).toHaveTextContent('Two')
     expect(document.body).toHaveTextContent('Three')
+  })
+
+  it('marks notifications as stacked when stack threshold is exceeded', () => {
+    notification.config({ stack: { threshold: 2 } })
+
+    notification.open({ message: 'One', duration: 0 })
+    notification.open({ message: 'Two', duration: 0 })
+    notification.open({ message: 'Three', duration: 0 })
+
+    expect(document.body).toHaveTextContent('One')
+    expect(document.body).toHaveTextContent('Two')
+    expect(document.body).toHaveTextContent('Three')
+    expect(document.body.querySelector('.ads-notification-stack')).toBeTruthy()
+    expect(document.body.querySelectorAll('.ads-notification-notice-stacked')).toHaveLength(3)
+  })
+
+  it('supports numeric keys when updating and destroying notifications', () => {
+    notification.open({ key: 1, message: 'One', duration: 0 })
+    notification.open({ key: 1, message: 'Updated one', duration: 0 })
+
+    expect(document.body).not.toHaveTextContent('One')
+    expect(document.body).toHaveTextContent('Updated one')
+
+    notification.destroy(1)
+    expect(document.body).not.toHaveTextContent('Updated one')
   })
 
   it('keeps duration false notifications open', () => {
@@ -242,21 +311,72 @@ describe('notification', () => {
       showProgress: true,
       role: 'status',
       classNames: {
-        notice: 'semantic-notice',
-        message: 'semantic-message',
+        root: 'semantic-root',
+        wrapper: 'semantic-wrapper',
+        section: 'semantic-section',
+        title: 'semantic-title',
         progress: 'semantic-progress',
       },
-      styles: { message: { color: 'red' }, progress: { height: '4px' } },
+      styles: { title: { color: 'red' }, progress: { height: '4px' } },
     })
 
-    const notice = document.body.querySelector<HTMLElement>('.semantic-notice')
-    const message = document.body.querySelector<HTMLElement>('.semantic-message')
+    const notice = document.body.querySelector<HTMLElement>('.semantic-root')
+    const title = document.body.querySelector<HTMLElement>('.semantic-title')
     const progress = document.body.querySelector<HTMLElement>('.semantic-progress')
 
     expect(document.body.querySelector('.ads-notification-rtl')).toBeTruthy()
+    expect(document.body.querySelector('.semantic-wrapper')).toBeTruthy()
+    expect(document.body.querySelector('.semantic-section')).toBeTruthy()
     expect(notice?.getAttribute('role')).toBe('status')
-    expect(message?.style.color).toBe('red')
+    expect(title?.style.color).toBe('red')
     expect(progress).toBeTruthy()
     expect(progress?.style.height).toBe('4px')
+  })
+
+  it('uses hook api with an inline context holder and local config', () => {
+    let api!: ReturnType<typeof notification.useNotification>[0]
+    const dispose = createRoot((rootDispose) => {
+      const [instance, contextHolder] = notification.useNotification({
+        placement: 'bottomLeft',
+        props: { 'data-testid': 'hook-notice' },
+        getContainer: () => document.querySelector<HTMLElement>('#app')!,
+      })
+      api = instance
+      render(() => <div id="app">{contextHolder}</div>, document.body)
+      return rootDispose
+    })
+
+    api.open({ title: 'Hook notice', duration: 0 })
+
+    expect(document.body.querySelector('#app')).toHaveTextContent('Hook notice')
+    expect(document.body.querySelector('.ads-notification-bottom-left')).toHaveTextContent(
+      'Hook notice',
+    )
+    expect(document.body.querySelector('[data-testid="hook-notice"]')).toBeTruthy()
+
+    dispose()
+  })
+
+  it('uses ConfigProvider notification defaults in hook holder', () => {
+    let api!: ReturnType<typeof notification.useNotification>[0]
+    render(
+      () => (
+        <ConfigProvider prefixCls="custom" notification={{ classNames: { title: 'from-config' } }}>
+          {(() => {
+            const [instance, contextHolder] = notification.useNotification()
+            api = instance
+            return contextHolder
+          })()}
+        </ConfigProvider>
+      ),
+      document.body,
+    )
+
+    api.open({ title: 'Configured hook', duration: 0 })
+
+    expect(document.body.querySelector('.custom-notification-top-right')).toHaveTextContent(
+      'Configured hook',
+    )
+    expect(document.body.querySelector('.from-config')).toHaveTextContent('Configured hook')
   })
 })

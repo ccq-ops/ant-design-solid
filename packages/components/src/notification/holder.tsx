@@ -14,6 +14,7 @@ import { useNotificationStyle } from './notification.style'
 import type { Accessor } from 'solid-js'
 import type {
   NotificationConfig,
+  NotificationKey,
   NotificationNotice,
   NotificationPlacement,
   NotificationType,
@@ -21,9 +22,9 @@ import type {
 
 export interface NotificationHolderProps {
   notices: Accessor<NotificationNotice[]>
-  close: (key: string) => void
-  pause: (key: string) => void
-  resume: (key: string) => void
+  close: (key: NotificationKey) => void
+  pause: (key: NotificationKey) => void
+  resume: (key: NotificationKey) => void
   config: NotificationConfig
 }
 
@@ -69,127 +70,226 @@ function shouldShowClose(notice: NotificationNotice) {
 }
 
 function closeIcon(notice: NotificationNotice) {
-  if (typeof notice.closable === 'object' && notice.closable.closeIcon !== undefined) {
+  if (
+    notice.closable &&
+    typeof notice.closable === 'object' &&
+    notice.closable.closeIcon !== undefined
+  ) {
     return notice.closable.closeIcon
   }
   if (notice.closeIcon !== undefined && notice.closeIcon !== true) return notice.closeIcon
   return <CloseOutlined />
 }
 
-function NotificationHolder(props: NotificationHolderProps) {
+function semanticClassNames(
+  config: NotificationConfig,
+  notice: NotificationNotice,
+): Partial<Record<string, string>> {
+  const info = { props: notice.props }
+  const configClassNames =
+    typeof config.classNames === 'function' ? config.classNames(info) : config.classNames
+  const noticeClassNames =
+    typeof notice.classNames === 'function' ? notice.classNames(info) : notice.classNames
+  return { ...configClassNames, ...noticeClassNames }
+}
+
+function semanticStyles(
+  config: NotificationConfig,
+  notice: NotificationNotice,
+): Partial<Record<string, import('solid-js').JSX.CSSProperties>> {
+  const info = { props: notice.props }
+  const configStyles = typeof config.styles === 'function' ? config.styles(info) : config.styles
+  const noticeStyles = typeof notice.styles === 'function' ? notice.styles(info) : notice.styles
+  return { ...configStyles, ...noticeStyles }
+}
+
+function configClassNames(config: NotificationConfig): Partial<Record<string, string>> {
+  return typeof config.classNames === 'function'
+    ? config.classNames({ props: undefined })
+    : (config.classNames ?? {})
+}
+
+function configStyles(
+  config: NotificationConfig,
+): Partial<Record<string, import('solid-js').JSX.CSSProperties>> {
+  return typeof config.styles === 'function'
+    ? config.styles({ props: undefined })
+    : (config.styles ?? {})
+}
+
+function stackThreshold(stack: NotificationConfig['stack']) {
+  if (stack === false) return Number.POSITIVE_INFINITY
+  if (typeof stack === 'object') return stack.threshold ?? 3
+  return stack ? 3 : Number.POSITIVE_INFINITY
+}
+
+export function NotificationHolder(props: NotificationHolderProps) {
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-notification`
+  const holderConfig = () => ({
+    closeIcon: config.notification().closeIcon,
+    classNames: config.notification().classNames,
+    styles: config.notification().styles,
+    ...props.config,
+  })
+  const prefixBase = () => holderConfig().prefixCls ?? config.prefixCls()
+  const prefixCls = () => `${prefixBase()}-notification`
   const [, hashId] = useNotificationStyle(prefixCls())
   const byPlacement = (placement: NotificationPlacement) =>
     props.notices().filter((item) => item.placement === placement)
 
   return (
-    <InternalPortal mount={props.config.getContainer?.()}>
+    <InternalPortal mount={holderConfig().getContainer?.()}>
       <For each={placements}>
-        {(placement) => (
-          <div
-            class={classNames(
-              `${prefixCls()}-${classByPlacement[placement]}`,
-              props.config.rtl && `${prefixCls()}-rtl`,
-              hashId(),
-            )}
-            style={{
-              top: placement.startsWith('top') ? `${props.config.top ?? 24}px` : undefined,
-              bottom: placement.startsWith('bottom') ? `${props.config.bottom ?? 24}px` : undefined,
-            }}
-          >
-            <For each={byPlacement(placement)}>
-              {(notice) => (
-                <div
-                  {...notice.props}
-                  class={classNames(
-                    `${prefixCls()}-notice`,
-                    notice.type && `${prefixCls()}-notice-${notice.type}`,
-                    notice.className,
-                    notice.classNames?.notice,
-                  )}
-                  style={{ ...notice.style, ...notice.styles?.notice }}
-                  role={notice.role ?? 'alert'}
-                  onClick={notice.onClick}
-                  onMouseEnter={() => {
-                    if (notice.pauseOnHover !== false) props.pause(notice.key)
-                  }}
-                  onMouseLeave={() => {
-                    if (notice.pauseOnHover !== false) props.resume(notice.key)
-                  }}
-                >
-                  <Show when={shouldShowClose(notice)}>
-                    <button
-                      type="button"
-                      class={classNames(`${prefixCls()}-notice-close`, notice.classNames?.close)}
-                      style={notice.styles?.close}
-                      aria-label="close notification"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        props.close(notice.key)
-                      }}
-                    >
-                      {closeIcon(notice)}
-                    </button>
-                  </Show>
-                  <div
-                    class={classNames(`${prefixCls()}-notice-message`, notice.classNames?.message)}
-                    style={notice.styles?.message}
-                  >
-                    <Show when={notice.icon ?? notice.type}>
-                      <span
-                        class={classNames(
-                          `${prefixCls()}-icon`,
-                          notice.type && `${prefixCls()}-icon-${notice.type}`,
-                          notice.classNames?.icon,
-                        )}
-                        style={notice.styles?.icon}
-                        aria-hidden="true"
-                      >
-                        {notice.icon ?? <NotificationIcon type={notice.type!} />}
-                      </span>
-                    </Show>
-                    {notice.title ?? notice.message}
-                  </div>
-                  <Show when={notice.description}>
-                    <div
-                      class={classNames(
-                        `${prefixCls()}-notice-description`,
-                        notice.classNames?.description,
-                      )}
-                      style={notice.styles?.description}
-                    >
-                      {notice.description}
-                    </div>
-                  </Show>
-                  <Show when={notice.actions ?? notice.btn}>
-                    <div
-                      class={classNames(
-                        `${prefixCls()}-notice-actions`,
-                        notice.classNames?.actions,
-                      )}
-                      style={notice.styles?.actions}
-                    >
-                      {notice.actions ?? notice.btn}
-                    </div>
-                  </Show>
-                  <Show when={notice.showProgress && notice.duration && notice.duration > 0}>
-                    <div
-                      class={classNames(
-                        `${prefixCls()}-notice-progress`,
-                        notice.classNames?.progress,
-                      )}
-                      style={{
-                        'animation-duration': `${notice.duration || 0}s`,
-                        ...notice.styles?.progress,
-                      }}
-                    />
-                  </Show>
-                </div>
+        {(placement) => {
+          const placementNotices = () => byPlacement(placement)
+          const stacked = () => placementNotices().length > stackThreshold(holderConfig().stack)
+          const placementClasses = () => configClassNames(holderConfig())
+          const placementStyles = () => configStyles(holderConfig())
+          return (
+            <div
+              class={classNames(
+                `${prefixCls()}-${classByPlacement[placement]}`,
+                stacked() && `${prefixCls()}-stack`,
+                holderConfig().rtl && `${prefixCls()}-rtl`,
+                hashId(),
               )}
-            </For>
-          </div>
-        )}
+              style={{
+                top: placement.startsWith('top') ? `${holderConfig().top ?? 24}px` : undefined,
+                bottom: placement.startsWith('bottom')
+                  ? `${holderConfig().bottom ?? 24}px`
+                  : undefined,
+              }}
+            >
+              <div
+                class={classNames(
+                  `${prefixCls()}-list`,
+                  stacked() && `${prefixCls()}-list-stacked`,
+                  placementClasses().list,
+                )}
+                style={placementStyles().list}
+              >
+                <div
+                  class={classNames(`${prefixCls()}-list-content`, placementClasses().listContent)}
+                  style={placementStyles().listContent}
+                >
+                  <For each={placementNotices()}>
+                    {(notice) => {
+                      const classes = () => semanticClassNames(holderConfig(), notice)
+                      const styles = () => semanticStyles(holderConfig(), notice)
+                      return (
+                        <div
+                          class={classNames(`${prefixCls()}-notice-wrapper`, classes().wrapper)}
+                          style={styles().wrapper}
+                        >
+                          <div
+                            {...notice.props}
+                            class={classNames(
+                              `${prefixCls()}-notice`,
+                              stacked() && `${prefixCls()}-notice-stacked`,
+                              notice.type && `${prefixCls()}-notice-${notice.type}`,
+                              notice.class,
+                              notice.className,
+                              classes().root,
+                              classes().notice,
+                            )}
+                            style={{ ...notice.style, ...styles().root, ...styles().notice }}
+                            role={notice.props?.role ?? notice.role ?? 'alert'}
+                            onClick={notice.onClick}
+                            onMouseEnter={() => {
+                              if (notice.pauseOnHover !== false) props.pause(notice.key)
+                            }}
+                            onMouseLeave={() => {
+                              if (notice.pauseOnHover !== false) props.resume(notice.key)
+                            }}
+                          >
+                            <Show when={shouldShowClose(notice)}>
+                              <button
+                                type="button"
+                                class={classNames(`${prefixCls()}-notice-close`, classes().close)}
+                                style={styles().close}
+                                aria-label="close notification"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  props.close(notice.key)
+                                }}
+                              >
+                                {closeIcon(notice)}
+                              </button>
+                            </Show>
+                            <div
+                              class={classNames(`${prefixCls()}-notice-section`, classes().section)}
+                              style={styles().section}
+                            >
+                              <div
+                                class={classNames(
+                                  `${prefixCls()}-notice-message`,
+                                  classes().title,
+                                  classes().message,
+                                )}
+                                style={{ ...styles().title, ...styles().message }}
+                              >
+                                <Show when={notice.icon ?? notice.type}>
+                                  <span
+                                    class={classNames(
+                                      `${prefixCls()}-icon`,
+                                      notice.type && `${prefixCls()}-icon-${notice.type}`,
+                                      classes().icon,
+                                    )}
+                                    style={styles().icon}
+                                    aria-hidden="true"
+                                  >
+                                    {notice.icon ?? <NotificationIcon type={notice.type!} />}
+                                  </span>
+                                </Show>
+                                {notice.title ?? notice.message}
+                              </div>
+                              <Show when={notice.description}>
+                                <div
+                                  class={classNames(
+                                    `${prefixCls()}-notice-description`,
+                                    classes().description,
+                                  )}
+                                  style={styles().description}
+                                >
+                                  {notice.description}
+                                </div>
+                              </Show>
+                              <Show when={notice.actions ?? notice.btn}>
+                                <div
+                                  class={classNames(
+                                    `${prefixCls()}-notice-actions`,
+                                    classes().actions,
+                                  )}
+                                  style={styles().actions}
+                                >
+                                  {notice.actions ?? notice.btn}
+                                </div>
+                              </Show>
+                            </div>
+                            <Show
+                              when={notice.showProgress && notice.duration && notice.duration > 0}
+                            >
+                              <div
+                                class={classNames(
+                                  `${prefixCls()}-notice-progress`,
+                                  classes().progress,
+                                )}
+                                style={{
+                                  'animation-duration': `${notice.duration || 0}s`,
+                                  ...styles().progress,
+                                }}
+                              />
+                            </Show>
+                          </div>
+                        </div>
+                      )
+                    }}
+                  </For>
+                </div>
+              </div>
+            </div>
+          )
+        }}
       </For>
     </InternalPortal>
   )
@@ -202,7 +302,7 @@ export function mountNotificationHolder(props: NotificationHolderProps) {
   ;(props.config.getContainer?.() ?? document.body).appendChild(container)
   const dispose = render(
     () => (
-      <ConfigProvider>
+      <ConfigProvider prefixCls={props.config.prefixCls}>
         <NotificationHolder {...props} />
       </ConfigProvider>
     ),

@@ -2,7 +2,7 @@ import { Portal } from 'solid-js/web'
 import type { Accessor, JSX } from 'solid-js'
 
 export interface InternalPortalProps {
-  mount?: HTMLElement | Accessor<HTMLElement | undefined>
+  mount?: HTMLElement | ShadowRoot | Accessor<HTMLElement | ShadowRoot | undefined>
   children?: JSX.Element
 }
 
@@ -12,7 +12,7 @@ export function canUseDom() {
 
 export function resolvePortalMount(
   mount: InternalPortalProps['mount'] | undefined,
-): HTMLElement | undefined {
+): HTMLElement | ShadowRoot | undefined {
   if (!canUseDom()) return undefined
   if (typeof mount === 'function') return mount()
   return mount ?? document.body
