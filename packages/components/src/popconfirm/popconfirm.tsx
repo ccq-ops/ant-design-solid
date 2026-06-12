@@ -5,6 +5,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
+import { useWatermarkPanelRef } from '../watermark/context'
 import type { PopconfirmProps } from './interface'
 import { usePopconfirmStyle } from './popconfirm.style'
 
@@ -16,6 +17,7 @@ export function Popconfirm(props: PopconfirmProps) {
   const [popup, setPopup] = createSignal<HTMLDivElement>()
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-popconfirm`
+  const watermarkPanelRef = useWatermarkPanelRef()
   const [, hashId] = usePopconfirmStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Popconfirm', props.zIndex)
   const mergedOpen = () => props.open ?? innerOpen()
@@ -109,7 +111,10 @@ export function Popconfirm(props: PopconfirmProps) {
           }
         >
           <div
-            ref={setPopup}
+            ref={(element) => {
+              setPopup(element)
+              watermarkPanelRef(element)
+            }}
             class={classNames(prefixCls(), `${prefixCls()}-${placement()}`, hashId())}
             style={{ ...position(), 'z-index': zIndex }}
             role="dialog"

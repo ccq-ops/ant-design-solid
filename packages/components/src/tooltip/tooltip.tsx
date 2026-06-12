@@ -23,6 +23,7 @@ import {
 } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
+import { useWatermarkPanelRef } from '../watermark/context'
 import type {
   TooltipProps,
   TooltipRef,
@@ -132,6 +133,7 @@ export function Tooltip(props: TooltipProps) {
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-tooltip`
+  const watermarkPanelRef = useWatermarkPanelRef()
   const [, hashId] = useTooltipStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Tooltip', local.zIndex)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
@@ -412,6 +414,7 @@ export function Tooltip(props: TooltipProps) {
       <div
         ref={(element) => {
           popupRef = element
+          watermarkPanelRef(element)
         }}
         role="tooltip"
         aria-hidden={!open()}

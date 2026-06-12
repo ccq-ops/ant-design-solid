@@ -12,6 +12,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, lockBodyScroll, unlockBodyScroll } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
+import { useWatermarkPanelRef } from '../watermark/context'
 import type {
   ModalClosableConfig,
   ModalFooterRender,
@@ -93,6 +94,7 @@ export function ModalBase(props: ModalProps) {
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-modal`
+  const watermarkPanelRef = useWatermarkPanelRef(`.${prefixCls()}-content`)
   const [, hashId] = useModalStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Modal', local.zIndex)
   const titleId = createUniqueId()
@@ -216,6 +218,7 @@ export function ModalBase(props: ModalProps) {
   const modalNode = () => {
     const node = (
       <div
+        ref={watermarkPanelRef}
         class={classNames(prefixCls(), local.class, local.className, local.classNames?.modal)}
         classList={local.classList}
         style={{ width: widthStyle(), ...local.styles?.modal }}

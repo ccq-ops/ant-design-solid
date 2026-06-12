@@ -19,6 +19,7 @@ import { classNames } from '../shared/class-names'
 import { addDocumentKeydown, lockBodyScroll, unlockBodyScroll } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
+import { useWatermarkPanelRef } from '../watermark/context'
 import type {
   DrawerClosableConfig,
   DrawerMaskConfig,
@@ -167,6 +168,7 @@ export function Drawer(props: DrawerProps) {
   const config = useConfig()
   const parentPushContext = useContext(DrawerPushContext)
   const prefixCls = () => `${config.prefixCls()}-drawer`
+  const watermarkPanelRef = useWatermarkPanelRef(`.${prefixCls()}-content`)
   const [, hashId] = useDrawerStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Drawer', local.zIndex)
   const titleId = createUniqueId()
@@ -441,6 +443,7 @@ export function Drawer(props: DrawerProps) {
       <div
         ref={(element) => {
           dialogRef = element
+          watermarkPanelRef(element)
         }}
         role="dialog"
         aria-modal="true"

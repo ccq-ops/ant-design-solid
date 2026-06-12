@@ -1,2 +1,12 @@
 export { Watermark } from './watermark'
-export type { WatermarkContent, WatermarkGap, WatermarkOffset, WatermarkProps } from './interface'
+export { useWatermarkPanelRef } from './context'
+export type {
+  WatermarkContent,
+  WatermarkFontSize,
+  WatermarkFontStyle,
+  WatermarkFontWeight,
+  WatermarkGap,
+  WatermarkOffset,
+  WatermarkProps,
+  WatermarkTextAlign,
+} from './interface'

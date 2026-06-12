@@ -10,6 +10,7 @@ import {
 import { getDropdownPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
+import { useWatermarkPanelRef } from '../watermark/context'
 import type { DropdownMenuItem, DropdownProps } from './interface'
 import { useDropdownStyle } from './dropdown.style'
 
@@ -38,6 +39,7 @@ export function Dropdown(props: DropdownProps) {
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-dropdown`
+  const watermarkPanelRef = useWatermarkPanelRef()
   const [, hashId] = useDropdownStyle(prefixCls())
   const [zIndex] = useZIndex('Dropdown', local.zIndex)
   const [triggerElement, setTriggerElement] = createSignal<HTMLSpanElement>()
@@ -153,7 +155,10 @@ export function Dropdown(props: DropdownProps) {
           }
         >
           <div
-            ref={setOverlayElement}
+            ref={(element) => {
+              setOverlayElement(element)
+              watermarkPanelRef(element)
+            }}
             class={classNames(
               prefixCls(),
               `${prefixCls()}-${placement()}`,

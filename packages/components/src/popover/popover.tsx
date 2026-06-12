@@ -16,6 +16,7 @@ import {
 import { getTooltipPosition, type OverlayPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
+import { useWatermarkPanelRef } from '../watermark/context'
 import type { PopoverProps } from './interface'
 import { usePopoverStyle } from './popover.style'
 
@@ -54,6 +55,7 @@ export function Popover(props: PopoverProps) {
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-popover`
+  const watermarkPanelRef = useWatermarkPanelRef()
   const [, hashId] = usePopoverStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Popover', local.zIndex)
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
@@ -176,6 +178,7 @@ export function Popover(props: PopoverProps) {
           <div
             ref={(element) => {
               overlayRef = element
+              watermarkPanelRef(element)
             }}
             role="tooltip"
             class={classNames(
