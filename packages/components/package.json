@@ -27,6 +27,7 @@
     "@ant-design-solid/theme": "workspace:*",
     "@tanstack/solid-virtual": "^3.13.28",
     "dayjs": "^1.11.13",
+    "qrcode-generator": "^2.0.4",
     "solid-motionone": "^1.0.4"
   },
   "peerDependencies": {
