@@ -129,17 +129,42 @@ export default Demo7
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { MinusOutlined, PlusOutlined } from '@ant-design-solid/icons'
+import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
 
 const Demo8 = function () {
+  const token = useToken()
+  const mutedTextStyle = () => ({ color: token().colorTextSecondary })
+
   return (
-    <Space>
-      <InputNumber prefix={<span>$</span>} suffix={<span>USD</span>} variant="filled" />
+    <Space wrap align="center">
       <InputNumber
-        variant="borderless"
-        controls={{ upIcon: <span>+</span>, downIcon: <span>-</span> }}
+        defaultValue={1280}
+        prefix={<span style={mutedTextStyle()}>$</span>}
+        suffix={<span style={mutedTextStyle()}>USD</span>}
+        formatter={(value) => (value === null ? '' : Number(value).toLocaleString())}
+        parser={(displayValue) => {
+          const parsed = Number((displayValue ?? '').replace(/,/g, ''))
+          return Number.isNaN(parsed) ? null : parsed
+        }}
+        variant="filled"
       />
-      <InputNumber mode="spinner" variant="underlined" />
+      <InputNumber
+        defaultValue={12}
+        min={0}
+        max={100}
+        suffix={<span style={mutedTextStyle()}>%</span>}
+        controls={{
+          upIcon: <PlusOutlined width="0.85em" height="0.85em" />,
+          downIcon: <MinusOutlined width="0.85em" height="0.85em" />,
+        }}
+        mode="spinner"
+      />
+      <InputNumber
+        defaultValue={32}
+        suffix={<span style={mutedTextStyle()}>items</span>}
+        variant="underlined"
+      />
     </Space>
   )
 }
