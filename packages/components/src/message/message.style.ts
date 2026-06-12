@@ -24,6 +24,13 @@ export function useMessageStyle(prefixCls: string) {
           padding: `${t.paddingXS}px 0`,
           'text-align': 'center',
         },
+        [`.${prefixCls}-stack .${prefixCls}-notice-stacked`]: {
+          transform: 'scale(0.96)',
+          opacity: 0.72,
+        },
+        [`.${prefixCls}-stack .${prefixCls}-notice-stacked:not(:first-child)`]: {
+          'margin-top': -t.margin,
+        },
         [`.${prefixCls}-notice-content`]: {
           display: 'inline-flex',
           'align-items': 'center',

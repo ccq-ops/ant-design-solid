@@ -240,6 +240,26 @@ describe('message', () => {
     expect(wrapper.classList.contains('fade-message-appear-active')).toBe(true)
   })
 
+  it('keeps all notices rendered and marks stacked state after stack threshold', () => {
+    message.config({ stack: { threshold: 2 } })
+
+    message.info('First', 0)
+    message.success('Second', 0)
+    message.warning('Third', 0)
+
+    const root = document.body.querySelector('.ads-message') as HTMLElement
+    const wrappers = document.body.querySelectorAll('.ads-message-notice')
+
+    expect(document.body).toHaveTextContent('First')
+    expect(document.body).toHaveTextContent('Second')
+    expect(document.body).toHaveTextContent('Third')
+    expect(root.classList.contains('ads-message-stack')).toBe(true)
+    expect(wrappers).toHaveLength(3)
+    expect(wrappers[0].classList.contains('ads-message-notice-stacked')).toBe(true)
+    expect(wrappers[1].classList.contains('ads-message-notice-stacked')).toBe(true)
+    expect(wrappers[2].classList.contains('ads-message-notice-stacked')).toBe(false)
+  })
+
   it('renders internal pure panel and list helpers', () => {
     const Panel = message._InternalPanelDoNotUseOrYouWillBeFired
     const List = message._InternalListDoNotUseOrYouWillBeFired

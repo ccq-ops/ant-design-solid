@@ -116,13 +116,13 @@ export function MessageHolder(props: MessageHolderProps) {
   })
   const prefixCls = () => cfg().prefixCls ?? `${context.prefixCls()}-message`
   const [, hashId] = useMessageStyle(prefixCls())
-  const visibleNotices = createMemo(() => {
+  const stackThreshold = createMemo(() => {
     const stack = cfg().stack
-    if (!stack) return props.notices()
-    const threshold = typeof stack === 'object' ? (stack.threshold ?? 3) : 3
-    return props.notices().slice(-threshold)
+    if (!stack) return Number.POSITIVE_INFINITY
+    return typeof stack === 'object' ? (stack.threshold ?? 3) : 3
   })
-  const firstNotice = () => visibleNotices()[0] ?? ({ content: '' } as MessageNotice)
+  const stacked = createMemo(() => props.notices().length > stackThreshold())
+  const firstNotice = () => props.notices()[0] ?? ({ content: '' } as MessageNotice)
   const holderClassNames = () =>
     mergeClassNames(cfg().classNames, firstNotice().classNames, firstNotice())
   const holderStyles = () => mergeStyles(cfg().styles, firstNotice().styles, firstNotice())
@@ -131,23 +131,26 @@ export function MessageHolder(props: MessageHolderProps) {
     <div
       class={classNames(
         prefixCls(),
+        stacked() && `${prefixCls()}-stack`,
         cfg().rtl ? `${prefixCls()}-rtl` : undefined,
         hashId(),
         holderClassNames().root,
       )}
       style={{ top: px(cfg().top ?? 8), ...normalizeStyle(holderStyles().root) }}
     >
-      <For each={visibleNotices()}>
-        {(notice) => {
+      <For each={props.notices()}>
+        {(notice, index) => {
           const semanticClassNames = () =>
             mergeClassNames(cfg().classNames, notice.classNames, notice)
           const semanticStyles = () => mergeStyles(cfg().styles, notice.styles, notice)
           const pauseOnHover = () => notice.pauseOnHover ?? cfg().pauseOnHover ?? true
+          const noticeStacked = () => stacked() && index() < props.notices().length - 1
           return (
             <div
               class={classNames(
                 `${prefixCls()}-notice`,
                 `${prefixCls()}-notice-${notice.type}`,
+                noticeStacked() && `${prefixCls()}-notice-stacked`,
                 cfg().transitionName,
                 cfg().transitionName && `${cfg().transitionName}-appear`,
                 cfg().transitionName && `${cfg().transitionName}-appear-active`,
