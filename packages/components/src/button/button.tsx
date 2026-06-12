@@ -148,7 +148,8 @@ export function Button(props: ButtonProps) {
       event.preventDefault()
       return
     }
-    ;(local.onClick as JSX.EventHandler<HTMLElement, MouseEvent> | undefined)?.(event as never)
+    const onClick = local.onClick
+    if (typeof onClick === 'function') onClick(event as never)
   }
 
   return (

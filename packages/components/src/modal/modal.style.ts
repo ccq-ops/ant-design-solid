@@ -22,7 +22,32 @@ export function useModalStyle(prefixCls: string) {
         top: 100,
         margin: '0 auto',
         padding: `0 0 ${t.paddingLG}px`,
-        width: 520,
+        width: `var(--${prefixCls}-xs-width, 520px)`,
+      },
+      '@media (min-width: 576px)': {
+        [`.${prefixCls}`]: {
+          width: `var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px))`,
+        },
+      },
+      '@media (min-width: 768px)': {
+        [`.${prefixCls}`]: {
+          width: `var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px)))`,
+        },
+      },
+      '@media (min-width: 992px)': {
+        [`.${prefixCls}`]: {
+          width: `var(--${prefixCls}-lg-width, var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px))))`,
+        },
+      },
+      '@media (min-width: 1200px)': {
+        [`.${prefixCls}`]: {
+          width: `var(--${prefixCls}-xl-width, var(--${prefixCls}-lg-width, var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px)))))`,
+        },
+      },
+      '@media (min-width: 1600px)': {
+        [`.${prefixCls}`]: {
+          width: `var(--${prefixCls}-xxl-width, var(--${prefixCls}-xl-width, var(--${prefixCls}-lg-width, var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px))))))`,
+        },
       },
       [`.${prefixCls}-centered .${prefixCls}`]: { top: 0 },
       [`.${prefixCls}-content`]: {
@@ -65,14 +90,36 @@ export function useModalStyle(prefixCls: string) {
       [`.${prefixCls}-confirm .${prefixCls}-body`]: {
         padding: `${t.paddingLG}px ${t.paddingLG}px 0`,
       },
-      [`.${prefixCls}-confirm-body`]: { display: 'flex', gap: t.marginSM },
-      [`.${prefixCls}-confirm-icon`]: { 'font-size': t.fontSize, 'line-height': 1 },
+      [`.${prefixCls}-confirm-body`]: {
+        display: 'flex',
+        'align-items': 'flex-start',
+        gap: t.marginSM,
+      },
+      [`.${prefixCls}-confirm-icon`]: {
+        flex: 'none',
+        'font-size': mt.titleFontSize + 2,
+        'line-height': 1,
+        'margin-top': `${((mt.titleFontSize * t.lineHeight - (mt.titleFontSize + 2)) / 2).toFixed(2)}px`,
+      },
+      [`.${prefixCls}-confirm-icon > svg`]: { display: 'block' },
       [`.${prefixCls}-confirm-message`]: { flex: 1 },
+      [`.${prefixCls}-confirm-title`]: {
+        color: mt.titleColor,
+        'font-size': mt.titleFontSize,
+        'font-weight': 600,
+        'line-height': t.lineHeight,
+        'margin-bottom': t.marginXS,
+      },
       [`.${prefixCls}-confirm-content`]: { color: t.colorText },
       [`.${prefixCls}-confirm-success .${prefixCls}-title`]: { color: t.colorSuccess },
       [`.${prefixCls}-confirm-info .${prefixCls}-title`]: { color: t.colorInfo },
       [`.${prefixCls}-confirm-warning .${prefixCls}-title`]: { color: t.colorWarning },
       [`.${prefixCls}-confirm-error .${prefixCls}-title`]: { color: t.colorError },
+      [`.${prefixCls}-confirm-success .${prefixCls}-confirm-icon`]: { color: t.colorSuccess },
+      [`.${prefixCls}-confirm-info .${prefixCls}-confirm-icon`]: { color: t.colorInfo },
+      [`.${prefixCls}-confirm-warning .${prefixCls}-confirm-icon`]: { color: t.colorWarning },
+      [`.${prefixCls}-confirm-confirm .${prefixCls}-confirm-icon`]: { color: t.colorWarning },
+      [`.${prefixCls}-confirm-error .${prefixCls}-confirm-icon`]: { color: t.colorError },
     }
   })
 }

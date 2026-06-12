@@ -1,11 +1,16 @@
 import type { JSX } from 'solid-js'
 import type { ButtonProps, ButtonType } from '../button'
 
+export type ModalBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+export type ModalWidth = number | string | Partial<Record<ModalBreakpoint, number | string>>
+
 export type ModalSemanticName =
   | 'root'
   | 'mask'
   | 'wrap'
+  | 'wrapper'
   | 'modal'
+  | 'container'
   | 'content'
   | 'header'
   | 'title'
@@ -15,6 +20,11 @@ export type ModalSemanticName =
 
 export type ModalClassNames = Partial<Record<ModalSemanticName, string>>
 export type ModalStyles = Partial<Record<ModalSemanticName, JSX.CSSProperties>>
+export interface ModalSemanticInfo {
+  props: ModalProps
+}
+export type ModalClassNamesInput = ModalClassNames | ((info: ModalSemanticInfo) => ModalClassNames)
+export type ModalStylesInput = ModalStyles | ((info: ModalSemanticInfo) => ModalStyles)
 
 export interface ModalMaskConfig {
   enabled?: boolean
@@ -27,6 +37,12 @@ export interface ModalClosableConfig {
   disabled?: boolean
   onClose?: () => void
   afterClose?: () => void
+}
+
+export interface ModalFocusableConfig {
+  trap?: boolean
+  focusTriggerAfterClose?: boolean
+  autoFocusButton?: null | 'ok' | 'cancel'
 }
 
 export type ModalGetContainer = HTMLElement | (() => HTMLElement | undefined) | string | false
@@ -43,6 +59,9 @@ export type ModalFooterRender = (
 
 export type ModalFooter = JSX.Element | ModalFooterRender | null
 
+export type ModalCloseIcon = JSX.Element | null | false
+export type ModalEvent = MouseEvent | KeyboardEvent
+
 export interface ModalProps {
   open?: boolean
   title?: JSX.Element
@@ -51,48 +70,63 @@ export interface ModalProps {
   cancelText?: JSX.Element
   confirmLoading?: boolean
   closable?: boolean | ModalClosableConfig
-  closeIcon?: JSX.Element
+  closeIcon?: ModalCloseIcon
   mask?: boolean | ModalMaskConfig
   maskClosable?: boolean
   keyboard?: boolean
   centered?: boolean
-  width?: number | string
+  width?: ModalWidth
   zIndex?: number
   okType?: ButtonType
   okButtonProps?: ButtonProps
   cancelButtonProps?: ButtonProps
+  destroyOnClose?: boolean
   destroyOnHidden?: boolean
   forceRender?: boolean
   getContainer?: ModalGetContainer
   modalRender?: (node: JSX.Element) => JSX.Element
   afterOpenChange?: (open: boolean) => void
   loading?: boolean
+  focusable?: ModalFocusableConfig
+  focusTriggerAfterClose?: boolean
+  class?: string
   className?: string
+  rootClass?: string
+  rootClassName?: string
+  wrapClass?: string
   wrapClassName?: string
-  classNames?: ModalClassNames
-  styles?: ModalStyles
-  onOk?: () => void | Promise<void>
-  onCancel?: () => void
+  classNames?: ModalClassNamesInput
+  styles?: ModalStylesInput
+  bodyStyle?: JSX.CSSProperties
+  maskStyle?: JSX.CSSProperties
+  onOk?: (event: MouseEvent) => void | Promise<void>
+  onCancel?: (event: ModalEvent) => void
   afterClose?: () => void
   children?: JSX.Element
-  class?: string
   classList?: Record<string, boolean | undefined>
   style?: JSX.CSSProperties
+  rootStyle?: JSX.CSSProperties
+  wrapProps?: JSX.HTMLAttributes<HTMLDivElement>
+  prefixCls?: string
+  transitionName?: string
+  maskTransitionName?: string
+  mousePosition?: { x: number; y: number } | null
   'aria-label'?: string
   'aria-labelledby'?: string
 }
 
-export type ModalFuncType = 'info' | 'success' | 'error' | 'warning' | 'confirm'
+export type ModalFuncType = 'info' | 'success' | 'error' | 'warn' | 'warning' | 'confirm'
 export type ModalFuncClose = () => void
 
 export interface ModalFuncProps {
   type?: ModalFuncType
+  open?: boolean
   title?: JSX.Element
   content?: JSX.Element
   okText?: JSX.Element
   cancelText?: JSX.Element
   closable?: boolean | ModalClosableConfig
-  closeIcon?: JSX.Element
+  closeIcon?: ModalCloseIcon
   mask?: boolean | ModalMaskConfig
   maskClosable?: boolean
   keyboard?: boolean
@@ -100,20 +134,36 @@ export interface ModalFuncProps {
   width?: number | string
   zIndex?: number
   style?: JSX.CSSProperties
+  rootStyle?: JSX.CSSProperties
+  class?: string
   className?: string
+  rootClass?: string
+  rootClassName?: string
+  wrapClass?: string
   wrapClassName?: string
-  classNames?: ModalClassNames
-  styles?: ModalStyles
+  classNames?: ModalClassNamesInput
+  styles?: ModalStylesInput
+  bodyStyle?: JSX.CSSProperties
+  maskStyle?: JSX.CSSProperties
   okType?: ButtonType
   okButtonProps?: ButtonProps
   cancelButtonProps?: ButtonProps
   footer?: ModalFooter
-  icon?: JSX.Element
+  icon?: JSX.Element | null | false
   afterClose?: () => void
   getContainer?: ModalGetContainer
   modalRender?: (node: JSX.Element) => JSX.Element
+  destroyOnClose?: boolean
   destroyOnHidden?: boolean
   forceRender?: boolean
+  okCancel?: boolean
+  prefixCls?: string
+  direction?: 'ltr' | 'rtl'
+  transitionName?: string
+  maskTransitionName?: string
+  focusTriggerAfterClose?: boolean
+  autoFocusButton?: null | 'ok' | 'cancel'
+  focusable?: ModalFocusableConfig
   onOk?: (close?: ModalFuncClose) => void | Promise<void>
   onCancel?: (close?: ModalFuncClose) => void | Promise<void>
 }
@@ -127,13 +177,34 @@ export interface ModalFuncReturn {
   update: (config: ModalFuncUpdate) => void
 }
 
+export interface ModalFuncReturnWithThen extends ModalFuncReturn {
+  then: <T>(
+    onfulfilled?: ((value: boolean) => T | PromiseLike<T>) | null,
+    onrejected?: ((reason: unknown) => T | PromiseLike<T>) | null,
+  ) => Promise<T | boolean>
+}
+
+export type ModalHookFunc = (config: ModalFuncProps) => ModalFuncReturnWithThen
+
+export interface ModalHookApi {
+  confirm: ModalHookFunc
+  info: ModalHookFunc
+  success: ModalHookFunc
+  error: ModalHookFunc
+  warning: ModalHookFunc
+  warn: ModalHookFunc
+}
+
 export interface ModalStaticMethods {
   confirm: (config: ModalFuncProps) => ModalFuncReturn
   info: (config: ModalFuncProps) => ModalFuncReturn
   success: (config: ModalFuncProps) => ModalFuncReturn
   error: (config: ModalFuncProps) => ModalFuncReturn
   warning: (config: ModalFuncProps) => ModalFuncReturn
+  warn: (config: ModalFuncProps) => ModalFuncReturn
   destroyAll: () => void
+  useModal: () => readonly [ModalHookApi, JSX.Element]
+  config: (options: { rootPrefixCls?: string }) => void
 }
 
 export type ModalComponent = ((props: ModalProps) => JSX.Element) & ModalStaticMethods

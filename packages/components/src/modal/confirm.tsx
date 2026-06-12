@@ -1,4 +1,10 @@
 import { Show, createSignal } from 'solid-js'
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ExclamationCircleFilled,
+  InfoCircleFilled,
+} from '@ant-design-solid/icons'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -14,8 +20,27 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   const [loading, setLoading] = createSignal(false)
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-modal`
-  const type = () => props.config.type ?? 'confirm'
+  const type = () => (props.config.type === 'warn' ? 'warning' : (props.config.type ?? 'confirm'))
   const isConfirm = () => type() === 'confirm'
+  const defaultIcon = () => {
+    switch (type()) {
+      case 'success':
+        return <CheckCircleFilled />
+      case 'info':
+        return <InfoCircleFilled />
+      case 'error':
+        return <CloseCircleFilled />
+      case 'warning':
+      case 'confirm':
+        return <ExclamationCircleFilled />
+      default:
+        return null
+    }
+  }
+  const icon = () => {
+    if (props.config.icon === null || props.config.icon === false) return null
+    return props.config.icon ?? defaultIcon()
+  }
   const handleOk = async () => {
     let result: void | Promise<void>
     try {
@@ -75,15 +100,24 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   return (
     <ModalBase
       open
-      title={props.config.title}
       width={props.config.width}
       zIndex={props.config.zIndex}
       style={props.config.style}
-      class={classNames(`${prefixCls()}-confirm`, `${prefixCls()}-confirm-${type()}`)}
+      rootStyle={props.config.rootStyle}
+      class={classNames(
+        `${prefixCls()}-confirm`,
+        `${prefixCls()}-confirm-${type()}`,
+        props.config.class,
+      )}
+      rootClass={props.config.rootClass}
+      rootClassName={props.config.rootClassName}
+      wrapClass={props.config.wrapClass}
       className={props.config.className}
       wrapClassName={props.config.wrapClassName}
       classNames={props.config.classNames}
       styles={props.config.styles}
+      bodyStyle={props.config.bodyStyle}
+      maskStyle={props.config.maskStyle}
       centered={props.config.centered}
       closable={props.config.closable ?? false}
       closeIcon={props.config.closeIcon}
@@ -100,16 +134,27 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
       afterClose={props.config.afterClose}
       getContainer={props.config.getContainer}
       modalRender={props.config.modalRender}
+      destroyOnClose={props.config.destroyOnClose}
       destroyOnHidden={props.config.destroyOnHidden}
       forceRender={props.config.forceRender}
+      prefixCls={props.config.prefixCls}
+      focusTriggerAfterClose={props.config.focusTriggerAfterClose}
+      focusable={{
+        ...props.config.focusable,
+        autoFocusButton:
+          props.config.focusable?.autoFocusButton ?? props.config.autoFocusButton ?? 'ok',
+      }}
       onOk={handleOk}
       onCancel={handleCancel}
     >
       <div class={`${prefixCls()}-confirm-body`}>
-        <Show when={props.config.icon}>
+        <Show when={icon()}>
           {(icon) => <span class={`${prefixCls()}-confirm-icon`}>{icon()}</span>}
         </Show>
         <div class={`${prefixCls()}-confirm-message`}>
+          <Show when={props.config.title}>
+            <div class={`${prefixCls()}-confirm-title`}>{props.config.title}</div>
+          </Show>
           <div class={`${prefixCls()}-confirm-content`}>{props.config.content}</div>
         </div>
       </div>

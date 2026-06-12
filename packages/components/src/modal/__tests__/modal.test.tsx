@@ -230,6 +230,74 @@ describe('Modal', () => {
     instances.forEach((instance) => instance.destroy())
   })
 
+  it('renders default static method icons next to the confirm title', () => {
+    const instances = [
+      Modal.info({ title: 'Info title', content: 'Info content' }),
+      Modal.success({ title: 'Success title', content: 'Success content' }),
+      Modal.error({ title: 'Error title', content: 'Error content' }),
+      Modal.warning({ title: 'Warning title', content: 'Warning content' }),
+      Modal.confirm({ title: 'Confirm title', content: 'Confirm content' }),
+    ]
+
+    const dialogs = document.body.querySelectorAll('.ads-modal-confirm-body')
+    expect(dialogs).toHaveLength(5)
+
+    dialogs.forEach((dialog) => {
+      const icon = dialog.querySelector('.ads-modal-confirm-icon')
+      const svg = icon?.querySelector('svg')
+      const title = dialog.querySelector('.ads-modal-confirm-title')
+      expect(icon).toBeTruthy()
+      expect(svg).toBeTruthy()
+      expect(title).toBeTruthy()
+      expect(icon?.nextElementSibling).toHaveClass('ads-modal-confirm-message')
+      expect(title?.parentElement).toHaveClass('ads-modal-confirm-message')
+    })
+
+    expect(document.body.querySelectorAll('.ads-modal-header')).toHaveLength(0)
+    instances.forEach((instance) => instance.destroy())
+  })
+
+  it('colors default static method icons by status', () => {
+    const instances = [
+      Modal.info({ title: 'Info title' }),
+      Modal.success({ title: 'Success title' }),
+      Modal.error({ title: 'Error title' }),
+      Modal.warning({ title: 'Warning title' }),
+      Modal.confirm({ title: 'Confirm title' }),
+    ]
+
+    expect(
+      document.body.querySelector('.ads-modal-confirm-info .ads-modal-confirm-icon'),
+    ).toBeTruthy()
+    expect(
+      document.body.querySelector('.ads-modal-confirm-success .ads-modal-confirm-icon'),
+    ).toBeTruthy()
+    expect(
+      document.body.querySelector('.ads-modal-confirm-error .ads-modal-confirm-icon'),
+    ).toBeTruthy()
+    expect(
+      document.body.querySelector('.ads-modal-confirm-warning .ads-modal-confirm-icon'),
+    ).toBeTruthy()
+    expect(
+      document.body.querySelector('.ads-modal-confirm-confirm .ads-modal-confirm-icon'),
+    ).toBeTruthy()
+
+    instances.forEach((instance) => instance.destroy())
+  })
+
+  it('supports custom and hidden static method icons', () => {
+    const custom = Modal.info({
+      title: 'Custom icon',
+      icon: <span data-testid="custom-static-icon">i</span>,
+    })
+    expect(document.body.querySelector('[data-testid="custom-static-icon"]')).toBeTruthy()
+    custom.destroy()
+
+    const hidden = Modal.success({ title: 'Hidden icon', icon: null })
+    expect(document.body.querySelector('.ads-modal-confirm-icon')).toBeFalsy()
+    hidden.destroy()
+  })
+
   it('keeps confirm modal open while async onOk resolves', async () => {
     let resolve!: () => void
     const promise = new Promise<void>((next) => {
@@ -558,5 +626,193 @@ describe('Modal', () => {
     )
     expect(onCancel).toHaveBeenCalledTimes(1)
     expect(document.body).not.toHaveTextContent('Close from cancel')
+  })
+
+  it('supports Solid class aliases root class and semantic functions', () => {
+    render(() => (
+      <Modal
+        open
+        title="Solid names"
+        class="dialog-solid"
+        rootClass="root-solid"
+        wrapClass="wrap-solid"
+        classNames={({ props }) => ({
+          body: props.open ? 'body-open' : 'body-closed',
+          wrapper: 'wrapper-solid',
+          container: 'container-solid',
+        })}
+        styles={({ props }) => ({
+          body: { color: props.open ? 'green' : 'red' },
+          wrapper: { padding: '4px' },
+          container: { border: '1px solid blue' },
+        })}
+      >
+        Body
+      </Modal>
+    ))
+
+    expect(document.body.querySelector('.root-solid')).toBeTruthy()
+    expect(document.body.querySelector('.wrap-solid')).toBeTruthy()
+    expect(document.body.querySelector('.wrapper-solid')).toBeTruthy()
+    expect(document.body.querySelector('.dialog-solid')).toBeTruthy()
+    expect(document.body.querySelector('.container-solid')).toBeTruthy()
+    expect(document.body.querySelector('.body-open')).toBeTruthy()
+    expect(document.body.querySelector<HTMLElement>('.body-open')!.style.color).toBe('green')
+    expect(document.body.querySelector<HTMLElement>('.wrapper-solid')!.style.padding).toBe('4px')
+    expect(document.body.querySelector<HTMLElement>('.container-solid')!.style.border).toBe(
+      '1px solid blue',
+    )
+  })
+
+  it('supports responsive width objects with breakpoint css variables', () => {
+    render(() => (
+      <Modal open title="Responsive" width={{ xs: 280, md: '640px' }}>
+        Body
+      </Modal>
+    ))
+
+    const dialog = document.body.querySelector<HTMLElement>('.ads-modal')!
+    expect(dialog.style.getPropertyValue('--ads-modal-xs-width')).toBe('280px')
+    expect(dialog.style.getPropertyValue('--ads-modal-md-width')).toBe('640px')
+  })
+
+  it('hides close button when closeIcon is null or false', () => {
+    const first = render(() => (
+      <Modal open title="No close" closeIcon={null}>
+        Body
+      </Modal>
+    ))
+
+    expect(document.body.querySelector('.ads-modal-close')).toBeFalsy()
+
+    first.unmount()
+    render(() => (
+      <Modal open title="No close false" closeIcon={false}>
+        Body
+      </Modal>
+    ))
+
+    expect(document.body.querySelector('.ads-modal-close')).toBeFalsy()
+  })
+
+  it('passes click keyboard and close events to callbacks and respects confirmLoading cancel guard', () => {
+    const onOk = vi.fn()
+    const onCancel = vi.fn()
+    const onClose = vi.fn()
+    render(() => (
+      <Modal open title="Events" closable={{ onClose }} onOk={onOk} onCancel={onCancel}>
+        Body
+      </Modal>
+    ))
+
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>('.ads-modal-footer .ads-btn-primary')!,
+    )
+    expect(onOk).toHaveBeenCalledWith(expect.objectContaining({ type: 'click' }))
+
+    onOk.mockClear()
+    cleanup()
+    render(() => (
+      <Modal open title="Guarded" confirmLoading closable={{ onClose }} onCancel={onCancel}>
+        Body
+      </Modal>
+    ))
+
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.ads-modal-footer .ads-btn:not(.ads-btn-primary)',
+      )!,
+    )
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(onCancel).not.toHaveBeenCalled()
+
+    fireEvent.click(document.body.querySelector<HTMLButtonElement>('.ads-modal-close')!)
+    expect(onClose).not.toHaveBeenCalled()
+    expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('supports focusable trap and focus trigger after close behavior', async () => {
+    const [open, setOpen] = createSignal(false)
+    render(() => (
+      <>
+        <button type="button" data-testid="trigger" onClick={() => setOpen(true)}>
+          Open
+        </button>
+        <Modal
+          open={open()}
+          title="Focusable"
+          focusable={{ trap: true, focusTriggerAfterClose: true }}
+          onCancel={() => setOpen(false)}
+        >
+          <button type="button" data-testid="inside">
+            Inside
+          </button>
+        </Modal>
+      </>
+    ))
+
+    const trigger = document.body.querySelector<HTMLButtonElement>('[data-testid="trigger"]')!
+    trigger.focus()
+    fireEvent.click(trigger)
+
+    const inside = document.body.querySelector<HTMLButtonElement>('[data-testid="inside"]')!
+    inside.focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(document.activeElement).not.toBe(document.body)
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    await waitFor(() => expect(document.activeElement).toBe(trigger))
+  })
+
+  it('supports Modal.warn alias and useModal hook with context holder and promise result', async () => {
+    expect(Modal.warn).toBe(Modal.warning)
+
+    let api!: ReturnType<typeof Modal.useModal>[0]
+    function HookHost() {
+      const [modal, contextHolder] = Modal.useModal()
+      api = modal
+      return <>{contextHolder}</>
+    }
+
+    render(() => (
+      <ConfigProvider prefixCls="hooked">
+        <HookHost />
+      </ConfigProvider>
+    ))
+
+    const result = api.confirm({ title: 'Hook confirm', content: 'Hook body' })
+    await waitFor(() => expect(document.body.querySelector('.hooked-modal-root')).toBeTruthy())
+    expect(result.then).toBeTypeOf('function')
+
+    const confirmed = result.then((value) => value)
+    fireEvent.click(
+      document.body.querySelector<HTMLButtonElement>(
+        '.hooked-modal-footer .hooked-btn:not(.hooked-btn-primary)',
+      )!,
+    )
+
+    await expect(confirmed).resolves.toBe(false)
+    await waitFor(() => expect(document.body).not.toHaveTextContent('Hook confirm'))
+  })
+
+  it('passes static Solid class aliases and focusable auto focus config', async () => {
+    Modal.confirm({
+      title: 'Static aliases',
+      class: 'static-solid',
+      rootClass: 'static-root',
+      wrapClass: 'static-wrap-solid',
+      focusable: { autoFocusButton: 'cancel' },
+    })
+
+    expect(document.body.querySelector('.static-root')).toBeTruthy()
+    expect(document.body.querySelector('.static-solid')).toBeTruthy()
+    expect(document.body.querySelector('.static-wrap-solid')).toBeTruthy()
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        document.body.querySelector<HTMLButtonElement>(
+          '.ads-modal-footer .ads-btn:not(.ads-btn-primary)',
+        ),
+      ),
+    )
   })
 })

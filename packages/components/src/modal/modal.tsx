@@ -1,11 +1,13 @@
 import {
   Show,
+  createEffect,
   createRenderEffect,
   createSignal,
   createUniqueId,
   onCleanup,
   splitProps,
 } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -18,6 +20,7 @@ import type {
   ModalFooterRender,
   ModalMaskConfig,
   ModalProps,
+  ModalStyles,
 } from './interface'
 import { useModalStyle } from './modal.style'
 import { CloseOutlined } from '@ant-design-solid/icons'
@@ -41,6 +44,10 @@ function isFooterRender(footer: ModalProps['footer']): footer is ModalFooterRend
   return typeof footer === 'function'
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
 function resolveGetContainer(
   getContainer: ModalProps['getContainer'],
 ): HTMLElement | undefined | false {
@@ -51,6 +58,25 @@ function resolveGetContainer(
   }
   if (typeof getContainer === 'function') return getContainer()
   return getContainer
+}
+
+function isCloseIconHidden(value: ModalProps['closeIcon']) {
+  return value === null || value === false
+}
+
+function focusableElements(container: HTMLElement) {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(
+      [
+        'a[href]',
+        'button:not([disabled])',
+        'textarea:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(','),
+    ),
+  ).filter((element) => !element.hasAttribute('disabled') && element.tabIndex !== -1)
 }
 
 export function ModalBase(props: ModalProps) {
@@ -72,16 +98,24 @@ export function ModalBase(props: ModalProps) {
     'okType',
     'okButtonProps',
     'cancelButtonProps',
+    'destroyOnClose',
     'destroyOnHidden',
     'forceRender',
     'getContainer',
     'modalRender',
     'afterOpenChange',
     'loading',
+    'focusable',
+    'focusTriggerAfterClose',
     'className',
+    'rootClass',
+    'rootClassName',
+    'wrapClass',
     'wrapClassName',
     'classNames',
     'styles',
+    'bodyStyle',
+    'maskStyle',
     'onOk',
     'onCancel',
     'afterClose',
@@ -89,11 +123,17 @@ export function ModalBase(props: ModalProps) {
     'class',
     'classList',
     'style',
+    'rootStyle',
+    'wrapProps',
+    'prefixCls',
+    'transitionName',
+    'maskTransitionName',
+    'mousePosition',
     'aria-label',
     'aria-labelledby',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-modal`
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-modal`
   const watermarkPanelRef = useWatermarkPanelRef(`.${prefixCls()}-content`)
   const [, hashId] = useModalStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Modal', local.zIndex)
@@ -102,9 +142,15 @@ export function ModalBase(props: ModalProps) {
   const [hasRendered, setHasRendered] = createSignal(Boolean(local.open || local.forceRender))
   let locked = false
   let wasOpen = false
+  const [wrapRef, setWrapRef] = createSignal<HTMLDivElement>()
+  let lastActiveElement: HTMLElement | null = null
 
   const shouldRender = () =>
-    Boolean(local.open || local.forceRender || (hasRendered() && !local.destroyOnHidden))
+    Boolean(
+      local.open ||
+      local.forceRender ||
+      (hasRendered() && !(local.destroyOnHidden ?? local.destroyOnClose)),
+    )
   const maskEnabled = () =>
     isMaskConfig(local.mask) ? local.mask.enabled !== false : local.mask !== false
   const maskBlur = () => (isMaskConfig(local.mask) ? Boolean(local.mask.blur) : false)
@@ -112,14 +158,28 @@ export function ModalBase(props: ModalProps) {
     isMaskConfig(local.mask) && local.mask.closable !== undefined
       ? local.mask.closable
       : (local.maskClosable ?? true)
-  const closeVisible = () => local.closable !== false
+  const closeVisible = () => local.closable !== false && !isCloseIconHidden(local.closeIcon)
   const closeDisabled = () => isClosableConfig(local.closable) && Boolean(local.closable.disabled)
   const closeIcon = () =>
     isClosableConfig(local.closable)
       ? (local.closable.closeIcon ?? local.closeIcon ?? <CloseOutlined />)
       : (local.closeIcon ?? <CloseOutlined />)
+  const focusableConfig = () => ({
+    trap: local.focusable?.trap ?? maskEnabled(),
+    focusTriggerAfterClose:
+      local.focusable?.focusTriggerAfterClose ?? local.focusTriggerAfterClose ?? true,
+    autoFocusButton: local.focusable?.autoFocusButton,
+  })
+  const semanticInfo = () => ({ props })
+  const semanticClasses = () =>
+    typeof local.classNames === 'function' ? local.classNames(semanticInfo()) : local.classNames
+  const semanticStyles = () =>
+    typeof local.styles === 'function' ? local.styles(semanticInfo()) : local.styles
 
   createRenderEffect(() => {
+    if (local.open && !wasOpen && canUseDom()) {
+      lastActiveElement = document.activeElement as HTMLElement | null
+    }
     if (local.open || local.forceRender) setHasRendered(true)
     if (local.open && !locked) {
       lockBodyScroll()
@@ -137,18 +197,59 @@ export function ModalBase(props: ModalProps) {
     if (!local.open && wasOpen) {
       local.afterClose?.()
       if (isClosableConfig(local.closable)) local.closable.afterClose?.()
+      if (focusableConfig().focusTriggerAfterClose) {
+        queueMicrotask(() => lastActiveElement?.focus?.())
+      }
     }
     wasOpen = Boolean(local.open)
   })
 
+  createEffect(() => {
+    const wrap = wrapRef()
+    if (!local.open || !wrap) return
+    const autoFocusButton = focusableConfig().autoFocusButton
+    if (!autoFocusButton) return
+    const selector =
+      autoFocusButton === 'ok'
+        ? `.${prefixCls()}-footer .${config.prefixCls()}-btn-primary`
+        : `.${prefixCls()}-footer .${config.prefixCls()}-btn:not(.${config.prefixCls()}-btn-primary)`
+    queueMicrotask(() => wrap.querySelector<HTMLElement>(selector)?.focus())
+  })
+
   const cleanupKeydown = addDocumentKeydown((event) => {
+    if (
+      event.key === 'Tab' &&
+      local.open &&
+      focusableConfig().trap &&
+      modalStack[modalStack.length - 1] === stackItem &&
+      wrapRef()
+    ) {
+      const wrap = wrapRef()
+      if (!wrap) return
+      const elements = focusableElements(wrap)
+      if (!elements.length) {
+        event.preventDefault()
+        wrap.focus()
+        return
+      }
+      const first = elements[0]
+      const last = elements[elements.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
     if (
       event.key === 'Escape' &&
       local.open &&
       (local.keyboard ?? true) &&
       modalStack[modalStack.length - 1] === stackItem
     ) {
-      local.onCancel?.()
+      if (local.confirmLoading) return
+      local.onCancel?.(event)
     }
   })
 
@@ -160,20 +261,29 @@ export function ModalBase(props: ModalProps) {
     }
   })
 
-  const widthStyle = () => {
+  const widthStyle = (): string | ModalStyles['modal'] | undefined => {
     if (local.width === undefined) return undefined
+    if (isPlainObject(local.width)) {
+      const style: ModalStyles['modal'] = {}
+      Object.entries(local.width).forEach(([breakpoint, value]) => {
+        style[`--${prefixCls()}-${breakpoint}-width` as never] =
+          typeof value === 'number' ? `${value}px` : value
+      })
+      return style
+    }
     return typeof local.width === 'number' ? `${local.width}px` : local.width
   }
   const rootStyle = () => ({
     'z-index': zIndex,
     ...(local.open ? undefined : { display: 'none' }),
-    ...local.styles?.root,
+    ...semanticStyles()?.root,
+    ...local.rootStyle,
     ...local.style,
   })
   const titleLabelId = () => local['aria-labelledby'] ?? (local.title ? titleId : undefined)
-  const handleOk = () => {
+  const handleOk = (event: MouseEvent) => {
     try {
-      const result = local.onOk?.()
+      const result = local.onOk?.(event)
       if (result && typeof (result as Promise<void>).catch === 'function') {
         ;(result as Promise<void>).catch(() => undefined)
       }
@@ -181,14 +291,22 @@ export function ModalBase(props: ModalProps) {
       // Keep controlled modal open and avoid surfacing handler failures through Solid's event system.
     }
   }
-  const handleCloseClick = () => {
+  const handleCancel = (event: MouseEvent | KeyboardEvent) => {
+    if (local.confirmLoading) return
+    local.onCancel?.(event)
+  }
+  const handleCloseClick = (event: MouseEvent) => {
+    if (local.confirmLoading) return
     if (isClosableConfig(local.closable)) local.closable.onClose?.()
     if (closeDisabled()) return
-    local.onCancel?.()
+    handleCancel(event)
   }
 
   const CancelBtn = () => (
-    <Button {...local.cancelButtonProps} onClick={() => local.onCancel?.()}>
+    <Button
+      {...local.cancelButtonProps}
+      onClick={(event) => handleCancel(event as unknown as MouseEvent)}
+    >
       {local.cancelText ?? 'Cancel'}
     </Button>
   )
@@ -197,7 +315,7 @@ export function ModalBase(props: ModalProps) {
       {...local.okButtonProps}
       type={local.okType ?? 'primary'}
       loading={local.confirmLoading || local.okButtonProps?.loading}
-      onClick={handleOk}
+      onClick={(event) => handleOk(event as unknown as MouseEvent)}
     >
       {local.okText ?? 'OK'}
     </Button>
@@ -216,47 +334,58 @@ export function ModalBase(props: ModalProps) {
   }
 
   const modalNode = () => {
+    const classes = semanticClasses()
+    const styles = semanticStyles()
+    const modalStyle = widthStyle()
     const node = (
       <div
         ref={watermarkPanelRef}
-        class={classNames(prefixCls(), local.class, local.className, local.classNames?.modal)}
+        class={classNames(
+          prefixCls(),
+          local.class,
+          local.className,
+          classes?.modal,
+          classes?.container,
+        )}
         classList={local.classList}
-        style={{ width: widthStyle(), ...local.styles?.modal }}
+        style={{
+          ...(typeof modalStyle === 'object' ? modalStyle : { width: modalStyle }),
+          ...styles?.modal,
+          ...styles?.container,
+          ...local.style,
+        }}
         onClick={(event) => event.stopPropagation()}
       >
-        <div
-          class={classNames(`${prefixCls()}-content`, local.classNames?.content)}
-          style={local.styles?.content}
-        >
+        <div class={classNames(`${prefixCls()}-content`, classes?.content)} style={styles?.content}>
           <Show when={closeVisible()}>
             <button
               type="button"
-              class={classNames(`${prefixCls()}-close`, local.classNames?.close)}
-              style={local.styles?.close}
+              class={classNames(`${prefixCls()}-close`, classes?.close)}
+              style={styles?.close}
               aria-label="close modal"
               aria-disabled={closeDisabled() || undefined}
-              onClick={handleCloseClick}
+              onClick={(event) => handleCloseClick(event as unknown as MouseEvent)}
             >
               {closeIcon()}
             </button>
           </Show>
           <Show when={local.title}>
             <div
-              class={classNames(`${prefixCls()}-header`, local.classNames?.header)}
-              style={local.styles?.header}
+              class={classNames(`${prefixCls()}-header`, classes?.header)}
+              style={styles?.header}
             >
               <div
                 id={titleId}
-                class={classNames(`${prefixCls()}-title`, local.classNames?.title)}
-                style={local.styles?.title}
+                class={classNames(`${prefixCls()}-title`, classes?.title)}
+                style={styles?.title}
               >
                 {local.title}
               </div>
             </div>
           </Show>
           <div
-            class={classNames(`${prefixCls()}-body`, local.classNames?.body)}
-            style={local.styles?.body}
+            class={classNames(`${prefixCls()}-body`, classes?.body)}
+            style={{ ...styles?.body, ...local.bodyStyle }}
           >
             <Show
               when={!local.loading}
@@ -267,8 +396,8 @@ export function ModalBase(props: ModalProps) {
           </div>
           <Show when={footerNode() !== null}>
             <div
-              class={classNames(`${prefixCls()}-footer`, local.classNames?.footer)}
-              style={local.styles?.footer}
+              class={classNames(`${prefixCls()}-footer`, classes?.footer)}
+              style={styles?.footer}
             >
               {footerNode()}
             </div>
@@ -282,41 +411,65 @@ export function ModalBase(props: ModalProps) {
   const content = () => (
     <ZIndexContext.Provider value={contextZIndex}>
       <Show when={shouldRender()}>
-        <div
-          class={classNames(`${prefixCls()}-root`, hashId(), local.classNames?.root)}
-          style={rootStyle()}
-        >
-          <Show when={maskEnabled()}>
+        {(() => {
+          const classes = semanticClasses()
+          const styles = semanticStyles()
+          return (
             <div
               class={classNames(
-                `${prefixCls()}-mask`,
-                maskBlur() && `${prefixCls()}-mask-blur`,
-                local.classNames?.mask,
+                `${prefixCls()}-root`,
+                hashId(),
+                local.rootClass,
+                local.rootClassName,
+                classes?.root,
               )}
-              style={local.styles?.mask}
-            />
-          </Show>
-          <div
-            class={classNames(
-              `${prefixCls()}-wrap`,
-              local.centered && `${prefixCls()}-centered`,
-              local.wrapClassName,
-              local.classNames?.wrap,
-            )}
-            style={local.styles?.wrap}
-            role="dialog"
-            aria-modal="true"
-            aria-label={local['aria-label']}
-            aria-labelledby={titleLabelId()}
-            onClick={(event) => {
-              if (event.target === event.currentTarget && maskClosable()) {
-                local.onCancel?.()
-              }
-            }}
-          >
-            {modalNode()}
-          </div>
-        </div>
+              style={rootStyle()}
+            >
+              <Show when={maskEnabled()}>
+                <div
+                  class={classNames(
+                    `${prefixCls()}-mask`,
+                    maskBlur() && `${prefixCls()}-mask-blur`,
+                    classes?.mask,
+                  )}
+                  style={{ ...styles?.mask, ...local.maskStyle }}
+                />
+              </Show>
+              <div
+                {...local.wrapProps}
+                ref={setWrapRef}
+                class={classNames(
+                  `${prefixCls()}-wrap`,
+                  local.centered && `${prefixCls()}-centered`,
+                  local.wrapClass,
+                  local.wrapClassName,
+                  classes?.wrap,
+                  classes?.wrapper,
+                  local.wrapProps?.class,
+                )}
+                style={{
+                  ...styles?.wrap,
+                  ...styles?.wrapper,
+                  ...(local.wrapProps?.style as JSX.CSSProperties | undefined),
+                }}
+                tabindex={-1}
+                role="dialog"
+                aria-modal="true"
+                aria-label={local['aria-label']}
+                aria-labelledby={titleLabelId()}
+                onClick={(event) => {
+                  if (event.target === event.currentTarget && maskClosable()) {
+                    handleCancel(event as unknown as MouseEvent)
+                  }
+                  const wrapClick = local.wrapProps?.onClick
+                  if (typeof wrapClick === 'function') wrapClick(event)
+                }}
+              >
+                {modalNode()}
+              </div>
+            </div>
+          )
+        })()}
       </Show>
     </ZIndexContext.Provider>
   )
