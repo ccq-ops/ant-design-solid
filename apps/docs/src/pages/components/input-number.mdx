@@ -225,14 +225,16 @@ export default Demo11
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
 
 const Demo12 = function () {
+  const token = useToken()
+
   return (
     <InputNumber
       rootClassName="custom-root"
       classNames={{ input: 'custom-input', actions: 'custom-actions' }}
-      styles={{ root: { width: '180px' }, input: { color: '#1677ff' } }}
+      styles={{ root: { width: '180px' }, input: { color: token().colorPrimary } }}
     />
   )
 }
@@ -312,17 +314,19 @@ export default Demo15
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { ConfigProvider, Form, InputNumber, Space } from '@ant-design-solid/core'
+import { ConfigProvider, Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
 
-const Demo16 = function () {
+const TokenInputNumber = function () {
+  const token = useToken()
+
   return (
     <ConfigProvider
       theme={{
         components: {
           InputNumber: {
             handleWidth: 30,
-            activeBorderColor: '#722ed1',
-            handleHoverColor: '#722ed1',
+            activeBorderColor: token().colorPrimary,
+            handleHoverColor: token().colorPrimary,
           },
         },
       }}
@@ -330,6 +334,10 @@ const Demo16 = function () {
       <InputNumber defaultValue={6} />
     </ConfigProvider>
   )
+}
+
+const Demo16 = function () {
+  return <TokenInputNumber />
 }
 
 export default Demo16
