@@ -80,6 +80,7 @@ export function useProgressStyle(prefixCls: string) {
           color: t.colorError,
         },
         [`.${prefixCls}-circle`]: {
+          position: 'relative',
           width: 'auto',
           'flex-direction': 'column',
           'align-items': 'center',

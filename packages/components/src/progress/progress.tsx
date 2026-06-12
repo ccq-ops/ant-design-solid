@@ -93,14 +93,14 @@ function resolveStepCount(steps: ProgressProps['steps']): number {
 function gapPlacementToRotation(placement: GapPlacement): number {
   switch (placement) {
     case 'top':
-      return 90
+      return -90
     case 'start':
       return 180
     case 'end':
       return 0
     case 'bottom':
     default:
-      return -90
+      return 90
   }
 }
 

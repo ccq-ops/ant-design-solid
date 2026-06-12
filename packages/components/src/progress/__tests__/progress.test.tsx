@@ -1,3 +1,4 @@
+import { createCache, StyleProvider } from '@ant-design-solid/cssinjs'
 import { cleanup, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -124,8 +125,32 @@ describe('Progress', () => {
     const path = container.querySelector('.ads-progress-circle-path') as SVGCircleElement
 
     expect(root).toHaveClass('ads-progress-dashboard')
-    expect(path).toHaveAttribute('transform', 'rotate(150 60 60)')
+    expect(path).toHaveAttribute('transform', 'rotate(-30 60 60)')
     expect(path.getAttribute('stroke-dasharray')).toContain('209.')
+  })
+
+  it('places the default dashboard gap at the bottom', () => {
+    const { container } = render(() => <Progress type="dashboard" percent={50} />)
+    const path = container.querySelector('.ads-progress-circle-path') as SVGCircleElement
+
+    expect(path).toHaveAttribute('transform', 'rotate(127.5 60 60)')
+  })
+
+  it('positions dashboard text inside the progress root', () => {
+    document.head.innerHTML = ''
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Progress type="dashboard" percent={70} />
+      </StyleProvider>
+    ))
+
+    expect(screen.getByText('70%')).toHaveClass('ads-progress-text')
+
+    const styles = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+    expect(styles).toMatch(/\.ads-progress-circle\{[^}]*position:relative;/)
   })
 
   it('renders line steps with stroke color array', () => {
