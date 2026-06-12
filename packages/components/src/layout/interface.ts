@@ -18,11 +18,21 @@ export interface LayoutContentProps extends JSX.HTMLAttributes<HTMLElement> {
 }
 
 export type LayoutSiderTheme = 'light' | 'dark'
+export type LayoutSiderCollapseType = 'clickTrigger' | 'responsive'
+export type LayoutSiderBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl'
 
 export interface LayoutSiderProps extends JSX.HTMLAttributes<HTMLElement> {
   width?: number | string
   collapsedWidth?: number | string
   collapsed?: boolean
+  collapsible?: boolean
+  defaultCollapsed?: boolean
+  reverseArrow?: boolean
+  trigger?: JSX.Element | null
+  zeroWidthTriggerStyle?: JSX.CSSProperties
+  breakpoint?: LayoutSiderBreakpoint
   theme?: LayoutSiderTheme
+  onBreakpoint?: (broken: boolean) => void
+  onCollapse?: (collapsed: boolean, type: LayoutSiderCollapseType) => void
   children?: JSX.Element
 }

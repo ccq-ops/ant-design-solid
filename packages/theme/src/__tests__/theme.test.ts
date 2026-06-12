@@ -282,6 +282,7 @@ describe('@ant-design-solid/theme', () => {
         Table: { headerBg: '#fafafa', cellPadding: 20 },
         Tag: { borderRadius: 12, closeIconColor: '#111111' },
         Badge: { overflowIndicatorHeight: 24, dotSize: 8 },
+        Layout: { headerBg: '#10239e', triggerHeight: 56 },
       },
     })
 
@@ -299,6 +300,13 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Badge', token).dotSize).toBe(8)
     expect(getComponentToken('Badge', token).colorBg).toBe(token.colorError)
     expect(getComponentToken('Badge', token).colorText).toBe('#ffffff')
+
+    expect(getComponentToken('Layout', token).bodyBg).toBe(token.colorBgLayout)
+    expect(getComponentToken('Layout', token).headerBg).toBe('#10239e')
+    expect(getComponentToken('Layout', token).headerColor).toBe(token.colorTextLightSolid)
+    expect(getComponentToken('Layout', token).headerHeight).toBe(64)
+    expect(getComponentToken('Layout', token).triggerHeight).toBe(56)
+    expect(getComponentToken('Layout', token).zeroTriggerWidth).toBe(40)
   })
 
   it('derives interaction component token defaults and applies overrides', () => {

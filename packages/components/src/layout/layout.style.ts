@@ -1,10 +1,12 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useLayoutStyle(prefixCls: string) {
   const token = useToken()
   return useStyleRegister({ theme: 'default', token: token(), path: ['Layout', prefixCls] }, () => {
     const t = token()
+    const layout = getComponentToken('Layout', t)
     return {
       [`.${prefixCls}`]: {
         display: 'flex',
@@ -16,7 +18,7 @@ export function useLayoutStyle(prefixCls: string) {
         'font-size': `${t.fontSize}px`,
         'font-family': t.fontFamily,
         'line-height': t.lineHeight,
-        background: t.colorFillAlter,
+        background: layout.bodyBg,
       },
       [`.${prefixCls}, .${prefixCls} *`]: {
         'box-sizing': 'border-box',
@@ -26,18 +28,18 @@ export function useLayoutStyle(prefixCls: string) {
       },
       [`.${prefixCls}-header`]: {
         flex: '0 0 auto',
-        height: '64px',
-        padding: `0 ${t.paddingLG}px`,
-        color: '#fff',
-        'line-height': '64px',
-        background: '#001529',
+        height: `${layout.headerHeight}px`,
+        padding: layout.headerPadding,
+        color: layout.headerColor,
+        'line-height': `${layout.headerHeight}px`,
+        background: layout.headerBg,
       },
       [`.${prefixCls}-footer`]: {
         flex: '0 0 auto',
-        padding: `${t.padding}px ${t.paddingLG}px`,
+        padding: layout.footerPadding,
         color: t.colorText,
         'font-size': `${t.fontSize}px`,
-        background: t.colorFillAlter,
+        background: layout.footerBg,
       },
       [`.${prefixCls}-content`]: {
         flex: 'auto',
@@ -52,18 +54,76 @@ export function useLayoutStyle(prefixCls: string) {
         transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
       },
       [`.${prefixCls}-sider-collapsed`]: {
-        flex: '0 0 var(--ads-layout-sider-collapsed-width, 80px)',
-        width: 'var(--ads-layout-sider-collapsed-width, 80px)',
-        'min-width': 'var(--ads-layout-sider-collapsed-width, 80px)',
-        'max-width': 'var(--ads-layout-sider-collapsed-width, 80px)',
+        flex: '0 0 var(--ads-layout-sider-width, 80px)',
+        width: 'var(--ads-layout-sider-width, 80px)',
+        'min-width': 'var(--ads-layout-sider-width, 80px)',
+        'max-width': 'var(--ads-layout-sider-width, 80px)',
       },
       [`.${prefixCls}-sider-dark`]: {
-        color: '#fff',
-        background: '#001529',
+        color: layout.triggerColor,
+        background: layout.siderBg,
       },
       [`.${prefixCls}-sider-light`]: {
         color: t.colorText,
-        background: t.colorBgContainer,
+        background: layout.lightSiderBg,
+        'border-inline-end': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+      },
+      [`.${prefixCls}-sider-children`]: {
+        height: '100%',
+        'margin-top': 0,
+        'padding-top': 0,
+      },
+      [`.${prefixCls}-sider-has-trigger`]: {
+        'padding-bottom': `${layout.triggerHeight}px`,
+      },
+      [`.${prefixCls}-sider-trigger`]: {
+        position: 'absolute',
+        bottom: 0,
+        insetInlineStart: 0,
+        zIndex: 1,
+        height: `${layout.triggerHeight}px`,
+        color: layout.triggerColor,
+        'line-height': `${layout.triggerHeight}px`,
+        'text-align': 'center',
+        background: layout.triggerBg,
+        cursor: 'pointer',
+        transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
+      },
+      [`.${prefixCls}-sider-light .${prefixCls}-sider-trigger`]: {
+        color: layout.lightTriggerColor,
+        background: layout.lightTriggerBg,
+      },
+      [`.${prefixCls}-sider-zero-width`]: {
+        overflow: 'visible',
+      },
+      [`.${prefixCls}-sider-zero-width .${prefixCls}-sider-children`]: {
+        overflow: 'hidden',
+      },
+      [`.${prefixCls}-sider-zero-width-trigger`]: {
+        position: 'absolute',
+        top: `${layout.headerHeight}px`,
+        zIndex: 1,
+        width: `${layout.zeroTriggerWidth}px`,
+        height: `${layout.zeroTriggerHeight}px`,
+        color: layout.triggerColor,
+        'font-size': `${t.fontSizeLG}px`,
+        'line-height': `${layout.zeroTriggerHeight}px`,
+        'text-align': 'center',
+        background: layout.siderBg,
+        'border-radius': `0 ${t.borderRadius}px ${t.borderRadius}px 0`,
+        cursor: 'pointer',
+        transition: `background ${t.motionDurationMid} ${t.motionEaseInOut}`,
+      },
+      [`.${prefixCls}-sider-zero-width-trigger-left`]: {
+        insetInlineEnd: `-${layout.zeroTriggerWidth}px`,
+      },
+      [`.${prefixCls}-sider-zero-width-trigger-right`]: {
+        insetInlineStart: `-${layout.zeroTriggerWidth}px`,
+        'border-radius': `${t.borderRadius}px 0 0 ${t.borderRadius}px`,
+      },
+      [`.${prefixCls}-sider-light .${prefixCls}-sider-zero-width-trigger`]: {
+        color: layout.lightTriggerColor,
+        background: layout.lightTriggerBg,
         'border-inline-end': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
       },
     }

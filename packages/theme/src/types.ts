@@ -521,6 +521,25 @@ export interface TourComponentToken extends ComponentTokenBase {
   zIndex: number
 }
 
+export interface LayoutComponentToken extends ComponentTokenBase {
+  bodyBg: string
+  headerBg: string
+  headerColor: string
+  headerHeight: number
+  headerPadding: string
+  footerBg: string
+  footerPadding: string
+  lightSiderBg: string
+  lightTriggerBg: string
+  lightTriggerColor: string
+  siderBg: string
+  triggerBg: string
+  triggerColor: string
+  triggerHeight: number
+  zeroTriggerWidth: number
+  zeroTriggerHeight: number
+}
+
 export interface ComponentTokenMap {
   Affix?: ComponentTokenBase
   Addon?: ComponentTokenBase
@@ -552,7 +571,7 @@ export interface ComponentTokenMap {
   Image?: ComponentTokenBase
   Input: InputComponentToken
   InputNumber: InputNumberComponentToken
-  Layout?: ComponentTokenBase
+  Layout: LayoutComponentToken
   List?: ComponentTokenBase
   Masonry?: ComponentTokenBase
   Mentions?: ComponentTokenBase

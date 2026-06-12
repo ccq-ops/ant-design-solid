@@ -246,6 +246,24 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       targetBorderRadius: token.borderRadius,
       zIndex: 1070,
     },
+    Layout: {
+      bodyBg: token.colorBgLayout,
+      headerBg: '#001529',
+      headerColor: token.colorTextLightSolid,
+      headerHeight: 64,
+      headerPadding: `0 ${token.paddingLG}px`,
+      footerBg: token.colorBgLayout,
+      footerPadding: `${token.padding}px ${token.paddingLG}px`,
+      lightSiderBg: token.colorBgContainer,
+      lightTriggerBg: token.colorBgContainer,
+      lightTriggerColor: token.colorText,
+      siderBg: '#001529',
+      triggerBg: '#002140',
+      triggerColor: token.colorTextLightSolid,
+      triggerHeight: 48,
+      zeroTriggerWidth: 40,
+      zeroTriggerHeight: 40,
+    },
   }
   const overrides = overrideStore.get(token)?.[componentName] ?? {}
   return { ...defaults[componentName], ...overrides } as ComponentTokenMap[K]
