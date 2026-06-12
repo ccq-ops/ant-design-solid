@@ -1,20 +1,14 @@
 import { Show, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type { StatisticProps } from './interface'
+import {
+  formatStatisticValue,
+  resolveSemanticClassNames,
+  resolveSemanticStyles,
+} from './format-util'
 import { useStatisticStyle } from './statistic.style'
-
-function isNumericValue(value: unknown): value is number | string {
-  if (typeof value === 'number') return Number.isFinite(value)
-  if (typeof value !== 'string' || value.trim() === '') return false
-  return Number.isFinite(Number(value))
-}
-
-function formatValue(value: StatisticProps['value'], precision: number | undefined): string {
-  if (value === undefined || value === null) return ''
-  if (precision !== undefined && isNumericValue(value)) return Number(value).toFixed(precision)
-  return String(value)
-}
 
 export function Statistic(props: StatisticProps) {
   const [local, rest] = splitProps(props, [
@@ -24,6 +18,11 @@ export function Statistic(props: StatisticProps) {
     'prefix',
     'suffix',
     'loading',
+    'formatter',
+    'decimalSeparator',
+    'groupSeparator',
+    'classNames',
+    'styles',
     'valueStyle',
     'class',
     'classList',
@@ -32,29 +31,80 @@ export function Statistic(props: StatisticProps) {
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-statistic`
   const [, hashId] = useStatisticStyle(prefixCls())
-  const valueText = () => formatValue(local.value, local.precision)
+  const mergedProps = () => ({
+    ...props,
+    decimalSeparator: local.decimalSeparator ?? '.',
+    groupSeparator: local.groupSeparator ?? ',',
+    loading: local.loading ?? false,
+  })
+  const semanticClassNames = () => resolveSemanticClassNames(local.classNames, mergedProps())
+  const semanticStyles = () => resolveSemanticStyles(local.styles, mergedProps())
+  const valueText = () =>
+    formatStatisticValue(local.value, {
+      formatter: local.formatter,
+      decimalSeparator: local.decimalSeparator,
+      groupSeparator: local.groupSeparator,
+      precision: local.precision,
+    })
+  const rootStyle = () =>
+    typeof local.style === 'string'
+      ? local.style
+      : { ...semanticStyles().root, ...(local.style as JSX.CSSProperties | undefined) }
+  const contentStyle = () =>
+    typeof local.valueStyle === 'string'
+      ? local.valueStyle
+      : {
+          ...(local.valueStyle as JSX.CSSProperties | undefined),
+          ...semanticStyles().content,
+        }
 
   return (
     <div
       {...rest}
-      class={classNames(prefixCls(), hashId(), local.class)}
+      class={classNames(prefixCls(), hashId(), semanticClassNames().root, local.class)}
       classList={local.classList}
-      style={local.style}
+      style={rootStyle()}
     >
       <Show when={local.title !== undefined && local.title !== null}>
-        <div class={`${prefixCls()}-title`}>{local.title}</div>
+        <div
+          class={classNames(`${prefixCls()}-header`, semanticClassNames().header)}
+          style={semanticStyles().header}
+        >
+          <div
+            class={classNames(`${prefixCls()}-title`, semanticClassNames().title)}
+            style={semanticStyles().title}
+          >
+            {local.title}
+          </div>
+        </div>
       </Show>
-      <div class={`${prefixCls()}-content`}>
+      <div
+        class={classNames(`${prefixCls()}-content`, semanticClassNames().content)}
+        style={contentStyle()}
+      >
         <Show when={!local.loading && local.prefix !== undefined && local.prefix !== null}>
-          <span class={`${prefixCls()}-content-prefix`}>{local.prefix}</span>
+          <span
+            class={classNames(`${prefixCls()}-content-prefix`, semanticClassNames().prefix)}
+            style={semanticStyles().prefix}
+          >
+            {local.prefix}
+          </span>
         </Show>
-        <span class={`${prefixCls()}-content-value`} style={local.valueStyle}>
+        <span
+          class={classNames(`${prefixCls()}-content-value`, semanticClassNames().value)}
+          style={semanticStyles().value}
+        >
           <Show when={!local.loading} fallback={<span class={`${prefixCls()}-loading`} />}>
             {valueText()}
           </Show>
         </span>
         <Show when={!local.loading && local.suffix !== undefined && local.suffix !== null}>
-          <span class={`${prefixCls()}-content-suffix`}>{local.suffix}</span>
+          <span
+            class={classNames(`${prefixCls()}-content-suffix`, semanticClassNames().suffix)}
+            style={semanticStyles().suffix}
+          >
+            {local.suffix}
+          </span>
         </Show>
       </div>
     </div>
