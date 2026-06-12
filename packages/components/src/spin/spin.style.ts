@@ -8,7 +8,12 @@ export function useSpinStyle(prefixCls: string) {
     return {
       '@keyframes adsSpinRotate': {
         to: {
-          transform: 'rotate(360deg)',
+          transform: 'rotate(405deg)',
+        },
+      },
+      '@keyframes adsSpinMove': {
+        to: {
+          opacity: 1,
         },
       },
       [`.${prefixCls}`]: {
@@ -61,7 +66,8 @@ export function useSpinStyle(prefixCls: string) {
         width: '20px',
         height: '20px',
         position: 'relative',
-        animation: `adsSpinRotate ${t.motionDurationMid} linear infinite`,
+        transform: 'rotate(45deg)',
+        animation: 'adsSpinRotate 1.2s linear infinite',
       },
       [`.${prefixCls}-dot-item`]: {
         position: 'absolute',
@@ -72,25 +78,27 @@ export function useSpinStyle(prefixCls: string) {
         background: t.colorPrimary,
         transform: 'scale(0.75)',
         opacity: 0.3,
+        animation: 'adsSpinMove 1s linear infinite alternate',
       },
       [`.${prefixCls}-dot-item-1`]: {
         top: 0,
         left: 0,
+        'animation-delay': '0s',
       },
       [`.${prefixCls}-dot-item-2`]: {
         top: 0,
         right: 0,
-        opacity: 0.5,
+        'animation-delay': '0.4s',
       },
       [`.${prefixCls}-dot-item-3`]: {
         right: 0,
         bottom: 0,
-        opacity: 0.8,
+        'animation-delay': '0.8s',
       },
       [`.${prefixCls}-dot-item-4`]: {
         bottom: 0,
         left: 0,
-        opacity: 1,
+        'animation-delay': '1.2s',
       },
       [`.${prefixCls}-dot-progress`]: {
         position: 'absolute',

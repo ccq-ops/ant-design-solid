@@ -118,6 +118,19 @@ describe('Spin', () => {
     expect(screen.queryByRole('progressbar')).toBeNull()
   })
 
+  it('aligns default indicator animation timing with antd', () => {
+    render(() => <Spin />)
+    const styles = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(styles).toContain('adsSpinRotate 1.2s linear infinite')
+    expect(styles).toContain('adsSpinMove 1s linear infinite alternate')
+    expect(styles).toContain('animation-delay:0.4s;')
+    expect(styles).toContain('animation-delay:0.8s;')
+    expect(styles).toContain('animation-delay:1.2s;')
+  })
+
   it('prefers description over deprecated tip', () => {
     render(() => <Spin tip="Legacy tip" description="Loading description" />)
 
