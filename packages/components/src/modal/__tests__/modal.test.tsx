@@ -189,6 +189,93 @@ describe('Modal', () => {
     expect(document.body.style.overflow).toBe('')
   })
 
+  it('applies antd-style zoom and fade motion classes while opening and closing', async () => {
+    vi.useFakeTimers()
+    try {
+      const [open, setOpen] = createSignal(false)
+      const afterClose = vi.fn()
+      const afterOpenChange = vi.fn()
+      render(() => (
+        <Modal
+          open={open()}
+          title="Motion"
+          destroyOnHidden
+          afterClose={afterClose}
+          afterOpenChange={afterOpenChange}
+        >
+          Body
+        </Modal>
+      ))
+
+      expect(document.body.querySelector('.ads-modal-root')).toBeFalsy()
+
+      setOpen(true)
+      await Promise.resolve()
+
+      const modal = document.body.querySelector<HTMLElement>('.ads-modal')!
+      const mask = document.body.querySelector<HTMLElement>('.ads-modal-mask')!
+      expect(modal).toHaveClass('ads-zoom-enter')
+      expect(modal).toHaveClass('ads-zoom-enter-active')
+      expect(mask).toHaveClass('ads-fade-enter')
+      expect(mask).toHaveClass('ads-fade-enter-active')
+      expect(afterOpenChange).toHaveBeenCalledWith(true)
+
+      vi.advanceTimersByTime(200)
+      await Promise.resolve()
+
+      expect(modal).not.toHaveClass('ads-zoom-enter')
+      expect(mask).not.toHaveClass('ads-fade-enter')
+
+      setOpen(false)
+      await Promise.resolve()
+
+      expect(document.body).toHaveTextContent('Motion')
+      expect(modal).toHaveClass('ads-zoom-leave')
+      expect(modal).toHaveClass('ads-zoom-leave-active')
+      expect(mask).toHaveClass('ads-fade-leave')
+      expect(mask).toHaveClass('ads-fade-leave-active')
+      expect(afterClose).not.toHaveBeenCalled()
+
+      vi.advanceTimersByTime(200)
+      await Promise.resolve()
+
+      expect(document.body).not.toHaveTextContent('Motion')
+      expect(afterClose).toHaveBeenCalledTimes(1)
+      expect(afterOpenChange).toHaveBeenCalledWith(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps force rendered modal mounted but hidden after close motion finishes', async () => {
+    vi.useFakeTimers()
+    try {
+      const [open, setOpen] = createSignal(true)
+      render(() => (
+        <Modal open={open()} forceRender title="Force motion">
+          Body
+        </Modal>
+      ))
+
+      const root = document.body.querySelector<HTMLElement>('.ads-modal-root')!
+      expect(root.style.display).toBe('')
+
+      setOpen(false)
+      await Promise.resolve()
+      expect(root.style.display).toBe('')
+      expect(root.querySelector('.ads-modal')).toHaveClass('ads-zoom-leave')
+
+      vi.advanceTimersByTime(200)
+      await Promise.resolve()
+
+      expect(document.body.querySelector('.ads-modal-root')).toBe(root)
+      expect(root.style.display).toBe('none')
+      expect(root).toHaveTextContent('Force motion')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('creates updates and destroys confirm modal', () => {
     const instance = Modal.confirm({ title: 'Confirm', content: 'Delete?' })
     expect(document.body).toHaveTextContent('Confirm')
@@ -512,7 +599,7 @@ describe('Modal', () => {
     expect(inline.container).toHaveTextContent('Inline')
   })
 
-  it('preserves hidden content by default and destroys it with destroyOnHidden', () => {
+  it('preserves hidden content by default and destroys it with destroyOnHidden', async () => {
     const [open, setOpen] = createSignal(true)
     const preserved = render(() => (
       <Modal open={open()} title="Preserved">
@@ -532,10 +619,10 @@ describe('Modal', () => {
     ))
 
     setDestroyOpen(false)
-    expect(document.body).not.toHaveTextContent('Destroyed body')
+    await waitFor(() => expect(document.body).not.toHaveTextContent('Destroyed body'))
   })
 
-  it('supports forceRender modalRender classNames styles loading and afterOpenChange', () => {
+  it('supports forceRender modalRender classNames styles loading and afterOpenChange', async () => {
     const [open, setOpen] = createSignal(false)
     const afterOpenChange = vi.fn()
     render(() => (
@@ -562,7 +649,7 @@ describe('Modal', () => {
     setOpen(true)
     expect(afterOpenChange).toHaveBeenCalledWith(true)
     setOpen(false)
-    expect(afterOpenChange).toHaveBeenCalledWith(false)
+    await waitFor(() => expect(afterOpenChange).toHaveBeenCalledWith(false))
   })
 
   it('passes static method visual and layout config to ModalBase', () => {

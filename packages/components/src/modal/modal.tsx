@@ -26,6 +26,8 @@ import { useModalStyle } from './modal.style'
 import { CloseOutlined } from '@ant-design-solid/icons'
 
 const modalStack: object[] = []
+const modalMotionDuration = 200
+type MotionStatus = 'enter' | 'stable' | 'leave'
 
 function removeFromStack(item: object) {
   const index = modalStack.lastIndexOf(item)
@@ -140,14 +142,21 @@ export function ModalBase(props: ModalProps) {
   const titleId = createUniqueId()
   const stackItem = {}
   const [hasRendered, setHasRendered] = createSignal(Boolean(local.open || local.forceRender))
+  const [visible, setVisible] = createSignal(Boolean(local.open))
+  const [motionStatus, setMotionStatus] = createSignal<MotionStatus>(
+    local.open ? 'enter' : 'stable',
+  )
   let locked = false
   let wasOpen = false
+  let closeNotified = !local.open
+  let motionTimer: ReturnType<typeof setTimeout> | undefined
   const [wrapRef, setWrapRef] = createSignal<HTMLDivElement>()
   let lastActiveElement: HTMLElement | null = null
 
   const shouldRender = () =>
     Boolean(
       local.open ||
+      visible() ||
       local.forceRender ||
       (hasRendered() && !(local.destroyOnHidden ?? local.destroyOnClose)),
     )
@@ -175,12 +184,45 @@ export function ModalBase(props: ModalProps) {
     typeof local.classNames === 'function' ? local.classNames(semanticInfo()) : local.classNames
   const semanticStyles = () =>
     typeof local.styles === 'function' ? local.styles(semanticInfo()) : local.styles
+  const transitionName = () =>
+    local.transitionName === undefined ? `${config.prefixCls()}-zoom` : local.transitionName
+  const maskTransitionName = () =>
+    local.maskTransitionName === undefined ? `${config.prefixCls()}-fade` : local.maskTransitionName
+  const motionClass = (name: string | undefined, target: MotionStatus) =>
+    name && target !== 'stable' ? `${name}-${target} ${name}-${target}-active` : undefined
+  const modalMotionClass = () => motionClass(transitionName(), motionStatus())
+  const maskMotionClass = () => motionClass(maskTransitionName(), motionStatus())
+  const notifyClose = () => {
+    if (closeNotified) return
+    closeNotified = true
+    local.afterClose?.()
+    if (isClosableConfig(local.closable)) local.closable.afterClose?.()
+    if (focusableConfig().focusTriggerAfterClose) {
+      queueMicrotask(() => lastActiveElement?.focus?.())
+    }
+    local.afterOpenChange?.(false)
+  }
+  const scheduleMotionEnd = (status: MotionStatus) => {
+    if (motionTimer) clearTimeout(motionTimer)
+    motionTimer = setTimeout(() => {
+      if (status === 'enter' && local.open) {
+        setMotionStatus('stable')
+        return
+      }
+      if (status === 'leave' && !local.open) {
+        setMotionStatus('stable')
+        setVisible(false)
+        notifyClose()
+      }
+    }, modalMotionDuration)
+  }
 
   createRenderEffect(() => {
     if (local.open && !wasOpen && canUseDom()) {
       lastActiveElement = document.activeElement as HTMLElement | null
     }
     if (local.open || local.forceRender) setHasRendered(true)
+    if (local.open) setVisible(true)
     if (local.open && !locked) {
       lockBodyScroll()
       modalStack.push(stackItem)
@@ -191,15 +233,16 @@ export function ModalBase(props: ModalProps) {
       removeFromStack(stackItem)
       locked = false
     }
-    if (local.open !== wasOpen) {
-      local.afterOpenChange?.(Boolean(local.open))
+    if (local.open && !wasOpen) {
+      closeNotified = false
+      setMotionStatus('enter')
+      scheduleMotionEnd('enter')
+      local.afterOpenChange?.(true)
     }
     if (!local.open && wasOpen) {
-      local.afterClose?.()
-      if (isClosableConfig(local.closable)) local.closable.afterClose?.()
-      if (focusableConfig().focusTriggerAfterClose) {
-        queueMicrotask(() => lastActiveElement?.focus?.())
-      }
+      setMotionStatus('leave')
+      setVisible(true)
+      scheduleMotionEnd('leave')
     }
     wasOpen = Boolean(local.open)
   })
@@ -254,6 +297,7 @@ export function ModalBase(props: ModalProps) {
   })
 
   onCleanup(() => {
+    if (motionTimer) clearTimeout(motionTimer)
     cleanupKeydown()
     if (locked) {
       unlockBodyScroll()
@@ -275,7 +319,7 @@ export function ModalBase(props: ModalProps) {
   }
   const rootStyle = () => ({
     'z-index': zIndex,
-    ...(local.open ? undefined : { display: 'none' }),
+    ...(visible() ? undefined : { display: 'none' }),
     ...semanticStyles()?.root,
     ...local.rootStyle,
     ...local.style,
@@ -344,6 +388,7 @@ export function ModalBase(props: ModalProps) {
           prefixCls(),
           local.class,
           local.className,
+          modalMotionClass(),
           classes?.modal,
           classes?.container,
         )}
@@ -430,6 +475,7 @@ export function ModalBase(props: ModalProps) {
                   class={classNames(
                     `${prefixCls()}-mask`,
                     maskBlur() && `${prefixCls()}-mask-blur`,
+                    maskMotionClass(),
                     classes?.mask,
                   )}
                   style={{ ...styles?.mask, ...local.maskStyle }}

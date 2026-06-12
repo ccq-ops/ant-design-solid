@@ -7,7 +7,24 @@ export function useModalStyle(prefixCls: string) {
   return useStyleRegister({ theme: 'default', token: token(), path: ['Modal', prefixCls] }, () => {
     const t = token()
     const mt = getComponentToken('Modal', t)
+    const zoomMotion = `${t.motionDurationMid} ${t.motionEaseInOut}`
     return {
+      '@keyframes adsModalFadeIn': {
+        '0%': { opacity: 0 },
+        '100%': { opacity: 1 },
+      },
+      '@keyframes adsModalFadeOut': {
+        '0%': { opacity: 1 },
+        '100%': { opacity: 0 },
+      },
+      '@keyframes adsModalZoomIn': {
+        '0%': { opacity: 0, transform: 'scale(0.8)' },
+        '100%': { opacity: 1, transform: 'scale(1)' },
+      },
+      '@keyframes adsModalZoomOut': {
+        '0%': { opacity: 1, transform: 'scale(1)' },
+        '100%': { opacity: 0, transform: 'scale(0.8)' },
+      },
       [`.${prefixCls}-root`]: { position: 'relative' },
       [`.${prefixCls}-mask`]: { position: 'fixed', inset: 0, background: mt.maskBg },
       [`.${prefixCls}-mask-blur`]: { 'backdrop-filter': 'blur(2px)' },
@@ -23,6 +40,24 @@ export function useModalStyle(prefixCls: string) {
         margin: '0 auto',
         padding: `0 0 ${t.paddingLG}px`,
         width: `var(--${prefixCls}-xs-width, 520px)`,
+        'transform-origin': '50% 50%',
+      },
+      [`.ads-zoom-enter, .ads-zoom-appear`]: {
+        opacity: 0,
+        transform: 'scale(0.8)',
+        animation: `adsModalZoomIn ${zoomMotion} both`,
+      },
+      [`.ads-zoom-leave`]: {
+        animation: `adsModalZoomOut ${zoomMotion} both`,
+        'pointer-events': 'none',
+      },
+      [`.ads-fade-enter, .ads-fade-appear`]: {
+        opacity: 0,
+        animation: `adsModalFadeIn ${t.motionDurationMid} linear both`,
+      },
+      [`.ads-fade-leave`]: {
+        animation: `adsModalFadeOut ${t.motionDurationMid} linear both`,
+        'pointer-events': 'none',
       },
       '@media (min-width: 576px)': {
         [`.${prefixCls}`]: {
