@@ -1,11 +1,10 @@
 # TreeSelect
 
-Select a value from hierarchical tree data.
+Select values from hierarchical tree data.
 
 ### Basic
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { TreeSelect } from '@ant-design-solid/core'
 
 const treeData = [
@@ -20,17 +19,16 @@ const treeData = [
   { title: 'Europe', value: 'europe' },
 ]
 
-const Demo1 = function () {
+const Demo = function () {
   return <TreeSelect placeholder="Select area" treeData={treeData} />
 }
 
-export default Demo1
+export default Demo
 ```
 
-### Default expanded
+### Multiple
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { TreeSelect } from '@ant-design-solid/core'
 
 const treeData = [
@@ -39,49 +37,85 @@ const treeData = [
     value: 'asia',
     children: [
       { title: 'China', value: 'china' },
-      { title: 'Japan', value: 'japan', disabled: true },
+      { title: 'Japan', value: 'japan' },
     ],
   },
   { title: 'Europe', value: 'europe' },
 ]
 
-const Demo2 = function () {
-  return <TreeSelect defaultExpandedKeys={['asia']} placeholder="Expanded" treeData={treeData} />
-}
-
-export default Demo2
-```
-
-### Clearable
-
-```tsx
-import { createSignal } from 'solid-js'
-import { TreeSelect } from '@ant-design-solid/core'
-
-const treeData = [
-  {
-    title: 'Asia',
-    value: 'asia',
-    children: [
-      { title: 'China', value: 'china' },
-      { title: 'Japan', value: 'japan', disabled: true },
-    ],
-  },
-  { title: 'Europe', value: 'europe' },
-]
-
-const Demo3 = function () {
+const Demo = function () {
   return (
     <TreeSelect
+      multiple
       allowClear
       defaultExpandedKeys={['asia']}
-      defaultValue="china"
+      placeholder="Select areas"
       treeData={treeData}
     />
   )
 }
 
-export default Demo3
+export default Demo
+```
+
+### Checkable
+
+```tsx
+import { TreeSelect } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Libraries',
+    value: 'libraries',
+    children: [
+      { title: 'Solid', value: 'solid' },
+      { title: 'React', value: 'react' },
+    ],
+  },
+]
+
+const Demo = function () {
+  return (
+    <TreeSelect
+      treeCheckable
+      defaultExpandedKeys={['libraries']}
+      showCheckedStrategy={TreeSelect.SHOW_CHILD}
+      placeholder="Select libraries"
+      treeData={treeData}
+    />
+  )
+}
+
+export default Demo
+```
+
+### Search
+
+```tsx
+import { TreeSelect } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Asia',
+    value: 'asia',
+    children: [{ title: 'China', value: 'china' }],
+  },
+  { title: 'Europe', value: 'europe' },
+]
+
+const Demo = function () {
+  return (
+    <TreeSelect
+      showSearch
+      treeNodeFilterProp="title"
+      notFoundContent="No matches"
+      placeholder="Search area"
+      treeData={treeData}
+    />
+  )
+}
+
+export default Demo
 ```
 
 ### Controlled
@@ -91,52 +125,258 @@ import { createSignal } from 'solid-js'
 import { TreeSelect } from '@ant-design-solid/core'
 
 const treeData = [
-  {
-    title: 'Asia',
-    value: 'asia',
-    children: [
-      { title: 'China', value: 'china' },
-      { title: 'Japan', value: 'japan', disabled: true },
-    ],
-  },
+  { title: 'China', value: 'china' },
   { title: 'Europe', value: 'europe' },
 ]
 
-const Demo4 = function () {
+const Demo = function () {
   const [value, setValue] = createSignal('europe')
+  const [open, setOpen] = createSignal(false)
+  const [search, setSearch] = createSignal('')
 
-  return <TreeSelect value={value()} onChange={(next) => setValue(next)} treeData={treeData} />
+  return (
+    <TreeSelect
+      showSearch
+      value={value()}
+      open={open()}
+      searchValue={search()}
+      treeData={treeData}
+      onChange={(next) => setValue(next as string)}
+      onOpenChange={setOpen}
+      onSearch={setSearch}
+    />
+  )
 }
 
-export default Demo4
+export default Demo
+```
+
+### Field Names And Simple Mode
+
+```tsx
+import { TreeSelect } from '@ant-design-solid/core'
+
+const flatData = [
+  { id: 1, pId: 0, code: 'asia', name: 'Asia' },
+  { id: 2, pId: 1, code: 'china', name: 'China' },
+]
+
+const Demo = function () {
+  return (
+    <TreeSelect
+      treeDataSimpleMode
+      fieldNames={{ label: 'name', value: 'code' }}
+      treeData={flatData}
+      placeholder="Simple mode"
+    />
+  )
+}
+
+export default Demo
+```
+
+### Custom Render
+
+```tsx
+import { FolderOutlined } from '@ant-design-solid/icons'
+import { TreeSelect } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Asia',
+    value: 'asia',
+    children: [{ title: 'China', value: 'china' }],
+  },
+]
+
+const Demo = function () {
+  return (
+    <TreeSelect
+      allowClear={{ clearIcon: <span>clear</span> }}
+      prefix={<FolderOutlined />}
+      suffixIcon={<span>open</span>}
+      switcherIcon={<span>+</span>}
+      treeTitleRender={(node) => <strong>{node.title}</strong>}
+      defaultExpandedKeys={['asia']}
+      treeData={treeData}
+    />
+  )
+}
+
+export default Demo
+```
+
+### Popup And Semantic Slots
+
+```tsx
+import { TreeSelect } from '@ant-design-solid/core'
+
+const treeData = [{ title: 'Europe', value: 'europe' }]
+
+const Demo = function () {
+  return (
+    <TreeSelect
+      treeData={treeData}
+      popupMatchSelectWidth={320}
+      popupRender={(origin) => <div class="popup-shell">{origin}</div>}
+      classNames={{ root: 'custom-root', 'popup.root': 'custom-popup' }}
+      styles={{ 'popup.root': { maxHeight: '280px' } }}
+    />
+  )
+}
+
+export default Demo
+```
+
+### Status And Variant
+
+```tsx
+import { TreeSelect } from '@ant-design-solid/core'
+
+const treeData = [{ title: 'Europe', value: 'europe' }]
+
+const Demo = function () {
+  return (
+    <div style={{ display: 'flex', gap: '12px' }}>
+      <TreeSelect size="large" treeData={treeData} placeholder="Large" />
+      <TreeSelect status="error" treeData={treeData} placeholder="Error" />
+      <TreeSelect variant="filled" treeData={treeData} placeholder="Filled" />
+    </div>
+  )
+}
+
+export default Demo
+```
+
+### Label In Value
+
+```tsx
+import { TreeSelect } from '@ant-design-solid/core'
+
+const treeData = [{ title: 'China', value: 'china' }]
+
+const Demo = function () {
+  return (
+    <TreeSelect
+      labelInValue
+      treeData={treeData}
+      onChange={(value, label, extra) => {
+        console.log(value, label, extra.triggerValue)
+      }}
+    />
+  )
+}
+
+export default Demo
 ```
 
 ## API
 
 ### TreeSelect
 
-| Property              | Description                                    | Type                                                                           | Default |
-| --------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ | ------- |
-| `treeData`            | Hierarchical option nodes.                     | `TreeSelectNode[]`                                                             | `-`     |
-| `value`               | Controlled selected value.                     | `OptionValue`                                                                  | `-`     |
-| `defaultValue`        | Initial selected value for uncontrolled usage. | `OptionValue`                                                                  | `-`     |
-| `open`                | Controlled dropdown open state.                | `boolean`                                                                      | `-`     |
-| `defaultOpen`         | Initial dropdown open state.                   | `boolean`                                                                      | `false` |
-| `placeholder`         | Placeholder content.                           | `JSX.Element`                                                                  | `-`     |
-| `disabled`            | Disables the selector.                         | `boolean`                                                                      | `false` |
-| `allowClear`          | Shows a clear button when a value is selected. | `boolean`                                                                      | `false` |
-| `defaultExpandedKeys` | Initially expanded tree node values.           | `OptionValue[]`                                                                | `-`     |
-| `prefixCls`           | Custom CSS class prefix.                       | `string`                                                                       | `-`     |
-| `zIndex`              | Custom dropdown z-index.                       | `number`                                                                       | `-`     |
-| `getPopupContainer`   | Returns dropdown portal container.             | `(triggerNode?: HTMLElement) => HTMLElement`                                   | `-`     |
-| `onChange`            | Called when selection changes.                 | `(value: OptionValue \| undefined, node: TreeSelectNode \| undefined) => void` | `-`     |
-| `onOpenChange`        | Called when dropdown open state changes.       | `(open: boolean) => void`                                                      | `-`     |
+| Property                  | Description                                                            | Type                                                                     | Default                                                    |
+| ------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `allowClear`              | Show clear button or customize clear icon.                             | `boolean \| { clearIcon?: JSX.Element }`                                 | `false`                                                    |
+| `class`                   | Root class. Use Solid `class` rather than React `className`.           | `string`                                                                 | `-`                                                        |
+| `classNames`              | Semantic class names.                                                  | `Partial<Record<TreeSelectSemanticSlot, string>>`                        | `-`                                                        |
+| `defaultOpen`             | Initial popup open state.                                              | `boolean`                                                                | `false`                                                    |
+| `defaultValue`            | Initial selected value.                                                | `TreeSelectValue`                                                        | `-`                                                        |
+| `disabled`                | Disable selector.                                                      | `boolean`                                                                | `false`                                                    |
+| `fieldNames`              | Customize data field names.                                            | `{ label?: string; value?: string; children?: string }`                  | `{ label: 'title', value: 'value', children: 'children' }` |
+| `getPopupContainer`       | Return popup portal container.                                         | `(triggerNode?: HTMLElement) => HTMLElement`                             | `document.body`                                            |
+| `labelInValue`            | Wrap value with label.                                                 | `boolean`                                                                | `false`                                                    |
+| `listHeight`              | Popup list height.                                                     | `number`                                                                 | `-`                                                        |
+| `loadData`                | Load tree data asynchronously.                                         | `(node: TreeSelectNode) => Promise<unknown> \| unknown`                  | `-`                                                        |
+| `maxCount`                | Maximum selectable count in multiple/checkable mode.                   | `number`                                                                 | `-`                                                        |
+| `maxTagCount`             | Max displayed tags.                                                    | `number \| 'responsive'`                                                 | `-`                                                        |
+| `maxTagPlaceholder`       | Placeholder for omitted tags.                                          | `JSX.Element \| (omittedValues: TreeSelectNode[]) => JSX.Element`        | `+ n ...`                                                  |
+| `maxTagTextLength`        | Max displayed tag text length.                                         | `number`                                                                 | `-`                                                        |
+| `multiple`                | Enable multiple selection.                                             | `boolean`                                                                | `false`                                                    |
+| `notFoundContent`         | Empty search content.                                                  | `JSX.Element`                                                            | `Not Found`                                                |
+| `open`                    | Controlled popup open state.                                           | `boolean`                                                                | `-`                                                        |
+| `placeholder`             | Placeholder content.                                                   | `JSX.Element`                                                            | `-`                                                        |
+| `placement`               | Popup placement.                                                       | `bottomLeft \| bottomRight \| topLeft \| topRight`                       | `bottomLeft`                                               |
+| `popupMatchSelectWidth`   | Match popup width to selector or set a numeric width.                  | `boolean \| number`                                                      | `true`                                                     |
+| `popupRender`             | Customize popup content.                                               | `(originNode: JSX.Element) => JSX.Element`                               | `-`                                                        |
+| `prefix`                  | Selector prefix.                                                       | `JSX.Element`                                                            | `-`                                                        |
+| `ref`                     | Exposes `focus()` and `blur()`.                                        | `TreeSelectRef \| ((ref) => void)`                                       | `-`                                                        |
+| `searchValue`             | Controlled search value.                                               | `string`                                                                 | `-`                                                        |
+| `showCheckedStrategy`     | Checked display strategy.                                              | `TreeSelect.SHOW_ALL \| TreeSelect.SHOW_PARENT \| TreeSelect.SHOW_CHILD` | `SHOW_CHILD`                                               |
+| `showSearch`              | Enable search or configure search.                                     | `boolean \| TreeSelectSearchConfig`                                      | `false`                                                    |
+| `size`                    | Selector size.                                                         | `large \| middle \| small`                                               | `middle`                                                   |
+| `status`                  | Validation status.                                                     | `error \| warning`                                                       | `-`                                                        |
+| `styles`                  | Semantic inline styles.                                                | `Partial<Record<TreeSelectSemanticSlot, JSX.CSSProperties>>`             | `-`                                                        |
+| `suffixIcon`              | Custom suffix icon.                                                    | `JSX.Element \| null`                                                    | `<DownOutlined />`                                         |
+| `switcherIcon`            | Custom tree switcher icon.                                             | `TreeIcon`                                                               | `-`                                                        |
+| `tagRender`               | Custom tag render in multiple/checkable mode.                          | `(props: TreeSelectTagRenderProps) => JSX.Element`                       | `-`                                                        |
+| `treeCheckable`           | Show tree checkboxes.                                                  | `boolean`                                                                | `false`                                                    |
+| `treeCheckStrictly`       | Check nodes without parent-child association and force `labelInValue`. | `boolean`                                                                | `false`                                                    |
+| `treeData`                | Tree data. Values must be unique.                                      | `TreeSelectNode[]`                                                       | `[]`                                                       |
+| `treeDataSimpleMode`      | Use flat simple mode data.                                             | `boolean \| { id?: string; pId?: string; rootPId?: OptionValue }`        | `false`                                                    |
+| `treeDefaultExpandAll`    | Expand all tree nodes by default.                                      | `boolean`                                                                | `false`                                                    |
+| `treeDefaultExpandedKeys` | Initial expanded tree keys.                                            | `OptionValue[]`                                                          | `-`                                                        |
+| `treeExpandAction`        | Expand when clicking or double-clicking title.                         | `false \| click \| doubleClick`                                          | `false`                                                    |
+| `treeExpandedKeys`        | Controlled expanded tree keys.                                         | `OptionValue[]`                                                          | `-`                                                        |
+| `treeIcon`                | Show tree node icons.                                                  | `boolean`                                                                | `false`                                                    |
+| `treeLine`                | Show tree lines.                                                       | `boolean \| { showLeafIcon?: boolean \| TreeIcon }`                      | `false`                                                    |
+| `treeLoadedKeys`          | Controlled loaded keys for `loadData`.                                 | `OptionValue[]`                                                          | `[]`                                                       |
+| `treeNodeFilterProp`      | Node prop used for filtering.                                          | `string`                                                                 | `value`                                                    |
+| `treeNodeLabelProp`       | Node prop used for selected display.                                   | `string`                                                                 | `title`                                                    |
+| `treeTitleRender`         | Customize tree title render.                                           | `(nodeData: TreeSelectNode) => JSX.Element`                              | `-`                                                        |
+| `value`                   | Controlled selected value.                                             | `TreeSelectValue`                                                        | `-`                                                        |
+| `variant`                 | Selector variant.                                                      | `outlined \| borderless \| filled \| underlined`                         | `outlined`                                                 |
+| `virtual`                 | Disable virtual scroll when `false`.                                   | `boolean`                                                                | `true`                                                     |
+| `onChange`                | Called when value changes.                                             | `(value, label, extra) => void`                                          | `-`                                                        |
+| `onOpenChange`            | Called when popup open state changes.                                  | `(open: boolean) => void`                                                | `-`                                                        |
+| `onPopupScroll`           | Called when popup scrolls.                                             | `(event: UIEvent) => void`                                               | `-`                                                        |
+| `onSearch`                | Called when search input changes.                                      | `(value: string) => void`                                                | `-`                                                        |
+| `onSelect`                | Called when a tree node is selected.                                   | `(value, node, extra) => void`                                           | `-`                                                        |
+| `onTreeExpand`            | Called when tree expansion changes.                                    | `(expandedKeys: OptionValue[]) => void`                                  | `-`                                                        |
 
-### TreeSelectNode
+### Deprecated Aliases
 
-| Property   | Description              | Type               | Default |
-| ---------- | ------------------------ | ------------------ | ------- |
-| `title`    | Node display title.      | `JSX.Element`      | `-`     |
-| `value`    | Node option value.       | `OptionValue`      | `-`     |
-| `disabled` | Disables this node.      | `boolean`          | `false` |
-| `children` | Child tree select nodes. | `TreeSelectNode[]` | `-`     |
+| Property                   | Replacement                       |
+| -------------------------- | --------------------------------- |
+| `bordered`                 | `variant`                         |
+| `dropdownClassName`        | `classNames['popup.root']`        |
+| `dropdownMatchSelectWidth` | `popupMatchSelectWidth`           |
+| `dropdownRender`           | `popupRender`                     |
+| `dropdownStyle`            | `styles['popup.root']`            |
+| `popupClassName`           | `classNames['popup.root']`        |
+| `autoClearSearchValue`     | `showSearch.autoClearSearchValue` |
+| `filterTreeNode`           | `showSearch.filterTreeNode`       |
+| `treeNodeFilterProp`       | `showSearch.treeNodeFilterProp`   |
+| `searchValue`              | `showSearch.searchValue`          |
+| `onSearch`                 | `showSearch.onSearch`             |
+
+### showSearch
+
+| Property               | Description                           | Type                                           | Default |
+| ---------------------- | ------------------------------------- | ---------------------------------------------- | ------- |
+| `autoClearSearchValue` | Clear search after selection.         | `boolean`                                      | `true`  |
+| `filterTreeNode`       | Custom filter.                        | `boolean \| (inputValue, treeNode) => boolean` | `true`  |
+| `searchValue`          | Controlled search value.              | `string`                                       | `-`     |
+| `treeNodeFilterProp`   | Node prop used for default filtering. | `string`                                       | `value` |
+| `onSearch`             | Search callback.                      | `(value: string) => void`                      | `-`     |
+
+### Methods
+
+| Name      | Description     |
+| --------- | --------------- |
+| `focus()` | Focus selector. |
+| `blur()`  | Blur selector.  |
+
+### TreeNode
+
+`TreeSelect.TreeNode` is available for antd API parity, though `treeData` is recommended.
+
+| Property          | Description                                 | Type          | Default |
+| ----------------- | ------------------------------------------- | ------------- | ------- |
+| `checkable`       | Show checkbox for this node when checkable. | `boolean`     | `true`  |
+| `disableCheckbox` | Disable node checkbox.                      | `boolean`     | `false` |
+| `disabled`        | Disable node.                               | `boolean`     | `false` |
+| `isLeaf`          | Mark node as leaf.                          | `boolean`     | `false` |
+| `key`             | Tree key. Defaults to value.                | `OptionValue` | `value` |
+| `selectable`      | Whether the node can be selected.           | `boolean`     | `true`  |
+| `title`           | Node title.                                 | `JSX.Element` | `-`     |
+| `value`           | Unique node value.                          | `OptionValue` | `-`     |
