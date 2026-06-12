@@ -129,6 +129,8 @@ export interface AliasToken extends SeedToken {
   colorBgSolid: string
   colorBgSolidHover: string
   colorBgSolidActive: string
+  colorBgTextHover: string
+  colorBgTextActive: string
   colorBgContainerDisabled: string
   colorBorder: string
   colorBorderDisabled: string
@@ -540,6 +542,29 @@ export interface LayoutComponentToken extends ComponentTokenBase {
   zeroTriggerHeight: number
 }
 
+export interface MenuComponentToken extends ComponentTokenBase {
+  itemBg: string
+  itemColor: string
+  itemHoverBg: string
+  itemHoverColor: string
+  itemSelectedBg: string
+  itemSelectedColor: string
+  itemDisabledColor: string
+  groupTitleColor: string
+  popupBg: string
+  subMenuItemBg: string
+  darkItemBg: string
+  darkPopupBg: string
+  darkSubMenuItemBg: string
+  darkItemColor: string
+  darkItemHoverColor: string
+  darkItemSelectedBg: string
+  darkItemSelectedColor: string
+  darkItemDisabledColor: string
+  darkGroupTitleColor: string
+  darkItemDividerBg: string
+}
+
 export interface ComponentTokenMap {
   Affix?: ComponentTokenBase
   Addon?: ComponentTokenBase
@@ -575,7 +600,7 @@ export interface ComponentTokenMap {
   List?: ComponentTokenBase
   Masonry?: ComponentTokenBase
   Mentions?: ComponentTokenBase
-  Menu?: ComponentTokenBase
+  Menu: MenuComponentToken
   Message: MessageComponentToken
   Modal: ModalComponentToken
   Notification: NotificationComponentToken

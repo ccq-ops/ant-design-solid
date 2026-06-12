@@ -126,7 +126,7 @@ const Demo2 = function () {
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
       <Layout.Sider>
         <div style={logoStyle} />
-        <Menu mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
       <Layout>
         <Layout.Header style={headerStyle} />
@@ -195,6 +195,7 @@ const Demo3 = function () {
       >
         <div style={logoStyle} />
         <Menu
+          theme="dark"
           mode="inline"
           inlineCollapsed={collapsed()}
           defaultSelectedKeys={['dashboard']}
@@ -264,6 +265,7 @@ const Demo4 = function () {
       <Layout.Sider collapsible collapsed={collapsed()} trigger={null}>
         <div style={logoStyle} />
         <Menu
+          theme="dark"
           mode="inline"
           inlineCollapsed={collapsed()}
           defaultSelectedKeys={['dashboard']}
@@ -332,7 +334,7 @@ const Demo5 = function () {
         onBreakpoint={(nextBroken) => setBroken(nextBroken)}
       >
         <div style={logoStyle} />
-        <Menu mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
       <Layout>
         <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }} />
@@ -379,7 +381,7 @@ const Demo6 = function () {
     <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
       <Layout.Sider collapsible defaultCollapsed collapsedWidth={0}>
         <div style={logoStyle} />
-        <Menu mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
       <Layout>
         <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }} />

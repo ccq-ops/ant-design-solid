@@ -1,35 +1,32 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useMenuStyle(prefixCls: string) {
   const token = useToken()
   return useStyleRegister({ theme: 'default', token: token(), path: ['Menu', prefixCls] }, () => {
     const t = token()
+    const menu = getComponentToken('Menu', t)
     const itemHeight = 40
     const horizontalHeight = 46
     const collapsedWidth = 80
     const itemRadius = t.borderRadiusLG
-    const itemSelectedBg = t.colorPrimaryBg
-    const darkBg = '#001529'
-    const darkItemColor = 'rgba(255,255,255,0.65)'
-    const darkItemHoverColor = t.colorWhite
-    const darkItemSelectedBg = t.colorPrimary
     return {
       [`.${prefixCls}`]: {
         'box-sizing': 'border-box',
         margin: 0,
         padding: `${t.paddingXXS}px`,
-        color: t.colorText,
+        color: menu.itemColor,
         'font-size': `${t.fontSize}px`,
         'font-family': t.fontFamily,
         'line-height': t.lineHeight,
         'list-style': 'none',
-        background: t.colorBgContainer,
+        background: menu.itemBg,
         outline: 'none',
       },
       [`.${prefixCls}-dark`]: {
-        color: darkItemColor,
-        background: darkBg,
+        color: menu.darkItemColor,
+        background: menu.darkItemBg,
       },
       [`.${prefixCls}-horizontal`]: {
         display: 'flex',
@@ -53,14 +50,14 @@ export function useMenuStyle(prefixCls: string) {
         'min-height': `${itemHeight}px`,
         margin: `${t.marginXXS}px 0`,
         padding: `0 ${t.padding}px`,
-        color: t.colorText,
+        color: menu.itemColor,
         'border-radius': `${itemRadius}px`,
         cursor: 'pointer',
         transition: `background ${t.motionDurationMid} ${t.motionEaseInOut}, color ${t.motionDurationMid} ${t.motionEaseInOut}`,
       },
       [`.${prefixCls}-item:hover, .${prefixCls}-submenu-title:hover`]: {
-        color: t.colorPrimary,
-        background: t.controlItemBgHover,
+        color: menu.itemHoverColor,
+        background: menu.itemHoverBg,
       },
       [`.${prefixCls}-horizontal > .${prefixCls}-item, .${prefixCls}-horizontal > .${prefixCls}-submenu`]:
         {
@@ -73,19 +70,19 @@ export function useMenuStyle(prefixCls: string) {
           height: `${horizontalHeight}px`,
           margin: 0,
           padding: `0 ${t.padding}px`,
-          color: t.colorText,
+          color: menu.itemColor,
           'border-radius': 0,
           background: 'transparent',
           'line-height': `${horizontalHeight}px`,
         },
       [`.${prefixCls}-horizontal > .${prefixCls}-item:hover, .${prefixCls}-horizontal > .${prefixCls}-submenu:hover > .${prefixCls}-submenu-title, .${prefixCls}-horizontal > .${prefixCls}-overflowed-indicator:hover`]:
         {
-          color: t.colorPrimary,
+          color: menu.itemSelectedColor,
           background: 'transparent',
         },
       [`.${prefixCls}-item-selected`]: {
-        color: t.colorPrimary,
-        background: itemSelectedBg,
+        color: menu.itemSelectedColor,
+        background: menu.itemSelectedBg,
         'font-weight': 500,
       },
       [`.${prefixCls}-inline .${prefixCls}-item-selected::after, .${prefixCls}-vertical .${prefixCls}-item-selected::after`]:
@@ -94,7 +91,7 @@ export function useMenuStyle(prefixCls: string) {
           inset: `0 0 0 auto`,
           width: 0,
           border: 0,
-          'border-inline-end': `3px solid ${t.colorPrimary}`,
+          'border-inline-end': `3px solid ${menu.itemSelectedColor}`,
           content: '""',
         },
       [`.${prefixCls}-horizontal > .${prefixCls}-item::after, .${prefixCls}-horizontal > .${prefixCls}-submenu::after`]:
@@ -110,10 +107,10 @@ export function useMenuStyle(prefixCls: string) {
         },
       [`.${prefixCls}-horizontal > .${prefixCls}-item:hover::after, .${prefixCls}-horizontal > .${prefixCls}-submenu:hover::after, .${prefixCls}-horizontal > .${prefixCls}-item-selected::after, .${prefixCls}-horizontal > .${prefixCls}-submenu-open::after`]:
         {
-          'border-bottom-color': t.colorPrimary,
+          'border-bottom-color': menu.itemSelectedColor,
         },
       [`.${prefixCls}-horizontal > .${prefixCls}-item-selected`]: {
-        color: t.colorPrimary,
+        color: menu.itemSelectedColor,
         background: 'transparent',
       },
       [`.${prefixCls}-item-danger`]: {
@@ -129,13 +126,13 @@ export function useMenuStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-disabled, .${prefixCls}-submenu-disabled > .${prefixCls}-submenu-title`]:
         {
-          color: t.colorTextDisabled,
+          color: menu.itemDisabledColor,
           background: 'transparent',
           cursor: 'not-allowed',
         },
       [`.${prefixCls}-item-disabled:hover, .${prefixCls}-submenu-disabled > .${prefixCls}-submenu-title:hover`]:
         {
-          color: t.colorTextDisabled,
+          color: menu.itemDisabledColor,
           background: 'transparent',
         },
       [`.${prefixCls}-item-icon`]: {
@@ -154,7 +151,7 @@ export function useMenuStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-extra`]: {
         flex: 'none',
-        color: t.colorTextSecondary,
+        color: menu.groupTitleColor,
         'font-size': `${Math.max(12, t.fontSize - 2)}px`,
       },
       [`.${prefixCls}-submenu`]: {
@@ -179,8 +176,8 @@ export function useMenuStyle(prefixCls: string) {
         'box-sizing': 'border-box',
         'min-width': '160px',
         padding: `${t.paddingXXS}px`,
-        color: t.colorText,
-        background: t.colorBgElevated,
+        color: menu.itemColor,
+        background: menu.popupBg,
         'border-radius': `${t.borderRadiusLG}px`,
         'box-shadow': t.boxShadowSecondary,
       },
@@ -202,7 +199,7 @@ export function useMenuStyle(prefixCls: string) {
       [`.${prefixCls}-item-group-title`]: {
         height: `${t.controlHeightSM}px`,
         padding: `${t.paddingXXS}px ${t.padding}px`,
-        color: t.colorTextSecondary,
+        color: menu.groupTitleColor,
         'font-size': `${t.fontSizeSM}px`,
         'line-height': `${t.controlHeightSM - t.paddingXXS * 2}px`,
       },
@@ -250,33 +247,33 @@ export function useMenuStyle(prefixCls: string) {
         'font-size': `${t.fontSizeXL}px`,
       },
       [`.${prefixCls}-dark .${prefixCls}-item, .${prefixCls}-dark .${prefixCls}-submenu-title`]: {
-        color: darkItemColor,
+        color: menu.darkItemColor,
       },
       [`.${prefixCls}-dark .${prefixCls}-item:hover, .${prefixCls}-dark .${prefixCls}-submenu-title:hover`]:
         {
-          color: darkItemHoverColor,
+          color: menu.darkItemHoverColor,
           background: 'transparent',
         },
       [`.${prefixCls}-dark .${prefixCls}-item-selected`]: {
-        color: t.colorWhite,
-        background: darkItemSelectedBg,
+        color: menu.darkItemSelectedColor,
+        background: menu.darkItemSelectedBg,
       },
       [`.${prefixCls}-dark .${prefixCls}-item-selected::after`]: {
-        'border-color': t.colorWhite,
+        'border-color': menu.darkItemSelectedColor,
       },
       [`.${prefixCls}-dark .${prefixCls}-submenu-popup`]: {
-        color: darkItemColor,
-        background: darkBg,
+        color: menu.darkItemColor,
+        background: menu.darkPopupBg,
       },
       [`.${prefixCls}-dark .${prefixCls}-item-group-title`]: {
-        color: 'rgba(255,255,255,0.45)',
+        color: menu.darkGroupTitleColor,
       },
       [`.${prefixCls}-dark .${prefixCls}-item-divider`]: {
-        background: 'rgba(255,255,255,0.18)',
+        background: menu.darkItemDividerBg,
       },
       [`.${prefixCls}-dark .${prefixCls}-item-disabled, .${prefixCls}-dark .${prefixCls}-submenu-disabled > .${prefixCls}-submenu-title`]:
         {
-          color: 'rgba(255,255,255,0.25)',
+          color: menu.darkItemDisabledColor,
         },
       [`.${prefixCls}-dark .${prefixCls}-item-danger`]: {
         color: t.colorError,

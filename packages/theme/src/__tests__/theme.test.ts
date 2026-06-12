@@ -315,6 +315,7 @@ describe('@ant-design-solid/theme', () => {
         Tabs: { inkBarColor: '#722ed1', horizontalItemPadding: 18 },
         Tooltip: { maxWidth: 320, bg: '#111111' },
         Dropdown: { minWidth: 180, itemHoverBg: '#f0f5ff' },
+        Menu: { itemBg: '#fafafa' },
       },
     })
 
@@ -346,6 +347,17 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Dropdown', token).itemDisabledColor).toBe(token.colorTextDisabled)
     expect(getComponentToken('Dropdown', token).itemPaddingBlock).toBe(token.paddingXS)
     expect(getComponentToken('Dropdown', token).itemPaddingInline).toBe(token.paddingSM)
+
+    expect(getComponentToken('Menu', token).itemBg).toBe('#fafafa')
+    expect(getComponentToken('Menu', token).popupBg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Menu', token).itemHoverBg).toBe(token.colorBgTextHover)
+    expect(getComponentToken('Menu', token).itemSelectedBg).toBe(token.colorPrimaryBg)
+    expect(getComponentToken('Menu', token).darkItemBg).toBe('#001529')
+    expect(getComponentToken('Menu', token).darkPopupBg).toBe('#001529')
+    expect(getComponentToken('Menu', token).darkSubMenuItemBg).toBe('#000c17')
+    expect(getComponentToken('Menu', token).darkItemColor).toBe('rgba(255,255,255,0.65)')
+    expect(getComponentToken('Menu', token).darkItemHoverColor).toBe(token.colorTextLightSolid)
+    expect(getComponentToken('Menu', token).darkItemSelectedBg).toBe(token.colorPrimary)
   })
   it('derives dark-compatible component token defaults', () => {
     const token = mergeTheme({ algorithm: darkAlgorithm })

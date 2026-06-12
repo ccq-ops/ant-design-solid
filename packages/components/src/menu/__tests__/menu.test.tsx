@@ -491,6 +491,12 @@ describe('Menu', () => {
     expect(
       result.getByTestId('overflow').closest('.ads-menu-overflowed-indicator'),
     ).toBeInTheDocument()
+
+    const styles = menuStyleText()
+    expect(styles).toContain('.ads-menu-dark{background:#001529;color:rgba(255,255,255,0.65);')
+    expect(styles).toContain(
+      '.ads-menu-dark .ads-menu-submenu-popup{background:#001529;color:rgba(255,255,255,0.65);',
+    )
   })
 
   it('registers antd-like menu layout styles', () => {
