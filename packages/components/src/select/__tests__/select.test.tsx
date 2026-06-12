@@ -489,6 +489,26 @@ describe('Select', () => {
     expect(selectorRule).toContain('display:flex;')
     expect(selectorRule).toContain('height:32px;')
   })
+
+  it('overlays the clear button on the arrow slot when the selector is hovered', () => {
+    render(() => <Select allowClear defaultValue="a" options={options} />)
+
+    const selectStyle = Array.from(document.head.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .find((styleText) => styleText.includes('.ads-select-clear'))
+
+    const selectorRule = selectStyle?.match(/(?:^|\n)(\.ads-select-selector\{[^}]*\})/)?.[1]
+    const clearRule = selectStyle?.match(/(?:^|\n)(\.ads-select-clear\{[^}]*\})/)?.[1]
+
+    expect(selectorRule).toContain('position:relative;')
+    expect(clearRule).toContain('position:absolute;')
+    expect(clearRule).toContain('right:12px;')
+    expect(clearRule).toContain('opacity:0;')
+    expect(clearRule).toContain('pointer-events:none;')
+    expect(selectStyle).toContain(
+      '.ads-select:not(.ads-select-disabled):hover .ads-select-clear{opacity:1;pointer-events:auto;',
+    )
+  })
 })
 
 it('renders dropdown in a portal with fixed positioning and explicit zIndex', () => {
