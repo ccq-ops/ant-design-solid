@@ -122,15 +122,41 @@ export default Demo6
 ### Progress
 
 ```tsx
-import { Button, Space, Spin } from '@ant-design-solid/core'
+import { Button, Flex, Space, Spin, Switch } from '@ant-design-solid/core'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 const Demo7 = function () {
+  const [auto, setAuto] = createSignal(false)
+  const [percent, setPercent] = createSignal(-50)
+
+  createEffect(() => {
+    const timer = window.setTimeout(() => {
+      setPercent((value) => {
+        const nextPercent = value + 5
+        return nextPercent > 150 ? -50 : nextPercent
+      })
+    }, 100)
+
+    onCleanup(() => window.clearTimeout(timer))
+  })
+
+  const mergedPercent = () => (auto() ? 'auto' : percent())
+
   return (
-    <Space align="center">
-      <Spin percent={45} />
-      <Spin percent="auto" description="Uploading" />
-    </Space>
+    <Flex align="center" gap="middle">
+      <Switch
+        checkedChildren="Auto"
+        unCheckedChildren="Auto"
+        checked={auto()}
+        onChange={(checked) => {
+          setAuto(checked)
+          setPercent(-50)
+        }}
+      />
+      <Spin percent={mergedPercent()} size="small" />
+      <Spin percent={mergedPercent()} />
+      <Spin percent={mergedPercent()} size="large" />
+    </Flex>
   )
 }
 
