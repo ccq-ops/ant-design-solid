@@ -17,6 +17,12 @@ export function useTransferStyle(prefixCls: string) {
           'font-family': t.fontFamily,
         },
         [`.${prefixCls}-disabled`]: { color: t.colorTextDisabled },
+        [`.${prefixCls}-status-error .${prefixCls}-panel`]: {
+          'border-color': t.colorError,
+        },
+        [`.${prefixCls}-status-warning .${prefixCls}-panel`]: {
+          'border-color': t.colorWarning,
+        },
         [`.${prefixCls}-panel`]: {
           width: '200px',
           height: '260px',
@@ -31,11 +37,32 @@ export function useTransferStyle(prefixCls: string) {
           'border-bottom': `${t.lineWidth}px solid ${t.colorBorder}`,
           'font-weight': '600',
         },
+        [`.${prefixCls}-title`]: { display: 'inline-block' },
         [`.${prefixCls}-search`]: {
           margin: `${t.marginXS}px`,
           padding: `${t.paddingXS}px`,
           border: `${t.lineWidth}px solid ${t.colorBorder}`,
           'border-radius': `${t.borderRadius}px`,
+        },
+        [`.${prefixCls}-select-all`]: {
+          display: 'flex',
+          'align-items': 'center',
+          gap: `${t.paddingXS}px`,
+          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          'border-bottom': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          color: t.colorTextSecondary,
+          'font-size': `${t.fontSize - 1}px`,
+        },
+        [`.${prefixCls}-select-all input`]: {
+          margin: '0',
+        },
+        [`.${prefixCls}-select-all-icon`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+        },
+        [`.${prefixCls}-select-all-total`]: {
+          'margin-left': 'auto',
+          color: t.colorTextSecondary,
         },
         [`.${prefixCls}-list`]: {
           flex: '1',
@@ -57,6 +84,15 @@ export function useTransferStyle(prefixCls: string) {
           display: 'block',
           color: t.colorTextSecondary,
           'font-size': `${t.fontSize - 2}px`,
+        },
+        [`.${prefixCls}-empty`]: {
+          padding: `${t.paddingSM}px`,
+          color: t.colorTextSecondary,
+          'text-align': 'center',
+        },
+        [`.${prefixCls}-footer`]: {
+          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          'border-top': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         },
         [`.${prefixCls}-operations`]: {
           display: 'inline-flex',

@@ -1,8 +1,9 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { createSignal } from 'solid-js'
+import { For, createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Transfer } from '../index'
+import type { TransferKey } from '../index'
 
 const dataSource = [
   { key: '1', title: 'Alpha', description: 'First item' },
@@ -53,8 +54,8 @@ describe('Transfer', () => {
   })
 
   it('supports controlled target keys and selected keys', () => {
-    const [targetKeys, setTargetKeys] = createSignal<string[]>([])
-    const [selectedKeys, setSelectedKeys] = createSignal<string[]>(['1'])
+    const [targetKeys, setTargetKeys] = createSignal<TransferKey[]>([])
+    const [selectedKeys, setSelectedKeys] = createSignal<TransferKey[]>(['1'])
     const result = render(() => (
       <Transfer
         dataSource={dataSource}
@@ -121,5 +122,146 @@ describe('Transfer', () => {
       </ConfigProvider>
     ))
     expect(withProvider.container.querySelector('.custom-transfer')).toBeTruthy()
+  })
+
+  it('supports render, rowKey, actions, and direction-aware filtering', () => {
+    const filterOption = vi.fn((input: string, item: { name: string }, direction: string) =>
+      direction === 'left' ? item.name.toLowerCase().includes(input) : true,
+    )
+    const result = render(() => (
+      <Transfer
+        showSearch={{ placeholder: 'Find item', defaultValue: 'al' }}
+        dataSource={[
+          { id: 1, name: 'Alpha', description: 'First item' },
+          { id: 2, name: 'Beta', description: 'Second item' },
+        ]}
+        rowKey={(record) => record.id}
+        render={(item) => ({ label: <strong>{item.name}</strong>, value: item.name })}
+        actions={['Choose', 'Return']}
+        filterOption={filterOption}
+      />
+    ))
+
+    expect(result.getAllByPlaceholderText('Find item')[0]).toHaveValue('al')
+    expect(result.getByRole('button', { name: 'move selected right' })).toHaveTextContent('Choose')
+    expect(result.getByRole('option', { name: /Alpha/ })).toBeTruthy()
+    expect(result.queryByRole('option', { name: /Beta/ })).toBeNull()
+    expect(filterOption).toHaveBeenCalledWith(
+      'al',
+      expect.objectContaining({ name: 'Alpha' }),
+      'left',
+    )
+  })
+
+  it('calls search and scroll callbacks for each panel', () => {
+    const onSearch = vi.fn()
+    const onScroll = vi.fn()
+    const result = render(() => (
+      <Transfer showSearch dataSource={dataSource} onSearch={onSearch} onScroll={onScroll} />
+    ))
+
+    fireEvent.input(result.getByPlaceholderText('Search source'), { target: { value: 'alp' } })
+    fireEvent.scroll(result.getByRole('listbox', { name: 'source' }))
+
+    expect(onSearch).toHaveBeenCalledWith('left', 'alp')
+    expect(onScroll).toHaveBeenCalledWith('left', expect.any(Event))
+  })
+
+  it('supports footer and children custom list body render props', () => {
+    const result = render(() => (
+      <Transfer dataSource={dataSource} footer={(_, info) => <span>{info?.direction} footer</span>}>
+        {(listProps) => (
+          <div data-testid={`${listProps.direction}-custom-body`}>
+            <For each={listProps.filteredItems}>
+              {(item) => (
+                <button type="button" onClick={() => listProps.onItemSelect(item.key, true)}>
+                  Pick {item.title}
+                </button>
+              )}
+            </For>
+          </div>
+        )}
+      </Transfer>
+    ))
+
+    expect(result.getByText('left footer')).toBeTruthy()
+    expect(result.getByTestId('left-custom-body')).toBeTruthy()
+    fireEvent.click(result.getByRole('button', { name: 'Pick Alpha' }))
+    fireEvent.click(result.getByRole('button', { name: 'move selected right' }))
+    expect(result.getByTestId('right-custom-body')).toHaveTextContent('Pick Alpha')
+  })
+
+  it('supports select all labels, oneWay mode, pagination, locale, status, and semantic styles', () => {
+    const result = render(() => (
+      <Transfer
+        class="outer-transfer"
+        dataSource={[
+          { key: '1', title: 'Alpha' },
+          { key: '2', title: 'Beta' },
+          { key: '3', title: 'Gamma' },
+        ]}
+        locale={{
+          titles: ['Left title', 'Right title'],
+          notFoundContent: 'Nothing here',
+          searchPlaceholder: 'Lookup',
+        }}
+        showSearch
+        actions={['Add']}
+        oneWay
+        pagination={{ pageSize: 2 }}
+        status="error"
+        selectionsIcon={<span data-testid="selection-icon">S</span>}
+        selectAllLabels={[
+          ({ selectedCount, totalCount }) => `${selectedCount}/${totalCount} source`,
+          'target selected',
+        ]}
+        classNames={{ root: 'semantic-root', item: 'semantic-item', actions: 'semantic-actions' }}
+        styles={{ section: { width: '240px' }, actions: { margin: '4px' } }}
+        listStyle={({ direction }) => ({
+          'min-height': direction === 'left' ? '220px' : '210px',
+        })}
+        operationStyle={{ padding: '8px' }}
+      />
+    ))
+
+    expect(result.container.firstElementChild).toHaveClass('outer-transfer')
+    expect(result.container.firstElementChild).toHaveClass('semantic-root')
+    expect(result.container.firstElementChild).toHaveClass('ads-transfer-status-error')
+    expect(result.getByText('Left title')).toBeTruthy()
+    expect(result.getAllByPlaceholderText('Lookup')).toHaveLength(2)
+    expect(result.getAllByTestId('selection-icon')).toHaveLength(2)
+    expect(result.getByText('0/2 source')).toBeTruthy()
+    expect(result.getAllByRole('option')).toHaveLength(2)
+    expect(result.queryByRole('button', { name: 'move selected left' })).toBeNull()
+    expect(result.container.querySelector('.semantic-item')).toBeTruthy()
+    expect(result.container.querySelector('.semantic-actions')).toHaveStyle({ margin: '4px' })
+    expect(result.container.querySelector('[data-direction="left"]')).toHaveStyle({
+      width: '240px',
+    })
+    expect(result.container.querySelector('[data-direction="left"]')).toHaveStyle({
+      'min-height': '220px',
+    })
+    expect(result.getByRole('button', { name: 'move selected right' })).toHaveStyle({
+      padding: '8px',
+    })
+  })
+
+  it('exports Transfer.List, Transfer.Search, and Transfer.Operation helpers', () => {
+    const result = render(() => (
+      <>
+        <Transfer.Search value="abc" onChange={() => {}} />
+        <Transfer.Operation direction="right">Move</Transfer.Operation>
+        <Transfer.List
+          direction="left"
+          items={dataSource}
+          selectedKeys={[]}
+          onItemSelect={() => {}}
+        />
+      </>
+    ))
+
+    expect(result.getByDisplayValue('abc')).toBeTruthy()
+    expect(result.getByRole('button', { name: 'Move' })).toBeTruthy()
+    expect(result.getByRole('option', { name: /Alpha/ })).toBeTruthy()
   })
 })
