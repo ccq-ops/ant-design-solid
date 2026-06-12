@@ -263,32 +263,304 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+### Compound components
+
+```tsx
+import { Menu } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Menu
+      mode="inline"
+      defaultOpenKeys={['workspace']}
+      defaultSelectedKeys={['members']}
+      class="w-70"
+    >
+      <Menu.Item key="home" icon="⌂">
+        Home
+      </Menu.Item>
+      <Menu.SubMenu key="workspace" title="Workspace" icon="◆">
+        <Menu.Item key="projects">Projects</Menu.Item>
+        <Menu.ItemGroup title="Team">
+          <Menu.Item key="members">Members</Menu.Item>
+          <Menu.Item key="roles">Roles</Menu.Item>
+        </Menu.ItemGroup>
+        <Menu.Divider dashed />
+        <Menu.Item key="archive" danger>
+          Archive
+        </Menu.Item>
+      </Menu.SubMenu>
+    </Menu>
+  )
+}
+
+export default Demo7
+```
+
+### Multiple selection
+
+```tsx
+import { Menu } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Menu
+      multiple
+      defaultSelectedKeys={['mail']}
+      items={[
+        { key: 'mail', label: 'Mail' },
+        { key: 'team', label: 'Team' },
+        { key: 'projects', label: 'Projects' },
+      ]}
+      class="w-60"
+    />
+  )
+}
+
+export default Demo8
+```
+
+### Submenu trigger
+
+```tsx
+import { Menu, Space } from '@ant-design-solid/core'
+
+const navItems = [
+  {
+    key: 'settings',
+    label: 'Settings',
+    children: [
+      { key: 'profile', label: 'Profile' },
+      { key: 'security', label: 'Security' },
+    ],
+  },
+]
+
+const Demo9 = function () {
+  return (
+    <Space align="start">
+      <Menu items={navItems} class="w-55" />
+      <Menu triggerSubMenuAction="click" items={navItems} class="w-55" />
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+### Custom rendering
+
+```tsx
+import { Menu } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Menu
+      mode="inline"
+      defaultOpenKeys={['settings']}
+      inlineIndent={32}
+      expandIcon={(props) => (props.open ? '⌄' : '›')}
+      items={[
+        {
+          key: 'settings',
+          label: 'Settings',
+          children: [
+            { key: 'profile', label: 'Profile', extra: '⌘P', title: 'Profile' },
+            { key: 'delete', label: 'Delete workspace', danger: true, extra: '⌘D' },
+            { type: 'divider', dashed: true },
+            { key: 'billing', label: 'Billing' },
+          ],
+        },
+      ]}
+      class="w-80"
+    />
+  )
+}
+
+export default Demo10
+```
+
+### Popup and theme
+
+```tsx
+import { Menu } from '@ant-design-solid/core'
+import { createSignal, onCleanup, onMount } from 'solid-js'
+
+function currentTheme() {
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
+}
+
+const Demo11 = function () {
+  const [menuTheme, setMenuTheme] = createSignal(currentTheme())
+
+  onMount(() => {
+    const observer = new MutationObserver(() => setMenuTheme(currentTheme()))
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+    onCleanup(() => observer.disconnect())
+  })
+
+  return (
+    <Menu
+      mode="horizontal"
+      theme={menuTheme()}
+      triggerSubMenuAction="click"
+      overflowedIndicator="More"
+      popupRender={(node) => (
+        <div class="docs-border docs-surface-solid rounded border p-1 shadow">{node}</div>
+      )}
+      items={[
+        { key: 'mail', label: 'Mail' },
+        {
+          key: 'settings',
+          label: 'Settings',
+          popupClass: 'min-w-44',
+          popupOffset: [0, 8],
+          children: [
+            { key: 'profile', label: 'Profile' },
+            { key: 'security', label: 'Security' },
+          ],
+        },
+      ]}
+    />
+  )
+}
+
+export default Demo11
+```
+
+### Semantic styles
+
+```tsx
+import { Menu } from '@ant-design-solid/core'
+
+const Demo12 = function () {
+  return (
+    <Menu
+      mode="inline"
+      defaultOpenKeys={['settings']}
+      classNames={{
+        root: 'border rounded',
+        item: 'tracking-wide',
+        submenuTitle: 'font-medium',
+      }}
+      styles={{
+        item: { color: '#1677ff' },
+      }}
+      items={[
+        {
+          key: 'settings',
+          label: 'Settings',
+          children: [{ key: 'profile', label: 'Profile' }],
+        },
+      ]}
+      class="w-70"
+    />
+  )
+}
+
+export default Demo12
+```
+
 ## API
 
 ### Menu
 
-| Property              | Description                                        | Type                                         | Default      |
-| --------------------- | -------------------------------------------------- | -------------------------------------------- | ------------ |
-| `items`               | Menu items, submenus, groups, and dividers.        | `MenuItem[]`                                 | `-`          |
-| `mode`                | Menu layout mode.                                  | `'vertical' \| 'horizontal' \| 'inline'`     | `'vertical'` |
-| `selectedKeys`        | Controlled selected item keys.                     | `string[]`                                   | `-`          |
-| `defaultSelectedKeys` | Initial selected item keys for uncontrolled usage. | `string[]`                                   | `-`          |
-| `openKeys`            | Controlled open submenu keys.                      | `string[]`                                   | `-`          |
-| `defaultOpenKeys`     | Initial open submenu keys for uncontrolled usage.  | `string[]`                                   | `-`          |
-| `inlineCollapsed`     | Collapses inline menus.                            | `boolean`                                    | `false`      |
-| `zIndex`              | Overrides popup submenu z-index.                   | `number`                                     | `-`          |
-| `getPopupContainer`   | Returns popup submenu portal container.            | `(triggerNode?: HTMLElement) => HTMLElement` | `-`          |
-| `onClick`             | Called when an enabled menu item is clicked.       | `(info: MenuClickInfo) => void`              | `-`          |
-| `onSelect`            | Called when selected keys change.                  | `(info: MenuSelectInfo) => void`             | `-`          |
-| `onOpenChange`        | Called when open submenu keys change.              | `(openKeys: string[]) => void`               | `-`          |
+| Property               | Description                                         | Type                                                | Default      |
+| ---------------------- | --------------------------------------------------- | --------------------------------------------------- | ------------ |
+| `items`                | Menu items, submenus, groups, dividers, or `null`.  | `MenuItem[]`                                        | `-`          |
+| `children`             | Compound `Menu.Item` / `Menu.SubMenu` entries.      | `JSX.Element`                                       | `-`          |
+| `mode`                 | Menu layout mode.                                   | `'vertical' \| 'horizontal' \| 'inline'`            | `'vertical'` |
+| `selectedKeys`         | Controlled selected item keys.                      | `string[]`                                          | `-`          |
+| `defaultSelectedKeys`  | Initial selected item keys for uncontrolled usage.  | `string[]`                                          | `-`          |
+| `openKeys`             | Controlled open submenu keys.                       | `string[]`                                          | `-`          |
+| `defaultOpenKeys`      | Initial open submenu keys for uncontrolled usage.   | `string[]`                                          | `-`          |
+| `inlineCollapsed`      | Collapses inline menus.                             | `boolean`                                           | `false`      |
+| `inlineIndent`         | Inline nested item indent in pixels.                | `number`                                            | `24`         |
+| `multiple`             | Enables multiple selected keys.                     | `boolean`                                           | `false`      |
+| `selectable`           | Allows item selection.                              | `boolean`                                           | `true`       |
+| `expandIcon`           | Custom submenu expand icon.                         | `JSX.Element \| (props) => JSX.Element`             | `-`          |
+| `forceSubMenuRender`   | Keeps submenu lists mounted while hidden.           | `boolean`                                           | `false`      |
+| `overflowedIndicator`  | Horizontal overflow indicator hook.                 | `JSX.Element`                                       | `-`          |
+| `popupRender`          | Custom popup submenu renderer.                      | `(node, props) => JSX.Element`                      | `-`          |
+| `subMenuOpenDelay`     | Hover open delay in seconds.                        | `number`                                            | `0`          |
+| `subMenuCloseDelay`    | Hover close delay in seconds.                       | `number`                                            | `0.1`        |
+| `theme`                | Menu color theme class.                             | `'light' \| 'dark'`                                 | `'light'`    |
+| `tooltip`              | Collapsed item title behavior; `false` disables.    | `false \| { title?, class?, style? }`               | `-`          |
+| `triggerSubMenuAction` | Submenu trigger interaction.                        | `'hover' \| 'click'`                                | `'hover'`    |
+| `classNames`           | Semantic class hooks.                               | `Record<MenuSemanticName, string> \| (info) => ...` | `-`          |
+| `styles`               | Semantic style hooks.                               | `Record<MenuSemanticName, CSSProperties> \| ...`    | `-`          |
+| `zIndex`               | Overrides popup submenu z-index.                    | `number`                                            | `-`          |
+| `getPopupContainer`    | Returns popup submenu portal container.             | `(triggerNode?: HTMLElement) => HTMLElement`        | `-`          |
+| `onClick`              | Called when an enabled menu item is clicked.        | `(info: MenuClickInfo) => void`                     | `-`          |
+| `onSelect`             | Called when an item is selected.                    | `(info: MenuSelectInfo) => void`                    | `-`          |
+| `onDeselect`           | Called when an item is deselected in multiple mode. | `(info: MenuSelectInfo) => void`                    | `-`          |
+| `onOpenChange`         | Called when open submenu keys change.               | `(openKeys: string[]) => void`                      | `-`          |
 
-### MenuItem
+### MenuItemType
 
-| Property   | Description                                   | Type                                          | Default |
-| ---------- | --------------------------------------------- | --------------------------------------------- | ------- |
-| `key`      | Stable menu key for item and submenu entries. | `string`                                      | `-`     |
-| `label`    | Menu label content.                           | `JSX.Element`                                 | `-`     |
-| `icon`     | Optional leading icon.                        | `JSX.Element`                                 | `-`     |
-| `disabled` | Disables item interaction.                    | `boolean`                                     | `-`     |
-| `type`     | Entry type: item, submenu, group, or divider. | `'item' \| 'submenu' \| 'group' \| 'divider'` | `-`     |
-| `children` | Nested entries for submenus and groups.       | `MenuItem[]`                                  | `-`     |
+| Property   | Description                                  | Type            | Default |
+| ---------- | -------------------------------------------- | --------------- | ------- |
+| `key`      | Stable menu item key.                        | `string`        | `-`     |
+| `label`    | Menu label content.                          | `JSX.Element`   | `-`     |
+| `icon`     | Optional leading icon.                       | `JSX.Element`   | `-`     |
+| `disabled` | Disables item interaction.                   | `boolean`       | `false` |
+| `danger`   | Applies danger styling.                      | `boolean`       | `false` |
+| `extra`    | Extra content rendered at the item end.      | `JSX.Element`   | `-`     |
+| `title`    | Native title used in collapsed inline menus. | `string`        | `-`     |
+| `type`     | Item marker.                                 | `'item'`        | `-`     |
+| `class`    | Custom item class.                           | `string`        | `-`     |
+| `style`    | Custom item style.                           | `CSSProperties` | `-`     |
+
+### SubMenuType
+
+| Property       | Description                                                     | Type                           | Default |
+| -------------- | --------------------------------------------------------------- | ------------------------------ | ------- |
+| `key`          | Stable submenu key.                                             | `string`                       | `-`     |
+| `label`        | Submenu title content.                                          | `JSX.Element`                  | `-`     |
+| `children`     | Nested menu entries.                                            | `MenuItem[]`                   | `-`     |
+| `icon`         | Optional leading icon.                                          | `JSX.Element`                  | `-`     |
+| `disabled`     | Disables submenu interaction.                                   | `boolean`                      | `false` |
+| `popupClass`   | Popup submenu class, Solid equivalent of antd `popupClassName`. | `string`                       | `-`     |
+| `popupOffset`  | Popup offset in pixels.                                         | `[number, number]`             | `-`     |
+| `theme`        | Submenu theme class.                                            | `'light' \| 'dark'`            | `-`     |
+| `onTitleClick` | Called when the submenu title is clicked.                       | `(info) => void`               | `-`     |
+| `popupRender`  | Custom popup renderer for this submenu.                         | `(node, props) => JSX.Element` | `-`     |
+| `class`        | Custom submenu class.                                           | `string`                       | `-`     |
+| `style`        | Custom submenu style.                                           | `CSSProperties`                | `-`     |
+
+### MenuItemGroupType
+
+| Property   | Description               | Type            | Default |
+| ---------- | ------------------------- | --------------- | ------- |
+| `type`     | Group marker.             | `'group'`       | `-`     |
+| `key`      | Optional group key.       | `string`        | `-`     |
+| `label`    | Group title content.      | `JSX.Element`   | `-`     |
+| `children` | Group child menu entries. | `MenuItem[]`    | `-`     |
+| `class`    | Custom group class.       | `string`        | `-`     |
+| `style`    | Custom group style.       | `CSSProperties` | `-`     |
+
+### MenuDividerType
+
+| Property | Description          | Type            | Default |
+| -------- | -------------------- | --------------- | ------- |
+| `type`   | Divider marker.      | `'divider'`     | `-`     |
+| `key`    | Optional key.        | `string`        | `-`     |
+| `dashed` | Renders dashed line. | `boolean`       | `false` |
+| `class`  | Custom class.        | `string`        | `-`     |
+| `style`  | Custom style.        | `CSSProperties` | `-`     |
+
+### Compound components
+
+| Component        | Description                         |
+| ---------------- | ----------------------------------- |
+| `Menu.Item`      | JSX item. Uses `children` as label. |
+| `Menu.SubMenu`   | JSX submenu. Uses `title` as label. |
+| `Menu.ItemGroup` | JSX group. Uses `title` as label.   |
+| `Menu.Divider`   | JSX divider. Supports `dashed`.     |
+
+### Semantic names
+
+`root`, `item`, `itemIcon`, `itemContent`, `itemExtra`, `submenu`, `submenuTitle`, `submenuArrow`, `submenuList`, `submenuPopup`, `group`, `groupTitle`, `groupList`, `divider`.
