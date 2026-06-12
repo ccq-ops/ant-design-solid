@@ -1,5 +1,6 @@
 import { createRoot, createSignal, onCleanup } from 'solid-js'
 import { createMessageHolder, mountMessageHolder } from './holder'
+import { PureList, PurePanel } from './pure-panel'
 import type { JSX } from 'solid-js'
 import type {
   MessageArgs,
@@ -319,4 +320,6 @@ export const message: MessageStatic = {
   destroy,
   config,
   useMessage,
+  _InternalPanelDoNotUseOrYouWillBeFired: PurePanel,
+  _InternalListDoNotUseOrYouWillBeFired: PureList,
 }

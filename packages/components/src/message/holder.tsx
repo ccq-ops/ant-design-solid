@@ -17,7 +17,9 @@ import type {
   MessageKey,
   MessageNotice,
   MessageSemanticClassNames,
+  MessageSemanticClassNamesMap,
   MessageSemanticStyles,
+  MessageSemanticStylesMap,
   MessageVisualType,
 } from './interface'
 
@@ -64,37 +66,19 @@ function normalizeStyle(style: JSX.CSSProperties | undefined): JSX.CSSProperties
   return result as JSX.CSSProperties
 }
 
-function resolveClassNames(
-  value:
-    | MessageSemanticClassNames
-    | ((info: { props: MessageNotice }) => MessageSemanticClassNames)
-    | undefined,
-  notice: MessageNotice,
-) {
+function resolveClassNames(value: MessageSemanticClassNames | undefined, notice: MessageNotice) {
   return typeof value === 'function' ? value({ props: notice }) : value
 }
 
-function resolveStyles(
-  value:
-    | MessageSemanticStyles
-    | ((info: { props: MessageNotice }) => MessageSemanticStyles)
-    | undefined,
-  notice: MessageNotice,
-) {
+function resolveStyles(value: MessageSemanticStyles | undefined, notice: MessageNotice) {
   return typeof value === 'function' ? value({ props: notice }) : value
 }
 
 function mergeClassNames(
-  global:
-    | MessageSemanticClassNames
-    | ((info: { props: MessageNotice }) => MessageSemanticClassNames)
-    | undefined,
-  local:
-    | MessageSemanticClassNames
-    | ((info: { props: MessageNotice }) => MessageSemanticClassNames)
-    | undefined,
+  global: MessageSemanticClassNames | undefined,
+  local: MessageSemanticClassNames | undefined,
   notice: MessageNotice,
-): MessageSemanticClassNames {
+): MessageSemanticClassNamesMap {
   const g = resolveClassNames(global, notice)
   const l = resolveClassNames(local, notice)
   return {
@@ -108,16 +92,10 @@ function mergeClassNames(
 }
 
 function mergeStyles(
-  global:
-    | MessageSemanticStyles
-    | ((info: { props: MessageNotice }) => MessageSemanticStyles)
-    | undefined,
-  local:
-    | MessageSemanticStyles
-    | ((info: { props: MessageNotice }) => MessageSemanticStyles)
-    | undefined,
+  global: MessageSemanticStyles | undefined,
+  local: MessageSemanticStyles | undefined,
   notice: MessageNotice,
-): MessageSemanticStyles {
+): MessageSemanticStylesMap {
   const g = resolveStyles(global, notice)
   const l = resolveStyles(local, notice)
   return {
@@ -132,7 +110,10 @@ function mergeStyles(
 
 export function MessageHolder(props: MessageHolderProps) {
   const context = useConfig()
-  const cfg = () => props.config?.() ?? {}
+  const cfg = () => ({
+    ...context.message(),
+    ...props.config?.(),
+  })
   const prefixCls = () => cfg().prefixCls ?? `${context.prefixCls()}-message`
   const [, hashId] = useMessageStyle(prefixCls())
   const visibleNotices = createMemo(() => {
@@ -167,10 +148,17 @@ export function MessageHolder(props: MessageHolderProps) {
               class={classNames(
                 `${prefixCls()}-notice`,
                 `${prefixCls()}-notice-${notice.type}`,
+                cfg().transitionName,
+                cfg().transitionName && `${cfg().transitionName}-appear`,
+                cfg().transitionName && `${cfg().transitionName}-appear-active`,
+                cfg().class,
+                cfg().className,
+                notice.class,
                 notice.className,
                 semanticClassNames().wrapper,
               )}
               style={{
+                ...normalizeStyle(cfg().style),
                 ...normalizeStyle(notice.style),
                 ...normalizeStyle(semanticStyles().wrapper),
               }}

@@ -2,6 +2,7 @@ import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssi
 import { createSignal } from 'solid-js'
 import { render } from '@solidjs/testing-library'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ConfigProvider } from '../../config-provider'
 import { message } from '../index'
 import { MessageHolder } from '../holder'
 
@@ -188,6 +189,80 @@ describe('message', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  it('supports Solid class prop and semantic classNames and styles functions', () => {
+    message.config({
+      classNames: ({ props }) => ({
+        root: props.type === 'success' ? 'global-success-root' : undefined,
+        wrapper: 'global-wrapper',
+      }),
+      styles: ({ props }) => ({
+        root: props.type === 'success' ? { inset: '0 auto auto 50%' } : undefined,
+        wrapper: { border: '1px solid rgb(1, 2, 3)' },
+      }),
+    })
+
+    message.success({
+      content: 'Solid class',
+      duration: 0,
+      class: 'solid-notice',
+      className: 'react-notice',
+      classNames: ({ props }) => ({
+        title: props.key === 'solid-key' ? 'solid-title' : undefined,
+      }),
+      styles: ({ props }) => ({
+        title: props.key === 'solid-key' ? { color: 'rgb(4, 5, 6)' } : undefined,
+      }),
+      key: 'solid-key',
+    })
+
+    const root = document.body.querySelector('.ads-message') as HTMLElement
+    const wrapper = document.body.querySelector('.ads-message-notice') as HTMLElement
+    const title = document.body.querySelector('.ads-message-title') as HTMLElement
+
+    expect(root.classList.contains('global-success-root')).toBe(true)
+    expect(root.style.inset).toBe('0 auto auto 50%')
+    expect(wrapper.classList.contains('solid-notice')).toBe(true)
+    expect(wrapper.classList.contains('react-notice')).toBe(true)
+    expect(wrapper.classList.contains('global-wrapper')).toBe(true)
+    expect(wrapper.style.border).toBe('1px solid rgb(1, 2, 3)')
+    expect(title.classList.contains('solid-title')).toBe(true)
+    expect(title.style.color).toBe('rgb(4, 5, 6)')
+  })
+
+  it('adds transition classes when transitionName is configured', () => {
+    message.config({ transitionName: 'fade-message' })
+    message.info('Animated', 0)
+
+    const wrapper = document.body.querySelector('.ads-message-notice') as HTMLElement
+
+    expect(wrapper.classList.contains('fade-message')).toBe(true)
+    expect(wrapper.classList.contains('fade-message-appear')).toBe(true)
+    expect(wrapper.classList.contains('fade-message-appear-active')).toBe(true)
+  })
+
+  it('renders internal pure panel and list helpers', () => {
+    const Panel = message._InternalPanelDoNotUseOrYouWillBeFired
+    const List = message._InternalListDoNotUseOrYouWillBeFired
+
+    const panel = render(() => <Panel type="success" content="Panel content" class="panel-extra" />)
+    expect(panel.container).toHaveTextContent('Panel content')
+    expect(panel.container.querySelector('.ads-message-notice-pure-panel')).toBeTruthy()
+    expect(panel.container.querySelector('.panel-extra')).toBeTruthy()
+
+    const list = render(() => (
+      <List
+        notices={[
+          { key: 'a', type: 'info', content: 'List A' },
+          { key: 'b', type: 'error', content: 'List B' },
+        ]}
+      />
+    ))
+
+    expect(list.container).toHaveTextContent('List A')
+    expect(list.container).toHaveTextContent('List B')
+    expect(list.container.querySelectorAll('.ads-message-notice')).toHaveLength(2)
+  })
+
   it('pauses auto close while hovered', () => {
     message.open({ content: 'Hover', duration: 1, pauseOnHover: true })
     const content = document.body.querySelector('.ads-message-notice-content') as HTMLElement
@@ -227,5 +302,45 @@ describe('message', () => {
     expect(result.container).toHaveTextContent('Local')
     expect(result.container.querySelector('.local-message')).toBeTruthy()
     expect(document.body.querySelector('.ads-message')).toBeFalsy()
+  })
+
+  it('merges ConfigProvider message config for hook holders', () => {
+    function InnerDemo() {
+      const [api, holder] = message.useMessage()
+      return (
+        <>
+          {holder}
+          <button type="button" onClick={() => api.info('Context message', 0)}>
+            Show
+          </button>
+        </>
+      )
+    }
+
+    function Demo() {
+      return (
+        <ConfigProvider
+          message={{
+            class: 'context-notice',
+            style: { 'letter-spacing': '1px' },
+            classNames: { title: 'context-title' },
+            styles: { title: { color: 'rgb(7, 8, 9)' } },
+          }}
+        >
+          <InnerDemo />
+        </ConfigProvider>
+      )
+    }
+
+    const result = render(() => <Demo />)
+    result.getByText('Show').click()
+
+    const wrapper = result.container.querySelector('.ads-message-notice') as HTMLElement
+    const title = result.container.querySelector('.ads-message-title') as HTMLElement
+
+    expect(wrapper.classList.contains('context-notice')).toBe(true)
+    expect(wrapper.style.letterSpacing).toBe('1px')
+    expect(title.classList.contains('context-title')).toBe(true)
+    expect(title.style.color).toBe('rgb(7, 8, 9)')
   })
 })

@@ -4,8 +4,17 @@ export type MessageVisualType = 'info' | 'success' | 'error' | 'warning' | 'load
 export type MessageType = MessageVisualType
 export type MessageKey = string | number
 export type MessageSemanticKey = 'root' | 'list' | 'listContent' | 'wrapper' | 'icon' | 'title'
-export type MessageSemanticClassNames = Partial<Record<MessageSemanticKey, string>>
-export type MessageSemanticStyles = Partial<Record<MessageSemanticKey, JSX.CSSProperties>>
+export interface MessageSemanticInfo {
+  props: MessageArgs
+}
+export type MessageSemanticClassNamesMap = Partial<Record<MessageSemanticKey, string>>
+export type MessageSemanticStylesMap = Partial<Record<MessageSemanticKey, JSX.CSSProperties>>
+export type MessageSemanticClassNames =
+  | MessageSemanticClassNamesMap
+  | ((info: MessageSemanticInfo) => MessageSemanticClassNamesMap)
+export type MessageSemanticStyles =
+  | MessageSemanticStylesMap
+  | ((info: MessageSemanticInfo) => MessageSemanticStylesMap)
 
 export interface MessageArgs {
   key?: MessageKey
@@ -14,6 +23,7 @@ export interface MessageArgs {
   duration?: number
   onClose?: () => void
   icon?: JSX.Element
+  class?: string
   className?: string
   style?: JSX.CSSProperties
   classNames?: MessageSemanticClassNames
@@ -27,10 +37,14 @@ export interface MessageConfigOptions {
   duration?: number
   prefixCls?: string
   getContainer?: () => HTMLElement
+  transitionName?: string
   maxCount?: number
   rtl?: boolean
   stack?: boolean | { threshold?: number }
   pauseOnHover?: boolean
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
   classNames?: MessageSemanticClassNames
   styles?: MessageSemanticStyles
 }
@@ -65,4 +79,15 @@ export interface MessageInstance {
 export interface MessageStatic extends MessageInstance {
   config: (options: MessageConfigOptions) => void
   useMessage: (config?: MessageConfigOptions) => [MessageInstance, JSX.Element]
+  _InternalPanelDoNotUseOrYouWillBeFired: (props: MessagePurePanelProps) => JSX.Element
+  _InternalListDoNotUseOrYouWillBeFired: (props: MessagePureListProps) => JSX.Element
+}
+
+export interface MessagePurePanelProps extends Omit<MessageArgs, 'key' | 'duration' | 'onClose'> {
+  prefixCls?: string
+}
+
+export interface MessagePureListProps {
+  notices: MessageNotice[]
+  config?: MessageConfigOptions
 }
