@@ -13,6 +13,16 @@ function input(container: HTMLElement) {
   return container.querySelector('input[type="file"]') as HTMLInputElement
 }
 
+function dataTransfer(files: File[]) {
+  return {
+    files,
+    items: files.map((item) => ({
+      kind: 'file',
+      getAsFile: () => item,
+    })),
+  }
+}
+
 afterEach(() => cleanup())
 
 describe('Upload', () => {
@@ -74,7 +84,9 @@ describe('Upload', () => {
 
     await waitFor(() => expect(screen.getByText('b.txt')).toBeInTheDocument())
     expect(screen.getByText('ready')).toBeInTheDocument()
-    expect(beforeUpload).toHaveBeenCalledWith(expect.objectContaining({ name: 'b.txt' }))
+    expect(beforeUpload).toHaveBeenCalledWith(expect.objectContaining({ name: 'b.txt' }), [
+      expect.objectContaining({ name: 'b.txt' }),
+    ])
     expect(onChange).toHaveBeenLastCalledWith(
       expect.objectContaining({
         file: expect.objectContaining({ name: 'b.txt', status: 'ready' }),
@@ -156,6 +168,83 @@ describe('Upload', () => {
       expect.objectContaining({
         file: expect.objectContaining({ status: 'done', percent: 100, response: { ok: true } }),
       }),
+    )
+  })
+
+  it('skips files when beforeUpload returns Upload.LIST_IGNORE', async () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Upload beforeUpload={() => Upload.LIST_IGNORE} onChange={onChange}>
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), { target: { files: [file('ignored.txt')] } })
+
+    await Promise.resolve()
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.queryByText('ignored.txt')).not.toBeInTheDocument()
+  })
+
+  it('uploads a transformed file from beforeUpload', async () => {
+    const customRequest = vi.fn(({ file: uploadFile, onSuccess }) => {
+      onSuccess({ ok: true }, uploadFile)
+    })
+    const result = render(() => (
+      <Upload
+        beforeUpload={() => new File(['changed'], 'changed.txt', { type: 'text/plain' })}
+        customRequest={customRequest}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), { target: { files: [file('original.txt')] } })
+
+    await waitFor(() => expect(screen.getByText('original.txt')).toBeInTheDocument())
+    expect(customRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        file: expect.objectContaining({ name: 'changed.txt' }),
+      }),
+      expect.objectContaining({ defaultRequest: expect.any(Function) }),
+    )
+  })
+
+  it('passes full request options to customRequest and supports defaultRequest', async () => {
+    const customRequest = vi.fn()
+    const data = vi.fn(() => ({ token: 'abc' }))
+    const result = render(() => (
+      <Upload
+        action={(uploadFile) => `/upload/${uploadFile.name}`}
+        data={data}
+        headers={{ 'x-test': '1' }}
+        method="PUT"
+        name="asset"
+        withCredentials
+        customRequest={customRequest}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), { target: { files: [file('request.txt')] } })
+
+    await waitFor(() => expect(customRequest).toHaveBeenCalled())
+    expect(data).toHaveBeenCalledWith(expect.objectContaining({ name: 'request.txt' }))
+    expect(customRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: '/upload/request.txt',
+        data: { token: 'abc' },
+        filename: 'asset',
+        file: expect.objectContaining({ name: 'request.txt' }),
+        headers: { 'x-test': '1' },
+        method: 'PUT',
+        withCredentials: true,
+        onProgress: expect.any(Function),
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function),
+      }),
+      expect.objectContaining({ defaultRequest: expect.any(Function) }),
     )
   })
 
@@ -374,6 +463,118 @@ describe('Upload', () => {
 
     await waitFor(() => expect(onChange).toHaveBeenCalled())
     expect(screen.queryByText('hidden.txt')).not.toBeInTheDocument()
+  })
+
+  it('customizes upload list actions with showUploadList object', () => {
+    const onPreview = vi.fn()
+    const onDownload = vi.fn()
+    render(() => (
+      <Upload
+        defaultFileList={[{ uid: '1', name: 'photo.png', status: 'done', url: '/photo.png' }]}
+        showUploadList={{
+          extra: (uploadFile) => <span>extra {uploadFile.name}</span>,
+          showRemoveIcon: false,
+          showPreviewIcon: true,
+          showDownloadIcon: true,
+          previewIcon: <span>Preview</span>,
+          downloadIcon: <span>Download</span>,
+        }}
+        onPreview={onPreview}
+        onDownload={onDownload}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview photo.png' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Download photo.png' }))
+
+    expect(screen.getByText('extra photo.png')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Remove photo.png' })).not.toBeInTheDocument()
+    expect(onPreview).toHaveBeenCalledWith(expect.objectContaining({ name: 'photo.png' }))
+    expect(onDownload).toHaveBeenCalledWith(expect.objectContaining({ name: 'photo.png' }))
+  })
+
+  it('supports itemRender and semantic classNames/styles', () => {
+    const result = render(() => (
+      <Upload
+        defaultFileList={[{ uid: '1', name: 'custom.txt', status: 'done' }]}
+        classNames={{
+          root: 'root-slot',
+          list: 'list-slot',
+          item: 'item-slot',
+          trigger: 'trigger-slot',
+        }}
+        styles={{ item: { color: 'red' } }}
+        itemRender={(_originNode, uploadFile, _fileList, actions) => (
+          <button type="button" onClick={actions.remove}>
+            Custom {uploadFile.name}
+          </button>
+        )}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    expect(result.container.querySelector('.root-slot')).toBeInTheDocument()
+    expect(result.container.querySelector('.list-slot')).toBeInTheDocument()
+    expect(result.container.querySelector('.trigger-slot')).toBeInTheDocument()
+    expect(result.container.querySelector<HTMLElement>('.item-slot')?.style.color).toBe('red')
+  })
+
+  it('supports dragger, drop uploads, and onDrop', async () => {
+    const onDrop = vi.fn()
+    const onChange = vi.fn()
+    render(() => (
+      <Upload.Dragger onDrop={onDrop} onChange={onChange}>
+        <span>Drop files</span>
+      </Upload.Dragger>
+    ))
+
+    fireEvent.drop(screen.getByText('Drop files'), {
+      dataTransfer: dataTransfer([file('drop.txt')]),
+    })
+
+    await waitFor(() => expect(screen.getByText('drop.txt')).toBeInTheDocument())
+    expect(onDrop).toHaveBeenCalled()
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ file: expect.objectContaining({ name: 'drop.txt' }) }),
+    )
+  })
+
+  it('supports paste uploads when pastable is true', async () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Upload pastable onChange={onChange}>
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.paste(result.container.querySelector('.ads-upload') as HTMLElement, {
+      clipboardData: dataTransfer([file('paste.txt')]),
+    })
+
+    await waitFor(() => expect(screen.getByText('paste.txt')).toBeInTheDocument())
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ file: expect.objectContaining({ name: 'paste.txt' }) }),
+    )
+  })
+
+  it('passes directory, capture, and openFileDialogOnClick input behavior', () => {
+    const result = render(() => (
+      <Upload directory capture="environment" openFileDialogOnClick={false}>
+        <button>Upload</button>
+      </Upload>
+    ))
+    const element = input(result.container)
+    const click = vi.spyOn(element, 'click')
+
+    fireEvent.click(result.container.querySelector('.ads-upload-trigger') as HTMLElement)
+
+    expect(element).toHaveAttribute('webkitdirectory')
+    expect(element).toHaveAttribute('directory')
+    expect(element).toHaveAttribute('capture', 'environment')
+    expect(click).not.toHaveBeenCalled()
   })
 
   it('guards trigger, remove, and selection when disabled', async () => {
