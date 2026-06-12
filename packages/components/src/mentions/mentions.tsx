@@ -2,6 +2,7 @@ import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
   For,
   Show,
+  children as resolveChildren,
   createEffect,
   createMemo,
   createRenderEffect,
@@ -13,12 +14,38 @@ import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
+import { Empty } from '../empty'
+import { Spin } from '../spin'
+import {
+  applyExceedFormatter,
+  formatCount,
+  getAllowClearConfig,
+  getCount,
+  getMaxLength,
+  shouldShowCount,
+} from '../input/utils'
 import { classNames } from '../shared/class-names'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
-import type { MentionsOption, MentionsProps } from './interface'
+import type {
+  MentionsConfig,
+  MentionsEntity,
+  MentionsOption,
+  MentionsOptionProps,
+  MentionsProps,
+} from './interface'
 import { useMentionsStyle } from './mentions.style'
+
+const OPTION_MARK = '__ANT_DESIGN_SOLID_MENTIONS_OPTION__'
+const textareaLineHeight = 24
+const popupTriggerOffset = 2
+
+function mergeStyle(
+  ...styles: Array<JSX.CSSProperties | undefined>
+): JSX.CSSProperties | undefined {
+  return Object.assign({}, ...styles.filter(Boolean))
+}
 
 interface ActiveMention {
   prefix: string
@@ -49,6 +76,136 @@ function defaultValidateSearch(search: string): boolean {
   return !/\s/.test(search)
 }
 
+function getAutoSizeConfig(autoSize: MentionsProps['autoSize']) {
+  if (!autoSize) return undefined
+  return typeof autoSize === 'object' ? autoSize : {}
+}
+
+function getWindowHeight(): number {
+  if (typeof window === 'undefined') return 0
+  return window.innerHeight || document.documentElement.clientHeight || 0
+}
+
+function copyTextareaStyles(textarea: HTMLTextAreaElement, mirror: HTMLDivElement): void {
+  const style = window.getComputedStyle(textarea)
+  const properties = [
+    'box-sizing',
+    'width',
+    'height',
+    'overflow-x',
+    'overflow-y',
+    'border-top-width',
+    'border-right-width',
+    'border-bottom-width',
+    'border-left-width',
+    'padding-top',
+    'padding-right',
+    'padding-bottom',
+    'padding-left',
+    'font-family',
+    'font-size',
+    'font-weight',
+    'font-style',
+    'letter-spacing',
+    'line-height',
+    'text-transform',
+    'text-align',
+    'white-space',
+    'word-break',
+    'word-wrap',
+    'tab-size',
+  ]
+
+  for (const property of properties) {
+    mirror.style.setProperty(property, style.getPropertyValue(property))
+  }
+}
+
+function measureTextAreaPosition(
+  textarea: HTMLTextAreaElement,
+  index: number,
+): { left: number; top: number; bottom: number } | undefined {
+  if (!canUseDom()) return undefined
+  const rect = textarea.getBoundingClientRect()
+  const mirror = document.createElement('div')
+  mirror.setAttribute('data-mentions-measure', 'true')
+  copyTextareaStyles(textarea, mirror)
+  mirror.style.position = 'fixed'
+  mirror.style.visibility = 'hidden'
+  mirror.style.pointerEvents = 'none'
+  mirror.style.left = `${rect.left}px`
+  mirror.style.top = `${rect.top}px`
+  mirror.style.zIndex = '-1'
+  mirror.style.whiteSpace = 'pre-wrap'
+  mirror.style.overflowWrap = 'break-word'
+  mirror.textContent = textarea.value.slice(0, index)
+
+  const marker = document.createElement('span')
+  marker.setAttribute('data-mentions-caret', 'true')
+  marker.textContent = '\u200b'
+  mirror.appendChild(marker)
+  document.body.appendChild(mirror)
+  mirror.scrollTop = textarea.scrollTop
+  mirror.scrollLeft = textarea.scrollLeft
+
+  const markerRect = marker.getBoundingClientRect()
+  const position = {
+    left: markerRect.left,
+    top: markerRect.top,
+    bottom: markerRect.bottom,
+  }
+  document.body.removeChild(mirror)
+  return position
+}
+
+function normalizeOptionMarker(node: unknown): MentionsOption | undefined {
+  if (!node || typeof node !== 'object') return undefined
+  const record = node as Record<string, unknown>
+  if (!record[OPTION_MARK]) return undefined
+  const props = record.props as MentionsOptionProps | undefined
+  if (!props) return undefined
+  return {
+    ...props,
+    label: props.label ?? props.children,
+  } as MentionsOption
+}
+
+function optionsFromChildren(childrenValue: JSX.Element | undefined): MentionsOption[] {
+  const resolved = resolveChildren(() => childrenValue)
+  return resolved.toArray().map(normalizeOptionMarker).filter(Boolean) as MentionsOption[]
+}
+
+function mergedOptions(
+  options: MentionsOption[] | undefined,
+  childrenValue: JSX.Element | undefined,
+) {
+  const childOptions = optionsFromChildren(childrenValue)
+  return options ?? childOptions
+}
+
+function isRecordRef(
+  ref: MentionsProps['ref'],
+): ref is { current?: import('./interface').MentionsRef } {
+  return Boolean(ref && typeof ref === 'object')
+}
+
+export function Option(props: MentionsOptionProps): JSX.Element {
+  return { [OPTION_MARK]: true, props } as unknown as JSX.Element
+}
+
+export function getMentions(value = '', config: MentionsConfig = {}): MentionsEntity[] {
+  const prefix = config.prefix ?? '@'
+  const split = config.split ?? ' '
+  const prefixList = Array.isArray(prefix) ? prefix : [prefix]
+  return value.split(split).reduce<MentionsEntity[]>((list, part = '') => {
+    const hitPrefix = prefixList.find((prefixItem) => part.startsWith(prefixItem))
+    if (!hitPrefix) return list
+    const entityValue = part.slice(hitPrefix.length)
+    if (entityValue) list.push({ prefix: hitPrefix, value: entityValue })
+    return list
+  }, [])
+}
+
 function findActiveMention(
   text: string,
   cursor: number,
@@ -76,18 +233,32 @@ function findActiveMention(
   return found
 }
 
-export function Mentions(props: MentionsProps) {
+function MentionsRoot(props: MentionsProps) {
   const [local, rest] = splitProps(props, [
     'value',
     'defaultValue',
     'open',
     'defaultOpen',
     'options',
+    'children',
     'prefix',
     'split',
     'placeholder',
     'disabled',
+    'size',
+    'status',
+    'variant',
     'allowClear',
+    'loading',
+    'notFoundContent',
+    'placement',
+    'rootClass',
+    'popupClass',
+    'showCount',
+    'count',
+    'autoSize',
+    'classNames',
+    'styles',
     'filterOption',
     'validateSearch',
     'prefixCls',
@@ -99,9 +270,15 @@ export function Mentions(props: MentionsProps) {
     'onOpenChange',
     'onInput',
     'onFocus',
+    'onBlur',
     'onKeyDown',
+    'onPressEnter',
+    'onClear',
+    'onResize',
+    'onPopupScroll',
     'zIndex',
     'getPopupContainer',
+    'ref',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
@@ -111,9 +288,31 @@ export function Mentions(props: MentionsProps) {
   const [innerValue, setInnerValue] = createSignal(local.defaultValue ?? '')
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
   const [cursor, setCursor] = createSignal((local.defaultValue ?? '').length)
+  const [activeValue, setActiveValue] = createSignal<string | undefined>()
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
+  const [textareaSize, setTextareaSize] = createSignal({ width: 0, height: 0 })
+  let rootRef: HTMLDivElement | undefined
   let textareaRef: HTMLTextAreaElement | undefined
   let dropdownRef: HTMLDivElement | undefined
+
+  const mentionsRef = {
+    focus: () => textareaRef?.focus(),
+    blur: () => textareaRef?.blur(),
+    get textarea() {
+      return textareaRef
+    },
+    get nativeElement() {
+      return rootRef
+    },
+  }
+
+  createEffect(() => {
+    if (typeof local.ref === 'function') local.ref(mentionsRef)
+    else if (isRecordRef(local.ref)) {
+      Object.assign(local.ref, mentionsRef)
+      local.ref.current = mentionsRef
+    }
+  })
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -126,6 +325,12 @@ export function Mentions(props: MentionsProps) {
 
   const disabled = () => Boolean(local.disabled)
   const split = () => local.split ?? ' '
+  const placement = () => local.placement ?? 'bottom'
+  const variant = () => local.variant ?? 'outlined'
+  const allowClearConfig = () => getAllowClearConfig(local.allowClear)
+  const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
+  const autoSizeConfig = () => getAutoSizeConfig(local.autoSize)
+  const rows = () => autoSizeConfig()?.minRows ?? rest.rows
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
   const value = () => {
@@ -134,14 +339,30 @@ export function Mentions(props: MentionsProps) {
     if (isValueControlled()) return local.value ?? ''
     return innerValue()
   }
+  const maxLength = () => getMaxLength(rest.maxLength, local.count)
+  const characterCount = () => getCount(value(), local.count)
+  const countInfo = () => ({ value: value(), count: characterCount(), maxLength: maxLength() })
+  const allOptions = createMemo(() => mergedOptions(local.options, local.children))
   const validateSearch = (search: string) =>
     local.validateSearch ? local.validateSearch(search, props) : defaultValidateSearch(search)
   const activeMention = createMemo(() =>
     findActiveMention(value(), cursor(), normalizePrefixes(local.prefix), validateSearch),
   )
   function filterOptions(active: ActiveMention | undefined): MentionsOption[] {
-    const options = local.options ?? []
+    const options = allOptions()
     if (!active) return []
+    if (local.loading)
+      return [
+        {
+          label: (
+            <span>
+              <Spin size="small" /> Loading
+            </span>
+          ),
+          value: 'ANTD_SEARCHING',
+          disabled: true,
+        },
+      ]
     const filter = local.filterOption
     if (filter === false) return options
     if (typeof filter === 'function')
@@ -150,11 +371,39 @@ export function Mentions(props: MentionsProps) {
   }
 
   const filteredOptions = createMemo(() => filterOptions(activeMention()))
+  const hasNotFoundContent = () =>
+    local.notFoundContent !== undefined && local.notFoundContent !== null
+  const hasPopupContent = () =>
+    Boolean(activeMention()) && (filteredOptions().length > 0 || hasNotFoundContent())
   const popupOpen = () => {
     const nextOpen = isOpenControlled() ? Boolean(local.open) : innerOpen()
-    return nextOpen && Boolean(activeMention()) && filteredOptions().length > 0
+    return nextOpen && hasPopupContent()
   }
   const enabledOptions = () => filteredOptions().filter((option) => !option.disabled)
+  const activeOption = createMemo(() =>
+    enabledOptions().find((option) => option.value === activeValue()),
+  )
+
+  function setDefaultActiveOption(): void {
+    const first = enabledOptions()[0]
+    setActiveValue(first?.value)
+  }
+
+  function moveActiveOption(offset: 1 | -1): void {
+    const options = enabledOptions()
+    if (options.length === 0) {
+      setActiveValue(undefined)
+      return
+    }
+    const currentIndex = options.findIndex((option) => option.value === activeValue())
+    const nextIndex =
+      currentIndex === -1
+        ? offset === 1
+          ? 0
+          : options.length - 1
+        : (currentIndex + offset + options.length) % options.length
+    setActiveValue(options[nextIndex].value)
+  }
 
   function updateDropdownPosition(): void {
     if (isServer) return
@@ -163,11 +412,23 @@ export function Mentions(props: MentionsProps) {
       return
     }
     const rect = textareaRef.getBoundingClientRect()
+    const mention = activeMention()
+    const mentionPosition = mention
+      ? measureTextAreaPosition(textareaRef, mention.start)
+      : undefined
+    const basePosition =
+      placement() === 'top'
+        ? {
+            bottom: `${Math.max(
+              0,
+              getWindowHeight() - (mentionPosition?.top ?? rect.top) + popupTriggerOffset,
+            )}px`,
+          }
+        : { top: `${(mentionPosition?.bottom ?? rect.bottom) + popupTriggerOffset}px` }
     setDropdownPosition({
       position: 'fixed',
-      top: `${rect.bottom + 4}px`,
-      left: `${rect.left}px`,
-      width: `${rect.width}px`,
+      ...basePosition,
+      left: `${mentionPosition?.left ?? rect.left}px`,
       'z-index': `${dropdownZIndex}`,
     })
   }
@@ -182,16 +443,24 @@ export function Mentions(props: MentionsProps) {
 
   function setOpen(nextOpen: boolean): void {
     if (disabled() && nextOpen) return
-    const normalizedOpen = nextOpen && Boolean(activeMention()) && filteredOptions().length > 0
-    if (normalizedOpen) updateDropdownPosition()
-    if (normalizedOpen) updateDropdownPosition()
+    const normalizedOpen = nextOpen && hasPopupContent()
+    if (normalizedOpen) {
+      updateDropdownPosition()
+      setDefaultActiveOption()
+    } else {
+      setActiveValue(undefined)
+    }
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
   }
 
   function setOpenForActive(nextOpen: boolean, active: ActiveMention | undefined): void {
     if (disabled() && nextOpen) return
-    const normalizedOpen = nextOpen && Boolean(active) && filterOptions(active).length > 0
+    const activeOptions = filterOptions(active)
+    const normalizedOpen =
+      nextOpen && Boolean(active) && (activeOptions.length > 0 || hasNotFoundContent())
+    if (normalizedOpen) setDefaultActiveOption()
+    else setActiveValue(undefined)
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
     local.onOpenChange?.(normalizedOpen)
   }
@@ -215,15 +484,16 @@ export function Mentions(props: MentionsProps) {
   })
 
   function changeValue(nextValue: string): void {
+    const formattedValue = applyExceedFormatter(nextValue, local.count)
     if (
       !isValueControlled() &&
       !(formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange')
     ) {
-      setInnerValue(nextValue)
+      setInnerValue(formattedValue)
     }
-    local.onChange?.(nextValue)
+    local.onChange?.(formattedValue)
     if (formItem?.valuePropName() === 'value' && formItem.trigger() === 'onChange')
-      formItem.setFieldValueFromControl(nextValue)
+      formItem.setFieldValueFromControl(formattedValue)
   }
 
   function syncCursorFromTextarea(): void {
@@ -263,27 +533,73 @@ export function Mentions(props: MentionsProps) {
   function clearValue(event: MouseEvent): void {
     event.stopPropagation()
     changeValue('')
+    if (textareaRef) textareaRef.value = ''
     setCursor(0)
     setOpen(false)
+    local.onClear?.()
   }
+
+  function syncTextareaSize(): void {
+    if (!textareaRef) return
+    const nextSize = {
+      width: textareaRef.offsetWidth,
+      height: textareaRef.offsetHeight,
+    }
+    const previous = textareaSize()
+    if (nextSize.width !== previous.width || nextSize.height !== previous.height) {
+      setTextareaSize(nextSize)
+      local.onResize?.(nextSize)
+    }
+  }
+
+  createEffect(syncTextareaSize)
+
+  createEffect(() => {
+    if (!textareaRef || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(syncTextareaSize)
+    observer.observe(textareaRef)
+    onCleanup(() => observer.disconnect())
+  })
 
   return (
     <div
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         popupOpen() && `${prefixCls()}-open`,
+        local.size && `${prefixCls()}-${local.size}`,
+        local.status && `${prefixCls()}-status-${local.status}`,
+        `${prefixCls()}-${variant()}`,
+        maxLength() !== undefined &&
+          characterCount() > maxLength()! &&
+          `${prefixCls()}-count-exceed`,
         hashId(),
+        local.rootClass,
+        local.classNames?.root,
         local.class,
       )}
-      style={local.style}
+      style={mergeStyle(local.styles?.root, local.style as JSX.CSSProperties | undefined)}
     >
       <textarea
         {...rest}
         ref={(el) => {
           textareaRef = el
         }}
-        class={`${prefixCls()}-textarea`}
+        rows={rows()}
+        class={classNames(`${prefixCls()}-textarea`, local.classNames?.textarea)}
+        style={mergeStyle(
+          local.styles?.textarea,
+          autoSizeConfig()?.maxRows
+            ? {
+                'max-height': `${autoSizeConfig()!.maxRows! * textareaLineHeight}px`,
+                'overflow-y': 'auto',
+              }
+            : undefined,
+          local.autoSize ? { resize: 'none' } : undefined,
+        )}
         placeholder={local.placeholder}
         disabled={disabled()}
         value={value()}
@@ -305,6 +621,7 @@ export function Mentions(props: MentionsProps) {
           changeValue(nextValue)
           refreshSearch(nextValue, nextCursor)
           ;(local.onInput as JSX.EventHandler<HTMLTextAreaElement, InputEvent> | undefined)?.(event)
+          syncTextareaSize()
         }}
         onClick={syncCursorFromTextarea}
         onKeyUp={syncCursorFromTextarea}
@@ -312,28 +629,55 @@ export function Mentions(props: MentionsProps) {
           ;(local.onKeyDown as JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent> | undefined)?.(
             event,
           )
+          if (event.key === 'Enter') {
+            ;(
+              local.onPressEnter as JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent> | undefined
+            )?.(event)
+          }
           if (event.key === 'Escape') {
             setOpen(false)
             return
           }
+          if (event.key === 'ArrowDown' && popupOpen()) {
+            event.preventDefault()
+            moveActiveOption(1)
+            return
+          }
+          if (event.key === 'ArrowUp' && popupOpen()) {
+            event.preventDefault()
+            moveActiveOption(-1)
+            return
+          }
           if (event.key === 'Enter' && popupOpen()) {
-            const first = enabledOptions()[0]
-            if (first) {
+            const option = activeOption() ?? enabledOptions()[0]
+            if (option) {
               event.preventDefault()
-              selectOption(first)
+              selectOption(option)
             }
           }
         }}
+        onBlur={(event) => {
+          ;(local.onBlur as JSX.EventHandler<HTMLTextAreaElement, FocusEvent> | undefined)?.(event)
+        }}
       />
-      <Show when={local.allowClear && !disabled() && value()}>
+      <Show when={showClear()}>
         <button
           type="button"
           aria-label="clear mentions"
-          class={`${prefixCls()}-clear`}
+          class={classNames(`${prefixCls()}-clear`, local.classNames?.clear)}
+          style={local.styles?.clear}
           onClick={clearValue}
         >
-          <CloseCircleFilled />
+          {allowClearConfig()?.clearIcon ?? <CloseCircleFilled />}
         </button>
+      </Show>
+      <Show when={shouldShowCount(local.showCount, local.count)}>
+        <span
+          class={classNames(`${prefixCls()}-count`, local.classNames?.count)}
+          style={local.styles?.count}
+        >
+          {formatCount(local.showCount, local.count, countInfo())}
+        </span>
       </Show>
       <Show when={popupOpen()}>
         <InternalPortal
@@ -346,28 +690,49 @@ export function Mentions(props: MentionsProps) {
             ref={(element) => {
               dropdownRef = element
             }}
-            class={`${prefixCls()}-dropdown`}
-            style={dropdownPosition()}
+            class={classNames(`${prefixCls()}-dropdown`, local.popupClass, local.classNames?.popup)}
+            style={mergeStyle(dropdownPosition(), local.styles?.popup)}
+            onScroll={(event) => local.onPopupScroll?.(event as unknown as UIEvent)}
           >
-            <For each={filteredOptions()}>
-              {(option) => (
+            <Show
+              when={filteredOptions().length > 0}
+              fallback={
                 <div
-                  role="option"
-                  aria-disabled={Boolean(option.disabled)}
-                  class={classNames(
-                    `${prefixCls()}-item`,
-                    option.disabled && `${prefixCls()}-item-disabled`,
-                  )}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => selectOption(option)}
+                  class={classNames(`${prefixCls()}-empty`, local.classNames?.notFound)}
+                  style={local.styles?.notFound}
                 >
-                  {option.label ?? option.value}
+                  {local.notFoundContent ?? <Empty />}
                 </div>
-              )}
-            </For>
+              }
+            >
+              <For each={filteredOptions()}>
+                {(option) => (
+                  <div
+                    role="option"
+                    aria-disabled={Boolean(option.disabled)}
+                    aria-selected={option.value === activeValue()}
+                    class={classNames(
+                      `${prefixCls()}-item`,
+                      option.disabled && `${prefixCls()}-item-disabled`,
+                      option.value === activeValue() && `${prefixCls()}-item-active`,
+                      local.classNames?.option,
+                      option.class,
+                    )}
+                    style={mergeStyle(local.styles?.option, option.style)}
+                    title={option.title}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => selectOption(option)}
+                  >
+                    {option.label ?? option.value}
+                  </div>
+                )}
+              </For>
+            </Show>
           </div>
         </InternalPortal>
       </Show>
     </div>
   )
 }
+
+export const Mentions = Object.assign(MentionsRoot, { Option, getMentions })

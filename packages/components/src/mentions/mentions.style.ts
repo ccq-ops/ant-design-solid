@@ -32,6 +32,15 @@ export function useMentionsStyle(prefixCls: string) {
           'box-sizing': 'border-box',
           transition: 'border-color 0.2s, box-shadow 0.2s',
         },
+        [`.${prefixCls}-small .${prefixCls}-textarea`]: {
+          minHeight: `${t.controlHeightSM * 2}px`,
+          padding: `${Math.max(2, t.paddingXS - 2)}px ${t.paddingSM}px`,
+        },
+        [`.${prefixCls}-large .${prefixCls}-textarea`]: {
+          minHeight: `${t.controlHeightLG * 2}px`,
+          padding: `${t.paddingSM}px ${t.padding}px`,
+          'font-size': `${t.fontSize + 2}px`,
+        },
         [`.${prefixCls}-textarea:focus`]: {
           'border-color': t.colorPrimary,
           'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
@@ -44,6 +53,25 @@ export function useMentionsStyle(prefixCls: string) {
           color: t.colorTextDisabled,
           background: t.colorFillAlter,
           cursor: 'not-allowed',
+        },
+        [`.${prefixCls}-status-error .${prefixCls}-textarea`]: {
+          'border-color': t.colorError,
+        },
+        [`.${prefixCls}-status-warning .${prefixCls}-textarea`]: {
+          'border-color': t.colorWarning,
+        },
+        [`.${prefixCls}-borderless .${prefixCls}-textarea`]: {
+          'border-color': 'transparent',
+          'box-shadow': 'none',
+        },
+        [`.${prefixCls}-filled .${prefixCls}-textarea`]: {
+          background: t.colorFillAlter,
+        },
+        [`.${prefixCls}-underlined .${prefixCls}-textarea`]: {
+          'border-top': 0,
+          'border-inline-start': 0,
+          'border-inline-end': 0,
+          'border-radius': 0,
         },
         [`.${prefixCls}-clear`]: {
           position: 'absolute',
@@ -58,21 +86,43 @@ export function useMentionsStyle(prefixCls: string) {
           'line-height': '1',
         },
         [`.${prefixCls}-dropdown`]: {
-          marginTop: `${t.marginXS}px`,
-          padding: `${t.paddingXS}px 0`,
+          marginTop: `${Math.max(2, t.marginXS / 2)}px`,
+          padding: '2px 0',
           border: `${t.lineWidth}px solid ${t.colorBorder}`,
-          'border-radius': `${t.borderRadius}px`,
+          'border-radius': `${Math.max(4, t.borderRadius - 2)}px`,
           background: t.colorBgContainer,
           'box-shadow': t.boxShadow,
           'box-sizing': 'border-box',
+          minWidth: '120px',
+          overflow: 'auto',
+          maxHeight: '256px',
         },
         [`.${prefixCls}-item`]: {
-          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          padding: '2px 8px',
           cursor: 'pointer',
+          'font-size': '13px',
+          'line-height': '20px',
+          'min-height': '24px',
+          'box-sizing': 'border-box',
         },
-        [`.${prefixCls}-item:hover`]: { background: t.colorFillAlter },
+        [`.${prefixCls}-item:hover, .${prefixCls}-item-active`]: { background: t.colorFillAlter },
         [`.${prefixCls}-item-disabled`]: { color: t.colorTextDisabled, cursor: 'not-allowed' },
         [`.${prefixCls}-item-disabled:hover`]: { background: 'transparent' },
+        [`.${prefixCls}-empty`]: {
+          padding: `${t.paddingSM}px`,
+          color: t.colorTextDisabled,
+          'text-align': 'center',
+        },
+        [`.${prefixCls}-count`]: {
+          display: 'block',
+          color: t.colorTextDisabled,
+          'font-size': `${Math.max(12, t.fontSize - 2)}px`,
+          'text-align': 'end',
+          marginTop: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-count-exceed .${prefixCls}-textarea`]: {
+          'border-color': t.colorError,
+        },
       }
     },
   )
