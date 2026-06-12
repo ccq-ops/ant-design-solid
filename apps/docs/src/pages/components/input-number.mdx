@@ -172,13 +172,41 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+### Spinner mode
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  const token = useToken()
+  const mutedTextStyle = () => ({ color: token().colorTextSecondary })
+
+  return (
+    <Space wrap align="center">
+      <InputNumber mode="spinner" defaultValue={3} />
+      <InputNumber
+        mode="spinner"
+        min={0}
+        max={10}
+        defaultValue={6}
+        suffix={<span style={mutedTextStyle()}>kg</span>}
+      />
+      <InputNumber mode="spinner" defaultValue={8} disabled />
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
 ### Keyboard, wheel, and step events
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo9 = function () {
+const Demo10 = function () {
   const [stepInfo, setStepInfo] = createSignal('No step yet')
 
   return (
@@ -197,7 +225,7 @@ const Demo9 = function () {
   )
 }
 
-export default Demo9
+export default Demo10
 ```
 
 ### Commit while typing
@@ -206,7 +234,7 @@ export default Demo9
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo10 = function () {
+const Demo11 = function () {
   const [liveValue, setLiveValue] = createSignal()
 
   return (
@@ -217,7 +245,7 @@ const Demo10 = function () {
   )
 }
 
-export default Demo10
+export default Demo11
 ```
 
 ### String mode and decimal separator
@@ -226,7 +254,7 @@ export default Demo10
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo11 = function () {
+const Demo12 = function () {
   const [stringValue, setStringValue] = createSignal('0.000000000000000001')
 
   return (
@@ -243,7 +271,7 @@ const Demo11 = function () {
   )
 }
 
-export default Demo11
+export default Demo12
 ```
 
 ### Semantic styles
@@ -252,7 +280,7 @@ export default Demo11
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
 
-const Demo12 = function () {
+const Demo13 = function () {
   const token = useToken()
 
   return (
@@ -264,7 +292,7 @@ const Demo12 = function () {
   )
 }
 
-export default Demo12
+export default Demo13
 ```
 
 ### Semantic function styles
@@ -273,7 +301,7 @@ export default Demo12
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo13 = function () {
+const Demo14 = function () {
   return (
     <InputNumber
       size="large"
@@ -288,7 +316,7 @@ const Demo13 = function () {
   )
 }
 
-export default Demo13
+export default Demo14
 ```
 
 ### Addons and bordered compatibility
@@ -297,7 +325,7 @@ export default Demo13
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo14 = function () {
+const Demo15 = function () {
   return (
     <Space>
       <InputNumber addonBefore="$" addonAfter="USD" defaultValue={100} />
@@ -306,7 +334,7 @@ const Demo14 = function () {
   )
 }
 
-export default Demo14
+export default Demo15
 ```
 
 ### Ref
@@ -316,7 +344,7 @@ import type { InputNumberRef } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo15 = function () {
+const Demo16 = function () {
   let inputNumberRef: InputNumberRef | undefined
 
   return (
@@ -332,7 +360,7 @@ const Demo15 = function () {
   )
 }
 
-export default Demo15
+export default Demo16
 ```
 
 ### Design token
@@ -361,11 +389,11 @@ const TokenInputNumber = function () {
   )
 }
 
-const Demo16 = function () {
+const Demo17 = function () {
   return <TokenInputNumber />
 }
 
-export default Demo16
+export default Demo17
 ```
 
 ### Form usage
@@ -374,7 +402,7 @@ export default Demo16
 import { createSignal } from 'solid-js'
 import { Form, InputNumber, Space } from '@ant-design-solid/core'
 
-const Demo17 = function () {
+const Demo18 = function () {
   return (
     <Form onFinish={(values) => console.log(values)}>
       <Form.Item name="amount" label="Amount">
@@ -385,7 +413,7 @@ const Demo17 = function () {
   )
 }
 
-export default Demo17
+export default Demo18
 ```
 
 ## API
