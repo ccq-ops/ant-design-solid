@@ -1,16 +1,21 @@
 # Steps
 
+Steps display progress through an ordered task and can also act as clickable navigation between stages.
+
 ### Basic
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Space, Steps } from '@ant-design-solid/core'
+import { Steps } from '@ant-design-solid/core'
 
 const Demo1 = function () {
   return (
     <Steps
       current={1}
-      items={[{ title: 'Finished' }, { title: 'In Progress' }, { title: 'Waiting' }]}
+      items={[
+        { title: 'Finished', content: 'This step is complete.' },
+        { title: 'In Progress', content: 'This step is running.' },
+        { title: 'Waiting', content: 'This step has not started.' },
+      ]}
     />
   )
 }
@@ -18,19 +23,24 @@ const Demo1 = function () {
 export default Demo1
 ```
 
-### Small
+### Size
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Space, Steps } from '@ant-design-solid/core'
+import { Steps } from '@ant-design-solid/core'
+
+const items = [
+  { title: 'Login' },
+  { title: 'Verification' },
+  { title: 'Payment' },
+  { title: 'Done' },
+]
 
 const Demo2 = function () {
   return (
-    <Steps
-      size="small"
-      current={1}
-      items={[{ title: 'Login' }, { title: 'Verification' }, { title: 'Pay' }, { title: 'Done' }]}
-    />
+    <div class="flex w-full flex-col gap-4">
+      <Steps current={1} items={items} />
+      <Steps size="small" current={1} items={items} />
+    </div>
   )
 }
 
@@ -40,18 +50,17 @@ export default Demo2
 ### Vertical
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Space, Steps } from '@ant-design-solid/core'
+import { Steps } from '@ant-design-solid/core'
 
 const Demo3 = function () {
   return (
     <Steps
-      direction="vertical"
+      orientation="vertical"
       current={1}
       items={[
-        { title: 'Create project', description: 'Configure the basics.' },
-        { title: 'Invite teammates', description: 'Add collaborators.' },
-        { title: 'Launch', description: 'Publish when ready.' },
+        { title: 'Create project', content: 'Configure the basics.' },
+        { title: 'Invite teammates', content: 'Add collaborators.' },
+        { title: 'Launch', content: 'Publish when ready.' },
       ]}
     />
   )
@@ -63,15 +72,18 @@ export default Demo3
 ### Error status
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Space, Steps } from '@ant-design-solid/core'
+import { Steps } from '@ant-design-solid/core'
 
 const Demo4 = function () {
   return (
     <Steps
       current={1}
       status="error"
-      items={[{ title: 'Finished' }, { title: 'Failed' }, { title: 'Waiting' }]}
+      items={[
+        { title: 'Finished' },
+        { title: 'Failed', content: 'Review the failed validation.' },
+        { title: 'Waiting' },
+      ]}
     />
   )
 }
@@ -79,7 +91,7 @@ const Demo4 = function () {
 export default Demo4
 ```
 
-### Navigation
+### Clickable
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -89,16 +101,15 @@ const Demo5 = function () {
   const [current, setCurrent] = createSignal(0)
 
   return (
-    <Space direction="vertical">
+    <Space direction="vertical" class="w-full">
       <Steps
-        type="navigation"
         current={current()}
         onChange={setCurrent}
         items={[
-          { title: 'Start' },
-          { title: 'Review' },
-          { title: 'Disabled', disabled: true },
-          { title: 'Done' },
+          { title: 'Start', content: 'Create a draft.' },
+          { title: 'Review', content: 'Check the submission.' },
+          { title: 'Disabled', disabled: true, content: 'This step cannot be selected.' },
+          { title: 'Done', content: 'Finish the task.' },
         ]}
       />
       <span>Current step: {current() + 1}</span>
@@ -109,13 +120,42 @@ const Demo5 = function () {
 export default Demo5
 ```
 
-### Custom icon
+### Navigation
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Space, Steps } from '@ant-design-solid/core'
 
 const Demo6 = function () {
+  const [current, setCurrent] = createSignal(0)
+
+  return (
+    <Space direction="vertical" class="w-full">
+      <Steps
+        type="navigation"
+        current={current()}
+        onChange={setCurrent}
+        items={[
+          { title: 'Profile' },
+          { title: 'Team' },
+          { title: 'Billing' },
+          { title: 'Confirm' },
+        ]}
+      />
+      <span>Current step: {current() + 1}</span>
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+### Custom icon
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo7 = function () {
   return (
     <Steps
       current={1}
@@ -128,29 +168,284 @@ const Demo6 = function () {
   )
 }
 
-export default Demo6
+export default Demo7
+```
+
+### Icon render
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Steps
+      current={1}
+      iconRender={(originNode, info) => (
+        <span class={info.active ? 'scale-105' : 'opacity-80'} title={`Step ${info.index + 1}`}>
+          {originNode}
+        </span>
+      )}
+      items={[{ title: 'Create' }, { title: 'Upload' }, { title: 'Publish' }]}
+    />
+  )
+}
+
+export default Demo8
+```
+
+### Title placement and progress
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <Steps
+      current={1}
+      percent={60}
+      titlePlacement="vertical"
+      items={[
+        { title: 'Create', subTitle: 'Done' },
+        { title: 'Upload', subTitle: '60%', content: 'Uploading assets.' },
+        { title: 'Publish', content: 'Waiting for upload.' },
+      ]}
+    />
+  )
+}
+
+export default Demo9
+```
+
+### Dot style
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Steps
+      type="dot"
+      current={1}
+      items={[
+        { title: 'Queued', content: 'Waiting for worker.' },
+        { title: 'Running', content: 'Processing data.' },
+        { title: 'Done', content: 'Ready to publish.' },
+      ]}
+    />
+  )
+}
+
+export default Demo10
+```
+
+### Customized dot
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo11 = function () {
+  return (
+    <Steps
+      progressDot={(dot, info) => (
+        <span title={`${info.title} - ${info.status}`} class="inline-flex items-center">
+          {dot}
+        </span>
+      )}
+      items={[
+        { title: 'Design', content: 'Approved' },
+        { title: 'Build', content: 'In progress' },
+        { title: 'Verify', content: 'Waiting' },
+      ]}
+    />
+  )
+}
+
+export default Demo11
+```
+
+### Inline
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo12 = function () {
+  return (
+    <Steps
+      type="inline"
+      current={1}
+      ellipsis
+      offset={2}
+      items={[
+        { title: 'Draft', content: 'Owner editing' },
+        { title: 'Review', content: 'Legal review' },
+        { title: 'Ship', content: 'Ready' },
+      ]}
+    />
+  )
+}
+
+export default Demo12
+```
+
+### Panel
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo13 = function () {
+  return (
+    <Steps
+      type="panel"
+      current={1}
+      items={[{ title: 'Cart' }, { title: 'Address' }, { title: 'Payment' }]}
+    />
+  )
+}
+
+export default Demo13
+```
+
+### Variant
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const items = [{ title: 'Create' }, { title: 'Upload' }, { title: 'Publish' }]
+
+const Demo14 = function () {
+  return (
+    <div class="flex w-full flex-col gap-4">
+      <Steps variant="filled" current={1} items={items} />
+      <Steps variant="outlined" current={1} items={items} />
+    </div>
+  )
+}
+
+export default Demo14
+```
+
+### Initial number
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo15 = function () {
+  return (
+    <Steps initial={2} items={[{ title: 'Step 3' }, { title: 'Step 4' }, { title: 'Step 5' }]} />
+  )
+}
+
+export default Demo15
+```
+
+### Semantic styling
+
+```tsx
+import { Steps } from '@ant-design-solid/core'
+
+const Demo16 = function () {
+  return (
+    <Steps
+      current={1}
+      classNames={{
+        root: 'rounded border border-dashed border-blue-200 p-4',
+        itemTitle: 'font-medium',
+        itemSubtitle: 'text-xs',
+      }}
+      styles={{
+        itemContent: { color: '#64748b' },
+      }}
+      items={[
+        {
+          title: 'Create',
+          subTitle: 'Owner',
+          content: 'Draft the request.',
+          classNames: { itemIcon: 'bg-blue-50' },
+        },
+        { title: 'Review', subTitle: 'Team', content: 'Approve the request.' },
+        { title: 'Publish', subTitle: 'System', content: 'Send the result.' },
+      ]}
+    />
+  )
+}
+
+export default Demo16
 ```
 
 ## API
 
 ### Steps
 
-| Property    | Description                                         | Type                                         | Default        |
-| ----------- | --------------------------------------------------- | -------------------------------------------- | -------------- |
-| `items`     | Step items rendered in order.                       | `StepItem[]`                                 | `-`            |
-| `current`   | Current step index.                                 | `number`                                     | `0`            |
-| `status`    | Status for the current step.                        | `'wait' \| 'process' \| 'finish' \| 'error'` | `-`            |
-| `direction` | Step layout direction.                              | `'horizontal' \| 'vertical'`                 | `'horizontal'` |
-| `size`      | Step size.                                          | `'default' \| 'small'`                       | `'default'`    |
-| `type`      | Step style type.                                    | `'default' \| 'navigation'`                  | `'default'`    |
-| `onChange`  | Called when a clickable step changes current index. | `(current: number) => void`                  | `-`            |
+| Property         | Description                                                                                                                        | Type                                                                      | Default             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------- |
+| `items`          | Step items rendered in order.                                                                                                      | `StepItem[]`                                                              | `[]`                |
+| `current`        | Current step index, counting from 0.                                                                                               | `number`                                                                  | `0`                 |
+| `initial`        | Initial number offset for generated step numbers.                                                                                  | `number`                                                                  | `0`                 |
+| `status`         | Status for the current step.                                                                                                       | `'wait' \| 'process' \| 'finish' \| 'error'`                              | `'process'`         |
+| `orientation`    | Step bar orientation.                                                                                                              | `'horizontal' \| 'vertical'`                                              | `'horizontal'`      |
+| `direction`      | Deprecated alias of `orientation`.                                                                                                 | `'horizontal' \| 'vertical'`                                              | `'horizontal'`      |
+| `titlePlacement` | Place title and content horizontally or vertically. Dot and inline steps force vertical title placement in horizontal orientation. | `'horizontal' \| 'vertical'`                                              | `'horizontal'`      |
+| `labelPlacement` | Deprecated alias of `titlePlacement`.                                                                                              | `'horizontal' \| 'vertical'`                                              | `'horizontal'`      |
+| `size`           | Step size. `default` is kept as a deprecated alias for `medium`.                                                                   | `'medium' \| 'small' \| 'default'`                                        | `'medium'`          |
+| `type`           | Step style type.                                                                                                                   | `'default' \| 'dot' \| 'inline' \| 'navigation' \| 'panel'`               | `'default'`         |
+| `variant`        | Style variant.                                                                                                                     | `'filled' \| 'outlined'`                                                  | `'filled'`          |
+| `percent`        | Progress percentage for the current `process` step in basic Steps. Values are clamped to the 0-100 range.                          | `number`                                                                  | `-`                 |
+| `progressDot`    | Deprecated dot style switch or custom dot renderer. Prefer `type="dot"`.                                                           | `boolean \| StepsProgressDotRender`                                       | `false`             |
+| `responsive`     | Switch to vertical orientation below 532px.                                                                                        | `boolean`                                                                 | `true`              |
+| `ellipsis`       | Apply ellipsis styling for long step text.                                                                                         | `boolean`                                                                 | `false`             |
+| `offset`         | Inline type item offset value exposed as `--<prefixCls>-items-offset`.                                                             | `number`                                                                  | `0`                 |
+| `iconRender`     | Custom renderer for generated or item icons.                                                                                       | `StepsIconRender`                                                         | `-`                 |
+| `onChange`       | Called when a non-disabled step is clicked. When present, default Steps become clickable.                                          | `(current: number) => void`                                               | `-`                 |
+| `className`      | Root class name.                                                                                                                   | `string`                                                                  | `-`                 |
+| `rootClassName`  | Additional root class name.                                                                                                        | `string`                                                                  | `-`                 |
+| `classNames`     | Semantic DOM class names, or a function receiving merged component props.                                                          | `StepsSemanticClassNames \| (info: { props }) => StepsSemanticClassNames` | `-`                 |
+| `styles`         | Semantic DOM inline styles, or a function receiving merged component props.                                                        | `StepsSemanticStyles \| (info: { props }) => StepsSemanticStyles`         | `-`                 |
+| `prefixCls`      | Custom CSS class prefix.                                                                                                           | `string`                                                                  | From ConfigProvider |
+| `rootComponent`  | Root element override for internal consumers.                                                                                      | `'div' \| 'ol'`                                                           | `'div'`             |
+| `itemComponent`  | Item element override for internal consumers.                                                                                      | `'div' \| 'li'`                                                           | `'li'`              |
 
 ### StepItem
 
-| Property      | Description                       | Type                                         | Default |
-| ------------- | --------------------------------- | -------------------------------------------- | ------- |
-| `title`       | Step title.                       | `JSX.Element`                                | `-`     |
-| `description` | Step description.                 | `JSX.Element`                                | `-`     |
-| `status`      | Per-step status override.         | `'wait' \| 'process' \| 'finish' \| 'error'` | `-`     |
-| `icon`        | Custom step icon.                 | `JSX.Element`                                | `-`     |
-| `disabled`    | Disables navigation to this step. | `boolean`                                    | `-`     |
+| Property      | Description                                                                   | Type                                              | Default                         |
+| ------------- | ----------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------- |
+| `title`       | Step title.                                                                   | `JSX.Element`                                     | `-`                             |
+| `subTitle`    | Step subtitle.                                                                | `JSX.Element`                                     | `-`                             |
+| `content`     | Step content.                                                                 | `JSX.Element`                                     | `-`                             |
+| `description` | Deprecated alias of `content`. `content` wins when both are provided.         | `JSX.Element`                                     | `-`                             |
+| `status`      | Per-step status override.                                                     | `'wait' \| 'process' \| 'finish' \| 'error'`      | Derived from `current`          |
+| `icon`        | Custom step icon.                                                             | `JSX.Element`                                     | Generated number or status icon |
+| `disabled`    | Disables click.                                                               | `boolean`                                         | `false`                         |
+| `onClick`     | Called when the item container is clicked.                                    | `JSX.EventHandler<HTMLElement, MouseEvent>`       | `-`                             |
+| `class`       | Item class name.                                                              | `string`                                          | `-`                             |
+| `className`   | Item class name alias.                                                        | `string`                                          | `-`                             |
+| `style`       | Item inline style.                                                            | `JSX.CSSProperties`                               | `-`                             |
+| `classNames`  | Semantic DOM class names for this item. `root` and `list` are not accepted.   | `Omit<StepsSemanticClassNames, 'root' \| 'list'>` | `-`                             |
+| `styles`      | Semantic DOM inline styles for this item. `root` and `list` are not accepted. | `Omit<StepsSemanticStyles, 'root' \| 'list'>`     | `-`                             |
+
+### Semantic DOM
+
+| Key            | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `root`         | Root Steps element.                                                |
+| `list`         | Ordered list wrapper when the root is not already an ordered list. |
+| `item`         | Single step item.                                                  |
+| `itemWrapper`  | Wrapper around each step's visual content.                         |
+| `itemSection`  | Section containing header and content.                             |
+| `itemHeader`   | Header containing icon, title, and subtitle.                       |
+| `itemIcon`     | Icon container.                                                    |
+| `itemTitle`    | Title node.                                                        |
+| `itemSubtitle` | Subtitle node.                                                     |
+| `itemContent`  | Content node.                                                      |
+| `itemRail`     | Connector rail between steps.                                      |
+
+### Related types
+
+| Type                     | Definition                                                                                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `StepsStatus`            | `'wait' \| 'process' \| 'finish' \| 'error'`                                                                                                                 |
+| `StepsDirection`         | `'horizontal' \| 'vertical'`                                                                                                                                 |
+| `StepsSize`              | `'medium' \| 'small' \| 'default'`                                                                                                                           |
+| `StepsType`              | `'default' \| 'navigation' \| 'dot' \| 'inline' \| 'panel'`                                                                                                  |
+| `StepsVariant`           | `'filled' \| 'outlined'`                                                                                                                                     |
+| `StepsIconRender`        | `(originNode: JSX.Element, info: { index: number; active: boolean; item: StepItem }) => JSX.Element`                                                         |
+| `StepsProgressDotRender` | `(iconDot: JSX.Element, info: { index: number; status: StepsStatus; title?: JSX.Element; description?: JSX.Element; content?: JSX.Element }) => JSX.Element` |

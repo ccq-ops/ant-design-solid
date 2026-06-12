@@ -38,8 +38,12 @@ export function useStepsStyle(prefixCls: string) {
         'min-width': 0,
         padding: 0,
       },
+      [`.${prefixCls}-horizontal .${prefixCls}-item`]: {
+        'flex-wrap': 'wrap',
+        'align-items': 'flex-start',
+      },
       [`.${prefixCls}-horizontal .${prefixCls}-item:not(:last-child)`]: {
-        'padding-inline-end': `${t.padding}px`,
+        'padding-inline-end': 0,
       },
       [`.${prefixCls}-vertical .${prefixCls}-item`]: {
         flex: '0 0 auto',
@@ -48,7 +52,7 @@ export function useStepsStyle(prefixCls: string) {
       [`.${prefixCls}-item-container`]: {
         position: 'relative',
         display: 'flex',
-        width: '100%',
+        'flex-shrink': '0',
         padding: 0,
         border: 0,
         color: 'inherit',
@@ -65,14 +69,35 @@ export function useStepsStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-section`]: {
         display: 'flex',
+        'flex-direction': 'column',
         'min-width': 0,
       },
       [`.${prefixCls}-item-header`]: {
+        position: 'relative',
+        'z-index': '1',
         display: 'inline-flex',
-        'align-items': 'flex-start',
+        'align-items': 'baseline',
         'min-width': 0,
+        background: t.colorBgContainer,
       },
+      [`.${prefixCls}-title-placement-vertical.${prefixCls}-horizontal .${prefixCls}-item-wrapper`]:
+        {
+          'align-items': 'flex-start',
+        },
+      [`.${prefixCls}-title-placement-vertical.${prefixCls}-horizontal .${prefixCls}-item-section`]:
+        {
+          'flex-direction': 'column',
+        },
+      [`.${prefixCls}-title-placement-vertical.${prefixCls}-horizontal .${prefixCls}-item-header`]:
+        {
+          'flex-direction': 'column',
+          'align-items': 'center',
+          'text-align': 'center',
+        },
       [`.${prefixCls}-navigation .${prefixCls}-item-container`]: {
+        cursor: 'pointer',
+      },
+      [`.${prefixCls}-item-container:is(button)`]: {
         cursor: 'pointer',
       },
       [`.${prefixCls}-navigation .${prefixCls}-item-container:hover .${prefixCls}-item-title`]: {
@@ -114,28 +139,47 @@ export function useStepsStyle(prefixCls: string) {
       [`.${prefixCls}-item-content`]: {
         display: 'block',
         'min-width': 0,
+        width: 'auto',
+        color: t.colorTextSecondary,
+        'font-size': `${t.fontSize}px`,
+        'line-height': String(t.lineHeight),
+        'margin-inline-start': `${iconSize + t.marginSM}px`,
         'padding-top': '4px',
       },
       [`.${prefixCls}-item-section > .${prefixCls}-item-content`]: {
         'padding-top': '4px',
       },
+      [`.${prefixCls}-horizontal > .${prefixCls}-list > .${prefixCls}-item > .${prefixCls}-item-content`]:
+        {
+          flex: '0 0 100%',
+          width: '100%',
+        },
       [`.${prefixCls}-small .${prefixCls}-item-content`]: {
+        'margin-inline-start': `${smallIconSize + t.marginXS}px`,
         'padding-top': '1px',
       },
+      [`.${prefixCls}-dot .${prefixCls}-item-content`]: {
+        'margin-inline-start': `${10 + t.marginSM}px`,
+      },
+      [`.${prefixCls}-inline .${prefixCls}-item-content, .${prefixCls}-title-placement-vertical.${prefixCls}-horizontal .${prefixCls}-item-content`]:
+        {
+          'margin-inline-start': 0,
+        },
       [`.${prefixCls}-item-title`]: {
         display: 'inline-block',
+        'padding-inline-end': `${t.paddingXS}px`,
         color: t.colorText,
         'font-weight': '400',
         transition: `color ${t.motionDurationMid} ${t.motionEaseInOut}`,
       },
-      [`.${prefixCls}-item-description`]: {
-        margin: `${t.marginXS / 2}px 0 0`,
+      [`.${prefixCls}-item-subtitle`]: {
+        display: 'inline-block',
+        'margin-inline-start': `${t.marginXS}px`,
         color: t.colorTextSecondary,
         'font-size': `${t.fontSize}px`,
-        'line-height': String(t.lineHeight),
       },
-      [`.${prefixCls}-small .${prefixCls}-item-description`]: {
-        'font-size': `${t.fontSize - 2}px`,
+      [`.${prefixCls}-title-placement-vertical .${prefixCls}-item-subtitle`]: {
+        'margin-inline-start': 0,
       },
       [`.${prefixCls}-item-tail`]: {
         position: 'absolute',
@@ -144,26 +188,6 @@ export function useStepsStyle(prefixCls: string) {
       [`.${prefixCls}-item-rail`]: {
         position: 'absolute',
         background: tailColor,
-      },
-      [`.${prefixCls}-horizontal .${prefixCls}-item-tail`]: {
-        top: `${iconSize / 2}px`,
-        inset: `0 ${t.padding}px auto ${iconSize + t.marginSM}px`,
-        height: `${t.lineWidth}px`,
-        transform: 'translateY(-50%)',
-      },
-      [`.${prefixCls}-horizontal .${prefixCls}-item-rail`]: {
-        top: `${iconSize / 2}px`,
-        inset: `0 ${t.padding}px auto ${iconSize + t.marginSM}px`,
-        height: `${t.lineWidth}px`,
-        transform: 'translateY(-50%)',
-      },
-      [`.${prefixCls}-small.${prefixCls}-horizontal .${prefixCls}-item-tail`]: {
-        top: `${smallIconSize / 2}px`,
-        inset: `0 ${t.padding}px auto ${smallIconSize + t.marginXS}px`,
-      },
-      [`.${prefixCls}-small.${prefixCls}-horizontal .${prefixCls}-item-rail`]: {
-        top: `${smallIconSize / 2}px`,
-        inset: `0 ${t.padding}px auto ${smallIconSize + t.marginXS}px`,
       },
       [`.${prefixCls}-vertical .${prefixCls}-item-tail`]: {
         top: `${iconSize + t.marginXS / 2}px`,
@@ -193,9 +217,30 @@ export function useStepsStyle(prefixCls: string) {
       [`.${prefixCls}-item:last-child .${prefixCls}-item-rail`]: {
         display: 'none',
       },
+      [`.${prefixCls}-horizontal .${prefixCls}-item-rail`]: {
+        position: 'relative',
+        flex: '1 1 auto',
+        'align-self': 'flex-start',
+        'min-width': `${t.marginLG}px`,
+        height: `${t.lineWidth}px`,
+        'margin-inline': `${t.marginSM}px`,
+        'margin-top': `${iconSize / 2}px`,
+        transform: 'translateY(-50%)',
+      },
+      [`.${prefixCls}-small.${prefixCls}-horizontal .${prefixCls}-item-rail`]: {
+        'margin-top': `${smallIconSize / 2}px`,
+      },
       [`.${prefixCls}-item-finish .${prefixCls}-item-icon`]: {
         border: `${t.lineWidth}px solid ${t.colorPrimary}`,
         color: t.colorPrimary,
+      },
+      [`.${prefixCls}-item-finish .${prefixCls}-item-icon-filled`]: {
+        borderColor: 'transparent',
+        background: t.colorFillAlter,
+        color: t.colorPrimary,
+      },
+      [`.${prefixCls}-item-finish .${prefixCls}-item-icon-outlined`]: {
+        background: t.colorBgContainer,
       },
       [`.${prefixCls}-item-finish .${prefixCls}-item-tail`]: {
         background: t.colorPrimary,
@@ -205,12 +250,28 @@ export function useStepsStyle(prefixCls: string) {
         background: t.colorPrimary,
         color: t.colorBgContainer,
       },
+      [`.${prefixCls}-item-process .${prefixCls}-item-icon-filled`]: {
+        borderColor: 'transparent',
+        background: t.colorPrimary,
+        color: t.colorBgContainer,
+      },
+      [`.${prefixCls}-item-process .${prefixCls}-item-icon-outlined`]: {
+        background: t.colorBgContainer,
+        color: t.colorPrimary,
+      },
       [`.${prefixCls}-item-process .${prefixCls}-item-title`]: {
         'font-weight': '600',
       },
       [`.${prefixCls}-item-error .${prefixCls}-item-icon`]: {
         border: `${t.lineWidth}px solid ${t.colorError}`,
         color: t.colorError,
+      },
+      [`.${prefixCls}-item-error .${prefixCls}-item-icon-filled`]: {
+        borderColor: 'transparent',
+        background: t.colorFillAlter,
+      },
+      [`.${prefixCls}-item-error .${prefixCls}-item-icon-outlined`]: {
+        background: t.colorBgContainer,
       },
       [`.${prefixCls}-item-error .${prefixCls}-item-title`]: {
         color: t.colorError,
@@ -219,10 +280,38 @@ export function useStepsStyle(prefixCls: string) {
         border: `${t.lineWidth}px solid ${t.colorBorder}`,
         color: t.colorTextDisabled,
       },
+      [`.${prefixCls}-item-wait .${prefixCls}-item-icon-filled`]: {
+        borderColor: 'transparent',
+        background: t.colorFillAlter,
+        color: t.colorTextSecondary,
+      },
+      [`.${prefixCls}-item-wait .${prefixCls}-item-icon-outlined`]: {
+        background: t.colorBgContainer,
+      },
+      [`.${prefixCls}-progress-icon`]: {
+        position: 'absolute',
+        inset: `-${t.lineWidth * 2}px`,
+        display: 'inline-flex',
+        'align-items': 'center',
+        'justify-content': 'center',
+        'border-radius': '50%',
+        color: t.colorPrimary,
+      },
+      [`.${prefixCls}-progress-icon::before`]: {
+        content: '""',
+        position: 'absolute',
+        inset: `${t.lineWidth * 2}px`,
+        'border-radius': '50%',
+        background: t.colorPrimary,
+      },
+      [`.${prefixCls}-progress-icon > .${prefixCls}-item-icon-number`]: {
+        position: 'relative',
+        color: t.colorBgContainer,
+      },
       [`.${prefixCls}-item-disabled`]: {
         color: t.colorTextDisabled,
       },
-      [`.${prefixCls}-item-disabled .${prefixCls}-item-title, .${prefixCls}-item-disabled .${prefixCls}-item-description`]:
+      [`.${prefixCls}-item-disabled .${prefixCls}-item-title, .${prefixCls}-item-disabled .${prefixCls}-item-content`]:
         {
           color: t.colorTextDisabled,
         },
@@ -246,11 +335,11 @@ export function useStepsStyle(prefixCls: string) {
         height: '100%',
         'border-radius': '50%',
       },
-      [`.${prefixCls}-dot.${prefixCls}-variant-filled .${prefixCls}-item-icon`]: {
+      [`.${prefixCls}-dot .${prefixCls}-item-icon-filled`]: {
         background: t.colorPrimary,
         color: t.colorBgContainer,
       },
-      [`.${prefixCls}-dot.${prefixCls}-variant-outlined .${prefixCls}-item-icon`]: {
+      [`.${prefixCls}-dot .${prefixCls}-item-icon-outlined`]: {
         background: t.colorBgContainer,
       },
       [`.${prefixCls}-dot .${prefixCls}-item-process .${prefixCls}-item-icon`]: {
@@ -261,6 +350,50 @@ export function useStepsStyle(prefixCls: string) {
         border: `${t.lineWidth * 2}px solid ${t.colorBorder}`,
         color: t.colorTextDisabled,
       },
+      [`.${prefixCls}-inline`]: {
+        display: 'inline-flex',
+        width: 'auto',
+      },
+      [`.${prefixCls}-inline .${prefixCls}-list`]: {
+        gap: `${t.marginXS}px`,
+      },
+      [`.${prefixCls}-inline .${prefixCls}-item`]: {
+        flex: '0 0 auto',
+        'max-width': '160px',
+      },
+      [`.${prefixCls}-inline .${prefixCls}-item-content`]: {
+        overflow: 'hidden',
+        'text-overflow': 'ellipsis',
+        'white-space': 'nowrap',
+      },
+      [`.${prefixCls}-panel .${prefixCls}-item`]: {
+        padding: `${t.paddingSM}px ${t.padding}px`,
+        border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        background: t.colorBgContainer,
+      },
+      [`.${prefixCls}-panel .${prefixCls}-item:not(:last-child)`]: {
+        'margin-inline-end': `${t.marginSM}px`,
+      },
+      [`.${prefixCls}-panel-arrow`]: {
+        position: 'absolute',
+        top: '50%',
+        'inset-inline-end': `-${t.marginSM}px`,
+        width: `${t.marginSM}px`,
+        height: `${t.marginSM}px`,
+        'border-block-start': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        'border-inline-end': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        background: t.colorBgContainer,
+        transform: 'translateY(-50%) rotate(45deg)',
+      },
+      [`.${prefixCls}-panel .${prefixCls}-item:last-child .${prefixCls}-panel-arrow`]: {
+        display: 'none',
+      },
+      [`.${prefixCls}-ellipsis .${prefixCls}-item-title, .${prefixCls}-ellipsis .${prefixCls}-item-content`]:
+        {
+          overflow: 'hidden',
+          'text-overflow': 'ellipsis',
+          'white-space': 'nowrap',
+        },
     }
   })
 }

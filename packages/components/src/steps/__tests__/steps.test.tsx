@@ -140,7 +140,9 @@ describe('Steps', () => {
 
     expect(root).toHaveClass('ads-steps-dot')
     expect(root).toHaveClass('ads-steps-vertical')
-    expect(root).toHaveClass('ads-steps-variant-filled')
+    expect(root).not.toHaveClass('ads-steps-filled')
+    expect(root).not.toHaveClass('ads-steps-variant-filled')
+    expect(icon).toHaveClass('ads-steps-item-icon-filled')
     expect(root).toHaveClass('custom-root')
     expect(root).toHaveStyle({ width: '320px' })
     expect(result.container.querySelector('.ads-steps-list')).toHaveClass('custom-list')
@@ -160,6 +162,33 @@ describe('Steps', () => {
     expect(result.container.querySelector('.ads-steps-item-header')).toHaveClass('custom-header')
   })
 
+  it('applies outlined variant to item icons instead of the root', () => {
+    const result = render(() => (
+      <Steps variant="outlined" items={[{ title: 'One' }, { title: 'Two' }]} />
+    ))
+    const root = result.container.firstElementChild
+    const icons = result.container.querySelectorAll('.ads-steps-item-icon')
+
+    expect(root).not.toHaveClass('ads-steps-outlined')
+    expect(root).not.toHaveClass('ads-steps-variant-outlined')
+    expect(icons[0]).toHaveClass('ads-steps-item-icon-outlined')
+    expect(icons[1]).toHaveClass('ads-steps-item-icon-outlined')
+  })
+
+  it('keeps the current process icon filled with the brand color', () => {
+    const result = render(() => (
+      <Steps current={1} items={[{ title: 'Done' }, { title: 'In progress' }]} />
+    ))
+    const currentIcon = result.container.querySelectorAll<HTMLElement>('.ads-steps-item-icon')[1]
+
+    expect(currentIcon).toHaveClass('ads-steps-item-icon-filled')
+    expect(currentIcon).toHaveStyle({
+      background: '#1677ff',
+      'border-color': 'rgba(0, 0, 0, 0)',
+      color: '#ffffff',
+    })
+  })
+
   it('can render ordered-list semantics for internal consumers', () => {
     const result = render(() => (
       <Steps rootComponent="ol" itemComponent="li" items={[{ title: 'One' }, { title: 'Two' }]} />
@@ -170,5 +199,165 @@ describe('Steps', () => {
       Array.from(result.container.firstElementChild?.children ?? []).map((node) => node.tagName),
     ).toEqual(['LI', 'LI'])
     expect(result.getAllByRole('listitem')).toHaveLength(2)
+  })
+
+  it('renders v6 content, subtitle, title placement, and medium size semantics', () => {
+    const result = render(() => (
+      <Steps
+        size="medium"
+        titlePlacement="vertical"
+        items={[{ title: 'Profile', subTitle: 'Optional', content: 'Tell us about yourself' }]}
+      />
+    ))
+
+    const root = result.container.firstElementChild
+
+    expect(root).toHaveClass('ads-steps-title-placement-vertical')
+    expect(root).not.toHaveClass('ads-steps-small')
+    expect(result.getByText('Optional')).toHaveClass('ads-steps-item-subtitle')
+    expect(result.getByText('Tell us about yourself')).toHaveClass('ads-steps-item-content')
+  })
+
+  it('uses content before deprecated description', () => {
+    const result = render(() => (
+      <Steps
+        items={[{ title: 'Details', content: 'New content', description: 'Old description' }]}
+      />
+    ))
+
+    expect(result.getByText('New content')).toBeInTheDocument()
+    expect(result.queryByText('Old description')).not.toBeInTheDocument()
+  })
+
+  it('stacks item content below the title area by default', () => {
+    const result = render(() => (
+      <Steps items={[{ title: 'Details', content: 'Content appears below the title' }]} />
+    ))
+
+    expect(result.container.querySelector('.ads-steps-item-section')).toHaveStyle({
+      'flex-direction': 'column',
+    })
+  })
+
+  it('keeps the item header above the connector rail', () => {
+    const result = render(() => (
+      <Steps items={[{ title: 'Details', content: 'Content appears below the title' }]} />
+    ))
+
+    expect(result.container.querySelector('.ads-steps-item-header')).toHaveStyle({
+      position: 'relative',
+      'z-index': '1',
+    })
+  })
+
+  it('renders horizontal connector after the item container so spacing follows header width', () => {
+    const result = render(() => (
+      <Steps items={[{ title: 'One', content: 'First content' }, { title: 'Two' }]} />
+    ))
+    const firstItemChildren = Array.from(result.getAllByRole('listitem')[0].children)
+
+    expect(firstItemChildren.map((node) => (node as HTMLElement).className)).toEqual([
+      'ads-steps-item-container',
+      'ads-steps-item-rail ads-steps-item-tail',
+      'ads-steps-item-content',
+    ])
+  })
+
+  it('makes default steps clickable when onChange is provided', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Steps current={0} onChange={onChange} items={[{ title: 'Start' }, { title: 'Details' }]} />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Go to step 2: Details' }))
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenLastCalledWith(1)
+  })
+
+  it('uses initial offset for default step numbers', () => {
+    const result = render(() => (
+      <Steps initial={2} items={[{ title: 'Three' }, { title: 'Four' }]} />
+    ))
+
+    expect(result.getByText('3')).toBeInTheDocument()
+    expect(result.getByText('4')).toBeInTheDocument()
+  })
+
+  it('renders percent progress on the current basic step', () => {
+    const result = render(() => (
+      <Steps current={1} percent={40} items={[{ title: 'Done' }, { title: 'Upload' }]} />
+    ))
+
+    const currentIcon = result.container.querySelector('.ads-steps-progress-icon')
+
+    expect(result.container.firstElementChild).toHaveClass('ads-steps-with-progress')
+    expect(currentIcon).toHaveAttribute('aria-label', '40%')
+  })
+
+  it('supports Solid-style iconRender for generated icons', () => {
+    const result = render(() => (
+      <Steps
+        iconRender={(origin, info) => (
+          <span data-testid={`icon-${info.index}`} data-active={String(info.active)}>
+            {origin}
+          </span>
+        )}
+        items={[{ title: 'One' }, { title: 'Two' }]}
+      />
+    ))
+
+    expect(result.getByTestId('icon-0')).toHaveAttribute('data-active', 'true')
+    expect(result.getByTestId('icon-1')).toHaveAttribute('data-active', 'false')
+  })
+
+  it('maps progressDot to dot type and supports custom dot rendering', () => {
+    const result = render(() => (
+      <Steps
+        progressDot={(dot, info) => (
+          <span data-testid={`dot-${info.index}`} data-status={info.status}>
+            {dot}
+          </span>
+        )}
+        items={[{ title: 'One' }, { title: 'Two', content: 'Second' }]}
+      />
+    ))
+
+    expect(result.container.firstElementChild).toHaveClass('ads-steps-dot')
+    expect(result.getByTestId('dot-0')).toHaveAttribute('data-status', 'process')
+    expect(result.getByTestId('dot-1')).toHaveAttribute('data-status', 'wait')
+  })
+
+  it('applies inline and panel type classes with inline offset', () => {
+    const inline = render(() => (
+      <Steps type="inline" offset={2} items={[{ title: 'One', content: 'Inline detail' }]} />
+    ))
+    const panel = render(() => <Steps type="panel" items={[{ title: 'Panel' }]} />)
+
+    expect(inline.container.firstElementChild).toHaveClass('ads-steps-inline')
+    expect(inline.container.firstElementChild).toHaveStyle({ '--ads-steps-items-offset': '2' })
+    expect(inline.getByText('Inline detail')).toBeInTheDocument()
+    expect(panel.container.firstElementChild).toHaveClass('ads-steps-panel')
+    expect(panel.container.querySelector('.ads-steps-panel-arrow')).toBeInTheDocument()
+  })
+
+  it('honors responsive vertical orientation below the default breakpoint', () => {
+    const originalMatchMedia = window.matchMedia
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query.includes('max-width: 532px'),
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+
+    const result = render(() => <Steps items={[{ title: 'One' }, { title: 'Two' }]} />)
+
+    expect(result.container.firstElementChild).toHaveClass('ads-steps-vertical')
+
+    window.matchMedia = originalMatchMedia
   })
 })
