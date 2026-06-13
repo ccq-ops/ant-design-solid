@@ -6,16 +6,6 @@ import { Form, useForm } from '../index'
 describe('FormInstance advanced getFieldsValue', () => {
   it('filters fields by touched and validating meta', () => {
     const [form] = useForm()
-    const getFieldsValue = form.getFieldsValue as unknown as (
-      nameList?:
-        | true
-        | unknown[]
-        | {
-            strict?: boolean
-            filter?: (meta: { touched: boolean; validating: boolean }) => boolean
-          },
-      filter?: (meta: { touched: boolean; validating: boolean }) => boolean,
-    ) => unknown
 
     render(() => (
       <Form form={form} initialValues={{ a: 'A', b: 'B' }}>
@@ -33,8 +23,8 @@ describe('FormInstance advanced getFieldsValue', () => {
       { name: 'b', validating: true },
     ])
 
-    expect(getFieldsValue({ filter: (meta) => meta.touched })).toEqual({ a: 'A' })
-    expect(getFieldsValue(['a', 'b'], (meta) => meta.validating)).toEqual({ b: 'B' })
+    expect(form.getFieldsValue({ filter: (meta) => meta.touched })).toEqual({ a: 'A' })
+    expect(form.getFieldsValue(['a', 'b'], (meta) => meta.validating)).toEqual({ b: 'B' })
   })
 
   it('strict mode returns only registered field paths', () => {

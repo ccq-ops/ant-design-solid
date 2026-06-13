@@ -118,7 +118,10 @@ export interface FieldMeta {
 export interface FormInstance {
   getFieldValue: (name: FieldName) => FieldValue
   setFieldValue: (name: FieldName, value: FieldValue) => void
-  getFieldsValue: (nameList?: true | FieldName[] | GetFieldsValueConfig) => FormValues
+  getFieldsValue(): FormValues
+  getFieldsValue(nameList: true, filterFunc?: FilterFunc): FormValues
+  getFieldsValue(nameList: FieldName[], filterFunc?: FilterFunc): FormValues
+  getFieldsValue(config: GetFieldsValueConfig): FormValues
   setFieldsValue: (values: FormValues) => void
   setFields: (fields: FieldData[]) => void
   resetFields: (names?: FieldName[]) => void

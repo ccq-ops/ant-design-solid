@@ -1,6 +1,6 @@
-import { batch, createRoot, createSignal, type Accessor } from 'solid-js'
+import { batch, createRoot, createSignal, untrack, type Accessor } from 'solid-js'
 import { createFieldRecord, fieldRecordToData, getFieldKey, type FieldRecord } from './field-store'
-import { matchNamePath } from './name-path'
+import { getNamePath, matchNamePath } from './name-path'
 import {
   cloneFormValues,
   deleteValue,
@@ -94,10 +94,21 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     const validationSequences = new WeakMap<FieldRecord, number>()
     const subscribers = new Set<(previousValues?: FormValues) => void>()
     const fieldInstances = new Map<string, HTMLElement>()
+    const registeredFieldKeys = new Set<string>()
     let ownerCount = 0
 
     function getFieldFilter(config?: GetFieldsValueConfig): FilterFunc | undefined {
       return config?.filter
+    }
+
+    function areStringArraysEqual(
+      first: readonly string[] | undefined,
+      second: readonly string[] | undefined,
+    ): boolean {
+      if (first === second) return true
+      const left = first ?? []
+      const right = second ?? []
+      return left.length === right.length && left.every((value, index) => value === right[index])
     }
 
     function notifySubscribers(previousValues?: FormValues): void {
@@ -166,15 +177,40 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
 
     function getRegisteredRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
-      const records = Array.from(fields.values())
+      const records = Array.from(registeredFieldKeys, (key) => fields.get(key)).filter(
+        (record): record is FieldRecord => record !== undefined,
+      )
       if (!nameList) return records
       return records.filter((record) =>
         nameList.some((name) => matchNamePath(name, record.state.name, recursive)),
       )
     }
 
+    function getRegisteredFieldData(nameList?: FieldName[], recursive = false): FieldData[] {
+      const currentValues = untrack(() => values())
+      return getRegisteredRecords(nameList, recursive).map((record) =>
+        fieldRecordToData(record, currentValues),
+      )
+    }
+
+    function getFilteredRegisteredNames(
+      nameList?: FieldName[],
+      filter?: FilterFunc,
+    ): InternalNamePath[] {
+      return getRegisteredFieldData(nameList)
+        .filter((field) =>
+          filter
+            ? filter({
+                touched: field.touched ?? false,
+                validating: field.validating ?? false,
+              })
+            : true,
+        )
+        .map((field) => getNamePath(field.name))
+    }
+
     function getAllFieldData(): FieldData[] {
-      return Array.from(fields.values()).map((record) => fieldRecordToData(record, values()))
+      return getRegisteredFieldData()
     }
 
     function notifyFieldsChange(changedRecords: FieldRecord[]) {
@@ -339,26 +375,24 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           revalidateDependencies([name])
         })
       },
-      getFieldsValue(nameList) {
-        if (nameList === true) return cloneFormValues(values())
-        if (Array.isArray(nameList)) return pickValues(values(), nameList)
-        if (nameList && typeof nameList === 'object') {
-          const filter = getFieldFilter(nameList)
-          const matchingNames = Array.from(fields.values())
-            .filter((record) =>
-              filter
-                ? filter({
-                    touched: record.state.touched,
-                    validating: record.state.validating,
-                  })
-                : true,
-            )
-            .map((record) => record.state.name)
-          return pickValues(values(), matchingNames)
+      getFieldsValue(nameListOrConfig?: true | FieldName[] | GetFieldsValueConfig, filter?: FilterFunc) {
+        const currentValues = untrack(() => values())
+        if (nameListOrConfig === true) {
+          if (!filter) return cloneFormValues(currentValues)
+          return pickValues(currentValues, getFilteredRegisteredNames(undefined, filter))
+        }
+        if (Array.isArray(nameListOrConfig)) {
+          if (!filter) return pickValues(currentValues, nameListOrConfig)
+          return pickValues(currentValues, getFilteredRegisteredNames(nameListOrConfig, filter))
+        }
+        if (nameListOrConfig && typeof nameListOrConfig === 'object') {
+          const matchingNames = getFilteredRegisteredNames(undefined, getFieldFilter(nameListOrConfig))
+          if (nameListOrConfig.strict) return pickValues(currentValues, matchingNames)
+          return pickValues(currentValues, matchingNames)
         }
         return pickValues(
-          values(),
-          Array.from(fields.values()).map((record) => record.state.name),
+          currentValues,
+          getFilteredRegisteredNames(),
         )
       },
       setFieldsValue(nextValues) {
@@ -400,8 +434,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             if ('value' in field) {
               setValues((currentValues) => setValue(currentValues, field.name, field.value))
             }
-            if (field.errors) record.setErrors(field.errors)
-            if (field.warnings) setRecordWarnings(record, field.warnings)
+            if ('errors' in field) record.setErrors(field.errors ?? [])
+            if ('warnings' in field) setRecordWarnings(record, field.warnings ?? [])
             if (field.touched !== undefined) record.state.touched = field.touched
             if (field.validating !== undefined) setRecordValidating(record, field.validating)
             if ('value' in field) record.state.dirty = true
@@ -413,7 +447,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       },
       setControlledFields(nextFields) {
         batch(() => {
-          const previousValues = cloneFormValues(values())
+          const previousValues = untrack(() => cloneFormValues(values()))
+          let nextValues = untrack(() => values())
           let hasValueChange = false
           for (const field of nextFields) {
             const key = getFieldKey(field.name)
@@ -426,16 +461,30 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
               fields.set(key, record)
             }
             if ('value' in field) {
-              setValues((currentValues) => setValue(currentValues, field.name, field.value))
-              record.state.dirty = true
-              hasValueChange = true
+              const currentValue = getValue(nextValues, field.name)
+              if (!Object.is(currentValue, field.value)) {
+                nextValues = setValue(nextValues, field.name, field.value)
+                record.state.dirty = true
+                hasValueChange = true
+              }
             }
-            if (field.errors) record.setErrors(field.errors)
-            if (field.warnings) setRecordWarnings(record, field.warnings)
-            if (field.touched !== undefined) record.state.touched = field.touched
-            if (field.validating !== undefined) setRecordValidating(record, field.validating)
+            if ('errors' in field && !areStringArraysEqual(record.state.errors, field.errors)) {
+              record.setErrors(field.errors ?? [])
+            }
+            if ('warnings' in field && !areStringArraysEqual(record.state.warnings, field.warnings)) {
+              setRecordWarnings(record, field.warnings ?? [])
+            }
+            if (field.touched !== undefined && record.state.touched !== field.touched) {
+              record.state.touched = field.touched
+            }
+            if (field.validating !== undefined && record.state.validating !== field.validating) {
+              setRecordValidating(record, field.validating)
+            }
           }
-          if (hasValueChange) notifySubscribers(previousValues)
+          if (hasValueChange) {
+            setValues(nextValues)
+            notifySubscribers(previousValues)
+          }
         })
       },
       resetFields(names) {
@@ -502,12 +551,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         const record = existing ?? createFieldRecord(meta, ensureErrorSignal(meta.name))
         record.meta = meta
         fields.set(key, record)
+        registeredFieldKeys.add(key)
         if (meta.initialValue !== undefined && getValue(values(), meta.name) === undefined) {
           setValues((currentValues) => setValue(currentValues, meta.name, meta.initialValue))
           notifySubscribers()
         }
         return () => {
           if (fields.get(key) !== record) return
+          registeredFieldKeys.delete(key)
           fields.delete(key)
           if (record.meta.preserve === false) {
             batch(() => {

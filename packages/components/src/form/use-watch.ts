@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, untrack } from 'solid-js'
+import { createSignal, onCleanup, onMount, untrack } from 'solid-js'
 import { useFormInstance } from './context'
 import { getValue } from './value-util'
 import type { Accessor } from 'solid-js'
@@ -23,8 +23,15 @@ function isFormInstance(value: FormInstance | WatchOptions | undefined): value i
 function resolveWatchedValue(
   form: FormInstance,
   namePathOrSelector: NamePath | ((values: FormValues) => unknown),
+  preserve = false,
 ): unknown {
-  const values = untrack(() => form.getFieldsValue(true))
+  const values = untrack(() =>
+    typeof namePathOrSelector === 'function'
+      ? form.getFieldsValue(true)
+      : preserve
+        ? form.getFieldsValue(true)
+        : form.getFieldsValue(),
+  )
   if (typeof namePathOrSelector === 'function') return namePathOrSelector(values)
   return getValue(values, namePathOrSelector)
 }
@@ -36,14 +43,18 @@ export function useWatch(
   const form = isFormInstance(formOrOptions)
     ? formOrOptions
     : (formOrOptions?.form ?? useFormInstance())
-  const [value, setValue] = createSignal(resolveWatchedValue(form, namePathOrSelector), {
+  const preserve = !isFormInstance(formOrOptions) && formOrOptions?.preserve === true
+  const [value, setValue] = createSignal(resolveWatchedValue(form, namePathOrSelector, preserve), {
     equals: false,
   })
 
   const unsubscribe = form.subscribe(() => {
-    setValue(() => resolveWatchedValue(form, namePathOrSelector))
+    setValue(() => resolveWatchedValue(form, namePathOrSelector, preserve))
   })
   onCleanup(unsubscribe)
+  onMount(() => {
+    setValue(() => resolveWatchedValue(form, namePathOrSelector, preserve))
+  })
 
   return value
 }
