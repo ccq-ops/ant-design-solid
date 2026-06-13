@@ -228,9 +228,10 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-lg .${prefixCls}-clear-overlay`]: {
           insetInlineEnd: `${dp.paddingInlineLG}px`,
         },
-        [`.${prefixCls}-week-cell`]: {
-          color: t.colorText,
-        },
+        [`.${prefixCls}-week-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled)`]:
+          {
+            color: t.colorText,
+          },
         [`.${prefixCls}-clear:hover`]: {
           color: t.colorText,
         },

@@ -68,7 +68,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain(
       '.ads-date-picker-week-column-header{align-items:center;display:inline-flex;justify-content:center;',
     )
-    expect(css).toContain('.ads-date-picker-week-cell{color:rgba(0,0,0,0.88);')
+    expect(css).toContain(
+      '.ads-date-picker-week-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-disabled){color:rgba(0,0,0,0.88);',
+    )
   })
 
   it('keeps suffix icon visible and overlays clear icon on selector hover', () => {
