@@ -1,14 +1,37 @@
+import type { JSX } from 'solid-js'
 import { Show, createEffect, createSignal, onCleanup, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import { InternalPortal } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
-import type { ImageProps } from './interface'
+import type {
+  ImagePlaceholder,
+  ImageProps,
+  ImageSemanticClassNames,
+  ImageSemanticStyles,
+} from './interface'
 import { useImageStyle } from './image.style'
-import { CloseOutlined } from '@ant-design-solid/icons'
+import { ImagePreview, canPreview } from './preview'
+import { ImageProgress } from './progress'
+import { usePreviewGroup } from './preview-group'
 
 function toCssSize(value: number | string | undefined) {
   return typeof value === 'number' ? `${value}px` : value
+}
+
+function resolveClassNames(props: ImageProps): ImageSemanticClassNames {
+  return typeof props.classNames === 'function'
+    ? props.classNames({ props })
+    : (props.classNames ?? {})
+}
+
+function resolveStyles(props: ImageProps): ImageSemanticStyles {
+  return typeof props.styles === 'function' ? props.styles({ props }) : (props.styles ?? {})
+}
+
+function isProgressPlaceholder(
+  value: ImageProps['placeholder'],
+): value is Extract<ImagePlaceholder, { progress?: unknown }> {
+  return typeof value === 'object' && value !== null && 'progress' in value
 }
 
 export function Image(props: ImageProps) {
@@ -21,50 +44,125 @@ export function Image(props: ImageProps) {
     'placeholder',
     'preview',
     'prefixCls',
+    'previewPrefixCls',
     'zIndex',
     'getPopupContainer',
     'class',
     'classList',
+    'style',
+    'rootClass',
+    'wrapperStyle',
+    'classNames',
+    'styles',
     'onLoad',
     'onError',
+    'onClick',
+    'onKeyDown',
   ])
   const config = useConfig()
+  const previewGroup = usePreviewGroup()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-image`
   const [, hashId] = useImageStyle(prefixCls())
   const [previewZIndex] = useZIndex('ImagePreview', local.zIndex)
   const [loaded, setLoaded] = createSignal(false)
   const [currentSrc, setCurrentSrc] = createSignal(local.src)
-  const [previewOpen, setPreviewOpen] = createSignal(false)
-  const canPreview = () => local.preview !== false
+  let groupId: string | undefined
 
   createEffect(() => {
     setCurrentSrc(local.src)
     setLoaded(false)
   })
-
-  const closePreview = () => setPreviewOpen(false)
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') closePreview()
-  }
-
-  createEffect(() => {
-    if (!previewOpen()) return
-    document.addEventListener('keydown', onKeyDown)
-    onCleanup(() => document.removeEventListener('keydown', onKeyDown))
+  onCleanup(() => {
+    if (previewGroup && groupId) previewGroup.unregister(groupId)
   })
 
-  const imageStyle = () => ({ width: toCssSize(local.width), height: toCssSize(local.height) })
+  createEffect(() => {
+    if (!previewGroup) return
+    const data = {
+      url: currentSrc() ?? '',
+      alt: local.alt ?? '',
+      width: local.width,
+      height: local.height,
+    }
+    if (!groupId) {
+      groupId = previewGroup.register(data)
+    } else {
+      previewGroup.update(groupId, data)
+    }
+  })
+
+  const semanticClasses = () => resolveClassNames(props)
+  const semanticStyles = () => resolveStyles(props)
+  const sizeStyle = () => ({ width: toCssSize(local.width), height: toCssSize(local.height) })
+  const rootStyle = () => ({
+    ...sizeStyle(),
+    ...local.wrapperStyle,
+    ...semanticStyles().root,
+    ...local.style,
+  })
+  const imageStyle = () => ({ ...sizeStyle(), ...semanticStyles().image })
+  const preview = ImagePreview({
+    prefixCls,
+    src: currentSrc,
+    alt: () => local.alt,
+    width: () => local.width,
+    height: () => local.height,
+    preview: () => local.preview,
+    zIndex: () => local.zIndex ?? previewZIndex,
+    getPopupContainer: () => local.getPopupContainer,
+    classNames: () => semanticClasses().popup,
+    styles: () => semanticStyles().popup,
+  })
+  const previewConfig = () =>
+    typeof local.preview === 'object' && local.preview !== null ? local.preview : undefined
+  const cover = () => {
+    const configCover = previewConfig()?.cover
+    if (!configCover) return null
+    const isCoverConfig =
+      typeof configCover === 'object' &&
+      configCover !== null &&
+      ('coverNode' in configCover || 'placement' in configCover)
+    const coverNode = (isCoverConfig ? configCover.coverNode : configCover) as JSX.Element
+    const placement = isCoverConfig ? configCover.placement : undefined
+    return (
+      <div
+        class={classNames(
+          `${prefixCls()}-cover`,
+          placement && `${prefixCls()}-cover-${placement}`,
+          semanticClasses().cover,
+        )}
+        style={semanticStyles().cover}
+        onClick={() => {
+          if (canPreview(local.preview)) preview.open()
+        }}
+      >
+        {coverNode}
+      </div>
+    )
+  }
 
   return (
     <>
       <div
-        {...rest}
-        class={classNames(prefixCls(), hashId(), local.class)}
+        class={classNames(
+          prefixCls(),
+          hashId(),
+          local.rootClass,
+          semanticClasses().root,
+          local.class,
+        )}
         classList={local.classList}
-        style={imageStyle()}
+        style={rootStyle()}
+        onClick={local.onClick}
+        onKeyDown={local.onKeyDown}
       >
         <img
-          class={classNames(`${prefixCls()}-img`, !canPreview() && `${prefixCls()}-img-no-preview`)}
+          {...rest}
+          class={classNames(
+            `${prefixCls()}-img`,
+            !canPreview(local.preview) && `${prefixCls()}-img-no-preview`,
+            semanticClasses().image,
+          )}
           src={currentSrc()}
           alt={local.alt ?? ''}
           style={imageStyle()}
@@ -77,31 +175,40 @@ export function Image(props: ImageProps) {
             local.onError?.(event)
           }}
           onClick={() => {
-            if (canPreview()) setPreviewOpen(true)
+            if (previewGroup && groupId && canPreview(local.preview)) {
+              previewGroup.open(groupId)
+              return
+            }
+            if (canPreview(local.preview)) preview.open()
           }}
         />
         <Show when={local.placeholder && !loaded()}>
           <div class={`${prefixCls()}-placeholder`}>
-            {local.placeholder === true ? 'Loading...' : local.placeholder}
+            {isProgressPlaceholder(local.placeholder) ? (
+              <ImageProgress
+                prefixCls={prefixCls()}
+                width={toCssSize(local.width)}
+                height={toCssSize(local.height)}
+                config={
+                  local.placeholder.progress === true
+                    ? {}
+                    : local.placeholder.progress === false
+                      ? undefined
+                      : local.placeholder.progress
+                }
+                classNames={semanticClasses().placeholder?.progress}
+                styles={semanticStyles().placeholder?.progress}
+              />
+            ) : local.placeholder === true ? (
+              'Loading...'
+            ) : (
+              local.placeholder
+            )}
           </div>
         </Show>
+        {cover()}
       </div>
-      <Show when={previewOpen()}>
-        <InternalPortal mount={() => local.getPopupContainer?.()}>
-          <div
-            class={`${prefixCls()}-preview`}
-            style={{ 'z-index': previewZIndex }}
-            onClick={(event) => {
-              if (event.target === event.currentTarget) closePreview()
-            }}
-          >
-            <button type="button" class={`${prefixCls()}-preview-close`} onClick={closePreview}>
-              <CloseOutlined />
-            </button>
-            <img class={`${prefixCls()}-preview-img`} src={currentSrc()} alt={local.alt ?? ''} />
-          </div>
-        </InternalPortal>
-      </Show>
+      {preview.node}
     </>
   )
 }
