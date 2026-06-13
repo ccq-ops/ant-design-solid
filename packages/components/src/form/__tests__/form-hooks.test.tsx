@@ -121,4 +121,35 @@ describe('Form hooks', () => {
     fireEvent.click(result.getByRole('button', { name: 'Hide' }))
     expect(result.getByTestId('preserve-watch')).toHaveTextContent(/^$/)
   })
+
+  it('Form.useWatch ignores unregistered values by default and observes them with preserve', () => {
+    const [form] = useForm()
+
+    function DefaultWatch() {
+      const value = Form.useWatch('age', form)
+      return <span data-testid="default-watch">{String(value() ?? '')}</span>
+    }
+
+    function PreserveWatch() {
+      const value = Form.useWatch('age', { form, preserve: true })
+      return <span data-testid="preserve-watch">{String(value() ?? '')}</span>
+    }
+
+    const result = render(() => (
+      <>
+        <Form form={form}>
+          <Form.Item name="name">
+            <Input />
+          </Form.Item>
+        </Form>
+        <DefaultWatch />
+        <PreserveWatch />
+      </>
+    ))
+
+    form.setFieldValue('age', 18)
+
+    expect(result.getByTestId('default-watch')).toHaveTextContent(/^$/)
+    expect(result.getByTestId('preserve-watch')).toHaveTextContent('18')
+  })
 })
