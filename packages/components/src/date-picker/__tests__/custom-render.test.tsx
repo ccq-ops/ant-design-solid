@@ -50,8 +50,12 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(clear).toHaveClass('ads-date-picker-clear-overlay')
     expect(screen.getByTestId('clear-icon')).toBeInTheDocument()
     expect(css).toContain('.ads-date-picker-clear-overlay{')
+    expect(css).toContain('background:#ffffff;')
     expect(css).toContain('position:absolute;')
     expect(css).toContain('opacity:0;pointer-events:none;')
+    expect(css).toContain(
+      '.ads-date-picker-filled .ads-date-picker-clear-overlay{background:rgba(0,0,0,0.02);',
+    )
     expect(css).toContain(
       '.ads-date-picker-selector:hover .ads-date-picker-clear-overlay, .ads-date-picker-selector:focus-within .ads-date-picker-clear-overlay{opacity:1;pointer-events:auto;',
     )

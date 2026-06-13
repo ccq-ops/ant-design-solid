@@ -75,6 +75,9 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-filled .${prefixCls}-selector`]: {
           background: dp.addonBg,
         },
+        [`.${prefixCls}-filled .${prefixCls}-clear-overlay`]: {
+          background: dp.addonBg,
+        },
         [`.${prefixCls}-underlined .${prefixCls}-selector`]: {
           'border-top-color': 'transparent',
           'border-left-color': 'transparent',
@@ -89,6 +92,9 @@ export function useDatePickerStyle(prefixCls: string) {
           color: t.colorTextDisabled,
           background: t.colorFillAlter,
           cursor: 'not-allowed',
+        },
+        [`.${prefixCls}-disabled .${prefixCls}-clear-overlay`]: {
+          background: t.colorFillAlter,
         },
         [`.${prefixCls}-multiple .${prefixCls}-selector`]: {
           height: 'auto',
@@ -183,6 +189,7 @@ export function useDatePickerStyle(prefixCls: string) {
           top: '50%',
           'z-index': 1,
           transform: 'translateY(-50%)',
+          background: dp.activeBg,
           opacity: 0,
           'pointer-events': 'none',
           transition: `opacity ${t.motionDurationMid} ${t.motionEaseInOut}, color ${t.motionDurationMid} ${t.motionEaseInOut}`,
