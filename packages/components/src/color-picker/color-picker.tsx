@@ -121,8 +121,6 @@ export function ColorPicker(props: ColorPickerProps) {
   let suppressBlurTarget: HTMLInputElement | undefined
   let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
   let interactiveTriggerElement: HTMLElement | undefined
-  let colorPickerAppliedInteractiveDisabled = false
-  let restoreInteractiveTriggerDisabled: (() => void) | undefined
   let customTriggerClickCaptureCleanup: (() => void) | undefined
 
   const size = () => local.size ?? config.componentSize()
@@ -211,8 +209,6 @@ export function ColorPicker(props: ColorPickerProps) {
     clearHoverCloseTimer()
     activeDragCleanup?.()
     activeDragCleanup = undefined
-    restoreInteractiveTriggerDisabled?.()
-    restoreInteractiveTriggerDisabled = undefined
     customTriggerClickCaptureCleanup?.()
     customTriggerClickCaptureCleanup = undefined
   })
@@ -895,7 +891,7 @@ export function ColorPicker(props: ColorPickerProps) {
     local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
   const [hasInteractiveCustomChild, setHasInteractiveCustomChild] = createSignal(false)
   const interactiveChildSelector =
-    'button, a[href], input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])'
+    'button, a[href], input, select, textarea, summary'
   const triggerClass = () =>
     classNames(
       prefixCls(),
@@ -923,13 +919,6 @@ export function ColorPicker(props: ColorPickerProps) {
   }
   const customTriggerProps = rest as JSX.HTMLAttributes<HTMLSpanElement>
   const customTrigger = () => resolvedChildren()
-  const supportsDisabled = (
-    element: HTMLElement | undefined,
-  ): element is HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement =>
-    element instanceof HTMLButtonElement ||
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLSelectElement ||
-    element instanceof HTMLTextAreaElement
   const syncInteractiveTriggerElement = (): void => {
     interactiveTriggerElement?.setAttribute('aria-haspopup', 'dialog')
     interactiveTriggerElement?.setAttribute('aria-expanded', open() ? 'true' : 'false')
@@ -938,35 +927,12 @@ export function ColorPicker(props: ColorPickerProps) {
     } else {
       interactiveTriggerElement?.removeAttribute('aria-disabled')
     }
-
-    if (supportsDisabled(interactiveTriggerElement)) {
-      if (!restoreInteractiveTriggerDisabled) {
-        const element = interactiveTriggerElement
-
-        restoreInteractiveTriggerDisabled = () => {
-          if (colorPickerAppliedInteractiveDisabled) element.disabled = false
-          colorPickerAppliedInteractiveDisabled = false
-        }
-      }
-
-      if (disabled()) {
-        if (!interactiveTriggerElement.disabled) {
-          interactiveTriggerElement.disabled = true
-          colorPickerAppliedInteractiveDisabled = true
-        }
-      } else if (colorPickerAppliedInteractiveDisabled) {
-        interactiveTriggerElement.disabled = false
-        colorPickerAppliedInteractiveDisabled = false
-      }
-    }
   }
   const updateInteractiveCustomChild = (): void => {
     const nextInteractiveTriggerElement =
       triggerRef?.querySelector<HTMLElement>(interactiveChildSelector) ?? undefined
 
     if (nextInteractiveTriggerElement !== interactiveTriggerElement) {
-      restoreInteractiveTriggerDisabled?.()
-      restoreInteractiveTriggerDisabled = undefined
       interactiveTriggerElement = nextInteractiveTriggerElement
     }
 
@@ -1044,7 +1010,7 @@ export function ColorPicker(props: ColorPickerProps) {
           class={triggerClass()}
           style={local.style}
           tabIndex={hasInteractiveCustomChild() || disabled() ? undefined : 0}
-          aria-label="Color Picker"
+          aria-label={customTriggerProps['aria-label']}
           aria-haspopup="dialog"
           aria-expanded={open() ? 'true' : 'false'}
           aria-disabled={disabled() ? 'true' : undefined}

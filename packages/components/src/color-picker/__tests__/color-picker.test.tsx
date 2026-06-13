@@ -343,7 +343,7 @@ describe('ColorPicker v6 API compatibility', () => {
     ))
     const trigger = result.getByRole('button', { name: 'Pick brand color' })
 
-    expect(trigger).toBeDisabled()
+    expect(trigger).not.toBeDisabled()
     expect(trigger).toHaveAttribute('aria-disabled', 'true')
 
     fireEvent.click(trigger)
@@ -393,6 +393,29 @@ describe('ColorPicker v6 API compatibility', () => {
     expect(trigger).toBeDisabled()
   })
 
+  it('preserves owner-controlled child disabled state after ColorPicker disabled toggles off', () => {
+    const [colorPickerDisabled, setColorPickerDisabled] = createSignal(true)
+    const [childDisabled, setChildDisabled] = createSignal(false)
+    const result = render(() => (
+      <ColorPicker disabled={colorPickerDisabled()}>
+        <button type="button" disabled={childDisabled()}>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).not.toBeDisabled()
+    expect(trigger).toHaveAttribute('aria-disabled', 'true')
+
+    setChildDisabled(true)
+    expect(trigger).toBeDisabled()
+
+    setColorPickerDisabled(false)
+    expect(trigger).toBeDisabled()
+    expect(trigger).not.toHaveAttribute('aria-disabled')
+  })
+
   it('suppresses child and ColorPicker clicks for disabled interactive custom children', () => {
     const childClick = vi.fn()
     const onClick = vi.fn()
@@ -433,13 +456,52 @@ describe('ColorPicker v6 API compatibility', () => {
       </ColorPicker>
     ))
 
-    const trigger = result.getByRole('button', { name: /color picker/i })
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
 
     fireEvent.keyDown(trigger, { key: 'Enter' })
     expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
 
     fireEvent.keyDown(trigger, { key: ' ' })
     expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('opens custom aria-role trigger children with Enter and Space from the wrapper', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span role="button" tabIndex={0}>
+          Pick brand color
+        </span>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getAllByRole('button', { name: /pick brand color/i })[0]
+    expect(trigger).toHaveAttribute('role', 'button')
+
+    fireEvent.keyDown(trigger as HTMLElement, { key: 'Enter' })
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.keyDown(trigger as HTMLElement, { key: ' ' })
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('uses visible custom trigger text as the accessible name', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    expect(result.getByRole('button', { name: 'Pick brand color' })).toBeInTheDocument()
+  })
+
+  it('allows custom trigger aria-label to override visible content', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff" aria-label="Brand color picker">
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    expect(result.getByRole('button', { name: 'Brand color picker' })).toBeInTheDocument()
   })
 
   it('does not call onClick or open from a disabled custom trigger', () => {
@@ -450,7 +512,7 @@ describe('ColorPicker v6 API compatibility', () => {
       </ColorPicker>
     ))
 
-    const trigger = result.getByRole('button', { name: /color picker/i })
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
 
     fireEvent.click(trigger)
     fireEvent.keyDown(trigger, { key: 'Enter' })
