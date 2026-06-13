@@ -239,6 +239,21 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(onChange).not.toHaveBeenCalled()
   })
 
+  it('hides the default Today shortcut outside date picker panels', () => {
+    const { unmount } = render(() => (
+      <>
+        <DatePicker picker="week" defaultOpen />
+        <DatePicker picker="month" defaultOpen />
+        <DatePicker picker="quarter" defaultOpen />
+        <DatePicker picker="year" defaultOpen />
+      </>
+    ))
+
+    expect(screen.queryByRole('button', { name: 'Today' })).toBeNull()
+
+    unmount()
+  })
+
   it('applies semantic classes, styles, status, variant, size, and custom icons', () => {
     const result = render(() => (
       <DatePicker

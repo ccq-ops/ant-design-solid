@@ -624,7 +624,7 @@ function DatePickerBase(props: DatePickerProps) {
             nextIcon={local.nextIcon}
             superNextIcon={local.superNextIcon}
             components={local.components}
-            showToday={!showTimeEnabled()}
+            showToday={picker() === 'date' && !showTimeEnabled()}
             todayDisabled={isDateDisabled(pickerSelectionStart(dayjs(), picker()))}
             onToday={selectToday}
             showNow={Boolean(local.showNow)}
