@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -158,6 +159,65 @@ describe('Checkbox', () => {
     ))
     expect(withProvider.container.querySelector('.custom-checkbox')).toBeTruthy()
   })
+
+  it('exposes focus, blur, and nativeElement through ref', () => {
+    const ref: {
+      current?: { focus: () => void; blur: () => void; nativeElement?: HTMLInputElement }
+    } = {}
+    const result = render(() => <Checkbox ref={ref}>Focusable</Checkbox>)
+    const input = result.getByRole('checkbox', { name: 'Focusable' }) as HTMLInputElement
+
+    expect(ref.current?.nativeElement).toBe(input)
+
+    ref.current?.focus()
+    expect(document.activeElement).toBe(input)
+
+    ref.current?.blur()
+    expect(document.activeElement).not.toBe(input)
+  })
+
+  it('applies semantic classes and styles to root, icon, and label slots', () => {
+    const result = render(() => (
+      <Checkbox
+        classNames={{ root: 'root-slot', icon: 'icon-slot', label: 'label-slot' }}
+        styles={{
+          root: { color: 'rgb(1, 2, 3)' },
+          icon: { width: '20px' },
+          label: { 'font-weight': '700' },
+        }}
+      >
+        Semantic
+      </Checkbox>
+    ))
+    const root = result.container.querySelector('.ads-checkbox')
+    const input = result.getByRole('checkbox', { name: 'Semantic' })
+    const label = result.getByText('Semantic')
+
+    expect(root).toHaveClass('root-slot')
+    expect(root).toHaveStyle({ color: 'rgb(1, 2, 3)' })
+    expect(input).toHaveClass('icon-slot')
+    expect(input).toHaveStyle({ width: '20px' })
+    expect(label).toHaveClass('label-slot')
+    expect(label).toHaveStyle({ 'font-weight': '700' })
+  })
+
+  it('registers tokenized checkbox control styles', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Checkbox defaultChecked>Styled</Checkbox>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('appearance:none;')
+    expect(css).toContain('width:16px;')
+    expect(css).toContain('border:1px solid #d9d9d9;')
+    expect(css).toContain('background:#1677ff;')
+    expect(css).toContain('.ads-checkbox-indeterminate .ads-checkbox-input::after')
+    expect(css).toContain('outline:2px solid rgba(5,145,255,0.1);')
+  })
 })
 
 describe('Checkbox.Group', () => {
@@ -188,6 +248,119 @@ describe('Checkbox.Group', () => {
 
     expect(a.checked).toBe(false)
     expect(onChange).toHaveBeenLastCalledWith(['b'])
+  })
+
+  it('defaults role to group and passes name to option inputs', () => {
+    const result = render(() => (
+      <Checkbox.Group
+        name="fruits"
+        options={[
+          { label: 'Apple', value: 'apple' },
+          { label: 'Pear', value: 'pear' },
+        ]}
+      />
+    ))
+    const group = result.getByRole('group')
+    const apple = result.getByRole('checkbox', { name: 'Apple' }) as HTMLInputElement
+    const pear = result.getByRole('checkbox', { name: 'Pear' }) as HTMLInputElement
+
+    expect(group).toHaveClass('ads-checkbox-group')
+    expect(apple.name).toBe('fruits')
+    expect(pear.name).toBe('fruits')
+  })
+
+  it('passes option class, style, title, id, required, and onChange to checkboxes', () => {
+    const optionChange = vi.fn()
+    const result = render(() => (
+      <Checkbox.Group
+        options={[
+          {
+            label: 'Styled',
+            value: 'styled',
+            class: 'option-class',
+            style: { color: 'rgb(2, 3, 4)' },
+            title: 'Styled title',
+            id: 'styled-id',
+            required: true,
+            onChange: optionChange,
+          },
+        ]}
+      />
+    ))
+    const root = result.container.querySelector('.option-class')
+    const input = result.getByRole('checkbox', { name: 'Styled' }) as HTMLInputElement
+
+    expect(root).toHaveStyle({ color: 'rgb(2, 3, 4)' })
+    expect(root).toHaveAttribute('title', 'Styled title')
+    expect(input.id).toBe('styled-id')
+    expect(input.required).toBe(true)
+
+    fireEvent.click(input)
+
+    expect(optionChange).toHaveBeenCalledOnce()
+  })
+
+  it('controls checkbox children through group context', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Checkbox.Group defaultValue={['a']} name="letters" onChange={onChange}>
+        <Checkbox value="a">A</Checkbox>
+        <Checkbox value="b">B</Checkbox>
+      </Checkbox.Group>
+    ))
+    const a = result.getByRole('checkbox', { name: 'A' }) as HTMLInputElement
+    const b = result.getByRole('checkbox', { name: 'B' }) as HTMLInputElement
+
+    expect(a.checked).toBe(true)
+    expect(b.checked).toBe(false)
+    expect(a.name).toBe('letters')
+    expect(b.name).toBe('letters')
+
+    fireEvent.click(b)
+
+    expect(b.checked).toBe(true)
+    expect(onChange).toHaveBeenLastCalledWith(['a', 'b'])
+  })
+
+  it('lets skipGroup checkbox ignore group checked state and name', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Checkbox.Group value={['a']} name="letters" onChange={onChange}>
+        <Checkbox value="a">A</Checkbox>
+        <Checkbox value="a" skipGroup defaultChecked>
+          Standalone
+        </Checkbox>
+      </Checkbox.Group>
+    ))
+    const standalone = result.getByRole('checkbox', { name: 'Standalone' }) as HTMLInputElement
+
+    expect(standalone.checked).toBe(true)
+    expect(standalone.name).toBe('')
+
+    fireEvent.click(standalone)
+
+    expect(standalone.checked).toBe(false)
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('sorts onChange values by option order and filters unregistered controlled values', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Checkbox.Group
+        value={['outside', 'b']}
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+          { label: 'C', value: 'c' },
+        ]}
+        onChange={onChange}
+      />
+    ))
+    const a = result.getByRole('checkbox', { name: 'A' }) as HTMLInputElement
+
+    fireEvent.click(a)
+
+    expect(onChange).toHaveBeenLastCalledWith(['a', 'b'])
   })
 
   it('restores controlled option checked state when parent does not update', () => {
