@@ -1,13 +1,19 @@
 import { For, Show, createMemo, createSignal, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useCollapseStyle } from './collapse.style'
 import type {
   CollapseActiveKey,
   CollapseCollapsible,
+  CollapseExpandIconProps,
   CollapseItem,
   CollapseKey,
   CollapseProps,
+  CollapseSemanticClassNames,
+  CollapseSemanticClassNamesMap,
+  CollapseSemanticStyles,
+  CollapseSemanticStylesMap,
 } from './interface'
 
 function normalizeActiveKey(activeKey: CollapseActiveKey | undefined): CollapseKey[] {
@@ -19,12 +25,34 @@ function toAccordionKey(activeKeys: CollapseKey[]): CollapseKey | undefined {
   return activeKeys[0]
 }
 
-function keyToId(key: string) {
-  return key.replace(/[^a-zA-Z0-9_-]/g, '-')
+function keyToId(key: CollapseKey) {
+  return String(key).replace(/[^a-zA-Z0-9_-]/g, '-')
 }
 
 function isDisabled(item: CollapseItem, rootCollapsible: CollapseCollapsible | undefined) {
   return item.disabled || item.collapsible === 'disabled' || rootCollapsible === 'disabled'
+}
+
+function resolveSemanticClassNames(
+  value: CollapseSemanticClassNames | undefined,
+  props: CollapseProps,
+): CollapseSemanticClassNamesMap {
+  return typeof value === 'function' ? value({ props }) : (value ?? {})
+}
+
+function resolveSemanticStyles(
+  value: CollapseSemanticStyles | undefined,
+  props: CollapseProps,
+): CollapseSemanticStylesMap {
+  return typeof value === 'function' ? value({ props }) : (value ?? {})
+}
+
+function mergeStyle(
+  ...styles: Array<string | JSX.CSSProperties | undefined>
+): string | JSX.CSSProperties {
+  const stringStyle = styles.find((style): style is string => typeof style === 'string')
+  if (stringStyle) return stringStyle
+  return Object.assign({}, ...styles.filter(Boolean))
 }
 
 export function Collapse(props: CollapseProps) {
@@ -35,25 +63,51 @@ export function Collapse(props: CollapseProps) {
     'accordion',
     'bordered',
     'ghost',
+    'destroyInactivePanel',
+    'destroyOnHidden',
+    'size',
     'collapsible',
+    'expandIcon',
+    'expandIconPlacement',
     'expandIconPosition',
     'onChange',
+    'rootClass',
+    'classNames',
+    'styles',
     'class',
+    'classList',
+    'style',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-collapse`
   const [, hashId] = useCollapseStyle(prefixCls())
+  const collapseConfig = () => config.collapse()
   const [innerActiveKeys, setInnerActiveKeys] = createSignal(
     normalizeActiveKey(local.defaultActiveKey),
   )
   const items = () => local.items ?? []
   const bordered = () => local.bordered ?? true
-  const expandIconPosition = () => local.expandIconPosition ?? 'start'
+  const size = () => local.size ?? collapseConfig().size ?? config.componentSize()
+  const collapseSize = () => (size() === 'middle' ? 'medium' : size())
+  const expandIconPlacement = () =>
+    local.expandIconPlacement ??
+    collapseConfig().expandIconPlacement ??
+    local.expandIconPosition ??
+    collapseConfig().expandIconPosition ??
+    'start'
+  const destroyOnHidden = () => local.destroyOnHidden ?? local.destroyInactivePanel ?? false
+  const semanticClassNames = createMemo(() =>
+    resolveSemanticClassNames(local.classNames ?? collapseConfig().classNames, props),
+  )
+  const semanticStyles = createMemo(() =>
+    resolveSemanticStyles(local.styles ?? collapseConfig().styles, props),
+  )
+  const mergedExpandIcon = () => local.expandIcon ?? collapseConfig().expandIcon
   const mergedActiveKeys = createMemo(() =>
     normalizeActiveKey(local.activeKey ?? innerActiveKeys()),
   )
-  const headerId = (key: string) => `${prefixCls()}-header-${keyToId(key)}`
-  const contentId = (key: string) => `${prefixCls()}-content-${keyToId(key)}`
+  const headerId = (key: CollapseKey) => `${prefixCls()}-header-${keyToId(key)}`
+  const contentId = (key: CollapseKey) => `${prefixCls()}-content-${keyToId(key)}`
 
   const emitChange = (nextKeys: CollapseKey[]) => {
     if (local.accordion) {
@@ -97,6 +151,23 @@ export function Collapse(props: CollapseProps) {
     return collapsible !== 'header' && !isDisabled(item, local.collapsible)
   }
 
+  const shouldRenderContent = (item: CollapseItem, active: boolean) =>
+    active || item.forceRender || !destroyOnHidden()
+
+  const renderExpandIcon = (item: CollapseItem, active: boolean) => {
+    const panelProps: CollapseExpandIconProps = {
+      key: item.key,
+      isActive: active,
+      label: item.label,
+      children: item.children,
+      extra: item.extra,
+      showArrow: item.showArrow,
+      forceRender: item.forceRender,
+      collapsible: item.collapsible ?? local.collapsible,
+    }
+    return typeof mergedExpandIcon() === 'function' ? mergedExpandIcon()?.(panelProps) : '›'
+  }
+
   return (
     <div
       {...rest}
@@ -104,10 +175,20 @@ export function Collapse(props: CollapseProps) {
         prefixCls(),
         !bordered() && `${prefixCls()}-borderless`,
         local.ghost && `${prefixCls()}-ghost`,
-        `${prefixCls()}-icon-position-${expandIconPosition()}`,
+        collapseSize() === 'large' && `${prefixCls()}-large`,
+        collapseSize() === 'small' && `${prefixCls()}-small`,
+        `${prefixCls()}-icon-placement-${expandIconPlacement()}`,
+        local.expandIconPlacement === undefined &&
+          local.expandIconPosition !== undefined &&
+          `${prefixCls()}-icon-position-${local.expandIconPosition}`,
         hashId(),
+        semanticClassNames().root,
+        collapseConfig().class,
         local.class,
+        local.rootClass,
       )}
+      classList={local.classList}
+      style={mergeStyle(semanticStyles().root, collapseConfig().style, local.style)}
     >
       <For each={items()}>
         {(item) => {
@@ -119,23 +200,34 @@ export function Collapse(props: CollapseProps) {
                 `${prefixCls()}-item`,
                 active() && `${prefixCls()}-item-active`,
                 disabled() && `${prefixCls()}-item-disabled`,
+                item.showArrow === false && `${prefixCls()}-no-arrow`,
                 item.class,
               )}
               style={item.style}
             >
-              <div class={`${prefixCls()}-header`}>
-                <button
-                  type="button"
-                  class={`${prefixCls()}-expand-icon`}
-                  aria-label={`Toggle ${String(item.label)}`}
-                  aria-expanded={active() ? 'true' : 'false'}
-                  aria-controls={contentId(item.key)}
-                  disabled={!canIconToggle(item)}
-                  onClick={() => toggleItem(item)}
-                  onKeyDown={(event) => handleKeyDown(event, item)}
-                >
-                  <span aria-hidden="true">›</span>
-                </button>
+              <div
+                class={classNames(
+                  `${prefixCls()}-header`,
+                  semanticClassNames().header,
+                  item.classNames?.header,
+                )}
+                style={mergeStyle(semanticStyles().header, item.styles?.header)}
+              >
+                <Show when={item.showArrow !== false}>
+                  <button
+                    type="button"
+                    class={classNames(`${prefixCls()}-expand-icon`, semanticClassNames().icon)}
+                    style={semanticStyles().icon}
+                    aria-label={`Toggle ${String(item.label)}`}
+                    aria-expanded={active() ? 'true' : 'false'}
+                    aria-controls={contentId(item.key)}
+                    disabled={!canIconToggle(item)}
+                    onClick={() => toggleItem(item)}
+                    onKeyDown={(event) => handleKeyDown(event, item)}
+                  >
+                    <span aria-hidden="true">{renderExpandIcon(item, active())}</span>
+                  </button>
+                </Show>
                 <button
                   id={headerId(item.key)}
                   type="button"
@@ -146,7 +238,12 @@ export function Collapse(props: CollapseProps) {
                   onClick={() => toggleItem(item)}
                   onKeyDown={(event) => handleKeyDown(event, item)}
                 >
-                  <span class={`${prefixCls()}-header-text`}>{item.label}</span>
+                  <span
+                    class={classNames(`${prefixCls()}-header-text`, semanticClassNames().title)}
+                    style={semanticStyles().title}
+                  >
+                    {item.label}
+                  </span>
                 </button>
                 <Show when={item.extra}>
                   <div class={`${prefixCls()}-extra`}>{item.extra}</div>
@@ -163,7 +260,18 @@ export function Collapse(props: CollapseProps) {
                   !active() && `${prefixCls()}-content-hidden`,
                 )}
               >
-                <div class={`${prefixCls()}-content-box`}>{item.children}</div>
+                <Show when={shouldRenderContent(item, active())}>
+                  <div
+                    class={classNames(
+                      `${prefixCls()}-content-box`,
+                      semanticClassNames().body,
+                      item.classNames?.body,
+                    )}
+                    style={mergeStyle(semanticStyles().body, item.styles?.body)}
+                  >
+                    {item.children}
+                  </div>
+                </Show>
               </div>
             </div>
           )

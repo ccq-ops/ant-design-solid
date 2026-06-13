@@ -1,4 +1,5 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useCollapseStyle(prefixCls: string) {
@@ -7,6 +8,7 @@ export function useCollapseStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['Collapse', prefixCls] },
     () => {
       const t = token()
+      const collapse = getComponentToken('Collapse', t)
       return {
         [`.${prefixCls}`]: {
           'box-sizing': 'border-box',
@@ -19,6 +21,12 @@ export function useCollapseStyle(prefixCls: string) {
           background: t.colorFillAlter,
           border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
           'border-radius': `${t.borderRadius}px`,
+        },
+        [`.${prefixCls}-large`]: {
+          'font-size': `${t.fontSizeLG}px`,
+        },
+        [`.${prefixCls}-small`]: {
+          'font-size': `${t.fontSizeSM}px`,
         },
         [`.${prefixCls}-borderless`]: {
           border: 0,
@@ -41,9 +49,12 @@ export function useCollapseStyle(prefixCls: string) {
           display: 'flex',
           'align-items': 'center',
           gap: `${t.marginSM}px`,
-          padding: `${t.padding}px ${t.padding}px`,
+          padding: collapse.headerPadding,
           color: t.colorText,
-          background: 'transparent',
+          background: collapse.headerBg,
+        },
+        [`.${prefixCls}-small > .${prefixCls}-item > .${prefixCls}-header`]: {
+          padding: collapse.headerPaddingSM,
         },
         [`.${prefixCls}-item-disabled > .${prefixCls}-header`]: {
           color: t.colorTextDisabled,
@@ -62,6 +73,9 @@ export function useCollapseStyle(prefixCls: string) {
           border: 0,
           cursor: 'pointer',
           transition: `transform ${t.motionDurationMid} ${t.motionEaseInOut}`,
+        },
+        [`.${prefixCls}-no-arrow > .${prefixCls}-header .${prefixCls}-expand-icon`]: {
+          display: 'none',
         },
         [`.${prefixCls}-expand-icon:disabled`]: {
           cursor: 'not-allowed',
@@ -97,7 +111,7 @@ export function useCollapseStyle(prefixCls: string) {
         },
         [`.${prefixCls}-content`]: {
           color: t.colorText,
-          background: t.colorBgContainer,
+          background: collapse.contentBg,
           'border-top': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         },
         [`.${prefixCls}-borderless .${prefixCls}-content, .${prefixCls}-ghost .${prefixCls}-content`]:
@@ -105,18 +119,20 @@ export function useCollapseStyle(prefixCls: string) {
             'border-top': 0,
           },
         [`.${prefixCls}-content-box`]: {
-          padding: `${t.padding}px`,
+          padding: collapse.contentPadding,
         },
         [`.${prefixCls}-content-hidden`]: {
           display: 'none',
         },
-        [`.${prefixCls}-icon-position-end .${prefixCls}-header`]: {
-          'flex-direction': 'row-reverse',
-        },
-        [`.${prefixCls}-icon-position-end .${prefixCls}-extra`]: {
-          'margin-inline-start': 0,
-          'margin-inline-end': `${t.margin}px`,
-        },
+        [`.${prefixCls}-icon-position-end .${prefixCls}-header, .${prefixCls}-icon-placement-end .${prefixCls}-header`]:
+          {
+            'flex-direction': 'row-reverse',
+          },
+        [`.${prefixCls}-icon-position-end .${prefixCls}-extra, .${prefixCls}-icon-placement-end .${prefixCls}-extra`]:
+          {
+            'margin-inline-start': 0,
+            'margin-inline-end': `${t.margin}px`,
+          },
       }
     },
   )

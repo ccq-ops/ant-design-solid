@@ -21,7 +21,7 @@ export function attachComponentOverrides(
 export function getComponentToken<K extends keyof ComponentTokenMap>(
   componentName: K,
   token: AliasToken,
-): ComponentTokenMap[K] {
+): NonNullable<ComponentTokenMap[K]> {
   const defaults: ComponentTokenMap = {
     Button: {
       borderRadius: token.borderRadius,
@@ -495,5 +495,5 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
     },
   }
   const overrides = overrideStore.get(token)?.[componentName] ?? {}
-  return { ...defaults[componentName], ...overrides } as ComponentTokenMap[K]
+  return { ...defaults[componentName], ...overrides } as NonNullable<ComponentTokenMap[K]>
 }

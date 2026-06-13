@@ -208,4 +208,152 @@ describe('Collapse', () => {
     expect(root.className).toContain('custom-collapse-icon-position-end')
     expect(root.className).toContain('extra-collapse')
   })
+
+  it('supports number keys and returns number keys from onChange', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Collapse
+        items={[
+          { key: 1, label: 'Panel one', children: 'One' },
+          { key: 2, label: 'Panel two', children: 'Two' },
+        ]}
+        defaultActiveKey={1}
+        onChange={onChange}
+      />
+    ))
+
+    expect(result.getByRole('button', { name: 'Panel one' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+
+    fireEvent.click(result.getByRole('button', { name: 'Panel two' }))
+
+    expect(onChange).toHaveBeenCalledWith([1, 2])
+  })
+
+  it('supports custom expand icon with panel props and expandIconPlacement', () => {
+    const expandIcon = vi.fn((panelProps) => (
+      <span data-testid={`icon-${panelProps.key}`}>
+        {panelProps.isActive ? 'open' : 'closed'}-{String(panelProps.label)}
+      </span>
+    ))
+    const result = render(() => (
+      <Collapse
+        items={items.slice(0, 2)}
+        defaultActiveKey="one"
+        expandIcon={expandIcon}
+        expandIconPosition="start"
+        expandIconPlacement="end"
+      />
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root.className).toContain('ads-collapse-icon-placement-end')
+    expect(root.className).not.toContain('ads-collapse-icon-position-start')
+    expect(result.getByTestId('icon-one')).toHaveTextContent('open-Panel one')
+    expect(result.getByTestId('icon-two')).toHaveTextContent('closed-Panel two')
+    expect(expandIcon).toHaveBeenCalledWith(
+      expect.objectContaining({
+        key: 'one',
+        isActive: true,
+        label: 'Panel one',
+      }),
+    )
+  })
+
+  it('supports size classes and ConfigProvider collapse defaults', () => {
+    const result = render(() => (
+      <ConfigProvider
+        componentSize="large"
+        collapse={{
+          size: 'small',
+          expandIconPlacement: 'end',
+          class: 'configured-collapse',
+          classNames: { root: 'semantic-root' },
+          styles: { root: { color: 'rgb(1, 2, 3)' } },
+        }}
+      >
+        <Collapse items={items.slice(0, 1)} />
+      </ConfigProvider>
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root).toHaveClass('ads-collapse-small')
+    expect(root).toHaveClass('ads-collapse-icon-placement-end')
+    expect(root).toHaveClass('configured-collapse')
+    expect(root).toHaveClass('semantic-root')
+    expect(root).toHaveStyle({ color: 'rgb(1, 2, 3)' })
+  })
+
+  it('supports showArrow false and semantic classNames/styles', () => {
+    const result = render(() => (
+      <Collapse
+        classNames={{
+          root: 'root-slot',
+          header: 'header-slot',
+          title: 'title-slot',
+          body: 'body-slot',
+          icon: 'icon-slot',
+        }}
+        styles={{
+          header: { color: 'rgb(4, 5, 6)' },
+          title: { 'font-weight': 700 },
+          body: { background: 'rgb(7, 8, 9)' },
+          icon: { color: 'rgb(10, 11, 12)' },
+        }}
+        items={[
+          {
+            key: 'no-arrow',
+            label: 'No arrow',
+            children: 'No arrow content',
+            showArrow: false,
+            classNames: { header: 'item-header-slot', body: 'item-body-slot' },
+            styles: { header: { 'font-size': '18px' }, body: { padding: '24px' } },
+          },
+        ]}
+      />
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+    const header = root.querySelector('.ads-collapse-header') as HTMLElement
+    const title = root.querySelector('.ads-collapse-header-text') as HTMLElement
+    const body = root.querySelector('.ads-collapse-content-box') as HTMLElement
+
+    expect(root).toHaveClass('root-slot')
+    expect(root.querySelector('.ads-collapse-expand-icon')).toBeNull()
+    expect(header).toHaveClass('header-slot')
+    expect(header).toHaveClass('item-header-slot')
+    expect(header).toHaveStyle({ color: 'rgb(4, 5, 6)', 'font-size': '18px' })
+    expect(title).toHaveClass('title-slot')
+    expect(title).toHaveStyle({ 'font-weight': '700' })
+    expect(body).toHaveClass('body-slot')
+    expect(body).toHaveClass('item-body-slot')
+    expect(body).toHaveStyle({ background: 'rgb(7, 8, 9)', padding: '24px' })
+  })
+
+  it('supports forceRender and destroyOnHidden panel rendering behavior', () => {
+    const result = render(() => (
+      <Collapse
+        destroyOnHidden
+        items={[
+          { key: 'lazy', label: 'Lazy', children: <span>Lazy content</span> },
+          {
+            key: 'forced',
+            label: 'Forced',
+            forceRender: true,
+            children: <span>Forced content</span>,
+          },
+        ]}
+      />
+    ))
+
+    expect(result.queryByText('Lazy content')).toBeNull()
+    expect(result.getByText('Forced content')).toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('button', { name: 'Lazy' }))
+    expect(result.getByText('Lazy content')).toBeInTheDocument()
+
+    fireEvent.click(result.getByRole('button', { name: 'Lazy' }))
+    expect(result.queryByText('Lazy content')).toBeNull()
+  })
 })

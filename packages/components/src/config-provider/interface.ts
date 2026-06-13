@@ -131,7 +131,12 @@ export type CascaderConfig = ComponentStyleConfig &
 export type CheckboxConfig = ComponentStyleConfig &
   PickProps<CheckboxProps, 'classNames' | 'styles'>
 export type CollapseConfig = ComponentStyleConfig &
-  Partial<PickProps<CollapseProps, 'expandIconPosition'>>
+  Partial<
+    PickProps<
+      CollapseProps,
+      'expandIcon' | 'expandIconPlacement' | 'expandIconPosition' | 'size' | 'classNames' | 'styles'
+    >
+  >
 export type ColorPickerConfig = ComponentStyleConfig & PickProps<ColorPickerProps, 'allowClear'>
 export type DatePickerConfig = ComponentStyleConfig &
   PickProps<DatePickerProps, 'variant' | 'classNames' | 'styles' | 'suffixIcon' | 'allowClear'> & {

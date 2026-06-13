@@ -850,9 +850,7 @@ export interface ComponentTokenMap {
   Wave?: ComponentTokenBase
 }
 
-export type ComponentTokenConfig<T extends ComponentTokenBase | undefined> = Partial<
-  NonNullable<T>
-> & {
+export type ComponentTokenConfig<T> = Partial<NonNullable<T>> & {
   algorithm?: boolean | ThemeAlgorithm | ThemeAlgorithm[]
 }
 
