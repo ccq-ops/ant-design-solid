@@ -371,8 +371,8 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-variant-grid`]: {
           display: 'grid',
           'grid-template-columns': 'repeat(3, 1fr)',
-          gap: `${t.marginSM}px`,
-          padding: `${t.paddingXS}px 0`,
+          gap: `${t.marginXXS}px`,
+          padding: `${t.paddingXXS}px 0`,
         },
         [`.${prefixCls}-quarter-grid`]: {
           'grid-template-columns': 'repeat(4, 1fr)',
@@ -407,7 +407,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'align-items': 'center',
           'justify-content': 'center',
           width: '100%',
-          height: `${dp.withoutTimeCellHeight}px`,
+          height: `${t.controlHeightLG}px`,
           background: 'transparent',
         },
         [`.${prefixCls}-variant-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled):hover`]:

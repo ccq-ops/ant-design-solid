@@ -46,7 +46,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
 
     const css = extractStyle(cache)
     expect(css).toContain(
-      '.ads-date-picker-variant-cell{align-items:center;background:transparent;display:inline-flex;height:66px;justify-content:center;width:100%;',
+      '.ads-date-picker-variant-cell{align-items:center;background:transparent;display:inline-flex;height:40px;justify-content:center;width:100%;',
     )
     expect(css).toContain('.ads-date-picker-cell-inner{')
     expect(css).toContain('align-items:center;border-radius:6px;')
@@ -54,6 +54,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain('min-width:24px;padding:0 8px;')
     expect(css).toContain(
       '.ads-date-picker-variant-cell.ads-date-picker-cell-selected .ads-date-picker-cell-inner{background:#1677ff;color:#ffffff;',
+    )
+    expect(css).toContain(
+      '.ads-date-picker-variant-grid{display:grid;gap:4px;grid-template-columns:repeat(3, 1fr);padding:4px 0;',
     )
     expect(css).toContain('.ads-date-picker-quarter-grid{grid-template-columns:repeat(4, 1fr);')
     expect(css).toContain(
