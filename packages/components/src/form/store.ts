@@ -33,17 +33,20 @@ interface CreateFormOptions {
   onFieldsChange?: (changedFields: FieldData[], allFields: FieldData[]) => void
 }
 
+type FormCallbacks = Omit<CreateFormOptions, 'initialValues'>
+type ProviderCallbacks = {
+  name?: string
+  onFieldsChange?: (changedFields: FieldData[]) => void
+  onFinish?: (values: FormValues) => void
+}
+
 interface InternalFormInstance extends FormInstance {
   setInitialValues?: (values?: FormValues) => void
-  setCallbacks?: (callbacks: Omit<CreateFormOptions, 'initialValues'>) => void
+  setCallbacks?: (callbacks: FormCallbacks) => () => void
   setControlledFields?: (fields: FieldData[]) => void
-  destroy?: () => void
+  destroy?: (clearOnDestroy?: boolean) => void
   registerFormOwner?: () => () => void
-  setProviderCallbacks?: (callbacks: {
-    name?: string
-    onFieldsChange?: (changedFields: FieldData[]) => void
-    onFinish?: (values: FormValues) => void
-  }) => void
+  setProviderCallbacks?: (callbacks: ProviderCallbacks) => () => void
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -73,18 +76,17 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     let sourceInitialValues = options.initialValues
     let formInitialValues = cloneFormValues(options.initialValues ?? {})
     const [values, setValues] = createSignal<FormValues>(cloneFormValues(formInitialValues))
-    let callbacks: Omit<CreateFormOptions, 'initialValues'> = {
+    const defaultCallbacks: FormCallbacks = {
       clearOnDestroy: options.clearOnDestroy,
       onFinish: options.onFinish,
       onFinishFailed: options.onFinishFailed,
       onValuesChange: options.onValuesChange,
       onFieldsChange: options.onFieldsChange,
     }
-    let providerCallbacks: {
-      name?: string
-      onFieldsChange?: (changedFields: FieldData[]) => void
-      onFinish?: (values: FormValues) => void
-    } = {}
+    let callbacks: FormCallbacks = defaultCallbacks
+    let providerCallbacks: ProviderCallbacks = {}
+    const callbackEntries: Array<{ id: symbol; callbacks: FormCallbacks }> = []
+    const providerCallbackEntries: Array<{ id: symbol; callbacks: ProviderCallbacks }> = []
     const fields = new Map<string, FieldRecord>()
     const errorSignals = new Map<string, [Accessor<string[]>, (errors: string[]) => void]>()
     const warningSignals = new Map<string, [Accessor<string[]>, (warnings: string[]) => void]>()
@@ -605,7 +607,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         formInitialValues = nextInitialValuesClone
       },
       setCallbacks(nextCallbacks) {
+        const id = Symbol('form-callbacks')
+        callbackEntries.push({ id, callbacks: nextCallbacks })
         callbacks = nextCallbacks
+        return () => {
+          const index = callbackEntries.findIndex((entry) => entry.id === id)
+          if (index >= 0) callbackEntries.splice(index, 1)
+          callbacks = callbackEntries[callbackEntries.length - 1]?.callbacks ?? defaultCallbacks
+        }
       },
       registerFormOwner() {
         ownerCount += 1
@@ -616,8 +625,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           ownerCount = Math.max(0, ownerCount - 1)
         }
       },
-      destroy() {
-        if (ownerCount > 0 || !callbacks.clearOnDestroy) return
+      destroy(clearOnDestroy = callbacks.clearOnDestroy) {
+        if (ownerCount > 0 || !clearOnDestroy) return
         batch(() => {
           const nextValues = cloneFormValues(formInitialValues)
           for (const key of Object.keys(nextValues)) delete nextValues[key]
@@ -632,7 +641,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         })
       },
       setProviderCallbacks(nextProviderCallbacks) {
+        const id = Symbol('form-provider-callbacks')
+        providerCallbackEntries.push({ id, callbacks: nextProviderCallbacks })
         providerCallbacks = nextProviderCallbacks
+        return () => {
+          const index = providerCallbackEntries.findIndex((entry) => entry.id === id)
+          if (index >= 0) providerCallbackEntries.splice(index, 1)
+          providerCallbacks = providerCallbackEntries[providerCallbackEntries.length - 1]?.callbacks ?? {}
+        }
       },
     }
 
@@ -650,17 +666,17 @@ export function setFormInitialValues(form: FormInstance, initialValues?: FormVal
 
 export function setFormCallbacks(
   form: FormInstance,
-  callbacks: Omit<CreateFormOptions, 'initialValues'>,
-): void {
-  ;(form as InternalFormInstance).setCallbacks?.(callbacks)
+  callbacks: FormCallbacks,
+): () => void {
+  return (form as InternalFormInstance).setCallbacks?.(callbacks) ?? (() => undefined)
 }
 
 export function setFormControlledFields(form: FormInstance, fields: FieldData[]): void {
   ;(form as InternalFormInstance).setControlledFields?.(fields)
 }
 
-export function destroyForm(form: FormInstance): void {
-  ;(form as InternalFormInstance).destroy?.()
+export function destroyForm(form: FormInstance, clearOnDestroy?: boolean): void {
+  ;(form as InternalFormInstance).destroy?.(clearOnDestroy)
 }
 
 export function registerFormOwner(form: FormInstance): () => void {
@@ -669,11 +685,7 @@ export function registerFormOwner(form: FormInstance): () => void {
 
 export function setFormProviderCallbacks(
   form: FormInstance,
-  callbacks: {
-    name?: string
-    onFieldsChange?: (changedFields: FieldData[]) => void
-    onFinish?: (values: FormValues) => void
-  },
-): void {
-  ;(form as InternalFormInstance).setProviderCallbacks?.(callbacks)
+  callbacks: ProviderCallbacks,
+): () => void {
+  return (form as InternalFormInstance).setProviderCallbacks?.(callbacks) ?? (() => undefined)
 }

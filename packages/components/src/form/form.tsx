@@ -21,6 +21,7 @@ import type { FormInstance, FormProps } from './interface'
 import type { JSX } from 'solid-js'
 
 function mergeStyle(...values: Array<JSX.CSSProperties | string | undefined>) {
+  if (values.length === 1 && typeof values[0] === 'string') return values[0]
   const objects = values.filter(
     (value): value is JSX.CSSProperties => !!value && typeof value === 'object',
   )
@@ -102,8 +103,10 @@ export function FormRoot(props: FormProps) {
     validateTrigger,
   }
 
+  let unregisterCallbacks: (() => void) | undefined
   createEffect(() => {
-    setFormCallbacks(form(), {
+    unregisterCallbacks?.()
+    unregisterCallbacks = setFormCallbacks(form(), {
       clearOnDestroy: local.clearOnDestroy,
       onFinish: local.onFinish,
       onFinishFailed: (errorInfo) => {
@@ -119,9 +122,12 @@ export function FormRoot(props: FormProps) {
       onFieldsChange: local.onFieldsChange,
     })
   })
+  onCleanup(() => unregisterCallbacks?.())
 
+  let unregisterProviderCallbacks: (() => void) | undefined
   createEffect(() => {
-    setFormProviderCallbacks(form(), {
+    unregisterProviderCallbacks?.()
+    unregisterProviderCallbacks = setFormProviderCallbacks(form(), {
       name: local.name,
       onFieldsChange:
         provider && local.name
@@ -133,6 +139,7 @@ export function FormRoot(props: FormProps) {
           : undefined,
     })
   })
+  onCleanup(() => unregisterProviderCallbacks?.())
 
   let unregisterProviderForm: (() => void) | undefined
   createEffect(() => {
@@ -149,13 +156,16 @@ export function FormRoot(props: FormProps) {
   })
   onCleanup(() => {
     unregisterOwner?.()
-    destroyForm(form())
+    destroyForm(form(), local.clearOnDestroy)
   })
 
   const rootClass = () =>
     classNames(prefixCls(), `${prefixCls()}-${layout()}`, hashId(), semanticClassNames().root, local.class)
-  const rootStyle = () =>
-    mergeStyle(semanticStyles().root, local.style as JSX.CSSProperties | string | undefined)
+  const rootStyle = () => {
+    const semanticStyle = semanticStyles().root
+    if (!semanticStyle) return mergeStyle(local.style as JSX.CSSProperties | string | undefined)
+    return mergeStyle(semanticStyle, local.style as JSX.CSSProperties | string | undefined)
+  }
 
   const rootProps = () => ({
     ...rest,

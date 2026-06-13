@@ -22,6 +22,12 @@ describe('Form root v6 APIs', () => {
     expect(form).toHaveStyle({ color: 'rgb(1, 2, 3)' })
   })
 
+  it('preserves string style on the root element', () => {
+    const result = render(() => <Form aria-label="styled" style="display: none;" />)
+
+    expect(result.getByLabelText('styled')).toHaveAttribute('style', 'display: none;')
+  })
+
   it('renders no form element when component is false', () => {
     const result = render(() => (
       <Form component={false}>
@@ -74,11 +80,8 @@ describe('Form root v6 APIs', () => {
       expect(scrollIntoView).toHaveBeenCalled()
       expect(focus).toHaveBeenCalled()
     } finally {
-      if (originalScrollIntoView) {
-        fieldElement!.scrollIntoView = originalScrollIntoView
-      } else {
-        delete fieldElement!.scrollIntoView
-      }
+      fieldElement!.scrollIntoView =
+        originalScrollIntoView ?? Element.prototype.scrollIntoView
       input.focus = originalFocus
     }
   })
@@ -104,6 +107,43 @@ describe('Form root v6 APIs', () => {
 
     expect(form.getFieldsValue(true)).toEqual({ username: 'Ada' })
     fireEvent.click(result.getByRole('button', { name: 'Hide' }))
+    expect(form.getFieldsValue(true)).toEqual({})
+  })
+
+  it('does not clear a shared form instance until the final owner unmounts', () => {
+    const [firstVisible, setFirstVisible] = createSignal(true)
+    const [secondVisible, setSecondVisible] = createSignal(true)
+    const [form] = useForm()
+
+    const result = render(() => (
+      <>
+        <Show when={firstVisible()}>
+          <Form form={form} clearOnDestroy initialValues={{ username: 'Ada' }}>
+            <Form.Item name="username">
+              <Input />
+            </Form.Item>
+          </Form>
+        </Show>
+        <Show when={secondVisible()}>
+          <Form form={form} clearOnDestroy>
+            <Form.Item name="username">
+              <Input />
+            </Form.Item>
+          </Form>
+        </Show>
+        <button type="button" onClick={() => setFirstVisible(false)}>
+          Hide first
+        </button>
+        <button type="button" onClick={() => setSecondVisible(false)}>
+          Hide second
+        </button>
+      </>
+    ))
+
+    expect(form.getFieldsValue(true)).toEqual({ username: 'Ada' })
+    fireEvent.click(result.getByRole('button', { name: 'Hide first' }))
+    expect(form.getFieldsValue(true)).toEqual({ username: 'Ada' })
+    fireEvent.click(result.getByRole('button', { name: 'Hide second' }))
     expect(form.getFieldsValue(true)).toEqual({})
   })
 })
