@@ -184,4 +184,140 @@ describe('Anchor', () => {
     expect(result.container.querySelector('.custom-anchor')).toBeInTheDocument()
     expect(result.container.querySelector('.ads-anchor')).toBeNull()
   })
+
+  it('applies semantic classNames, styles, rootClass, and component config', () => {
+    const result = render(() => (
+      <ConfigProvider anchor={{ class: 'configured-root', style: { 'font-size': '18px' } }}>
+        <Anchor
+          affix={false}
+          showInkInFixed
+          rootClass="root-layer"
+          class="local-root"
+          style={{ color: 'rgb(1, 2, 3)' }}
+          classNames={{
+            root: 'semantic-root',
+            item: 'semantic-item',
+            itemTitle: 'semantic-title',
+            indicator: 'semantic-indicator',
+          }}
+          styles={{
+            root: { background: 'rgb(4, 5, 6)' },
+            item: { padding: '3px' },
+            itemTitle: { color: 'rgb(7, 8, 9)' },
+            indicator: { width: '4px' },
+          }}
+          items={items}
+        />
+      </ConfigProvider>
+    ))
+
+    const root = result.container.querySelector<HTMLElement>('.ads-anchor')
+    expect(root).toHaveClass('configured-root')
+    expect(root).toHaveClass('root-layer')
+    expect(root).toHaveClass('local-root')
+    expect(root).toHaveClass('semantic-root')
+    expect(root).toHaveStyle({ color: 'rgb(1, 2, 3)', background: 'rgb(4, 5, 6)' })
+    expect(root).toHaveStyle({ 'font-size': '18px' })
+    expect(result.getByRole('link', { name: 'Intro' }).parentElement).toHaveClass('semantic-item')
+    expect(result.getByRole('link', { name: 'Intro' })).toHaveClass('semantic-title')
+    expect(result.getByRole('link', { name: 'Intro' })).toHaveStyle({ color: 'rgb(7, 8, 9)' })
+    expect(result.container.querySelector('.ads-anchor-ink')).toHaveClass('semantic-indicator')
+  })
+
+  it('supports semantic classNames and styles as functions', () => {
+    const result = render(() => (
+      <Anchor
+        affix={false}
+        direction="horizontal"
+        classNames={({ props }) => ({ root: props.direction === 'horizontal' ? 'fn-root' : '' })}
+        styles={({ props }) => ({
+          root: { display: props.direction === 'horizontal' ? 'block' : 'inline-block' },
+        })}
+        items={items}
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-anchor')).toHaveClass('fn-root')
+    expect(result.container.querySelector('.ads-anchor')).toHaveStyle({ display: 'block' })
+  })
+
+  it('supports showInkInFixed when affix is false', () => {
+    const hidden = render(() => <Anchor affix={false} items={items} />)
+    expect(hidden.container.querySelector('.ads-anchor-ink')).toBeNull()
+    cleanup()
+
+    const shown = render(() => <Anchor affix={false} showInkInFixed items={items} />)
+    expect(shown.container.querySelector('.ads-anchor-ink')).toBeInTheDocument()
+  })
+
+  it('passes object affix configuration to Affix', () => {
+    const result = render(() => (
+      <Anchor affix={{ offsetBottom: 12, class: 'affix-extra' }} items={items} />
+    ))
+
+    expect(result.container.querySelector('.ads-affix-wrapper')).toHaveClass('affix-extra')
+  })
+
+  it('renders Anchor.Link children and scrolls with link-level targetOffset', () => {
+    appendTarget('intro', 120)
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    const result = render(() => (
+      <Anchor affix={false}>
+        <Anchor.Link href="#intro" title="Intro child" targetOffset={20} />
+      </Anchor>
+    ))
+
+    fireEvent.click(result.getByRole('link', { name: 'Intro child' }))
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 100, behavior: 'smooth' })
+  })
+
+  it('uses Anchor.Link children when calculating the active link', () => {
+    const onChange = vi.fn()
+    appendTarget('intro', -20)
+    const result = render(() => (
+      <Anchor affix={false} showInkInFixed bounds={0} onChange={onChange}>
+        <Anchor.Link href="#intro" title="Intro child" />
+      </Anchor>
+    ))
+
+    window.dispatchEvent(new Event('scroll'))
+
+    expect(result.getByRole('link', { name: 'Intro child' })).toHaveClass(
+      'ads-anchor-link-title-active',
+    )
+    expect(onChange).toHaveBeenCalledWith('#intro')
+  })
+
+  it('hides nested links in horizontal direction for children and items', () => {
+    const result = render(() => (
+      <Anchor affix={false} direction="horizontal" items={items}>
+        <Anchor.Link href="#parent" title="Parent">
+          <Anchor.Link href="#child" title="Child" />
+        </Anchor.Link>
+      </Anchor>
+    ))
+
+    expect(result.queryByRole('link', { name: 'API' })).toBeNull()
+    expect(result.queryByRole('link', { name: 'Child' })).toBeNull()
+  })
+
+  it('lets external links keep caller-controlled browser navigation', () => {
+    const onClick = vi.fn((event: MouseEvent) => event.preventDefault())
+    const result = render(() => (
+      <Anchor
+        affix={false}
+        onClick={onClick}
+        items={[{ href: 'https://example.com/default', title: 'External default' }]}
+      />
+    ))
+
+    const defaultEvent = new MouseEvent('click', { bubbles: true, cancelable: true })
+    result.getByRole('link', { name: 'External default' }).dispatchEvent(defaultEvent)
+    expect(defaultEvent.defaultPrevented).toBe(true)
+    expect(onClick).toHaveBeenCalledWith(
+      expect.any(MouseEvent),
+      expect.objectContaining({ href: 'https://example.com/default' }),
+    )
+  })
 })

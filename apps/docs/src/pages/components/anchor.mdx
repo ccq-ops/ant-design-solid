@@ -8,29 +8,26 @@ Anchor renders page-section navigation and highlights the current section while 
 import { Anchor, Card, Space } from '@ant-design-solid/core'
 
 const items = [
-  { href: '#anchor-basic', title: 'Basic' },
-  {
-    href: '#anchor-examples',
-    title: 'Examples',
-    children: [{ href: '#anchor-api', title: 'API' }],
-  },
+  { key: 'part-1', href: '#anchor-basic-part-1', title: 'Part 1' },
+  { key: 'part-2', href: '#anchor-basic-part-2', title: 'Part 2' },
+  { key: 'part-3', href: '#anchor-basic-part-3', title: 'Part 3' },
 ]
 
 const Demo1 = function () {
   return (
     <Space align="start" style={{ width: '100%' }}>
-      <Anchor affix={false} items={items} />
+      <Anchor affix={false} showInkInFixed items={items} />
       <div style={{ flex: 1 }}>
-        <Card id="anchor-basic" title="Basic">
+        <Card id="anchor-basic-part-1" title="Part 1">
           Basic section content.
         </Card>
         <div style={{ height: '24px' }} />
-        <Card id="anchor-examples" title="Examples">
-          Example section content.
+        <Card id="anchor-basic-part-2" title="Part 2">
+          More content for the second anchor.
         </Card>
         <div style={{ height: '24px' }} />
-        <Card id="anchor-api" title="API">
-          API section content.
+        <Card id="anchor-basic-part-3" title="Part 3">
+          Final section content.
         </Card>
       </div>
     </Space>
@@ -40,53 +37,231 @@ const Demo1 = function () {
 export default Demo1
 ```
 
-### Affixed
+### Static Position
 
 ```tsx
-import { Anchor, Card, Space } from '@ant-design-solid/core'
+import { Anchor } from '@ant-design-solid/core'
 
 const items = [
-  { href: '#anchor-basic', title: 'Basic' },
-  {
-    href: '#anchor-examples',
-    title: 'Examples',
-    children: [{ href: '#anchor-api', title: 'API' }],
-  },
+  { key: 'basic', href: '#anchor-static-basic', title: 'Basic demo' },
+  { key: 'static', href: '#anchor-static-position', title: 'Static position' },
+  { key: 'api', href: '#anchor-static-api', title: 'API' },
 ]
 
 const Demo2 = function () {
-  return <Anchor offsetTop={80} items={items} />
+  return <Anchor affix={false} showInkInFixed items={items} />
 }
 
 export default Demo2
 ```
 
+### Customize Container
+
+```tsx
+import { Anchor, Card } from '@ant-design-solid/core'
+
+let containerRef: HTMLDivElement | undefined
+
+const items = [
+  { key: 'a', href: '#anchor-container-a', title: 'Section A' },
+  { key: 'b', href: '#anchor-container-b', title: 'Section B' },
+  { key: 'c', href: '#anchor-container-c', title: 'Section C' },
+]
+
+const Demo3 = function () {
+  return (
+    <div
+      ref={containerRef}
+      style={{ display: 'flex', gap: '24px', height: '240px', overflow: 'auto' }}
+    >
+      <Anchor
+        affix={false}
+        showInkInFixed
+        getContainer={() => containerRef}
+        targetOffset={16}
+        items={items}
+      />
+      <div style={{ flex: 1 }}>
+        <Card id="anchor-container-a" title="Section A">
+          Container section A.
+        </Card>
+        <div style={{ height: '80px' }} />
+        <Card id="anchor-container-b" title="Section B">
+          Container section B.
+        </Card>
+        <div style={{ height: '80px' }} />
+        <Card id="anchor-container-c" title="Section C">
+          Container section C.
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default Demo3
+```
+
+### Target Offset
+
+```tsx
+import { Anchor } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'default', href: '#anchor-offset-default', title: 'Default offset' },
+  {
+    key: 'custom',
+    href: '#anchor-offset-custom',
+    title: 'Custom item offset',
+    targetOffset: 80,
+  },
+]
+
+const Demo4 = function () {
+  return <Anchor targetOffset={24} items={items} />
+}
+
+export default Demo4
+```
+
+### Horizontal
+
+```tsx
+import { Anchor } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'basic', href: '#anchor-horizontal-basic', title: 'Basic' },
+  { key: 'container', href: '#anchor-horizontal-container', title: 'Container' },
+  { key: 'api', href: '#anchor-horizontal-api', title: 'API' },
+]
+
+const Demo5 = function () {
+  return <Anchor affix={false} direction="horizontal" showInkInFixed items={items} />
+}
+
+export default Demo5
+```
+
+### Replace
+
+```tsx
+import { Anchor } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'push', href: '#anchor-replace-push', title: 'Push history' },
+  { key: 'replace', href: '#anchor-replace-replace', title: 'Replace history', replace: true },
+]
+
+const Demo6 = function () {
+  return <Anchor replace items={items} />
+}
+
+export default Demo6
+```
+
+### Anchor Link
+
+```tsx
+import { Anchor } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Anchor affix={false} showInkInFixed>
+      <Anchor.Link href="#anchor-link-basic" title="Basic" />
+      <Anchor.Link href="#anchor-link-nested" title="Nested">
+        <Anchor.Link href="#anchor-link-child" title="Child" targetOffset={48} />
+      </Anchor.Link>
+    </Anchor>
+  )
+}
+
+export default Demo7
+```
+
+### Semantic DOM
+
+```tsx
+import { Anchor } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Anchor
+      affix={false}
+      showInkInFixed
+      classNames={{
+        root: 'custom-anchor',
+        item: 'custom-anchor-item',
+        itemTitle: 'custom-anchor-title',
+        indicator: 'custom-anchor-indicator',
+      }}
+      styles={{
+        root: { width: '220px' },
+        indicator: { background: '#722ed1' },
+      }}
+      items={[
+        { key: 'semantic-a', href: '#anchor-semantic-a', title: 'Semantic A' },
+        { key: 'semantic-b', href: '#anchor-semantic-b', title: 'Semantic B' },
+      ]}
+    />
+  )
+}
+
+export default Demo8
+```
+
 ## API
+
+Solid uses `class` instead of React `className`. The Solid root-layer prop is `rootClass`.
 
 ### Anchor
 
-| Property           | Description                                                 | Type                                               | Default      |
-| ------------------ | ----------------------------------------------------------- | -------------------------------------------------- | ------------ |
-| `items`            | Anchor links rendered as navigation items.                  | `AnchorItem[]`                                     | `-`          |
-| `affix`            | Wraps the anchor in Affix behavior.                         | `boolean`                                          | `true`       |
-| `offsetTop`        | Top offset used by the affixed anchor.                      | `number`                                           | `-`          |
-| `targetOffset`     | Scroll target offset used when navigating to anchors.       | `number`                                           | `-`          |
-| `getContainer`     | Returns the scroll container observed by the anchor.        | `() => Window \| HTMLElement \| undefined \| null` | `-`          |
-| `bounds`           | Pixel tolerance when determining the current active anchor. | `number`                                           | `-`          |
-| `getCurrentAnchor` | Overrides active anchor selection.                          | `(activeLink: string) => string`                   | `-`          |
-| `direction`        | Anchor layout direction.                                    | `'vertical' \| 'horizontal'`                       | `'vertical'` |
-| `replace`          | Uses history replace instead of push for navigation.        | `boolean`                                          | `-`          |
-| `onClick`          | Called when a link is clicked.                              | `(event: MouseEvent, link: AnchorItem) => void`    | `-`          |
-| `onChange`         | Called when the active link changes.                        | `(currentActiveLink: string) => void`              | `-`          |
+| Property           | Description                                                 | Type                                                                              | Default        |
+| ------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------- | -------------- |
+| `items`            | Anchor links rendered as navigation items.                  | `AnchorItem[]`                                                                    | `-`            |
+| `affix`            | Wraps the anchor in Affix behavior.                         | `boolean \| Omit<AffixProps, 'offsetTop' \| 'target' \| 'children'>`              | `true`         |
+| `offsetTop`        | Top offset used by the affixed anchor.                      | `number`                                                                          | `0`            |
+| `targetOffset`     | Scroll target offset used when navigating to anchors.       | `number`                                                                          | `-`            |
+| `getContainer`     | Returns the scroll container observed by the anchor.        | `() => Window \| HTMLElement \| undefined \| null`                                | `() => window` |
+| `bounds`           | Pixel tolerance when determining the current active anchor. | `number`                                                                          | `5`            |
+| `getCurrentAnchor` | Overrides active anchor selection.                          | `(activeLink: string) => string`                                                  | `-`            |
+| `direction`        | Anchor layout direction.                                    | `'vertical' \| 'horizontal'`                                                      | `'vertical'`   |
+| `replace`          | Uses history replace instead of push for navigation.        | `boolean`                                                                         | `false`        |
+| `showInkInFixed`   | Shows the indicator when `affix={false}`.                   | `boolean`                                                                         | `false`        |
+| `rootClass`        | Extra class on the root element.                            | `string`                                                                          | `-`            |
+| `classNames`       | Semantic DOM class names.                                   | `Record<'root' \| 'item' \| 'itemTitle' \| 'indicator', string> \| fn`            | `-`            |
+| `styles`           | Semantic DOM inline styles.                                 | `Record<'root' \| 'item' \| 'itemTitle' \| 'indicator', JSX.CSSProperties> \| fn` | `-`            |
+| `onClick`          | Called when a link is clicked.                              | `(event: MouseEvent, link: AnchorItem) => void`                                   | `-`            |
+| `onChange`         | Called when the active link changes.                        | `(currentActiveLink: string) => void`                                             | `-`            |
 
 ### AnchorItem
 
-| Property       | Description                               | Type               | Default |
-| -------------- | ----------------------------------------- | ------------------ | ------- |
-| `key`          | Optional stable item key.                 | `string \| number` | `-`     |
-| `href`         | Anchor href target.                       | `string`           | `-`     |
-| `target`       | Link target attribute.                    | `string`           | `-`     |
-| `title`        | Link label content.                       | `JSX.Element`      | `-`     |
-| `replace`      | Overrides replace behavior for this item. | `boolean`          | `-`     |
-| `targetOffset` | Overrides target offset for this item.    | `number`           | `-`     |
-| `children`     | Nested anchor items.                      | `AnchorItem[]`     | `-`     |
+| Property       | Description                                                      | Type               | Default |
+| -------------- | ---------------------------------------------------------------- | ------------------ | ------- |
+| `key`          | Optional stable item key.                                        | `string \| number` | `-`     |
+| `href`         | Anchor href target.                                              | `string`           | `-`     |
+| `target`       | Link target attribute.                                           | `string`           | `-`     |
+| `title`        | Link label content.                                              | `JSX.Element`      | `-`     |
+| `replace`      | Overrides replace behavior for this item.                        | `boolean`          | `false` |
+| `targetOffset` | Overrides the component `targetOffset` for this link.            | `number`           | `-`     |
+| `children`     | Nested anchor items. Not rendered when `direction="horizontal"`. | `AnchorItem[]`     | `-`     |
+
+### Anchor.Link
+
+`Anchor.Link` is supported for compatibility. Prefer `items` for new code.
+
+| Property       | Description                                           | Type          | Default |
+| -------------- | ----------------------------------------------------- | ------------- | ------- |
+| `href`         | Anchor href target.                                   | `string`      | `-`     |
+| `target`       | Link target attribute.                                | `string`      | `-`     |
+| `title`        | Link label content.                                   | `JSX.Element` | `-`     |
+| `replace`      | Uses history replace instead of push for navigation.  | `boolean`     | `false` |
+| `targetOffset` | Overrides the component `targetOffset` for this link. | `number`      | `-`     |
+| `children`     | Nested links. Not rendered when horizontal.           | `JSX.Element` | `-`     |
+
+### Semantic DOM
+
+| Slot        | Description              |
+| ----------- | ------------------------ |
+| `root`      | Root navigation element. |
+| `item`      | Link item wrapper.       |
+| `itemTitle` | Link title element.      |
+| `indicator` | Active-link indicator.   |

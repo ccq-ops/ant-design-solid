@@ -364,10 +364,10 @@ describe('@ant-design-solid/theme', () => {
         Avatar: { groupOverlapping: -6, groupSpace: 6 },
         Badge: { overflowIndicatorHeight: 24, dotSize: 8 },
         FloatButton: { size: 48, iconSize: 20 },
-      Layout: { headerBg: '#10239e', triggerHeight: 56 },
-      Anchor: { linkPaddingBlock: 6 },
-    },
-  })
+        Layout: { headerBg: '#10239e', triggerHeight: 56 },
+        Anchor: { linkPaddingBlock: 6 },
+      },
+    })
 
     expect(getComponentToken('Table', token).headerBg).toBe('#fafafa')
     expect(getComponentToken('Table', token).headerColor).toBe(token.colorText)
