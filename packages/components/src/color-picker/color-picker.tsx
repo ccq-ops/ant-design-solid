@@ -15,7 +15,7 @@ import {
   addDocumentPointerDown,
   addPositionUpdateListeners,
 } from '../shared/overlay'
-import { getDropdownPosition } from '../shared/placement'
+import { getTooltipPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
@@ -57,12 +57,24 @@ export function ColorPicker(props: ColorPickerProps) {
     'onOpenChange',
     'disabled',
     'size',
+    'mode',
+    'children',
     'placement',
+    'arrow',
+    'rootClass',
+    'classNames',
+    'styles',
+    'autoAdjustOverflow',
+    'destroyOnHidden',
+    'destroyTooltipOnHide',
     'trigger',
     'format',
     'defaultFormat',
+    'onFormatChange',
+    'disabledFormat',
     'disabledAlpha',
     'allowClear',
+    'onClear',
     'showText',
     'presets',
     'panelRender',
@@ -120,7 +132,7 @@ export function ColorPicker(props: ColorPickerProps) {
     if (!canUseDom() || !target) return
     setPosition({
       position: 'fixed',
-      ...getDropdownPosition(target.getBoundingClientRect(), placement(), 4),
+      ...getTooltipPosition(target.getBoundingClientRect(), placement(), 4),
     })
   }
 
@@ -294,10 +306,19 @@ export function ColorPicker(props: ColorPickerProps) {
     if (!valueControlled()) setInnerColor(undefined)
     local.onChange?.(undefined, '')
     local.onChangeComplete?.(undefined)
+    local.onClear?.()
     syncDraftToSource()
   }
 
-  function selectPreset(value: string): void {
+  function presetColorLabel(
+    value: NonNullable<ColorPickerProps['presets']>[number]['colors'][number],
+  ): string {
+    return typeof value === 'string' ? value : colorToCss(parseColor(value))
+  }
+
+  function selectPreset(
+    value: NonNullable<ColorPickerProps['presets']>[number]['colors'][number],
+  ): void {
     if (disabled()) return
 
     const nextColor = parseColor(value)
@@ -782,10 +803,16 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-label="Color format"
             class={`${prefixCls()}-format-select`}
             value={format()}
-            disabled={disabled() || formatControlled()}
+            disabled={disabled() || formatControlled() || Boolean(local.disabledFormat)}
             onChange={(event) => {
-              if (!disabled() && !formatControlled())
-                setInnerFormat(event.currentTarget.value as ColorPickerFormat)
+              if (disabled() || formatControlled() || local.disabledFormat) return
+
+              const nextFormat = event.currentTarget.value as ColorPickerFormat
+
+              if (nextFormat === format()) return
+
+              setInnerFormat(nextFormat)
+              local.onFormatChange?.(nextFormat)
             }}
           >
             <option value="hex">HEX</option>
@@ -808,8 +835,8 @@ export function ColorPicker(props: ColorPickerProps) {
                         <button
                           type="button"
                           class={`${prefixCls()}-preset-color`}
-                          aria-label={`Select preset color ${presetColor}`}
-                          title={presetColor}
+                          aria-label={`Select preset color ${presetColorLabel(presetColor)}`}
+                          title={presetColorLabel(presetColor)}
                           disabled={disabled()}
                           onClick={() => selectPreset(presetColor)}
                         >
@@ -886,15 +913,26 @@ export function ColorPicker(props: ColorPickerProps) {
         onMouseEnter={handleHoverEnter}
         onMouseLeave={handleHoverLeave}
       >
-        <span class={`${prefixCls()}-color-block`} aria-hidden="true">
-          <span
-            class={`${prefixCls()}-color-block-inner`}
-            style={{ background: colorToCss(mergedColor()) }}
-          />
-        </span>
-        {local.showText && (
-          <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
-        )}
+        <Show
+          when={local.children}
+          fallback={
+            <>
+              <span class={`${prefixCls()}-color-block`} aria-hidden="true">
+                <span
+                  class={`${prefixCls()}-color-block-inner`}
+                  style={{ background: colorToCss(mergedColor()) }}
+                />
+              </span>
+              {local.showText && (
+                <span class={`${prefixCls()}-text`}>
+                  {renderText(local.showText, mergedColor())}
+                </span>
+              )}
+            </>
+          }
+        >
+          {local.children}
+        </Show>
       </button>
       <Show when={open()}>
         <InternalPortal

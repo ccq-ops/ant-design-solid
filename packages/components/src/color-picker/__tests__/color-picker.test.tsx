@@ -292,6 +292,46 @@ describe('ColorPicker trigger', () => {
   })
 })
 
+describe('ColorPicker v6 API compatibility', () => {
+  it('renders custom trigger children while preserving popup behavior', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span>Custom trigger</span>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getByRole('button', { name: /color picker/i })
+    expect(result.getByText('Custom trigger')).toBeInTheDocument()
+
+    fireEvent.click(trigger)
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+  })
+
+  it('calls onFormatChange when uncontrolled format changes', () => {
+    const onFormatChange = vi.fn()
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" onFormatChange={onFormatChange} />)
+
+    fireEvent.change(latestPanel().getByLabelText('Color format'), { target: { value: 'rgb' } })
+
+    expect(onFormatChange).toHaveBeenCalledWith('rgb')
+  })
+
+  it('disables format switching with disabledFormat', () => {
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" disabledFormat />)
+
+    expect(latestPanel().getByLabelText('Color format')).toBeDisabled()
+  })
+
+  it('calls onClear when the color is cleared', () => {
+    const onClear = vi.fn()
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" allowClear onClear={onClear} />)
+
+    fireEvent.click(latestPanel().getByRole('button', { name: /clear color/i }))
+
+    expect(onClear).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('ColorPicker popup', () => {
   it('opens from trigger and closes from trigger, Escape, and outside pointer down', () => {
     const onOpenChange = vi.fn()
@@ -810,7 +850,7 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
         defaultOpen
         defaultValue="#1677ff"
         showText={(color) => <strong>Current: {color?.toHexString() ?? 'empty'}</strong>}
-        presets={[{ colors: ['#52c41a'] }]}
+        presets={[{ label: 'Recommended', colors: ['#52c41a'] }]}
       />
     ))
 
@@ -969,7 +1009,7 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
         defaultValue="#1677ff"
         trigger="hover"
         allowClear
-        presets={[{ colors: ['#52c41a'] }]}
+        presets={[{ label: 'Recommended', colors: ['#52c41a'] }]}
         onChange={onChange}
         onChangeComplete={onChangeComplete}
         onOpenChange={onOpenChange}
