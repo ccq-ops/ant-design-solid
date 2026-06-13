@@ -297,9 +297,8 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-weekdays`]: {
           display: 'grid',
-          'grid-template-columns': `repeat(7, ${dp.cellHeight}px)`,
+          'grid-template-columns': 'repeat(7, 1fr)',
           gap: `${t.marginXXS}px`,
-          'justify-content': 'center',
           'margin-bottom': `${t.marginXS}px`,
         },
         [`.${prefixCls}-weekdays-with-week`]: {
@@ -314,12 +313,11 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-grid`]: {
           display: 'grid',
-          'grid-template-columns': `repeat(7, ${dp.cellHeight}px)`,
+          'grid-template-columns': 'repeat(7, 1fr)',
           gap: `${t.marginXXS}px`,
-          'justify-content': 'center',
         },
         [`.${prefixCls}-grid .${prefixCls}-cell`]: {
-          width: `${dp.cellHeight}px`,
+          width: '100%',
         },
         [`.${prefixCls}-week-grid`]: {
           display: 'block',

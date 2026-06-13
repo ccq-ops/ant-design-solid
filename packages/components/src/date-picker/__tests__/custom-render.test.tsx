@@ -26,10 +26,11 @@ describe('DatePicker custom rendering and visual APIs', () => {
       '.ads-date-picker-cell-range-start:hover, .ads-date-picker-cell-range-start:active, .ads-date-picker-cell-range-end:hover, .ads-date-picker-cell-range-end:active{background:#1677ff;color:#ffffff;',
     )
     expect(css).toContain(
-      '.ads-date-picker-grid{display:grid;gap:4px;grid-template-columns:repeat(7, 24px);justify-content:center;',
+      '.ads-date-picker-grid{display:grid;gap:4px;grid-template-columns:repeat(7, 1fr);',
     )
+    expect(css).toContain('.ads-date-picker-grid .ads-date-picker-cell{width:100%;')
     expect(css).toContain(
-      '.ads-date-picker-weekdays{display:grid;gap:4px;grid-template-columns:repeat(7, 24px);justify-content:center;',
+      '.ads-date-picker-weekdays{display:grid;gap:4px;grid-template-columns:repeat(7, 1fr);',
     )
     expect(css).toContain('.ads-date-picker-empty-cell{min-height:24px;')
     expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0,0,0,0.02);')
