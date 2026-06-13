@@ -48,6 +48,9 @@ export interface PickerPanelProps {
   needConfirm?: boolean
   showTime?: boolean
   showNow?: boolean
+  showToday?: boolean
+  todayDisabled?: boolean
+  onToday?: () => void
   onNow?: () => void
   onPrevious?: () => void
   onSuperPrevious?: () => void
@@ -214,13 +217,25 @@ export function PickerPanel(props: PickerPanelProps) {
         onSelect={props.onPresetSelect}
       />
       {panelContent()}
-      <Show when={props.renderExtraFooter || props.needConfirm || props.showTime}>
+      <Show
+        when={props.renderExtraFooter || props.needConfirm || props.showTime || props.showToday}
+      >
         <div
           class={semanticClass('footer', props.classNames, `${props.prefixCls}-footer`)}
           style={semanticStyle('footer', props.styles)}
         >
           <div class={`${props.prefixCls}-footer-extra`}>
             {props.renderExtraFooter?.(props.mode ?? 'date')}
+            <Show when={props.showToday}>
+              <button
+                type="button"
+                class={`${props.prefixCls}-today`}
+                disabled={props.todayDisabled}
+                onClick={props.onToday}
+              >
+                {props.locale?.lang?.today ?? 'Today'}
+              </button>
+            </Show>
             <Show when={props.showTime && props.showNow}>
               <button type="button" class={`${props.prefixCls}-now`} onClick={props.onNow}>
                 {props.locale?.lang?.now ?? 'Now'}

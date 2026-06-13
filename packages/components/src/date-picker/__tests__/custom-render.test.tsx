@@ -187,6 +187,35 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(callbackRangeStrings).toEqual(['2026-06-01', '2026-06-30'])
   })
 
+  it('shows a default Today shortcut for DatePicker panels', () => {
+    const onChange = vi.fn()
+    render(() => <DatePicker defaultOpen onChange={onChange} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Today' }))
+
+    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(dayjs.isDayjs(nextValue)).toBe(true)
+    expect(nextString).toBe(dayjs().format('YYYY-MM-DD'))
+  })
+
+  it('disables the default Today shortcut when today is disabled', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <DatePicker
+        defaultOpen
+        disabledDate={(current) => current.isSame(dayjs(), 'day')}
+        onChange={onChange}
+      />
+    ))
+
+    const todayButton = screen.getByRole('button', { name: 'Today' })
+    expect(todayButton).toBeDisabled()
+
+    fireEvent.click(todayButton)
+
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
   it('applies semantic classes, styles, status, variant, size, and custom icons', () => {
     const result = render(() => (
       <DatePicker
