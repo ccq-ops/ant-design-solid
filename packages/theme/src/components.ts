@@ -30,6 +30,16 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       defaultBorderColor: token.colorBorder,
       paddingInline: token.padding,
     },
+    Carousel: {
+      arrowSize: 16,
+      arrowOffset: token.marginXS,
+      dotWidth: 16,
+      dotHeight: 3,
+      dotGap: token.marginXXS,
+      dotOffset: 12,
+      dotWidthActive: 24,
+      dotActiveWidth: 24,
+    },
     Input: {
       paddingBlock: Math.max(
         Math.round(((token.controlHeight - token.fontSize * token.lineHeight) / 2) * 10) / 10 -

@@ -5,28 +5,36 @@ Display a group of content in a carousel with dots, arrows, and autoplay.
 ### Basic
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Button, Carousel, Space } from '@ant-design-solid/core'
+import { Carousel } from '@ant-design-solid/core'
 
-const slideStyle = {
+const contentStyle = {
+  margin: 0,
   height: '160px',
   color: '#fff',
   'line-height': '160px',
   'text-align': 'center',
-  background: '#1677ff',
-  'font-size': '24px',
-}
-
-function Slide(props) {
-  return <div style={slideStyle}>{props.children}</div>
+  background: '#364d79',
 }
 
 const Demo1 = function () {
+  const onChange = (currentSlide: number) => {
+    console.log(currentSlide)
+  }
+
   return (
-    <Carousel>
-      <Slide>1</Slide>
-      <Slide>2</Slide>
-      <Slide>3</Slide>
+    <Carousel afterChange={onChange}>
+      <div>
+        <h3 style={contentStyle}>1</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>2</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>3</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>4</h3>
+      </div>
     </Carousel>
   )
 }
@@ -37,28 +45,32 @@ export default Demo1
 ### Autoplay
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Button, Carousel, Space } from '@ant-design-solid/core'
+import { Carousel } from '@ant-design-solid/core'
 
-const slideStyle = {
+const contentStyle = {
+  margin: 0,
   height: '160px',
   color: '#fff',
   'line-height': '160px',
   'text-align': 'center',
-  background: '#1677ff',
-  'font-size': '24px',
-}
-
-function Slide(props) {
-  return <div style={slideStyle}>{props.children}</div>
+  background: '#364d79',
 }
 
 const Demo2 = function () {
   return (
-    <Carousel autoplay autoplaySpeed={2000}>
-      <Slide>1</Slide>
-      <Slide>2</Slide>
-      <Slide>3</Slide>
+    <Carousel autoplay>
+      <div>
+        <h3 style={contentStyle}>1</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>2</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>3</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>4</h3>
+      </div>
     </Carousel>
   )
 }
@@ -66,31 +78,35 @@ const Demo2 = function () {
 export default Demo2
 ```
 
-### Arrows
+### Dot Duration
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Button, Carousel, Space } from '@ant-design-solid/core'
+import { Carousel } from '@ant-design-solid/core'
 
-const slideStyle = {
+const contentStyle = {
+  margin: 0,
   height: '160px',
   color: '#fff',
   'line-height': '160px',
   'text-align': 'center',
-  background: '#1677ff',
-  'font-size': '24px',
-}
-
-function Slide(props) {
-  return <div style={slideStyle}>{props.children}</div>
+  background: '#364d79',
 }
 
 const Demo3 = function () {
   return (
-    <Carousel arrows>
-      <Slide>1</Slide>
-      <Slide>2</Slide>
-      <Slide>3</Slide>
+    <Carousel autoplay={{ dotDuration: true }} autoplaySpeed={5000}>
+      <div>
+        <h3 style={contentStyle}>1</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>2</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>3</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>4</h3>
+      </div>
     </Carousel>
   )
 }
@@ -98,60 +114,215 @@ const Demo3 = function () {
 export default Demo3
 ```
 
-### Fade
+### Position
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Carousel, Space } from '@ant-design-solid/core'
+import type { CarouselProps } from '@ant-design-solid/core'
+import { Carousel, Radio } from '@ant-design-solid/core'
 
-const slideStyle = {
+type DotPlacement = CarouselProps['dotPlacement']
+
+const contentStyle = {
+  margin: 0,
   height: '160px',
   color: '#fff',
   'line-height': '160px',
   'text-align': 'center',
-  background: '#1677ff',
-  'font-size': '24px',
-}
-
-function Slide(props) {
-  return <div style={slideStyle}>{props.children}</div>
+  background: '#364d79',
 }
 
 const Demo4 = function () {
+  const [dotPlacement, setDotPlacement] = createSignal<DotPlacement>('top')
+
   return (
-    <Carousel effect="fade">
-      <Slide>1</Slide>
-      <Slide>2</Slide>
-      <Slide>3</Slide>
-    </Carousel>
+    <>
+      <Radio.Group
+        onChange={(value) => setDotPlacement(value as DotPlacement)}
+        value={dotPlacement()}
+        style={{ 'margin-bottom': '8px' }}
+      >
+        <Radio.Button value="top">Top</Radio.Button>
+        <Radio.Button value="bottom">Bottom</Radio.Button>
+        <Radio.Button value="start">Start</Radio.Button>
+        <Radio.Button value="end">End</Radio.Button>
+      </Radio.Group>
+      <Carousel dotPlacement={dotPlacement()}>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>
+    </>
   )
 }
 
 export default Demo4
 ```
 
-### Imperative methods
+### Arrows
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Button, Carousel, Space } from '@ant-design-solid/core'
+import { Carousel } from '@ant-design-solid/core'
 
-const slideStyle = {
+const contentStyle = {
+  margin: 0,
   height: '160px',
   color: '#fff',
   'line-height': '160px',
   'text-align': 'center',
-  background: '#1677ff',
-  'font-size': '24px',
-}
-
-function Slide(props) {
-  return <div style={slideStyle}>{props.children}</div>
+  background: '#364d79',
 }
 
 const Demo5 = function () {
-  let carousel
+  return (
+    <>
+      <Carousel arrows infinite={false}>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>
+      <br />
+      <Carousel arrows dotPlacement="start" infinite={false}>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>
+    </>
+  )
+}
 
+export default Demo5
+```
+
+### Fade
+
+```tsx
+import { Carousel } from '@ant-design-solid/core'
+
+const contentStyle = {
+  margin: 0,
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#364d79',
+}
+
+const Demo6 = function () {
+  return (
+    <Carousel effect="fade">
+      <div>
+        <h3 style={contentStyle}>1</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>2</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>3</h3>
+      </div>
+      <div>
+        <h3 style={contentStyle}>4</h3>
+      </div>
+    </Carousel>
+  )
+}
+
+export default Demo6
+```
+
+### Component Token
+
+```tsx
+import { Carousel, ConfigProvider } from '@ant-design-solid/core'
+
+const contentStyle = {
+  margin: 0,
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#364d79',
+}
+
+const Demo7 = function () {
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Carousel: {
+            dotWidth: 50,
+            dotHeight: 50,
+            dotActiveWidth: 80,
+          },
+        },
+      }}
+    >
+      <Carousel>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>
+    </ConfigProvider>
+  )
+}
+
+export default Demo7
+```
+
+### Imperative Methods
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Carousel, Space } from '@ant-design-solid/core'
+import type { CarouselRef } from '@ant-design-solid/core'
+
+const contentStyle = {
+  margin: 0,
+  height: '160px',
+  color: '#fff',
+  'line-height': '160px',
+  'text-align': 'center',
+  background: '#364d79',
+}
+
+const Demo8 = function () {
+  let carousel: CarouselRef | undefined
   const [current, setCurrent] = createSignal(0)
 
   return (
@@ -163,9 +334,18 @@ const Demo5 = function () {
         arrows
         afterChange={setCurrent}
       >
-        <Slide>1</Slide>
-        <Slide>2</Slide>
-        <Slide>3</Slide>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
       </Carousel>
       <Space>
         <Button onClick={() => carousel?.prev()}>Previous</Button>
@@ -177,35 +357,67 @@ const Demo5 = function () {
   )
 }
 
-export default Demo5
+export default Demo8
 ```
 
 ## API
 
 ### Carousel
 
-| Property        | Description                                  | Type                                          | Default     |
-| --------------- | -------------------------------------------- | --------------------------------------------- | ----------- |
-| `autoplay`      | Automatically advances slides.               | `boolean`                                     | `false`     |
-| `autoplaySpeed` | Autoplay interval in milliseconds.           | `number`                                      | `3000`      |
-| `dots`          | Whether to show dots or dot configuration.   | `boolean \| { className?: string }`           | `true`      |
-| `dotPosition`   | Dot navigation position.                     | `'top' \| 'bottom' \| 'left' \| 'right'`      | `'bottom'`  |
-| `arrows`        | Whether to show previous and next arrows.    | `boolean`                                     | `false`     |
-| `effect`        | Transition effect.                           | `'scrollx' \| 'fade'`                         | `'scrollx'` |
-| `fade`          | Alias that enables fade effect.              | `boolean`                                     | `false`     |
-| `easing`        | CSS transition easing.                       | `string`                                      | `'ease'`    |
-| `speed`         | Transition duration in milliseconds.         | `number`                                      | `500`       |
-| `infinite`      | Whether navigation wraps around at the ends. | `boolean`                                     | `true`      |
-| `initialSlide`  | Initial active slide index.                  | `number`                                      | `0`         |
-| `beforeChange`  | Called before active slide changes.          | `(current: number, next: number) => void`     | `-`         |
-| `afterChange`   | Called after active slide changes.           | `(current: number) => void`                   | `-`         |
-| `prefixCls`     | Custom CSS class prefix.                     | `string`                                      | `-`         |
-| `ref`           | Receives imperative carousel methods.        | `CarouselRef \| ((ref: CarouselRef) => void)` | `-`         |
+| Property           | Description                                                                  | Type                                                                         | Default     |
+| ------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------- |
+| `adaptiveHeight`   | Adjust the slide height automatically.                                       | `boolean`                                                                    | `false`     |
+| `afterChange`      | Callback function called after the current index changes.                    | `(current: number) => void`                                                  | `-`         |
+| `appendDots`       | Custom dots container renderer.                                              | `(dots: JSX.Element) => JSX.Element`                                         | `-`         |
+| `arrows`           | Whether to show switch arrows.                                               | `boolean`                                                                    | `false`     |
+| `autoplay`         | Whether to scroll automatically, or display dot progress with object config. | `boolean \| { dotDuration?: boolean }`                                       | `false`     |
+| `autoplaySpeed`    | Delay between each auto scroll in milliseconds.                              | `number`                                                                     | `3000`      |
+| `beforeChange`     | Callback function called before the current index changes.                   | `(current: number, next: number) => void`                                    | `-`         |
+| `customPaging`     | Custom dot content renderer.                                                 | `(index: number) => JSX.Element`                                             | `-`         |
+| `dotPlacement`     | The position of the dots.                                                    | `'top' \| 'bottom' \| 'start' \| 'end'`                                      | `'bottom'`  |
+| `dotPosition`      | Deprecated dot position alias.                                               | `'top' \| 'bottom' \| 'left' \| 'right' \| 'start' \| 'end'`                 | `'bottom'`  |
+| `dots`             | Whether to show dots or dot configuration.                                   | `boolean \| { class?: string }`                                              | `true`      |
+| `draggable`        | Enable scrollable via dragging on desktop.                                   | `boolean`                                                                    | `false`     |
+| `easing`           | Transition interpolation function name.                                      | `string`                                                                     | `'linear'`  |
+| `effect`           | Transition effect.                                                           | `'scrollx' \| 'fade'`                                                        | `'scrollx'` |
+| `fade`             | Whether to use fade transition.                                              | `boolean`                                                                    | `false`     |
+| `infinite`         | Infinitely wrap around contents.                                             | `boolean`                                                                    | `true`      |
+| `initialSlide`     | Initial active slide index.                                                  | `number`                                                                     | `0`         |
+| `nextArrow`        | Custom next arrow content.                                                   | `JSX.Element`                                                                | `-`         |
+| `pauseOnDotsHover` | Pause autoplay while hovering dots.                                          | `boolean`                                                                    | `false`     |
+| `pauseOnFocus`     | Pause autoplay while focused.                                                | `boolean`                                                                    | `false`     |
+| `pauseOnHover`     | Pause autoplay while hovering carousel.                                      | `boolean`                                                                    | `false`     |
+| `prefixCls`        | Custom CSS class prefix.                                                     | `string`                                                                     | `-`         |
+| `prevArrow`        | Custom previous arrow content.                                               | `JSX.Element`                                                                | `-`         |
+| `responsive`       | Responsive breakpoint settings.                                              | `{ breakpoint: number; settings: Partial<CarouselSettings> \| 'unslick' }[]` | `-`         |
+| `rootClass`        | Custom class on the root element.                                            | `string`                                                                     | `-`         |
+| `rtl`              | Enable right-to-left mode.                                                   | `boolean`                                                                    | `false`     |
+| `slickGoTo`        | Programmatically switch to the given slide index.                            | `number`                                                                     | `-`         |
+| `slidesToScroll`   | Number of slides to scroll at a time.                                        | `number`                                                                     | `1`         |
+| `slidesToShow`     | Number of slides to show at a time.                                          | `number`                                                                     | `1`         |
+| `speed`            | Animation speed in milliseconds.                                             | `number`                                                                     | `500`       |
+| `vertical`         | Enable vertical sliding.                                                     | `boolean`                                                                    | `false`     |
+| `waitForAnimate`   | Whether to wait for the animation when switching.                            | `boolean`                                                                    | `false`     |
+
+Solid style differences: use `class` instead of `className`; use `rootClass` instead of antd React's `rootClassName`; `dots` object accepts `{ class?: string }`.
 
 ### CarouselRef
 
-| Property | Description                        | Type                                             | Default |
-| -------- | ---------------------------------- | ------------------------------------------------ | ------- |
-| `goTo`   | Switches to the given slide index. | `(slide: number, dontAnimate?: boolean) => void` | `-`     |
-| `next`   | Switches to the next slide.        | `() => void`                                     | `-`     |
-| `prev`   | Switches to the previous slide.    | `() => void`                                     | `-`     |
+| Property   | Description                        | Type                                                 | Default |
+| ---------- | ---------------------------------- | ---------------------------------------------------- | ------- |
+| `goTo`     | Switches to the given slide index. | `(slide: number, dontAnimate?: boolean) => void`     | `-`     |
+| `next`     | Switches to the next slide.        | `() => void`                                         | `-`     |
+| `prev`     | Switches to the previous slide.    | `() => void`                                         | `-`     |
+| `autoPlay` | Resumes autoplay.                  | `(playType?: 'update' \| 'leave' \| 'blur') => void` | `-`     |
+
+### Design Token
+
+| Token            | Description                    | Type               | Default |
+| ---------------- | ------------------------------ | ------------------ | ------- |
+| `arrowOffset`    | Arrow offset to Carousel edge. | `number`           | `8`     |
+| `arrowSize`      | Size of arrows.                | `number`           | `16`    |
+| `dotActiveWidth` | Width of active indicator.     | `number \| string` | `24`    |
+| `dotGap`         | Gap between indicators.        | `number`           | `4`     |
+| `dotHeight`      | Height of indicator.           | `number \| string` | `3`     |
+| `dotOffset`      | Dot offset to Carousel edge.   | `number`           | `12`    |
+| `dotWidth`       | Width of indicator.            | `number \| string` | `16`    |

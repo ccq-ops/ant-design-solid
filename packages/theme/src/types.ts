@@ -278,6 +278,17 @@ export interface ButtonComponentToken extends ComponentTokenBase {
   paddingInline: number
 }
 
+export interface CarouselComponentToken extends ComponentTokenBase {
+  dotWidth?: number | string
+  dotHeight?: number | string
+  dotGap?: number
+  dotOffset?: number
+  dotWidthActive?: number
+  dotActiveWidth?: number | string
+  arrowSize?: number
+  arrowOffset?: number
+}
+
 export interface InputComponentToken extends ComponentTokenBase {
   activeBorderColor: string
   activeBg: string
@@ -733,7 +744,7 @@ export interface ComponentTokenMap {
   Breadcrumb?: ComponentTokenBase
   Calendar?: ComponentTokenBase
   Card: CardComponentToken
-  Carousel?: ComponentTokenBase
+  Carousel: CarouselComponentToken
   Cascader: CascaderComponentToken
   Checkbox: CheckboxComponentToken
   ColorPicker: ColorPickerComponentToken

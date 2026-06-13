@@ -1,5 +1,13 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
+
+const dotDurationVar = '--dot-duration'
+
+function unit(value: number | string | undefined): string {
+  if (typeof value === 'number') return `${value}px`
+  return value ?? '0'
+}
 
 export function useCarouselStyle(prefixCls: string) {
   const token = useToken()
@@ -7,6 +15,14 @@ export function useCarouselStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['Carousel', prefixCls] },
     () => {
       const t = token()
+      const ct = getComponentToken('Carousel', t)
+      const dotWidth = unit(ct.dotWidth)
+      const dotHeight = unit(ct.dotHeight)
+      const dotActiveWidth = unit(ct.dotActiveWidth ?? ct.dotWidthActive)
+      const dotGap = `${ct.dotGap ?? t.marginXXS}px`
+      const dotOffset = `${ct.dotOffset ?? 12}px`
+      const arrowSize = `${ct.arrowSize ?? 16}px`
+      const arrowOffset = `${ct.arrowOffset ?? t.marginXS}px`
       return {
         [`.${prefixCls}`]: {
           position: 'relative',
@@ -17,9 +33,20 @@ export function useCarouselStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'box-sizing': 'border-box',
         },
+        [`.${prefixCls}-slider`]: {
+          position: 'relative',
+          display: 'block',
+          width: '100%',
+          'box-sizing': 'border-box',
+          'touch-action': 'pan-y',
+        },
         [`.${prefixCls}-viewport`]: {
+          position: 'relative',
+          display: 'block',
           overflow: 'hidden',
           width: '100%',
+          margin: '0',
+          padding: '0',
         },
         [`.${prefixCls}-track`]: {
           display: 'flex',
@@ -32,6 +59,13 @@ export function useCarouselStyle(prefixCls: string) {
           'min-width': '100%',
           outline: 'none',
           'box-sizing': 'border-box',
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-track`]: {
+          display: 'block',
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-slide`]: {
+          width: '100%',
+          'min-width': '100%',
         },
         [`.${prefixCls}-fade .${prefixCls}-viewport`]: {
           position: 'relative',
@@ -56,84 +90,144 @@ export function useCarouselStyle(prefixCls: string) {
         [`.${prefixCls}-arrow`]: {
           position: 'absolute',
           top: '50%',
-          'z-index': '2',
-          width: '32px',
-          height: '32px',
+          'z-index': '1',
+          width: arrowSize,
+          height: arrowSize,
           padding: '0',
           border: '0',
-          'border-radius': '50%',
-          color: t.colorBgContainer,
-          background: 'rgba(0, 0, 0, 0.32)',
+          outline: 'none',
+          color: '#fff',
+          opacity: '0.4',
+          background: 'transparent',
           cursor: 'pointer',
           transform: 'translateY(-50%)',
+          transition: `opacity ${t.motionDurationSlow}`,
         },
-        [`.${prefixCls}-arrow:hover`]: {
-          background: 'rgba(0, 0, 0, 0.48)',
+        [`.${prefixCls}-arrow:hover, .${prefixCls}-arrow:focus`]: {
+          opacity: '1',
         },
         [`.${prefixCls}-arrow:disabled`]: {
-          opacity: '0.35',
+          opacity: '0',
           cursor: 'not-allowed',
+          'pointer-events': 'none',
         },
         [`.${prefixCls}-prev`]: {
-          left: `${t.marginSM}px`,
+          left: arrowOffset,
         },
         [`.${prefixCls}-next`]: {
-          right: `${t.marginSM}px`,
+          right: arrowOffset,
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-prev, .${prefixCls}-vertical .${prefixCls}-next`]: {
+          left: '50%',
+          transform: 'translateX(-50%)',
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-prev`]: {
+          top: arrowOffset,
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-next`]: {
+          top: 'auto',
+          bottom: arrowOffset,
         },
         [`.${prefixCls}-dots`]: {
           position: 'absolute',
-          'z-index': '2',
-          display: 'flex',
+          'z-index': '15',
+          display: 'flex !important',
           'align-items': 'center',
           'justify-content': 'center',
-          gap: `${t.marginXS}px`,
           margin: '0',
           padding: '0',
           'list-style': 'none',
         },
         [`.${prefixCls}-dot-bottom .${prefixCls}-dots`]: {
           right: '0',
-          bottom: `${t.marginSM}px`,
+          bottom: dotOffset,
           left: '0',
         },
         [`.${prefixCls}-dot-top .${prefixCls}-dots`]: {
-          top: `${t.marginSM}px`,
+          top: dotOffset,
           right: '0',
           left: '0',
         },
-        [`.${prefixCls}-dot-left .${prefixCls}-dots`]: {
-          top: '0',
-          bottom: '0',
-          left: `${t.marginSM}px`,
+        [`.${prefixCls}-dot-start .${prefixCls}-dots`]: {
+          top: '50%',
+          bottom: 'auto',
+          left: dotOffset,
+          width: dotHeight,
+          transform: 'translateY(-50%)',
           'flex-direction': 'column',
         },
-        [`.${prefixCls}-dot-right .${prefixCls}-dots`]: {
-          top: '0',
-          right: `${t.marginSM}px`,
-          bottom: '0',
+        [`.${prefixCls}-dot-end .${prefixCls}-dots`]: {
+          top: '50%',
+          right: dotOffset,
+          bottom: 'auto',
+          left: 'auto',
+          width: dotHeight,
+          transform: 'translateY(-50%)',
           'flex-direction': 'column',
+        },
+        [`.${prefixCls}-dots li`]: {
+          position: 'relative',
+          display: 'inline-block',
+          flex: '0 1 auto',
+          width: dotWidth,
+          height: dotHeight,
+          margin: `0 ${dotGap}`,
+          padding: '0',
+          overflow: 'hidden',
+          'border-radius': dotHeight,
+          transition: `all ${t.motionDurationSlow}`,
+        },
+        [`.${prefixCls}-dots li.slick-active`]: {
+          width: dotActiveWidth,
+        },
+        [`.${prefixCls}-dots li.slick-active::after`]: {
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '0',
+          height: dotHeight,
+          content: '""',
+          background: t.colorBgContainer,
+          'border-radius': dotHeight,
+          animation: `${prefixCls}-dot-animation var(${dotDurationVar}) ease-out forwards`,
         },
         [`.${prefixCls}-dot`]: {
           display: 'block',
-          width: '16px',
-          height: '3px',
+          width: '100%',
+          height: dotHeight,
           padding: '0',
           border: '0',
-          'border-radius': '2px',
-          background: 'rgba(255, 255, 255, 0.5)',
+          'border-radius': dotHeight,
+          opacity: '0.2',
+          background: t.colorBgContainer,
           cursor: 'pointer',
-          transition: 'all 0.2s',
+          overflow: 'hidden',
+          transition: `all ${t.motionDurationSlow}`,
+        },
+        [`.${prefixCls}-dot:hover`]: {
+          opacity: '0.75',
         },
         [`.${prefixCls}-dot-active`]: {
-          width: '24px',
+          width: '100%',
+          opacity: '1',
           background: t.colorBgContainer,
         },
-        [`.${prefixCls}-vertical .${prefixCls}-dot`]: {
-          width: '3px',
-          height: '16px',
+        [`.${prefixCls}-vertical .${prefixCls}-dots li`]: {
+          width: dotHeight,
+          height: dotWidth,
+          margin: `${t.marginXXS}px 0`,
         },
-        [`.${prefixCls}-vertical .${prefixCls}-dot-active`]: {
-          height: '24px',
+        [`.${prefixCls}-vertical .${prefixCls}-dots li.slick-active`]: {
+          width: dotHeight,
+          height: dotActiveWidth,
+        },
+        [`.${prefixCls}-vertical .${prefixCls}-dot`]: {
+          width: dotHeight,
+          height: '100%',
+        },
+        [`@keyframes ${prefixCls}-dot-animation`]: {
+          from: { width: '0' },
+          to: { width: dotActiveWidth },
         },
       }
     },
