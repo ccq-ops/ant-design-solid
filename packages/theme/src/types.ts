@@ -416,6 +416,13 @@ export interface ModalComponentToken extends ComponentTokenBase {
   maskBg: string
 }
 
+export interface DrawerComponentToken extends ComponentTokenBase {
+  zIndexPopup: number
+  footerPaddingBlock: number
+  footerPaddingInline: number
+  draggerSize: number
+}
+
 export interface PopconfirmComponentToken extends ComponentTokenBase {
   width: number
   padding: number
@@ -530,9 +537,15 @@ export interface DropdownComponentToken extends ComponentTokenBase {
   itemColor: string
   itemHoverBg: string
   itemDisabledColor: string
-  itemPaddingBlock: number
-  itemPaddingInline: number
+  paddingBlock: number
+  dropdownArrowDistance: number
+  dropdownEdgeChildPadding: number
   minWidth: number
+  zIndexPopup: number
+  /** @deprecated Use `paddingBlock` and global control padding tokens instead. */
+  itemPaddingBlock: number
+  /** @deprecated Use global control padding tokens instead. */
+  itemPaddingInline: number
 }
 
 export interface TreeComponentToken extends ComponentTokenBase {
@@ -613,7 +626,7 @@ export interface ComponentTokenMap {
   DatePicker?: ComponentTokenBase
   Descriptions?: ComponentTokenBase
   Divider?: ComponentTokenBase
-  Drawer?: ComponentTokenBase
+  Drawer: DrawerComponentToken
   Dropdown: DropdownComponentToken
   Empty?: ComponentTokenBase
   Flex: FlexComponentToken

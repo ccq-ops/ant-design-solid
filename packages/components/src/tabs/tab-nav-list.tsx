@@ -212,7 +212,7 @@ export function TabNavList(props: TabNavListProps) {
     event.stopPropagation()
     props.onEdit?.(item.key, 'remove')
   }
-  const handleMoreClick = (key: string, event: MouseEvent) => {
+  const handleMoreClick = (key: string, event: MouseEvent | KeyboardEvent) => {
     const item = props.items.find((candidate) => candidate.key === key)
     if (item) props.onTabActivate(item, event)
   }
@@ -349,7 +349,7 @@ export function TabNavList(props: TabNavListProps) {
       <Show when={hiddenItems().length > 0}>
         <Dropdown
           class={`${props.prefixCls}-more-wrap`}
-          trigger={moreTrigger()}
+          trigger={moreTrigger() === 'click' ? ['click'] : [moreTrigger()]}
           overlayClass={props.classNames.popup?.root}
           overlayStyle={props.styles.popup?.root}
           menu={{

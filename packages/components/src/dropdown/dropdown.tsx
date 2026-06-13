@@ -1,21 +1,59 @@
-import { For, Show, createEffect, createSignal, onCleanup, splitProps } from 'solid-js'
+import {
+  Show,
+  createEffect,
+  createMemo,
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+  splitProps,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
+import { Menu } from '../menu'
+import type { MenuProps, MenuSemanticName } from '../menu'
 import { classNames } from '../shared/class-names'
 import {
   addDocumentKeydown,
   addDocumentPointerDown,
   addPositionUpdateListeners,
 } from '../shared/overlay'
-import { getDropdownPosition } from '../shared/placement'
+import {
+  getAdjustedTooltipPlacement,
+  getTooltipPosition,
+  type OverlayPosition,
+} from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
-import { useZIndex } from '../shared/z-index'
+import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { useWatermarkPanelRef } from '../watermark/context'
-import type { DropdownMenuItem, DropdownProps } from './interface'
+import type {
+  DropdownProps,
+  DropdownSemanticClassNames,
+  DropdownSemanticStyles,
+  DropdownTrigger,
+} from './interface'
 import { useDropdownStyle } from './dropdown.style'
 
-function emptyPosition(): JSX.CSSProperties {
-  return { position: 'fixed', top: '0px', left: '0px' }
+const noopHashId = () => undefined
+
+function normalizeTriggers(trigger: DropdownProps['trigger'] | undefined): DropdownTrigger[] {
+  if (!trigger) return ['hover']
+  return Array.isArray(trigger) ? trigger : [trigger]
+}
+
+function includesTrigger(triggers: DropdownTrigger[], trigger: DropdownTrigger) {
+  return triggers.includes(trigger)
+}
+
+function mergeStyle(
+  ...styles: Array<JSX.CSSProperties | string | undefined>
+): JSX.CSSProperties | string {
+  const stringStyle = styles.find((style): style is string => typeof style === 'string')
+  if (stringStyle) return stringStyle
+  return Object.assign({}, ...styles.filter(Boolean))
+}
+
+function emptyPosition(): OverlayPosition {
+  return { top: '0px', left: '0px' }
 }
 
 export function Dropdown(props: DropdownProps) {
@@ -27,57 +65,110 @@ export function Dropdown(props: DropdownProps) {
     'open',
     'defaultOpen',
     'onOpenChange',
+    'disabled',
+    'arrow',
+    'autoAdjustOverflow',
+    'align',
+    'popupRender',
+    'dropdownRender',
+    'destroyOnHidden',
+    'destroyPopupOnHide',
+    'forceRender',
+    'autoFocus',
+    'mouseEnterDelay',
+    'mouseLeaveDelay',
+    'rootClass',
+    'openClass',
     'overlayClass',
+    'overlayClassName',
     'overlayStyle',
+    'classNames',
+    'styles',
     'zIndex',
     'getPopupContainer',
     'class',
+    'classList',
     'style',
     'onClick',
     'onMouseEnter',
     'onMouseLeave',
+    'onContextMenu',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-dropdown`
+  const menuPrefixCls = () => `${prefixCls()}-menu`
   const watermarkPanelRef = useWatermarkPanelRef()
-  const [, hashId] = useDropdownStyle(prefixCls())
-  const [zIndex] = useZIndex('Dropdown', local.zIndex)
+  const dropdownStyle = useDropdownStyle(prefixCls())
+  const hashId = dropdownStyle?.[1] ?? noopHashId
+  const [zIndex, contextZIndex] = useZIndex('Dropdown', local.zIndex)
   const [triggerElement, setTriggerElement] = createSignal<HTMLSpanElement>()
   const [overlayElement, setOverlayElement] = createSignal<HTMLDivElement>()
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
-  const [position, setPosition] = createSignal<JSX.CSSProperties>(emptyPosition())
-  let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
-  const trigger = () => local.trigger ?? 'click'
+  const [hasBeenOpen, setHasBeenOpen] = createSignal(Boolean(local.defaultOpen || local.open))
+  const [actualPlacement, setActualPlacement] = createSignal(local.placement ?? 'bottomLeft')
+  const [position, setPosition] = createSignal<OverlayPosition>(emptyPosition())
+  let enterTimer: ReturnType<typeof setTimeout> | undefined
+  let leaveTimer: ReturnType<typeof setTimeout> | undefined
+  let contextMenuPoint: { x: number; y: number } | undefined
+
   const placement = () => local.placement ?? 'bottomLeft'
-  const mergedOpen = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
+  const triggers = createMemo(() => normalizeTriggers(local.trigger))
+  const mergedOpen = () => Boolean(local.open ?? innerOpen())
+  const destroyOnHidden = () => local.destroyOnHidden ?? local.destroyPopupOnHide ?? true
+  const shouldRenderPopup = () =>
+    mergedOpen() || local.forceRender || (hasBeenOpen() && !destroyOnHidden())
+  const showArrow = () => Boolean(local.arrow)
+  const pointAtCenter = () =>
+    typeof local.arrow === 'object' ? Boolean(local.arrow.pointAtCenter) : false
 
-  function updatePosition(element?: HTMLSpanElement | Event) {
-    const target = element instanceof HTMLElement ? element : triggerElement()
-    if (!canUseDom() || !target) return
-    setPosition({
-      position: 'fixed',
-      ...getDropdownPosition(target.getBoundingClientRect(), placement(), 4),
-    })
+  const semanticProps = (): DropdownProps => ({
+    ...props,
+    placement: actualPlacement(),
+    trigger: triggers(),
+  })
+  const semanticClassNames = (): DropdownSemanticClassNames =>
+    typeof local.classNames === 'function'
+      ? local.classNames({ props: semanticProps() })
+      : (local.classNames ?? {})
+  const semanticStyles = (): DropdownSemanticStyles =>
+    typeof local.styles === 'function'
+      ? local.styles({ props: semanticProps() })
+      : (local.styles ?? {})
+
+  const clearTimer = (timer: ReturnType<typeof setTimeout> | undefined) => {
+    if (timer) clearTimeout(timer)
   }
 
-  function setOpen(nextOpen: boolean) {
-    if (nextOpen) updatePosition()
+  function updatePosition() {
+    if (!canUseDom()) return
+    if (contextMenuPoint) {
+      setActualPlacement(placement())
+      setPosition({ top: `${contextMenuPoint.y}px`, left: `${contextMenuPoint.x}px` })
+      return
+    }
+    const target = triggerElement()
+    if (!target) return
+    const rect = target.getBoundingClientRect()
+    const nextPlacement = getAdjustedTooltipPlacement(
+      rect,
+      placement(),
+      showArrow() ? 8 : 4,
+      local.autoAdjustOverflow ?? true,
+    ) as NonNullable<DropdownProps['placement']>
+    setActualPlacement(nextPlacement)
+    setPosition(getTooltipPosition(rect, nextPlacement, showArrow() ? 8 : 4, local.align))
+  }
+
+  function setOpen(nextOpen: boolean, source: 'trigger' | 'menu') {
+    if (local.disabled && nextOpen) return
+    if (nextOpen) {
+      updatePosition()
+      setHasBeenOpen(true)
+    } else {
+      contextMenuPoint = undefined
+    }
     if (local.open === undefined) setInnerOpen(nextOpen)
-    local.onOpenChange?.(nextOpen)
-  }
-
-  function clearHoverCloseTimer() {
-    if (!hoverCloseTimer) return
-    clearTimeout(hoverCloseTimer)
-    hoverCloseTimer = undefined
-  }
-
-  function scheduleHoverClose() {
-    clearHoverCloseTimer()
-    hoverCloseTimer = setTimeout(() => {
-      hoverCloseTimer = undefined
-      setOpen(false)
-    }, 100)
+    local.onOpenChange?.(nextOpen, { source })
   }
 
   function containsTarget(target: EventTarget | null) {
@@ -87,27 +178,29 @@ export function Dropdown(props: DropdownProps) {
     )
   }
 
-  function handleHoverEnter() {
-    if (trigger() !== 'hover') return
-    clearHoverCloseTimer()
-    setOpen(true)
-  }
-
-  function handleHoverLeave(event: MouseEvent) {
-    if (trigger() !== 'hover') return
-    if (containsTarget(event.relatedTarget)) return
-    scheduleHoverClose()
-  }
-
+  const canCloseByOutsidePointer = () =>
+    includesTrigger(triggers(), 'click') || includesTrigger(triggers(), 'contextMenu')
   const removeKeydown = addDocumentKeydown((event) => {
-    if (event.key === 'Escape' && mergedOpen()) setOpen(false)
+    if (event.key === 'Escape' && mergedOpen()) setOpen(false, 'trigger')
   })
   const removePointerDown = addDocumentPointerDown((event) => {
-    if (trigger() === 'click' && mergedOpen() && !containsTarget(event.target)) setOpen(false)
+    if (!canCloseByOutsidePointer() || !mergedOpen() || containsTarget(event.target)) return
+    setOpen(false, 'trigger')
   })
+
+  createRenderEffect(() => {
+    if (mergedOpen()) updatePosition()
+  })
+
+  createEffect(() => {
+    if (mergedOpen()) {
+      setHasBeenOpen(true)
+      if (local.autoFocus) queueMicrotask(() => overlayElement()?.focus())
+    }
+  })
+
   createEffect(() => {
     if (!mergedOpen()) return
-    updatePosition()
     const removeListeners = addPositionUpdateListeners(updatePosition)
     onCleanup(removeListeners)
   })
@@ -115,89 +208,170 @@ export function Dropdown(props: DropdownProps) {
   onCleanup(() => {
     removeKeydown()
     removePointerDown()
-    clearHoverCloseTimer()
+    clearTimer(enterTimer)
+    clearTimer(leaveTimer)
   })
 
-  function clickItem(item: DropdownMenuItem, event: MouseEvent) {
-    event.stopPropagation()
-    if (item.disabled || item.type === 'divider') return
-    local.menu.onClick?.({ key: item.key, domEvent: event })
-    setOpen(false)
+  const handleMouseEnter = (event: MouseEvent) => {
+    ;(local.onMouseEnter as ((event: MouseEvent) => void) | undefined)?.(event)
+    if (local.disabled || !includesTrigger(triggers(), 'hover')) return
+    clearTimer(leaveTimer)
+    enterTimer = setTimeout(() => setOpen(true, 'trigger'), (local.mouseEnterDelay ?? 0.15) * 1000)
+  }
+
+  const handleMouseLeave = (event: MouseEvent) => {
+    ;(local.onMouseLeave as ((event: MouseEvent) => void) | undefined)?.(event)
+    if (!includesTrigger(triggers(), 'hover') || containsTarget(event.relatedTarget)) return
+    clearTimer(enterTimer)
+    leaveTimer = setTimeout(() => setOpen(false, 'trigger'), (local.mouseLeaveDelay ?? 0.1) * 1000)
+  }
+
+  const handleClick = (event: MouseEvent) => {
+    ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
+    if (local.disabled || !includesTrigger(triggers(), 'click')) return
+    setOpen(!mergedOpen(), 'trigger')
+  }
+
+  const handleContextMenu = (event: MouseEvent) => {
+    ;(local.onContextMenu as ((event: MouseEvent) => void) | undefined)?.(event)
+    if (local.disabled || !includesTrigger(triggers(), 'contextMenu')) return
+    event.preventDefault()
+    contextMenuPoint = { x: event.clientX, y: event.clientY }
+    setOpen(true, 'trigger')
+  }
+
+  const rootClass = () =>
+    classNames(
+      prefixCls(),
+      `${prefixCls()}-${actualPlacement()}`,
+      !mergedOpen() && `${prefixCls()}-hidden`,
+      pointAtCenter() && `${prefixCls()}-arrow-point-at-center`,
+      hashId(),
+      local.rootClass,
+      local.overlayClass,
+      local.overlayClassName,
+      semanticClassNames().root,
+    )
+
+  const rootStyle = () =>
+    mergeStyle(
+      {
+        position: 'fixed',
+        ...position(),
+        'z-index': `${zIndex}`,
+      },
+      semanticStyles().root,
+      local.overlayStyle,
+    )
+
+  const triggerClass = () =>
+    classNames(
+      `${prefixCls()}-trigger`,
+      mergedOpen() && local.openClass,
+      local.disabled && `${prefixCls()}-trigger-disabled`,
+      local.class,
+    )
+
+  const menuProps = () => local.menu as MenuProps | undefined
+  const resolvedMenuClassNames = (): Partial<Record<MenuSemanticName, string>> => {
+    const classNames = menuProps()?.classNames
+    return typeof classNames === 'function'
+      ? classNames({ props: menuProps() ?? {} })
+      : (classNames ?? {})
+  }
+  const resolvedMenuStyles = (): Partial<Record<MenuSemanticName, JSX.CSSProperties>> => {
+    const styles = menuProps()?.styles
+    return typeof styles === 'function' ? styles({ props: menuProps() ?? {} }) : (styles ?? {})
+  }
+  const menuClassNames = () => ({
+    ...resolvedMenuClassNames(),
+    root: classNames(menuPrefixCls(), resolvedMenuClassNames().root),
+    item: classNames(semanticClassNames().item, resolvedMenuClassNames().item),
+    itemIcon: classNames(semanticClassNames().itemIcon, resolvedMenuClassNames().itemIcon),
+    itemContent: classNames(semanticClassNames().itemContent, resolvedMenuClassNames().itemContent),
+  })
+
+  const menuStyles = () => ({
+    ...resolvedMenuStyles(),
+    item: mergeStyle(semanticStyles().item, resolvedMenuStyles().item) as JSX.CSSProperties,
+    itemIcon: mergeStyle(
+      semanticStyles().itemIcon,
+      resolvedMenuStyles().itemIcon,
+    ) as JSX.CSSProperties,
+    itemContent: mergeStyle(
+      semanticStyles().itemContent,
+      resolvedMenuStyles().itemContent,
+    ) as JSX.CSSProperties,
+  })
+  const menuItems = () => local.menu?.items as Parameters<typeof Menu>[0]['items']
+
+  const menuNode = () => (
+    <Menu
+      mode="vertical"
+      selectable={false}
+      {...local.menu}
+      items={menuItems()}
+      class={classNames(menuPrefixCls(), local.menu?.class)}
+      classNames={menuClassNames()}
+      styles={menuStyles()}
+      getPopupContainer={local.getPopupContainer ?? config.getPopupContainer}
+      zIndex={zIndex + 1}
+      onClick={(info) => {
+        local.menu?.onClick?.(info)
+        if (!info.domEvent.defaultPrevented) setOpen(false, 'menu')
+      }}
+    />
+  )
+
+  const overlayNode = () => {
+    const node = (
+      <div
+        ref={(element) => {
+          setOverlayElement(element)
+          watermarkPanelRef(element)
+        }}
+        tabindex={-1}
+        aria-hidden={!mergedOpen() ? 'true' : undefined}
+        class={rootClass()}
+        style={rootStyle()}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Show when={showArrow()}>
+          <div class={`${prefixCls()}-arrow`} />
+        </Show>
+        {menuNode()}
+      </div>
+    )
+    return (local.popupRender ?? local.dropdownRender)?.(node) ?? node
   }
 
   return (
-    <>
+    <ZIndexContext.Provider value={contextZIndex}>
       <span
         {...rest}
         ref={setTriggerElement}
-        class={classNames(`${prefixCls()}-trigger`, local.class)}
+        aria-disabled={local.disabled ? 'true' : undefined}
+        class={triggerClass()}
+        classList={local.classList}
         style={local.style}
-        onClick={(event) => {
-          ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
-          if (trigger() === 'click') setOpen(!mergedOpen())
-        }}
-        onMouseEnter={(event) => {
-          ;(local.onMouseEnter as ((event: MouseEvent) => void) | undefined)?.(event)
-          handleHoverEnter()
-        }}
-        onMouseLeave={(event) => {
-          ;(local.onMouseLeave as ((event: MouseEvent) => void) | undefined)?.(event)
-          handleHoverLeave(event)
-        }}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onContextMenu={handleContextMenu}
       >
         {local.children}
       </span>
-      <Show when={mergedOpen()}>
+      <Show when={shouldRenderPopup()}>
         <InternalPortal
           mount={() =>
             local.getPopupContainer?.(triggerElement()) ??
             config.getPopupContainer?.(triggerElement())
           }
         >
-          <div
-            ref={(element) => {
-              setOverlayElement(element)
-              watermarkPanelRef(element)
-            }}
-            class={classNames(
-              prefixCls(),
-              `${prefixCls()}-${placement()}`,
-              hashId(),
-              local.overlayClass,
-            )}
-            style={{ ...position(), 'z-index': zIndex, ...local.overlayStyle }}
-            onMouseEnter={handleHoverEnter}
-            onMouseLeave={handleHoverLeave}
-            on:click={(event) => event.stopPropagation()}
-          >
-            <ul role="menu" class={`${prefixCls()}-menu`}>
-              <For each={local.menu.items}>
-                {(item) => (
-                  <Show
-                    when={item.type === 'divider'}
-                    fallback={
-                      <li
-                        role="menuitem"
-                        data-menu-key={item.key}
-                        aria-disabled={item.disabled ? 'true' : undefined}
-                        class={classNames(
-                          `${prefixCls()}-menu-item`,
-                          item.disabled && `${prefixCls()}-menu-item-disabled`,
-                        )}
-                        on:click={(event) => clickItem(item, event)}
-                      >
-                        {item.label}
-                      </li>
-                    }
-                  >
-                    <li role="separator" class={`${prefixCls()}-menu-divider`} />
-                  </Show>
-                )}
-              </For>
-            </ul>
-          </div>
+          {overlayNode()}
         </InternalPortal>
       </Show>
-    </>
+    </ZIndexContext.Provider>
   )
 }

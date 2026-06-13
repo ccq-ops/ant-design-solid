@@ -283,6 +283,7 @@ describe('@ant-design-solid/theme', () => {
         Message: { noticeBorderRadius: 10 },
         Notification: { width: 420 },
         Modal: { titleFontSize: 18 },
+        Drawer: { draggerSize: 10, footerPaddingBlock: 12 },
         Popconfirm: { width: 240 },
       },
     })
@@ -295,6 +296,10 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Notification', token).bg).toBe(token.colorBgElevated)
     expect(getComponentToken('Modal', token).titleFontSize).toBe(18)
     expect(getComponentToken('Modal', token).maskBg).toBe('rgba(0, 0, 0, 0.45)')
+    expect(getComponentToken('Drawer', token).zIndexPopup).toBe(1000)
+    expect(getComponentToken('Drawer', token).footerPaddingBlock).toBe(12)
+    expect(getComponentToken('Drawer', token).footerPaddingInline).toBe(token.paddingLG)
+    expect(getComponentToken('Drawer', token).draggerSize).toBe(10)
     expect(getComponentToken('Popconfirm', token).width).toBe(240)
     expect(getComponentToken('Popconfirm', token).bg).toBe(token.colorBgElevated)
   })
@@ -370,11 +375,21 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Dropdown', token).minWidth).toBe(180)
     expect(getComponentToken('Dropdown', token).itemHoverBg).toBe('#f0f5ff')
     expect(getComponentToken('Dropdown', token).bg).toBe(token.colorBgElevated)
-    expect(getComponentToken('Dropdown', token).boxShadow).toBe(token.boxShadow)
-    expect(getComponentToken('Dropdown', token).borderRadius).toBe(token.borderRadius)
+    expect(getComponentToken('Dropdown', token).boxShadow).toBe(token.boxShadowSecondary)
+    expect(getComponentToken('Dropdown', token).borderRadius).toBe(token.borderRadiusLG)
     expect(getComponentToken('Dropdown', token).itemColor).toBe(token.colorText)
     expect(getComponentToken('Dropdown', token).itemDisabledColor).toBe(token.colorTextDisabled)
-    expect(getComponentToken('Dropdown', token).itemPaddingBlock).toBe(token.paddingXS)
+    expect(getComponentToken('Dropdown', token).paddingBlock).toBe(
+      (token.controlHeight - token.fontSize * token.lineHeight) / 2,
+    )
+    expect(getComponentToken('Dropdown', token).dropdownArrowDistance).toBe(
+      token.sizePopupArrow / 2 + token.marginXXS,
+    )
+    expect(getComponentToken('Dropdown', token).dropdownEdgeChildPadding).toBe(token.paddingXXS)
+    expect(getComponentToken('Dropdown', token).zIndexPopup).toBe(token.zIndexPopupBase + 50)
+    expect(getComponentToken('Dropdown', token).itemPaddingBlock).toBe(
+      (token.controlHeight - token.fontSize * token.lineHeight) / 2,
+    )
     expect(getComponentToken('Dropdown', token).itemPaddingInline).toBe(token.paddingSM)
 
     expect(getComponentToken('Menu', token).itemBg).toBe('#fafafa')

@@ -541,6 +541,7 @@ function MenuRoot(props: MenuProps) {
     return (
       <li
         role="menuitem"
+        data-menu-key={menuItem.key}
         tabindex={menuItem.disabled ? undefined : 0}
         aria-disabled={menuItem.disabled ? 'true' : undefined}
         aria-selected={selected() ? 'true' : 'false'}
