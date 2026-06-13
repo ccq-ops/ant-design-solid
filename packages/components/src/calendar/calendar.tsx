@@ -1,7 +1,15 @@
-import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createSignal, splitProps, type JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import type { CalendarMode, CalendarProps, CalendarValue } from './interface'
+import type {
+  CalendarCellRenderInfo,
+  CalendarCellType,
+  CalendarMode,
+  CalendarProps,
+  CalendarSemanticClassNames,
+  CalendarSemanticStyles,
+  CalendarValue,
+} from './interface'
 import { useCalendarStyle } from './calendar.style'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -69,6 +77,14 @@ function formatMonth(value: Date): string {
   return `${value.getFullYear()}-${pad(value.getMonth() + 1)}`
 }
 
+function getWeek(value: Date): number {
+  const date = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()))
+  const day = date.getUTCDay() || 7
+  date.setUTCDate(date.getUTCDate() + 4 - day)
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1))
+  return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+}
+
 function addMonths(value: Date, offset: number): Date {
   return new Date(value.getFullYear(), value.getMonth() + offset, 1)
 }
@@ -93,6 +109,26 @@ function yearMonths(value: Date): Date[] {
   return Array.from({ length: 12 }, (_, month) => new Date(value.getFullYear(), month, 1))
 }
 
+function isRenderable(value: JSX.Element): boolean {
+  return value !== undefined && value !== null && value !== false
+}
+
+function mergeStyle(
+  ...styles: Array<JSX.CSSProperties | undefined>
+): JSX.CSSProperties | undefined {
+  return Object.assign({}, ...styles.filter(Boolean))
+}
+
+function resolveSemanticClassNames(props: CalendarProps): CalendarSemanticClassNames {
+  return typeof props.classNames === 'function'
+    ? props.classNames({ props })
+    : (props.classNames ?? {})
+}
+
+function resolveSemanticStyles(props: CalendarProps): CalendarSemanticStyles {
+  return typeof props.styles === 'function' ? props.styles({ props }) : (props.styles ?? {})
+}
+
 export function Calendar(props: CalendarProps) {
   const [local, rest] = splitProps(props, [
     'value',
@@ -100,17 +136,26 @@ export function Calendar(props: CalendarProps) {
     'mode',
     'defaultMode',
     'fullscreen',
+    'showWeek',
+    'locale',
+    'validRange',
     'disabledDate',
     'dateCellRender',
     'dateFullCellRender',
     'monthCellRender',
     'monthFullCellRender',
+    'cellRender',
+    'fullCellRender',
     'headerRender',
     'onSelect',
     'onChange',
     'onPanelChange',
     'prefixCls',
+    'rootClassName',
+    'classNames',
+    'styles',
     'class',
+    'classList',
     'style',
   ])
   const config = useConfig()
@@ -132,11 +177,30 @@ export function Calendar(props: CalendarProps) {
   const today = () => startOfDay(new Date())
   const visibleDates = createMemo(() => monthDates(panelDate()))
   const visibleMonths = createMemo(() => yearMonths(panelDate()))
+  const semanticProps = (): CalendarProps => ({ ...props, fullscreen: fullscreen(), mode: mode() })
+  const semanticClassNames = createMemo(() => resolveSemanticClassNames(semanticProps()))
+  const semanticStyles = createMemo(() => resolveSemanticStyles(semanticProps()))
+  const parsedValidRange = createMemo(() => {
+    if (!local.validRange) return undefined
+    const start = parseDate(local.validRange[0])
+    const end = parseDate(local.validRange[1])
+    if (!start || !end) return undefined
+    return start.getTime() <= end.getTime() ? [start, end] : [end, start]
+  })
 
   createEffect(() => {
     const selected = selectedDate()
     if (selected) setPanelDate(firstOfMonth(selected))
   })
+
+  function isDisabled(date: Date): boolean {
+    const range = parsedValidRange()
+    const normalized = startOfDay(date)
+    const outsideRange = range
+      ? normalized.getTime() < range[0].getTime() || normalized.getTime() > range[1].getTime()
+      : false
+    return outsideRange || Boolean(local.disabledDate?.(date))
+  }
 
   function emitPanelChange(nextPanelDate: Date, nextMode = mode()): void {
     local.onPanelChange?.(nextPanelDate, nextMode)
@@ -153,10 +217,10 @@ export function Calendar(props: CalendarProps) {
     emitPanelChange(panelDate(), nextMode)
   }
 
-  function changeValue(nextDate: Date): void {
+  function changeValue(nextDate: Date, source: 'date' | 'month' | 'customize'): void {
     const normalized = startOfDay(nextDate)
     const previous = selectedDate()
-    local.onSelect?.(normalized)
+    local.onSelect?.(normalized, { source })
     if (!sameDate(previous, normalized)) {
       if (!isValueControlled()) setInnerValue(normalized)
       local.onChange?.(normalized)
@@ -164,8 +228,8 @@ export function Calendar(props: CalendarProps) {
   }
 
   function selectDate(date: Date): void {
-    if (local.disabledDate?.(date)) return
-    changeValue(date)
+    if (isDisabled(date)) return
+    changeValue(date, 'date')
     if (
       date.getMonth() !== panelDate().getMonth() ||
       date.getFullYear() !== panelDate().getFullYear()
@@ -175,14 +239,57 @@ export function Calendar(props: CalendarProps) {
   }
 
   function selectMonth(date: Date): void {
-    if (local.disabledDate?.(date)) return
-    changeValue(date)
+    if (isDisabled(date)) return
+    changeValue(date, 'month')
     changePanelDate(date)
+  }
+
+  function cellInfo(type: CalendarCellType, originNode: JSX.Element): CalendarCellRenderInfo {
+    return {
+      prefixCls: prefixCls(),
+      originNode,
+      today: today(),
+      type,
+      locale: local.locale,
+    }
+  }
+
+  function renderCellContent(date: Date, type: CalendarCellType): JSX.Element {
+    const originNode = type === 'date' ? date.getDate() : MONTHS[date.getMonth()]
+    const info = cellInfo(type, originNode)
+
+    if (local.fullCellRender) return local.fullCellRender(date, info)
+    if (type === 'date' && local.dateFullCellRender) return local.dateFullCellRender(date)
+    if (type === 'month' && local.monthFullCellRender) return local.monthFullCellRender(date)
+
+    const extra = local.cellRender
+      ? local.cellRender(date, info)
+      : type === 'date'
+        ? local.dateCellRender?.(date)
+        : local.monthCellRender?.(date)
+    const valueClass = type === 'date' ? `${prefixCls()}-date-value` : `${prefixCls()}-month-value`
+
+    return (
+      <>
+        <span class={valueClass}>{originNode}</span>
+        <Show when={isRenderable(extra)}>
+          <div
+            class={classNames(`${prefixCls()}-cell-content`, semanticClassNames().itemContent)}
+            style={semanticStyles().itemContent}
+          >
+            {extra}
+          </div>
+        </Show>
+      </>
+    )
   }
 
   function renderDefaultHeader() {
     return (
-      <div class={`${prefixCls()}-header`}>
+      <div
+        class={classNames(`${prefixCls()}-header`, semanticClassNames().header)}
+        style={semanticStyles().header}
+      >
         <div class={`${prefixCls()}-title`}>
           {mode() === 'month' ? formatMonth(panelDate()) : panelDate().getFullYear()}
         </div>
@@ -259,28 +366,39 @@ export function Calendar(props: CalendarProps) {
         prefixCls(),
         fullscreen() ? `${prefixCls()}-fullscreen` : `${prefixCls()}-mini`,
         hashId(),
+        local.rootClassName,
         local.class,
+        semanticClassNames().root,
       )}
-      style={local.style}
+      classList={local.classList}
+      style={mergeStyle(semanticStyles().root, local.style as JSX.CSSProperties | undefined)}
     >
       <Show when={local.headerRender} fallback={renderDefaultHeader()}>
         {(headerRender) =>
           headerRender()({
             value: panelDate(),
             mode: mode(),
+            type: mode(),
             onChange: changePanelDate,
             onModeChange: changeMode,
+            onTypeChange: changeMode,
           })
         }
       </Show>
-      <div class={`${prefixCls()}-body`}>
+      <div
+        class={classNames(`${prefixCls()}-body`, semanticClassNames().body)}
+        style={semanticStyles().body}
+      >
         <Show
           when={mode() === 'month'}
           fallback={
-            <div class={`${prefixCls()}-year-grid`}>
+            <div
+              class={classNames(`${prefixCls()}-year-grid`, semanticClassNames().content)}
+              style={semanticStyles().content}
+            >
               <For each={visibleMonths()}>
                 {(monthDate) => {
-                  const monthDisabled = () => Boolean(local.disabledDate?.(monthDate))
+                  const monthDisabled = () => isDisabled(monthDate)
                   const selected = () => {
                     const selectedValue = selectedDate()
                     return Boolean(
@@ -299,26 +417,12 @@ export function Calendar(props: CalendarProps) {
                         `${prefixCls()}-cell`,
                         selected() && `${prefixCls()}-cell-selected`,
                         monthDisabled() && `${prefixCls()}-cell-disabled`,
+                        semanticClassNames().item,
                       )}
+                      style={semanticStyles().item}
                       onClick={() => selectMonth(monthDate)}
                     >
-                      <Show
-                        when={local.monthFullCellRender}
-                        fallback={
-                          <>
-                            <span class={`${prefixCls()}-date-value`}>
-                              {MONTHS[monthDate.getMonth()]}
-                            </span>
-                            <Show when={local.monthCellRender?.(monthDate)}>
-                              {(content) => (
-                                <div class={`${prefixCls()}-cell-content`}>{content()}</div>
-                              )}
-                            </Show>
-                          </>
-                        }
-                      >
-                        {(render) => render()(monthDate)}
-                      </Show>
+                      {renderCellContent(monthDate, 'month')}
                     </button>
                   )
                 }}
@@ -327,48 +431,58 @@ export function Calendar(props: CalendarProps) {
           }
         >
           <div>
-            <div class={`${prefixCls()}-weekdays`}>
+            <div
+              class={classNames(
+                `${prefixCls()}-weekdays`,
+                local.showWeek && `${prefixCls()}-weekdays-show-week`,
+              )}
+            >
+              <Show when={local.showWeek}>
+                <div class={classNames(`${prefixCls()}-weekday`, `${prefixCls()}-week-label`)}>
+                  {local.locale?.lang?.week ?? 'Week'}
+                </div>
+              </Show>
               <For each={WEEKDAYS}>
                 {(weekday) => <div class={`${prefixCls()}-weekday`}>{weekday}</div>}
               </For>
             </div>
-            <div class={`${prefixCls()}-date-grid`}>
+            <div
+              class={classNames(
+                `${prefixCls()}-date-grid`,
+                local.showWeek && `${prefixCls()}-date-grid-show-week`,
+                semanticClassNames().content,
+              )}
+              style={semanticStyles().content}
+            >
               <For each={visibleDates()}>
-                {(date) => {
-                  const cellDisabled = () => Boolean(local.disabledDate?.(date))
+                {(date, index) => {
+                  const cellDisabled = () => isDisabled(date)
                   const selected = () => sameDate(selectedDate(), date)
                   const outside = () => date.getMonth() !== panelDate().getMonth()
                   return (
-                    <button
-                      type="button"
-                      aria-label={formatDate(date)}
-                      aria-pressed={selected()}
-                      aria-disabled={cellDisabled()}
-                      class={classNames(
-                        `${prefixCls()}-cell`,
-                        sameDate(today(), date) && `${prefixCls()}-cell-today`,
-                        selected() && `${prefixCls()}-cell-selected`,
-                        outside() && `${prefixCls()}-cell-outside`,
-                        cellDisabled() && `${prefixCls()}-cell-disabled`,
-                      )}
-                      onClick={() => selectDate(date)}
-                    >
-                      <Show
-                        when={local.dateFullCellRender}
-                        fallback={
-                          <>
-                            <span class={`${prefixCls()}-date-value`}>{date.getDate()}</span>
-                            <Show when={local.dateCellRender?.(date)}>
-                              {(content) => (
-                                <div class={`${prefixCls()}-cell-content`}>{content()}</div>
-                              )}
-                            </Show>
-                          </>
-                        }
-                      >
-                        {(render) => render()(date)}
+                    <>
+                      <Show when={local.showWeek && index() % 7 === 0}>
+                        <div class={`${prefixCls()}-week-number`}>{getWeek(date)}</div>
                       </Show>
-                    </button>
+                      <button
+                        type="button"
+                        aria-label={formatDate(date)}
+                        aria-pressed={selected()}
+                        aria-disabled={cellDisabled()}
+                        class={classNames(
+                          `${prefixCls()}-cell`,
+                          sameDate(today(), date) && `${prefixCls()}-cell-today`,
+                          selected() && `${prefixCls()}-cell-selected`,
+                          outside() && `${prefixCls()}-cell-outside`,
+                          cellDisabled() && `${prefixCls()}-cell-disabled`,
+                          semanticClassNames().item,
+                        )}
+                        style={semanticStyles().item}
+                        onClick={() => selectDate(date)}
+                      >
+                        {renderCellContent(date, 'date')}
+                      </button>
+                    </>
                   )
                 }}
               </For>

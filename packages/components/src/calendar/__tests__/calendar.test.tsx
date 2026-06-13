@@ -27,7 +27,7 @@ describe('Calendar', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
 
-    expect(onSelect).toHaveBeenLastCalledWith(expect.any(Date))
+    expect(onSelect).toHaveBeenLastCalledWith(expect.any(Date), { source: 'date' })
     expect(onChange).toHaveBeenLastCalledWith(expect.any(Date))
     expect(screen.getByRole('button', { name: '2026-06-20' })).toHaveAttribute(
       'aria-pressed',
@@ -42,7 +42,7 @@ describe('Calendar', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
 
-    expect(onSelect).toHaveBeenLastCalledWith(expect.any(Date))
+    expect(onSelect).toHaveBeenLastCalledWith(expect.any(Date), { source: 'date' })
     expect(onChange).not.toHaveBeenCalled()
   })
 
@@ -169,6 +169,121 @@ describe('Calendar', () => {
     expect(screen.getByText('Full month')).toBeInTheDocument()
   })
 
+  it('supports v6 cellRender info for date and month cells', () => {
+    const cellRender = vi.fn((date: Date, info) => (
+      <span>
+        {info.type}:{info.originNode}:{date.getDate()}
+      </span>
+    ))
+    render(() => <Calendar defaultValue="2026-06-15" cellRender={cellRender} />)
+
+    expect(screen.getByText('date:15:15')).toBeInTheDocument()
+    expect(cellRender).toHaveBeenCalledWith(
+      expect.any(Date),
+      expect.objectContaining({
+        prefixCls: 'ads-calendar',
+        today: expect.any(Date),
+        type: 'date',
+      }),
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Year mode' }))
+
+    expect(screen.getByText('month:Jun:1')).toBeInTheDocument()
+  })
+
+  it('supports v6 fullCellRender info overrides', () => {
+    render(() => (
+      <Calendar
+        defaultValue="2026-06-15"
+        fullCellRender={(date, info) =>
+          info.type === 'date' && date.getDate() === 15 ? (
+            <strong>v6 full date</strong>
+          ) : (
+            info.originNode
+          )
+        }
+      />
+    ))
+
+    expect(screen.getByText('v6 full date')).toBeInTheDocument()
+  })
+
+  it('passes select source info when selecting dates and months', () => {
+    const onSelect = vi.fn()
+    render(() => <Calendar defaultValue="2026-06-15" onSelect={onSelect} />)
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-20' }))
+    expect(onSelect).toHaveBeenLastCalledWith(expect.any(Date), { source: 'date' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Year mode' }))
+    fireEvent.click(screen.getByRole('button', { name: '2026-07' }))
+    expect(onSelect).toHaveBeenLastCalledWith(expect.any(Date), { source: 'month' })
+  })
+
+  it('disables dates outside validRange', () => {
+    const onSelect = vi.fn()
+    render(() => (
+      <Calendar
+        defaultValue="2026-06-15"
+        validRange={['2026-06-10', '2026-06-20']}
+        onSelect={onSelect}
+      />
+    ))
+
+    const beforeRange = screen.getByRole('button', { name: '2026-06-09' })
+    const inRange = screen.getByRole('button', { name: '2026-06-10' })
+    const afterRange = screen.getByRole('button', { name: '2026-06-21' })
+
+    expect(beforeRange).toHaveAttribute('aria-disabled', 'true')
+    expect(inRange).toHaveAttribute('aria-disabled', 'false')
+    expect(afterRange).toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(afterRange)
+    expect(onSelect).not.toHaveBeenCalled()
+  })
+
+  it('renders week numbers when showWeek is true', () => {
+    render(() => <Calendar defaultValue="2026-06-15" showWeek />)
+
+    expect(screen.getByText('Week')).toBeInTheDocument()
+    expect(document.querySelector('.ads-calendar-week-number')).toHaveTextContent('22')
+  })
+
+  it('applies semantic classNames and styles', () => {
+    const { container } = render(() => (
+      <Calendar
+        defaultValue="2026-06-15"
+        rootClassName="calendar-root"
+        classNames={{
+          root: 'semantic-root',
+          header: 'semantic-header',
+          body: 'semantic-body',
+          content: 'semantic-content',
+          item: 'semantic-item',
+          itemContent: 'semantic-item-content',
+        }}
+        styles={{
+          root: { color: 'rgb(1, 2, 3)' },
+          header: { color: 'rgb(4, 5, 6)' },
+          body: { color: 'rgb(7, 8, 9)' },
+          content: { color: 'rgb(10, 11, 12)' },
+          item: { color: 'rgb(13, 14, 15)' },
+          itemContent: { color: 'rgb(16, 17, 18)' },
+        }}
+        dateCellRender={(date) => (date.getDate() === 15 ? <span>Content</span> : null)}
+      />
+    ))
+
+    expect(container.firstElementChild).toHaveClass('calendar-root')
+    expect(container.firstElementChild).toHaveClass('semantic-root')
+    expect(container.querySelector('.semantic-header')).toHaveStyle({ color: 'rgb(4, 5, 6)' })
+    expect(container.querySelector('.semantic-body')).toHaveStyle({ color: 'rgb(7, 8, 9)' })
+    expect(container.querySelector('.semantic-content')).toHaveStyle({ color: 'rgb(10, 11, 12)' })
+    expect(screen.getByRole('button', { name: '2026-06-15' })).toHaveClass('semantic-item')
+    expect(screen.getByText('Content').parentElement).toHaveClass('semantic-item-content')
+  })
+
   it('supports custom header render callbacks', () => {
     render(() => (
       <Calendar
@@ -192,6 +307,31 @@ describe('Calendar', () => {
     expect(screen.getByRole('button', { name: '2027-01' })).toBeInTheDocument()
   })
 
+  it('supports v6 custom header render callback names', () => {
+    render(() => (
+      <Calendar
+        defaultValue="2026-06-15"
+        headerRender={({ type, onChange, onTypeChange }) => (
+          <div>
+            <span>Panel type: {type}</span>
+            <button type="button" onClick={() => onChange(new Date(2028, 0, 1))}>
+              Jump v6
+            </button>
+            <button type="button" onClick={() => onTypeChange('year')}>
+              Show years v6
+            </button>
+          </div>
+        )}
+      />
+    ))
+
+    expect(screen.getByText('Panel type: month')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Jump v6' }))
+    expect(screen.getByRole('button', { name: '2028-01-01' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Show years v6' }))
+    expect(screen.getByRole('button', { name: '2028-01' })).toBeInTheDocument()
+  })
+
   it('applies mini and custom prefix classes', () => {
     const { container } = render(() => (
       <Calendar fullscreen={false} prefixCls="custom-calendar" defaultValue="2026-06-15" />
@@ -199,5 +339,28 @@ describe('Calendar', () => {
 
     expect(container.firstElementChild).toHaveClass('custom-calendar')
     expect(container.firstElementChild).toHaveClass('custom-calendar-mini')
+  })
+
+  it('does not fix mini body height so month grids and custom cells stay inside the card', () => {
+    render(() => <Calendar fullscreen={false} defaultValue="2026-06-15" />)
+
+    const styleText = Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(styleText).not.toMatch(
+      /\.ads-calendar-mini\s+\.ads-calendar-body[^}]*(?:^|[;{])height:\s*256px/,
+    )
+    expect(styleText).toMatch(/\.ads-calendar-mini\s+\.ads-calendar-body[^}]*min-height:/)
+  })
+
+  it('keeps the calendar header title on one line', () => {
+    render(() => <Calendar fullscreen={false} defaultValue="2026-06-15" />)
+
+    const styleText = Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(styleText).toMatch(/\.ads-calendar-title[^}]*white-space:nowrap/)
   })
 })

@@ -130,6 +130,14 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       timeColumnWidth: 56,
       withoutTimeCellHeight: 66,
     },
+    Calendar: {
+      fullBg: token.colorBgContainer,
+      fullPanelBg: token.colorBgContainer,
+      itemActiveBg: token.colorPrimaryBg,
+      miniContentHeight: 256,
+      monthControlWidth: 70,
+      yearControlWidth: 80,
+    },
     ColorPicker: {
       colorPickerWidth: 234,
       colorPickerHandlerSize: 16,
