@@ -402,10 +402,6 @@ export function useDatePickerStyle(prefixCls: string) {
           'border-radius': `${t.borderRadius}px`,
           'box-sizing': 'border-box',
         },
-        [`.${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-range-start):not(.${prefixCls}-cell-range-end):hover`]:
-          {
-            background: dp.cellHoverBg,
-          },
         [`.${prefixCls}-variant-cell`]: {
           display: 'inline-flex',
           'align-items': 'center',
