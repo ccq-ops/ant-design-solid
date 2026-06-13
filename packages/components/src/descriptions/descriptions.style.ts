@@ -1,5 +1,6 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
 import { useToken } from '../config-provider'
+import { getComponentToken } from '@ant-design-solid/theme'
 
 export function useDescriptionsStyle(prefixCls: string) {
   const token = useToken()
@@ -7,6 +8,7 @@ export function useDescriptionsStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['Descriptions', prefixCls] },
     () => {
       const t = token()
+      const componentToken = getComponentToken('Descriptions', t)
       return {
         [`.${prefixCls}`]: {
           'box-sizing': 'border-box',
@@ -20,7 +22,7 @@ export function useDescriptionsStyle(prefixCls: string) {
         [`.${prefixCls}-header`]: {
           display: 'flex',
           'align-items': 'center',
-          'margin-bottom': `${t.margin}px`,
+          'margin-bottom': `${componentToken.titleMarginBottom}px`,
         },
         [`.${prefixCls}-title`]: {
           flex: 1,
@@ -30,7 +32,7 @@ export function useDescriptionsStyle(prefixCls: string) {
         },
         [`.${prefixCls}-extra`]: {
           'margin-inline-start': `${t.margin}px`,
-          color: t.colorText,
+          color: componentToken.extraColor,
         },
         [`.${prefixCls}-view`]: {
           width: '100%',
@@ -42,11 +44,11 @@ export function useDescriptionsStyle(prefixCls: string) {
           'border-collapse': 'collapse',
         },
         [`.${prefixCls}-item`]: {
-          'padding-bottom': `${t.padding}px`,
+          'padding-bottom': `${componentToken.itemPaddingBottom}px`,
           'vertical-align': 'top',
         },
         [`.${prefixCls}-item-label`]: {
-          color: t.colorTextSecondary,
+          color: componentToken.labelColor,
           'font-weight': 400,
           'white-space': 'nowrap',
         },
@@ -54,11 +56,16 @@ export function useDescriptionsStyle(prefixCls: string) {
           content: '":"',
           position: 'relative',
           top: '-0.5px',
-          margin: '0 8px 0 2px',
+          'margin-inline-start': `${componentToken.colonMarginInlineStart}px`,
+          'margin-inline-end': `${componentToken.colonMarginInlineEnd}px`,
+        },
+        [`.${prefixCls}-item-no-colon::after`]: {
+          content: '""',
+          margin: 0,
         },
         [`.${prefixCls}-item-content`]: {
           display: 'inline-block',
-          color: t.colorText,
+          color: componentToken.contentColor,
         },
         [`.${prefixCls}-vertical .${prefixCls}-item-label`]: {
           display: 'table-cell',
@@ -70,7 +77,7 @@ export function useDescriptionsStyle(prefixCls: string) {
         [`.${prefixCls}-vertical .${prefixCls}-item-content`]: {
           display: 'table-cell',
         },
-        [`.${prefixCls}-middle .${prefixCls}-item`]: {
+        [`.${prefixCls}-medium .${prefixCls}-item`]: {
           'padding-bottom': `${t.paddingSM}px`,
         },
         [`.${prefixCls}-small .${prefixCls}-item`]: {
@@ -86,9 +93,9 @@ export function useDescriptionsStyle(prefixCls: string) {
         },
         [`.${prefixCls}-bordered .${prefixCls}-item-label`]: {
           display: 'table-cell',
-          padding: `${t.paddingSM}px ${t.padding}px`,
-          color: t.colorTextSecondary,
-          background: t.colorFillAlter,
+          padding: `${componentToken.cellPaddingBlock}px ${componentToken.cellPaddingInline}px`,
+          color: componentToken.labelColor,
+          background: componentToken.labelBg,
           border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         },
         [`.${prefixCls}-bordered .${prefixCls}-item-label::after`]: {
@@ -96,16 +103,16 @@ export function useDescriptionsStyle(prefixCls: string) {
         },
         [`.${prefixCls}-bordered .${prefixCls}-item-content`]: {
           display: 'table-cell',
-          padding: `${t.paddingSM}px ${t.padding}px`,
+          padding: `${componentToken.cellPaddingBlock}px ${componentToken.cellPaddingInline}px`,
           border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         },
-        [`.${prefixCls}-bordered.${prefixCls}-middle .${prefixCls}-item-label, .${prefixCls}-bordered.${prefixCls}-middle .${prefixCls}-item-content`]:
+        [`.${prefixCls}-bordered.${prefixCls}-medium .${prefixCls}-item-label, .${prefixCls}-bordered.${prefixCls}-medium .${prefixCls}-item-content`]:
           {
-            padding: `${t.paddingXS}px ${t.paddingSM}px`,
+            padding: `${componentToken.cellPaddingBlockMD}px ${componentToken.cellPaddingInlineMD}px`,
           },
         [`.${prefixCls}-bordered.${prefixCls}-small .${prefixCls}-item-label, .${prefixCls}-bordered.${prefixCls}-small .${prefixCls}-item-content`]:
           {
-            padding: `${Math.max(2, Math.floor(t.paddingXS / 2))}px ${t.paddingXS}px`,
+            padding: `${componentToken.cellPaddingBlockSM}px ${componentToken.cellPaddingInlineSM}px`,
           },
       }
     },

@@ -343,6 +343,23 @@ export interface GridComponentToken extends ComponentTokenBase {
   columns: number
 }
 
+export interface DescriptionsComponentToken extends ComponentTokenBase {
+  labelBg: string
+  titleMarginBottom: number
+  itemPaddingBottom: number
+  colonMarginInlineStart: number
+  colonMarginInlineEnd: number
+  contentColor: string
+  labelColor: string
+  extraColor: string
+  cellPaddingBlock: number
+  cellPaddingInline: number
+  cellPaddingBlockMD: number
+  cellPaddingInlineMD: number
+  cellPaddingBlockSM: number
+  cellPaddingInlineSM: number
+}
+
 export interface FormComponentToken extends ComponentTokenBase {
   /** Required mark color. */
   labelRequiredMarkColor: string
@@ -649,7 +666,7 @@ export interface ComponentTokenMap {
   ColorPicker?: ComponentTokenBase
   Collapse?: ComponentTokenBase
   DatePicker?: ComponentTokenBase
-  Descriptions?: ComponentTokenBase
+  Descriptions: DescriptionsComponentToken
   Divider: DividerComponentToken
   Drawer: DrawerComponentToken
   Dropdown: DropdownComponentToken

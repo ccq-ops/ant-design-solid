@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { For, createSignal } from 'solid-js'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Descriptions } from '../index'
 
 afterEach(() => cleanup())
@@ -77,6 +77,148 @@ describe('Descriptions', () => {
     expect(descriptions).toHaveStyle({ margin: '4px' })
     expect(firstItem).toHaveStyle({ color: 'rgb(255, 0, 0)' })
     expect(addressContent).toHaveAttribute('colspan', '2')
+  })
+
+  it('supports v6 size names and hides the generated colon when colon is false', () => {
+    const { container } = render(() => (
+      <Descriptions colon={false} size="medium" items={[{ label: 'Name', children: 'Ada' }]} />
+    ))
+
+    const descriptions = container.querySelector('.ads-descriptions') as HTMLElement
+    const label = screen.getByText('Name')
+
+    expect(descriptions).toHaveClass('ads-descriptions-medium')
+    expect(label).toHaveClass('ads-descriptions-item-no-colon')
+  })
+
+  it('applies semantic classNames and styles from root and items', () => {
+    render(() => (
+      <Descriptions
+        title="User Info"
+        extra="Actions"
+        classNames={{
+          root: 'semantic-root',
+          header: 'semantic-header',
+          title: 'semantic-title',
+          extra: 'semantic-extra',
+          label: 'root-label',
+          content: 'root-content',
+        }}
+        styles={{
+          root: { margin: '6px' },
+          header: { padding: '2px' },
+          title: { color: 'rgb(255, 0, 0)' },
+          extra: { color: 'rgb(0, 128, 0)' },
+          label: { color: 'rgb(0, 0, 255)' },
+          content: { background: 'rgb(0, 255, 255)' },
+        }}
+        items={[
+          {
+            label: 'Name',
+            children: 'Ada',
+            classNames: { label: 'item-label', content: 'item-content' },
+            styles: {
+              label: { background: 'rgb(255, 255, 0)' },
+              content: { color: 'rgb(128, 0, 128)' },
+            },
+          },
+        ]}
+      />
+    ))
+
+    const descriptions = document.querySelector('.ads-descriptions') as HTMLElement
+    const header = document.querySelector('.ads-descriptions-header') as HTMLElement
+    const title = document.querySelector('.ads-descriptions-title') as HTMLElement
+    const extra = document.querySelector('.ads-descriptions-extra') as HTMLElement
+    const label = screen.getByText('Name')
+    const content = screen.getByText('Ada')
+
+    expect(descriptions).toHaveClass('semantic-root')
+    expect(descriptions).toHaveStyle({ margin: '6px' })
+    expect(header).toHaveClass('semantic-header')
+    expect(header).toHaveStyle({ padding: '2px' })
+    expect(title).toHaveClass('semantic-title')
+    expect(title).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+    expect(extra).toHaveClass('semantic-extra')
+    expect(extra).toHaveStyle({ color: 'rgb(0, 128, 0)' })
+    expect(label).toHaveClass('root-label')
+    expect(label).toHaveClass('item-label')
+    expect(label).toHaveStyle({ color: 'rgb(0, 0, 255)', background: 'rgb(255, 255, 0)' })
+    expect(content).toHaveClass('root-content')
+    expect(content).toHaveClass('item-content')
+    expect(content).toHaveStyle({ color: 'rgb(128, 0, 128)', background: 'rgb(0, 255, 255)' })
+  })
+
+  it('supports semantic classNames and styles functions with resolved props', () => {
+    render(() => (
+      <Descriptions
+        title="User Info"
+        size="small"
+        column={2}
+        classNames={(info) => ({
+          root: `root-${info.props.size}`,
+          label: `label-${info.props.column}`,
+        })}
+        styles={(info) => ({
+          content: { color: info.props.size === 'small' ? 'rgb(255, 0, 0)' : 'rgb(0, 0, 0)' },
+        })}
+        items={[{ label: 'Name', children: 'Ada' }]}
+      />
+    ))
+
+    const descriptions = document.querySelector('.ads-descriptions') as HTMLElement
+
+    expect(descriptions).toHaveClass('root-small')
+    expect(screen.getByText('Name')).toHaveClass('label-2')
+    expect(screen.getByText('Ada')).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+  })
+
+  it('resolves responsive column and span values from active breakpoints', () => {
+    const originalMatchMedia = window.matchMedia
+    window.matchMedia = vi.fn((query: string) => ({
+      matches: query.includes('768px') || query.includes('576px'),
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+
+    try {
+      render(() => (
+        <Descriptions
+          column={{ xs: 1, sm: 2, md: 4 }}
+          items={[
+            { label: 'A', children: 'Alpha', span: { xs: 1, md: 2 } },
+            { label: 'B', children: 'Beta' },
+          ]}
+        />
+      ))
+
+      expect(screen.getByText('A').closest('td')).toHaveAttribute('colspan', '2')
+      expect(screen.getByText('B').closest('td')).toHaveAttribute('colspan', '2')
+    } finally {
+      window.matchMedia = originalMatchMedia
+    }
+  })
+
+  it('fills remaining row space for filled spans and the final row', () => {
+    render(() => (
+      <Descriptions
+        column={3}
+        items={[
+          { label: 'A', children: 'Alpha' },
+          { label: 'B', children: 'Beta', span: 'filled' },
+          { label: 'C', children: 'Gamma' },
+        ]}
+      />
+    ))
+
+    expect(screen.getByText('A').closest('td')).toHaveAttribute('colspan', '1')
+    expect(screen.getByText('B').closest('td')).toHaveAttribute('colspan', '2')
+    expect(screen.getByText('C').closest('td')).toHaveAttribute('colspan', '3')
   })
 
   it('keeps children item order in sync with dynamic source order', () => {
