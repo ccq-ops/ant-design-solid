@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@solidjs/testing-library'
+import { fireEvent, render, waitFor } from '@solidjs/testing-library'
 import { describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { Input } from '../../input'
@@ -43,12 +43,14 @@ describe('Form.Provider', () => {
 
     fireEvent.click(result.getByRole('button', { name: 'Submit' }))
 
-    expect(onFormFinish).toHaveBeenCalledWith(
-      'profile',
-      expect.objectContaining({
-        values: { username: 'Ada' },
-        forms: expect.objectContaining({ profile: expect.any(Object) }),
-      }),
+    return waitFor(() =>
+      expect(onFormFinish).toHaveBeenCalledWith(
+        'profile',
+        expect.objectContaining({
+          values: { username: 'Ada' },
+          forms: expect.objectContaining({ profile: expect.any(Object) }),
+        }),
+      ),
     )
   })
 })

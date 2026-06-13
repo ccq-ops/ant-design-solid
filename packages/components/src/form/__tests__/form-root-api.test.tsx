@@ -48,31 +48,38 @@ describe('Form root v6 APIs', () => {
   })
 
   it('scrolls and focuses the first error field on failed submit', async () => {
+    const result = render(() => (
+      <Form scrollToFirstError={{ focus: true }} onFinishFailed={() => undefined}>
+        <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
+          <Input placeholder="username" />
+        </Form.Item>
+        <Button htmlType="submit">Submit</Button>
+      </Form>
+    ))
+    const input = result.getByPlaceholderText('username') as HTMLInputElement
+    const fieldElement = input.closest('.ads-form-item') as HTMLElement | null
     const scrollIntoView = vi.fn()
     const focus = vi.fn()
-    const originalScrollIntoView = Element.prototype.scrollIntoView
-    const originalFocus = HTMLInputElement.prototype.focus
-    Element.prototype.scrollIntoView = scrollIntoView
-    HTMLInputElement.prototype.focus = focus
+    const originalScrollIntoView = fieldElement?.scrollIntoView
+    const originalFocus = input.focus
+
+    expect(fieldElement).toBeInstanceOf(HTMLElement)
+    fieldElement!.scrollIntoView = scrollIntoView
+    input.focus = focus
 
     try {
-      const result = render(() => (
-        <Form scrollToFirstError={{ focus: true }} onFinishFailed={() => undefined}>
-          <Form.Item name="username" rules={[{ required: true, message: 'Required' }]}>
-            <Input placeholder="username" />
-          </Form.Item>
-          <Button htmlType="submit">Submit</Button>
-        </Form>
-      ))
-
       fireEvent.click(result.getByRole('button', { name: 'Submit' }))
 
       await waitFor(() => expect(result.getByText('Required')).toBeInTheDocument())
       expect(scrollIntoView).toHaveBeenCalled()
       expect(focus).toHaveBeenCalled()
     } finally {
-      Element.prototype.scrollIntoView = originalScrollIntoView
-      HTMLInputElement.prototype.focus = originalFocus
+      if (originalScrollIntoView) {
+        fieldElement!.scrollIntoView = originalScrollIntoView
+      } else {
+        delete fieldElement!.scrollIntoView
+      }
+      input.focus = originalFocus
     }
   })
 
@@ -80,7 +87,7 @@ describe('Form root v6 APIs', () => {
     const [visible, setVisible] = createSignal(true)
     const [form] = useForm()
 
-    render(() => (
+    const result = render(() => (
       <>
         <Show when={visible()}>
           <Form form={form} clearOnDestroy initialValues={{ username: 'Ada' }}>
@@ -96,7 +103,7 @@ describe('Form root v6 APIs', () => {
     ))
 
     expect(form.getFieldsValue(true)).toEqual({ username: 'Ada' })
-    setVisible(false)
+    fireEvent.click(result.getByRole('button', { name: 'Hide' }))
     expect(form.getFieldsValue(true)).toEqual({})
   })
 })
