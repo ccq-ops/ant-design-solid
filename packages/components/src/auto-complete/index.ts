@@ -1,2 +1,15 @@
 export { AutoComplete } from './auto-complete'
-export type { AutoCompleteOption, AutoCompleteProps } from './interface'
+export type {
+  AutoCompleteAllowClear,
+  AutoCompleteDataSourceItemObject,
+  AutoCompleteOption,
+  AutoCompleteProps,
+  AutoCompleteRef,
+  AutoCompleteSemanticClassNames,
+  AutoCompleteSemanticKey,
+  AutoCompleteSemanticStyles,
+  AutoCompleteShowSearch,
+  AutoCompleteSize,
+  AutoCompleteStatus,
+  AutoCompleteVariant,
+} from './interface'

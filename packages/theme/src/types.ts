@@ -324,6 +324,11 @@ export interface BreadcrumbComponentToken extends ComponentTokenBase {
   separatorMargin: number
 }
 
+export interface AnchorComponentToken extends ComponentTokenBase {
+  linkPaddingBlock: number
+  linkPaddingInlineStart: number
+}
+
 export interface CarouselComponentToken extends ComponentTokenBase {
   dotWidth?: number | string
   dotHeight?: number | string
@@ -492,6 +497,30 @@ export interface FormComponentToken extends ComponentTokenBase {
 }
 
 export interface SelectComponentToken extends ComponentTokenBase {
+  optionHeight: number
+  optionPadding: number
+  optionSelectedBg: string
+  optionActiveBg: string
+  clearIconColor: string
+}
+
+export interface AutoCompleteComponentToken extends ComponentTokenBase {
+  activeBorderColor: string
+  activeBg: string
+  activeShadow: string
+  errorActiveShadow: string
+  warningActiveShadow: string
+  hoverBorderColor: string
+  hoverBg: string
+  inputFontSize: number
+  inputFontSizeLG: number
+  inputFontSizeSM: number
+  paddingBlock: number
+  paddingBlockLG: number
+  paddingBlockSM: number
+  paddingInline: number
+  paddingInlineLG: number
+  paddingInlineSM: number
   optionHeight: number
   optionPadding: number
   optionSelectedBg: string
@@ -806,7 +835,8 @@ export interface ComponentTokenMap {
   Affix?: ComponentTokenBase
   Addon?: ComponentTokenBase
   Alert: AlertComponentToken
-  Anchor?: ComponentTokenBase
+  Anchor: AnchorComponentToken
+  AutoComplete: AutoCompleteComponentToken
   Avatar: AvatarComponentToken
   BackTop?: ComponentTokenBase
   Badge: BadgeComponentToken

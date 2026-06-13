@@ -2,6 +2,7 @@ import { CloseCircleFilled } from '@ant-design-solid/icons'
 import {
   For,
   Show,
+  children,
   createEffect,
   createMemo,
   createRenderEffect,
@@ -10,7 +11,7 @@ import {
   splitProps,
 } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { Dynamic, isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
@@ -18,7 +19,15 @@ import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/ov
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import { useAutoCompleteStyle } from './auto-complete.style'
-import type { AutoCompleteOption, AutoCompleteProps } from './interface'
+import type {
+  AutoCompleteDataSourceItemObject,
+  AutoCompleteOption,
+  AutoCompleteProps,
+  AutoCompleteRef,
+  AutoCompleteSize,
+  AutoCompleteSemanticClassNames,
+  AutoCompleteSemanticStyles,
+} from './interface'
 
 function optionText(option: AutoCompleteOption): string {
   if (typeof option.label === 'string' || typeof option.label === 'number')
@@ -33,13 +42,93 @@ function defaultFilter(inputValue: string, option: AutoCompleteOption): boolean 
   )
 }
 
+function assignRef<T>(ref: ((value: T) => void) | { current?: T } | T | undefined, value: T) {
+  if (!ref) return
+  if (typeof ref === 'function') {
+    ;(ref as (value: T) => void)(value)
+    return
+  }
+  if (!('focus' in (ref as object))) {
+    ;(ref as { current?: T }).current = value
+    return
+  }
+  Object.assign(ref as object, value)
+}
+
+function mergeStyle(
+  ...styles: Array<JSX.CSSProperties | string | undefined>
+): JSX.CSSProperties | string | undefined {
+  const stringStyle = styles.find((style): style is string => typeof style === 'string')
+  if (stringStyle) return stringStyle
+  const merged: JSX.CSSProperties = {}
+  styles.filter(Boolean).forEach((style) => {
+    Object.entries(style as JSX.CSSProperties).forEach(([key, value]) => {
+      const normalizedKey = key.startsWith('--')
+        ? key
+        : key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)
+      ;(merged as Record<string, unknown>)[normalizedKey] = value
+    })
+  })
+  return merged
+}
+
+function resolveClassNames(
+  classNamesConfig: AutoCompleteProps['classNames'],
+  props: AutoCompleteProps,
+): AutoCompleteSemanticClassNames {
+  return typeof classNamesConfig === 'function'
+    ? classNamesConfig({ props })
+    : (classNamesConfig ?? {})
+}
+
+function resolveStyles(
+  stylesConfig: AutoCompleteProps['styles'],
+  props: AutoCompleteProps,
+): AutoCompleteSemanticStyles {
+  return typeof stylesConfig === 'function' ? stylesConfig({ props }) : (stylesConfig ?? {})
+}
+
+function normalizeDataSourceItem(
+  item: string | AutoCompleteDataSourceItemObject | JSX.Element,
+): AutoCompleteOption | undefined {
+  if (typeof item === 'string') return { value: item, label: item }
+  if (!item || typeof item !== 'object') return undefined
+  const record = item as AutoCompleteDataSourceItemObject
+  if (typeof record.value !== 'string') return undefined
+  return {
+    ...record,
+    label: record.label ?? record.text ?? record.value,
+    value: record.value,
+    title: typeof record.title === 'string' ? record.title : record.value,
+  }
+}
+
+function inputChild(
+  childrenValue: JSX.Element,
+): HTMLInputElement | HTMLTextAreaElement | undefined {
+  const resolved = children(() => childrenValue)
+  const nodes = resolved.toArray()
+  const first = nodes[0]
+  if (first instanceof HTMLInputElement || first instanceof HTMLTextAreaElement) return first
+  if (first instanceof HTMLElement) {
+    const innerInput = first.querySelector('input, textarea')
+    if (innerInput instanceof HTMLInputElement || innerInput instanceof HTMLTextAreaElement) {
+      return innerInput
+    }
+  }
+  return undefined
+}
+
 export function AutoComplete(props: AutoCompleteProps) {
   const [local, rest] = splitProps(props, [
+    'ref',
     'value',
     'defaultValue',
     'open',
     'defaultOpen',
     'options',
+    'dataSource',
+    'children',
     'placeholder',
     'disabled',
     'allowClear',
@@ -52,6 +141,17 @@ export function AutoComplete(props: AutoCompleteProps) {
     'notFoundContent',
     'popupMatchSelectWidth',
     'popupRender',
+    'dropdownRender',
+    'dropdownMatchSelectWidth',
+    'popupClass',
+    'dropdownClass',
+    'popupClassName',
+    'dropdownClassName',
+    'popupStyle',
+    'dropdownStyle',
+    'virtual',
+    'classNames',
+    'styles',
     'onClear',
     'onInputKeyDown',
     'onPopupScroll',
@@ -62,7 +162,10 @@ export function AutoComplete(props: AutoCompleteProps) {
     'onChange',
     'onSelect',
     'onOpenChange',
+    'onDropdownVisibleChange',
     'onKeyDown',
+    'onFocus',
+    'onBlur',
     'zIndex',
     'getPopupContainer',
   ])
@@ -77,7 +180,21 @@ export function AutoComplete(props: AutoCompleteProps) {
   const [activeValue, setActiveValue] = createSignal<string | undefined>()
   const [dropdownPosition, setDropdownPosition] = createSignal<JSX.CSSProperties>({})
   let selectorRef: HTMLDivElement | undefined
+  let rootRef: HTMLDivElement | undefined
+  let inputRef: HTMLInputElement | HTMLTextAreaElement | undefined
   let dropdownRef: HTMLDivElement | undefined
+
+  const api: AutoCompleteRef = {
+    focus: () => inputRef?.focus(),
+    blur: () => inputRef?.blur(),
+    get input() {
+      return inputRef
+    },
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  assignRef(local.ref, api)
 
   createEffect(() => {
     if (formItem?.valuePropName() === 'value' && formItem.trigger() !== 'onChange')
@@ -85,7 +202,10 @@ export function AutoComplete(props: AutoCompleteProps) {
   })
 
   const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
-  const size = () => local.size ?? formItem?.size?.()
+  const size = (): AutoCompleteSize | undefined => {
+    const mergedSize = local.size ?? formItem?.size?.()
+    return mergedSize === 'medium' ? 'middle' : mergedSize
+  }
   const variant = () => local.variant ?? formItem?.variant?.() ?? 'outlined'
   const allowClear = () => Boolean(local.allowClear)
   const clearIcon = () =>
@@ -103,11 +223,28 @@ export function AutoComplete(props: AutoCompleteProps) {
     return innerValue()
   }
   const open = () => (isOpenControlled() ? Boolean(local.open) : innerOpen())
+  const semanticProps = (): AutoCompleteProps => ({
+    ...props,
+    value: value(),
+    open: open(),
+    disabled: disabled(),
+    size: size(),
+    variant: variant(),
+  })
+  const semanticClassNames = createMemo(() => resolveClassNames(local.classNames, semanticProps()))
+  const semanticStyles = createMemo(() => resolveStyles(local.styles, semanticProps()))
   const showSearchConfig = () =>
     typeof local.showSearch === 'object' ? local.showSearch : undefined
   const mergedFilterOption = () => showSearchConfig()?.filterOption ?? local.filterOption
+  const mergedOptions = createMemo(() => {
+    if (local.options) return local.options
+    return (local.dataSource ?? [])
+      .map(normalizeDataSourceItem)
+      .filter(Boolean) as AutoCompleteOption[]
+  })
+  const hasCustomInput = createMemo(() => Boolean(local.children && inputChild(local.children)))
   const filteredOptions = createMemo(() => {
-    const options = local.options ?? []
+    const options = mergedOptions()
     const filter = mergedFilterOption()
     if (open() && inputFocused() && filter === undefined) return options
     if (filter === false) return options
@@ -119,6 +256,13 @@ export function AutoComplete(props: AutoCompleteProps) {
     local.notFoundContent !== undefined && local.notFoundContent !== null
   const hasPopupContent = () => filteredOptions().length > 0 || hasNotFoundContent()
   const defaultActiveFirstOption = () => local.defaultActiveFirstOption ?? true
+  const mergedPopupRender = () => local.popupRender ?? local.dropdownRender
+  const mergedPopupMatchSelectWidth = () =>
+    local.popupMatchSelectWidth ?? local.dropdownMatchSelectWidth ?? true
+  const callOpenChange = (nextOpen: boolean) => {
+    local.onOpenChange?.(nextOpen)
+    local.onDropdownVisibleChange?.(nextOpen)
+  }
   let activeOptionCache: AutoCompleteOption | undefined
   const activeOption = () => {
     activeOptionCache = enabledOptions().find((option) => option.value === activeValue())
@@ -169,7 +313,7 @@ export function AutoComplete(props: AutoCompleteProps) {
       return
     }
     const rect = selectorRef.getBoundingClientRect()
-    const matchWidth = local.popupMatchSelectWidth ?? true
+    const matchWidth = mergedPopupMatchSelectWidth()
     const width =
       typeof matchWidth === 'number'
         ? `${Math.max(rect.width, matchWidth)}px`
@@ -204,7 +348,7 @@ export function AutoComplete(props: AutoCompleteProps) {
       setActiveValue(undefined)
     }
     if (!isOpenControlled()) setInnerOpen(normalizedOpen)
-    local.onOpenChange?.(normalizedOpen)
+    callOpenChange(normalizedOpen)
   }
 
   createRenderEffect(() => {
@@ -261,6 +405,18 @@ export function AutoComplete(props: AutoCompleteProps) {
     if (!disabled()) setOpen(true)
   }
 
+  function handleTextInput(
+    event: InputEvent & {
+      currentTarget: HTMLInputElement | HTMLTextAreaElement
+      target: Element
+    },
+  ) {
+    const nextValue = event.currentTarget.value
+    changeValue(nextValue)
+    showSearchConfig()?.onSearch?.(nextValue)
+    if (!disabled()) setOpen(true)
+  }
+
   function clearValue(event: MouseEvent): void {
     event.stopPropagation()
     changeValue('')
@@ -274,13 +430,36 @@ export function AutoComplete(props: AutoCompleteProps) {
       ref={(element) => {
         dropdownRef = element
       }}
-      class={`${prefixCls()}-dropdown`}
-      style={dropdownPosition()}
+      class={classNames(
+        `${prefixCls()}-dropdown`,
+        local.popupClass,
+        local.dropdownClass,
+        local.popupClassName,
+        local.dropdownClassName,
+        semanticClassNames().popup,
+        semanticClassNames().list,
+      )}
+      style={
+        mergeStyle(
+          dropdownPosition(),
+          local.popupStyle,
+          local.dropdownStyle,
+          semanticStyles().popup,
+          semanticStyles().list,
+        ) as JSX.CSSProperties
+      }
       onScroll={(event) => local.onPopupScroll?.(event as unknown as UIEvent)}
     >
       <Show
         when={filteredOptions().length > 0}
-        fallback={<div class={`${prefixCls()}-empty`}>{local.notFoundContent}</div>}
+        fallback={
+          <div
+            class={classNames(`${prefixCls()}-empty`, semanticClassNames().empty)}
+            style={semanticStyles().empty}
+          >
+            {local.notFoundContent}
+          </div>
+        }
       >
         <For each={filteredOptions()}>
           {(option) => (
@@ -292,7 +471,11 @@ export function AutoComplete(props: AutoCompleteProps) {
                 `${prefixCls()}-item`,
                 option.disabled && `${prefixCls()}-item-disabled`,
                 option.value === activeValue() && `${prefixCls()}-item-active`,
+                option.class ?? option.className,
+                semanticClassNames().option,
               )}
+              style={mergeStyle(option.style, semanticStyles().option) as JSX.CSSProperties}
+              title={option.title ?? option.value}
               onClick={() => selectOption(option)}
             >
               {option.label ?? option.value}
@@ -305,81 +488,149 @@ export function AutoComplete(props: AutoCompleteProps) {
 
   const renderedDropdownNode = () => {
     const node = dropdownNode()
-    return local.popupRender ? local.popupRender(node) : node
+    return mergedPopupRender() ? mergedPopupRender()!(node) : node
+  }
+
+  function handleKeyDown(
+    event: KeyboardEvent & { currentTarget: HTMLInputElement | HTMLTextAreaElement },
+  ) {
+    ;(local.onKeyDown as unknown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+    local.onInputKeyDown?.(event)
+    if (event.key === 'Escape') {
+      setOpen(false)
+      return
+    }
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      const wasOpen = open()
+      if (!wasOpen) setOpen(true)
+      moveActiveOption(1)
+      return
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      const wasOpen = open()
+      if (!wasOpen) setOpen(true)
+      moveActiveOption(-1)
+      return
+    }
+    if (event.key === 'Enter' && open()) {
+      const option = getActiveOption()
+      if (option) selectOption(option)
+    }
+  }
+
+  const defaultInputNode = () => (
+    <input
+      role="combobox"
+      aria-expanded={open()}
+      aria-disabled={disabled()}
+      disabled={disabled()}
+      class={classNames(`${prefixCls()}-input`, semanticClassNames().input)}
+      style={semanticStyles().input}
+      placeholder={local.placeholder}
+      value={value()}
+      ref={(element) => {
+        inputRef = element
+      }}
+      onFocus={(event) => {
+        ;(local.onFocus as unknown as ((event: FocusEvent) => void) | undefined)?.(event)
+        setInputFocused(true)
+        setOpen(true)
+      }}
+      onBlur={(event) => {
+        ;(local.onBlur as unknown as ((event: FocusEvent) => void) | undefined)?.(event)
+      }}
+      onInput={(event) => {
+        setInputFocused(false)
+        handleInput(event)
+      }}
+      onKeyDown={(event) => handleKeyDown(event)}
+    />
+  )
+
+  const customInputNode = () => {
+    if (!local.children) return undefined
+    const node = inputChild(local.children)
+    if (!node) return undefined
+    const tagName = node.tagName.toLowerCase() as 'input' | 'textarea'
+    const existingClass = node.getAttribute('class') ?? undefined
+    const existingStyle = node.getAttribute('style') ?? undefined
+    return (
+      <Dynamic
+        component={tagName}
+        role="combobox"
+        aria-expanded={open()}
+        aria-disabled={disabled()}
+        disabled={disabled()}
+        class={classNames(existingClass, `${prefixCls()}-input`, semanticClassNames().input)}
+        style={mergeStyle(existingStyle, semanticStyles().input) as JSX.CSSProperties}
+        placeholder={local.placeholder ?? node.getAttribute('placeholder') ?? undefined}
+        value={value()}
+        ref={(element: HTMLInputElement | HTMLTextAreaElement) => {
+          inputRef = element
+        }}
+        onFocus={(
+          event: FocusEvent & { currentTarget: HTMLInputElement | HTMLTextAreaElement },
+        ) => {
+          ;(local.onFocus as unknown as ((event: FocusEvent) => void) | undefined)?.(event)
+          setInputFocused(true)
+          setOpen(true)
+        }}
+        onBlur={(event: FocusEvent & { currentTarget: HTMLInputElement | HTMLTextAreaElement }) => {
+          ;(local.onBlur as unknown as ((event: FocusEvent) => void) | undefined)?.(event)
+        }}
+        onInput={(
+          event: InputEvent & {
+            currentTarget: HTMLInputElement | HTMLTextAreaElement
+            target: Element
+          },
+        ) => {
+          setInputFocused(false)
+          handleTextInput(event)
+        }}
+        onKeyDown={(
+          event: KeyboardEvent & { currentTarget: HTMLInputElement | HTMLTextAreaElement },
+        ) => handleKeyDown(event)}
+      />
+    )
   }
 
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
+        hasCustomInput() && `${prefixCls()}-customize-input`,
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         size() && `${prefixCls()}-${size()}`,
         local.status && `${prefixCls()}-status-${local.status}`,
         `${prefixCls()}-${variant()}`,
         hashId(),
+        semanticClassNames().root,
         local.class,
       )}
-      style={local.style}
+      style={mergeStyle(local.style as JSX.CSSProperties | undefined, semanticStyles().root)}
     >
       <div
         ref={(element) => {
           selectorRef = element
         }}
-        class={`${prefixCls()}-selector`}
+        class={classNames(`${prefixCls()}-selector`, semanticClassNames().selector)}
+        style={semanticStyles().selector}
         onClick={() => !disabled() && setOpen(true)}
       >
-        <input
-          role="combobox"
-          aria-expanded={open()}
-          aria-disabled={disabled()}
-          disabled={disabled()}
-          class={`${prefixCls()}-input`}
-          placeholder={local.placeholder}
-          value={value()}
-          onFocus={() => {
-            setInputFocused(true)
-            setOpen(true)
-          }}
-          onInput={(event) => {
-            setInputFocused(false)
-            handleInput(event)
-          }}
-          onKeyDown={(event) => {
-            ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(
-              event,
-            )
-            local.onInputKeyDown?.(event)
-            if (event.key === 'Escape') {
-              setOpen(false)
-              return
-            }
-            if (event.key === 'ArrowDown') {
-              event.preventDefault()
-              const wasOpen = open()
-              if (!wasOpen) setOpen(true)
-              moveActiveOption(1)
-              return
-            }
-            if (event.key === 'ArrowUp') {
-              event.preventDefault()
-              const wasOpen = open()
-              if (!wasOpen) setOpen(true)
-              moveActiveOption(-1)
-              return
-            }
-            if (event.key === 'Enter' && open()) {
-              const option = getActiveOption()
-              if (option) selectOption(option)
-            }
-          }}
-        />
+        {customInputNode() ?? defaultInputNode()}
         <Show when={allowClear() && !disabled() && value()}>
           <button
             type="button"
             aria-label="clear autocomplete"
-            class={`${prefixCls()}-clear`}
+            class={classNames(`${prefixCls()}-clear`, semanticClassNames().clear)}
+            style={semanticStyles().clear}
             onClick={clearValue}
           >
             {clearIcon()}

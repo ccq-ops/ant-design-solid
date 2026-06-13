@@ -75,6 +75,10 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       separatorColor: token.colorTextDescription,
       separatorMargin: token.marginXS,
     },
+    Anchor: {
+      linkPaddingBlock: token.paddingXXS,
+      linkPaddingInlineStart: token.padding,
+    },
     BorderBeam: {},
     Carousel: {
       arrowSize: 16,
@@ -236,6 +240,41 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       feedbackIconMarginInlineStart: token.marginXS,
     },
     Select: {
+      optionHeight: token.controlHeight,
+      optionPadding: token.paddingSM,
+      optionSelectedBg: selectedBg(token),
+      optionActiveBg: token.colorFillAlter,
+      clearIconColor: token.colorTextDisabled,
+    },
+    AutoComplete: {
+      activeBorderColor: token.colorPrimary,
+      activeBg: token.colorBgContainer,
+      activeShadow: `0 0 0 ${token.controlOutlineWidth}px ${token.controlOutline}`,
+      errorActiveShadow: `0 0 0 ${token.controlOutlineWidth}px ${token.colorErrorOutline}`,
+      warningActiveShadow: `0 0 0 ${token.controlOutlineWidth}px ${token.colorWarningOutline}`,
+      hoverBorderColor: token.colorPrimaryHover,
+      hoverBg: token.colorBgContainer,
+      inputFontSize: token.fontSize,
+      inputFontSizeLG: token.fontSizeLG,
+      inputFontSizeSM: token.fontSize,
+      paddingBlock: Math.max(
+        Math.round(((token.controlHeight - token.fontSize * token.lineHeight) / 2) * 10) / 10 -
+          token.lineWidth,
+        0,
+      ),
+      paddingBlockSM: Math.max(
+        Math.round(((token.controlHeightSM - token.fontSize * token.lineHeight) / 2) * 10) / 10 -
+          token.lineWidth,
+        0,
+      ),
+      paddingBlockLG: Math.max(
+        Math.ceil(((token.controlHeightLG - token.fontSizeLG * token.lineHeightLG) / 2) * 10) / 10 -
+          token.lineWidth,
+        0,
+      ),
+      paddingInline: token.paddingSM - token.lineWidth,
+      paddingInlineSM: token.controlPaddingHorizontalSM - token.lineWidth,
+      paddingInlineLG: token.controlPaddingHorizontal - token.lineWidth,
       optionHeight: token.controlHeight,
       optionPadding: token.paddingSM,
       optionSelectedBg: selectedBg(token),

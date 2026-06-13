@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { ConfigProvider } from '../../config-provider'
 import { Form, useForm } from '../../form'
+import { Input } from '../../input'
 import { AutoComplete } from '../index'
 
 afterEach(() => {
@@ -158,6 +159,165 @@ describe('AutoComplete', () => {
     expect((result.getByRole('combobox') as HTMLInputElement).value).toBe('')
     expect(onChange).toHaveBeenLastCalledWith('')
     expect(onClear).toHaveBeenCalledTimes(1)
+  })
+
+  it('exposes focus and blur methods through ref', () => {
+    let ref:
+      | {
+          focus: () => void
+          blur: () => void
+          input?: HTMLInputElement | HTMLTextAreaElement | null
+          nativeElement?: HTMLElement | null
+        }
+      | undefined
+    const result = render(() => <AutoComplete ref={(api) => (ref = api)} options={options} />)
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    ref?.focus()
+    expect(document.activeElement).toBe(combobox)
+    expect(ref?.input).toBe(combobox)
+    expect(ref?.nativeElement).toBe(result.container.querySelector('.ads-auto-complete'))
+
+    ref?.blur()
+    expect(document.activeElement).not.toBe(combobox)
+  })
+
+  it('applies semantic classNames and styles from object or function configs', () => {
+    const result = render(() => (
+      <AutoComplete
+        options={options}
+        classNames={(info) => ({
+          root: info.props.disabled ? 'semantic-disabled-root' : 'semantic-root',
+          selector: 'semantic-selector',
+          input: 'semantic-input',
+          popup: 'semantic-popup',
+          option: 'semantic-option',
+        })}
+        styles={{
+          root: { width: '240px' },
+          selector: { 'border-color': 'rgb(1, 2, 3)' },
+          input: { color: 'rgb(4, 5, 6)' },
+          popup: { background: 'rgb(7, 8, 9)' },
+          option: { color: 'rgb(10, 11, 12)' },
+        }}
+      />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.input(combobox, { target: { value: 'a' } })
+
+    expect(result.container.querySelector('.ads-auto-complete')).toHaveClass('semantic-root')
+    expect(result.container.querySelector('.ads-auto-complete-selector')).toHaveClass(
+      'semantic-selector',
+    )
+    expect(combobox).toHaveClass('semantic-input')
+    expect(screen.getByRole('listbox')).toHaveClass('semantic-popup')
+    expect(screen.getByRole('option', { name: 'Alpha' })).toHaveClass('semantic-option')
+    expect((result.container.querySelector('.ads-auto-complete') as HTMLElement).style.width).toBe(
+      '240px',
+    )
+    expect((screen.getByRole('listbox') as HTMLElement).style.background).toBe('rgb(7, 8, 9)')
+  })
+
+  it('supports Solid popup aliases and deprecated React class aliases', () => {
+    const result = render(() => (
+      <AutoComplete
+        options={options}
+        popupClass="solid-popup"
+        dropdownClass="solid-dropdown"
+        popupClassName="react-popup"
+        dropdownClassName="react-dropdown"
+        dropdownStyle={{ 'max-height': '120px' }}
+        dropdownRender={(originNode) => (
+          <section data-testid="dropdown-render-wrapper">{originNode}</section>
+        )}
+        dropdownMatchSelectWidth={260}
+      />
+    ))
+    const selector = result.container.querySelector('.ads-auto-complete-selector') as HTMLElement
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+    vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+    fireEvent.input(combobox, { target: { value: 'a' } })
+
+    const popup = screen.getByRole('listbox') as HTMLElement
+    expect(screen.getByTestId('dropdown-render-wrapper')).toBeTruthy()
+    expect(popup).toHaveClass('solid-popup')
+    expect(popup).toHaveClass('solid-dropdown')
+    expect(popup).toHaveClass('react-popup')
+    expect(popup).toHaveClass('react-dropdown')
+    expect(popup.style.maxHeight).toBe('120px')
+    expect(popup.style.width).toBe('260px')
+  })
+
+  it('normalizes dataSource and applies option class style and title', () => {
+    const result = render(() => (
+      <AutoComplete
+        filterOption={false}
+        dataSource={[
+          'Plain',
+          { value: 'object', text: 'Object Label' },
+          { value: 'styled', label: 'Styled', class: 'custom-option', style: { color: 'red' } },
+        ]}
+      />
+    ))
+    const combobox = result.getByRole('combobox') as HTMLInputElement
+
+    fireEvent.focus(combobox)
+
+    expect(screen.getByRole('option', { name: 'Plain' })).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Object Label' })).toBeTruthy()
+    const styled = screen.getByRole('option', { name: 'Styled' }) as HTMLElement
+    expect(styled).toHaveClass('custom-option')
+    expect(styled.style.color).toBe('red')
+    expect(styled).toHaveAttribute('title', 'styled')
+  })
+
+  it('uses an Input.TextArea child while preserving autocomplete behavior', () => {
+    const onSelect = vi.fn()
+    const result = render(() => (
+      <AutoComplete options={options} filterOption={false} onSelect={onSelect}>
+        <Input.TextArea class="custom-textarea" />
+      </AutoComplete>
+    ))
+    const combobox = result.getByRole('combobox') as HTMLTextAreaElement
+
+    expect(combobox.tagName).toBe('TEXTAREA')
+    expect(combobox).toHaveClass('custom-textarea')
+    expect(result.container.querySelector('.ads-auto-complete')).toHaveClass(
+      'ads-auto-complete-customize-input',
+    )
+
+    const autoCompleteStyle = Array.from(
+      document.head.querySelectorAll('style[data-ant-design-solid]'),
+    )
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+    expect(autoCompleteStyle).toContain(
+      '.ads-auto-complete-customize-input .ads-auto-complete-selector{background:transparent;border-color:transparent;box-shadow:none;height:auto;padding:0;}',
+    )
+    expect(autoCompleteStyle).toContain(
+      '.ads-auto-complete.ads-auto-complete-customize-input:hover:not(.ads-auto-complete-disabled) .ads-auto-complete-selector{background:transparent;border-color:transparent;}',
+    )
+    expect(autoCompleteStyle).toContain(
+      '.ads-auto-complete.ads-auto-complete-customize-input.ads-auto-complete-open .ads-auto-complete-selector{background:transparent;border-color:transparent;box-shadow:none;}',
+    )
+
+    fireEvent.input(combobox, { target: { value: 'a' } })
+    fireEvent.click(screen.getByRole('option', { name: 'Beta' }))
+
+    expect(combobox.value).toBe('beta')
+    expect(onSelect).toHaveBeenCalledWith('beta', { label: 'Beta', value: 'beta' })
   })
 
   it('calls showSearch.onSearch when the user types', () => {

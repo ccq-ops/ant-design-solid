@@ -231,6 +231,7 @@ describe('@ant-design-solid/theme', () => {
       components: {
         Form: { labelColor: '#222222' },
         Select: { optionSelectedBg: '#d6e4ff' },
+        AutoComplete: { activeBorderColor: '#0958d9', optionSelectedBg: '#e6f4ff' },
         Checkbox: { checkColor: '#111111' },
         Radio: { dotSize: 10 },
         Switch: { handleSize: 16 },
@@ -253,6 +254,15 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Form', token).feedbackIconMarginInlineStart).toBe(token.marginXS)
     expect(getComponentToken('Select', token).optionSelectedBg).toBe('#d6e4ff')
     expect(getComponentToken('Select', token).optionHeight).toBe(32)
+    expect(getComponentToken('AutoComplete', token).activeBorderColor).toBe('#0958d9')
+    expect(getComponentToken('AutoComplete', token).activeShadow).toBe(
+      `0 0 0 ${token.controlOutlineWidth}px ${token.controlOutline}`,
+    )
+    expect(getComponentToken('AutoComplete', token).optionSelectedBg).toBe('#e6f4ff')
+    expect(getComponentToken('AutoComplete', token).optionHeight).toBe(token.controlHeight)
+    expect(getComponentToken('AutoComplete', token).paddingInline).toBe(
+      token.paddingSM - token.lineWidth,
+    )
     expect(getComponentToken('Checkbox', token).checkColor).toBe('#111111')
     expect(getComponentToken('Checkbox', token).size).toBe(16)
     expect(getComponentToken('Radio', token).dotSize).toBe(10)
@@ -354,9 +364,10 @@ describe('@ant-design-solid/theme', () => {
         Avatar: { groupOverlapping: -6, groupSpace: 6 },
         Badge: { overflowIndicatorHeight: 24, dotSize: 8 },
         FloatButton: { size: 48, iconSize: 20 },
-        Layout: { headerBg: '#10239e', triggerHeight: 56 },
-      },
-    })
+      Layout: { headerBg: '#10239e', triggerHeight: 56 },
+      Anchor: { linkPaddingBlock: 6 },
+    },
+  })
 
     expect(getComponentToken('Table', token).headerBg).toBe('#fafafa')
     expect(getComponentToken('Table', token).headerColor).toBe(token.colorText)
@@ -382,7 +393,7 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Badge', token).overflowIndicatorHeight).toBe(24)
     expect(getComponentToken('Badge', token).dotSize).toBe(8)
     expect(getComponentToken('Badge', token).colorBg).toBe(token.colorError)
-    expect(getComponentToken('Badge', token).colorText).toBe('#ffffff')
+    expect(getComponentToken('Badge', token).colorText).toBe(token.colorTextLightSolid)
 
     expect(getComponentToken('FloatButton', token).size).toBe(48)
     expect(getComponentToken('FloatButton', token).iconSize).toBe(20)
@@ -395,6 +406,9 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Layout', token).headerHeight).toBe(64)
     expect(getComponentToken('Layout', token).triggerHeight).toBe(56)
     expect(getComponentToken('Layout', token).zeroTriggerWidth).toBe(40)
+
+    expect(getComponentToken('Anchor', token).linkPaddingBlock).toBe(6)
+    expect(getComponentToken('Anchor', token).linkPaddingInlineStart).toBe(token.padding)
   })
 
   it('derives interaction component token defaults and applies overrides', () => {
