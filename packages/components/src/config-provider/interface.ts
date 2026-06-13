@@ -111,7 +111,10 @@ export type BadgeConfig = ComponentStyleConfig
 export type BorderBeamConfig = ComponentStyleConfig
 export type BreadcrumbConfig = ComponentStyleConfig & PickProps<BreadcrumbProps, 'separator'>
 export type ButtonConfig = ComponentStyleConfig &
-  PickProps<ButtonProps, 'autoInsertSpace' | 'variant' | 'color' | 'shape'> & {
+  PickProps<
+    ButtonProps,
+    'autoInsertSpace' | 'variant' | 'color' | 'shape' | 'classNames' | 'styles'
+  > & {
     loadingIcon?: JSX.Element
   }
 export type CalendarConfig = ComponentStyleConfig

@@ -365,7 +365,7 @@ it('inherits popover shared placement, trigger, arrow, and semantic style APIs',
     </Popconfirm>
   ))
 
-  const trigger = result.getByText('Hover me').parentElement!
+  const trigger = result.getByText('Hover me').closest('button')!.parentElement!
   expect(trigger).toHaveClass('trigger-extra')
 
   fireEvent.mouseEnter(trigger)

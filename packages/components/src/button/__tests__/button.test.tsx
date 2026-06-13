@@ -87,12 +87,114 @@ describe('Button', () => {
     const result = render(() => <Button icon={<SearchOutlined />}>Search</Button>)
     const button = result.getByRole('button')
     const iconWrapper = button.querySelector('.ads-btn-icon')
+    const content = button.querySelector('.ads-btn-content')
 
     expect(iconWrapper).not.toBeNull()
     expect(iconWrapper?.className).toContain('ads-btn-icon-start')
     expect(iconWrapper?.querySelector('svg')).not.toBeNull()
     expect(button.firstElementChild).toBe(iconWrapper)
+    expect(content).not.toBeNull()
+    expect(content).toHaveTextContent('Search')
     expect(button).toHaveTextContent('Search')
+  })
+
+  it('supports semantic classNames and styles for root, icon and content', () => {
+    const result = render(() => (
+      <Button
+        icon={<SearchOutlined />}
+        classNames={{ root: 'semantic-root', icon: 'semantic-icon', content: 'semantic-content' }}
+        styles={{
+          root: { width: '160px' },
+          icon: { color: 'red' },
+          content: { color: 'blue' },
+        }}
+      >
+        Search
+      </Button>
+    ))
+    const button = result.getByRole('button') as HTMLButtonElement
+    const icon = button.querySelector<HTMLElement>('.ads-btn-icon')
+    const content = button.querySelector<HTMLElement>('.ads-btn-content')
+
+    expect(button).toHaveClass('semantic-root')
+    expect(button.style.width).toBe('160px')
+    expect(icon).toHaveClass('semantic-icon')
+    expect(icon?.style.color).toBe('red')
+    expect(content).toHaveClass('semantic-content')
+    expect(content?.style.color).toBe('blue')
+  })
+
+  it('supports function semantic props and rootClass', () => {
+    const result = render(() => (
+      <Button
+        rootClass="root-extra"
+        type="primary"
+        classNames={({ props }) => ({
+          root: props.type === 'primary' ? 'semantic-primary' : 'semantic-default',
+          content: 'semantic-content',
+        })}
+        styles={({ props }) => ({ content: { color: props.type === 'primary' ? 'red' : 'blue' } })}
+      >
+        Submit
+      </Button>
+    ))
+    const button = result.getByRole('button') as HTMLButtonElement
+    const content = button.querySelector<HTMLElement>('.ads-btn-content')
+
+    expect(button).toHaveClass('root-extra')
+    expect(button).toHaveClass('semantic-primary')
+    expect(content).toHaveClass('semantic-content')
+    expect(content?.style.color).toBe('red')
+  })
+
+  it('merges ConfigProvider button semantic props before local semantic props', () => {
+    const result = render(() => (
+      <ConfigProvider
+        button={{
+          classNames: { root: 'config-root', icon: 'config-icon', content: 'config-content' },
+          styles: {
+            root: { width: '120px', height: '40px' },
+            icon: { color: 'green' },
+            content: { color: 'green', 'font-weight': 400 },
+          },
+        }}
+      >
+        <Button
+          icon={<SearchOutlined />}
+          classNames={{ root: 'local-root', content: 'local-content' }}
+          styles={{ root: { width: '180px' }, content: { color: 'purple' } }}
+        >
+          Search
+        </Button>
+      </ConfigProvider>
+    ))
+    const button = result.getByRole('button') as HTMLButtonElement
+    const icon = button.querySelector<HTMLElement>('.ads-btn-icon')
+    const content = button.querySelector<HTMLElement>('.ads-btn-content')
+
+    expect(button).toHaveClass('config-root')
+    expect(button).toHaveClass('local-root')
+    expect(button.style.width).toBe('180px')
+    expect(button.style.height).toBe('40px')
+    expect(icon).toHaveClass('config-icon')
+    expect(icon?.style.color).toBe('green')
+    expect(content).toHaveClass('config-content')
+    expect(content).toHaveClass('local-content')
+    expect(content?.style.color).toBe('purple')
+    expect(content?.style.fontWeight).toBe('400')
+  })
+
+  it('supports custom prefixCls on Button', () => {
+    const result = render(() => (
+      <Button prefixCls="custom-button" icon={<SearchOutlined />}>
+        Search
+      </Button>
+    ))
+    const button = result.getByRole('button')
+
+    expect(button).toHaveClass('custom-button')
+    expect(button.querySelector('.custom-button-icon')).not.toBeNull()
+    expect(button.querySelector('.custom-button-content')).not.toBeNull()
   })
 
   it('does not add icon spacing when the button only contains an icon', () => {
@@ -161,7 +263,14 @@ describe('Button', () => {
   it('renders an anchor when href is provided and prevents clicks while disabled', () => {
     const onClick = vi.fn()
     const result = render(() => (
-      <Button href="https://example.com" target="_blank" disabled onClick={onClick}>
+      <Button
+        href="https://example.com"
+        target="_blank"
+        rel="noopener"
+        download="report.txt"
+        disabled
+        onClick={onClick}
+      >
         Link
       </Button>
     ))
@@ -170,6 +279,8 @@ describe('Button', () => {
     expect(link.tagName).toBe('A')
     expect(link.getAttribute('href')).toBe('https://example.com')
     expect(link.getAttribute('target')).toBe('_blank')
+    expect(link.getAttribute('rel')).toBe('noopener')
+    expect(link.getAttribute('download')).toBe('report.txt')
     expect(link.className).toContain('ads-btn-disabled')
 
     fireEvent.click(link)

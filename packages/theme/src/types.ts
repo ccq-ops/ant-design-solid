@@ -273,9 +273,45 @@ export interface ComponentTokenBase extends TokenRecord {}
 export interface ButtonComponentToken extends ComponentTokenBase {
   borderRadius: number
   fontWeight: number
+  iconGap: number
+  defaultShadow: string
+  primaryShadow: string
+  dangerShadow: string
   primaryColor: string
+  dangerColor: string
+  solidTextColor: string
+  defaultColor: string
+  defaultBg: string
   defaultBorderColor: string
+  defaultHoverBg: string
+  defaultHoverColor: string
+  defaultHoverBorderColor: string
+  defaultActiveBg: string
+  defaultActiveColor: string
+  defaultActiveBorderColor: string
+  borderColorDisabled: string
+  defaultGhostColor: string
+  ghostBg: string
+  defaultGhostBorderColor: string
+  textTextColor: string
+  textTextHoverColor: string
+  textTextActiveColor: string
+  textHoverBg: string
+  linkHoverBg: string
   paddingInline: number
+  paddingInlineLG: number
+  paddingInlineSM: number
+  paddingBlock: number
+  paddingBlockLG: number
+  paddingBlockSM: number
+  contentFontSize: number
+  contentFontSizeLG: number
+  contentFontSizeSM: number
+  contentLineHeight: number
+  contentLineHeightLG: number
+  contentLineHeightSM: number
+  defaultBgDisabled: string
+  dashedBgDisabled: string
 }
 
 export interface CarouselComponentToken extends ComponentTokenBase {

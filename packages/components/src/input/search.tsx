@@ -86,7 +86,7 @@ export function Search(props: SearchProps) {
         semanticClassNames().button,
       )}
       style={semanticStyles().button}
-      onMouseDown={(event) => {
+      onMouseDown={(event: MouseEvent) => {
         if (document.activeElement === inputRef) event.preventDefault()
       }}
       onClick={(event) => triggerSearch(event)}
