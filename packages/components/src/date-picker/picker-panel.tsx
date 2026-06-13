@@ -49,9 +49,6 @@ export interface PickerPanelProps {
   showTime?: boolean
   timePanel?: JSX.Element
   showNow?: boolean
-  showToday?: boolean
-  todayDisabled?: boolean
-  onToday?: () => void
   onNow?: () => void
   onPrevious?: () => void
   onSuperPrevious?: () => void
@@ -151,9 +148,6 @@ function superNextLabel(locale: DatePickerLocale | undefined, mode: PickerMode =
 }
 
 export function PickerPanel(props: PickerPanelProps) {
-  const centeredFooter = () =>
-    props.showToday && !props.renderExtraFooter && !props.needConfirm && !props.showTime
-
   const panelContent = () => {
     const Component = props.components?.[props.mode ?? 'date'] ?? props.components?.panel
     return Component ? (
@@ -242,30 +236,13 @@ export function PickerPanel(props: PickerPanelProps) {
         onSelect={props.onPresetSelect}
       />
       {panelBody()}
-      <Show
-        when={props.renderExtraFooter || props.needConfirm || props.showTime || props.showToday}
-      >
+      <Show when={props.renderExtraFooter || props.needConfirm || props.showTime}>
         <div
-          class={semanticClass(
-            'footer',
-            props.classNames,
-            `${props.prefixCls}-footer`,
-            centeredFooter() && `${props.prefixCls}-footer-centered`,
-          )}
+          class={semanticClass('footer', props.classNames, `${props.prefixCls}-footer`)}
           style={semanticStyle('footer', props.styles)}
         >
           <div class={`${props.prefixCls}-footer-extra`}>
             {props.renderExtraFooter?.(props.mode ?? 'date')}
-            <Show when={props.showToday}>
-              <button
-                type="button"
-                class={`${props.prefixCls}-today`}
-                disabled={props.todayDisabled}
-                onClick={props.onToday}
-              >
-                {props.locale?.lang?.today ?? 'Today'}
-              </button>
-            </Show>
             <Show when={props.showTime && props.showNow}>
               <button type="button" class={`${props.prefixCls}-now`} onClick={props.onNow}>
                 {props.locale?.lang?.now ?? 'Now'}

@@ -444,12 +444,6 @@ function DatePickerBase(props: DatePickerProps) {
     if (!isPickerValueControlled()) setViewMonth(pickerViewStart(now, picker()))
   }
 
-  function selectToday(): void {
-    const today = dayjs()
-    selectDate(pickerSelectionStart(today, picker()))
-    if (!isPickerValueControlled()) setViewMonth(pickerViewStart(today, picker()))
-  }
-
   function selectPickerValue(date: dayjs.Dayjs): void {
     selectDate(pickerSelectionStart(date, picker()))
   }
@@ -637,9 +631,6 @@ function DatePickerBase(props: DatePickerProps) {
             nextIcon={local.nextIcon}
             superNextIcon={local.superNextIcon}
             components={local.components}
-            showToday={picker() === 'date' && !showTimeEnabled()}
-            todayDisabled={isDateDisabled(pickerSelectionStart(dayjs(), picker()))}
-            onToday={selectToday}
             showNow={Boolean(local.showNow)}
             onNow={selectNow}
             onOk={confirmPendingValue}

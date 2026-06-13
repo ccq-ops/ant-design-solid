@@ -549,18 +549,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'align-items': 'center',
           gap: `${t.marginXS}px`,
         },
-        [`.${prefixCls}-footer-centered`]: {
-          'justify-content': 'center',
-        },
-        [`.${prefixCls}-footer-centered .${prefixCls}-footer-extra`]: {
-          width: '100%',
-          'justify-content': 'center',
-        },
-        [`.${prefixCls}-footer-centered .${prefixCls}-today`]: {
-          width: '100%',
-          'justify-content': 'center',
-        },
-        [`.${prefixCls}-today, .${prefixCls}-now`]: {
+        [`.${prefixCls}-now`]: {
           display: 'inline-flex',
           'align-items': 'center',
           border: '0',
@@ -569,11 +558,6 @@ export function useDatePickerStyle(prefixCls: string) {
           color: t.colorPrimary,
           cursor: 'pointer',
           'line-height': '1',
-        },
-        [`.${prefixCls}-today:disabled`]: {
-          color: t.colorTextDisabled,
-          cursor: 'not-allowed',
-          'pointer-events': 'none',
         },
         [`.${prefixCls}-ok`]: {
           border: '0',
