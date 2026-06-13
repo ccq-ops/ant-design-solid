@@ -59,10 +59,56 @@ describe('Form layout props', () => {
     const css = extractStyle(cache)
     expect(css).toContain('.ant-form-vertical .ant-form-item{align-items:flex-start;display:block;')
     expect(css).toContain(
-      '.ant-form-vertical .ant-form-item-label{height:auto;margin:0;padding:0 0 8px;text-align:left;',
+      '.ant-form-vertical .ant-form-item-label{display:flex;height:auto;justify-content:flex-start;margin:0;padding:0 0 8px;text-align:left;white-space:initial;',
     )
     expect(css).toContain(
       '.ant-form-vertical .ant-form-item-label-colon .ant-form-item-label-content::after{visibility:hidden;',
+    )
+  })
+
+  it('centers inline labels with controls', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider prefixCls="ant">
+          <Form layout="inline">
+            <Form.Item label="Field name">
+              <Input />
+            </Form.Item>
+          </Form>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ant-form-inline .ant-form-item{align-items:flex-start;display:flex;margin-bottom:0;',
+    )
+    expect(css).toContain(
+      '.ant-form-inline .ant-form-item-label{align-items:center;display:inline-flex;height:32px;margin-bottom:0;',
+    )
+  })
+
+  it('keeps vertical labels left aligned even when labelAlign defaults to right', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider prefixCls="ant">
+          <Form layout="vertical">
+            <Form.Item label="Field name">
+              <Input />
+            </Form.Item>
+          </Form>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const label = result.getByText('Field name').closest('label')
+    expect(label).toHaveClass('ant-form-item-label-right')
+
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ant-form-vertical .ant-form-item-label{display:flex;height:auto;justify-content:flex-start;margin:0;padding:0 0 8px;text-align:left;',
     )
   })
 
@@ -86,6 +132,27 @@ describe('Form layout props', () => {
     const css = extractStyle(cache)
     expect(css).toContain(
       '.ant-form-item-label.ant-form-item-required::before{color:#ff4d4f;content:"*";display:inline-block;font-family:sans-serif;font-size:14px;line-height:1;margin-inline-end:4px;',
+    )
+  })
+
+  it('uses Ant Design Form token defaults for label color and control height', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider prefixCls="ant">
+          <Form>
+            <Form.Item label="Username">
+              <Input />
+            </Form.Item>
+          </Form>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain('.ant-form-item-label{color:rgba(0,0,0,0.88);font-size:14px;')
+    expect(css).toContain(
+      '.ant-form-item-control-input{align-items:center;display:flex;min-height:32px;',
     )
   })
 

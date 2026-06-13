@@ -1,28 +1,157 @@
 # Form
 
-Form stores field values, validates rules, and coordinates common input controls.
+Form stores field values, validates rules, and coordinates common input controls. The examples below follow the Ant Design v6 Form demo order and translate each demo to Solid syntax.
 
-### Basic form
+### Basic Usage
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
 
 const Demo1 = function () {
   return (
-    <Form onFinish={(values) => message.success(`Submitted ${values.username}`)}>
+    <Form
+      name="basic"
+      initialValues={{ remember: true }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+      onFinishFailed={() => message.error('Submit failed')}
+    >
       <Space direction="vertical" class="w-80">
-        <Form.Item name="username" rules={[{ required: true, message: 'Username is required' }]}>
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: 'Please input your username!' }]}
+        >
           <Input placeholder="Username" />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <Input.Password placeholder="Password" />
+        </Form.Item>
+        <Form.Item name="remember" valuePropName="checked">
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
+        <Space>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+          <a href="#">Register now!</a>
+        </Space>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo1
+```
+
+### Form methods
+
+```tsx
+import { Button, Form, Input, Select, Space, message, useForm } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  const [form] = useForm()
+
+  return (
+    <Form
+      form={form}
+      initialValues={{ note: 'Hello world!', gender: 'male' }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+    >
+      <Space direction="vertical" class="w-90">
+        <Form.Item name="note" label="Note" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
+          <Select
+            options={[
+              { label: 'male', value: 'male' },
+              { label: 'female', value: 'female' },
+              { label: 'other', value: 'other' },
+            ]}
+          />
+        </Form.Item>
+        <Space>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+          <Button htmlType="button" onClick={() => form.resetFields()}>
+            Reset
+          </Button>
+          <Button
+            htmlType="button"
+            onClick={() => form.setFieldsValue({ note: 'Hi there!', gender: 'female' })}
+          >
+            Fill form
+          </Button>
+        </Space>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo2
+```
+
+### Form Layout
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Form, Input, Radio, Space, message } from '@ant-design-solid/core'
+import type { FormLayout } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  const [layout, setLayout] = createSignal<FormLayout>('horizontal')
+
+  return (
+    <Space direction="vertical" class="w-100">
+      <Radio.Group
+        value={layout()}
+        options={[
+          { label: 'Horizontal', value: 'horizontal' },
+          { label: 'Vertical', value: 'vertical' },
+          { label: 'Inline', value: 'inline' },
+        ]}
+        onChange={(value) => setLayout(value as FormLayout)}
+      />
+      <Form layout={layout()} onFinish={() => message.success('Submitted')}>
+        <Form.Item label="Field A" name="fieldA">
+          <Input placeholder="input placeholder" />
+        </Form.Item>
+        <Form.Item label="Field B" name="fieldB">
+          <Input placeholder="input placeholder" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+### Form mix layout
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Form layout="vertical" onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Space direction="vertical" class="w-100">
+        <Form.Item label="Address" name="address">
+          <Input placeholder="Street address" />
+        </Form.Item>
+        <Form.Item layout="horizontal" label="City" name="city">
+          <Input placeholder="City" />
+        </Form.Item>
+        <Form.Item layout="inline" label="Zip" name="zip">
+          <Input placeholder="Zip code" />
         </Form.Item>
         <Button type="primary" htmlType="submit">
           Submit
@@ -32,161 +161,31 @@ const Demo1 = function () {
   )
 }
 
-export default Demo1
-```
-
-### Labels and initial values
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-const Demo2 = function () {
-  return (
-    <Form initialValues={{ username: 'solid-user', email: 'hello@example.com' }}>
-      <Space direction="vertical" class="w-90">
-        <Form.Item label="Username" name="username">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Email" name="email">
-          <Input />
-        </Form.Item>
-      </Space>
-    </Form>
-  )
-}
-
-export default Demo2
-```
-
-### Form layout
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-const Demo3 = function () {
-  return (
-    <Space direction="vertical" size="large">
-      <Form layout="vertical" initialValues={{ verticalUsername: 'solid-user' }}>
-        <Space direction="vertical" class="w-90">
-          <Form.Item label="Username" name="verticalUsername">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Email" name="verticalEmail">
-            <Input placeholder="hello@example.com" />
-          </Form.Item>
-        </Space>
-      </Form>
-      <Form layout="inline" onFinish={() => message.success('Inline form submitted')}>
-        <Form.Item name="inlineUsername">
-          <Input placeholder="Username" />
-        </Form.Item>
-        <Form.Item name="inlineEmail">
-          <Input placeholder="Email" />
-        </Form.Item>
-        <Button htmlType="submit">Submit</Button>
-      </Form>
-    </Space>
-  )
-}
-
-export default Demo3
-```
-
-### Required mark
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-const Demo4 = function () {
-  return (
-    <Space direction="vertical" size="large">
-      <Form requiredMark="optional">
-        <Space direction="vertical" class="w-90">
-          <Form.Item label="Username" name="markUsername" rules={[{ required: true }]}>
-            <Input placeholder="Required" />
-          </Form.Item>
-          <Form.Item label="Nickname" name="markNickname">
-            <Input placeholder="Optional" />
-          </Form.Item>
-        </Space>
-      </Form>
-      <Form requiredMark={false}>
-        <Space direction="vertical" class="w-90">
-          <Form.Item label="Email" name="hiddenMarkEmail" rules={[{ required: true }]}>
-            <Input placeholder="Required mark hidden" />
-          </Form.Item>
-        </Space>
-      </Form>
-    </Space>
-  )
-}
-
 export default Demo4
 ```
 
-### Validation
+### Form disabled
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Button, Form, Input, InputNumber, Select, Space, Switch } from '@ant-design-solid/core'
 
 const Demo5 = function () {
   return (
-    <Form
-      onFinish={() => message.success('Validation passed')}
-      onFinishFailed={({ errorFields }) => message.error(errorFields[0]?.errors[0] ?? 'Invalid')}
-    >
+    <Form disabled initialValues={{ amount: 12, enabled: true, plan: 'starter' }}>
       <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, message: 'Email is required' },
-            { pattern: /@/, message: 'Enter a valid email' },
-          ]}
-        >
-          <Input placeholder="name@example.com" />
+        <Form.Item label="Name" name="name">
+          <Input placeholder="Disabled input" />
         </Form.Item>
-        <Button htmlType="submit">Validate</Button>
+        <Form.Item label="Amount" name="amount">
+          <InputNumber class="w-full" />
+        </Form.Item>
+        <Form.Item label="Plan" name="plan">
+          <Select options={[{ label: 'Starter', value: 'starter' }]} />
+        </Form.Item>
+        <Form.Item label="Enabled" name="enabled" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        <Button type="primary">Submit</Button>
       </Space>
     </Form>
   )
@@ -195,85 +194,63 @@ const Demo5 = function () {
 export default Demo5
 ```
 
-### Validate trigger
+### Form variants
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { For } from 'solid-js'
+import { Form, Input, InputNumber, Select, Space } from '@ant-design-solid/core'
+import type { FormVariant } from '@ant-design-solid/core'
+
+const variants: FormVariant[] = ['outlined', 'filled', 'borderless', 'underlined']
 
 const Demo6 = function () {
   return (
-    <Form>
-      <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Email"
-          name="triggerEmail"
-          validateTrigger="onBlur"
-          rules={[
-            { required: true, message: 'Email is required' },
-            { type: 'email', message: 'Enter a valid email after blur' },
-          ]}
-        >
-          <Input placeholder="Validation runs on blur" />
-        </Form.Item>
-      </Space>
-    </Form>
+    <Space direction="vertical" class="w-100">
+      <For each={variants}>
+        {(variant) => (
+          <Form variant={variant} initialValues={{ count: 3, plan: 'pro' }}>
+            <Space direction="vertical" class="w-90">
+              <Form.Item label={variant} name="name">
+                <Input placeholder={variant + ' input'} />
+              </Form.Item>
+              <Form.Item label="Count" name="count">
+                <InputNumber class="w-full" />
+              </Form.Item>
+              <Form.Item label="Plan" name="plan">
+                <Select options={[{ label: 'Pro', value: 'pro' }]} />
+              </Form.Item>
+            </Space>
+          </Form>
+        )}
+      </For>
+    </Space>
   )
 }
 
 export default Demo6
 ```
 
-### Validate only
+### Required style
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Form, Input, Space } from '@ant-design-solid/core'
 
 const Demo7 = function () {
-  const [validateOnlyForm] = useForm()
-
   return (
-    <Space direction="vertical" class="w-90">
-      <Form form={validateOnlyForm}>
-        <Form.Item
-          label="Username"
-          name="validateOnlyUsername"
-          rules={[{ required: true, message: 'Username is required' }]}
-        >
-          <Input placeholder="Validate without showing field errors" />
+    <Space direction="vertical" class="w-100">
+      <Form requiredMark="optional">
+        <Form.Item label="Required" name="required" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item label="Optional" name="optional">
+          <Input />
         </Form.Item>
       </Form>
-      <Button
-        onClick={() => {
-          void validateOnlyForm
-            .validateFields(undefined, { validateOnly: true })
-            .then(() => message.success('Validate only passed'))
-            .catch((error) =>
-              message.error(error.errorFields?.[0]?.errors[0] ?? 'Validation failed'),
-            )
-        }}
-      >
-        Validate only
-      </Button>
+      <Form requiredMark={false}>
+        <Form.Item label="Hidden mark" name="hidden" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+      </Form>
     </Space>
   )
 }
@@ -281,29 +258,70 @@ const Demo7 = function () {
 export default Demo7
 ```
 
-### Warning only
+### Form size
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { For } from 'solid-js'
+import { Form, Input, Select, Space } from '@ant-design-solid/core'
+import type { ComponentSize } from '@ant-design-solid/core'
+
+const sizes: ComponentSize[] = ['small', 'middle', 'large']
 
 const Demo8 = function () {
+  return (
+    <Space direction="vertical" class="w-100">
+      <For each={sizes}>
+        {(size) => (
+          <Form size={size} initialValues={{ plan: size }}>
+            <Space direction="vertical" class="w-80">
+              <Form.Item label={size} name="name">
+                <Input placeholder={size + ' input'} />
+              </Form.Item>
+              <Form.Item label="Plan" name="plan">
+                <Select options={[{ label: size, value: size }]} />
+              </Form.Item>
+            </Space>
+          </Form>
+        )}
+      </For>
+    </Space>
+  )
+}
+
+export default Demo8
+```
+
+### label can wrap
+
+```tsx
+import { Form, Input } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <Form labelWrap labelAlign="left" class="w-100">
+      <Form.Item label="This is a very long label that can wrap to multiple lines" name="field">
+        <Input placeholder="Input" />
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default Demo9
+```
+
+### No block rule
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo10 = function () {
   return (
     <Form onFinish={() => message.success('Submitted despite warnings')}>
       <Space direction="vertical" class="w-90">
         <Form.Item
-          label="Website"
-          name="warningWebsite"
-          rules={[{ type: 'url', warningOnly: true, message: 'Enter a valid URL' }]}
+          label="URL"
+          name="url"
+          rules={[{ type: 'url', warningOnly: true, message: 'This is not a valid URL' }]}
         >
           <Input placeholder="https://example.com" />
         </Form.Item>
@@ -315,125 +333,28 @@ const Demo8 = function () {
   )
 }
 
-export default Demo8
-```
-
-### Form instance
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-const Demo9 = function () {
-  const [instanceForm] = useForm()
-
-  const [summary, setSummary] = createSignal('Submit the form to see values.')
-
-  return (
-    <Space direction="vertical" class="w-90">
-      <Form
-        form={instanceForm}
-        initialValues={{ username: 'initial' }}
-        onValuesChange={(_, values) => setSummary(JSON.stringify(values))}
-      >
-        <Form.Item label="Username" name="username">
-          <Input />
-        </Form.Item>
-      </Form>
-      <Space>
-        <Button onClick={() => instanceForm.setFieldsValue({ username: 'updated' })}>Fill</Button>
-        <Button onClick={() => instanceForm.resetFields()}>Reset</Button>
-        <Button onClick={() => setSummary(JSON.stringify(instanceForm.getFieldsValue()))}>
-          Read
-        </Button>
-      </Space>
-      <span>{summary()}</span>
-    </Space>
-  )
-}
-
-export default Demo9
-```
-
-### Custom value binding
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-const Demo10 = function () {
-  return (
-    <Form initialValues={{ enabled: true }} onFinish={() => message.success('Saved')}>
-      <Space direction="vertical">
-        <Form.Item label="Enabled" name="enabled" valuePropName="checked">
-          <Switch />
-        </Form.Item>
-        <Form.Item
-          name="agree"
-          valuePropName="checked"
-          rules={[{ required: true, message: 'Please agree before saving' }]}
-        >
-          <Checkbox>I agree</Checkbox>
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Save
-        </Button>
-      </Space>
-    </Form>
-  )
-}
-
 export default Demo10
 ```
 
-### Nested fields
+### Watch Hooks
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Form, Input, Space, Typography, useForm } from '@ant-design-solid/core'
+
+function WatchPreview() {
+  const name = Form.useWatch('name')
+  return <Typography.Text>Watch value: {String(name() ?? '')}</Typography.Text>
+}
 
 const Demo11 = function () {
+  const [form] = useForm()
   return (
-    <Form
-      initialValues={{ user: { email: 'hello@example.com' } }}
-      onFinish={(values) => message.success(JSON.stringify(values))}
-    >
+    <Form form={form} initialValues={{ name: 'Bamboo' }}>
       <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Email"
-          name={['user', 'email']}
-          rules={[{ type: 'email', message: 'Enter an email' }]}
-        >
+        <Form.Item label="Name" name="name">
           <Input />
         </Form.Item>
-        <Button htmlType="submit">Submit nested</Button>
+        <WatchPreview />
       </Space>
     </Form>
   )
@@ -442,34 +363,23 @@ const Demo11 = function () {
 export default Demo11
 ```
 
-### Watch fields
+### Validate Trigger
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-function WatchedUsername() {
-  const username = Form.useWatch('username')
-  return <span>Watched: {String(username() ?? '')}</span>
-}
+import { Form, Input, Space } from '@ant-design-solid/core'
 
 const Demo12 = function () {
   return (
     <Form>
       <Space direction="vertical" class="w-90">
-        <Form.Item label="Username" name="username">
-          <Input />
+        <Form.Item
+          label="Email"
+          name="email"
+          validateTrigger="onBlur"
+          rules={[{ type: 'email', message: 'Please input a valid email after blur' }]}
+        >
+          <Input placeholder="Validate on blur" />
         </Form.Item>
-        <WatchedUsername />
       </Space>
     </Form>
   )
@@ -478,101 +388,58 @@ const Demo12 = function () {
 export default Demo12
 ```
 
-### Dynamic rules
+### Validate Only
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-function DynamicRuleFields() {
-  const requireNickname = Form.useWatch('requireNickname')
-
-  return (
-    <>
-      <Form.Item name="requireNickname" valuePropName="checked">
-        <Checkbox>Nickname is required</Checkbox>
-      </Form.Item>
-      <Form.Item
-        label="Nickname"
-        name="nickname"
-        rules={[
-          {
-            required: Boolean(requireNickname()),
-            message: 'Please input nickname',
-          },
-        ]}
-      >
-        <Input placeholder="Nickname" />
-      </Form.Item>
-    </>
-  )
-}
+import { Button, Form, Input, Space, message, useForm } from '@ant-design-solid/core'
 
 const Demo13 = function () {
+  const [form] = useForm()
   return (
-    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-      <Space direction="vertical" class="w-90">
-        <DynamicRuleFields />
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Space>
-    </Form>
+    <Space direction="vertical" class="w-90">
+      <Form form={form}>
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[{ required: true, message: 'Name is required' }]}
+        >
+          <Input placeholder="Validate without UI error" />
+        </Form.Item>
+      </Form>
+      <Button
+        onClick={() =>
+          void form
+            .validateFields(undefined, { validateOnly: true })
+            .then(() => message.success('Passed'))
+            .catch(() => message.error('Failed'))
+        }
+      >
+        Validate only
+      </Button>
+    </Space>
   )
 }
 
 export default Demo13
 ```
 
-### Dependencies
+### Path Prefix
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
 
 const Demo14 = function () {
   return (
-    <Form onFinish={() => message.success('Password confirmed')}>
+    <Form
+      initialValues={{ user: { name: 'Ada', email: 'ada@example.com' } }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+    >
       <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input password' }]}
-        >
-          <Input type="password" placeholder="Password" />
+        <Form.Item label="Name" name={['user', 'name']}>
+          <Input />
         </Form.Item>
-        <Form.Item
-          label="Confirm"
-          name="confirm"
-          dependencies={['password']}
-          rules={[
-            { required: true, message: 'Please confirm password' },
-            {
-              validator: (_, value, values) => {
-                if (value && value !== values?.password) return 'Passwords do not match'
-              },
-            },
-          ]}
-        >
-          <Input type="password" placeholder="Confirm password" />
+        <Form.Item label="Email" name={['user', 'email']} rules={[{ type: 'email' }]}>
+          <Input />
         </Form.Item>
         <Button type="primary" htmlType="submit">
           Submit
@@ -585,118 +452,26 @@ const Demo14 = function () {
 export default Demo14
 ```
 
-### shouldUpdate
+### Dynamic Form Item
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { createSignal, Show } from 'solid-js'
+import { Button, Form, Input, Space, Switch, message } from '@ant-design-solid/core'
 
 const Demo15 = function () {
-  const [shouldUpdateForm] = useForm()
-
+  const [showExtra, setShowExtra] = createSignal(false)
   return (
-    <Form form={shouldUpdateForm} initialValues={{ username: 'Ada', email: 'ada@example.com' }}>
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
       <Space direction="vertical" class="w-90">
+        <Switch checked={showExtra()} onChange={() => setShowExtra((value) => !value)} />
         <Form.Item label="Username" name="username">
-          <Input placeholder="Username" />
+          <Input />
         </Form.Item>
-        <Form.Item label="Email" name="email">
-          <Input placeholder="Email" />
-        </Form.Item>
-        <Form.Item shouldUpdate>
-          {() => (
-            <pre class="rounded bg-gray-50 p-3 text-sm">
-              {JSON.stringify(shouldUpdateForm.getFieldsValue(true), null, 2)}
-            </pre>
-          )}
-        </Form.Item>
-      </Space>
-    </Form>
-  )
-}
-
-export default Demo15
-```
-
-### noStyle nested control
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-const Demo16 = function () {
-  return (
-    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-      <Space direction="vertical" class="w-90">
-        <Form.Item label="Address">
-          <Form.Item name={['address', 'street']} noStyle>
-            <Input placeholder="Street" />
+        <Show when={showExtra()}>
+          <Form.Item label="Extra" name="extra">
+            <Input />
           </Form.Item>
-        </Form.Item>
-        <Button htmlType="submit">Submit address</Button>
-      </Space>
-    </Form>
-  )
-}
-
-export default Demo16
-```
-
-### Dynamic Form.Item
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-function ConditionalCompanyField() {
-  const business = Form.useWatch('business')
-
-  return (
-    <>
-      <Form.Item name="business" valuePropName="checked">
-        <Checkbox>Business account</Checkbox>
-      </Form.Item>
-      {business() ? (
-        <Form.Item label="Company" name="company" rules={[{ required: true }]}>
-          <Input placeholder="Company name" />
-        </Form.Item>
-      ) : null}
-    </>
-  )
-}
-
-const Demo17 = function () {
-  return (
-    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-      <Space direction="vertical" class="w-90">
-        <ConditionalCompanyField />
+        </Show>
         <Button type="primary" htmlType="submit">
           Submit
         </Button>
@@ -705,25 +480,16 @@ const Demo17 = function () {
   )
 }
 
-export default Demo17
+export default Demo15
 ```
 
-### Dynamic list
+### Dynamic Form nest Items
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { For } from 'solid-js'
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
 
-const Demo18 = function () {
+const Demo16 = function () {
   return (
     <Form
       initialValues={{ users: [{ name: 'Ada' }] }}
@@ -734,14 +500,104 @@ const Demo18 = function () {
           <Space direction="vertical" class="w-90">
             <For each={fields()}>
               {(field) => (
-                <Form.Item label={'User ' + (field.name + 1)} name={[field.name, 'name']}>
-                  <Input />
+                <Form.Item
+                  label={'User ' + (field.name + 1)}
+                  name={[field.name, 'name']}
+                  rules={[{ required: true }]}
+                >
+                  <Input placeholder="User name" />
                 </Form.Item>
               )}
             </For>
             <Space>
-              <Button onClick={() => operation.add({ name: '' })}>Add user</Button>
-              <Button htmlType="submit">Submit list</Button>
+              <Button onClick={() => operation.add({ name: '' })}>Add field</Button>
+              <Button htmlType="submit">Submit</Button>
+            </Space>
+          </Space>
+        )}
+      </Form.List>
+    </Form>
+  )
+}
+
+export default Demo16
+```
+
+### Dynamic Form nest pure Items
+
+```tsx
+import { For } from 'solid-js'
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo17 = function () {
+  return (
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Form.List name="names" initialValue={[{ first: 'Ada', last: 'Lovelace' }]}>
+        {(fields, operation) => (
+          <Space direction="vertical" class="w-100">
+            <For each={fields()}>
+              {(field) => (
+                <Space>
+                  <Form.Item name={[field.name, 'first']} noStyle>
+                    <Input placeholder="First" />
+                  </Form.Item>
+                  <Form.Item name={[field.name, 'last']} noStyle>
+                    <Input placeholder="Last" />
+                  </Form.Item>
+                </Space>
+              )}
+            </For>
+            <Space>
+              <Button onClick={() => operation.add({ first: '', last: '' })}>Add</Button>
+              <Button htmlType="submit">Submit</Button>
+            </Space>
+          </Space>
+        )}
+      </Form.List>
+    </Form>
+  )
+}
+
+export default Demo17
+```
+
+### Complex Dynamic Form Item
+
+```tsx
+import { For } from 'solid-js'
+import { Button, Form, Input, Select, Space, message } from '@ant-design-solid/core'
+
+const Demo18 = function () {
+  return (
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Form.List name="items" initialValue={[{ type: 'email', value: '' }]}>
+        {(fields, operation) => (
+          <Space direction="vertical" class="w-100">
+            <For each={fields()}>
+              {(field) => (
+                <Space>
+                  <Form.Item name={[field.name, 'type']} noStyle>
+                    <Select
+                      options={[
+                        { label: 'Email', value: 'email' },
+                        { label: 'Phone', value: 'phone' },
+                      ]}
+                    />
+                  </Form.Item>
+                  <Form.Item name={[field.name, 'value']} noStyle>
+                    <Input placeholder="Value" />
+                  </Form.Item>
+                  <Button danger onClick={() => operation.remove(field.name)}>
+                    Remove
+                  </Button>
+                </Space>
+              )}
+            </For>
+            <Space>
+              <Button onClick={() => operation.add({ type: 'email', value: '' })}>Add item</Button>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
             </Space>
           </Space>
         )}
@@ -753,65 +609,28 @@ const Demo18 = function () {
 export default Demo18
 ```
 
-### Advanced dynamic list
+### Nest
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
 
 const Demo19 = function () {
   return (
-    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
-      <Form.List
-        name="passengers"
-        initialValue={[{ name: 'Ada' }, { name: 'Grace' }]}
-        rules={[{ required: true, message: 'At least one passenger is required' }]}
-      >
-        {(fields, operation, meta) => (
-          <Space direction="vertical" class="w-100">
-            <For each={fields()}>
-              {(field) => (
-                <Space>
-                  <Form.Item
-                    label={'Passenger ' + (field.name + 1)}
-                    name={[field.name, 'name']}
-                    rules={[{ required: true, message: 'Passenger name is required' }]}
-                  >
-                    <Input placeholder="Passenger name" />
-                  </Form.Item>
-                  <Button
-                    disabled={field.name === 0}
-                    onClick={() => operation.move(field.name, field.name - 1)}
-                  >
-                    Up
-                  </Button>
-                  <Button onClick={() => operation.move(field.name, field.name + 1)}>Down</Button>
-                  <Button danger onClick={() => operation.remove(field.name)}>
-                    Remove
-                  </Button>
-                </Space>
-              )}
-            </For>
-            <Space>
-              <Button onClick={() => operation.add({ name: '' })}>Add passenger</Button>
-              <Button onClick={() => operation.add({ name: 'Inserted' }, 0)}>Add to top</Button>
-              <Button type="primary" htmlType="submit">
-                Submit passengers
-              </Button>
-            </Space>
-            <Form.ErrorList errors={meta.errors} />
-          </Space>
-        )}
-      </Form.List>
+    <Form
+      validateMessages={{ required: '${label} is required' }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+    >
+      <Space direction="vertical" class="w-90">
+        <Form.Item label="User name" name={['user', 'name']} rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item label="Street" name={['user', 'address', 'street']}>
+          <Input />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
     </Form>
   )
 }
@@ -819,92 +638,64 @@ const Demo19 = function () {
 export default Demo19
 ```
 
-### Scroll to field
+### complex form control
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Button, Form, Input, Select, Space, message } from '@ant-design-solid/core'
 
 const Demo20 = function () {
-  const [scrollForm] = useForm()
-
   return (
-    <Space direction="vertical" class="w-90">
-      <Form form={scrollForm}>
-        <Space direction="vertical" class="w-90">
-          <Form.Item label="Before" name="before">
-            <Input placeholder="Another field" />
-          </Form.Item>
-          <div style={{ height: '120px' }} />
-          <Form.Item
-            label="Target"
-            name="target"
-            rules={[{ required: true, message: 'Target is required' }]}
-          >
-            <Input placeholder="Scroll target" />
-          </Form.Item>
-        </Space>
-      </Form>
-      <Button onClick={() => scrollForm.scrollToField?.('target', { focus: true })}>
-        Scroll to target
-      </Button>
-    </Space>
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Space direction="vertical" class="w-100">
+        <Form.Item label="Address">
+          <Space>
+            <Form.Item name={['address', 'province']} noStyle>
+              <Select options={[{ label: 'Zhejiang', value: 'zhejiang' }]} />
+            </Form.Item>
+            <Form.Item name={['address', 'street']} noStyle>
+              <Input placeholder="Street" />
+            </Form.Item>
+          </Space>
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
   )
 }
 
 export default Demo20
 ```
 
-### getValueProps and normalize
+### Customized Form Controls
 
 ```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+function PriceInput(props: { value?: number; onChange?: (value: number) => void }) {
+  return (
+    <Input
+      value={String(props.value ?? '')}
+      placeholder="Price"
+      onInput={(event) => props.onChange?.(Number(event.currentTarget.value || 0))}
+    />
+  )
+}
 
 const Demo21 = function () {
   return (
     <Form
-      initialValues={{ code: 'SOLID' }}
+      initialValues={{ price: 10 }}
       onFinish={(values) => message.success(JSON.stringify(values))}
     >
-      <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Code"
-          name="code"
-          normalize={(value) => String(value).trim().toUpperCase()}
-          getValueProps={(value) => ({
-            value: String(value ?? '').toLowerCase(),
-          })}
-          extra="Stored value is trimmed and uppercased; the input displays it in lowercase."
-        >
-          {(control) => (
-            <input
-              class="ant-input"
-              value={String(control.valueProps().value ?? '')}
-              placeholder="Type with spaces or mixed case"
-              onInput={(event) => control.onChange(event)}
-            />
-          )}
+      <Space direction="vertical" class="w-80">
+        <Form.Item label="Price" name="price">
+          <PriceInput />
         </Form.Item>
-        <Button htmlType="submit">Submit normalized value</Button>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Space>
     </Form>
   )
@@ -913,169 +704,15 @@ const Demo21 = function () {
 export default Demo21
 ```
 
-### Form.Item.useStatus
-
-```tsx
-import { For, createSignal } from 'solid-js'
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Space,
-  Switch,
-  message,
-  useForm,
-} from '@ant-design-solid/core'
-
-function StatusInput() {
-  const status = Form.Item.useStatus()
-  return <Input placeholder={`Status: ${status.status() ?? 'none'}`} />
-}
-
-const Demo22 = function () {
-  return (
-    <Form>
-      <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Username"
-          name="statusUsername"
-          rules={[{ required: true, message: 'Username is required' }]}
-        >
-          <StatusInput />
-        </Form.Item>
-        <Button htmlType="submit">Check status</Button>
-      </Space>
-    </Form>
-  )
-}
-
-export default Demo22
-```
-
-### Disabled, size, and variants
-
-```tsx
-import { Form, Input, InputNumber, Select, Space } from '@ant-design-solid/core'
-
-const Demo23 = function () {
-  return (
-    <Form disabled size="large" variant="filled" initialValues={{ amount: 12 }}>
-      <Space direction="vertical" class="w-90">
-        <Form.Item label="Username" name="username">
-          <Input placeholder="Disabled large filled input" />
-        </Form.Item>
-        <Form.Item label="Amount" name="amount">
-          <InputNumber class="w-full" />
-        </Form.Item>
-        <Form.Item label="Plan" name="plan">
-          <Select options={[{ label: 'Starter', value: 'starter' }]} />
-        </Form.Item>
-      </Space>
-    </Form>
-  )
-}
-
-export default Demo23
-```
-
-### Semantic slots
-
-```tsx
-import { Form, Input, Space } from '@ant-design-solid/core'
-
-const Demo24 = function () {
-  return (
-    <Form
-      class="custom-form"
-      classNames={{ root: 'semantic-form-root' }}
-      styles={{ root: { maxWidth: '360px' } }}
-    >
-      <Form.Item
-        label="Username"
-        name="username"
-        classNames={{
-          root: 'semantic-item-root',
-          label: 'semantic-item-label',
-          content: 'semantic-item-content',
-          extra: 'semantic-item-extra',
-        }}
-        styles={{ content: { maxWidth: '280px' } }}
-        extra="Semantic slots use Solid class and style props."
-      >
-        <Input placeholder="Semantic item" />
-      </Form.Item>
-    </Form>
-  )
-}
-
-export default Demo24
-```
-
-### Validate messages
-
-```tsx
-import { Button, Form, Input, Space } from '@ant-design-solid/core'
-
-const Demo25 = function () {
-  return (
-    <Form validateMessages={{ required: '${label} needs ${reason}' }}>
-      <Space direction="vertical" class="w-90">
-        <Form.Item
-          label="Username"
-          name="username"
-          messageVariables={{ reason: 'attention' }}
-          rules={[{ required: true }]}
-        >
-          <Input />
-        </Form.Item>
-        <Button htmlType="submit">Submit</Button>
-      </Space>
-    </Form>
-  )
-}
-
-export default Demo25
-```
-
-### Form.Provider
-
-```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
-
-const Demo26 = function () {
-  return (
-    <Form.Provider
-      onFormChange={(name) => message.info(`${name} changed`)}
-      onFormFinish={(name, info) => message.success(`${name}: ${info.values.username}`)}
-    >
-      <Form name="profile" initialValues={{ username: 'Ada' }}>
-        <Space direction="vertical" class="w-90">
-          <Form.Item label="Username" name="username">
-            <Input />
-          </Form.Item>
-          <Button htmlType="submit">Submit profile</Button>
-        </Space>
-      </Form>
-    </Form.Provider>
-  )
-}
-
-export default Demo26
-```
-
-### Controlled fields
+### Store Form Data into Upper Component
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { Button, Form, Input, Space } from '@ant-design-solid/core'
 import type { FieldData } from '@ant-design-solid/core'
 
-const Demo27 = function () {
-  const [fields, setFields] = createSignal<FieldData[]>([
-    { name: 'username', value: 'Ada', touched: true },
-  ])
-
+const Demo22 = function () {
+  const [fields, setFields] = createSignal<FieldData[]>([{ name: 'username', value: 'Ada' }])
   return (
     <Space direction="vertical" class="w-90">
       <Form fields={fields()} onFieldsChange={(changed) => setFields(changed)}>
@@ -1084,49 +721,587 @@ const Demo27 = function () {
         </Form.Item>
       </Form>
       <Button onClick={() => setFields([{ name: 'username', value: 'Grace' }])}>Set fields</Button>
+      <pre>{JSON.stringify(fields(), null, 2)}</pre>
     </Space>
+  )
+}
+
+export default Demo22
+```
+
+### Control between forms
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo23 = function () {
+  return (
+    <Form.Provider
+      onFormChange={(name) => message.info(name + ' changed')}
+      onFormFinish={(name, info) => message.success(name + ': ' + JSON.stringify(info.values))}
+    >
+      <Space direction="vertical" class="w-90">
+        <Form name="form1">
+          <Form.Item label="Name" name="name">
+            <Input />
+          </Form.Item>
+          <Button htmlType="submit">Submit form1</Button>
+        </Form>
+        <Form name="form2">
+          <Form.Item label="Email" name="email">
+            <Input />
+          </Form.Item>
+          <Button htmlType="submit">Submit form2</Button>
+        </Form>
+      </Space>
+    </Form.Provider>
+  )
+}
+
+export default Demo23
+```
+
+### Inline Login Form
+
+```tsx
+import { Button, Checkbox, Form, Input, message } from '@ant-design-solid/core'
+
+const Demo24 = function () {
+  return (
+    <Form
+      layout="inline"
+      initialValues={{ remember: true }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+    >
+      <Form.Item
+        name="username"
+        rules={[{ required: true, message: 'Please input your username!' }]}
+      >
+        <Input placeholder="Username" />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        rules={[{ required: true, message: 'Please input your password!' }]}
+      >
+        <Input.Password placeholder="Password" />
+      </Form.Item>
+      <Form.Item name="remember" valuePropName="checked">
+        <Checkbox>Remember me</Checkbox>
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Log in
+        </Button>
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default Demo24
+```
+
+### Login Form
+
+```tsx
+import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo25 = function () {
+  return (
+    <Form
+      name="login"
+      initialValues={{ remember: true }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+    >
+      <Space direction="vertical" class="w-80">
+        <Form.Item
+          name="username"
+          rules={[{ required: true, message: 'Please input your username!' }]}
+        >
+          <Input placeholder="Username" />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+        >
+          <Input.Password placeholder="Password" />
+        </Form.Item>
+        <Form.Item name="remember" valuePropName="checked">
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Log in
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo25
+```
+
+### Registration
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo26 = function () {
+  return (
+    <Form onFinish={() => message.success('Registered')}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item label="Email" name="email" rules={[{ required: true }, { type: 'email' }]}>
+          <Input />
+        </Form.Item>
+        <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+          <Input.Password />
+        </Form.Item>
+        <Form.Item
+          label="Confirm"
+          name="confirm"
+          dependencies={['password']}
+          rules={[
+            { required: true },
+            {
+              validator: (_, value, values) =>
+                value && value !== values?.password ? 'Passwords do not match' : undefined,
+            },
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Register
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo26
+```
+
+### Advanced search
+
+```tsx
+import { createSignal, For } from 'solid-js'
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo27 = function () {
+  const [expand, setExpand] = createSignal(false)
+  const fields = () =>
+    expand() ? ['Field 1', 'Field 2', 'Field 3', 'Field 4'] : ['Field 1', 'Field 2']
+  return (
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Space direction="vertical" class="w-100">
+        <For each={fields()}>
+          {(label, index) => (
+            <Form.Item label={label} name={'field-' + index()}>
+              <Input placeholder="Search value" />
+            </Form.Item>
+          )}
+        </For>
+        <Space>
+          <Button type="primary" htmlType="submit">
+            Search
+          </Button>
+          <Button htmlType="reset">Clear</Button>
+          <Button onClick={() => setExpand((value) => !value)}>
+            {expand() ? 'Collapse' : 'Expand'}
+          </Button>
+        </Space>
+      </Space>
+    </Form>
   )
 }
 
 export default Demo27
 ```
 
-### Submit scroll and clear on destroy
+### Form in Modal to Create
 
 ```tsx
-import { Show, createSignal } from 'solid-js'
-import { Button, Form, Input, Space, useForm } from '@ant-design-solid/core'
+import { createSignal, Show } from 'solid-js'
+import { Button, Form, Input, Modal, Space, message } from '@ant-design-solid/core'
 
 const Demo28 = function () {
-  const [form] = useForm()
-  const [visible, setVisible] = createSignal(true)
-
+  const [open, setOpen] = createSignal(false)
+  const [form] = Form.useForm()
   return (
-    <Space direction="vertical" class="w-90">
-      <Show when={visible()}>
-        <Form form={form} scrollToFirstError={{ focus: true }} clearOnDestroy>
-          <Form.Item name="target" rules={[{ required: true, message: 'Target is required' }]}>
-            <Input placeholder="Submit scroll target" />
-          </Form.Item>
-          <Button htmlType="submit">Submit</Button>
-        </Form>
+    <>
+      <Button type="primary" onClick={() => setOpen(true)}>
+        New collection
+      </Button>
+      <Show when={open()}>
+        <Modal
+          title="Create a new collection"
+          open={open()}
+          onCancel={() => setOpen(false)}
+          onOk={() => form.submit()}
+        >
+          <Form
+            form={form}
+            onFinish={(values) => {
+              message.success(JSON.stringify(values))
+              setOpen(false)
+            }}
+          >
+            <Space direction="vertical" class="w-90">
+              <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+              <Form.Item label="Description" name="description">
+                <Input.TextArea />
+              </Form.Item>
+            </Space>
+          </Form>
+        </Modal>
       </Show>
-      <Button onClick={() => setVisible((value) => !value)}>Toggle form</Button>
-    </Space>
+    </>
   )
 }
 
 export default Demo28
 ```
 
-### Feedback icons
+### Time-related Controls
+
+```tsx
+import dayjs from 'dayjs'
+import { DatePicker, Form, Space, TimePicker } from '@ant-design-solid/core'
+
+const Demo29 = function () {
+  return (
+    <Form initialValues={{ date: dayjs(), time: dayjs() }}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item label="DatePicker" name="date">
+          <DatePicker />
+        </Form.Item>
+        <Form.Item label="RangePicker" name="range">
+          <DatePicker.RangePicker />
+        </Form.Item>
+        <Form.Item label="TimePicker" name="time">
+          <TimePicker />
+        </Form.Item>
+        <Form.Item label="TimeRange" name="timeRange">
+          <TimePicker.RangePicker />
+        </Form.Item>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo29
+```
+
+### Handle Form Data Manually
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo30 = function () {
+  const [form] = Form.useForm()
+  return (
+    <Space direction="vertical" class="w-90">
+      <Form form={form} component={false}>
+        <Form.Item label="Username" name="username">
+          <Input />
+        </Form.Item>
+      </Form>
+      <Button onClick={() => message.info(JSON.stringify(form.getFieldsValue(true)))}>
+        Read manually
+      </Button>
+    </Space>
+  )
+}
+
+export default Demo30
+```
+
+### Customized Validation
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo31 = function () {
+  return (
+    <Form onFinish={() => message.success('Passed')}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item
+          label="Username"
+          name="username"
+          rules={[
+            { validator: (_, value) => (value === 'ant' ? undefined : 'Username must be ant') },
+          ]}
+        >
+          <Input placeholder="Type ant" />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo31
+```
+
+### Dynamic Rules
+
+```tsx
+import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
+
+function DynamicRuleFields() {
+  const checked = Form.useWatch('required')
+  return (
+    <>
+      <Form.Item name="required" valuePropName="checked">
+        <Checkbox>Name is required</Checkbox>
+      </Form.Item>
+      <Form.Item
+        label="Name"
+        name="name"
+        rules={[{ required: Boolean(checked()), message: 'Name is required' }]}
+      >
+        <Input />
+      </Form.Item>
+    </>
+  )
+}
+
+const Demo32 = function () {
+  return (
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Space direction="vertical" class="w-90">
+        <DynamicRuleFields />
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo32
+```
+
+### Dependencies
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo33 = function () {
+  return (
+    <Form onFinish={() => message.success('Password confirmed')}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+          <Input.Password />
+        </Form.Item>
+        <Form.Item
+          label="Confirm Password"
+          name="confirm"
+          dependencies={['password']}
+          rules={[
+            { required: true },
+            {
+              validator: (_, value, values) =>
+                value && value !== values?.password ? 'Passwords do not match' : undefined,
+            },
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo33
+```
+
+### getValueProps + normalize
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo34 = function () {
+  return (
+    <Form
+      initialValues={{ code: 'ANTD' }}
+      onFinish={(values) => message.success(JSON.stringify(values))}
+    >
+      <Space direction="vertical" class="w-90">
+        <Form.Item
+          label="Code"
+          name="code"
+          normalize={(value) => String(value).trim().toUpperCase()}
+          getValueProps={(value) => ({ value: String(value ?? '').toLowerCase() })}
+        >
+          {(control) => (
+            <Input
+              value={String(control.valueProps().value ?? '')}
+              onInput={(event) => control.onChange(event.currentTarget.value)}
+            />
+          )}
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo34
+```
+
+### Slide to error field
+
+```tsx
+import { Button, Form, Input, Space, message, useForm } from '@ant-design-solid/core'
+
+const Demo35 = function () {
+  const [form] = useForm()
+  return (
+    <Form
+      form={form}
+      scrollToFirstError={{ focus: true }}
+      onFinishFailed={() => message.error('Scroll to first error')}
+    >
+      <Space direction="vertical" class="w-90">
+        <Form.Item
+          label="Name"
+          name="name"
+          rules={[{ required: true, message: 'Name is required' }]}
+        >
+          <Input />
+        </Form.Item>
+        <div style={{ height: '120px' }} />
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[{ required: true, message: 'Email is required' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo35
+```
+
+### Other Form Controls
+
+```tsx
+import {
+  Button,
+  Cascader,
+  Checkbox,
+  DatePicker,
+  Form,
+  Radio,
+  Rate,
+  Slider,
+  Space,
+  Switch,
+  TreeSelect,
+  message,
+} from '@ant-design-solid/core'
+
+const Demo36 = function () {
+  return (
+    <Form onFinish={(values) => message.success(JSON.stringify(values))}>
+      <Space direction="vertical" class="w-100">
+        <Form.Item label="Checkbox" name="checkbox" valuePropName="checked">
+          <Checkbox>Checkbox</Checkbox>
+        </Form.Item>
+        <Form.Item label="Radio" name="radio">
+          <Radio.Group
+            options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item label="Switch" name="switch" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+        <Form.Item label="Slider" name="slider">
+          <Slider class="w-80" />
+        </Form.Item>
+        <Form.Item label="Rate" name="rate">
+          <Rate />
+        </Form.Item>
+        <Form.Item label="DatePicker" name="date">
+          <DatePicker />
+        </Form.Item>
+        <Form.Item label="Cascader" name="cascader">
+          <Cascader
+            options={[
+              {
+                label: 'Zhejiang',
+                value: 'zhejiang',
+                children: [{ label: 'Hangzhou', value: 'hangzhou' }],
+              },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item label="TreeSelect" name="tree">
+          <TreeSelect treeData={[{ title: 'Node', value: 'node' }]} />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo36
+```
+
+### Custom semantic dom styling
+
+```tsx
+import { Form, Input } from '@ant-design-solid/core'
+
+const Demo37 = function () {
+  return (
+    <Form classNames={{ root: 'custom-form-root' }} styles={{ root: { maxWidth: '360px' } }}>
+      <Form.Item
+        label="Username"
+        name="username"
+        classNames={{
+          root: 'custom-form-item',
+          label: 'custom-form-label',
+          content: 'custom-form-content',
+        }}
+        styles={{ content: { maxWidth: '260px' } }}
+      >
+        <Input placeholder="Semantic styled input" />
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default Demo37
+```
+
+### Custom feedback icons
 
 ```tsx
 import { Button, Form, Input, Space } from '@ant-design-solid/core'
 
-const Demo29 = function () {
+const Demo38 = function () {
   return (
-    <Form feedbackIcons={{ error: <span>!</span>, success: <span>ok</span> }}>
+    <Form feedbackIcons={{ success: <span>ok</span>, error: <span>!</span> }}>
       <Space direction="vertical" class="w-90">
         <Form.Item
           label="Username"
@@ -1136,13 +1311,37 @@ const Demo29 = function () {
         >
           <Input />
         </Form.Item>
-        <Button htmlType="submit">Submit</Button>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Space>
     </Form>
   )
 }
 
-export default Demo29
+export default Demo38
+```
+
+### Component Token
+
+```tsx
+import { ConfigProvider, Form, Input } from '@ant-design-solid/core'
+
+const Demo39 = function () {
+  return (
+    <ConfigProvider
+      theme={{ components: { Form: { itemMarginBottom: 8, labelColor: '#1677ff' } } }}
+    >
+      <Form>
+        <Form.Item label="Token label" name="token">
+          <Input placeholder="Component token" />
+        </Form.Item>
+      </Form>
+    </ConfigProvider>
+  )
+}
+
+export default Demo39
 ```
 
 ## API
@@ -1311,15 +1510,16 @@ Templates support `${name}`, `${label}`, `${min}`, `${max}`, `${len}`, `${enum}`
 
 | Token                           | Default                      |
 | ------------------------------- | ---------------------------- |
-| `labelColor`                    | `token.colorText`            |
+| `labelRequiredMarkColor`        | `token.colorError`           |
+| `labelColor`                    | `token.colorTextHeading`     |
 | `labelFontSize`                 | `token.fontSize`             |
 | `labelHeight`                   | `token.controlHeight`        |
 | `labelColonMarginInlineStart`   | `token.marginXXS / 2`        |
 | `labelColonMarginInlineEnd`     | `token.marginXS`             |
-| `labelRequiredMarkColor`        | `token.colorError`           |
 | `itemMarginBottom`              | `token.marginLG`             |
 | `inlineItemMarginBottom`        | `0`                          |
 | `verticalLabelPadding`          | `token.paddingXS`            |
+| `verticalLabelMargin`           | `0`                          |
 | `explainColor`                  | `token.colorError`           |
 | `extraColor`                    | `token.colorTextDescription` |
 | `feedbackIconSize`              | `token.fontSize`             |

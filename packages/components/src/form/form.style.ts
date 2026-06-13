@@ -18,10 +18,13 @@ export function useFormStyle(prefixCls: string) {
         'align-items': 'flex-start',
       },
       [`.${prefixCls}-vertical .${prefixCls}-item-label`]: {
+        display: 'flex',
+        'justify-content': 'flex-start',
         height: 'auto',
-        margin: 0,
+        margin: formToken.verticalLabelMargin,
         padding: `0 0 ${formToken.verticalLabelPadding}px`,
         'text-align': 'left',
+        'white-space': 'initial',
       },
       [`.${prefixCls}-vertical .${prefixCls}-item-label-colon .${prefixCls}-item-label-content::after`]:
         {
@@ -32,10 +35,13 @@ export function useFormStyle(prefixCls: string) {
         'align-items': 'flex-start',
       },
       [`.${prefixCls}-item-vertical .${prefixCls}-item-label`]: {
+        display: 'flex',
+        'justify-content': 'flex-start',
         height: 'auto',
-        margin: 0,
+        margin: formToken.verticalLabelMargin,
         padding: `0 0 ${formToken.verticalLabelPadding}px`,
         'text-align': 'left',
+        'white-space': 'initial',
       },
       [`.${prefixCls}-horizontal .${prefixCls}-item`]: {
         display: 'flex',
@@ -55,7 +61,14 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-inline .${prefixCls}-item`]: {
         display: 'flex',
+        'align-items': 'flex-start',
         'margin-bottom': formToken.inlineItemMarginBottom,
+      },
+      [`.${prefixCls}-inline .${prefixCls}-item-label`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        height: formToken.labelHeight,
+        'margin-bottom': 0,
       },
       [`.${prefixCls}-item`]: { 'margin-bottom': formToken.itemMarginBottom },
       [`.${prefixCls}-item-hidden`]: {
@@ -68,6 +81,10 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-label-wrap`]: {
         'white-space': 'normal',
+      },
+      [`.${prefixCls}-item-label-wrap .${prefixCls}-item-label-content`]: {
+        'vertical-align': 'middle',
+        'text-wrap': 'balance',
       },
       [`.${prefixCls}-item-label.${prefixCls}-item-required::before`]: {
         display: 'inline-block',
@@ -94,9 +111,14 @@ export function useFormStyle(prefixCls: string) {
         'margin-inline-end': formToken.labelColonMarginInlineEnd,
       },
       [`.${prefixCls}-item-optional`]: {
-        color: t.colorTextSecondary,
-        'font-size': 12,
-        'margin-inline-start': 4,
+        color: t.colorTextDescription,
+        'font-size': formToken.labelFontSize,
+        'margin-inline-start': t.marginXXS,
+      },
+      [`.${prefixCls}-item-tooltip`]: {
+        color: t.colorTextDescription,
+        cursor: 'help',
+        'margin-inline-start': t.marginXXS,
       },
       [`.${prefixCls}-item-control`]: {
         flex: 1,
@@ -104,6 +126,7 @@ export function useFormStyle(prefixCls: string) {
       [`.${prefixCls}-item-control-input`]: {
         display: 'flex',
         'align-items': 'center',
+        'min-height': t.controlHeight,
       },
       [`.${prefixCls}-item-feedback-icon`]: {
         display: 'inline-flex',

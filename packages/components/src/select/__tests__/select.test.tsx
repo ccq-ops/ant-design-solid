@@ -232,6 +232,26 @@ describe('Select', () => {
     expect(onFinish).toHaveBeenCalledWith({ choice: 'b' })
   })
 
+  it('keeps selected value left aligned inside Form.Item', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Form initialValues={{ choice: 'a' }}>
+          <Form.Item label="Choice" name="choice">
+            <Select options={options} />
+          </Form.Item>
+        </Form>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    const selectionItemRule = css.match(/(?:^|\n)(\.ads-select-selection-item\{[^}]*\})/)?.[1]
+    const placeholderRule = css.match(/(?:^|\n)(\.ads-select-placeholder\{[^}]*\})/)?.[1]
+
+    expect(selectionItemRule).toContain('text-align:left;')
+    expect(placeholderRule).toContain('text-align:left;')
+  })
+
   it('filters searchable options and controls search text', () => {
     const onSearch = vi.fn()
     const result = render(() => (
