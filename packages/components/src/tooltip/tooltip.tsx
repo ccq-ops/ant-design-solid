@@ -85,6 +85,10 @@ function textColorForBackground(color: string): string | undefined {
   return luminance > 160 ? 'rgba(0, 0, 0, 0.88)' : '#ffffff'
 }
 
+function objectStyle(style: JSX.CSSProperties | string | undefined): JSX.CSSProperties | undefined {
+  return typeof style === 'object' ? style : undefined
+}
+
 const uniqueTooltipControllers = new WeakMap<object, Set<(source: symbol) => void>>()
 
 export function Tooltip(props: TooltipProps) {
@@ -366,7 +370,7 @@ export function Tooltip(props: TooltipProps) {
     'z-index': zIndex,
     'background-color': local.color,
     color: local.color ? textColorForBackground(local.color) : undefined,
-    ...tooltipConfig().style,
+    ...objectStyle(tooltipConfig().style),
     ...mergedStyles().root,
     ...local.overlayStyle,
   })

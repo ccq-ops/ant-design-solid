@@ -42,8 +42,6 @@ export function defaultFormatForPicker(picker: PickerType = 'date'): string {
       return 'YYYY-[Q]Q'
     case 'year':
       return 'YYYY'
-    case 'time':
-      return 'HH:mm:ss'
     case 'date':
     default:
       return 'YYYY-MM-DD'
@@ -60,8 +58,6 @@ export function pickerUnit(picker: PickerType = 'date'): OpUnitType {
       return 'month'
     case 'year':
       return 'year'
-    case 'time':
-      return 'second'
     case 'date':
     default:
       return 'day'

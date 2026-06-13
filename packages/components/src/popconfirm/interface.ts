@@ -79,7 +79,7 @@ export interface PopconfirmProps extends Omit<
   classNames?: PopconfirmSemanticClassNamesConfig
   styles?: PopconfirmSemanticStylesConfig
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   class?: string
   classList?: Record<string, boolean | undefined>
   style?: JSX.CSSProperties | string

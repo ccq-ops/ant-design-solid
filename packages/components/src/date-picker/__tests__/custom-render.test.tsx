@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import dayjs, { type Dayjs } from 'dayjs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DatePicker, RangePicker } from '..'
+import { ConfigProvider } from '../../config-provider'
 import type { DatePickerRef } from '../interface'
 
 describe('DatePicker custom rendering and visual APIs', () => {
@@ -16,7 +17,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
 
     const css = extractStyle(cache)
     expect(css).toContain(
-      '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0,0,0,0.02);',
+      '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0,0,0,0.04);',
     )
     expect(css).toContain(
       '.ads-date-picker-cell-selected:hover, .ads-date-picker-cell-selected:active{background:#1677ff;color:#ffffff;',
@@ -25,6 +26,32 @@ describe('DatePicker custom rendering and visual APIs', () => {
       '.ads-date-picker-cell-range-start:hover, .ads-date-picker-cell-range-start:active, .ads-date-picker-cell-range-end:hover, .ads-date-picker-cell-range-end:active{background:#1677ff;color:#ffffff;',
     )
     expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0,0,0,0.02);')
+  })
+
+  it('consumes DatePicker component token overrides', () => {
+    const cache = createCache()
+    render(() => (
+      <ConfigProvider
+        theme={{
+          components: {
+            DatePicker: {
+              cellWidth: 44,
+              cellActiveWithRangeBg: '#abcdef',
+              timeColumnHeight: 180,
+            },
+          },
+        }}
+      >
+        <StyleProvider cache={cache}>
+          <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />
+        </StyleProvider>
+      </ConfigProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain('width:44px')
+    expect(css).toContain('background:#abcdef')
+    expect(css).toContain('height:180px')
   })
 
   afterEach(() => {
@@ -161,23 +188,23 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(popup?.style.width).toBe('360px')
   })
 
-  it('applies bordered, variant, size, and all semantic classNames/styles slots', () => {
+  it('applies variant, size, and function semantic classNames/styles slots', () => {
     const firstResult = render(() => (
       <>
-        <DatePicker bordered={false} />
         <DatePicker variant="outlined" />
         <DatePicker variant="borderless" />
         <DatePicker variant="underlined" />
         <DatePicker size="small" />
+        <DatePicker size="medium" />
       </>
     ))
 
     const roots = firstResult.container.querySelectorAll('.ads-date-picker')
-    expect(roots[0]).toHaveClass('ads-date-picker-borderless')
-    expect(roots[1]).toHaveClass('ads-date-picker-outlined')
-    expect(roots[2]).toHaveClass('ads-date-picker-borderless')
-    expect(roots[3]).toHaveClass('ads-date-picker-underlined')
-    expect(roots[4]).toHaveClass('ads-date-picker-sm')
+    expect(roots[0]).toHaveClass('ads-date-picker-outlined')
+    expect(roots[1]).toHaveClass('ads-date-picker-borderless')
+    expect(roots[2]).toHaveClass('ads-date-picker-underlined')
+    expect(roots[3]).toHaveClass('ads-date-picker-sm')
+    expect(roots[4]).toHaveClass('ads-date-picker-md')
 
     cleanup()
     document.body.innerHTML = ''
@@ -192,22 +219,25 @@ describe('DatePicker custom rendering and visual APIs', () => {
         cellRender={(current, info) => (
           <span data-testid={`slot-cell-${current.date()}`}>{info.originNode}</span>
         )}
-        classNames={{
-          root: 'slot-root',
+        class="slot-root"
+        classNames={(info) => ({
+          root: info.props.class,
           selector: 'slot-selector',
           clear: 'slot-clear',
           cell: 'slot-cell',
           presets: 'slot-presets',
           footer: 'slot-footer',
-        }}
-        styles={{
+          popup: 'slot-popup',
+        })}
+        styles={() => ({
           root: { width: '222px' },
           selector: { height: '44px' },
           clear: { color: 'red' },
           cell: { color: 'blue' },
           presets: { margin: '3px' },
           footer: { padding: '5px' },
-        }}
+          popup: { width: '333px' },
+        })}
       />
     ))
 
@@ -216,6 +246,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
     const clear = result.container.querySelector<HTMLElement>('.ads-date-picker-clear')
     const presets = document.body.querySelector<HTMLElement>('.ads-date-picker-presets')
     const footer = document.body.querySelector<HTMLElement>('.ads-date-picker-footer')
+    const popup = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')
     const cell = screen.getByRole('button', { name: '2026-06-01' })
 
     expect(root).toHaveClass('slot-root')
@@ -230,9 +261,11 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(presets?.style.margin).toBe('3px')
     expect(footer).toHaveClass('slot-footer')
     expect(footer?.style.padding).toBe('5px')
+    expect(popup).toHaveClass('slot-popup')
+    expect(popup?.style.width).toBe('333px')
   })
 
-  it('supports previousIcon alias and RangePicker visual icons', () => {
+  it('supports RangePicker visual icons with prevIcon', () => {
     render(() => (
       <RangePicker
         defaultOpen
@@ -241,14 +274,14 @@ describe('DatePicker custom rendering and visual APIs', () => {
         allowEmpty={[true, true]}
         prefix={<span data-testid="range-prefix-icon">prefix</span>}
         suffixIcon={<span data-testid="range-suffix-icon">suffix</span>}
-        previousIcon={<span data-testid="range-prev-icon">prev</span>}
+        prevIcon={<span data-testid="range-prev-icon">prev</span>}
         nextIcon={<span data-testid="range-next-icon">next</span>}
       />
     ))
 
     expect(screen.getByTestId('range-prefix-icon')).toBeInTheDocument()
     expect(screen.getByTestId('range-suffix-icon')).toBeInTheDocument()
-    expect(screen.getAllByTestId('range-clear-icon')).toHaveLength(2)
+    expect(screen.getAllByTestId('range-clear-icon')).toHaveLength(3)
     expect(screen.getByTestId('range-prev-icon')).toBeInTheDocument()
     expect(screen.getByTestId('range-next-icon')).toBeInTheDocument()
   })
@@ -431,7 +464,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
         defaultOpen
         defaultPickerValue={dayjs('2026-06-01')}
         showWeek
-        previewValue={dayjs('2026-06-10')}
+        previewValue="hover"
         onSelect={onSelect}
         superPrevIcon={<span data-testid="super-prev-icon">super prev</span>}
         superNextIcon={<span data-testid="super-next-icon">super next</span>}
@@ -508,7 +541,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
   it('does not forward common owned props from RangePicker to the root DOM element', () => {
     const result = render(() => (
       <RangePicker
-        previewValue={[dayjs('2026-06-01'), dayjs('2026-06-30')]}
+        previewValue="hover"
         components={{
           input: (props) => <input aria-label="range custom input" ref={props.inputRef} />,
         }}

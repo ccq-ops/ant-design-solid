@@ -39,7 +39,7 @@ export interface ImagePreviewConfig {
   onOpenChange?: (open: boolean, prevOpen: boolean) => void
   /** @deprecated Use `onOpenChange` instead. */
   onVisibleChange?: (visible: boolean, prevVisible: boolean) => void
-  getContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   zIndex?: number
   rootClass?: string
   maskClass?: string
@@ -174,7 +174,7 @@ export interface ImageProps extends Omit<
   classNames?: ImageSemanticClassNamesConfig
   styles?: ImageSemanticStylesConfig
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   onLoad?: JSX.EventHandler<HTMLImageElement, Event>
   onError?: JSX.EventHandler<HTMLImageElement, Event>
   onClick?: JSX.EventHandler<HTMLDivElement, MouseEvent>

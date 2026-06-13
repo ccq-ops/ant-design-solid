@@ -48,6 +48,41 @@ describe('Button', () => {
     expect(result.getByRole('button').className).toContain('custom-btn')
   })
 
+  it('uses ConfigProvider disabled and button defaults', () => {
+    const result = render(() => (
+      <ConfigProvider
+        componentDisabled
+        button={{
+          class: 'configured-button',
+          autoInsertSpace: false,
+          color: 'blue',
+          variant: 'filled',
+        }}
+      >
+        <Button>按钮</Button>
+      </ConfigProvider>
+    ))
+    const button = result.getByRole('button') as HTMLButtonElement
+
+    expect(button.disabled).toBe(true)
+    expect(button.className).toContain('configured-button')
+    expect(button.className).toContain('ads-btn-color-blue')
+    expect(button.className).toContain('ads-btn-variant-filled')
+    expect(button).toHaveTextContent('按钮')
+  })
+
+  it('merges ConfigProvider button style before local style', () => {
+    const result = render(() => (
+      <ConfigProvider button={{ style: { color: 'red', 'background-color': 'white' } }}>
+        <Button style={{ color: 'blue' }}>Styled</Button>
+      </ConfigProvider>
+    ))
+    const button = result.getByRole('button') as HTMLButtonElement
+
+    expect(button.style.color).toBe('blue')
+    expect(button.style.backgroundColor).toBe('white')
+  })
+
   it('renders an icon from the icons package before children by default', () => {
     const result = render(() => <Button icon={<SearchOutlined />}>Search</Button>)
     const button = result.getByRole('button')

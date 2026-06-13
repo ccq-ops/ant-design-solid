@@ -26,6 +26,7 @@
 ## Task 1: Public Type Contract
 
 **Files:**
+
 - Modify: `packages/components/src/date-picker/interface.ts`
 - Test: `packages/components/src/date-picker/__tests__/date-picker-types.test.tsx`
 
@@ -34,96 +35,96 @@
 Replace the "accepts public parity props" test in `packages/components/src/date-picker/__tests__/date-picker-types.test.tsx` with coverage for v6/Solid types:
 
 ```tsx
-  it('accepts v6 Solid public props and rejects removed compatibility props', () => {
-    const single = (
-      <DatePicker
-        class="solid-picker"
-        size="medium"
-        previewValue="hover"
-        format={['YYYY-MM-DD', (value) => value.format('YYYY/MM/DD')]}
-        classNames={(info) => ({ root: info.props.class, popup: 'popup-slot' })}
-        styles={() => ({ popup: { width: '320px' } })}
-        superPrevIcon={<span />}
-        superNextIcon={<span />}
-        components={{
-          input: (props) => <input ref={props.inputRef} value={props.value} />,
-          panel: (props) => <div>{props.children}</div>,
-          date: (props) => <div>{props.children}</div>,
-        }}
-        onSelect={(date) => date.format('YYYY-MM-DD')}
-      />
-    )
-    const range = (
-      <RangePicker
-        class="solid-range-picker"
-        id={{ start: 'range-start', end: 'range-end' }}
-        size="medium"
-        previewValue={false}
-        disabledDate={(current, info) => {
-          info.from?.format('YYYY-MM-DD')
-          return current.isBefore(dayjs('2026-01-01'))
-        }}
-        disabledTime={(date, partial, info) => {
-          date?.format('HH:mm:ss')
-          partial.toUpperCase()
-          info.from?.format('YYYY-MM-DD')
-          return {}
-        }}
-        onChange={(dates, dateStrings) => {
-          dates?.[0]?.format('YYYY-MM-DD')
-          dateStrings?.[0]?.toUpperCase()
-        }}
-      />
-    )
-    const removedClassName = (
-      // @ts-expect-error DatePicker uses Solid class instead of React className
-      <DatePicker className="legacy" />
-    )
-    const removedPopupClassName = (
-      // @ts-expect-error popupClassName is removed; use classNames.popup
-      <DatePicker popupClassName="legacy-popup" />
-    )
-    const removedDropdownClassName = (
-      // @ts-expect-error dropdownClassName is removed; use classNames.popup
-      <DatePicker dropdownClassName="legacy-popup" />
-    )
-    const removedPopupStyle = (
-      // @ts-expect-error popupStyle is removed; use styles.popup
-      <DatePicker popupStyle={{ width: '320px' }} />
-    )
-    const removedBordered = (
-      // @ts-expect-error bordered is removed; use variant
-      <DatePicker bordered={false} />
-    )
-    const removedPreviousIcon = (
-      // @ts-expect-error previousIcon alias is removed; use prevIcon
-      <DatePicker previousIcon={<span />} />
-    )
-    const removedTimePickerMode = (
-      // @ts-expect-error DatePicker picker does not expose time mode
-      <DatePicker picker="time" />
-    )
-    const removedShowTimeDefaultValue = (
-      // @ts-expect-error showTime.defaultValue compatibility alias is removed
-      <DatePicker showTime={{ defaultValue: dayjs('2026-06-01') }} />
-    )
-    const multipleWithShowTime = (
-      // @ts-expect-error multiple DatePicker does not support showTime
-      <DatePicker multiple showTime />
-    )
+it('accepts v6 Solid public props and rejects removed compatibility props', () => {
+  const single = (
+    <DatePicker
+      class="solid-picker"
+      size="medium"
+      previewValue="hover"
+      format={['YYYY-MM-DD', (value) => value.format('YYYY/MM/DD')]}
+      classNames={(info) => ({ root: info.props.class, popup: 'popup-slot' })}
+      styles={() => ({ popup: { width: '320px' } })}
+      superPrevIcon={<span />}
+      superNextIcon={<span />}
+      components={{
+        input: (props) => <input ref={props.inputRef} value={props.value} />,
+        panel: (props) => <div>{props.children}</div>,
+        date: (props) => <div>{props.children}</div>,
+      }}
+      onSelect={(date) => date.format('YYYY-MM-DD')}
+    />
+  )
+  const range = (
+    <RangePicker
+      class="solid-range-picker"
+      id={{ start: 'range-start', end: 'range-end' }}
+      size="medium"
+      previewValue={false}
+      disabledDate={(current, info) => {
+        info.from?.format('YYYY-MM-DD')
+        return current.isBefore(dayjs('2026-01-01'))
+      }}
+      disabledTime={(date, partial, info) => {
+        date?.format('HH:mm:ss')
+        partial.toUpperCase()
+        info.from?.format('YYYY-MM-DD')
+        return {}
+      }}
+      onChange={(dates, dateStrings) => {
+        dates?.[0]?.format('YYYY-MM-DD')
+        dateStrings?.[0]?.toUpperCase()
+      }}
+    />
+  )
+  const removedClassName = (
+    // @ts-expect-error DatePicker uses Solid class instead of React className
+    <DatePicker className="legacy" />
+  )
+  const removedPopupClassName = (
+    // @ts-expect-error popupClassName is removed; use classNames.popup
+    <DatePicker popupClassName="legacy-popup" />
+  )
+  const removedDropdownClassName = (
+    // @ts-expect-error dropdownClassName is removed; use classNames.popup
+    <DatePicker dropdownClassName="legacy-popup" />
+  )
+  const removedPopupStyle = (
+    // @ts-expect-error popupStyle is removed; use styles.popup
+    <DatePicker popupStyle={{ width: '320px' }} />
+  )
+  const removedBordered = (
+    // @ts-expect-error bordered is removed; use variant
+    <DatePicker bordered={false} />
+  )
+  const removedPreviousIcon = (
+    // @ts-expect-error previousIcon alias is removed; use prevIcon
+    <DatePicker previousIcon={<span />} />
+  )
+  const removedTimePickerMode = (
+    // @ts-expect-error DatePicker picker does not expose time mode
+    <DatePicker picker="time" />
+  )
+  const removedShowTimeDefaultValue = (
+    // @ts-expect-error showTime.defaultValue compatibility alias is removed
+    <DatePicker showTime={{ defaultValue: dayjs('2026-06-01') }} />
+  )
+  const multipleWithShowTime = (
+    // @ts-expect-error multiple DatePicker does not support showTime
+    <DatePicker multiple showTime />
+  )
 
-    expect(single).toBeTruthy()
-    expect(range).toBeTruthy()
-    expect(removedClassName).toBeTruthy()
-    expect(removedPopupClassName).toBeTruthy()
-    expect(removedDropdownClassName).toBeTruthy()
-    expect(removedPopupStyle).toBeTruthy()
-    expect(removedBordered).toBeTruthy()
-    expect(removedPreviousIcon).toBeTruthy()
-    expect(removedTimePickerMode).toBeTruthy()
-    expect(removedShowTimeDefaultValue).toBeTruthy()
-    expect(multipleWithShowTime).toBeTruthy()
-  })
+  expect(single).toBeTruthy()
+  expect(range).toBeTruthy()
+  expect(removedClassName).toBeTruthy()
+  expect(removedPopupClassName).toBeTruthy()
+  expect(removedDropdownClassName).toBeTruthy()
+  expect(removedPopupStyle).toBeTruthy()
+  expect(removedBordered).toBeTruthy()
+  expect(removedPreviousIcon).toBeTruthy()
+  expect(removedTimePickerMode).toBeTruthy()
+  expect(removedShowTimeDefaultValue).toBeTruthy()
+  expect(multipleWithShowTime).toBeTruthy()
+})
 ```
 
 - [ ] **Step 2: Run type test to verify failure**
@@ -185,6 +186,7 @@ Expected: PASS.
 ## Task 2: Semantic Helpers and Format Arrays
 
 **Files:**
+
 - Modify: `packages/components/src/date-picker/semantic.ts`
 - Modify: `packages/components/src/date-picker/format-utils.ts`
 - Modify: DatePicker panel files that call `semanticClass`/`semanticStyle`
@@ -195,85 +197,85 @@ Expected: PASS.
 In `packages/components/src/date-picker/__tests__/custom-render.test.tsx`, replace the bordered/previousIcon tests with v6 behavior:
 
 ```tsx
-  it('supports function semantic classNames/styles and medium size', () => {
-    const result = render(() => (
-      <DatePicker
-        defaultOpen
-        class="solid-root"
-        defaultValue={dayjs('2026-06-01')}
-        allowClear
-        size="medium"
-        presets={[{ label: 'Slot preset', value: dayjs('2026-06-02') }]}
-        renderExtraFooter={() => <span>slot footer</span>}
-        classNames={(info) => ({
-          root: info.props.class,
-          selector: 'slot-selector',
-          clear: 'slot-clear',
-          cell: 'slot-cell',
-          presets: 'slot-presets',
-          footer: 'slot-footer',
-          popup: 'slot-popup',
-        })}
-        styles={() => ({
-          root: { width: '222px' },
-          selector: { height: '44px' },
-          clear: { color: 'red' },
-          cell: { color: 'blue' },
-          presets: { margin: '3px' },
-          footer: { padding: '5px' },
-          popup: { width: '333px' },
-        })}
-      />
-    ))
+it('supports function semantic classNames/styles and medium size', () => {
+  const result = render(() => (
+    <DatePicker
+      defaultOpen
+      class="solid-root"
+      defaultValue={dayjs('2026-06-01')}
+      allowClear
+      size="medium"
+      presets={[{ label: 'Slot preset', value: dayjs('2026-06-02') }]}
+      renderExtraFooter={() => <span>slot footer</span>}
+      classNames={(info) => ({
+        root: info.props.class,
+        selector: 'slot-selector',
+        clear: 'slot-clear',
+        cell: 'slot-cell',
+        presets: 'slot-presets',
+        footer: 'slot-footer',
+        popup: 'slot-popup',
+      })}
+      styles={() => ({
+        root: { width: '222px' },
+        selector: { height: '44px' },
+        clear: { color: 'red' },
+        cell: { color: 'blue' },
+        presets: { margin: '3px' },
+        footer: { padding: '5px' },
+        popup: { width: '333px' },
+      })}
+    />
+  ))
 
-    const root = result.container.querySelector<HTMLElement>('.ads-date-picker')
-    const selector = result.container.querySelector<HTMLElement>('.ads-date-picker-selector')
-    const clear = result.container.querySelector<HTMLElement>('.ads-date-picker-clear')
-    const popup = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')
-    const presets = document.body.querySelector<HTMLElement>('.ads-date-picker-presets')
-    const footer = document.body.querySelector<HTMLElement>('.ads-date-picker-footer')
-    const cell = screen.getByRole('button', { name: '2026-06-01' })
+  const root = result.container.querySelector<HTMLElement>('.ads-date-picker')
+  const selector = result.container.querySelector<HTMLElement>('.ads-date-picker-selector')
+  const clear = result.container.querySelector<HTMLElement>('.ads-date-picker-clear')
+  const popup = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')
+  const presets = document.body.querySelector<HTMLElement>('.ads-date-picker-presets')
+  const footer = document.body.querySelector<HTMLElement>('.ads-date-picker-footer')
+  const cell = screen.getByRole('button', { name: '2026-06-01' })
 
-    expect(root).toHaveClass('solid-root')
-    expect(root).toHaveClass('ads-date-picker-md')
-    expect(root?.style.width).toBe('222px')
-    expect(selector).toHaveClass('slot-selector')
-    expect(selector?.style.height).toBe('44px')
-    expect(clear).toHaveClass('slot-clear')
-    expect(clear?.style.color).toBe('red')
-    expect(cell).toHaveClass('slot-cell')
-    expect(cell.style.color).toBe('blue')
-    expect(presets).toHaveClass('slot-presets')
-    expect(presets?.style.margin).toBe('3px')
-    expect(footer).toHaveClass('slot-footer')
-    expect(footer?.style.padding).toBe('5px')
-    expect(popup).toHaveClass('slot-popup')
-    expect(popup?.style.width).toBe('333px')
-  })
+  expect(root).toHaveClass('solid-root')
+  expect(root).toHaveClass('ads-date-picker-md')
+  expect(root?.style.width).toBe('222px')
+  expect(selector).toHaveClass('slot-selector')
+  expect(selector?.style.height).toBe('44px')
+  expect(clear).toHaveClass('slot-clear')
+  expect(clear?.style.color).toBe('red')
+  expect(cell).toHaveClass('slot-cell')
+  expect(cell.style.color).toBe('blue')
+  expect(presets).toHaveClass('slot-presets')
+  expect(presets?.style.margin).toBe('3px')
+  expect(footer).toHaveClass('slot-footer')
+  expect(footer?.style.padding).toBe('5px')
+  expect(popup).toHaveClass('slot-popup')
+  expect(popup?.style.width).toBe('333px')
+})
 
-  it('uses prevIcon and rejects the removed previousIcon alias at runtime', () => {
-    render(() => (
-      <RangePicker
-        defaultOpen
-        prevIcon={<span data-testid="range-prev-icon">prev</span>}
-        nextIcon={<span data-testid="range-next-icon">next</span>}
-      />
-    ))
+it('uses prevIcon and rejects the removed previousIcon alias at runtime', () => {
+  render(() => (
+    <RangePicker
+      defaultOpen
+      prevIcon={<span data-testid="range-prev-icon">prev</span>}
+      nextIcon={<span data-testid="range-next-icon">next</span>}
+    />
+  ))
 
-    expect(screen.getByTestId('range-prev-icon')).toBeInTheDocument()
-    expect(screen.getByTestId('range-next-icon')).toBeInTheDocument()
-  })
+  expect(screen.getByTestId('range-prev-icon')).toBeInTheDocument()
+  expect(screen.getByTestId('range-next-icon')).toBeInTheDocument()
+})
 
-  it('formats with formatter functions inside format arrays', () => {
-    render(() => (
-      <DatePicker
-        defaultValue={dayjs('2026-06-01')}
-        format={['YYYY-MM-DD', (value) => value.format('YYYY/MM/DD')]}
-      />
-    ))
+it('formats with formatter functions inside format arrays', () => {
+  render(() => (
+    <DatePicker
+      defaultValue={dayjs('2026-06-01')}
+      format={['YYYY-MM-DD', (value) => value.format('YYYY/MM/DD')]}
+    />
+  ))
 
-    expect(screen.getByRole('textbox')).toHaveValue('2026-06-01')
-  })
+  expect(screen.getByRole('textbox')).toHaveValue('2026-06-01')
+})
 ```
 
 - [ ] **Step 2: Run tests to verify failure**
@@ -308,7 +310,10 @@ const resolvedStyles = createMemo(() => resolveSemanticRecord(local.styles, prop
 In `format-utils.ts`, update formatter selection so arrays can contain strings or formatter functions. Use the first array item for display formatting and support parsing with string entries only:
 
 ```ts
-function primaryFormat(format: DatePickerFormat | undefined, picker: PickerType): string | ((value: dayjs.Dayjs) => string) {
+function primaryFormat(
+  format: DatePickerFormat | undefined,
+  picker: PickerType,
+): string | ((value: dayjs.Dayjs) => string) {
   const normalized = format ?? defaultFormat(picker)
   if (Array.isArray(normalized)) return normalized[0] ?? defaultFormat(picker)
   if (typeof normalized === 'object') return normalized.format
@@ -331,6 +336,7 @@ Expected: PASS.
 ## Task 3: DatePicker Behavior
 
 **Files:**
+
 - Modify: `packages/components/src/date-picker/date-picker.tsx`
 - Test: `packages/components/src/date-picker/__tests__/date-picker.test.tsx`
 - Test: `packages/components/src/date-picker/__tests__/multiple.test.tsx`
@@ -340,34 +346,34 @@ Expected: PASS.
 Add to `date-picker.test.tsx`:
 
 ```tsx
-  it('shows clear button by default and hides it with allowClear false', () => {
-    const { unmount } = render(() => <DatePicker defaultValue={dayjs('2026-06-01')} />)
-    expect(screen.getByRole('button', { name: 'Clear date' })).toBeInTheDocument()
+it('shows clear button by default and hides it with allowClear false', () => {
+  const { unmount } = render(() => <DatePicker defaultValue={dayjs('2026-06-01')} />)
+  expect(screen.getByRole('button', { name: 'Clear date' })).toBeInTheDocument()
 
-    unmount()
-    cleanup()
-    document.body.innerHTML = ''
+  unmount()
+  cleanup()
+  document.body.innerHTML = ''
 
-    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} allowClear={false} />)
-    expect(screen.queryByRole('button', { name: 'Clear date' })).not.toBeInTheDocument()
-  })
+  render(() => <DatePicker defaultValue={dayjs('2026-06-01')} allowClear={false} />)
+  expect(screen.queryByRole('button', { name: 'Clear date' })).not.toBeInTheDocument()
+})
 ```
 
 Add to `multiple.test.tsx`:
 
 ```tsx
-  it('does not render the time panel when multiple is combined with showTime at runtime', () => {
-    render(() => (
-      <DatePicker
-        // Runtime guard for JS consumers; TypeScript rejects this combination.
-        {...({ multiple: true, showTime: true } as any)}
-        defaultOpen
-        defaultPickerValue={dayjs('2026-06-01')}
-      />
-    ))
+it('does not render the time panel when multiple is combined with showTime at runtime', () => {
+  render(() => (
+    <DatePicker
+      // Runtime guard for JS consumers; TypeScript rejects this combination.
+      {...({ multiple: true, showTime: true } as any)}
+      defaultOpen
+      defaultPickerValue={dayjs('2026-06-01')}
+    />
+  ))
 
-    expect(document.body.querySelector('.ads-date-picker-time-panel')).not.toBeInTheDocument()
-  })
+  expect(document.body.querySelector('.ads-date-picker-time-panel')).not.toBeInTheDocument()
+})
 ```
 
 - [ ] **Step 2: Run tests to verify failure**
@@ -405,6 +411,7 @@ Expected: PASS.
 ## Task 4: RangePicker Behavior
 
 **Files:**
+
 - Modify: `packages/components/src/date-picker/range-picker.tsx`
 - Modify: `packages/components/src/date-picker/date-panel.tsx`
 - Test: `packages/components/src/date-picker/__tests__/range-picker.test.tsx`
@@ -415,95 +422,84 @@ Expected: PASS.
 Add to `range-picker.test.tsx`:
 
 ```tsx
-  it('uses object ids for start and end inputs', () => {
-    render(() => <RangePicker id={{ start: 'range-start', end: 'range-end' }} />)
+it('uses object ids for start and end inputs', () => {
+  render(() => <RangePicker id={{ start: 'range-start', end: 'range-end' }} />)
 
-    expect(screen.getAllByRole('textbox')[0]).toHaveAttribute('id', 'range-start')
-    expect(screen.getAllByRole('textbox')[1]).toHaveAttribute('id', 'range-end')
-  })
+  expect(screen.getAllByRole('textbox')[0]).toHaveAttribute('id', 'range-start')
+  expect(screen.getAllByRole('textbox')[1]).toHaveAttribute('id', 'range-end')
+})
 
-  it('uses a default icon separator instead of a hyphen', () => {
-    render(() => <RangePicker />)
+it('uses a default icon separator instead of a hyphen', () => {
+  render(() => <RangePicker />)
 
-    expect(document.body.textContent).not.toBe('-')
-    expect(document.querySelector('.ads-date-picker-range-separator svg')).toBeTruthy()
-  })
+  expect(document.body.textContent).not.toBe('-')
+  expect(document.querySelector('.ads-date-picker-range-separator svg')).toBeTruthy()
+})
 
-  it('clears the full range by default and emits null values', () => {
-    const onChange = vi.fn()
-    render(() => (
-      <RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} onChange={onChange} />
-    ))
+it('clears the full range by default and emits null values', () => {
+  const onChange = vi.fn()
+  render(() => (
+    <RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} onChange={onChange} />
+  ))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Clear date range' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Clear date range' }))
 
-    expect(onChange).toHaveBeenLastCalledWith(null, null)
-    const inputs = screen.getAllByRole('textbox')
-    expect(inputs[0]).toHaveValue('')
-    expect(inputs[1]).toHaveValue('')
-  })
+  expect(onChange).toHaveBeenLastCalledWith(null, null)
+  const inputs = screen.getAllByRole('textbox')
+  expect(inputs[0]).toHaveValue('')
+  expect(inputs[1]).toHaveValue('')
+})
 
-  it('passes from date to disabledDate while selecting a range end', () => {
-    const disabledDate = vi.fn(() => false)
-    render(() => (
-      <RangePicker
-        defaultOpen
-        defaultPickerValue={dayjs('2026-06-01')}
-        disabledDate={disabledDate}
-      />
-    ))
+it('passes from date to disabledDate while selecting a range end', () => {
+  const disabledDate = vi.fn(() => false)
+  render(() => (
+    <RangePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} disabledDate={disabledDate} />
+  ))
 
-    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
-    fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
+  fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+  fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
 
-    expect(
-      disabledDate.mock.calls.some(
-        ([, info]) => info.from?.format('YYYY-MM-DD') === '2026-06-10',
-      ),
-    ).toBe(true)
-  })
+  expect(
+    disabledDate.mock.calls.some(([, info]) => info.from?.format('YYYY-MM-DD') === '2026-06-10'),
+  ).toBe(true)
+})
 
-  it('disables hover preview when previewValue is false', () => {
-    render(() => (
-      <RangePicker
-        defaultOpen
-        previewValue={false}
-        defaultPickerValue={dayjs('2026-06-01')}
-      />
-    ))
+it('disables hover preview when previewValue is false', () => {
+  render(() => (
+    <RangePicker defaultOpen previewValue={false} defaultPickerValue={dayjs('2026-06-01')} />
+  ))
 
-    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
-    fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
+  fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+  fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
 
-    expect(screen.getByRole('button', { name: '2026-06-12' })).not.toHaveClass(
-      'ads-date-picker-cell-in-range',
-    )
-  })
+  expect(screen.getByRole('button', { name: '2026-06-12' })).not.toHaveClass(
+    'ads-date-picker-cell-in-range',
+  )
+})
 ```
 
 Add to `show-time.test.tsx`:
 
 ```tsx
-  it('passes active partial and from date to RangePicker disabledTime', () => {
-    const disabledTime = vi.fn(() => ({}))
-    render(() => (
-      <RangePicker
-        showTime
-        defaultOpen
-        defaultPickerValue={dayjs('2026-06-01')}
-        disabledTime={disabledTime}
-      />
-    ))
+it('passes active partial and from date to RangePicker disabledTime', () => {
+  const disabledTime = vi.fn(() => ({}))
+  render(() => (
+    <RangePicker
+      showTime
+      defaultOpen
+      defaultPickerValue={dayjs('2026-06-01')}
+      disabledTime={disabledTime}
+    />
+  ))
 
-    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+  fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
 
-    expect(
-      disabledTime.mock.calls.some(
-        ([, partial, info]) =>
-          partial === 'end' && info.from?.format('YYYY-MM-DD') === '2026-06-10',
-      ),
-    ).toBe(true)
-  })
+  expect(
+    disabledTime.mock.calls.some(
+      ([, partial, info]) => partial === 'end' && info.from?.format('YYYY-MM-DD') === '2026-06-10',
+    ),
+  ).toBe(true)
+})
 ```
 
 - [ ] **Step 2: Run tests to verify failure**
@@ -551,6 +547,7 @@ Expected: PASS.
 ## Task 5: DatePicker Component Tokens and Styles
 
 **Files:**
+
 - Modify: `packages/theme/src/types.ts`
 - Modify: `packages/theme/src/components.ts`
 - Modify: `packages/components/src/date-picker/date-picker.style.ts`
@@ -561,19 +558,19 @@ Expected: PASS.
 Add to `custom-render.test.tsx`:
 
 ```tsx
-  it('consumes DatePicker component tokens for dimensions and range colors', () => {
-    const cache = createCache()
-    render(() => (
-      <StyleProvider cache={cache}>
-        <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />
-      </StyleProvider>
-    ))
+it('consumes DatePicker component tokens for dimensions and range colors', () => {
+  const cache = createCache()
+  render(() => (
+    <StyleProvider cache={cache}>
+      <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />
+    </StyleProvider>
+  ))
 
-    const css = extractStyle(cache)
-    expect(css).toContain('height:32px')
-    expect(css).toContain('width:36px')
-    expect(css).toContain('background:#e6f4ff')
-  })
+  const css = extractStyle(cache)
+  expect(css).toContain('height:32px')
+  expect(css).toContain('width:36px')
+  expect(css).toContain('background:#e6f4ff')
+})
 ```
 
 - [ ] **Step 2: Run token test to verify failure or weak coverage**
@@ -621,7 +618,9 @@ In `date-picker.style.ts`:
 If Step 2 passed before implementation, update the test to wrap a `ConfigProvider` theme override:
 
 ```tsx
-<ConfigProvider theme={{ components: { DatePicker: { cellWidth: 44, cellActiveWithRangeBg: '#abcdef' } } }}>
+<ConfigProvider
+  theme={{ components: { DatePicker: { cellWidth: 44, cellActiveWithRangeBg: '#abcdef' } } }}
+>
   <StyleProvider cache={cache}>
     <DatePicker defaultOpen defaultValue={dayjs('2026-06-01')} />
   </StyleProvider>
@@ -643,6 +642,7 @@ Expected: PASS.
 ## Task 6: Documentation Examples and API
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/date-picker.mdx`
 - Test: docs route/runtime tests if present
 
@@ -694,6 +694,7 @@ Expected: PASS.
 ## Task 7: Full DatePicker Verification
 
 **Files:**
+
 - All modified DatePicker/theme/docs files
 
 - [ ] **Step 1: Run focused DatePicker tests**

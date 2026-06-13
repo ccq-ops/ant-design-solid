@@ -35,7 +35,7 @@ export interface PickerPanelProps {
   classNames?: Partial<Record<DatePickerSemanticSlot, string>>
   styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
   style?: JSX.CSSProperties
-  previousIcon?: JSX.Element
+  prevIcon?: JSX.Element
   nextIcon?: JSX.Element
   superPreviousIcon?: JSX.Element
   superNextIcon?: JSX.Element
@@ -186,7 +186,7 @@ export function PickerPanel(props: PickerPanelProps) {
           class={`${props.prefixCls}-month-button`}
           onClick={props.onPrevious}
         >
-          {props.previousIcon ?? '‹'}
+          {props.prevIcon ?? '‹'}
         </button>
         <div class={`${props.prefixCls}-month-label`}>{panelLabel(props.viewDate, props.mode)}</div>
         <button

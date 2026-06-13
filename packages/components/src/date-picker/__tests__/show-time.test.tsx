@@ -141,4 +141,26 @@ describe('DatePicker showTime', () => {
 
     expect(onChange.mock.calls.at(-1)![1]).toEqual(['2026-06-10 08:00:00', '2026-06-15 00:00:00'])
   })
+
+  it('passes active partial and from date to RangePicker disabledTime', () => {
+    const disabledTime = vi.fn(
+      (_date: Dayjs | null, _partial: 'start' | 'end', _info: { from?: Dayjs }) => ({}),
+    )
+    render(() => (
+      <RangePicker
+        showTime
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        disabledTime={disabledTime}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+
+    expect(
+      disabledTime.mock.calls.some(
+        (call) => call[1] === 'end' && call[2]?.from?.format('YYYY-MM-DD') === '2026-06-10',
+      ),
+    ).toBe(true)
+  })
 })

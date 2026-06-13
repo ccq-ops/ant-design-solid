@@ -113,7 +113,7 @@ export interface SelectProps extends Omit<
   prefixCls?: string
   rootClassName?: string
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   mode?: SelectMode
   labelInValue?: boolean
   fieldNames?: SelectFieldNames

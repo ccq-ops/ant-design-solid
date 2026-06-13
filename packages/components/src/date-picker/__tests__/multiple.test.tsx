@@ -100,4 +100,16 @@ describe('DatePicker multiple selection', () => {
     const [, dateStrings] = onChange.mock.lastCall as [Dayjs[], string[]]
     expect(dateStrings).toEqual(['2026-06-10'])
   })
+
+  it('does not render the time panel when multiple is combined with showTime at runtime', () => {
+    render(() => (
+      <DatePicker
+        {...({ multiple: true, showTime: true } as any)}
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+      />
+    ))
+
+    expect(document.body.querySelector('.ads-date-picker-time-panel')).not.toBeInTheDocument()
+  })
 })

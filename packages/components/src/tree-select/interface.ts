@@ -186,7 +186,7 @@ export interface TreeSelectProps extends Omit<
   variant?: TreeSelectVariant
   virtual?: boolean
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   onChange?: (
     value: TreeSelectValue,
     label: JSX.Element | JSX.Element[] | undefined,

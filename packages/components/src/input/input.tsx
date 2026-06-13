@@ -57,6 +57,7 @@ export function Input(props: InputProps) {
     'styles',
   ])
   const config = useConfig()
+  const inputConfig = () => config.input()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-input`
   const [, hashId] = useInputStyle(prefixCls())
@@ -67,12 +68,13 @@ export function Input(props: InputProps) {
     }
     return String(local.value ?? innerValue())
   }
-  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? config.componentDisabled()
   const size = () => local.size ?? formItem?.size?.() ?? config.componentSize()
   const variant = () =>
     local.variant ??
-    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? 'outlined'))
-  const allowClearConfig = () => getAllowClearConfig(local.allowClear)
+    inputConfig().variant ??
+    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? config.variant()))
+  const allowClearConfig = () => getAllowClearConfig(local.allowClear ?? inputConfig().allowClear)
   const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
   const showSuffixWithClear = () => Boolean(local.suffix && showClear())
   const maxLength = () => getMaxLength(rest.maxLength, local.count)
@@ -85,10 +87,10 @@ export function Input(props: InputProps) {
     variant: variant(),
   })
   const semanticClassNames = createMemo<InputSemanticClassNames>(() =>
-    resolveClassNames(local.classNames, semanticProps()),
+    resolveClassNames(local.classNames ?? inputConfig().classNames, semanticProps()),
   )
   const semanticStyles = createMemo<InputSemanticStyles>(() =>
-    resolveStyles(local.styles, semanticProps()),
+    resolveStyles(local.styles ?? inputConfig().styles, semanticProps()),
   )
   let rootRef: HTMLSpanElement | undefined
   let inputRef: HTMLInputElement | undefined
@@ -168,10 +170,13 @@ export function Input(props: InputProps) {
           `${prefixCls()}-count-exceed`,
         hashId(),
         includeRootProps && local.rootClassName,
+        includeRootProps && inputConfig().class,
         includeRootProps && local.class,
         includeRootProps && rootClass(semanticClassNames()),
       )}
-      style={includeRootProps ? rootStyle(semanticStyles()) : undefined}
+      style={
+        includeRootProps ? { ...inputConfig().style, ...rootStyle(semanticStyles()) } : undefined
+      }
     >
       <Show when={local.prefix}>
         <span
@@ -186,7 +191,12 @@ export function Input(props: InputProps) {
         ref={(el) => {
           inputRef = el
         }}
-        class={classNames(prefixCls(), semanticClassNames().input)}
+        class={classNames(
+          prefixCls(),
+          `${prefixCls()}-variant-${variant()}`,
+          inputConfig().class,
+          semanticClassNames().input,
+        )}
         style={semanticStyles().input}
         disabled={disabled()}
         size={local.htmlSize}
@@ -270,6 +280,7 @@ export function Input(props: InputProps) {
         `${prefixCls()}-group-wrapper`,
         hashId(),
         local.rootClassName,
+        inputConfig().class,
         local.class,
         rootClass(semanticClassNames()),
       )}

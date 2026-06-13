@@ -1,4 +1,5 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useDatePickerStyle(prefixCls: string) {
@@ -7,6 +8,7 @@ export function useDatePickerStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['DatePicker', prefixCls] },
     () => {
       const t = token()
+      const dp = getComponentToken('DatePicker', t)
       return {
         [`.${prefixCls}`]: {
           position: 'relative',
@@ -39,20 +41,25 @@ export function useDatePickerStyle(prefixCls: string) {
           gap: `${t.paddingXS}px`,
           width: '100%',
           height: `${t.controlHeight}px`,
-          padding: `0 ${t.paddingSM}px`,
+          padding: `${dp.paddingBlock}px ${dp.paddingInline}px`,
           border: `${t.lineWidth}px solid ${t.colorBorder}`,
           'border-radius': `${t.borderRadius}px`,
-          background: t.colorBgContainer,
+          background: dp.activeBg,
           cursor: 'pointer',
           'box-sizing': 'border-box',
         },
         [`.${prefixCls}-sm .${prefixCls}-selector`]: {
           height: `${t.controlHeightSM}px`,
-          padding: `0 ${t.paddingXS}px`,
+          padding: `${dp.paddingBlockSM}px ${dp.paddingInlineSM}px`,
+        },
+        [`.${prefixCls}-md .${prefixCls}-selector`]: {
+          height: `${t.controlHeight}px`,
+          padding: `${dp.paddingBlock}px ${dp.paddingInline}px`,
         },
         [`.${prefixCls}-lg .${prefixCls}-selector`]: {
           height: `${t.controlHeightLG}px`,
-          'font-size': `${t.fontSize + 2}px`,
+          padding: `${dp.paddingBlockLG}px ${dp.paddingInlineLG}px`,
+          'font-size': `${dp.inputFontSizeLG}px`,
         },
         [`.${prefixCls}-status-error .${prefixCls}-selector`]: {
           'border-color': t.colorError,
@@ -65,7 +72,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'box-shadow': 'none',
         },
         [`.${prefixCls}-filled .${prefixCls}-selector`]: {
-          background: t.colorFillAlter,
+          background: dp.addonBg,
         },
         [`.${prefixCls}-underlined .${prefixCls}-selector`]: {
           'border-top-color': 'transparent',
@@ -74,8 +81,8 @@ export function useDatePickerStyle(prefixCls: string) {
           'border-radius': '0',
         },
         [`.${prefixCls}-open .${prefixCls}-selector`]: {
-          'border-color': t.colorPrimary,
-          'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
+          'border-color': dp.activeBorderColor,
+          'box-shadow': dp.activeShadow,
         },
         [`.${prefixCls}-disabled .${prefixCls}-selector`]: {
           color: t.colorTextDisabled,
@@ -87,7 +94,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'min-height': `${t.controlHeight}px`,
           'justify-content': 'flex-start',
           'flex-wrap': 'wrap',
-          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          padding: `${dp.paddingBlock}px ${dp.paddingInline}px`,
         },
         [`.${prefixCls}-multiple .${prefixCls}-input`]: {
           flex: '0 1 24px',
@@ -101,14 +108,15 @@ export function useDatePickerStyle(prefixCls: string) {
           'max-width': '100%',
         },
         [`.${prefixCls}-multiple-tag`]: {
-          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          border: `${t.lineWidth}px solid ${dp.multipleItemBorderColor}`,
           'border-radius': `${t.borderRadius}px`,
           padding: `0 ${t.paddingXS}px`,
-          background: t.colorFillAlter,
+          background: dp.multipleItemBg,
           color: t.colorText,
           cursor: 'pointer',
           'font-size': `${t.fontSize}px`,
-          'line-height': '20px',
+          height: `${dp.multipleItemHeight}px`,
+          'line-height': `${dp.multipleItemHeight}px`,
         },
         [`.${prefixCls}-multiple-tag:hover`]: {
           borderColor: t.colorBorder,
@@ -122,7 +130,7 @@ export function useDatePickerStyle(prefixCls: string) {
           padding: '0',
           background: 'transparent',
           color: t.colorText,
-          'font-size': `${t.fontSize}px`,
+          'font-size': `${dp.inputFontSize}px`,
           'font-family': t.fontFamily,
           cursor: 'inherit',
         },
@@ -159,7 +167,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'line-height': '1',
         },
         [`.${prefixCls}-variant-cell`]: {
-          height: '48px',
+          height: `${dp.withoutTimeCellHeight}px`,
         },
         [`.${prefixCls}-week-cell`]: {
           color: t.colorTextSecondary,
@@ -184,6 +192,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'margin-bottom': `${t.marginSM}px`,
           'padding-bottom': `${t.paddingXS}px`,
           borderBottom: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'min-width': `${dp.presetsWidth}px`,
         },
         [`.${prefixCls}-preset`]: {
           border: '0',
@@ -253,8 +262,8 @@ export function useDatePickerStyle(prefixCls: string) {
           'grid-template-columns': 'repeat(2, 1fr)',
         },
         [`.${prefixCls}-cell`]: {
-          width: '100%',
-          height: '32px',
+          width: `${dp.cellWidth}px`,
+          height: `${dp.cellHeight}px`,
           border: '0',
           'border-radius': `${t.borderRadius}px`,
           background: 'transparent',
@@ -265,41 +274,41 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-range-start):not(.${prefixCls}-cell-range-end):hover`]:
           {
-            background: t.colorFillAlter,
+            background: dp.cellHoverBg,
           },
         [`.${prefixCls}-cell:active`]: {
           color: t.colorBgContainer,
-          background: t.colorPrimary,
+          background: dp.activeBorderColor,
         },
         [`.${prefixCls}-cell-selected`]: {
           color: t.colorBgContainer,
-          background: t.colorPrimary,
+          background: dp.activeBorderColor,
           'font-weight': '600',
         },
         [`.${prefixCls}-cell-selected:hover, .${prefixCls}-cell-selected:active`]: {
-          background: t.colorPrimary,
+          background: dp.activeBorderColor,
           color: t.colorBgContainer,
         },
 
         [`.${prefixCls}-cell-in-range`]: {
-          background: t.colorFillAlter,
+          background: dp.cellActiveWithRangeBg,
         },
         [`.${prefixCls}-cell-range-start, .${prefixCls}-cell-range-end`]: {
           color: t.colorBgContainer,
-          background: t.colorPrimary,
+          background: dp.activeBorderColor,
           'font-weight': '600',
         },
         [`.${prefixCls}-cell-range-start:hover, .${prefixCls}-cell-range-start:active, .${prefixCls}-cell-range-end:hover, .${prefixCls}-cell-range-end:active`]:
           {
-            background: t.colorPrimary,
+            background: dp.activeBorderColor,
             color: t.colorBgContainer,
           },
         [`.${prefixCls}-cell-today`]: {
-          border: `${t.lineWidth}px solid ${t.colorPrimary}`,
+          border: `${t.lineWidth}px solid ${dp.cellRangeBorderColor}`,
         },
         [`.${prefixCls}-cell-disabled`]: {
           color: t.colorTextDisabled,
-          background: 'transparent',
+          background: dp.cellBgDisabled,
           cursor: 'not-allowed',
         },
         [`.${prefixCls}-cell-disabled:hover`]: {
@@ -314,7 +323,8 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-time-column`]: {
           flex: '1 1 0',
-          height: '160px',
+          width: `${dp.timeColumnWidth}px`,
+          height: `${dp.timeColumnHeight}px`,
           overflow: 'auto',
         },
         [`.${prefixCls}-time-column-title`]: {

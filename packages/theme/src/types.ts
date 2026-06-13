@@ -1,4 +1,4 @@
-export type ComponentSize = 'small' | 'middle' | 'large'
+export type ComponentSize = 'small' | 'medium' | 'middle' | 'large'
 
 export type TokenValue = string | number | boolean | undefined
 
@@ -322,6 +322,41 @@ export interface InputNumberComponentToken extends ComponentTokenBase {
   paddingInline: number
   paddingInlineLG: number
   paddingInlineSM: number
+}
+
+export interface DatePickerComponentToken extends ComponentTokenBase {
+  activeBg: string
+  activeBorderColor: string
+  activeShadow: string
+  addonBg: string
+  cellActiveWithRangeBg: string
+  cellBgDisabled: string
+  cellHoverBg: string
+  cellHoverWithRangeBg: string
+  cellRangeBorderColor: string
+  cellHeight: number
+  cellWidth: number
+  hoverBg: string
+  hoverBorderColor: string
+  inputFontSize: number
+  inputFontSizeLG: number
+  inputFontSizeSM: number
+  multipleItemBg: string
+  multipleItemBorderColor: string
+  multipleItemHeight: number
+  multipleItemHeightLG: number
+  multipleItemHeightSM: number
+  paddingBlock: number
+  paddingBlockLG: number
+  paddingBlockSM: number
+  paddingInline: number
+  paddingInlineLG: number
+  paddingInlineSM: number
+  presetsWidth: number
+  textHeight: number
+  timeColumnHeight: number
+  timeColumnWidth: number
+  withoutTimeCellHeight: number
 }
 
 export interface SpaceComponentToken extends ComponentTokenBase {
@@ -665,7 +700,7 @@ export interface ComponentTokenMap {
   Checkbox: CheckboxComponentToken
   ColorPicker?: ComponentTokenBase
   Collapse?: ComponentTokenBase
-  DatePicker?: ComponentTokenBase
+  DatePicker: DatePickerComponentToken
   Descriptions: DescriptionsComponentToken
   Divider: DividerComponentToken
   Drawer: DrawerComponentToken
@@ -718,8 +753,23 @@ export interface ComponentTokenMap {
   Wave?: ComponentTokenBase
 }
 
+export type ComponentTokenConfig<T extends ComponentTokenBase | undefined> = Partial<
+  NonNullable<T>
+> & {
+  algorithm?: boolean | ThemeAlgorithm | ThemeAlgorithm[]
+}
+
 export interface ThemeConfig {
   algorithm?: ThemeAlgorithm | ThemeAlgorithm[]
   token?: Partial<SeedToken & AliasToken>
-  components?: { [K in keyof ComponentTokenMap]?: Partial<ComponentTokenMap[K]> }
+  components?: { [K in keyof ComponentTokenMap]?: ComponentTokenConfig<ComponentTokenMap[K]> }
+  inherit?: boolean
+  hashed?: boolean
+  cssVar?:
+    | boolean
+    | {
+        prefix?: string
+        key?: string
+      }
+  zeroRuntime?: boolean
 }

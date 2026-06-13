@@ -2,6 +2,7 @@ import { fireEvent, render } from '@solidjs/testing-library'
 import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
+import { ConfigProvider } from '../../config-provider'
 import { Input } from '../index'
 
 describe('Input extended API', () => {
@@ -71,6 +72,20 @@ describe('Input extended API', () => {
     expect(wrapper.style.width).toBe('123px')
     expect(input).toHaveClass('custom-input')
     expect(input.style.color).toBe('red')
+  })
+
+  it('uses ConfigProvider disabled and input defaults', () => {
+    const result = render(() => (
+      <ConfigProvider componentDisabled input={{ class: 'configured-input', variant: 'filled' }}>
+        <Input defaultValue="locked" />
+      </ConfigProvider>
+    ))
+    const input = result.getByDisplayValue('locked') as HTMLInputElement
+    const wrapper = result.container.querySelector('.ads-input')!
+
+    expect(input.disabled).toBe(true)
+    expect(wrapper).toHaveClass('configured-input')
+    expect(wrapper).toHaveClass('ads-input-variant-filled')
   })
 
   it('supports antd v6 semantic root key and function configs', () => {

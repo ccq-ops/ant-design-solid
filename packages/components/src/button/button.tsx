@@ -42,6 +42,18 @@ function spaceChildren(children: JSX.Element, autoInsertSpace: boolean): JSX.Ele
   return /^[\u4e00-\u9fa5]{2}$/.test(children) ? `${children[0]} ${children[1]}` : children
 }
 
+function mergeStyle(...values: Array<JSX.CSSProperties | string | undefined>) {
+  const lastString = [...values]
+    .reverse()
+    .find((value): value is string => typeof value === 'string')
+  if (lastString) return lastString
+
+  const objects = values.filter(
+    (value): value is JSX.CSSProperties => !!value && typeof value === 'object',
+  )
+  return objects.length ? Object.assign({}, ...objects) : undefined
+}
+
 export function Button(props: ButtonProps) {
   const [local, rest] = splitProps(props, [
     'type',
@@ -64,21 +76,28 @@ export function Button(props: ButtonProps) {
     'iconPosition',
     'iconPlacement',
     'autoInsertSpace',
+    'style',
   ])
   const config = useConfig()
+  const buttonConfig = () => config.button()
   const prefixCls = () => `${config.prefixCls()}-btn`
   const [, hashId] = useButtonStyle(prefixCls())
   const [delayedLoading, setDelayedLoading] = createSignal(false)
   const size = () => local.size ?? config.componentSize()
   const loadingActive = () =>
     isLoadingConfig(local.loading) ? delayedLoading() : Boolean(local.loading)
-  const disabled = () => Boolean(local.disabled || loadingActive())
+  const disabled = () => Boolean((local.disabled ?? config.componentDisabled()) || loadingActive())
   const iconPlacement = () => local.iconPlacement ?? local.iconPosition ?? 'start'
-  const mergedColor = () => local.color ?? (local.danger ? 'danger' : getTypeColor(local.type))
-  const mergedVariant = () => local.variant ?? getTypeVariant(local.type)
+  const mergedColor = () =>
+    local.color ?? buttonConfig().color ?? (local.danger ? 'danger' : getTypeColor(local.type))
+  const mergedVariant = () => local.variant ?? buttonConfig().variant ?? getTypeVariant(local.type)
+  const shape = () => local.shape ?? buttonConfig().shape
   const loadingIcon = () => (isLoadingConfig(local.loading) ? local.loading.icon : undefined)
-  const iconNode = () => (loadingActive() ? (loadingIcon() ?? <LoadingOutlined />) : local.icon)
-  const autoInsertSpace = () => local.autoInsertSpace ?? true
+  const iconNode = () =>
+    loadingActive()
+      ? (loadingIcon() ?? buttonConfig().loadingIcon ?? <LoadingOutlined />)
+      : local.icon
+  const autoInsertSpace = () => local.autoInsertSpace ?? buttonConfig().autoInsertSpace ?? true
   const children = () => spaceChildren(local.children, autoInsertSpace())
   const hasChildren = () => {
     const child = children()
@@ -138,11 +157,13 @@ export function Button(props: ButtonProps) {
       loadingActive() && `${prefixCls()}-loading`,
       disabled() && `${prefixCls()}-disabled`,
       iconOnly() && `${prefixCls()}-icon-only`,
-      local.shape && local.shape !== 'default' && `${prefixCls()}-${local.shape}`,
+      shape() && shape() !== 'default' && `${prefixCls()}-${shape()}`,
       local.ghost && `${prefixCls()}-background-ghost`,
       hashId(),
+      buttonConfig().class,
       local.class,
     )
+  const buttonStyle = () => mergeStyle(buttonConfig().style, local.style)
   const handleClick = (event: MouseEvent) => {
     if (disabled()) {
       event.preventDefault()
@@ -161,6 +182,7 @@ export function Button(props: ButtonProps) {
           type={local.htmlType ?? 'button'}
           disabled={disabled()}
           class={buttonClass()}
+          style={buttonStyle()}
           onClick={handleClick as JSX.EventHandler<HTMLButtonElement, MouseEvent>}
         >
           {content()}
@@ -173,6 +195,7 @@ export function Button(props: ButtonProps) {
           href={href()}
           target={local.target}
           class={buttonClass()}
+          style={buttonStyle()}
           role={disabled() ? 'link' : undefined}
           aria-disabled={disabled() || undefined}
           onClick={handleClick as JSX.EventHandler<HTMLAnchorElement, MouseEvent>}

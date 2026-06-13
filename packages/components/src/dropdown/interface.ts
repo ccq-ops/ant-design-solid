@@ -76,7 +76,7 @@ export interface DropdownProps extends JSX.HTMLAttributes<HTMLSpanElement> {
   classNames?: DropdownSemanticClassNamesConfig
   styles?: DropdownSemanticStylesConfig
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
 }
 
 export type DropdownButtonType = ButtonType

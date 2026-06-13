@@ -17,6 +17,12 @@ import type { FormInstance, FormProps } from './interface'
 import type { JSX } from 'solid-js'
 
 function mergeStyle(...values: Array<JSX.CSSProperties | string | undefined>) {
+  if (values.some((value) => typeof value === 'string')) {
+    const lastString = [...values]
+      .reverse()
+      .find((value): value is string => typeof value === 'string')
+    if (lastString) return lastString
+  }
   if (values.length === 1 && typeof values[0] === 'string') return values[0]
   const objects = values.filter(
     (value): value is JSX.CSSProperties => !!value && typeof value === 'object',
@@ -93,9 +99,9 @@ export function FormRoot(props: FormProps) {
   const labelWrap = () => local.labelWrap
   const tooltip = () => local.tooltip
   const validateMessages = () => local.validateMessages
-  const disabled = () => local.disabled
-  const size = () => local.size
-  const variant = () => local.variant
+  const disabled = () => local.disabled ?? config.form().disabled ?? config.componentDisabled()
+  const size = () => local.size ?? config.form().size ?? config.componentSize()
+  const variant = () => local.variant ?? config.form().variant ?? config.variant()
   const layoutContext = {
     layout,
     requiredMark,
@@ -174,13 +180,17 @@ export function FormRoot(props: FormProps) {
       prefixCls(),
       `${prefixCls()}-${layout()}`,
       hashId(),
+      config.form().class,
       semanticClassNames().root,
       local.class,
     )
   const rootStyle = () => {
     const semanticStyle = semanticStyles().root
-    if (!semanticStyle) return mergeStyle(local.style as JSX.CSSProperties | string | undefined)
-    return mergeStyle(semanticStyle, local.style as JSX.CSSProperties | string | undefined)
+    return mergeStyle(
+      config.form().style,
+      semanticStyle,
+      local.style as JSX.CSSProperties | string | undefined,
+    )
   }
 
   const rootProps = () => ({

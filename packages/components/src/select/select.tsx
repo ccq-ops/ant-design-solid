@@ -212,6 +212,7 @@ function SelectBase(props: SelectProps) {
     'styles',
   ])
   const config = useConfig()
+  const selectConfig = () => config.select()
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-select`
   const [, hashId] = useSelectStyle(prefixCls())
@@ -237,13 +238,23 @@ function SelectBase(props: SelectProps) {
       setInnerValue(formItem.value() as SelectValue)
   })
 
-  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
-  const size = () => local.size ?? formItem?.size?.()
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? config.componentDisabled()
+  const size = () => local.size ?? formItem?.size?.() ?? config.componentSize()
   const variant = () =>
     local.variant ??
-    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? 'outlined'))
-  const searchConfig = () => mergedSearchConfig(local)
-  const searchEnabled = () => isSearchEnabled(local)
+    selectConfig().variant ??
+    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? config.variant()))
+  const selectProps = () => ({ ...selectConfig(), ...local })
+  const searchConfig = () => mergedSearchConfig(selectProps())
+  const searchEnabled = () => isSearchEnabled(selectProps())
+  const classNamesConfig = () => selectProps().classNames
+  const stylesConfig = () => selectProps().styles
+  const allowClear = () => selectProps().allowClear
+  const clearIconNode = () => selectProps().clearIcon
+  const removeIconNode = () => selectProps().removeIcon
+  const menuItemSelectedIconNode = () => selectProps().menuItemSelectedIcon
+  const loadingIconNode = () => selectProps().loadingIcon
+  const suffixIconNode = () => selectProps().suffixIcon
   const searchValue = () =>
     searchConfig().searchValue !== undefined ? searchConfig().searchValue! : innerSearchValue()
   const baseOptions = createMemo(() => {
@@ -270,12 +281,17 @@ function SelectBase(props: SelectProps) {
   const open = () => (local.open !== undefined ? Boolean(local.open) : innerOpen())
   const selectedSet = () => new Set(selected().map((option) => option.value))
   const hasValue = () => selected().length > 0
-  const popupMatchSelectWidth = () => local.popupMatchSelectWidth ?? local.dropdownMatchSelectWidth
+  const popupMatchSelectWidth = () =>
+    local.popupMatchSelectWidth ?? local.dropdownMatchSelectWidth ?? config.popupMatchSelectWidth()
 
   function updateDropdownPosition(): void {
     if (isServer) return
     if (!canUseDom() || !selectorRef) {
-      setDropdownPosition({ 'z-index': `${dropdownZIndex}` })
+      const widthMatch = popupMatchSelectWidth()
+      setDropdownPosition({
+        width: typeof widthMatch === 'number' ? `${widthMatch}px` : undefined,
+        'z-index': `${dropdownZIndex}`,
+      })
       return
     }
     const rect = selectorRef.getBoundingClientRect()
@@ -476,16 +492,16 @@ function SelectBase(props: SelectProps) {
           `${prefixCls()}-dropdown`,
           local.popupClassName,
           local.dropdownClassName,
-          local.classNames?.popup,
-          local.classNames?.['popup.root'],
+          classNamesConfig()?.popup,
+          classNamesConfig()?.['popup.root'],
         )}
         style={mergeStyle(
           dropdownPosition(),
           { 'max-height': local.listHeight ? `${local.listHeight}px` : undefined },
           local.popupStyle,
           local.dropdownStyle,
-          local.styles?.popup,
-          local.styles?.['popup.root'],
+          stylesConfig()?.popup,
+          stylesConfig()?.['popup.root'],
         )}
         onScroll={(event) =>
           local.onPopupScroll?.(
@@ -524,9 +540,9 @@ function SelectBase(props: SelectProps) {
                           selectedOption() && `${prefixCls()}-item-option-selected`,
                           option.disabled && `${prefixCls()}-item-option-disabled`,
                           option.class,
-                          local.classNames?.item,
+                          classNamesConfig()?.item,
                         )}
-                        style={mergeStyle(option.style, local.styles?.item)}
+                        style={mergeStyle(option.style, stylesConfig()?.item)}
                         title={option.title}
                         onMouseEnter={() =>
                           local.onActive?.(
@@ -540,7 +556,7 @@ function SelectBase(props: SelectProps) {
                         </span>
                         <Show when={multiple() && selectedOption()}>
                           <span class={`${prefixCls()}-item-option-state`}>
-                            {local.menuItemSelectedIcon ?? <CheckOutlined />}
+                            {menuItemSelectedIconNode() ?? <CheckOutlined />}
                           </span>
                         </Show>
                       </div>
@@ -573,13 +589,18 @@ function SelectBase(props: SelectProps) {
         local.bordered === false ? `${prefixCls()}-borderless` : `${prefixCls()}-${variant()}`,
         hashId(),
         local.rootClassName,
+        selectConfig().class,
         local.class,
-        local.classNames?.root,
+        classNamesConfig()?.root,
       )}
       style={
         typeof local.style === 'string'
           ? local.style
-          : mergeStyle(local.style as JSX.CSSProperties | undefined, local.styles?.root)
+          : mergeStyle(
+              selectConfig().style,
+              local.style as JSX.CSSProperties | undefined,
+              stylesConfig()?.root,
+            )
       }
     >
       <div
@@ -591,9 +612,15 @@ function SelectBase(props: SelectProps) {
         aria-disabled={disabled()}
         ref={(element) => {
           selectorRef = element
+          if (open()) queueMicrotask(updateDropdownPosition)
         }}
-        class={classNames(`${prefixCls()}-selector`, local.classNames?.selector)}
-        style={local.styles?.selector}
+        class={classNames(
+          `${prefixCls()}-selector`,
+          `${prefixCls()}-${variant()}`,
+          selectConfig().class,
+          classNamesConfig()?.selector,
+        )}
+        style={stylesConfig()?.selector}
         onClick={() => setOpen(!open())}
         onFocus={(event) =>
           (local.onFocus as JSX.EventHandler<HTMLDivElement, FocusEvent> | undefined)?.(event)
@@ -670,7 +697,7 @@ function SelectBase(props: SelectProps) {
                             close()
                           }}
                         >
-                          {local.removeIcon ?? <CloseOutlined />}
+                          {removeIconNode() ?? <CloseOutlined />}
                         </button>
                       </span>
                     }
@@ -712,17 +739,17 @@ function SelectBase(props: SelectProps) {
             </Show>
           </span>
         </Show>
-        <Show when={local.allowClear && !disabled() && hasValue()}>
+        <Show when={allowClear() && !disabled() && hasValue()}>
           <button
             type="button"
             aria-label="clear selection"
             class={`${prefixCls()}-clear`}
             onClick={clearSelection}
           >
-            {clearIcon(local.allowClear, local.clearIcon)}
+            {clearIcon(allowClear(), clearIconNode())}
           </button>
         </Show>
-        <Show when={local.loading || local.showArrow !== false || local.suffixIcon !== null}>
+        <Show when={local.loading || local.showArrow !== false || suffixIconNode() !== null}>
           <span
             class={classNames(
               `${prefixCls()}-arrow`,
@@ -731,8 +758,8 @@ function SelectBase(props: SelectProps) {
             )}
           >
             {local.loading
-              ? (local.loadingIcon ?? <LoadingOutlined />)
-              : (local.suffixIcon ?? <DownOutlined width="0.8em" height="0.8em" />)}
+              ? (loadingIconNode() ?? <LoadingOutlined />)
+              : (suffixIconNode() ?? <DownOutlined width="0.8em" height="0.8em" />)}
           </span>
         </Show>
       </div>

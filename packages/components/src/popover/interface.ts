@@ -54,5 +54,5 @@ export interface PopoverProps extends Omit<JSX.HTMLAttributes<HTMLSpanElement>, 
   classNames?: PopoverSemanticClassNamesConfig
   styles?: PopoverSemanticStylesConfig
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
 }

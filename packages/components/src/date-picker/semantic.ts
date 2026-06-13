@@ -1,10 +1,27 @@
 import type { JSX } from 'solid-js'
 import { classNames } from '../shared/class-names'
-import type { DatePickerSemanticSlot } from './interface'
+import type { DatePickerSemanticSlot, SemanticClassNames, SemanticStyles } from './interface'
+
+export type ResolvedSemanticClasses = Partial<Record<DatePickerSemanticSlot, string>>
+export type ResolvedSemanticStyles = Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
+
+export function resolveSemanticClassNames<Props>(
+  classes: SemanticClassNames<DatePickerSemanticSlot, Props> | undefined,
+  props: Props,
+): ResolvedSemanticClasses | undefined {
+  return typeof classes === 'function' ? classes({ props }) : classes
+}
+
+export function resolveSemanticStyles<Props>(
+  styles: SemanticStyles<DatePickerSemanticSlot, Props> | undefined,
+  props: Props,
+): ResolvedSemanticStyles | undefined {
+  return typeof styles === 'function' ? styles({ props }) : styles
+}
 
 export function semanticClass(
   slot: DatePickerSemanticSlot,
-  classes: Partial<Record<DatePickerSemanticSlot, string>> | undefined,
+  classes: ResolvedSemanticClasses | undefined,
   ...values: Array<string | false | null | undefined>
 ): string {
   return classNames(...values, classes?.[slot])
@@ -12,7 +29,7 @@ export function semanticClass(
 
 export function semanticStyle(
   slot: DatePickerSemanticSlot,
-  styles: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>> | undefined,
+  styles: ResolvedSemanticStyles | undefined,
 ): JSX.CSSProperties | undefined {
   return styles?.[slot]
 }
@@ -22,9 +39,8 @@ export function rootVariantClass(
   status?: string,
   variant?: string,
   size?: string,
-  bordered?: boolean,
 ): Array<string | false | null | undefined> {
-  const effectiveVariant = variant ?? (bordered === false ? 'borderless' : undefined)
+  const effectiveVariant = variant
   return [
     status === 'error' && `${prefixCls}-status-error`,
     status === 'warning' && `${prefixCls}-status-warning`,
@@ -33,6 +49,7 @@ export function rootVariantClass(
     effectiveVariant === 'filled' && `${prefixCls}-filled`,
     effectiveVariant === 'underlined' && `${prefixCls}-underlined`,
     size === 'small' && `${prefixCls}-sm`,
+    size === 'medium' && `${prefixCls}-md`,
     size === 'large' && `${prefixCls}-lg`,
   ]
 }

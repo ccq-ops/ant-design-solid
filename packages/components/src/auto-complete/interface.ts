@@ -43,7 +43,7 @@ export interface AutoCompleteProps extends Omit<
   filterOption?: boolean | ((inputValue: string, option: AutoCompleteOption) => boolean)
   prefixCls?: string
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   onChange?: (value: string) => void
   onSelect?: (value: string, option: AutoCompleteOption) => void
   onOpenChange?: (open: boolean) => void

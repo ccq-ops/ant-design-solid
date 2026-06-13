@@ -1,6 +1,6 @@
 # ConfigProvider
 
-### Theme override
+### Theme
 
 ```tsx
 import { Button, ConfigProvider } from '@ant-design-solid/core'
@@ -16,15 +16,18 @@ const Demo1 = function () {
 export default Demo1
 ```
 
-### Component size
+### Size
 
 ```tsx
-import { Button, ConfigProvider } from '@ant-design-solid/core'
+import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
 
 const Demo2 = function () {
   return (
     <ConfigProvider componentSize="large">
-      <Button>Large by config</Button>
+      <Space>
+        <Button>Large</Button>
+        <Button type="primary">Primary</Button>
+      </Space>
     </ConfigProvider>
   )
 }
@@ -32,13 +35,137 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+### Disabled
+
+```tsx
+import { Button, ConfigProvider, Input, Space } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <ConfigProvider componentDisabled>
+      <Space>
+        <Input defaultValue="Disabled by ConfigProvider" />
+        <Button>Submit</Button>
+      </Space>
+    </ConfigProvider>
+  )
+}
+
+export default Demo3
+```
+
+### Variant
+
+```tsx
+import { ConfigProvider, Form, Input, Select, Space } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <ConfigProvider variant="filled">
+      <Space>
+        <Input placeholder="Filled input" />
+        <Select placeholder="Filled select" options={[{ label: 'Option', value: 'option' }]} />
+      </Space>
+      <Form variant="underlined">
+        <Form.Item label="Name">
+          <Input />
+        </Form.Item>
+      </Form>
+    </ConfigProvider>
+  )
+}
+
+export default Demo4
+```
+
+### Component Config
+
+```tsx
+import { Button, ConfigProvider, Input, Select, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <ConfigProvider
+      button={{ autoInsertSpace: false, color: 'blue', variant: 'filled' }}
+      input={{ variant: 'filled' }}
+      select={{ variant: 'underlined' }}
+      popupMatchSelectWidth={false}
+    >
+      <Space>
+        <Button>按钮</Button>
+        <Input placeholder="Input" />
+        <Select placeholder="Select" options={[{ label: 'Option', value: 'option' }]} />
+      </Space>
+    </ConfigProvider>
+  )
+}
+
+export default Demo5
+```
+
+### Static Config
+
+```tsx
+import { ConfigProvider } from '@ant-design-solid/core'
+
+ConfigProvider.config({
+  prefixCls: 'custom',
+  iconPrefixCls: 'customicon',
+  theme: { token: { colorPrimary: '#1677ff' } },
+})
+```
+
+### Hook
+
+```tsx
+import { ConfigProvider } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  const config = ConfigProvider.useConfig()
+
+  return <span>{config.componentSize()}</span>
+}
+
+export default Demo6
+```
+
 ## API
 
-| Property            | Description                                         | Type                                         | Default    |
-| ------------------- | --------------------------------------------------- | -------------------------------------------- | ---------- |
-| `prefixCls`         | Global CSS class prefix for components.             | `string`                                     | `'ads'`    |
-| `componentSize`     | Default component size.                             | `'small' \| 'middle' \| 'large'`             | `'middle'` |
-| `direction`         | Text and layout direction.                          | `'ltr' \| 'rtl'`                             | `'ltr'`    |
-| `theme`             | Theme token configuration.                          | `ThemeConfig`                                | `-`        |
-| `getPopupContainer` | Global popup portal container resolver.             | `(triggerNode?: HTMLElement) => HTMLElement` | `-`        |
-| `children`          | Application or subtree receiving the configuration. | `JSX.Element`                                | `-`        |
+| Property                | Description                                                                                                               | Type                                                       | Default      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------ |
+| `prefixCls`             | Global CSS class prefix for components.                                                                                   | `string`                                                   | `'ads'`      |
+| `iconPrefixCls`         | Global CSS class prefix for icons.                                                                                        | `string`                                                   | `'adsicon'`  |
+| `componentSize`         | Default component size. `middle` is kept for compatibility; `medium` follows antd v6.                                     | `'small' \| 'medium' \| 'middle' \| 'large'`               | `'middle'`   |
+| `componentDisabled`     | Set disabled state for supported child components.                                                                        | `boolean`                                                  | `false`      |
+| `direction`             | Text and layout direction.                                                                                                | `'ltr' \| 'rtl'`                                           | `'ltr'`      |
+| `variant`               | Default variant for supported data-entry components.                                                                      | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`   | `'outlined'` |
+| `theme`                 | Theme token configuration. Supports `token`, `components`, `algorithm`, `inherit`, `hashed`, `cssVar`, and `zeroRuntime`. | `ThemeConfig`                                              | `-`          |
+| `locale`                | Global locale object.                                                                                                     | `Locale`                                                   | `-`          |
+| `renderEmpty`           | Custom empty-state renderer.                                                                                              | `(componentName?: string) => JSX.Element`                  | `-`          |
+| `getPopupContainer`     | Global popup portal container resolver.                                                                                   | `(triggerNode?: HTMLElement) => HTMLElement \| ShadowRoot` | `-`          |
+| `getTargetContainer`    | Global target container resolver.                                                                                         | `() => HTMLElement \| Window \| ShadowRoot`                | `-`          |
+| `virtual`               | Enables virtual scrolling for supported components.                                                                       | `boolean`                                                  | `true`       |
+| `popupMatchSelectWidth` | Default popup width matching behavior for supported select-like components.                                               | `boolean \| number`                                        | `-`          |
+| `popupOverflow`         | Popup overflow strategy.                                                                                                  | `'viewport' \| 'scroll'`                                   | `'viewport'` |
+| `csp`                   | Content Security Policy config.                                                                                           | `{ nonce?: string }`                                       | `-`          |
+| `warning`               | Warning behavior config.                                                                                                  | `{ strict?: boolean }`                                     | `-`          |
+| `wave`                  | Wave effect config.                                                                                                       | `{ disabled?: boolean; triggerType?: TriggerType }`        | `-`          |
+| `children`              | Application or subtree receiving the configuration.                                                                       | `JSX.Element`                                              | `-`          |
+
+## Component Config
+
+Component config props follow antd v6 names, with Solid conventions:
+
+- `class` replaces React `className`.
+- Deprecated compatibility props from antd are not included.
+- Config is inherited by nested providers and shallow-merged by component key.
+
+Supported component config keys include `affix`, `alert`, `anchor`, `app`, `avatar`, `badge`, `borderBeam`, `breadcrumb`, `button`, `calendar`, `card`, `cardMeta`, `carousel`, `cascader`, `checkbox`, `collapse`, `colorPicker`, `datePicker`, `rangePicker`, `descriptions`, `divider`, `drawer`, `dropdown`, `empty`, `flex`, `floatButton`, `floatButtonGroup`, `form`, `image`, `input`, `inputPassword`, `inputSearch`, `otp`, `inputNumber`, `textArea`, `layout`, `list`, `masonry`, `mentions`, `menu`, `message`, `modal`, `notification`, `pagination`, `popconfirm`, `popover`, `progress`, `qrcode`, `radio`, `rate`, `result`, `ribbon`, `segmented`, `select`, `skeleton`, `slider`, `space`, `spin`, `splitter`, `statistic`, `steps`, `switch`, `table`, `tabs`, `tag`, `timeline`, `timePicker`, `tooltip`, `tour`, `transfer`, `tree`, `treeSelect`, `typography`, `upload`, and `watermark`.
+
+## Static Methods
+
+| Method                         | Description                                                                       | Type                                                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ConfigProvider.config`        | Sets global static defaults for prefix, icon prefix, theme, and holder rendering. | `(config: { prefixCls?: string; iconPrefixCls?: string; theme?: ThemeConfig; holderRender?: (children: JSX.Element) => JSX.Element }) => void` |
+| `ConfigProvider.useConfig`     | Reads current ConfigProvider context.                                             | `() => ConfigContextValue`                                                                                                                     |
+| `ConfigProvider.ConfigContext` | Raw Solid context for advanced integrations.                                      | `Context<ConfigContextValue>`                                                                                                                  |

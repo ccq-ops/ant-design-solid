@@ -40,5 +40,5 @@ export interface ColorPickerProps extends Omit<
   popupClass?: string
   popupStyle?: JSX.CSSProperties
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
 }

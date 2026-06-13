@@ -84,7 +84,7 @@ export interface TourProps {
   scrollIntoViewOptions?: TourScrollIntoViewOptions
   type?: TourType
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   gap?: TourGap
   nextText?: JSX.Element
   prevText?: JSX.Element

@@ -1,22 +1,23 @@
 import type { Dayjs } from 'dayjs'
 import type { Component, JSX } from 'solid-js'
-import type { ComponentSize } from '../config-provider'
 
-export type PickerType = 'date' | 'week' | 'month' | 'quarter' | 'year' | 'time'
-export type PickerMode = PickerType | 'decade'
+export type PickerType = 'date' | 'week' | 'month' | 'quarter' | 'year'
+export type PickerMode = PickerType | 'time' | 'decade'
 export type DatePickerPlacement = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
 export type DatePickerStatus = '' | 'error' | 'warning'
 export type DatePickerVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
+export type DatePickerSize = 'small' | 'medium' | 'large'
 export type DatePickerValue = Dayjs | null
 export type DatePickerMultipleValue = Dayjs[]
 export type RangePickerValue = [Dayjs | null, Dayjs | null] | null
 export type RangeSide = 'start' | 'end'
 export type TimeSubtype = 'hour' | 'minute' | 'second' | 'meridiem'
+export type DatePickerPreviewValue = false | 'hover'
 
 export type DatePickerFormat =
   | string
-  | string[]
   | ((value: Dayjs) => string)
+  | Array<string | ((value: Dayjs) => string)>
   | { format: string; type?: 'mask' }
 
 export interface DatePickerLocale {
@@ -71,7 +72,6 @@ export interface DisabledTimeConfig {
 }
 
 export interface ShowTimeOptions extends DisabledTimeConfig {
-  defaultValue?: Dayjs
   defaultOpenValue?: Dayjs
   format?: string
   showHour?: boolean
@@ -82,11 +82,7 @@ export interface ShowTimeOptions extends DisabledTimeConfig {
   hideDisabledOptions?: boolean
 }
 
-export interface RangeShowTimeOptions extends Omit<
-  ShowTimeOptions,
-  'defaultValue' | 'defaultOpenValue'
-> {
-  defaultValue?: [Dayjs, Dayjs]
+export interface RangeShowTimeOptions extends Omit<ShowTimeOptions, 'defaultOpenValue'> {
   defaultOpenValue?: [Dayjs, Dayjs]
 }
 
@@ -171,9 +167,27 @@ export type DatePickerSemanticSlot =
   | 'presets'
   | 'footer'
 
+export type SemanticClassNames<Slot extends string, Props> =
+  | Partial<Record<Slot, string>>
+  | ((info: { props: Props }) => Partial<Record<Slot, string>>)
+
+export type SemanticStyles<Slot extends string, Props> =
+  | Partial<Record<Slot, JSX.CSSProperties>>
+  | ((info: { props: Props }) => Partial<Record<Slot, JSX.CSSProperties>>)
+
+type ReactClassPropName = `class${'Name'}`
+
 export interface CommonPickerProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onInput' | 'onFocus' | 'onBlur' | 'onKeyDown' | 'onSelect' | 'prefix' | 'ref'
+  | 'onChange'
+  | 'onInput'
+  | 'onFocus'
+  | 'onBlur'
+  | 'onKeyDown'
+  | 'onSelect'
+  | 'prefix'
+  | 'ref'
+  | ReactClassPropName
 > {
   id?: string
   name?: string
@@ -191,16 +205,14 @@ export interface CommonPickerProps extends Omit<
   pickerValue?: Dayjs
   defaultPickerValue?: Dayjs
   placement?: DatePickerPlacement
-  size?: ComponentSize
+  size?: DatePickerSize
   status?: DatePickerStatus
   variant?: DatePickerVariant
   locale?: DatePickerLocale
-  disabledDate?: (current: Dayjs, info: { type: PickerType }) => boolean
+  disabledDate?: (current: Dayjs, info: { type: PickerType; from?: Dayjs }) => boolean
   minDate?: Dayjs
   maxDate?: Dayjs
-  showTime?: boolean | ShowTimeOptions
   showNow?: boolean
-  disabledTime?: (date: Dayjs | null) => DisabledTimeConfig
   cellRender?: (current: Dayjs, info: CellRenderInfo) => JSX.Element
   dateRender?: (current: Dayjs, today: Dayjs) => JSX.Element
   renderExtraFooter?: (mode: PickerMode) => JSX.Element
@@ -212,21 +224,15 @@ export interface CommonPickerProps extends Omit<
   nextIcon?: JSX.Element
   superPrevIcon?: JSX.Element
   superNextIcon?: JSX.Element
-  previousIcon?: JSX.Element
   components?: PickerComponents
-  previewValue?: DatePickerValue | RangePickerValue
+  previewValue?: DatePickerPreviewValue
   onSelect?: (date: Dayjs) => void
   showWeek?: boolean
-  bordered?: boolean
-  classNames?: Partial<Record<DatePickerSemanticSlot, string>>
-  styles?: Partial<Record<DatePickerSemanticSlot, JSX.CSSProperties>>
+  classNames?: SemanticClassNames<DatePickerSemanticSlot, DatePickerProps | RangePickerProps>
+  styles?: SemanticStyles<DatePickerSemanticSlot, DatePickerProps | RangePickerProps>
   prefixCls?: string
-  className?: string
-  popupClassName?: string
-  dropdownClassName?: string
-  popupStyle?: JSX.CSSProperties
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   onOpenChange?: (open: boolean) => void
   onPanelChange?: (value: Dayjs, mode: PickerMode) => void
   onFocus?: JSX.EventHandlerUnion<HTMLInputElement, FocusEvent>
@@ -240,6 +246,8 @@ export interface DatePickerSingleProps extends CommonPickerProps {
   defaultValue?: DatePickerValue
   multiple?: false
   order?: boolean
+  showTime?: boolean | ShowTimeOptions
+  disabledTime?: (date: Dayjs | null) => DisabledTimeConfig
   presets?: Array<PresetValue<SinglePresetValue>>
   needConfirm?: boolean
   tagRender?: (props: TagRenderProps) => JSX.Element
@@ -252,6 +260,8 @@ export interface DatePickerMultipleProps extends CommonPickerProps {
   defaultValue?: DatePickerMultipleValue
   multiple: true
   order?: boolean
+  showTime?: never
+  disabledTime?: never
   presets?: Array<PresetValue<SinglePresetValue>>
   needConfirm?: boolean
   tagRender?: (props: TagRenderProps) => JSX.Element
@@ -272,20 +282,26 @@ export interface RangePickerProps extends Omit<
   | 'id'
   | 'onFocus'
   | 'onBlur'
+  | 'disabledTime'
   | 'showWeek'
 > {
   value?: RangePickerValue
   defaultValue?: RangePickerValue
   defaultPickerValue?: Dayjs | [Dayjs, Dayjs]
   pickerValue?: Dayjs | [Dayjs, Dayjs]
-  id?: string | [string, string]
+  id?: { start?: string; end?: string }
   placeholder?: [string, string]
   disabled?: boolean | [boolean, boolean]
   allowEmpty?: [boolean, boolean]
   showTime?: boolean | RangeShowTimeOptions
+  disabledTime?: (
+    date: Dayjs | null,
+    partial: RangeSide,
+    info: { from?: Dayjs },
+  ) => DisabledTimeConfig
   presets?: Array<PresetValue<RangePresetValue>>
   order?: boolean
-  onChange?: (dates: RangePickerValue, dateStrings: [string, string]) => void
+  onChange?: (dates: RangePickerValue, dateStrings: [string, string] | null) => void
   onCalendarChange?: (
     dates: RangePickerValue,
     dateStrings: [string, string],

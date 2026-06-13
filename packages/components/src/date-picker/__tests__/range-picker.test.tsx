@@ -112,6 +112,36 @@ describe('RangePicker', () => {
     expect(inputs[1]).toHaveValue('2026-06-15')
   })
 
+  it('uses object ids for start and end inputs', () => {
+    render(() => <RangePicker id={{ start: 'range-start', end: 'range-end' }} />)
+
+    expect(screen.getAllByRole('textbox')[0]).toHaveAttribute('id', 'range-start')
+    expect(screen.getAllByRole('textbox')[1]).toHaveAttribute('id', 'range-end')
+  })
+
+  it('uses a default icon separator instead of a hyphen', () => {
+    const result = render(() => <RangePicker />)
+
+    expect(
+      result.container.querySelector('.ads-date-picker-range-separator')?.textContent,
+    ).not.toBe('-')
+    expect(result.container.querySelector('.ads-date-picker-range-separator svg')).toBeTruthy()
+  })
+
+  it('clears the full range by default and emits null values', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} onChange={onChange} />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear date range' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(null, null)
+    const inputs = screen.getAllByRole('textbox')
+    expect(inputs[0]).toHaveValue('')
+    expect(inputs[1]).toHaveValue('')
+  })
+
   it('passes range metadata to focus and blur callbacks', () => {
     const onFocus = vi.fn()
     const onBlur = vi.fn()
@@ -160,6 +190,41 @@ describe('RangePicker', () => {
     expect(screen.getByRole('button', { name: '2026-06-12' })).toHaveClass(
       'ads-date-picker-cell-in-range',
     )
+  })
+
+  it('disables hover preview when previewValue is false', () => {
+    render(() => (
+      <DatePickerModule.RangePicker
+        defaultOpen
+        previewValue={false}
+        defaultPickerValue={dayjs('2026-06-01')}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+    fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
+
+    expect(screen.getByRole('button', { name: '2026-06-12' })).not.toHaveClass(
+      'ads-date-picker-cell-in-range',
+    )
+  })
+
+  it('passes from date to disabledDate while selecting a range end', () => {
+    const disabledDate = vi.fn((_current: Dayjs, _info: { type: string; from?: Dayjs }) => false)
+    render(() => (
+      <RangePicker
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        disabledDate={disabledDate}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
+    fireEvent.mouseEnter(screen.getByRole('button', { name: '2026-06-15' }))
+
+    expect(
+      disabledDate.mock.calls.some((call) => call[1]?.from?.format('YYYY-MM-DD') === '2026-06-10'),
+    ).toBe(true)
   })
 
   it('marks the first selected range date as the range start while choosing an end date', () => {

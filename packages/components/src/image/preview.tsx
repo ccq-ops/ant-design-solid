@@ -22,7 +22,7 @@ export interface ImagePreviewProps {
   height?: Accessor<string | number | undefined>
   preview: Accessor<boolean | ImagePreviewConfig | undefined>
   zIndex: Accessor<number>
-  getPopupContainer: Accessor<((triggerNode?: HTMLElement) => HTMLElement) | undefined>
+  getPopupContainer: Accessor<((triggerNode?: HTMLElement) => HTMLElement | ShadowRoot) | undefined>
   classNames: Accessor<ImageSemanticClassNames['popup'] | undefined>
   styles: Accessor<ImageSemanticStyles['popup'] | undefined>
   count?: Accessor<number>

@@ -126,6 +126,18 @@ describe('DatePicker dayjs value model', () => {
     expect(screen.getByRole('textbox')).toHaveValue('')
   })
 
+  it('shows clear button by default and hides it with allowClear false', () => {
+    const { unmount } = render(() => <DatePicker defaultValue={dayjs('2026-06-01')} />)
+    expect(screen.getByRole('button', { name: 'Clear date' })).toBeInTheDocument()
+
+    unmount()
+    cleanup()
+    document.body.innerHTML = ''
+
+    render(() => <DatePicker defaultValue={dayjs('2026-06-01')} allowClear={false} />)
+    expect(screen.queryByRole('button', { name: 'Clear date' })).not.toBeInTheDocument()
+  })
+
   it('does not emit onChange when blurring unchanged valid input', () => {
     const onChange = vi.fn()
     render(() => <DatePicker defaultValue={dayjs('2026-06-01')} onChange={onChange} />)
@@ -313,10 +325,10 @@ describe('DatePicker dayjs value model', () => {
     rectSpy.mockRestore()
   })
 
-  it('applies className alias to root and topRight placement class to popup', () => {
+  it('applies Solid class to root and topRight placement class to popup', () => {
     const result = render(() => (
       <DatePicker
-        className="custom-picker"
+        class="custom-picker"
         defaultOpen
         defaultPickerValue={dayjs('2026-06-01')}
         placement="topRight"

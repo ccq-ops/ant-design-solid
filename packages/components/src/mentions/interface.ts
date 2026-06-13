@@ -100,7 +100,7 @@ export interface MentionsProps extends Omit<
   validateSearch?: (text: string, props: MentionsProps) => boolean
   prefixCls?: string
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   ref?: MentionsRef | { current?: MentionsRef } | ((ref: MentionsRef) => void)
   onChange?: (value: string) => void
   onSelect?: (option: MentionsOption, prefix: string) => void

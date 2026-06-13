@@ -72,5 +72,5 @@ export interface TooltipProps extends Omit<JSX.HTMLAttributes<HTMLSpanElement>, 
   classNames?: TooltipSemanticClassNamesConfig
   styles?: TooltipSemanticStylesConfig
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
 }

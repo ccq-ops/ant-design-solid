@@ -1,13 +1,15 @@
-import { fireEvent, render, screen } from '@solidjs/testing-library'
+import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Button } from '../../button'
 import { ConfigProvider } from '../../config-provider'
 import { Form, useForm } from '../../form'
 import { Select } from '../index'
 
 describe('Select', () => {
+  afterEach(() => cleanup())
+
   const options = [
     { label: 'Alpha', value: 'a' },
     { label: 'Beta', value: 'b' },
@@ -133,6 +135,24 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).toBeNull()
     expect(onOpenChange).not.toHaveBeenCalled()
     expect(result.queryByRole('button', { name: 'clear selection' })).toBeNull()
+  })
+
+  it('uses ConfigProvider disabled, variant, and select defaults', () => {
+    const result = render(() => (
+      <ConfigProvider
+        componentDisabled
+        variant="filled"
+        select={{ class: 'configured-select', suffixIcon: <span>suf</span> }}
+      >
+        <Select options={options} />
+      </ConfigProvider>
+    ))
+    const combobox = result.getByRole('combobox')
+
+    expect(combobox).toHaveAttribute('aria-disabled', 'true')
+    expect(combobox).toHaveClass('configured-select')
+    expect(combobox).toHaveClass('ads-select-filled')
+    expect(result.getByText('suf')).toBeTruthy()
   })
 
   it('closes dropdown on outside pointer down', () => {

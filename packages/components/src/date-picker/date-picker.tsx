@@ -38,7 +38,13 @@ import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
 import { TimePanel } from './time-panel'
 import { RangePicker } from './range-picker'
-import { rootVariantClass, semanticClass, semanticStyle } from './semantic'
+import {
+  resolveSemanticClassNames,
+  resolveSemanticStyles,
+  rootVariantClass,
+  semanticClass,
+  semanticStyle,
+} from './semantic'
 
 function DatePickerBase(props: DatePickerProps) {
   const ariaLabel = () => props['aria-label'] as string | undefined
@@ -66,13 +72,9 @@ function DatePickerBase(props: DatePickerProps) {
     'locale',
     'prefixCls',
     'class',
-    'className',
     'style',
     'classNames',
     'styles',
-    'popupClassName',
-    'dropdownClassName',
-    'popupStyle',
     'placement',
     'onChange',
     'onOpenChange',
@@ -91,7 +93,6 @@ function DatePickerBase(props: DatePickerProps) {
     'status',
     'variant',
     'size',
-    'bordered',
     'prevIcon',
     'nextIcon',
     'superPrevIcon',
@@ -100,7 +101,6 @@ function DatePickerBase(props: DatePickerProps) {
     'previewValue',
     'onSelect',
     'showWeek',
-    'previousIcon',
     'presets',
     'cellRender',
     'dateRender',
@@ -116,6 +116,8 @@ function DatePickerBase(props: DatePickerProps) {
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
+  const resolvedClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
+  const resolvedStyles = createMemo(() => resolveSemanticStyles(local.styles, props))
   const picker = () => local.picker ?? 'date'
   const multiple = () => Boolean(local.multiple)
   const showTimeEnabled = () => !multiple() && Boolean(local.showTime)
@@ -191,7 +193,7 @@ function DatePickerBase(props: DatePickerProps) {
     if (!canUseDom() || !selectorRef) {
       setDropdownPosition({
         'z-index': `${dropdownZIndex}`,
-        ...semanticStyle('popup', local.styles),
+        ...semanticStyle('popup', resolvedStyles()),
       })
       return
     }
@@ -201,8 +203,7 @@ function DatePickerBase(props: DatePickerProps) {
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       'z-index': `${dropdownZIndex}`,
-      ...semanticStyle('popup', local.styles),
-      ...local.popupStyle,
+      ...semanticStyle('popup', resolvedStyles()),
     })
   }
 
@@ -420,7 +421,7 @@ function DatePickerBase(props: DatePickerProps) {
     if (pendingValue()) return pendingValue()!
     if (selectedDate()) return selectedDate()!
     const options = typeof local.showTime === 'object' ? local.showTime : undefined
-    return options?.defaultOpenValue ?? options?.defaultValue ?? dayjs().startOf('day')
+    return options?.defaultOpenValue ?? dayjs().startOf('day')
   }
 
   function applyTimeSeed(date: dayjs.Dayjs): dayjs.Dayjs {
@@ -460,8 +461,8 @@ function DatePickerBase(props: DatePickerProps) {
           disabledDate={isDateDisabled}
           cellRender={local.cellRender}
           locale={locale()}
-          classNames={local.classNames}
-          styles={local.styles}
+          classNames={resolvedClassNames()}
+          styles={resolvedStyles()}
           onSelect={selectPickerValue}
         />
       )
@@ -475,8 +476,8 @@ function DatePickerBase(props: DatePickerProps) {
           disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
           cellRender={local.cellRender}
           locale={locale()}
-          classNames={local.classNames}
-          styles={local.styles}
+          classNames={resolvedClassNames()}
+          styles={resolvedStyles()}
           onSelect={selectPickerValue}
         />
       )
@@ -492,8 +493,8 @@ function DatePickerBase(props: DatePickerProps) {
         cellRender={local.cellRender}
         dateRender={local.dateRender}
         locale={locale()}
-        classNames={local.classNames}
-        styles={local.styles}
+        classNames={resolvedClassNames()}
+        styles={resolvedStyles()}
         onSelect={selectPickerValue}
       />
     )
@@ -507,18 +508,17 @@ function DatePickerBase(props: DatePickerProps) {
       }}
       class={semanticClass(
         'root',
-        local.classNames,
+        resolvedClassNames(),
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         multiple() && `${prefixCls()}-multiple`,
-        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size, local.bordered),
+        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size),
         hashId(),
         local.class,
-        local.className,
       )}
       style={{
-        ...semanticStyle('root', local.styles),
+        ...semanticStyle('root', resolvedStyles()),
         ...(local.style as JSX.CSSProperties | undefined),
       }}
     >
@@ -526,8 +526,8 @@ function DatePickerBase(props: DatePickerProps) {
         role="combobox"
         aria-expanded={open()}
         aria-disabled={disabled()}
-        class={semanticClass('selector', local.classNames, `${prefixCls()}-selector`)}
-        style={semanticStyle('selector', local.styles)}
+        class={semanticClass('selector', resolvedClassNames(), `${prefixCls()}-selector`)}
+        style={semanticStyle('selector', resolvedStyles())}
         onClick={() => {
           inputRef?.focus()
           setOpen(true)
@@ -548,16 +548,16 @@ function DatePickerBase(props: DatePickerProps) {
           disabled={disabled()}
           readOnly={local.inputReadOnly}
           autoFocus={local.autoFocus}
-          allowClear={Boolean(local.allowClear)}
+          allowClear={local.allowClear !== false}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
           clearAriaLabel={local.locale?.lang?.clear ?? 'Clear date'}
           prefix={local.prefix}
           suffixIcon={local.suffixIcon}
           ariaLabel={ariaLabel()}
-          inputClass={semanticClass('input', local.classNames, `${prefixCls()}-input`)}
-          inputStyle={semanticStyle('input', local.styles)}
-          clearClass={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
-          clearStyle={semanticStyle('clear', local.styles)}
+          inputClass={semanticClass('input', resolvedClassNames(), `${prefixCls()}-input`)}
+          inputStyle={semanticStyle('input', resolvedStyles())}
+          clearClass={semanticClass('clear', resolvedClassNames(), `${prefixCls()}-clear`)}
+          clearStyle={semanticStyle('clear', resolvedStyles())}
           inputRef={(element) => {
             inputRef = element
           }}
@@ -597,9 +597,9 @@ function DatePickerBase(props: DatePickerProps) {
             prefixCls={prefixCls()}
             viewDate={panelViewDate()}
             placement={local.placement}
-            class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
-            classNames={local.classNames}
-            styles={local.styles}
+            class={semanticClass('popup', resolvedClassNames())}
+            classNames={resolvedClassNames()}
+            styles={resolvedStyles()}
             style={dropdownPosition()}
             mode={picker()}
             presets={local.presets}
@@ -608,7 +608,7 @@ function DatePickerBase(props: DatePickerProps) {
             locale={locale()}
             needConfirm={local.needConfirm}
             showTime={showTimeEnabled()}
-            previousIcon={local.prevIcon ?? local.previousIcon}
+            prevIcon={local.prevIcon}
             superPreviousIcon={local.superPrevIcon}
             nextIcon={local.nextIcon}
             superNextIcon={local.superNextIcon}

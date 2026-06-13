@@ -122,7 +122,7 @@ export interface MenuProps extends Omit<
   classNames?: MenuSemanticClasses
   styles?: MenuSemanticStyles
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   onClick?: (info: MenuClickInfo) => void
   onSelect?: (info: MenuSelectInfo) => void
   onDeselect?: (info: MenuSelectInfo) => void

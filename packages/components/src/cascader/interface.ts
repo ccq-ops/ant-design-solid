@@ -50,7 +50,7 @@ export interface CascaderProps extends Omit<
   displayRender?: (labels: JSX.Element[], selectedOptions: CascaderOption[]) => JSX.Element
   prefixCls?: string
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
   onChange?: (
     value: OptionValue[] | OptionValue[][],
     selectedOptions: CascaderOption[] | CascaderOption[][],

@@ -73,11 +73,15 @@ describe('DatePicker public types', () => {
     expect(badRangePreset).toBeTruthy()
   })
 
-  it('accepts public parity props for single and range pickers', () => {
+  it('accepts v6 Solid public props and rejects invalid prop combinations', () => {
     const single = (
       <DatePicker
-        showWeek
-        previewValue={dayjs('2026-06-01')}
+        class="solid-picker"
+        size="medium"
+        previewValue="hover"
+        format={['YYYY-MM-DD', (value) => value.format('YYYY/MM/DD')]}
+        classNames={(info) => ({ root: info.props.class, popup: 'popup-slot' })}
+        styles={() => ({ popup: { width: '320px' } })}
         superPrevIcon={<span />}
         superNextIcon={<span />}
         components={{
@@ -90,16 +94,33 @@ describe('DatePicker public types', () => {
     )
     const range = (
       <RangePicker
-        picker="month"
-        previewValue={[dayjs('2026-06-01'), dayjs('2026-06-30')]}
-        superPrevIcon={<span />}
-        superNextIcon={<span />}
-        components={{ input: (props) => <input ref={props.inputRef} value={props.value} /> }}
-        onSelect={(date) => date.format('YYYY-MM-DD')}
+        class="solid-range-picker"
+        id={{ start: 'range-start', end: 'range-end' }}
+        size="medium"
+        previewValue={false}
+        disabledDate={(current, info) => {
+          info.from?.format('YYYY-MM-DD')
+          return current.isBefore(dayjs('2026-01-01'))
+        }}
+        disabledTime={(date, partial, info) => {
+          date?.format('HH:mm:ss')
+          partial.toUpperCase()
+          info.from?.format('YYYY-MM-DD')
+          return {}
+        }}
+        onChange={(dates, dateStrings) => {
+          dates?.[0]?.format('YYYY-MM-DD')
+          dateStrings?.[0]?.toUpperCase()
+        }}
       />
+    )
+    const multipleWithShowTime = (
+      // @ts-expect-error multiple DatePicker does not support showTime
+      <DatePicker multiple showTime />
     )
 
     expect(single).toBeTruthy()
     expect(range).toBeTruthy()
+    expect(multipleWithShowTime).toBeTruthy()
   })
 })

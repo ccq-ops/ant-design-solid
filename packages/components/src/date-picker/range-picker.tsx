@@ -9,6 +9,7 @@ import {
 } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic, isServer } from 'solid-js/web'
+import { SwapRightOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -38,7 +39,13 @@ import { mergeDatePickerLocale } from './locale'
 import { PickerInput } from './picker-input'
 import { PickerPanel } from './picker-panel'
 import { TimePanel } from './time-panel'
-import { rootVariantClass, semanticClass, semanticStyle } from './semantic'
+import {
+  resolveSemanticClassNames,
+  resolveSemanticStyles,
+  rootVariantClass,
+  semanticClass,
+  semanticStyle,
+} from './semantic'
 
 type RangeTuple = [dayjs.Dayjs | null, dayjs.Dayjs | null]
 type RangeMetaHandler = (event: FocusEvent, info: { range: RangeSide }) => void
@@ -97,13 +104,9 @@ export function RangePicker(props: RangePickerProps) {
     'locale',
     'prefixCls',
     'class',
-    'className',
     'style',
     'classNames',
     'styles',
-    'popupClassName',
-    'dropdownClassName',
-    'popupStyle',
     'placement',
     'onChange',
     'onCalendarChange',
@@ -120,7 +123,6 @@ export function RangePicker(props: RangePickerProps) {
     'status',
     'variant',
     'size',
-    'bordered',
     'prevIcon',
     'nextIcon',
     'superPrevIcon',
@@ -128,7 +130,6 @@ export function RangePicker(props: RangePickerProps) {
     'components',
     'previewValue',
     'onSelect',
-    'previousIcon',
     'presets',
     'cellRender',
     'dateRender',
@@ -144,6 +145,8 @@ export function RangePicker(props: RangePickerProps) {
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-date-picker`
   const [, hashId] = useDatePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('DatePicker', local.zIndex)
+  const resolvedClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
+  const resolvedStyles = createMemo(() => resolveSemanticStyles(local.styles, props))
   const picker = () => local.picker ?? 'date'
   const showTimeEnabled = () => Boolean(local.showTime)
   const effectiveFormat = () =>
@@ -226,7 +229,7 @@ export function RangePicker(props: RangePickerProps) {
     if (!canUseDom() || !selectorRef) {
       setDropdownPosition({
         'z-index': `${dropdownZIndex}`,
-        ...semanticStyle('popup', local.styles),
+        ...semanticStyle('popup', resolvedStyles()),
       })
       return
     }
@@ -236,8 +239,7 @@ export function RangePicker(props: RangePickerProps) {
       top: `${rect.bottom + 4}px`,
       left: `${rect.left}px`,
       'z-index': `${dropdownZIndex}`,
-      ...semanticStyle('popup', local.styles),
-      ...local.popupStyle,
+      ...semanticStyle('popup', resolvedStyles()),
     })
   }
 
@@ -274,9 +276,14 @@ export function RangePicker(props: RangePickerProps) {
 
   function isDateDisabled(date: dayjs.Dayjs): boolean {
     return Boolean(
-      local.disabledDate?.(date, { type: picker() }) ||
+      local.disabledDate?.(date, { type: picker(), from: fromForSide(activeRange()) }) ||
       isOutOfBounds(date, local.minDate, local.maxDate, picker()),
     )
+  }
+
+  function fromForSide(side: RangeSide): dayjs.Dayjs | undefined {
+    const range = selectedOrPendingRange()
+    return range[side === 'start' ? 1 : 0] ?? undefined
   }
 
   function commitValue(nextRange: RangeTuple): void {
@@ -284,7 +291,7 @@ export function RangePicker(props: RangePickerProps) {
     if (!isValueControlled()) setInnerValue(nextRange)
     const nextStrings = rangeStrings(nextRange, effectiveFormat(), picker())
     if (!isValueControlled()) setInputValues(nextStrings)
-    local.onChange?.(normalized, nextStrings)
+    local.onChange?.(normalized, normalized ? nextStrings : null)
   }
 
   function emitCalendarChange(nextRange: RangeTuple, range: RangeSide): void {
@@ -346,11 +353,8 @@ export function RangePicker(props: RangePickerProps) {
     const active = range[sideIndex(side)]
     if (active) return active
     const options = typeof local.showTime === 'object' ? local.showTime : undefined
-    const defaultTime = options?.defaultOpenValue ?? options?.defaultValue
-    return (
-      (Array.isArray(defaultTime) ? defaultTime[sideIndex(side)] : defaultTime) ??
-      dayjs().startOf('day')
-    )
+    const defaultTime = options?.defaultOpenValue
+    return defaultTime?.[sideIndex(side)] ?? dayjs().startOf('day')
   }
 
   function applyTimeSeed(date: dayjs.Dayjs, side: RangeSide): dayjs.Dayjs {
@@ -390,7 +394,19 @@ export function RangePicker(props: RangePickerProps) {
   }
 
   function changeHoverValue(date: dayjs.Dayjs | null): void {
-    setHoverValue(selecting() ? date : null)
+    setHoverValue(selecting() && local.previewValue !== false ? date : null)
+  }
+
+  function clearRange(event: MouseEvent): void {
+    event.stopPropagation()
+    const nextRange: RangeTuple = [null, null]
+    if (!isValueControlled()) setInnerValue(nextRange)
+    if (!isValueControlled()) setInputValues(['', ''])
+    setPendingRange([null, null])
+    setDraftRange([null, null])
+    setHoverValue(null)
+    setSelecting(false)
+    local.onChange?.(null, null)
   }
 
   function clearSide(side: RangeSide, event: MouseEvent): void {
@@ -483,8 +499,8 @@ export function RangePicker(props: RangePickerProps) {
           disabledDate={isDateDisabled}
           cellRender={local.cellRender}
           locale={locale()}
-          classNames={local.classNames}
-          styles={local.styles}
+          classNames={resolvedClassNames()}
+          styles={resolvedStyles()}
           onSelect={selectDate}
         />
       )
@@ -498,8 +514,8 @@ export function RangePicker(props: RangePickerProps) {
           disabledDate={isDateDisabled as (current: dayjs.Dayjs, info: { type: 'year' }) => boolean}
           cellRender={local.cellRender}
           locale={locale()}
-          classNames={local.classNames}
-          styles={local.styles}
+          classNames={resolvedClassNames()}
+          styles={resolvedStyles()}
           onSelect={selectDate}
         />
       )
@@ -517,8 +533,8 @@ export function RangePicker(props: RangePickerProps) {
         cellRender={local.cellRender}
         dateRender={local.dateRender}
         locale={locale()}
-        classNames={local.classNames}
-        styles={local.styles}
+        classNames={resolvedClassNames()}
+        styles={resolvedStyles()}
         onSelect={selectDate}
         onHover={changeHoverValue}
       />
@@ -526,8 +542,7 @@ export function RangePicker(props: RangePickerProps) {
   }
 
   function inputId(side: RangeSide): string | undefined {
-    if (Array.isArray(local.id)) return local.id[sideIndex(side)]
-    return side === 'start' ? local.id : undefined
+    return local.id?.[side]
   }
 
   return (
@@ -538,18 +553,17 @@ export function RangePicker(props: RangePickerProps) {
       }}
       class={semanticClass(
         'root',
-        local.classNames,
+        resolvedClassNames(),
         prefixCls(),
         `${prefixCls()}-range`,
         allDisabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
-        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size, local.bordered),
+        ...rootVariantClass(prefixCls(), local.status, local.variant, local.size),
         hashId(),
         local.class,
-        local.className,
       )}
       style={{
-        ...semanticStyle('root', local.styles),
+        ...semanticStyle('root', resolvedStyles()),
         ...(local.style as JSX.CSSProperties | undefined),
       }}
     >
@@ -557,8 +571,8 @@ export function RangePicker(props: RangePickerProps) {
         role="combobox"
         aria-expanded={open()}
         aria-disabled={allDisabled()}
-        class={semanticClass('selector', local.classNames, `${prefixCls()}-selector`)}
-        style={semanticStyle('selector', local.styles)}
+        class={semanticClass('selector', resolvedClassNames(), `${prefixCls()}-selector`)}
+        style={semanticStyle('selector', resolvedStyles())}
         onClick={() => {
           const target = activeRange() === 'start' ? startInputRef : endInputRef
           target?.focus()
@@ -578,18 +592,18 @@ export function RangePicker(props: RangePickerProps) {
           disabled={disabledForSide(local.disabled, 'start')}
           readOnly={local.inputReadOnly}
           autoFocus={local.autoFocus}
-          allowClear={Boolean(local.allowClear) && Boolean(local.allowEmpty?.[0])}
+          allowClear={local.allowClear !== false && Boolean(local.allowEmpty?.[0])}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
           clearAriaLabel={clearAriaLabel('start')}
           inputClass={semanticClass(
             'input',
-            local.classNames,
+            resolvedClassNames(),
             `${prefixCls()}-input`,
             `${prefixCls()}-range-input`,
           )}
-          inputStyle={semanticStyle('input', local.styles)}
-          clearClass={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
-          clearStyle={semanticStyle('clear', local.styles)}
+          inputStyle={semanticStyle('input', resolvedStyles())}
+          clearClass={semanticClass('clear', resolvedClassNames(), `${prefixCls()}-clear`)}
+          clearStyle={semanticStyle('clear', resolvedStyles())}
           inputRef={(element) => {
             startInputRef = element
           }}
@@ -603,7 +617,9 @@ export function RangePicker(props: RangePickerProps) {
           }}
           onClear={(event) => clearSide('start', event)}
         />
-        <span class={`${prefixCls()}-range-separator`}>{local.separator ?? '-'}</span>
+        <span class={`${prefixCls()}-range-separator`}>
+          {local.separator ?? <SwapRightOutlined />}
+        </span>
         <Dynamic
           component={InputComponent()}
           id={inputId('end')}
@@ -612,18 +628,18 @@ export function RangePicker(props: RangePickerProps) {
           placeholder={placeholder()[1]}
           disabled={disabledForSide(local.disabled, 'end')}
           readOnly={local.inputReadOnly}
-          allowClear={Boolean(local.allowClear) && Boolean(local.allowEmpty?.[1])}
+          allowClear={local.allowClear !== false && Boolean(local.allowEmpty?.[1])}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
           clearAriaLabel={clearAriaLabel('end')}
           inputClass={semanticClass(
             'input',
-            local.classNames,
+            resolvedClassNames(),
             `${prefixCls()}-input`,
             `${prefixCls()}-range-input`,
           )}
-          inputStyle={semanticStyle('input', local.styles)}
-          clearClass={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
-          clearStyle={semanticStyle('clear', local.styles)}
+          inputStyle={semanticStyle('input', resolvedStyles())}
+          clearClass={semanticClass('clear', resolvedClassNames(), `${prefixCls()}-clear`)}
+          clearStyle={semanticStyle('clear', resolvedStyles())}
           inputRef={(element) => {
             endInputRef = element
           }}
@@ -640,6 +656,17 @@ export function RangePicker(props: RangePickerProps) {
         <Show when={local.suffixIcon}>
           <span class={`${prefixCls()}-suffix`}>{local.suffixIcon}</span>
         </Show>
+        <Show when={local.allowClear !== false && (selectedRange()[0] || selectedRange()[1])}>
+          <button
+            type="button"
+            class={semanticClass('clear', resolvedClassNames(), `${prefixCls()}-clear`)}
+            style={semanticStyle('clear', resolvedStyles())}
+            aria-label={local.locale?.lang?.clear ?? 'Clear date range'}
+            onClick={clearRange}
+          >
+            {typeof local.allowClear === 'object' ? local.allowClear.clearIcon : '×'}
+          </button>
+        </Show>
       </div>
       <Show when={open()}>
         <InternalPortal
@@ -654,9 +681,9 @@ export function RangePicker(props: RangePickerProps) {
             prefixCls={prefixCls()}
             viewDate={panelViewDate()}
             placement={local.placement}
-            class={semanticClass('popup', undefined, local.popupClassName, local.dropdownClassName)}
-            classNames={local.classNames}
-            styles={local.styles}
+            class={semanticClass('popup', resolvedClassNames())}
+            classNames={resolvedClassNames()}
+            styles={resolvedStyles()}
             style={dropdownPosition()}
             mode={picker()}
             presets={local.presets}
@@ -664,7 +691,7 @@ export function RangePicker(props: RangePickerProps) {
             panelRender={local.panelRender}
             locale={locale()}
             showTime={showTimeEnabled()}
-            previousIcon={local.prevIcon ?? local.previousIcon}
+            prevIcon={local.prevIcon}
             superPreviousIcon={local.superPrevIcon}
             nextIcon={local.nextIcon}
             superNextIcon={local.superNextIcon}
@@ -693,6 +720,8 @@ export function RangePicker(props: RangePickerProps) {
                 showTime={local.showTime}
                 disabledTime={local.disabledTime?.(
                   selectedOrPendingRange()[sideIndex(activeRange())],
+                  activeRange(),
+                  { from: fromForSide(activeRange()) },
                 )}
                 locale={locale()}
                 onSelectTime={selectTime}

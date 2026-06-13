@@ -91,7 +91,7 @@ export interface TimePickerProps extends Omit<
   ref?: TimePickerRef | { current?: TimePickerRef } | ((ref: TimePickerRef) => void)
   prefixCls?: string
   zIndex?: number
-  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement
+  getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
 }
 
 export interface TimeRangePickerProps extends Omit<

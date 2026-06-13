@@ -5,11 +5,11 @@ import type { DatePickerFormat, PickerType } from './interface'
 function displayFormat(
   format: DatePickerFormat | undefined,
   picker: PickerType | undefined,
-): string {
+): string | ((value: Dayjs) => string) {
   if (!format) return defaultFormatForPicker(picker)
   if (typeof format === 'string') return format
   if (Array.isArray(format)) return format[0] ?? defaultFormatForPicker(picker)
-  if (typeof format === 'function') return defaultFormatForPicker(picker)
+  if (typeof format === 'function') return format
   return format.format
 }
 
@@ -19,7 +19,10 @@ function parseFormats(
 ): string[] {
   if (!format) return [defaultFormatForPicker(picker)]
   if (typeof format === 'string') return [format]
-  if (Array.isArray(format)) return format.length ? format : [defaultFormatForPicker(picker)]
+  if (Array.isArray(format)) {
+    const stringFormats = format.filter((item): item is string => typeof item === 'string')
+    return stringFormats.length ? stringFormats : [defaultFormatForPicker(picker)]
+  }
   if (typeof format === 'function') return [defaultFormatForPicker(picker)]
   return [format.format]
 }
@@ -30,8 +33,9 @@ export function formatDayjs(
   picker?: PickerType,
 ): string {
   if (!value?.isValid()) return ''
-  if (typeof format === 'function') return format(value)
-  return value.format(displayFormat(format, picker))
+  const currentFormat = displayFormat(format, picker)
+  if (typeof currentFormat === 'function') return currentFormat(value)
+  return value.format(currentFormat)
 }
 
 export function parseDayjs(
