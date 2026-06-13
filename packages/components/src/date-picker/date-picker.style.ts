@@ -118,6 +118,8 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-multiple .${prefixCls}-input`]: {
           flex: '1 1 auto',
+          height: `${t.controlHeightSM}px`,
+          'line-height': `${t.controlHeightSM}px`,
           width: 'auto',
           'min-width': '24px',
         },

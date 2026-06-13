@@ -74,7 +74,7 @@ describe('DatePicker multiple selection', () => {
 
     expect(input).toHaveAttribute('placeholder', 'Select multiple dates')
     expect(css).toContain(
-      '.ads-date-picker-multiple .ads-date-picker-input{flex:1 1 auto;min-width:24px;width:auto;',
+      '.ads-date-picker-multiple .ads-date-picker-input{flex:1 1 auto;height:24px;line-height:24px;min-width:24px;width:auto;',
     )
   })
 
