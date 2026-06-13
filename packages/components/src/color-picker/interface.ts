@@ -3,6 +3,7 @@ import type { JSX } from 'solid-js'
 import type { TooltipPlacement } from '../shared/placement'
 import type { TooltipArrow, TooltipOverflowConfig } from '../tooltip'
 import type { Color, ColorPickerValue } from './color'
+import type { ColorPickerPanelParts } from './color-picker-panel'
 
 export type ColorPickerFormat = 'hex' | 'rgb' | 'hsb'
 export type ColorPickerMode = 'single' | 'gradient'
@@ -48,7 +49,7 @@ export interface ColorPickerPreset {
 }
 
 export interface ColorPickerPanelRenderExtra {
-  components: Record<string, JSX.Element>
+  components: ColorPickerPanelParts
 }
 
 export interface ColorPickerProps extends Omit<

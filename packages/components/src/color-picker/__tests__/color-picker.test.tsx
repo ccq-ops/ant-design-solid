@@ -750,7 +750,7 @@ describe('ColorPicker popup', () => {
     const panelRender = vi.fn((panel, extra) => (
       <section data-testid="panel-wrapper">
         <h2>Wrapped panel</h2>
-        {extra.components.picker}
+        <extra.components.Picker />
         {panel}
       </section>
     ))
@@ -769,7 +769,8 @@ describe('ColorPicker popup', () => {
     expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('Wrapped panel')
     expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('No color')
     expect(panelRender).toHaveBeenCalledTimes(1)
-    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.picker')
+    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.Picker')
+    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.Presets')
   })
 })
 
@@ -1353,6 +1354,82 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
 
     expect(onOpenChange).toHaveBeenCalledTimes(1)
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+})
+
+describe('ColorPicker gradient mode', () => {
+  it('renders mode switcher and switches from single to gradient', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        mode={['single', 'gradient']}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(latestPanel().getByRole('button', { name: 'Gradient' }))
+
+    expect(latestPanel().getByRole('slider', { name: 'Gradient stops' })).toBeInTheDocument()
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isGradient: expect.any(Function) }),
+      'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(22, 119, 255) 100%)',
+    )
+  })
+
+  it('uses gradient defaultValue and updates the active stop color', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        mode="gradient"
+        defaultValue={[
+          { color: '#1677ff', percent: 0 },
+          { color: '#52c41a', percent: 100 },
+        ]}
+        onChange={onChange}
+      />
+    ))
+
+    const gradient = latestPanel().getByRole('slider', { name: 'Gradient stops' })
+    expect(gradient).toHaveStyle(
+      'background: linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+    )
+
+    fireEvent.click(latestPanel().getByRole('button', { name: /gradient stop 100/i }))
+    fireEvent.input(latestPanel().getByLabelText('Hex'), { target: { value: '#faad14' } })
+    fireEvent.blur(latestPanel().getByLabelText('Hex'))
+
+    expect(onChange.mock.calls.at(-1)?.[1]).toContain('rgb(250, 173, 20) 100%')
+  })
+
+  it('adds and deletes gradient stops', () => {
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        mode="gradient"
+        defaultValue={[
+          { color: '#000000', percent: 0 },
+          { color: '#ffffff', percent: 100 },
+        ]}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+
+    const gradient = latestPanel().getByRole('slider', { name: 'Gradient stops' })
+    mockRect(gradient, { left: 0, top: 0, width: 100, height: 12 })
+
+    fireEvent.pointerDown(gradient, { clientX: 50, clientY: 6 })
+    fireEvent.pointerUp(document, { clientX: 50, clientY: 6 })
+    expect(latestPanel().getByRole('button', { name: /gradient stop 50/i })).toBeInTheDocument()
+
+    fireEvent.keyDown(latestPanel().getByRole('button', { name: /gradient stop 50/i }), {
+      key: 'Delete',
+    })
+    expect(latestPanel().queryByRole('button', { name: /gradient stop 50/i })).toBeNull()
+    expect(onChangeComplete).toHaveBeenCalled()
   })
 })
 

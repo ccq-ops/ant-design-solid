@@ -20,10 +20,12 @@ import { getAdjustedTooltipPlacement, getTooltipPosition } from '../shared/place
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
-import type { HsbColor } from './color'
+import type { HsbColor, ParsedGradientColorStop } from './color'
+import { ColorPickerPanel } from './color-picker-panel'
 import { useColorPickerStyle } from './color-picker.style'
+import { GradientSlider } from './gradient-slider'
 import type { ColorPickerProps } from './interface'
-import type { ColorPickerFormat } from './interface'
+import type { ColorPickerFormat, ColorPickerMode } from './interface'
 
 function emptyPosition(): JSX.CSSProperties {
   return { position: 'fixed', top: '0px', left: '0px' }
@@ -131,6 +133,10 @@ export function ColorPicker(props: ColorPickerProps) {
   const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(
     local.defaultFormat ?? 'hex',
   )
+  const [innerMode, setInnerMode] = createSignal<ColorPickerMode>(
+    initialColor?.isGradient() ? 'gradient' : 'single',
+  )
+  const [activeGradientIndex, setActiveGradientIndex] = createSignal(0)
   const [hexDraft, setHexDraft] = createSignal(
     parseColor(local.value)?.toHexString() ?? initialColor?.toHexString() ?? '',
   )
@@ -156,8 +162,36 @@ export function ColorPicker(props: ColorPickerProps) {
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
   const mergedColor = () => (valueControlled() ? parseColor(local.value) : innerColor())
+  const modeOptions = (): ColorPickerMode[] =>
+    Array.isArray(local.mode) ? local.mode : [local.mode ?? 'single']
+  const modeState = (): ColorPickerMode => {
+    if (modeOptions().length === 1) return modeOptions()[0]
+    if (mergedColor()?.isGradient()) return 'gradient'
+    return innerMode()
+  }
+  const gradientColors = (): ParsedGradientColorStop[] => {
+    const color = mergedColor()
+
+    if (color?.isGradient()) return color.getColors()
+
+    const baseColor = color ?? Color.fromHsb(innerHsb())
+
+    return [
+      { color: baseColor, percent: 0 },
+      { color: baseColor, percent: 100 },
+    ]
+  }
+  const activeColor = () =>
+    modeState() === 'gradient'
+      ? (gradientColors()[activeGradientIndex()]?.color ?? gradientColors()[0]?.color)
+      : mergedColor()
   const mergedHsb = () =>
-    (valueControlled() ? mergedColor()?.toHsb() : innerHsb()) ?? { h: 0, s: 0, b: 100, a: 1 }
+    (modeState() === 'gradient'
+      ? activeColor()?.toHsb()
+      : valueControlled()
+        ? mergedColor()?.toHsb()
+        : innerHsb()) ?? { h: 0, s: 0, b: 100, a: 1 }
+  const displayColor = () => (modeState() === 'gradient' ? mergedColor() : activeColor())
   const open = () => (openControlled() ? Boolean(local.open) : innerOpen())
   const format = () => local.format ?? innerFormat()
   const placement = () => local.placement ?? 'bottomLeft'
@@ -279,6 +313,24 @@ export function ColorPicker(props: ColorPickerProps) {
   function emitColor(nextHsb: HsbColor): Color {
     const nextColor = Color.fromHsb(normalizeHsb(nextHsb))
 
+    if (modeState() === 'gradient') {
+      const nextColors = gradientColors()
+      const nextIndex = clamp(activeGradientIndex(), 0, Math.max(0, nextColors.length - 1))
+
+      nextColors[nextIndex] = { ...nextColors[nextIndex], color: nextColor }
+
+      const nextGradient = Color.fromGradient(nextColors)
+
+      if (!nextGradient) return nextColor
+      if (!valueControlled()) {
+        setInnerColor(nextGradient)
+        setInnerHsb(nextColor.toHsb())
+      }
+      local.onChange?.(nextGradient, nextGradient.toCssString())
+
+      return nextGradient
+    }
+
     if (!valueControlled()) {
       setInnerColor(nextColor)
       setInnerHsb(normalizeHsb(nextHsb))
@@ -296,8 +348,54 @@ export function ColorPicker(props: ColorPickerProps) {
     return { ...mergedHsb(), ...nextHsb }
   }
 
+  function setModeState(nextMode: ColorPickerMode): void {
+    if (disabled() || modeState() === nextMode) return
+
+    setInnerMode(nextMode)
+
+    if (nextMode === 'gradient') {
+      const nextGradient = Color.fromGradient(gradientColors())
+
+      if (!nextGradient) return
+      if (!valueControlled()) setInnerColor(nextGradient)
+      local.onChange?.(nextGradient, nextGradient.toCssString())
+      syncDraftToSource()
+      return
+    }
+
+    const nextColor = activeColor()
+
+    if (!valueControlled()) {
+      setInnerColor(nextColor)
+      if (nextColor) setInnerHsb(nextColor.toHsb())
+    }
+    if (nextColor) local.onChange?.(nextColor, nextColor.toHexString())
+    syncDraftToSource()
+  }
+
+  function emitGradientColors(
+    colors: ParsedGradientColorStop[],
+    options: { complete?: boolean } = {},
+  ): Color | undefined {
+    const nextGradient = Color.fromGradient(colors)
+
+    if (!nextGradient) return undefined
+    if (!valueControlled()) {
+      setInnerColor(nextGradient)
+      setInnerHsb(
+        nextGradient.getColors()[activeGradientIndex()]?.color.toHsb() ??
+          nextGradient.getColors()[0].color.toHsb(),
+      )
+    }
+    local.onChange?.(nextGradient, nextGradient.toCssString())
+    if (options.complete) local.onChangeComplete?.(nextGradient)
+    syncDraftToSource()
+
+    return nextGradient
+  }
+
   function rgbSourceDraft(): RgbInputDraft {
-    const rgb = mergedColor()?.toRgb() ?? { r: 0, g: 0, b: 0 }
+    const rgb = activeColor()?.toRgb() ?? { r: 0, g: 0, b: 0 }
 
     return {
       red: String(rgb.r),
@@ -327,7 +425,7 @@ export function ColorPicker(props: ColorPickerProps) {
       return
     }
 
-    setHexDraft(mergedColor()?.toHexString() ?? '')
+    setHexDraft(activeColor()?.toHexString() ?? '')
   }
 
   function sourceValueForInput(label: string | null): string {
@@ -348,7 +446,7 @@ export function ColorPicker(props: ColorPickerProps) {
       case 'B':
         return hsb.brightness
       default:
-        return mergedColor()?.toHexString() ?? ''
+        return activeColor()?.toHexString() ?? ''
     }
   }
 
@@ -794,13 +892,69 @@ export function ColorPicker(props: ColorPickerProps) {
     completeKeyboardChange(hsbWith(nextHsb))
   }
 
-  function renderPanel(): JSX.Element {
+  function renderModeSwitcher(): JSX.Element {
+    return (
+      <Show when={modeOptions().length > 1}>
+        <div class={`${prefixCls()}-mode-switch`} role="group" aria-label="Color mode">
+          <button
+            type="button"
+            class={classNames(
+              `${prefixCls()}-mode-button`,
+              modeState() === 'single' && `${prefixCls()}-mode-button-active`,
+            )}
+            aria-pressed={modeState() === 'single'}
+            disabled={disabled()}
+            onClick={() => setModeState('single')}
+          >
+            Single
+          </button>
+          <button
+            type="button"
+            class={classNames(
+              `${prefixCls()}-mode-button`,
+              modeState() === 'gradient' && `${prefixCls()}-mode-button-active`,
+            )}
+            aria-pressed={modeState() === 'gradient'}
+            disabled={disabled()}
+            onClick={() => setModeState('gradient')}
+          >
+            Gradient
+          </button>
+        </div>
+      </Show>
+    )
+  }
+
+  function renderGradientSlider(): JSX.Element {
+    return (
+      <Show when={modeState() === 'gradient'}>
+        <GradientSlider
+          prefixCls={prefixCls()}
+          colors={gradientColors()}
+          activeIndex={activeGradientIndex()}
+          disabled={disabled()}
+          onActive={(index) => {
+            setActiveGradientIndex(index)
+            syncDraftToSource()
+          }}
+          onChange={(colors) => {
+            emitGradientColors(colors)
+          }}
+          onChangeComplete={(colors) => {
+            emitGradientColors(colors, { complete: true })
+          }}
+        />
+      </Show>
+    )
+  }
+
+  function renderPicker(): JSX.Element {
     const hsb = mergedHsb
     const alphaBackground = () =>
       `linear-gradient(to right, rgba(255, 255, 255, 0), ${Color.fromHsb({ ...hsb(), a: 1 }).toRgbString()})`
 
     return (
-      <div class={`${prefixCls()}-panel`}>
+      <>
         <div
           role="slider"
           aria-label="Saturation and brightness"
@@ -891,67 +1045,101 @@ export function ColorPicker(props: ColorPickerProps) {
           </select>
           {formatInputs()}
         </div>
-        <Show when={presetList().length > 0}>
-          <div class={`${prefixCls()}-presets`}>
-            <For each={presetList()}>
-              {(preset) => (
-                <div class={`${prefixCls()}-preset`}>
-                  <Show when={preset.label}>
-                    <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
-                  </Show>
-                  <div class={`${prefixCls()}-preset-colors`}>
-                    <For each={preset.colors}>
-                      {(presetColor) => (
-                        <button
-                          type="button"
-                          class={`${prefixCls()}-preset-color`}
-                          aria-label={`Select preset color ${presetColorLabel(presetColor)}`}
-                          title={presetColorLabel(presetColor)}
-                          disabled={disabled()}
-                          onClick={() => selectPreset(presetColor)}
-                        >
-                          <span
-                            class={`${prefixCls()}-preset-color-inner`}
-                            style={{ background: colorToCss(parseColor(presetColor)) }}
-                          />
-                        </button>
-                      )}
-                    </For>
-                  </div>
+      </>
+    )
+  }
+
+  function renderPresets(): JSX.Element {
+    return (
+      <Show when={presetList().length > 0}>
+        <div class={`${prefixCls()}-presets`}>
+          <For each={presetList()}>
+            {(preset) => (
+              <div class={`${prefixCls()}-preset`}>
+                <Show when={preset.label}>
+                  <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
+                </Show>
+                <div class={`${prefixCls()}-preset-colors`}>
+                  <For each={preset.colors}>
+                    {(presetColor) => (
+                      <button
+                        type="button"
+                        class={`${prefixCls()}-preset-color`}
+                        aria-label={`Select preset color ${presetColorLabel(presetColor)}`}
+                        title={presetColorLabel(presetColor)}
+                        disabled={disabled()}
+                        onClick={() => selectPreset(presetColor)}
+                      >
+                        <span
+                          class={`${prefixCls()}-preset-color-inner`}
+                          style={{ background: colorToCss(parseColor(presetColor)) }}
+                        />
+                      </button>
+                    )}
+                  </For>
                 </div>
-              )}
-            </For>
-          </div>
-        </Show>
-        <Show when={local.allowClear}>
-          <div class={`${prefixCls()}-actions`}>
-            <button
-              type="button"
-              class={`${prefixCls()}-clear`}
-              disabled={disabled()}
-              onClick={clearColor}
-            >
-              Clear color
-            </button>
-          </div>
-        </Show>
-        <div class={`${prefixCls()}-preview`}>
-          <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
-            <span
-              class={`${prefixCls()}-preview-color-inner`}
-              style={{ background: colorToCss(mergedColor()) }}
-            />
-          </span>
-          <span class={`${prefixCls()}-preview-text`}>
-            {mergedColor()?.toRgbString() ?? 'No color'}
-          </span>
+              </div>
+            )}
+          </For>
         </div>
+      </Show>
+    )
+  }
+
+  function renderActions(): JSX.Element {
+    return (
+      <Show when={local.allowClear}>
+        <div class={`${prefixCls()}-actions`}>
+          <button
+            type="button"
+            class={`${prefixCls()}-clear`}
+            disabled={disabled()}
+            onClick={clearColor}
+          >
+            Clear color
+          </button>
+        </div>
+      </Show>
+    )
+  }
+
+  function renderPreview(): JSX.Element {
+    return (
+      <div class={`${prefixCls()}-preview`}>
+        <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
+          <span
+            class={`${prefixCls()}-preview-color-inner`}
+            style={{ background: colorToCss(displayColor()) }}
+          />
+        </span>
+        <span class={`${prefixCls()}-preview-text`}>
+          {displayColor()?.toRgbString() ?? 'No color'}
+        </span>
       </div>
     )
   }
 
+  function renderPanel(): JSX.Element {
+    return (
+      <ColorPickerPanel
+        prefixCls={prefixCls()}
+        modeSwitcher={renderModeSwitcher()}
+        gradientSlider={renderGradientSlider()}
+        picker={renderPicker()}
+        presets={renderPresets()}
+        actions={renderActions()}
+        preview={renderPreview()}
+      />
+    )
+  }
+
   const renderedPanel = () =>
-    local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
+    local.panelRender?.(renderPanel(), {
+      components: {
+        Picker: renderPicker,
+        Presets: renderPresets,
+      },
+    }) ?? renderPanel()
   const [hasInteractiveCustomChild, setHasInteractiveCustomChild] = createSignal(false)
   const interactiveChildSelector =
     'button, a[href], input, select, textarea, summary, [role="button"], [role="link"]'
