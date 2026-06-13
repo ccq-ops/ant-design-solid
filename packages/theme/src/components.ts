@@ -68,10 +68,18 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
     Grid: { columns: 24 },
     Form: {
       labelColor: token.colorText,
+      labelFontSize: token.fontSize,
+      labelHeight: token.controlHeight,
+      labelColonMarginInlineStart: token.marginXXS / 2,
+      labelColonMarginInlineEnd: token.marginXS,
       labelRequiredMarkColor: token.colorError,
       itemMarginBottom: token.marginLG,
+      inlineItemMarginBottom: 0,
       verticalLabelPadding: token.paddingXS,
       explainColor: token.colorError,
+      extraColor: token.colorTextDescription,
+      feedbackIconSize: token.fontSize,
+      feedbackIconMarginInlineStart: token.marginXS,
     },
     Select: {
       optionHeight: token.controlHeight,
