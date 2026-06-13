@@ -120,6 +120,17 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       timeColumnWidth: 56,
       withoutTimeCellHeight: 66,
     },
+    ColorPicker: {
+      colorPickerWidth: 234,
+      colorPickerHandlerSize: 16,
+      colorPickerHandlerSizeSM: 12,
+      colorPickerAlphaInputWidth: 44,
+      colorPickerInputNumberHandleWidth: 16,
+      colorPickerPresetColorSize: 24,
+      colorPickerInsetShadow: `inset 0 0 1px 0 ${token.colorTextQuaternary}`,
+      colorPickerSliderHeight: 8,
+      colorPickerPreviewSize: 24,
+    },
     Space: { gapSmall: token.marginXS, gapMiddle: token.marginSM, gapLarge: token.margin },
     Flex: { flexGapSM: token.paddingXS, flexGap: token.padding, flexGapLG: token.paddingLG },
     Typography: {

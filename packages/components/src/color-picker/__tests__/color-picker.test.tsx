@@ -154,6 +154,72 @@ describe('Color utilities', () => {
     expect(parseColor(null)).toBeUndefined()
     expect(colorToCss(undefined)).toBe('transparent')
   })
+
+  it('creates gradient colors and returns css gradient output', () => {
+    const color = parseColor([
+      { color: '#1677ff', percent: 0 },
+      { color: 'rgba(82, 196, 26, 0.5)', percent: 100 },
+    ])
+
+    expect(color?.isGradient()).toBe(true)
+    expect(color?.getColors().map((item) => [item.color.toHexString(), item.percent])).toEqual([
+      ['#1677ff', 0],
+      ['#52c41a', 100],
+    ])
+    expect(color?.toCssString()).toBe(
+      'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgba(82, 196, 26, 0.5) 100%)',
+    )
+  })
+
+  it('compares single and gradient colors by normalized value', () => {
+    const single = parseColor('#1677ff')!
+    const sameSingle = parseColor({ r: 22, g: 119, b: 255 })!
+    const gradient = parseColor([
+      { color: '#1677ff', percent: 0 },
+      { color: '#52c41a', percent: 100 },
+    ])!
+    const sameGradient = parseColor([
+      { color: '#1677ff', percent: 0 },
+      { color: '#52c41a', percent: 100 },
+    ])!
+
+    expect(single.equals(sameSingle)).toBe(true)
+    expect(single.equals(gradient)).toBe(false)
+    expect(gradient.equals(sameGradient)).toBe(true)
+  })
+
+  it('normalizes gradient percents and keeps first color methods compatible', () => {
+    const color = parseColor([
+      { color: '#1677ff', percent: -10 },
+      { color: '#52c41a', percent: 140 },
+    ])!
+
+    expect(color.getColors().map((item) => item.percent)).toEqual([0, 100])
+    expect(color.toHexString()).toBe('#1677ff')
+    expect(color.toRgbString()).toBe('rgb(22, 119, 255)')
+    expect(colorToCss(color)).toBe(
+      'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+    )
+  })
+
+  it('normalizes one-stop gradients to a single color', () => {
+    const color = parseColor([{ color: '#1677ff', percent: 50 }])!
+
+    expect(color.isGradient()).toBe(false)
+    expect(color.toHexString()).toBe('#1677ff')
+    expect(color.toCssString()).toBe('rgb(22, 119, 255)')
+  })
+
+  it('normalizes gradients with only one valid stop to a single color', () => {
+    const color = parseColor([
+      { color: 'not-a-color', percent: 0 },
+      { color: '#1677ff', percent: 50 },
+    ])!
+
+    expect(color.isGradient()).toBe(false)
+    expect(color.toHexString()).toBe('#1677ff')
+    expect(color.toCssString()).toBe('rgb(22, 119, 255)')
+  })
 })
 
 describe('ColorPicker trigger', () => {
@@ -226,7 +292,364 @@ describe('ColorPicker trigger', () => {
   })
 })
 
+describe('ColorPicker v6 API compatibility', () => {
+  it('calls onKeyDown on the default trigger', () => {
+    const onKeyDown = vi.fn()
+    const result = render(() => <ColorPicker defaultValue="#1677ff" onKeyDown={onKeyDown} />)
+
+    fireEvent.keyDown(result.getByRole('button', { name: /color picker/i }), { key: 'ArrowDown' })
+
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders custom trigger children without nesting native buttons', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+    expect(trigger.closest('button')).toBe(trigger)
+    expect(trigger.parentElement?.closest('button')).toBeNull()
+    expect(trigger.parentElement?.closest('[role="button"]')).toBeNull()
+
+    fireEvent.click(trigger)
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+  })
+
+  it('syncs popup semantics to an interactive custom trigger child', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('disables interactive custom trigger child buttons', () => {
+    const onClick = vi.fn()
+    const result = render(() => (
+      <ColorPicker disabled onClick={onClick}>
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).not.toBeDisabled()
+    expect(trigger).toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(trigger)
+
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('preserves custom trigger child disabled state when ColorPicker disabled toggles', () => {
+    const [disabled, setDisabled] = createSignal(false)
+    const result = render(() => (
+      <ColorPicker disabled={disabled()}>
+        <button type="button" disabled>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).toBeDisabled()
+
+    setDisabled(true)
+    expect(trigger).toBeDisabled()
+
+    setDisabled(false)
+    expect(trigger).toBeDisabled()
+  })
+
+  it('preserves owner-updated custom trigger child disabled state during ColorPicker sync', () => {
+    const [childDisabled, setChildDisabled] = createSignal(false)
+    const [open, setOpen] = createSignal(false)
+    const result = render(() => (
+      <ColorPicker open={open()}>
+        <button type="button" disabled={childDisabled()}>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).not.toBeDisabled()
+
+    setChildDisabled(true)
+    expect(trigger).toBeDisabled()
+
+    setOpen(true)
+    expect(trigger).toBeDisabled()
+  })
+
+  it('preserves owner-controlled child disabled state after ColorPicker disabled toggles off', () => {
+    const [colorPickerDisabled, setColorPickerDisabled] = createSignal(true)
+    const [childDisabled, setChildDisabled] = createSignal(false)
+    const result = render(() => (
+      <ColorPicker disabled={colorPickerDisabled()}>
+        <button type="button" disabled={childDisabled()}>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).not.toBeDisabled()
+    expect(trigger).toHaveAttribute('aria-disabled', 'true')
+
+    setChildDisabled(true)
+    expect(trigger).toBeDisabled()
+
+    setColorPickerDisabled(false)
+    expect(trigger).toBeDisabled()
+    expect(trigger).not.toHaveAttribute('aria-disabled')
+  })
+
+  it('suppresses child and ColorPicker clicks for disabled interactive custom children', () => {
+    const childClick = vi.fn()
+    const onClick = vi.fn()
+    render(() => (
+      <ColorPicker disabled onClick={onClick}>
+        <button type="button" onClick={childClick}>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pick brand color' }))
+
+    expect(childClick).not.toHaveBeenCalled()
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('calls onKeyDown from an interactive custom trigger child', () => {
+    const onKeyDown = vi.fn()
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff" onKeyDown={onKeyDown}>
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+
+    fireEvent.keyDown(result.getByRole('button', { name: 'Pick brand color' }), {
+      key: 'ArrowDown',
+    })
+
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+  })
+
+  it('opens custom non-interactive trigger children with Enter and Space', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    fireEvent.keyDown(trigger, { key: 'Enter' })
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.keyDown(trigger, { key: ' ' })
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('opens custom aria-role trigger children with Enter and Space without wrapper role nesting', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span role="button" tabIndex={0}>
+          Pick brand color
+        </span>
+      </ColorPicker>
+    ))
+
+    const roleButtons = result.getAllByRole('button', { name: /pick brand color/i })
+    expect(roleButtons).toHaveLength(1)
+
+    const trigger = roleButtons[0]
+    expect(trigger).toHaveAttribute('role', 'button')
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger.parentElement?.closest('[role="button"]')).toBeNull()
+
+    fireEvent.keyDown(trigger, { key: 'Enter' })
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    fireEvent.keyDown(trigger, { key: ' ' })
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('uses visible custom trigger text as the accessible name', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    expect(result.getByRole('button', { name: 'Pick brand color' })).toBeInTheDocument()
+  })
+
+  it('allows custom trigger aria-label to override visible content', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff" aria-label="Brand color picker">
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    expect(result.getByRole('button', { name: 'Brand color picker' })).toBeInTheDocument()
+  })
+
+  it('does not call onClick or open from a disabled custom trigger', () => {
+    const onClick = vi.fn()
+    const result = render(() => (
+      <ColorPicker disabled onClick={onClick}>
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    fireEvent.click(trigger)
+    fireEvent.keyDown(trigger, { key: 'Enter' })
+
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('calls onFormatChange when uncontrolled format changes', () => {
+    const onFormatChange = vi.fn()
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" onFormatChange={onFormatChange} />)
+
+    fireEvent.change(latestPanel().getByLabelText('Color format'), { target: { value: 'rgb' } })
+
+    expect(onFormatChange).toHaveBeenCalledWith('rgb')
+  })
+
+  it('disables format switching with disabledFormat', () => {
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" disabledFormat />)
+
+    expect(latestPanel().getByLabelText('Color format')).toBeDisabled()
+  })
+
+  it('calls onClear when the color is cleared', () => {
+    const onClear = vi.fn()
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" allowClear onClear={onClear} />)
+
+    fireEvent.click(latestPanel().getByRole('button', { name: /clear color/i }))
+
+    expect(onClear).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('ColorPicker popup', () => {
+  it('applies root and popup semantic classes and styles', () => {
+    const result = render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        rootClass="root-extra"
+        class="trigger-extra"
+        style={{ width: '123px' }}
+        popupClass="popup-extra"
+        popupStyle={{ width: '234px' }}
+        classNames={({ props }) => ({
+          root: props.disabled ? 'root-disabled' : 'root-slot',
+          popup: { root: 'popup-root-slot' },
+          popupOverlayInner: 'popup-inner-slot',
+        })}
+        styles={({ props }) => ({
+          root: { color: props.disabled ? 'gray' : 'red' },
+          popup: { root: { height: '45px' } },
+          popupOverlayInner: { padding: '9px' },
+        })}
+      />
+    ))
+
+    const trigger = result.getByRole('button', { name: /color picker/i })
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    const inner = popup.querySelector('.ads-color-picker-popup-inner') as HTMLElement
+
+    expect(trigger).toHaveClass('ads-color-picker', 'root-extra', 'trigger-extra', 'root-slot')
+    expect(trigger).toHaveStyle({ width: '123px', color: 'rgb(255, 0, 0)' })
+    expect(popup).toHaveClass('ads-color-picker-popup', 'popup-extra', 'popup-root-slot')
+    expect(popup).toHaveStyle({ width: '234px', height: '45px' })
+    expect(inner).toHaveClass('ads-color-picker-popup-inner', 'popup-inner-slot')
+    expect(inner).toHaveStyle({ padding: '9px' })
+  })
+
+  it('positions rightTop with adjusted placement and renders centered arrows', () => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 200 })
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff" placement="rightTop" arrow={{ pointAtCenter: true }} />
+    ))
+    const trigger = result.getByRole('button', { name: /color picker/i })
+    mockRect(trigger, { left: 180, top: 40, width: 30, height: 20 })
+
+    fireEvent.click(trigger)
+
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    expect(popup).toHaveClass('ads-color-picker-leftTop', 'ads-color-picker-arrow-point-at-center')
+    expect(popup).toHaveStyle({
+      top: '40px',
+      left: '176px',
+      transform: 'translateX(-100%)',
+    })
+    expect(popup.querySelector('.ads-color-picker-arrow')).toBeInTheDocument()
+  })
+
+  it('hides the popup arrow when arrow is false', () => {
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" arrow={false} />)
+
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    expect(popup.querySelector('.ads-color-picker-arrow')).toBeNull()
+  })
+
+  it('keeps a hidden popup mounted when destroyOnHidden is false', () => {
+    const [open, setOpen] = createSignal(true)
+    render(() => (
+      <ColorPicker open={open()} destroyOnHidden={false} defaultValue="#1677ff" allowClear />
+    ))
+
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    setOpen(false)
+
+    const popup = document.body.querySelector('.ads-color-picker-popup') as HTMLElement
+    expect(popup).toHaveClass('ads-color-picker-popup-hidden')
+    expect(popup).toHaveAttribute('aria-hidden', 'true')
+    expect(popup.querySelector('.ads-color-picker-clear')).toHaveTextContent('Clear color')
+  })
+
+  it('removes a hidden popup when destroyTooltipOnHide is enabled with keepParent', () => {
+    const [open, setOpen] = createSignal(true)
+    render(() => (
+      <ColorPicker
+        open={open()}
+        destroyTooltipOnHide={{ keepParent: true }}
+        defaultValue="#1677ff"
+      />
+    ))
+
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    setOpen(false)
+
+    expect(document.body.querySelector('.ads-color-picker-popup')).toBeNull()
+  })
+
   it('opens from trigger and closes from trigger, Escape, and outside pointer down', () => {
     const onOpenChange = vi.fn()
     const result = render(() => <ColorPicker defaultValue="#1677ff" onOpenChange={onOpenChange} />)
@@ -327,7 +750,7 @@ describe('ColorPicker popup', () => {
     const panelRender = vi.fn((panel, extra) => (
       <section data-testid="panel-wrapper">
         <h2>Wrapped panel</h2>
-        {extra.components.picker}
+        <extra.components.Picker />
         {panel}
       </section>
     ))
@@ -346,7 +769,8 @@ describe('ColorPicker popup', () => {
     expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('Wrapped panel')
     expect(screen.getByTestId('panel-wrapper')).toHaveTextContent('No color')
     expect(panelRender).toHaveBeenCalledTimes(1)
-    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.picker')
+    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.Picker')
+    expect(panelRender.mock.calls[0][1]).toHaveProperty('components.Presets')
   })
 })
 
@@ -744,7 +1168,7 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
         defaultOpen
         defaultValue="#1677ff"
         showText={(color) => <strong>Current: {color?.toHexString() ?? 'empty'}</strong>}
-        presets={[{ colors: ['#52c41a'] }]}
+        presets={[{ label: 'Recommended', colors: ['#52c41a'] }]}
       />
     ))
 
@@ -903,7 +1327,7 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
         defaultValue="#1677ff"
         trigger="hover"
         allowClear
-        presets={[{ colors: ['#52c41a'] }]}
+        presets={[{ label: 'Recommended', colors: ['#52c41a'] }]}
         onChange={onChange}
         onChangeComplete={onChangeComplete}
         onOpenChange={onOpenChange}
@@ -931,6 +1355,115 @@ describe('ColorPicker presets, clear, and hover trigger', () => {
     expect(onOpenChange).toHaveBeenCalledTimes(1)
     expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })
+})
+
+describe('ColorPicker gradient mode', () => {
+  it('renders mode switcher and switches from single to gradient', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        mode={['single', 'gradient']}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(latestPanel().getByRole('button', { name: 'Gradient' }))
+
+    expect(latestPanel().getByRole('slider', { name: 'Gradient stops' })).toBeInTheDocument()
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isGradient: expect.any(Function) }),
+      'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(22, 119, 255) 100%)',
+    )
+  })
+
+  it('uses gradient defaultValue and updates the active stop color', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        mode="gradient"
+        defaultValue={[
+          { color: '#1677ff', percent: 0 },
+          { color: '#52c41a', percent: 100 },
+        ]}
+        onChange={onChange}
+      />
+    ))
+
+    const gradient = latestPanel().getByRole('slider', { name: 'Gradient stops' })
+    expect(gradient).toHaveStyle(
+      'background: linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+    )
+
+    fireEvent.click(latestPanel().getByRole('button', { name: /gradient stop 100/i }))
+    fireEvent.input(latestPanel().getByLabelText('Hex'), { target: { value: '#faad14' } })
+    fireEvent.blur(latestPanel().getByLabelText('Hex'))
+
+    expect(onChange.mock.calls.at(-1)?.[1]).toContain('rgb(250, 173, 20) 100%')
+  })
+
+  it('adds and deletes gradient stops', () => {
+    const onChangeComplete = vi.fn()
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        mode="gradient"
+        defaultValue={[
+          { color: '#000000', percent: 0 },
+          { color: '#ffffff', percent: 100 },
+        ]}
+        onChangeComplete={onChangeComplete}
+      />
+    ))
+
+    const gradient = latestPanel().getByRole('slider', { name: 'Gradient stops' })
+    mockRect(gradient, { left: 0, top: 0, width: 100, height: 12 })
+
+    fireEvent.pointerDown(gradient, { clientX: 50, clientY: 6 })
+    fireEvent.pointerUp(document, { clientX: 50, clientY: 6 })
+    expect(latestPanel().getByRole('button', { name: /gradient stop 50/i })).toBeInTheDocument()
+
+    fireEvent.keyDown(latestPanel().getByRole('button', { name: /gradient stop 50/i }), {
+      key: 'Delete',
+    })
+    expect(latestPanel().queryByRole('button', { name: /gradient stop 50/i })).toBeNull()
+    expect(onChangeComplete).toHaveBeenCalled()
+  })
+})
+
+it('supports preset defaultOpen and gradient preset values', () => {
+  const onChange = vi.fn()
+  render(() => (
+    <ColorPicker
+      defaultOpen
+      mode={['single', 'gradient']}
+      onChange={onChange}
+      presets={[
+        {
+          label: 'Brand',
+          defaultOpen: false,
+          key: 'brand',
+          colors: [
+            [
+              { color: '#1677ff', percent: 0 },
+              { color: '#52c41a', percent: 100 },
+            ],
+          ],
+        },
+      ]}
+    />
+  ))
+
+  expect(latestPanel().queryByRole('button', { name: /select preset color/i })).toBeNull()
+
+  fireEvent.click(latestPanel().getByRole('button', { name: 'Brand' }))
+  fireEvent.click(latestPanel().getByRole('button', { name: /select preset color/i }))
+
+  expect(onChange.mock.calls.at(-1)?.[1]).toBe(
+    'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+  )
 })
 
 it('uses explicit zIndex and custom popup container', () => {

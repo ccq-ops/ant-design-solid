@@ -284,6 +284,17 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('InputNumber', token).activeBorderColor).toBe('#722ed1')
     expect(getComponentToken('InputNumber', token).inputFontSize).toBe(token.fontSize)
     expect(getComponentToken('InputNumber', token).paddingInline).toBe(token.paddingSM)
+
+    const colorPicker = getComponentToken('ColorPicker', token)
+    expect(colorPicker.colorPickerWidth).toBe(234)
+    expect(colorPicker.colorPickerHandlerSize).toBe(16)
+    expect(colorPicker.colorPickerHandlerSizeSM).toBe(12)
+    expect(colorPicker.colorPickerAlphaInputWidth).toBe(44)
+    expect(colorPicker.colorPickerInputNumberHandleWidth).toBe(16)
+    expect(colorPicker.colorPickerPresetColorSize).toBe(24)
+    expect(colorPicker.colorPickerSliderHeight).toBe(8)
+    expect(colorPicker.colorPickerPreviewSize).toBe(24)
+    expect(colorPicker.colorPickerInsetShadow).toBe(`inset 0 0 1px 0 ${token.colorTextQuaternary}`)
   })
 
   it('matches Ant Design Form component token defaults', () => {

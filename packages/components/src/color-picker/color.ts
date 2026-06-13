@@ -12,7 +12,19 @@ export interface HsbColor {
   a?: number
 }
 
-export type ColorPickerValue = string | RgbColor | HsbColor | Color | null | undefined
+export interface GradientColorStop {
+  color: SingleColorPickerValue
+  percent: number
+}
+
+export type SingleColorPickerValue = string | RgbColor | HsbColor | Color
+export type GradientColorValue = GradientColorStop[]
+export type ColorPickerValue = SingleColorPickerValue | GradientColorValue | null | undefined
+
+export interface ParsedGradientColorStop {
+  color: Color
+  percent: number
+}
 
 const toFiniteNumber = (value: number, fallback: number): number => {
   const numberValue = Number(value)
@@ -135,9 +147,11 @@ const isRgbColor = (value: RgbColor | HsbColor): value is RgbColor => 'r' in val
 
 export class Color {
   private readonly rgb: Required<RgbColor>
+  private readonly colors?: ParsedGradientColorStop[]
 
-  private constructor(color: RgbColor) {
+  private constructor(color: RgbColor, colors?: ParsedGradientColorStop[]) {
     this.rgb = normalizeRgb(color)
+    this.colors = colors
   }
 
   static fromRgb(color: RgbColor): Color {
@@ -146,6 +160,47 @@ export class Color {
 
   static fromHsb(color: HsbColor): Color {
     return new Color(hsbToRgb(color))
+  }
+
+  static fromGradient(colors: GradientColorValue): Color | undefined {
+    const parsedColors = colors
+      .map((item) => {
+        const parsedColor = parseColor(item.color)
+
+        if (!parsedColor) {
+          return undefined
+        }
+
+        return {
+          color: parsedColor.isGradient() ? parsedColor.getColors()[0].color : parsedColor,
+          percent: clamp(item.percent, 0, 100),
+        }
+      })
+      .filter((item): item is ParsedGradientColorStop => Boolean(item))
+
+    if (!parsedColors.length) {
+      return undefined
+    }
+
+    parsedColors.sort((a, b) => a.percent - b.percent)
+
+    if (parsedColors.length === 1) {
+      return parsedColors[0].color
+    }
+
+    return new Color(parsedColors[0].color.toRgb(), parsedColors)
+  }
+
+  isGradient(): boolean {
+    return Boolean(this.colors?.length)
+  }
+
+  getColors(): ParsedGradientColorStop[] {
+    return (
+      this.colors?.map((item) => ({ color: item.color, percent: item.percent })) ?? [
+        { color: this, percent: 0 },
+      ]
+    )
   }
 
   toHex(): string {
@@ -184,6 +239,40 @@ export class Color {
 
     return `hsb(${h}, ${s}%, ${b}%)`
   }
+
+  toCssString(): string {
+    if (this.colors) {
+      const stops = this.colors
+        .map((item) => `${item.color.toRgbString()} ${item.percent}%`)
+        .join(', ')
+
+      return `linear-gradient(90deg, ${stops})`
+    }
+
+    return this.toRgbString()
+  }
+
+  equals(color: Color | null | undefined): boolean {
+    if (!color || this.isGradient() !== color.isGradient()) {
+      return false
+    }
+
+    if (!this.isGradient()) {
+      return this.toRgbString() === color.toRgbString()
+    }
+
+    const colors = this.getColors()
+    const targetColors = color.getColors()
+
+    return (
+      colors.length === targetColors.length &&
+      colors.every(
+        (item, index) =>
+          item.percent === targetColors[index].percent &&
+          item.color.equals(targetColors[index].color),
+      )
+    )
+  }
 }
 
 export function colorFromHsb(color: HsbColor): Color {
@@ -193,7 +282,7 @@ export function colorFromHsb(color: HsbColor): Color {
 export function colorToCss(color: ColorPickerValue): string {
   const parsed = color instanceof Color ? color : parseColor(color)
 
-  return parsed?.toRgbString() ?? 'transparent'
+  return parsed?.toCssString() ?? 'transparent'
 }
 
 function parseHexColor(value: string): Color | undefined {
@@ -261,6 +350,10 @@ export function parseColor(value: ColorPickerValue): Color | undefined {
 
   if (value instanceof Color) {
     return value
+  }
+
+  if (Array.isArray(value)) {
+    return Color.fromGradient(value)
   }
 
   if (typeof value !== 'string') {

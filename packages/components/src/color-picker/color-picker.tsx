@@ -1,6 +1,6 @@
 import {
-  For,
   Show,
+  children as resolveChildren,
   createEffect,
   createRenderEffect,
   createSignal,
@@ -15,17 +15,49 @@ import {
   addDocumentPointerDown,
   addPositionUpdateListeners,
 } from '../shared/overlay'
-import { getDropdownPosition } from '../shared/placement'
+import { getAdjustedTooltipPlacement, getTooltipPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
-import type { HsbColor } from './color'
+import type { HsbColor, ParsedGradientColorStop } from './color'
+import { ColorPickerPanel } from './color-picker-panel'
 import { useColorPickerStyle } from './color-picker.style'
+import { GradientSlider } from './gradient-slider'
 import type { ColorPickerProps } from './interface'
-import type { ColorPickerFormat } from './interface'
+import type { ColorPickerFormat, ColorPickerMode } from './interface'
+import { Presets } from './presets'
 
 function emptyPosition(): JSX.CSSProperties {
   return { position: 'fixed', top: '0px', left: '0px' }
+}
+
+function mergeStyle(
+  ...styles: Array<JSX.CSSProperties | string | undefined>
+): JSX.CSSProperties | string | undefined {
+  const stringStyle = styles.find((style): style is string => typeof style === 'string')
+  const objectStyles = styles.filter((style): style is JSX.CSSProperties => !!style)
+
+  if (stringStyle) return stringStyle
+  if (!objectStyles.length) return undefined
+
+  return Object.assign({}, ...objectStyles)
+}
+
+function resolveMaybeFn<T>(
+  value: T | ((info: { props: ColorPickerProps }) => T) | undefined,
+  props: ColorPickerProps,
+): T | undefined {
+  return typeof value === 'function'
+    ? (value as (info: { props: ColorPickerProps }) => T)({ props })
+    : value
+}
+
+function showArrow(arrow: ColorPickerProps['arrow']): boolean {
+  return arrow !== false
+}
+
+function pointAtCenter(arrow: ColorPickerProps['arrow']): boolean {
+  return typeof arrow === 'object' && Boolean(arrow.pointAtCenter)
 }
 
 function renderText(showText: ColorPickerProps['showText'], color: Color | undefined): JSX.Element {
@@ -57,12 +89,24 @@ export function ColorPicker(props: ColorPickerProps) {
     'onOpenChange',
     'disabled',
     'size',
+    'mode',
+    'children',
     'placement',
+    'arrow',
+    'rootClass',
+    'classNames',
+    'styles',
+    'autoAdjustOverflow',
+    'destroyOnHidden',
+    'destroyTooltipOnHide',
     'trigger',
     'format',
     'defaultFormat',
+    'onFormatChange',
+    'disabledFormat',
     'disabledAlpha',
     'allowClear',
+    'onClear',
     'showText',
     'presets',
     'panelRender',
@@ -73,6 +117,7 @@ export function ColorPicker(props: ColorPickerProps) {
     'class',
     'style',
     'onClick',
+    'onKeyDown',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-color-picker`
@@ -84,9 +129,14 @@ export function ColorPicker(props: ColorPickerProps) {
     initialColor?.toHsb() ?? { h: 0, s: 0, b: 100, a: 1 },
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const [hasRenderedPopup, setHasRenderedPopup] = createSignal(Boolean(local.defaultOpen))
   const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(
     local.defaultFormat ?? 'hex',
   )
+  const [innerMode, setInnerMode] = createSignal<ColorPickerMode>(
+    initialColor?.isGradient() ? 'gradient' : 'single',
+  )
+  const [activeGradientIndex, setActiveGradientIndex] = createSignal(0)
   const [hexDraft, setHexDraft] = createSignal(
     parseColor(local.value)?.toHexString() ?? initialColor?.toHexString() ?? '',
   )
@@ -97,30 +147,91 @@ export function ColorPicker(props: ColorPickerProps) {
     brightness: '100',
   })
   const [position, setPosition] = createSignal<JSX.CSSProperties>(emptyPosition())
+  const resolvedChildren = resolveChildren(() => local.children)
   const valueControlled = () => 'value' in props
   const openControlled = () => 'open' in props
   const formatControlled = () => 'format' in props
-  let triggerRef: HTMLButtonElement | undefined
+  let triggerRef: HTMLElement | undefined
   let popupRef: HTMLDivElement | undefined
   let activeDragCleanup: (() => void) | undefined
   let suppressBlurTarget: HTMLInputElement | undefined
   let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
+  let interactiveTriggerElement: HTMLElement | undefined
+  let customTriggerClickCaptureCleanup: (() => void) | undefined
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
   const mergedColor = () => (valueControlled() ? parseColor(local.value) : innerColor())
+  const modeOptions = (): ColorPickerMode[] =>
+    Array.isArray(local.mode) ? local.mode : [local.mode ?? 'single']
+  const modeState = (): ColorPickerMode => {
+    if (modeOptions().length === 1) return modeOptions()[0]
+    if (mergedColor()?.isGradient()) return 'gradient'
+    return innerMode()
+  }
+  const gradientColors = (): ParsedGradientColorStop[] => {
+    const color = mergedColor()
+
+    if (color?.isGradient()) return color.getColors()
+
+    const baseColor = color ?? Color.fromHsb(innerHsb())
+
+    return [
+      { color: baseColor, percent: 0 },
+      { color: baseColor, percent: 100 },
+    ]
+  }
+  const activeColor = () =>
+    modeState() === 'gradient'
+      ? (gradientColors()[activeGradientIndex()]?.color ?? gradientColors()[0]?.color)
+      : mergedColor()
   const mergedHsb = () =>
-    (valueControlled() ? mergedColor()?.toHsb() : innerHsb()) ?? { h: 0, s: 0, b: 100, a: 1 }
+    (modeState() === 'gradient'
+      ? activeColor()?.toHsb()
+      : valueControlled()
+        ? mergedColor()?.toHsb()
+        : innerHsb()) ?? { h: 0, s: 0, b: 100, a: 1 }
+  const displayColor = () => (modeState() === 'gradient' ? mergedColor() : activeColor())
   const open = () => (openControlled() ? Boolean(local.open) : innerOpen())
   const format = () => local.format ?? innerFormat()
   const placement = () => local.placement ?? 'bottomLeft'
+  const semanticClassNames = () => resolveMaybeFn(local.classNames, props) ?? {}
+  const semanticStyles = () => resolveMaybeFn(local.styles, props) ?? {}
+  const destroyOnHidden = () => {
+    if (local.destroyOnHidden !== undefined) return local.destroyOnHidden
+    if (typeof local.destroyTooltipOnHide === 'boolean') return local.destroyTooltipOnHide
+    if (local.destroyTooltipOnHide) return true
+    return false
+  }
+  const shouldRenderPopup = () => open() || (hasRenderedPopup() && !destroyOnHidden())
+  const popupVisible = () => open()
+  const adjustedPlacement = () => {
+    const target = triggerRef
 
-  function updatePosition(element?: HTMLButtonElement | Event): void {
+    if (!canUseDom() || !target) return placement()
+
+    return getAdjustedTooltipPlacement(
+      target.getBoundingClientRect(),
+      placement(),
+      4,
+      local.autoAdjustOverflow,
+    )
+  }
+
+  function updatePosition(element?: HTMLElement | Event): void {
     const target = element instanceof HTMLElement ? element : triggerRef
     if (!canUseDom() || !target) return
+    const targetRect = target.getBoundingClientRect()
+    const nextPlacement = getAdjustedTooltipPlacement(
+      targetRect,
+      placement(),
+      4,
+      local.autoAdjustOverflow,
+    )
+
     setPosition({
       position: 'fixed',
-      ...getDropdownPosition(target.getBoundingClientRect(), placement(), 4),
+      ...getTooltipPosition(targetRect, nextPlacement, 4),
     })
   }
 
@@ -173,7 +284,10 @@ export function ColorPicker(props: ColorPickerProps) {
   })
 
   createRenderEffect(() => {
-    if (open()) updatePosition()
+    if (!open()) return
+
+    setHasRenderedPopup(true)
+    updatePosition()
   })
 
   createRenderEffect(() => {
@@ -192,10 +306,30 @@ export function ColorPicker(props: ColorPickerProps) {
     clearHoverCloseTimer()
     activeDragCleanup?.()
     activeDragCleanup = undefined
+    customTriggerClickCaptureCleanup?.()
+    customTriggerClickCaptureCleanup = undefined
   })
 
   function emitColor(nextHsb: HsbColor): Color {
     const nextColor = Color.fromHsb(normalizeHsb(nextHsb))
+
+    if (modeState() === 'gradient') {
+      const nextColors = gradientColors()
+      const nextIndex = clamp(activeGradientIndex(), 0, Math.max(0, nextColors.length - 1))
+
+      nextColors[nextIndex] = { ...nextColors[nextIndex], color: nextColor }
+
+      const nextGradient = Color.fromGradient(nextColors)
+
+      if (!nextGradient) return nextColor
+      if (!valueControlled()) {
+        setInnerColor(nextGradient)
+        setInnerHsb(nextColor.toHsb())
+      }
+      local.onChange?.(nextGradient, nextGradient.toCssString())
+
+      return nextGradient
+    }
 
     if (!valueControlled()) {
       setInnerColor(nextColor)
@@ -214,8 +348,54 @@ export function ColorPicker(props: ColorPickerProps) {
     return { ...mergedHsb(), ...nextHsb }
   }
 
+  function setModeState(nextMode: ColorPickerMode): void {
+    if (disabled() || modeState() === nextMode) return
+
+    setInnerMode(nextMode)
+
+    if (nextMode === 'gradient') {
+      const nextGradient = Color.fromGradient(gradientColors())
+
+      if (!nextGradient) return
+      if (!valueControlled()) setInnerColor(nextGradient)
+      local.onChange?.(nextGradient, nextGradient.toCssString())
+      syncDraftToSource()
+      return
+    }
+
+    const nextColor = activeColor()
+
+    if (!valueControlled()) {
+      setInnerColor(nextColor)
+      if (nextColor) setInnerHsb(nextColor.toHsb())
+    }
+    if (nextColor) local.onChange?.(nextColor, nextColor.toHexString())
+    syncDraftToSource()
+  }
+
+  function emitGradientColors(
+    colors: ParsedGradientColorStop[],
+    options: { complete?: boolean } = {},
+  ): Color | undefined {
+    const nextGradient = Color.fromGradient(colors)
+
+    if (!nextGradient) return undefined
+    if (!valueControlled()) {
+      setInnerColor(nextGradient)
+      setInnerHsb(
+        nextGradient.getColors()[activeGradientIndex()]?.color.toHsb() ??
+          nextGradient.getColors()[0].color.toHsb(),
+      )
+    }
+    local.onChange?.(nextGradient, nextGradient.toCssString())
+    if (options.complete) local.onChangeComplete?.(nextGradient)
+    syncDraftToSource()
+
+    return nextGradient
+  }
+
   function rgbSourceDraft(): RgbInputDraft {
-    const rgb = mergedColor()?.toRgb() ?? { r: 0, g: 0, b: 0 }
+    const rgb = activeColor()?.toRgb() ?? { r: 0, g: 0, b: 0 }
 
     return {
       red: String(rgb.r),
@@ -245,7 +425,7 @@ export function ColorPicker(props: ColorPickerProps) {
       return
     }
 
-    setHexDraft(mergedColor()?.toHexString() ?? '')
+    setHexDraft(activeColor()?.toHexString() ?? '')
   }
 
   function sourceValueForInput(label: string | null): string {
@@ -266,7 +446,7 @@ export function ColorPicker(props: ColorPickerProps) {
       case 'B':
         return hsb.brightness
       default:
-        return mergedColor()?.toHexString() ?? ''
+        return activeColor()?.toHexString() ?? ''
     }
   }
 
@@ -294,15 +474,31 @@ export function ColorPicker(props: ColorPickerProps) {
     if (!valueControlled()) setInnerColor(undefined)
     local.onChange?.(undefined, '')
     local.onChangeComplete?.(undefined)
+    local.onClear?.()
     syncDraftToSource()
   }
 
-  function selectPreset(value: string): void {
+  function selectPreset(
+    value: NonNullable<ColorPickerProps['presets']>[number]['colors'][number],
+  ): void {
     if (disabled()) return
 
     const nextColor = parseColor(value)
 
     if (!nextColor) return
+
+    if (nextColor.isGradient()) {
+      setInnerMode('gradient')
+      if (!valueControlled()) {
+        setInnerColor(nextColor)
+        setInnerHsb(nextColor.getColors()[0].color.toHsb())
+      }
+      setActiveGradientIndex(0)
+      local.onChange?.(nextColor, nextColor.toCssString())
+      local.onChangeComplete?.(nextColor)
+      syncDraftToSource()
+      return
+    }
 
     completeInputCommit(emitColor(nextColor.toHsb()))
   }
@@ -703,13 +899,69 @@ export function ColorPicker(props: ColorPickerProps) {
     completeKeyboardChange(hsbWith(nextHsb))
   }
 
-  function renderPanel(): JSX.Element {
+  function renderModeSwitcher(): JSX.Element {
+    return (
+      <Show when={modeOptions().length > 1}>
+        <div class={`${prefixCls()}-mode-switch`} role="group" aria-label="Color mode">
+          <button
+            type="button"
+            class={classNames(
+              `${prefixCls()}-mode-button`,
+              modeState() === 'single' && `${prefixCls()}-mode-button-active`,
+            )}
+            aria-pressed={modeState() === 'single'}
+            disabled={disabled()}
+            onClick={() => setModeState('single')}
+          >
+            Single
+          </button>
+          <button
+            type="button"
+            class={classNames(
+              `${prefixCls()}-mode-button`,
+              modeState() === 'gradient' && `${prefixCls()}-mode-button-active`,
+            )}
+            aria-pressed={modeState() === 'gradient'}
+            disabled={disabled()}
+            onClick={() => setModeState('gradient')}
+          >
+            Gradient
+          </button>
+        </div>
+      </Show>
+    )
+  }
+
+  function renderGradientSlider(): JSX.Element {
+    return (
+      <Show when={modeState() === 'gradient'}>
+        <GradientSlider
+          prefixCls={prefixCls()}
+          colors={gradientColors()}
+          activeIndex={activeGradientIndex()}
+          disabled={disabled()}
+          onActive={(index) => {
+            setActiveGradientIndex(index)
+            syncDraftToSource()
+          }}
+          onChange={(colors) => {
+            emitGradientColors(colors)
+          }}
+          onChangeComplete={(colors) => {
+            emitGradientColors(colors, { complete: true })
+          }}
+        />
+      </Show>
+    )
+  }
+
+  function renderPicker(): JSX.Element {
     const hsb = mergedHsb
     const alphaBackground = () =>
       `linear-gradient(to right, rgba(255, 255, 255, 0), ${Color.fromHsb({ ...hsb(), a: 1 }).toRgbString()})`
 
     return (
-      <div class={`${prefixCls()}-panel`}>
+      <>
         <div
           role="slider"
           aria-label="Saturation and brightness"
@@ -782,10 +1034,16 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-label="Color format"
             class={`${prefixCls()}-format-select`}
             value={format()}
-            disabled={disabled() || formatControlled()}
+            disabled={disabled() || formatControlled() || Boolean(local.disabledFormat)}
             onChange={(event) => {
-              if (!disabled() && !formatControlled())
-                setInnerFormat(event.currentTarget.value as ColorPickerFormat)
+              if (disabled() || formatControlled() || local.disabledFormat) return
+
+              const nextFormat = event.currentTarget.value as ColorPickerFormat
+
+              if (nextFormat === format()) return
+
+              setInnerFormat(nextFormat)
+              local.onFormatChange?.(nextFormat)
             }}
           >
             <option value="hex">HEX</option>
@@ -794,109 +1052,219 @@ export function ColorPicker(props: ColorPickerProps) {
           </select>
           {formatInputs()}
         </div>
-        <Show when={presetList().length > 0}>
-          <div class={`${prefixCls()}-presets`}>
-            <For each={presetList()}>
-              {(preset) => (
-                <div class={`${prefixCls()}-preset`}>
-                  <Show when={preset.label}>
-                    <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
-                  </Show>
-                  <div class={`${prefixCls()}-preset-colors`}>
-                    <For each={preset.colors}>
-                      {(presetColor) => (
-                        <button
-                          type="button"
-                          class={`${prefixCls()}-preset-color`}
-                          aria-label={`Select preset color ${presetColor}`}
-                          title={presetColor}
-                          disabled={disabled()}
-                          onClick={() => selectPreset(presetColor)}
-                        >
-                          <span
-                            class={`${prefixCls()}-preset-color-inner`}
-                            style={{ background: colorToCss(parseColor(presetColor)) }}
-                          />
-                        </button>
-                      )}
-                    </For>
-                  </div>
-                </div>
-              )}
-            </For>
-          </div>
-        </Show>
-        <Show when={local.allowClear}>
-          <div class={`${prefixCls()}-actions`}>
-            <button
-              type="button"
-              class={`${prefixCls()}-clear`}
-              disabled={disabled()}
-              onClick={clearColor}
-            >
-              Clear color
-            </button>
-          </div>
-        </Show>
-        <div class={`${prefixCls()}-preview`}>
-          <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
-            <span
-              class={`${prefixCls()}-preview-color-inner`}
-              style={{ background: colorToCss(mergedColor()) }}
-            />
-          </span>
-          <span class={`${prefixCls()}-preview-text`}>
-            {mergedColor()?.toRgbString() ?? 'No color'}
-          </span>
+      </>
+    )
+  }
+
+  function renderPresets(): JSX.Element {
+    return (
+      <Show when={presetList().length > 0}>
+        <Presets
+          prefixCls={prefixCls()}
+          presets={presetList()}
+          disabled={disabled()}
+          onSelect={selectPreset}
+        />
+      </Show>
+    )
+  }
+
+  function renderActions(): JSX.Element {
+    return (
+      <Show when={local.allowClear}>
+        <div class={`${prefixCls()}-actions`}>
+          <button
+            type="button"
+            class={`${prefixCls()}-clear`}
+            disabled={disabled()}
+            onClick={clearColor}
+          >
+            Clear color
+          </button>
         </div>
+      </Show>
+    )
+  }
+
+  function renderPreview(): JSX.Element {
+    return (
+      <div class={`${prefixCls()}-preview`}>
+        <span class={`${prefixCls()}-preview-color`} aria-hidden="true">
+          <span
+            class={`${prefixCls()}-preview-color-inner`}
+            style={{ background: colorToCss(displayColor()) }}
+          />
+        </span>
+        <span class={`${prefixCls()}-preview-text`}>
+          {displayColor()?.toRgbString() ?? 'No color'}
+        </span>
       </div>
     )
   }
 
+  function renderPanel(): JSX.Element {
+    return (
+      <ColorPickerPanel
+        prefixCls={prefixCls()}
+        modeSwitcher={renderModeSwitcher()}
+        gradientSlider={renderGradientSlider()}
+        picker={renderPicker()}
+        presets={renderPresets()}
+        actions={renderActions()}
+        preview={renderPreview()}
+      />
+    )
+  }
+
   const renderedPanel = () =>
-    local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
+    local.panelRender?.(renderPanel(), {
+      components: {
+        Picker: renderPicker,
+        Presets: renderPresets,
+      },
+    }) ?? renderPanel()
+  const [hasInteractiveCustomChild, setHasInteractiveCustomChild] = createSignal(false)
+  const interactiveChildSelector =
+    'button, a[href], input, select, textarea, summary, [role="button"], [role="link"]'
+  const triggerClass = () =>
+    classNames(
+      prefixCls(),
+      size() === 'small' && `${prefixCls()}-sm`,
+      size() === 'large' && `${prefixCls()}-lg`,
+      disabled() && `${prefixCls()}-disabled`,
+      hashId(),
+      local.rootClass,
+      semanticClassNames().root,
+      local.class,
+    )
+  const handleTriggerClick = (event: MouseEvent): void => {
+    if (disabled()) return
+    ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
+    if (event.defaultPrevented || local.trigger === 'hover') return
+    setOpen(!open())
+  }
+  const handleTriggerKeyDown = (event: KeyboardEvent): void => {
+    ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+    if (event.defaultPrevented) return
+    if (hasInteractiveCustomChild() && !isAriaRoleInteractiveElement(interactiveTriggerElement))
+      return
+    if (event.key !== 'Enter' && event.key !== ' ') return
+
+    event.preventDefault()
+    if (disabled() || local.trigger === 'hover') return
+    setOpen(!open())
+  }
+  const customTriggerProps = rest as JSX.HTMLAttributes<HTMLSpanElement>
+  const customTrigger = () => resolvedChildren()
+  const isAriaRoleInteractiveElement = (element: HTMLElement | undefined): boolean => {
+    const role = element?.getAttribute('role')
+
+    return role === 'button' || role === 'link'
+  }
+  const syncInteractiveTriggerElement = (): void => {
+    interactiveTriggerElement?.setAttribute('aria-haspopup', 'dialog')
+    interactiveTriggerElement?.setAttribute('aria-expanded', open() ? 'true' : 'false')
+    if (disabled()) {
+      interactiveTriggerElement?.setAttribute('aria-disabled', 'true')
+    } else {
+      interactiveTriggerElement?.removeAttribute('aria-disabled')
+    }
+  }
+  const updateInteractiveCustomChild = (): void => {
+    const nextInteractiveTriggerElement =
+      triggerRef?.querySelector<HTMLElement>(interactiveChildSelector) ?? undefined
+
+    if (nextInteractiveTriggerElement !== interactiveTriggerElement) {
+      interactiveTriggerElement = nextInteractiveTriggerElement
+    }
+
+    setHasInteractiveCustomChild(Boolean(interactiveTriggerElement))
+    syncInteractiveTriggerElement()
+  }
+  const addCustomTriggerClickCapture = (element: HTMLElement): void => {
+    customTriggerClickCaptureCleanup?.()
+
+    const handleClickCapture = (event: MouseEvent) => {
+      if (!disabled()) return
+
+      event.preventDefault()
+      event.stopPropagation()
+    }
+
+    element.addEventListener('click', handleClickCapture, { capture: true })
+    customTriggerClickCaptureCleanup = () => {
+      element.removeEventListener('click', handleClickCapture, { capture: true })
+    }
+  }
+
+  createEffect(() => {
+    customTrigger()
+    open()
+    disabled()
+    updateInteractiveCustomChild()
+  })
 
   return (
     <ZIndexContext.Provider value={contextZIndex}>
-      <button
-        {...rest}
-        ref={(element) => {
-          triggerRef = element
-        }}
-        type="button"
-        class={classNames(
-          prefixCls(),
-          size() === 'small' && `${prefixCls()}-sm`,
-          size() === 'large' && `${prefixCls()}-lg`,
-          disabled() && `${prefixCls()}-disabled`,
-          hashId(),
-          local.class,
-        )}
-        style={local.style}
-        disabled={disabled()}
-        aria-label="Color Picker"
-        aria-haspopup="dialog"
-        aria-expanded={open() ? 'true' : 'false'}
-        aria-disabled={disabled() ? 'true' : undefined}
-        onClick={(event) => {
-          ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
-          if (event.defaultPrevented || local.trigger === 'hover') return
-          setOpen(!open())
-        }}
-        onMouseEnter={handleHoverEnter}
-        onMouseLeave={handleHoverLeave}
+      <Show
+        when={customTrigger()}
+        fallback={
+          <button
+            {...rest}
+            ref={(element) => {
+              triggerRef = element
+            }}
+            type="button"
+            class={triggerClass()}
+            style={mergeStyle(semanticStyles().root, local.style)}
+            disabled={disabled()}
+            aria-label="Color Picker"
+            aria-haspopup="dialog"
+            aria-expanded={open() ? 'true' : 'false'}
+            aria-disabled={disabled() ? 'true' : undefined}
+            onClick={handleTriggerClick}
+            onKeyDown={(event) => {
+              ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+            }}
+            onMouseEnter={handleHoverEnter}
+            onMouseLeave={handleHoverLeave}
+          >
+            <span class={`${prefixCls()}-color-block`} aria-hidden="true">
+              <span
+                class={`${prefixCls()}-color-block-inner`}
+                style={{ background: colorToCss(mergedColor()) }}
+              />
+            </span>
+            {local.showText && (
+              <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
+            )}
+          </button>
+        }
       >
-        <span class={`${prefixCls()}-color-block`} aria-hidden="true">
-          <span
-            class={`${prefixCls()}-color-block-inner`}
-            style={{ background: colorToCss(mergedColor()) }}
-          />
+        <span
+          {...customTriggerProps}
+          ref={(element) => {
+            triggerRef = element
+            addCustomTriggerClickCapture(element)
+            updateInteractiveCustomChild()
+          }}
+          role={hasInteractiveCustomChild() ? undefined : 'button'}
+          class={triggerClass()}
+          style={mergeStyle(semanticStyles().root, local.style)}
+          tabIndex={hasInteractiveCustomChild() || disabled() ? undefined : 0}
+          aria-label={customTriggerProps['aria-label']}
+          aria-haspopup="dialog"
+          aria-expanded={open() ? 'true' : 'false'}
+          aria-disabled={disabled() ? 'true' : undefined}
+          onClick={handleTriggerClick}
+          onKeyDown={handleTriggerKeyDown}
+          onMouseEnter={handleHoverEnter}
+          onMouseLeave={handleHoverLeave}
+        >
+          {customTrigger()}
         </span>
-        {local.showText && (
-          <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
-        )}
-      </button>
-      <Show when={open()}>
+      </Show>
+      <Show when={shouldRenderPopup()}>
         <InternalPortal
           mount={() =>
             local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)
@@ -908,17 +1276,38 @@ export function ColorPicker(props: ColorPickerProps) {
             }}
             role="dialog"
             aria-label="Color Picker Panel"
+            aria-hidden={popupVisible() ? undefined : 'true'}
             class={classNames(
               `${prefixCls()}-popup`,
-              `${prefixCls()}-${placement()}`,
+              `${prefixCls()}-${adjustedPlacement()}`,
+              !popupVisible() && `${prefixCls()}-popup-hidden`,
+              showArrow(local.arrow) && `${prefixCls()}-with-arrow`,
+              pointAtCenter(local.arrow) && `${prefixCls()}-arrow-point-at-center`,
               hashId(),
               local.popupClass,
+              semanticClassNames().popup?.root,
             )}
-            style={{ ...position(), 'z-index': zIndex, ...local.popupStyle }}
+            style={mergeStyle(
+              position(),
+              { 'z-index': zIndex },
+              semanticStyles().popup?.root,
+              local.popupStyle,
+            )}
             onMouseEnter={handleHoverEnter}
             onMouseLeave={handleHoverLeave}
           >
-            {renderedPanel()}
+            <Show when={showArrow(local.arrow)}>
+              <div class={`${prefixCls()}-arrow`} />
+            </Show>
+            <div
+              class={classNames(
+                `${prefixCls()}-popup-inner`,
+                semanticClassNames().popupOverlayInner,
+              )}
+              style={semanticStyles().popupOverlayInner}
+            >
+              {renderedPanel()}
+            </div>
           </div>
         </InternalPortal>
       </Show>
