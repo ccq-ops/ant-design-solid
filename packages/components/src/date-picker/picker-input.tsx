@@ -45,7 +45,7 @@ export function PickerInput(props: PickerInputProps) {
       <Show when={props.prefix}>
         <span class={`${props.prefixCls}-prefix`}>{props.prefix}</span>
       </Show>
-      <Show when={props.multiple}>
+      <Show when={props.multiple && props.multipleValues?.length}>
         <MultipleTags
           prefixCls={props.prefixCls}
           values={props.multipleValues ?? []}
