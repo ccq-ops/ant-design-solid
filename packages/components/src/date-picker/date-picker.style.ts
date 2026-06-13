@@ -522,7 +522,7 @@ export function useDatePickerStyle(prefixCls: string) {
           cursor: 'pointer',
         },
         [`.${prefixCls}-empty-cell`]: {
-          minHeight: '32px',
+          minHeight: `${dp.cellHeight}px`,
         },
       }
     },
