@@ -188,14 +188,26 @@ describe('DatePicker custom rendering and visual APIs', () => {
   })
 
   it('shows a default Today shortcut for DatePicker panels', () => {
+    const cache = createCache()
     const onChange = vi.fn()
-    render(() => <DatePicker defaultOpen onChange={onChange} />)
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker defaultOpen onChange={onChange} />
+      </StyleProvider>
+    ))
 
     fireEvent.click(screen.getByRole('button', { name: 'Today' }))
 
+    const css = extractStyle(cache)
     const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
     expect(dayjs.isDayjs(nextValue)).toBe(true)
     expect(nextString).toBe(dayjs().format('YYYY-MM-DD'))
+    expect(css).toContain(
+      '.ads-date-picker-today, .ads-date-picker-now{background:transparent;border:0;color:#1677ff;cursor:pointer;padding:0;',
+    )
+    expect(css).toContain(
+      '.ads-date-picker-today:disabled{color:rgba(0,0,0,0.25);cursor:not-allowed;pointer-events:none;',
+    )
   })
 
   it('disables the default Today shortcut when today is disabled', () => {
