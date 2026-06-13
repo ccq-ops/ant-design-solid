@@ -346,7 +346,7 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-week-row .${prefixCls}-cell`]: {
           width: `${dp.cellHeight}px`,
         },
-        [`.${prefixCls}-week-row:hover`]: {
+        [`.${prefixCls}-week-row:not(.${prefixCls}-week-row-selected):hover`]: {
           background: dp.cellHoverBg,
         },
         [`.${prefixCls}-week-row-selected`]: {
