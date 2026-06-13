@@ -30,6 +30,7 @@
 ### Task 1: Aggregate Color Model
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/color.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
 
@@ -80,7 +81,9 @@ it('normalizes gradient percents and keeps first color methods compatible', () =
   expect(color.getColors().map((item) => item.percent)).toEqual([0, 100])
   expect(color.toHexString()).toBe('#1677ff')
   expect(color.toRgbString()).toBe('rgb(22, 119, 255)')
-  expect(colorToCss(color)).toBe('linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)')
+  expect(colorToCss(color)).toBe(
+    'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+  )
 })
 ```
 
@@ -138,7 +141,10 @@ export class Color {
       .map((item) => {
         const parsedColor = parseColor(item.color)
         if (!parsedColor) return undefined
-        return { color: parsedColor.isGradient() ? parsedColor.getColors()[0].color : parsedColor, percent: clamp(item.percent, 0, 100) }
+        return {
+          color: parsedColor.isGradient() ? parsedColor.getColors()[0].color : parsedColor,
+          percent: clamp(item.percent, 0, 100),
+        }
       })
       .filter((item): item is ParsedGradientColorStop => Boolean(item))
 
@@ -152,9 +158,11 @@ export class Color {
   }
 
   getColors(): ParsedGradientColorStop[] {
-    return this.colors?.map((item) => ({ color: item.color, percent: item.percent })) ?? [
-      { color: this, percent: 0 },
-    ]
+    return (
+      this.colors?.map((item) => ({ color: item.color, percent: item.percent })) ?? [
+        { color: this, percent: 0 },
+      ]
+    )
   }
 
   toCssString(): string {
@@ -176,7 +184,8 @@ export class Color {
       colors.length === targetColors.length &&
       colors.every(
         (item, index) =>
-          item.percent === targetColors[index].percent && item.color.equals(targetColors[index].color),
+          item.percent === targetColors[index].percent &&
+          item.color.equals(targetColors[index].color),
       )
     )
   }
@@ -190,7 +199,8 @@ export function parseColor(value: ColorPickerValue): Color | undefined {
   if (value == null) return undefined
   if (value instanceof Color) return value
   if (Array.isArray(value)) return Color.fromGradient(value)
-  if (typeof value !== 'string') return isRgbColor(value) ? Color.fromRgb(value) : Color.fromHsb(value)
+  if (typeof value !== 'string')
+    return isRgbColor(value) ? Color.fromRgb(value) : Color.fromHsb(value)
   const trimmedValue = value.trim()
   return parseHexColor(trimmedValue) ?? parseRgbColor(trimmedValue) ?? parseHsbColor(trimmedValue)
 }
@@ -220,6 +230,7 @@ git commit -m "feat: add color picker gradient color model"
 ### Task 2: Public API Types And Basic Prop Behavior
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/interface.ts`
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -289,7 +300,12 @@ import type { TooltipArrow, TooltipOverflowConfig } from '../tooltip'
 import type { TooltipPlacement } from '../shared/placement'
 
 export type ColorPickerMode = 'single' | 'gradient'
-export type ColorPickerSemanticSlot = 'root' | 'body' | 'content' | 'description' | 'popupOverlayInner'
+export type ColorPickerSemanticSlot =
+  | 'root'
+  | 'body'
+  | 'content'
+  | 'description'
+  | 'popupOverlayInner'
 export interface ColorPickerSemanticClassNames {
   root?: string
   body?: string
@@ -374,6 +390,7 @@ git commit -m "feat: expand color picker v6 props"
 ### Task 3: Popup Semantics, Placement, Arrow, And Destroy Controls
 
 **Files:**
+
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.style.ts`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -387,8 +404,16 @@ it('applies root and popup semantic classNames and styles', () => {
   render(() => (
     <ColorPicker
       open
-      classNames={{ root: 'root-slot', popup: { root: 'popup-root-slot' }, popupOverlayInner: 'inner-slot' }}
-      styles={{ root: { width: '123px' }, popup: { root: { width: '234px' } }, popupOverlayInner: { padding: '9px' } }}
+      classNames={{
+        root: 'root-slot',
+        popup: { root: 'popup-root-slot' },
+        popupOverlayInner: 'inner-slot',
+      }}
+      styles={{
+        root: { width: '123px' },
+        popup: { root: { width: '234px' } },
+        popupOverlayInner: { padding: '9px' },
+      }}
     />
   ))
 
@@ -436,8 +461,13 @@ Expected: FAIL because semantic slots and arrow are missing or placement is too 
 In `color-picker.tsx`, add helpers:
 
 ```ts
-function resolveMaybeFn<T>(value: T | ((info: { props: ColorPickerProps }) => T) | undefined, props: ColorPickerProps): T | undefined {
-  return typeof value === 'function' ? (value as (info: { props: ColorPickerProps }) => T)({ props }) : value
+function resolveMaybeFn<T>(
+  value: T | ((info: { props: ColorPickerProps }) => T) | undefined,
+  props: ColorPickerProps,
+): T | undefined {
+  return typeof value === 'function'
+    ? (value as (info: { props: ColorPickerProps }) => T)({ props })
+    : value
 }
 
 function showArrow(arrow: ColorPickerProps['arrow']): boolean {
@@ -459,7 +489,12 @@ Set position with:
 
 ```ts
 const rect = target.getBoundingClientRect()
-const nextPlacement = getAdjustedTooltipPlacement(rect, placement(), 4, local.autoAdjustOverflow ?? true)
+const nextPlacement = getAdjustedTooltipPlacement(
+  rect,
+  placement(),
+  4,
+  local.autoAdjustOverflow ?? true,
+)
 setPosition({
   position: 'fixed',
   ...getTooltipPosition(rect, nextPlacement, 4),
@@ -507,6 +542,7 @@ git commit -m "feat: align color picker popup semantics"
 ### Task 4: Mode Switching And Gradient Editing
 
 **Files:**
+
 - Create: `packages/components/src/color-picker/color-picker-panel.tsx`
 - Create: `packages/components/src/color-picker/gradient-slider.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
@@ -521,7 +557,14 @@ Append:
 describe('ColorPicker gradient mode', () => {
   it('renders mode switcher and switches from single to gradient', () => {
     const onChange = vi.fn()
-    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" mode={['single', 'gradient']} onChange={onChange} />)
+    render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        mode={['single', 'gradient']}
+        onChange={onChange}
+      />
+    ))
 
     fireEvent.click(latestPanel().getByRole('button', { name: 'Gradient' }))
 
@@ -579,7 +622,9 @@ describe('ColorPicker gradient mode', () => {
     fireEvent.pointerUp(document, { clientX: 50, clientY: 6 })
     expect(latestPanel().getByRole('button', { name: /gradient stop 50/i })).toBeInTheDocument()
 
-    fireEvent.keyDown(latestPanel().getByRole('button', { name: /gradient stop 50/i }), { key: 'Delete' })
+    fireEvent.keyDown(latestPanel().getByRole('button', { name: /gradient stop 50/i }), {
+      key: 'Delete',
+    })
     expect(latestPanel().queryByRole('button', { name: /gradient stop 50/i })).toBeNull()
     expect(onChangeComplete).toHaveBeenCalled()
   })
@@ -650,7 +695,10 @@ export function GradientSlider(props: GradientSliderProps): JSX.Element {
   const sortedColors = () => [...props.colors].sort((a, b) => a.percent - b.percent)
 
   const commit = (colors: ParsedGradientColorStop[], dragging = false) => {
-    props.onChange([...colors].sort((a, b) => a.percent - b.percent), dragging)
+    props.onChange(
+      [...colors].sort((a, b) => a.percent - b.percent),
+      dragging,
+    )
   }
 
   const startStopDrag = (index: number, event: PointerEvent) => {
@@ -722,7 +770,10 @@ export function GradientSlider(props: GradientSliderProps): JSX.Element {
               startStopDrag(index(), event)
             }}
             onKeyDown={(event) => {
-              if ((event.key === 'Delete' || event.key === 'Backspace') && sortedColors().length > 2) {
+              if (
+                (event.key === 'Delete' || event.key === 'Backspace') &&
+                sortedColors().length > 2
+              ) {
                 const next = sortedColors().filter((_, currentIndex) => currentIndex !== index())
                 props.onActive(Math.max(0, index() - 1))
                 commit(next, false)
@@ -774,8 +825,20 @@ In `color-picker.tsx`:
 
 ```tsx
 <div class={`${prefixCls()}-mode-switch`} role="group" aria-label="Color mode">
-  <button type="button" aria-pressed={modeState() === 'single'} onClick={() => switchMode('single')}>Single</button>
-  <button type="button" aria-pressed={modeState() === 'gradient'} onClick={() => switchMode('gradient')}>Gradient</button>
+  <button
+    type="button"
+    aria-pressed={modeState() === 'single'}
+    onClick={() => switchMode('single')}
+  >
+    Single
+  </button>
+  <button
+    type="button"
+    aria-pressed={modeState() === 'gradient'}
+    onClick={() => switchMode('gradient')}
+  >
+    Gradient
+  </button>
 </div>
 ```
 
@@ -804,6 +867,7 @@ git commit -m "feat: add color picker gradient mode"
 ### Task 5: Presets With Gradient Values And Collapsed Groups
 
 **Files:**
+
 - Create: `packages/components/src/color-picker/presets.tsx`
 - Modify: `packages/components/src/color-picker/color-picker.tsx`
 - Test: `packages/components/src/color-picker/__tests__/color-picker.test.tsx`
@@ -878,7 +942,10 @@ export function Presets(props: PresetsProps): JSX.Element {
   const [openKeys, setOpenKeys] = createSignal(
     new Set(
       props.presets
-        .map((preset, index) => ({ key: String(preset.key ?? index), open: preset.defaultOpen !== false }))
+        .map((preset, index) => ({
+          key: String(preset.key ?? index),
+          open: preset.defaultOpen !== false,
+        }))
         .filter((item) => item.open)
         .map((item) => item.key),
     ),
@@ -942,7 +1009,12 @@ export function Presets(props: PresetsProps): JSX.Element {
 In `color-picker.tsx`, import `Presets`, remove inline preset JSX, and call:
 
 ```tsx
-<Presets prefixCls={prefixCls()} presets={presetList()} disabled={disabled()} onSelect={selectPreset} />
+<Presets
+  prefixCls={prefixCls()}
+  presets={presetList()}
+  disabled={disabled()}
+  onSelect={selectPreset}
+/>
 ```
 
 Update `selectPreset(value: ColorPickerValue)` to parse gradients and switch mode to gradient when needed.
@@ -970,6 +1042,7 @@ git commit -m "feat: support color picker v6 presets"
 ### Task 6: Antd V6 Component Tokens And Styles
 
 **Files:**
+
 - Modify: `packages/theme/src/types.ts`
 - Modify: `packages/theme/src/components.ts`
 - Modify: `packages/theme/src/__tests__/theme.test.ts`
@@ -1069,6 +1142,7 @@ git commit -m "feat: align color picker component tokens"
 ### Task 7: Docs Examples And API Tables
 
 **Files:**
+
 - Modify: `apps/docs/src/pages/components/color-picker.mdx`
 
 - [ ] **Step 1: Replace docs with v6-aligned Solid examples**
@@ -1274,7 +1348,12 @@ const Demo12 = function () {
         },
         {
           label: 'Gradients',
-          colors: [[{ color: '#1677ff', percent: 0 }, { color: '#52c41a', percent: 100 }]],
+          colors: [
+            [
+              { color: '#1677ff', percent: 0 },
+              { color: '#52c41a', percent: 100 },
+            ],
+          ],
         },
       ]}
     />
@@ -1406,6 +1485,7 @@ git commit -m "docs: update color picker v6 examples"
 ### Task 8: Final Verification
 
 **Files:**
+
 - No planned code changes.
 
 - [ ] **Step 1: Run required repository checks**
