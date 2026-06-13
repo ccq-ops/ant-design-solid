@@ -1,4 +1,5 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useCascaderStyle(prefixCls: string) {
@@ -7,16 +8,18 @@ export function useCascaderStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['Cascader', prefixCls] },
     () => {
       const t = token()
+      const cascader = getComponentToken('Cascader', t)
       return {
         [`.${prefixCls}`]: {
           position: 'relative',
           display: 'inline-block',
-          width: '200px',
+          width: `${cascader.controlWidth}px`,
           color: t.colorText,
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
         },
         [`.${prefixCls}-selector`]: {
+          position: 'relative',
           display: 'inline-flex',
           'align-items': 'center',
           'justify-content': 'space-between',
@@ -32,7 +35,10 @@ export function useCascaderStyle(prefixCls: string) {
         },
         [`.${prefixCls}-open .${prefixCls}-selector`]: {
           'border-color': t.colorPrimary,
-          'box-shadow': `0 0 0 2px ${t.colorFillAlter}`,
+          'box-shadow': cascader.activeShadow,
+        },
+        [`.${prefixCls}:not(.${prefixCls}-disabled):hover .${prefixCls}-selector`]: {
+          'border-color': cascader.hoverBorderColor,
         },
         [`.${prefixCls}-disabled .${prefixCls}-selector`]: {
           color: t.colorTextDisabled,
@@ -68,8 +74,11 @@ export function useCascaderStyle(prefixCls: string) {
           'align-items': 'center',
           gap: `${t.marginXS}px`,
           padding: `0 ${t.paddingXS}px`,
-          background: t.colorFillAlter,
+          background: cascader.multipleItemBg,
+          border: `${t.lineWidth}px solid ${cascader.multipleItemBorderColor}`,
           'border-radius': `${t.borderRadius}px`,
+          height: `${cascader.multipleItemHeight}px`,
+          'line-height': `${cascader.multipleItemHeight - 2}px`,
         },
         [`.${prefixCls}-tag-close`]: {
           border: '0',
@@ -87,6 +96,17 @@ export function useCascaderStyle(prefixCls: string) {
           color: t.colorText,
           'font-size': 'inherit',
         },
+        [`.${prefixCls}-search`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          gap: `${t.marginXS}px`,
+          flex: '1',
+          'min-width': '0',
+        },
+        [`.${prefixCls}-search-icon`]: {
+          display: 'inline-flex',
+          color: t.colorTextSecondary,
+        },
         [`.${prefixCls}-search-list`]: {
           minWidth: '160px',
           margin: '0',
@@ -94,11 +114,11 @@ export function useCascaderStyle(prefixCls: string) {
           'list-style': 'none',
         },
         [`.${prefixCls}-search-item`]: {
-          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          padding: `${t.paddingXS}px ${cascader.optionPadding}px`,
           cursor: 'pointer',
           'white-space': 'nowrap',
         },
-        [`.${prefixCls}-search-item:hover`]: { background: t.colorFillAlter },
+        [`.${prefixCls}-search-item:hover`]: { background: cascader.optionActiveBg },
         [`.${prefixCls}-checkbox`]: {
           display: 'inline-flex',
           'align-items': 'center',
@@ -117,13 +137,34 @@ export function useCascaderStyle(prefixCls: string) {
           'white-space': 'nowrap',
         },
         [`.${prefixCls}-clear`]: {
+          position: 'absolute',
+          top: '50%',
+          'inset-inline-end': `${t.paddingSM}px`,
+          transform: 'translateY(-50%)',
+          'z-index': 1,
           border: '0',
           padding: '0',
-          background: 'transparent',
-          color: t.colorTextDisabled,
+          width: '16px',
+          height: '16px',
+          background: 'inherit',
+          color: cascader.clearIconColor,
           cursor: 'pointer',
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
           'font-size': `${t.fontSize}px`,
           'line-height': '1',
+          opacity: 0,
+          'pointer-events': 'none',
+          transition: 'opacity 0.2s ease',
+        },
+        [`.${prefixCls}:not(.${prefixCls}-disabled):hover .${prefixCls}-clear`]: {
+          opacity: 1,
+          'pointer-events': 'auto',
+        },
+        [`.${prefixCls}:not(.${prefixCls}-disabled):focus-within .${prefixCls}-clear`]: {
+          opacity: 1,
+          'pointer-events': 'auto',
         },
         [`.${prefixCls}-clear:hover`]: { color: t.colorText },
         [`.${prefixCls}-dropdown`]: {
@@ -134,9 +175,14 @@ export function useCascaderStyle(prefixCls: string) {
           background: t.colorBgContainer,
           'box-shadow': t.boxShadow,
         },
+        [`.${prefixCls}-panel`]: {
+          position: 'relative',
+          display: 'inline-flex',
+          marginTop: '0',
+        },
         [`.${prefixCls}-menu`]: {
-          minWidth: '120px',
-          minHeight: '120px',
+          minWidth: `${cascader.menuWidth}px`,
+          minHeight: `${cascader.dropdownHeight}px`,
           margin: '0',
           padding: `${t.paddingXS}px 0`,
           'list-style': 'none',
@@ -148,16 +194,17 @@ export function useCascaderStyle(prefixCls: string) {
           'align-items': 'center',
           'justify-content': 'space-between',
           gap: `${t.paddingSM}px`,
-          padding: `${t.paddingXS}px ${t.paddingSM}px`,
+          minHeight: `${cascader.optionHeight}px`,
+          padding: `${t.paddingXS}px ${cascader.optionPadding}px`,
           cursor: 'pointer',
           'white-space': 'nowrap',
         },
-        [`.${prefixCls}-menu-item:hover`]: { background: t.colorFillAlter },
+        [`.${prefixCls}-menu-item:hover`]: { background: cascader.optionActiveBg },
         [`.${prefixCls}-menu-item-selected`]: {
-          color: t.colorPrimary,
-          background: t.colorFillAlter,
+          color: cascader.optionSelectedColor,
+          background: cascader.optionSelectedBg,
         },
-        [`.${prefixCls}-menu-item-active`]: { background: t.colorFillAlter },
+        [`.${prefixCls}-menu-item-active`]: { background: cascader.optionActiveBg },
         [`.${prefixCls}-menu-item-disabled`]: {
           color: t.colorTextDisabled,
           cursor: 'not-allowed',
@@ -166,6 +213,18 @@ export function useCascaderStyle(prefixCls: string) {
         [`.${prefixCls}-menu-item-expand-icon`]: {
           color: t.colorTextDisabled,
           'font-size': `${t.fontSize}px`,
+        },
+        [`.${prefixCls}-suffix`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          color: t.colorTextSecondary,
+          'line-height': 1,
+        },
+        [`.${prefixCls}-empty`]: {
+          minWidth: `${cascader.menuWidth}px`,
+          padding: `${t.paddingSM}px`,
+          color: t.colorTextDisabled,
+          'text-align': 'center',
         },
       }
     },

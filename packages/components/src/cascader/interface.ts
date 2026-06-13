@@ -5,6 +5,37 @@ export type CascaderShowCheckedStrategy = 'SHOW_PARENT' | 'SHOW_CHILD'
 export type CascaderSize = 'large' | 'middle' | 'small'
 export type CascaderStatus = 'error' | 'warning'
 export type CascaderVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
+export type CascaderPlacement = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
+export type CascaderSemanticSlot =
+  | 'root'
+  | 'selector'
+  | 'prefix'
+  | 'suffix'
+  | 'clear'
+  | 'popup'
+  | 'menu'
+  | 'item'
+  | 'itemContent'
+  | 'expandIcon'
+  | 'loadingIcon'
+  | 'search'
+  | 'searchIcon'
+  | 'empty'
+  | 'tag'
+  | 'tagLabel'
+  | 'tagClose'
+export type CascaderSemanticClassNames =
+  | Partial<Record<CascaderSemanticSlot, string>>
+  | ((info: { props: CascaderProps }) => Partial<Record<CascaderSemanticSlot, string>>)
+export type CascaderSemanticStyles =
+  | Partial<Record<CascaderSemanticSlot, JSX.CSSProperties>>
+  | ((info: { props: CascaderProps }) => Partial<Record<CascaderSemanticSlot, JSX.CSSProperties>>)
+
+export interface CascaderFieldNames {
+  label?: string
+  value?: string
+  children?: string
+}
 
 export interface CascaderOption {
   label: JSX.Element
@@ -13,6 +44,17 @@ export interface CascaderOption {
   children?: CascaderOption[]
   isLeaf?: boolean
   loading?: boolean
+  [key: string]: unknown
+}
+
+export interface CascaderOptionInput {
+  label?: JSX.Element
+  value?: OptionValue
+  disabled?: boolean
+  children?: CascaderOptionInput[]
+  isLeaf?: boolean
+  loading?: boolean
+  [key: string]: unknown
 }
 
 export interface CascaderShowSearch {
@@ -33,11 +75,18 @@ export interface CascaderSelectedPath {
   label: JSX.Element
 }
 
+export interface CascaderRef {
+  focus: () => void
+  blur: () => void
+  nativeElement?: HTMLDivElement
+}
+
 export interface CascaderProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onInput' | 'prefix'
+  'onChange' | 'onInput' | 'prefix' | 'ref'
 > {
-  options?: CascaderOption[]
+  ref?: CascaderRef | { current?: CascaderRef } | ((ref: CascaderRef) => void)
+  options?: CascaderOptionInput[]
   value?: OptionValue[] | OptionValue[][]
   defaultValue?: OptionValue[] | OptionValue[][]
   open?: boolean
@@ -47,7 +96,9 @@ export interface CascaderProps extends Omit<
   allowClear?: boolean | { clearIcon?: JSX.Element }
   changeOnSelect?: boolean
   expandTrigger?: 'click' | 'hover'
+  expandIcon?: JSX.Element
   displayRender?: (labels: JSX.Element[], selectedOptions: CascaderOption[]) => JSX.Element
+  fieldNames?: CascaderFieldNames
   prefixCls?: string
   zIndex?: number
   getPopupContainer?: (triggerNode?: HTMLElement) => HTMLElement | ShadowRoot
@@ -61,6 +112,10 @@ export interface CascaderProps extends Omit<
   onSearch?: (search: string) => void
   loadData?: (selectedOptions: CascaderOption[]) => void | Promise<void>
   loadingIcon?: JSX.Element
+  notFoundContent?: JSX.Element
+  optionRender?: (option: CascaderOption) => JSX.Element
+  popupRender?: (originNode: JSX.Element) => JSX.Element
+  placement?: CascaderPlacement
   multiple?: boolean
   showCheckedStrategy?: CascaderShowCheckedStrategy
   tagRender?: (label: JSX.Element, onClose: () => void, value: OptionValue[]) => JSX.Element
@@ -73,4 +128,8 @@ export interface CascaderProps extends Omit<
   status?: CascaderStatus
   variant?: CascaderVariant
   prefix?: JSX.Element
+  suffixIcon?: JSX.Element | null
+  classNames?: CascaderSemanticClassNames
+  styles?: CascaderSemanticStyles
+  onClear?: () => void
 }

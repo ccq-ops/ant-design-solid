@@ -442,6 +442,24 @@ export interface SelectComponentToken extends ComponentTokenBase {
   clearIconColor: string
 }
 
+export interface CascaderComponentToken extends ComponentTokenBase {
+  optionHeight: number
+  optionPadding: number
+  optionSelectedBg: string
+  optionActiveBg: string
+  optionSelectedColor: string
+  dropdownHeight: number
+  controlWidth: number
+  menuWidth: number
+  multipleItemBg: string
+  multipleItemBorderColor: string
+  multipleItemHeight: number
+  activeBorderColor: string
+  activeShadow: string
+  hoverBorderColor: string
+  clearIconColor: string
+}
+
 export interface CheckboxComponentToken extends ComponentTokenBase {
   size: number
   borderRadius: number
@@ -593,6 +611,14 @@ export interface CardComponentToken extends ComponentTokenBase {
   headerBorderBottom: string
 }
 
+export interface CollapseComponentToken extends ComponentTokenBase {
+  headerBg: string
+  headerPadding: string
+  headerPaddingSM: string
+  contentPadding: string
+  contentBg: string
+}
+
 export interface DividerComponentToken extends ComponentTokenBase {
   textPaddingInline: string | number
   orientationMargin: number
@@ -708,10 +734,10 @@ export interface ComponentTokenMap {
   Calendar?: ComponentTokenBase
   Card: CardComponentToken
   Carousel?: ComponentTokenBase
-  Cascader?: ComponentTokenBase
+  Cascader: CascaderComponentToken
   Checkbox: CheckboxComponentToken
   ColorPicker: ColorPickerComponentToken
-  Collapse?: ComponentTokenBase
+  Collapse: CollapseComponentToken
   DatePicker: DatePickerComponentToken
   Descriptions: DescriptionsComponentToken
   Divider: DividerComponentToken

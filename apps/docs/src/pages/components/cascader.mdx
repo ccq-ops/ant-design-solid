@@ -5,201 +5,168 @@ Select from a nested set of related options with one menu column per level.
 ### Basic
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
       {
-        label: 'Hangzhou',
         value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
+        label: 'Hangzhou',
+        children: [{ value: 'xihu', label: 'West Lake' }],
       },
-      { label: 'Ningbo', value: 'ningbo' },
     ],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    children: [
+      {
+        value: 'nanjing',
+        label: 'Nanjing',
+        children: [{ value: 'zhonghuamen', label: 'Zhong Hua Men' }],
+      },
+    ],
   },
 ]
 
 const Demo1 = function () {
-  return <Cascader placeholder="Select area" options={options} />
+  return <Cascader options={options} placeholder="Please select" />
 }
 
 export default Demo1
 ```
 
-### Default value and allow clear
+### Default Value
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
+      { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
     ],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    children: [{ value: 'nanjing', label: 'Nanjing' }],
   },
 ]
 
 const Demo2 = function () {
-  return (
-    <Cascader allowClear defaultValue={['zhejiang', 'hangzhou', 'west-lake']} options={options} />
-  )
+  return <Cascader defaultValue={['zhejiang', 'hangzhou', 'xihu']} options={options} />
 }
 
 export default Demo2
 ```
 
-### Change on select
+### Change On Select
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
+      { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
     ],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    children: [{ value: 'nanjing', label: 'Nanjing' }],
   },
 ]
 
 const Demo3 = function () {
-  return <Cascader changeOnSelect placeholder="Select any level" options={options} />
+  return <Cascader changeOnSelect options={options} placeholder="Please select" />
 }
 
 export default Demo3
 ```
 
-### Hover expand
+### Hover Expand
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
+      { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
     ],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    children: [{ value: 'nanjing', label: 'Nanjing' }],
   },
 ]
 
 const Demo4 = function () {
-  return <Cascader expandTrigger="hover" placeholder="Hover to expand" options={options} />
+  return <Cascader expandTrigger="hover" options={options} placeholder="Please select" />
 }
 
 export default Demo4
 ```
 
-### Disabled
+### Disabled Option
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
-    children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
-    ],
+    label: 'Zhejiang',
+    children: [{ value: 'hangzhou', label: 'Hangzhou', disabled: true }],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    disabled: true,
+    children: [{ value: 'nanjing', label: 'Nanjing' }],
   },
 ]
 
 const Demo5 = function () {
-  return (
-    <Space direction="vertical">
-      <Cascader disabled placeholder="Disabled" options={options} />
-      <Cascader disabled defaultValue={['jiangsu', 'nanjing']} options={options} />
-    </Space>
-  )
+  return <Cascader options={options} placeholder="Please select" />
 }
 
 export default Demo5
 ```
 
-### Custom display render
+### Custom Display Render
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
+      { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
     ],
-  },
-  {
-    label: 'Jiangsu',
-    value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
   },
 ]
 
 const Demo6 = function () {
   return (
     <Cascader
-      defaultValue={['zhejiang', 'hangzhou', 'west-lake']}
+      defaultValue={['zhejiang', 'hangzhou', 'xihu']}
       options={options}
-      displayRender={(labels) => <strong>{labels.at(-1)}</strong>}
+      displayRender={(labels) => labels.at(-1)}
     />
   )
 }
@@ -210,68 +177,72 @@ export default Demo6
 ### Search
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
+      { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
     ],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    children: [{ value: 'nanjing', label: 'Nanjing' }],
   },
 ]
 
 const Demo7 = function () {
-  return <Cascader showSearch placeholder="Search area" options={options} />
+  return (
+    <Cascader
+      showSearch={{
+        filter: (inputValue, path) =>
+          path.some((option) =>
+            String(option.label).toLowerCase().includes(inputValue.toLowerCase()),
+          ),
+      }}
+      options={options}
+      placeholder="Search area"
+    />
+  )
 }
 
 export default Demo7
 ```
 
-### Lazy loading
+### Load Data
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
-
-const options = [
-  {
-    label: 'Zhejiang',
-    value: 'zhejiang',
-    children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
-    ],
-  },
-  {
-    label: 'Jiangsu',
-    value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
-  },
-]
+import { createSignal } from 'solid-js'
+import { Cascader } from '@ant-design-solid/core'
 
 const Demo8 = function () {
-  return (
-    <Cascader
-      options={[{ label: 'Lazy node', value: 'lazy', isLeaf: false }]}
-      loadData={() => Promise.resolve()}
-      loadingIcon="Loading"
-    />
-  )
+  const [options, setOptions] = createSignal([
+    { value: 'zhejiang', label: 'Zhejiang', isLeaf: false },
+    { value: 'jiangsu', label: 'Jiangsu', isLeaf: false },
+  ])
+
+  const loadData = async (selectedOptions) => {
+    const target = selectedOptions.at(-1)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setOptions((current) =>
+      current.map((option) =>
+        option.value === target?.value
+          ? {
+              ...option,
+              children: [
+                { label: `${option.label} Dynamic 1`, value: `${option.value}-1` },
+                { label: `${option.label} Dynamic 2`, value: `${option.value}-2` },
+              ],
+            }
+          : option,
+      ),
+    )
+  }
+
+  return <Cascader options={options()} loadData={loadData} placeholder="Please select" />
 }
 
 export default Demo8
@@ -280,93 +251,189 @@ export default Demo8
 ### Multiple
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
+    label: 'Zhejiang',
     children: [
       {
-        label: 'Hangzhou',
         value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
+        label: 'Hangzhou',
+        children: [
+          { value: 'xihu', label: 'West Lake' },
+          { value: 'xiasha', label: 'Xia Sha' },
+        ],
       },
-      { label: 'Ningbo', value: 'ningbo' },
     ],
   },
   {
-    label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Jiangsu',
+    children: [{ value: 'nanjing', label: 'Nanjing' }],
   },
 ]
 
 const Demo9 = function () {
-  return <Cascader multiple maxTagCount={1} options={options} />
+  return <Cascader multiple maxTagCount={2} options={options} placeholder="Please select" />
 }
 
 export default Demo9
 ```
 
-### Visual props
+### Custom Field Names
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
-    value: 'zhejiang',
-    children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
-    ],
+    name: 'Zhejiang',
+    id: 'zhejiang',
+    nodes: [{ name: 'Hangzhou', id: 'hangzhou', nodes: [{ name: 'West Lake', id: 'xihu' }] }],
   },
   {
-    label: 'Jiangsu',
-    value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    name: 'Jiangsu',
+    id: 'jiangsu',
+    nodes: [{ name: 'Nanjing', id: 'nanjing' }],
   },
 ]
 
 const Demo10 = function () {
-  return <Cascader size="large" status="error" variant="filled" prefix="Area" options={options} />
+  return (
+    <Cascader
+      fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
+      options={options}
+      placeholder="Please select"
+    />
+  )
 }
 
 export default Demo10
 ```
 
-### Form usage
+### Custom Dropdown
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Cascader } from '@ant-design-solid/core'
 
 const options = [
   {
-    label: 'Zhejiang',
     value: 'zhejiang',
-    children: [
-      {
-        label: 'Hangzhou',
-        value: 'hangzhou',
-        children: [{ label: 'West Lake', value: 'west-lake' }],
-      },
-      { label: 'Ningbo', value: 'ningbo' },
-    ],
-  },
-  {
-    label: 'Jiangsu',
-    value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }],
+    label: 'Zhejiang',
+    children: [{ value: 'hangzhou', label: 'Hangzhou' }],
   },
 ]
 
 const Demo11 = function () {
+  return (
+    <Cascader
+      options={options}
+      popupRender={(menus) => (
+        <div>
+          {menus}
+          <div style={{ padding: '8px 12px' }}>Custom footer</div>
+        </div>
+      )}
+    />
+  )
+}
+
+export default Demo11
+```
+
+### Custom Option
+
+```tsx
+import { Cascader } from '@ant-design-solid/core'
+
+const options = [
+  { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+  { value: 'jiangsu', label: 'Jiangsu', children: [{ value: 'nanjing', label: 'Nanjing' }] },
+]
+
+const Demo12 = function () {
+  return <Cascader options={options} optionRender={(option) => <strong>{option.label}</strong>} />
+}
+
+export default Demo12
+```
+
+### Placement
+
+```tsx
+import { Cascader, Space } from '@ant-design-solid/core'
+
+const options = [
+  { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+]
+
+const Demo13 = function () {
+  return (
+    <Space>
+      <Cascader placement="bottomLeft" options={options} />
+      <Cascader placement="bottomRight" options={options} />
+      <Cascader placement="topLeft" options={options} />
+      <Cascader placement="topRight" options={options} />
+    </Space>
+  )
+}
+
+export default Demo13
+```
+
+### Status And Variants
+
+```tsx
+import { Cascader, Space } from '@ant-design-solid/core'
+
+const options = [
+  { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+]
+
+const Demo14 = function () {
+  return (
+    <Space direction="vertical">
+      <Cascader status="error" options={options} placeholder="Error" />
+      <Cascader status="warning" options={options} placeholder="Warning" />
+      <Cascader variant="filled" options={options} placeholder="Filled" />
+      <Cascader variant="borderless" options={options} placeholder="Borderless" />
+      <Cascader variant="underlined" options={options} placeholder="Underlined" />
+    </Space>
+  )
+}
+
+export default Demo14
+```
+
+### Panel
+
+```tsx
+import { Cascader } from '@ant-design-solid/core'
+
+const options = [
+  { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+  { value: 'jiangsu', label: 'Jiangsu', children: [{ value: 'nanjing', label: 'Nanjing' }] },
+]
+
+const Demo15 = function () {
+  return <Cascader.Panel options={options} onChange={(value) => console.log(value)} />
+}
+
+export default Demo15
+```
+
+### Form Usage
+
+```tsx
+import { Cascader, Form } from '@ant-design-solid/core'
+
+const options = [
+  { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+]
+
+const Demo16 = function () {
   return (
     <Form onFinish={(values) => console.log(values)}>
       <Form.Item name="area" label="Area">
@@ -377,48 +444,75 @@ const Demo11 = function () {
   )
 }
 
-export default Demo11
+export default Demo16
 ```
 
 ## API
 
 ### Cascader
 
-| Property               | Description                                                                          | Type                                                                             | Default                |
-| ---------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ---------------------- |
-| `options`              | Nested option tree rendered by the cascader.                                         | `CascaderOption[]`                                                               | `-`                    |
-| `value`                | Controlled selected path values.                                                     | `OptionValue[] \| OptionValue[][]`                                               | `-`                    |
-| `defaultValue`         | Initial selected path values for uncontrolled usage.                                 | `OptionValue[] \| OptionValue[][]`                                               | `-`                    |
-| `open`                 | Controlled popup open state.                                                         | `boolean`                                                                        | `-`                    |
-| `defaultOpen`          | Initial popup open state.                                                            | `boolean`                                                                        | `false`                |
-| `placeholder`          | Placeholder shown when no path is selected.                                          | `JSX.Element`                                                                    | `-`                    |
-| `disabled`             | Disables opening and selection.                                                      | `boolean`                                                                        | `false`                |
-| `allowClear`           | Shows a clear button when a value is selected.                                       | `boolean`                                                                        | `false`                |
-| `changeOnSelect`       | Allows selecting intermediate parent options.                                        | `boolean`                                                                        | `false`                |
-| `expandTrigger`        | Interaction used to expand child columns.                                            | `'click' \| 'hover'`                                                             | `'click'`              |
-| `displayRender`        | Customizes selected path display.                                                    | `(labels: JSX.Element[], selectedOptions: CascaderOption[]) => JSX.Element`      | `-`                    |
-| `prefixCls`            | Custom CSS class prefix.                                                             | `string`                                                                         | `-`                    |
-| `zIndex`               | Overrides popup z-index.                                                             | `number`                                                                         | `-`                    |
-| `getPopupContainer`    | Returns the element used to mount the popup portal.                                  | `(triggerNode?: HTMLElement) => HTMLElement`                                     | `-`                    |
-| `showSearch`           | Enables path search or configures filtering, sorting, rendering, and search control. | `boolean \| CascaderShowSearch`                                                  | `false`                |
-| `searchValue`          | Controlled search text.                                                              | `string`                                                                         | `-`                    |
-| `onSearch`             | Called when search input changes.                                                    | `(search: string) => void`                                                       | `-`                    |
-| `loadData`             | Loads child options lazily for options with isLeaf set to false.                     | `(selectedOptions: CascaderOption[]) => void \| Promise<void>`                   | `-`                    |
-| `loadingIcon`          | Custom loading indicator for lazy options.                                           | `JSX.Element`                                                                    | `-`                    |
-| `multiple`             | Enables multiple path selection.                                                     | `boolean`                                                                        | `false`                |
-| `showCheckedStrategy`  | Controls whether parent or child paths are shown in multiple mode.                   | `Cascader.SHOW_PARENT \| Cascader.SHOW_CHILD`                                    | `Cascader.SHOW_PARENT` |
-| `tagRender`            | Custom multiple tag renderer.                                                        | `(label: JSX.Element, onClose: () => void, value: OptionValue[]) => JSX.Element` | `-`                    |
-| `removeIcon`           | Custom remove icon for multiple tags.                                                | `JSX.Element`                                                                    | `-`                    |
-| `maxTagCount`          | Maximum number of visible tags.                                                      | `number \| 'responsive'`                                                         | `-`                    |
-| `maxTagPlaceholder`    | Placeholder rendered for omitted tags.                                               | `JSX.Element \| ((omittedValues: CascaderSelectedPath[]) => JSX.Element)`        | `-`                    |
-| `maxTagTextLength`     | Maximum tag label text length.                                                       | `number`                                                                         | `-`                    |
-| `autoClearSearchValue` | Clears search text after selecting in multiple search mode.                          | `boolean`                                                                        | `true`                 |
-| `size`                 | Selector size.                                                                       | `'large' \| 'middle' \| 'small'`                                                 | `'middle'`             |
-| `status`               | Validation status style.                                                             | `'error' \| 'warning'`                                                           | `-`                    |
-| `variant`              | Selector visual variant.                                                             | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                         | `'outlined'`           |
-| `prefix`               | Custom prefix content inside the selector.                                           | `JSX.Element`                                                                    | `-`                    |
-| `onChange`             | Called with selected values and selected option path.                                | `(value: OptionValue[], selectedOptions: CascaderOption[]) => void`              | `-`                    |
-| `onOpenChange`         | Called when popup open state changes.                                                | `(open: boolean) => void`                                                        | `-`                    |
+| Property               | Description                                                                          | Type                                                                                                                        | Default                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `ref`                  | Imperative focus and blur handle.                                                    | `CascaderRef \| { current?: CascaderRef } \| ((ref: CascaderRef) => void)`                                                  | `-`                                                        |
+| `options`              | Nested option tree rendered by the cascader. Supports `fieldNames` mapped data.      | `CascaderOptionInput[]`                                                                                                     | `-`                                                        |
+| `value`                | Controlled selected path values. Arrays of arrays are used by `multiple`.            | `OptionValue[] \| OptionValue[][]`                                                                                          | `-`                                                        |
+| `defaultValue`         | Initial selected path values for uncontrolled usage.                                 | `OptionValue[] \| OptionValue[][]`                                                                                          | `-`                                                        |
+| `open`                 | Controlled popup open state.                                                         | `boolean`                                                                                                                   | `-`                                                        |
+| `defaultOpen`          | Initial popup open state.                                                            | `boolean`                                                                                                                   | `false`                                                    |
+| `placeholder`          | Placeholder shown when no path is selected.                                          | `JSX.Element`                                                                                                               | `-`                                                        |
+| `disabled`             | Disables opening and selection.                                                      | `boolean`                                                                                                                   | `false`                                                    |
+| `allowClear`           | Shows a clear button when a value is selected.                                       | `boolean \| { clearIcon?: JSX.Element }`                                                                                    | `true`                                                     |
+| `changeOnSelect`       | Allows selecting intermediate parent options.                                        | `boolean`                                                                                                                   | `false`                                                    |
+| `expandIcon`           | Custom expand icon for parent menu items.                                            | `JSX.Element`                                                                                                               | `-`                                                        |
+| `expandTrigger`        | Interaction used to expand child columns.                                            | `'click' \| 'hover'`                                                                                                        | `'click'`                                                  |
+| `displayRender`        | Customizes selected path display.                                                    | `(labels: JSX.Element[], selectedOptions: CascaderOption[]) => JSX.Element`                                                 | `labels.join(' / ')`                                       |
+| `fieldNames`           | Maps custom option field names.                                                      | `{ label?: string; value?: string; children?: string }`                                                                     | `{ label: 'label', value: 'value', children: 'children' }` |
+| `getPopupContainer`    | Returns the element used to mount the popup portal.                                  | `(triggerNode?: HTMLElement) => HTMLElement \| ShadowRoot`                                                                  | `document.body`                                            |
+| `showSearch`           | Enables path search or configures filtering, sorting, rendering, and search control. | `boolean \| CascaderShowSearch`                                                                                             | `false`                                                    |
+| `searchValue`          | Controlled search text.                                                              | `string`                                                                                                                    | `-`                                                        |
+| `onSearch`             | Called when search input changes.                                                    | `(search: string) => void`                                                                                                  | `-`                                                        |
+| `loadData`             | Loads child options lazily for options with `isLeaf` set to false.                   | `(selectedOptions: CascaderOption[]) => void \| Promise<void>`                                                              | `-`                                                        |
+| `loadingIcon`          | Custom loading indicator for lazy options.                                           | `JSX.Element`                                                                                                               | `-`                                                        |
+| `notFoundContent`      | Content rendered when no option or search result is available.                       | `JSX.Element`                                                                                                               | `'Not Found'`                                              |
+| `optionRender`         | Customizes dropdown option rendering.                                                | `(option: CascaderOption) => JSX.Element`                                                                                   | `-`                                                        |
+| `popupRender`          | Wraps or replaces popup content.                                                     | `(originNode: JSX.Element) => JSX.Element`                                                                                  | `-`                                                        |
+| `placement`            | Popup placement.                                                                     | `'bottomLeft' \| 'bottomRight' \| 'topLeft' \| 'topRight'`                                                                  | `'bottomLeft'`                                             |
+| `multiple`             | Enables multiple path selection.                                                     | `boolean`                                                                                                                   | `false`                                                    |
+| `showCheckedStrategy`  | Controls whether parent or child paths are shown in multiple mode.                   | `Cascader.SHOW_PARENT \| Cascader.SHOW_CHILD`                                                                               | `Cascader.SHOW_PARENT`                                     |
+| `tagRender`            | Custom multiple tag renderer.                                                        | `(label: JSX.Element, onClose: () => void, value: OptionValue[]) => JSX.Element`                                            | `-`                                                        |
+| `removeIcon`           | Custom remove icon for multiple tags.                                                | `JSX.Element`                                                                                                               | `-`                                                        |
+| `maxTagCount`          | Maximum number of visible tags. `responsive` is accepted for API compatibility.      | `number \| 'responsive'`                                                                                                    | `-`                                                        |
+| `maxTagPlaceholder`    | Placeholder rendered for omitted tags.                                               | `JSX.Element \| ((omittedValues: CascaderSelectedPath[]) => JSX.Element)`                                                   | `-`                                                        |
+| `maxTagTextLength`     | Maximum tag label text length.                                                       | `number`                                                                                                                    | `-`                                                        |
+| `autoClearSearchValue` | Clears search text after selecting in multiple search mode.                          | `boolean`                                                                                                                   | `true`                                                     |
+| `size`                 | Selector size. Solid uses `middle` for the antd `medium` size.                       | `'large' \| 'middle' \| 'small'`                                                                                            | `'middle'`                                                 |
+| `status`               | Validation status style.                                                             | `'error' \| 'warning'`                                                                                                      | `-`                                                        |
+| `variant`              | Selector visual variant.                                                             | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                                                                    | `'outlined'`                                               |
+| `prefix`               | Custom prefix content inside the selector.                                           | `JSX.Element`                                                                                                               | `-`                                                        |
+| `suffixIcon`           | Custom suffix icon. Use `null` to hide it.                                           | `JSX.Element \| null`                                                                                                       | `DownOutlined`                                             |
+| `classNames`           | Semantic class map or resolver. Uses Solid `class` naming, not React `className`.    | `Record<CascaderSemanticSlot, string> \| ((info: { props }) => Record<CascaderSemanticSlot, string>)`                       | `-`                                                        |
+| `styles`               | Semantic inline style map or resolver.                                               | `Record<CascaderSemanticSlot, JSX.CSSProperties> \| ((info: { props }) => Record<CascaderSemanticSlot, JSX.CSSProperties>)` | `-`                                                        |
+| `onChange`             | Called with selected values and selected option path.                                | `(value: OptionValue[] \| OptionValue[][], selectedOptions: CascaderOption[] \| CascaderOption[][]) => void`                | `-`                                                        |
+| `onClear`              | Called after clearing the selection.                                                 | `() => void`                                                                                                                | `-`                                                        |
+| `onOpenChange`         | Called when popup open state changes.                                                | `(open: boolean) => void`                                                                                                   | `-`                                                        |
+
+### Cascader.Panel
+
+`Cascader.Panel` renders the menu columns directly without selector chrome. It accepts the data and selection props used by the popup panel, including `options`, `fieldNames`, `value`, `defaultValue`, `multiple`, `changeOnSelect`, `expandTrigger`, `loadData`, `loadingIcon`, `expandIcon`, `notFoundContent`, `optionRender`, `classNames`, `styles`, and `onChange`.
+
+### showSearch
+
+| Property               | Description                                                  | Type                                                                       | Default              |
+| ---------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------- | -------------------- |
+| `autoClearSearchValue` | Clears search after selecting in multiple mode.              | `boolean`                                                                  | `true`               |
+| `filter`               | Filters paths by input text.                                 | `(inputValue: string, path: CascaderOption[]) => boolean`                  | built-in label match |
+| `limit`                | Maximum result count. Use `false` for no limit.              | `number \| false`                                                          | `50`                 |
+| `matchInputWidth`      | Matches popup minimum width to the selector while searching. | `boolean`                                                                  | `true`               |
+| `render`               | Customizes rendered search result labels.                    | `(inputValue: string, path: CascaderOption[]) => JSX.Element`              | `-`                  |
+| `sort`                 | Sorts matched paths.                                         | `(a: CascaderOption[], b: CascaderOption[], inputValue: string) => number` | `-`                  |
+| `searchValue`          | Controlled search text.                                      | `string`                                                                   | `-`                  |
+| `onSearch`             | Called when search text changes.                             | `(search: string) => void`                                                 | `-`                  |
+| `searchIcon`           | Custom search icon.                                          | `JSX.Element`                                                              | `-`                  |
 
 ### CascaderOption
 
@@ -430,3 +524,14 @@ export default Demo11
 | `children` | Child options rendered in the next column.                                | `CascaderOption[]`            | `-`     |
 | `isLeaf`   | Marks a lazy option as leaf or non-leaf when children are not loaded yet. | `boolean`                     | `-`     |
 | `loading`  | Marks this option as loading.                                             | `boolean`                     | `-`     |
+
+### Methods
+
+| Name      | Description           |
+| --------- | --------------------- |
+| `focus()` | Focuses the selector. |
+| `blur()`  | Blurs the selector.   |
+
+### Semantic DOM
+
+Supported slots: `root`, `selector`, `prefix`, `suffix`, `clear`, `popup`, `menu`, `item`, `itemContent`, `expandIcon`, `loadingIcon`, `search`, `searchIcon`, `empty`, `tag`, `tagLabel`, `tagClose`.

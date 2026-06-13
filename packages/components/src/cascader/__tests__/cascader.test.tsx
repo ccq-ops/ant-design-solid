@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -248,6 +249,7 @@ describe('Cascader', () => {
         ]}
         options={options}
         onChange={onChange}
+        showCheckedStrategy={Cascader.SHOW_CHILD}
         removeIcon={<span>remove</span>}
         tagRender={(label, onClose) => (
           <button type="button" onClick={onClose}>
@@ -277,6 +279,7 @@ describe('Cascader', () => {
           ['jiangsu', 'nanjing'],
         ]}
         options={options}
+        showCheckedStrategy={Cascader.SHOW_CHILD}
         maxTagCount={1}
         maxTagTextLength={8}
         maxTagPlaceholder={(omitted) => <span>+{omitted.length} more</span>}
@@ -649,5 +652,209 @@ describe('Cascader', () => {
     expect(dropdown.style.left).toBe('20px')
     expect(dropdown.style.zIndex).toBe('1312')
     rectSpy.mockRestore()
+  })
+
+  it('allows clearing by default and calls onClear separately from onChange', () => {
+    const onChange = vi.fn()
+    const onClear = vi.fn()
+    render(() => (
+      <Cascader
+        defaultValue={['zhejiang', 'hangzhou', 'west-lake']}
+        options={options}
+        onChange={onChange}
+        onClear={onClear}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear selection' }))
+
+    expect(onClear).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith([], [])
+  })
+
+  it('overlays clear icon on suffix and shows it when hovering the root', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <Cascader defaultValue={['zhejiang', 'hangzhou', 'west-lake']} options={options} />
+      </StyleProvider>
+    ))
+
+    const selector = result.container.querySelector<HTMLElement>('.ads-cascader-selector')
+    const suffix = result.container.querySelector<HTMLElement>('.ads-cascader-suffix')
+    const clear = result.container.querySelector<HTMLElement>('.ads-cascader-clear')
+    const css = extractStyle(cache)
+
+    expect(selector).toContainElement(suffix)
+    expect(selector).toContainElement(clear)
+    expect(css).toContain('.ads-cascader-clear{')
+    expect(css).toContain('position:absolute;')
+    expect(css).toContain('inset-inline-end:12px;')
+    expect(css).toContain('opacity:0;')
+    expect(css).toContain('pointer-events:none;')
+    expect(css).toContain(
+      '.ads-cascader:not(.ads-cascader-disabled):hover .ads-cascader-clear{opacity:1;pointer-events:auto;',
+    )
+  })
+
+  it('supports custom fieldNames and optionRender without React className props', () => {
+    const customOptions = [
+      {
+        name: 'Asia',
+        id: 'asia',
+        nodes: [{ name: 'China', id: 'china' }],
+      },
+    ]
+    const onChange = vi.fn()
+    render(() => (
+      <Cascader
+        fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
+        options={customOptions}
+        optionRender={(option) => <span>Custom {option.label}</span>}
+        onChange={onChange}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('combobox'))
+
+    expect(screen.getByRole('menuitem', { name: 'Custom Asia' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Custom Asia' }))
+    expect(screen.getByRole('menuitem', { name: 'Custom China' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Custom China' }))
+
+    expect(onChange).toHaveBeenCalledWith(
+      ['asia', 'china'],
+      [
+        expect.objectContaining({ label: 'Asia', value: 'asia' }),
+        expect.objectContaining({ label: 'China', value: 'china' }),
+      ],
+    )
+  })
+
+  it('wraps popup content, renders empty content, semantic classes/styles, and custom icons', () => {
+    render(() => (
+      <Cascader
+        open
+        showSearch={{ searchIcon: <span data-testid="search-icon">search</span> }}
+        searchValue="missing"
+        options={options}
+        notFoundContent={<span>No matches</span>}
+        popupRender={(origin) => <section data-testid="popup-wrapper">{origin}</section>}
+        classNames={{
+          root: 'root-slot',
+          selector: 'selector-slot',
+          popup: 'popup-slot',
+          empty: 'empty-slot',
+          suffix: 'suffix-slot',
+          searchIcon: 'search-slot',
+        }}
+        styles={{
+          root: { width: '244px' },
+          selector: { height: '44px' },
+          popup: { width: '333px' },
+          empty: { color: 'red' },
+        }}
+        suffixIcon={<span data-testid="suffix-icon">suffix</span>}
+      />
+    ))
+
+    const root = document.querySelector<HTMLElement>('.ads-cascader')!
+    const selector = screen.getByRole('combobox') as HTMLElement
+    const popup = document.body.querySelector<HTMLElement>('.ads-cascader-dropdown')!
+    const empty = screen.getByText('No matches').closest('.ads-cascader-empty') as HTMLElement
+
+    expect(screen.getByTestId('popup-wrapper')).toBeTruthy()
+    expect(root).toHaveClass('root-slot')
+    expect(selector).toHaveClass('selector-slot')
+    expect(popup).toHaveClass('popup-slot')
+    expect(empty).toHaveClass('empty-slot')
+    expect(root.style.width).toBe('244px')
+    expect(selector.style.height).toBe('44px')
+    expect(popup.style.width).toBe('333px')
+    expect(empty.style.color).toBe('red')
+    expect(screen.getByTestId('suffix-icon')).toBeTruthy()
+    expect(screen.getByTestId('search-icon')).toBeTruthy()
+  })
+
+  it('positions popup for topRight placement', () => {
+    const result = render(() => <Cascader placement="topRight" options={options} />)
+    const selector = result.container.querySelector('.ads-cascader-selector') as HTMLElement
+    const rectSpy = vi.spyOn(selector, 'getBoundingClientRect').mockReturnValue({
+      top: 10,
+      bottom: 42,
+      left: 20,
+      right: 220,
+      width: 200,
+      height: 32,
+      x: 20,
+      y: 10,
+      toJSON: () => ({}),
+    } as DOMRect)
+
+    fireEvent.click(selector)
+
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-cascader-dropdown')!
+    expect(dropdown.style.top).toBe('6px')
+    expect(dropdown.style.left).toBe('20px')
+    expect(dropdown).toHaveClass('ads-cascader-dropdown-top-right')
+    rectSpy.mockRestore()
+  })
+
+  it('exposes focus and blur methods through ref', () => {
+    const ref: {
+      current?: { focus: () => void; blur: () => void; nativeElement?: HTMLDivElement }
+    } = {}
+    const result = render(() => <Cascader ref={ref} options={options} />)
+    const combobox = result.getByRole('combobox')
+
+    ref.current?.focus()
+    expect(document.activeElement).toBe(combobox)
+    expect(ref.current?.nativeElement).toBe(result.container.querySelector('.ads-cascader'))
+
+    ref.current?.blur()
+    expect(document.activeElement).not.toBe(combobox)
+  })
+
+  it('uses SHOW_PARENT display strategy by default in multiple mode', () => {
+    const branchOptions: CascaderOption[] = [
+      {
+        label: 'Parent',
+        value: 'parent',
+        children: [
+          { label: 'Child A', value: 'a' },
+          { label: 'Child B', value: 'b' },
+        ],
+      },
+    ]
+    render(() => (
+      <Cascader
+        multiple
+        value={[
+          ['parent', 'a'],
+          ['parent', 'b'],
+        ]}
+        options={branchOptions}
+      />
+    ))
+
+    expect(screen.getByText('Parent')).toBeTruthy()
+    expect(screen.queryByText('Parent / Child A')).toBeNull()
+  })
+
+  it('renders Cascader.Panel and reports selections without selector chrome', () => {
+    const onChange = vi.fn()
+    const result = render(() => <Cascader.Panel options={options} onChange={onChange} />)
+    const panel = result.container.querySelector('.ads-cascader-panel')!
+
+    expect(result.queryByRole('combobox')).toBeNull()
+    expect(result.container.querySelectorAll('.ads-cascader-dropdown')).toHaveLength(1)
+    expect(panel).toHaveClass('ads-cascader-dropdown')
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Jiangsu' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Nanjing' }))
+
+    expect(onChange).toHaveBeenCalledWith(
+      ['jiangsu', 'nanjing'],
+      [options[1], options[1].children?.[0]],
+    )
   })
 })

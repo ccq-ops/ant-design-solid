@@ -1,6 +1,6 @@
 import type { JSX } from 'solid-js'
 import type { OptionValue } from '../shared/options'
-import type { CascaderOption, CascaderShowSearch } from './interface'
+import type { CascaderFieldNames, CascaderOption, CascaderShowSearch } from './interface'
 
 export interface CascaderPathEntity {
   value: OptionValue[]
@@ -23,3 +23,11 @@ export interface NormalizedShowSearch {
 }
 
 export type ShowSearchInput = boolean | CascaderShowSearch | undefined
+
+export interface NormalizedFieldNames {
+  label: string
+  value: string
+  children: string
+}
+
+export type FieldNamesInput = CascaderFieldNames | undefined

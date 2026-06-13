@@ -1,7 +1,12 @@
 import type { JSX } from 'solid-js'
 import type { OptionValue } from '../shared/options'
-import type { CascaderOption, CascaderShowCheckedStrategy } from './interface'
-import type { CascaderPathEntity } from './types'
+import type {
+  CascaderFieldNames,
+  CascaderOption,
+  CascaderOptionInput,
+  CascaderShowCheckedStrategy,
+} from './interface'
+import type { CascaderPathEntity, NormalizedFieldNames } from './types'
 
 export const SHOW_PARENT = 'SHOW_PARENT' satisfies CascaderShowCheckedStrategy
 export const SHOW_CHILD = 'SHOW_CHILD' satisfies CascaderShowCheckedStrategy
@@ -10,8 +15,39 @@ export function pathKey(valuePath: OptionValue[]): string {
   return valuePath.map(String).join('\u0000')
 }
 
+export function normalizeFieldNames(fieldNames?: CascaderFieldNames): NormalizedFieldNames {
+  return {
+    label: fieldNames?.label ?? 'label',
+    value: fieldNames?.value ?? 'value',
+    children: fieldNames?.children ?? 'children',
+  }
+}
+
+export function normalizeOptions(
+  options: CascaderOptionInput[] | undefined,
+  fieldNames?: CascaderFieldNames,
+): CascaderOption[] {
+  const names = normalizeFieldNames(fieldNames)
+  return (options ?? []).map((option) => {
+    const children = option[names.children] as CascaderOptionInput[] | undefined
+    const label = (option[names.label] as JSX.Element | undefined) ?? option.label
+    const value = (option[names.value] as OptionValue | undefined) ?? option.value
+    const normalized: CascaderOption = {
+      ...(option as Record<string, unknown>),
+      label: label ?? '',
+      value: value ?? '',
+      children: children
+        ? normalizeOptions(children, fieldNames)
+        : option.children
+          ? normalizeOptions(option.children, fieldNames)
+          : undefined,
+    }
+    return normalized
+  })
+}
+
 export function valuePathFromOptions(options: CascaderOption[]): OptionValue[] {
-  return options.map((option) => option.value)
+  return options.map((option) => option.value).filter((value) => value !== undefined)
 }
 
 export function valuesEqual(a: OptionValue[], b: OptionValue[]): boolean {
@@ -138,10 +174,10 @@ export function filterDisplayedPaths(
     if (!selectedDirectly && !selectedByChildren) continue
 
     display.push(path)
-    for (const selectedPath of selectedPaths) {
-      const selectedKey = pathKey(valuePathFromOptions(selectedPath))
-      if (isAncestorValuePath(valuePathFromOptions(path), valuePathFromOptions(selectedPath))) {
-        hiddenKeys.add(selectedKey)
+    for (const descendantPath of allPaths) {
+      const descendantKey = pathKey(valuePathFromOptions(descendantPath))
+      if (isAncestorValuePath(valuePathFromOptions(path), valuePathFromOptions(descendantPath))) {
+        hiddenKeys.add(descendantKey)
       }
     }
   }

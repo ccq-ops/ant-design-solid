@@ -1,8 +1,12 @@
 import { CloseCircleFilled } from '@ant-design-solid/icons'
 import { For, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { classNames } from '../shared/class-names'
 import type { OptionValue } from '../shared/options'
-import type { CascaderSelectedPath } from './interface'
+import type { CascaderSelectedPath, CascaderSemanticSlot } from './interface'
+
+type SemanticClasses = Partial<Record<CascaderSemanticSlot, string>>
+type SemanticStyles = Partial<Record<CascaderSemanticSlot, JSX.CSSProperties>>
 
 export interface CascaderDisplayPath extends CascaderSelectedPath {
   text: string
@@ -25,6 +29,10 @@ export interface CascaderSelectorProps {
   tagRender?: (label: JSX.Element, onClose: () => void, value: OptionValue[]) => JSX.Element
   removeIcon?: JSX.Element
   prefix?: JSX.Element
+  suffixIcon?: JSX.Element | null
+  searchIcon?: JSX.Element
+  classNames?: SemanticClasses
+  styles?: SemanticStyles
   searchEnabled: boolean
   searchValue: string
   selectorRef: (element: HTMLDivElement) => void
@@ -59,13 +67,16 @@ export function CascaderSelector(props: CascaderSelectorProps) {
       aria-expanded={props.open}
       aria-disabled={props.disabled}
       ref={props.selectorRef}
-      class={`${props.prefixCls}-selector`}
+      class={classNames(`${props.prefixCls}-selector`, props.classNames?.selector)}
+      style={props.styles?.selector}
       onClick={props.onToggleOpen}
       onFocusOut={props.onFocusOut}
       onKeyDown={props.onKeyDown}
     >
       <Show when={props.prefix}>
-        <span class={`${props.prefixCls}-prefix`}>{props.prefix}</span>
+        <span class={classNames(`${props.prefixCls}-prefix`, props.classNames?.prefix)}>
+          {props.prefix}
+        </span>
       </Show>
       <Show
         when={props.multiple}
@@ -90,11 +101,30 @@ export function CascaderSelector(props: CascaderSelectorProps) {
                 <Show
                   when={props.tagRender}
                   fallback={
-                    <span class={`${props.prefixCls}-selection-item ${props.prefixCls}-tag`}>
-                      <span class={`${props.prefixCls}-tag-label`}>{label()}</span>
+                    <span
+                      class={classNames(
+                        `${props.prefixCls}-selection-item`,
+                        `${props.prefixCls}-tag`,
+                        props.classNames?.tag,
+                      )}
+                      style={props.styles?.tag}
+                    >
+                      <span
+                        class={classNames(
+                          `${props.prefixCls}-tag-label`,
+                          props.classNames?.tagLabel,
+                        )}
+                        style={props.styles?.tagLabel}
+                      >
+                        {label()}
+                      </span>
                       <button
                         type="button"
-                        class={`${props.prefixCls}-tag-close`}
+                        class={classNames(
+                          `${props.prefixCls}-tag-close`,
+                          props.classNames?.tagClose,
+                        )}
+                        style={props.styles?.tagClose}
                         aria-label={`remove ${tag.text}`}
                         onClick={(event) => {
                           event.stopPropagation()
@@ -112,7 +142,14 @@ export function CascaderSelector(props: CascaderSelectorProps) {
             }}
           </For>
           <Show when={omittedPlaceholder()}>
-            <span class={`${props.prefixCls}-selection-item ${props.prefixCls}-tag`}>
+            <span
+              class={classNames(
+                `${props.prefixCls}-selection-item`,
+                `${props.prefixCls}-tag`,
+                props.classNames?.tag,
+              )}
+              style={props.styles?.tag}
+            >
               {omittedPlaceholder()}
             </span>
           </Show>
@@ -122,22 +159,38 @@ export function CascaderSelector(props: CascaderSelectorProps) {
         </span>
       </Show>
       <Show when={props.searchEnabled && props.open}>
-        <input
-          class={`${props.prefixCls}-search-input`}
-          value={props.searchValue}
-          onClick={(event) => event.stopPropagation()}
-          onInput={(event) => props.onSearchInput(event.currentTarget.value)}
-        />
+        <span class={classNames(`${props.prefixCls}-search`, props.classNames?.search)}>
+          <Show when={props.searchIcon}>
+            <span
+              class={classNames(`${props.prefixCls}-search-icon`, props.classNames?.searchIcon)}
+              style={props.styles?.searchIcon}
+            >
+              {props.searchIcon}
+            </span>
+          </Show>
+          <input
+            class={`${props.prefixCls}-search-input`}
+            value={props.searchValue}
+            onClick={(event) => event.stopPropagation()}
+            onInput={(event) => props.onSearchInput(event.currentTarget.value)}
+          />
+        </span>
       </Show>
       <Show when={props.allowClear && !props.disabled && props.selected}>
         <button
           type="button"
           aria-label="clear selection"
-          class={`${props.prefixCls}-clear`}
+          class={classNames(`${props.prefixCls}-clear`, props.classNames?.clear)}
+          style={props.styles?.clear}
           onClick={props.onClear}
         >
           {props.clearIcon ?? <CloseCircleFilled />}
         </button>
+      </Show>
+      <Show when={props.suffixIcon !== null}>
+        <span class={classNames(`${props.prefixCls}-suffix`, props.classNames?.suffix)}>
+          {props.suffixIcon ?? '⌄'}
+        </span>
       </Show>
     </div>
   )

@@ -4,6 +4,7 @@ import { flattenOptionPaths } from './path-utils'
 import type { NormalizedShowSearch, ShowSearchInput } from './types'
 
 function labelText(label: JSX.Element): string {
+  if (label === undefined || label === null) return ''
   if (typeof label === 'string' || typeof label === 'number' || typeof label === 'boolean')
     return String(label)
   return ''
