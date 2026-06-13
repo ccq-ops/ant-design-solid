@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import dayjs, { type Dayjs } from 'dayjs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DatePicker, RangePicker } from '..'
@@ -36,6 +37,30 @@ describe('DatePicker showTime', () => {
     expect(nextValue.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-15 09:30:00')
     expect(nextString).toBe('2026-06-15 09:30:00')
     expect(onOk).toHaveBeenLastCalledWith(nextValue)
+  })
+
+  it('places the time panel to the right of the date panel', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker showTime defaultOpen defaultPickerValue={dayjs('2026-06-01')} />
+      </StyleProvider>
+    ))
+
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')
+    const panelBody = document.body.querySelector<HTMLElement>('.ads-date-picker-panel-body')
+    const datePanel = document.body.querySelector<HTMLElement>('.ads-date-picker-panel-date')
+    const timePanel = document.body.querySelector<HTMLElement>('.ads-date-picker-time-panel')
+    const css = extractStyle(cache)
+
+    expect(dropdown).toHaveClass('ads-date-picker-dropdown-with-time')
+    expect(datePanel).toContainElement(screen.getByRole('button', { name: '2026-06-15' }))
+    expect(panelBody).toContainElement(timePanel)
+    expect(Array.from(panelBody?.children ?? [])).toEqual([datePanel, timePanel])
+    expect(css).toContain('.ads-date-picker-panel-body{align-items:stretch;display:flex;')
+    expect(css).toContain('.ads-date-picker-panel-date{flex:0 0 auto;')
+    expect(css).toContain('.ads-date-picker-time-panel{border-left:')
+    expect(css).not.toContain('.ads-date-picker-time-panel{display:flex;gap:8px;margin-top:')
   })
 
   it('marks disabled time options as disabled and prevents selection', () => {

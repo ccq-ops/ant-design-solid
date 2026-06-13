@@ -641,7 +641,7 @@ function DatePickerBase(props: DatePickerProps) {
             onNext={nextPanel}
             onSuperNext={superNextPanel}
           >
-            {panelNode()}
+            <div class={`${prefixCls()}-panel-date`}>{panelNode()}</div>
             <Show when={showTimeEnabled()}>
               <TimePanel
                 prefixCls={prefixCls()}

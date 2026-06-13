@@ -172,6 +172,7 @@ export function PickerPanel(props: PickerPanelProps) {
         props.classNames,
         `${props.prefixCls}-dropdown`,
         `${props.prefixCls}-dropdown-${placementToClassName(props.placement)}`,
+        props.showTime && `${props.prefixCls}-dropdown-with-time`,
         props.class,
       )}
       style={props.style}
@@ -219,7 +220,7 @@ export function PickerPanel(props: PickerPanelProps) {
         styles={props.styles}
         onSelect={props.onPresetSelect}
       />
-      {panelContent()}
+      <div class={`${props.prefixCls}-panel-body`}>{panelContent()}</div>
       <Show
         when={props.renderExtraFooter || props.needConfirm || props.showTime || props.showToday}
       >

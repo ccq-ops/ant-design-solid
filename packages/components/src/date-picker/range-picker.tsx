@@ -721,7 +721,7 @@ export function RangePicker(props: RangePickerProps) {
             onNext={nextPanel}
             onSuperNext={superNextPanel}
           >
-            {rangePanelNode()}
+            <div class={`${prefixCls()}-panel-date`}>{rangePanelNode()}</div>
             <Show when={showTimeEnabled()}>
               <TimePanel
                 prefixCls={prefixCls()}

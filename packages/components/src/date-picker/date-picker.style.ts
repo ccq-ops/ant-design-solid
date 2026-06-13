@@ -221,6 +221,16 @@ export function useDatePickerStyle(prefixCls: string) {
           'box-shadow': t.boxShadow,
           'box-sizing': 'border-box',
         },
+        [`.${prefixCls}-dropdown-with-time`]: {
+          width: 'auto',
+        },
+        [`.${prefixCls}-panel-body`]: {
+          display: 'flex',
+          'align-items': 'stretch',
+        },
+        [`.${prefixCls}-panel-date`]: {
+          flex: '0 0 auto',
+        },
         [`.${prefixCls}-presets`]: {
           display: 'flex',
           'flex-wrap': 'wrap',
@@ -429,9 +439,9 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-time-panel`]: {
           display: 'flex',
           gap: `${t.marginXS}px`,
-          'margin-top': `${t.marginSM}px`,
-          'padding-top': `${t.paddingXS}px`,
-          borderTop: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'margin-left': `${t.marginSM}px`,
+          'padding-left': `${t.paddingSM}px`,
+          'border-left': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
         },
         [`.${prefixCls}-time-column`]: {
           flex: '1 1 0',
