@@ -595,6 +595,7 @@ export function RangePicker(props: RangePickerProps) {
           allowClear={local.allowClear !== false && Boolean(local.allowEmpty?.[0])}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
           clearAriaLabel={clearAriaLabel('start')}
+          showSuffixIcon={false}
           inputClass={semanticClass(
             'input',
             resolvedClassNames(),
@@ -631,6 +632,7 @@ export function RangePicker(props: RangePickerProps) {
           allowClear={local.allowClear !== false && Boolean(local.allowEmpty?.[1])}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
           clearAriaLabel={clearAriaLabel('end')}
+          showSuffixIcon={false}
           inputClass={semanticClass(
             'input',
             resolvedClassNames(),

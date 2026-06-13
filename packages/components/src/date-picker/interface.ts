@@ -128,6 +128,7 @@ export interface PickerInputSlotProps {
   clearAriaLabel?: string
   prefix?: JSX.Element
   suffixIcon?: JSX.Element
+  showSuffixIcon?: boolean
   id?: string
   name?: string
   ariaLabel?: string

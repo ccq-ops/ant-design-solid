@@ -441,6 +441,15 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(screen.getByTestId('range-clear-icon')).toBeInTheDocument()
   })
 
+  it('renders only the final suffix icon for RangePicker', () => {
+    const result = render(() => <RangePicker />)
+
+    const suffixIcons = result.container.querySelectorAll('.ads-date-picker-suffix')
+
+    expect(suffixIcons).toHaveLength(1)
+    expect(suffixIcons[0]?.querySelector('svg')).toBeInTheDocument()
+  })
+
   it('passes originNode to month and year cellRender', () => {
     const { unmount } = render(() => (
       <DatePicker

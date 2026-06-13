@@ -21,6 +21,7 @@ export interface PickerInputProps {
   clearAriaLabel?: string
   prefix?: JSX.Element
   suffixIcon?: JSX.Element
+  showSuffixIcon?: boolean
   id?: string
   name?: string
   ariaLabel?: string
@@ -90,7 +91,9 @@ export function PickerInput(props: PickerInputProps) {
           {props.clearIcon ?? <CloseCircleFilled />}
         </button>
       </Show>
-      <span class={`${props.prefixCls}-suffix`}>{props.suffixIcon ?? <CalendarOutlined />}</span>
+      <Show when={props.showSuffixIcon !== false}>
+        <span class={`${props.prefixCls}-suffix`}>{props.suffixIcon ?? <CalendarOutlined />}</span>
+      </Show>
     </>
   )
 }
