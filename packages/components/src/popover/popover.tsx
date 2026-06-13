@@ -18,7 +18,7 @@ function resolveContent(value: PopoverProps['title'] | PopoverProps['content']) 
 }
 
 function hasOverlayContent(title: PopoverProps['title'], content: PopoverProps['content']) {
-  return hasNode(title) || hasNode(content)
+  return hasNode(title) || hasNode(content) || isRenderFunction(title) || isRenderFunction(content)
 }
 
 function textColorForBackground(color: string): string | undefined {

@@ -351,6 +351,7 @@ describe('@ant-design-solid/theme', () => {
       components: {
         Table: { headerBg: '#fafafa', cellPadding: 20 },
         Tag: { borderRadius: 12, closeIconColor: '#111111' },
+        Avatar: { groupOverlapping: -6, groupSpace: 6 },
         Badge: { overflowIndicatorHeight: 24, dotSize: 8 },
         FloatButton: { size: 48, iconSize: 20 },
         Layout: { headerBg: '#10239e', triggerHeight: 56 },
@@ -366,6 +367,17 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Tag', token).defaultBg).toBe(token.colorFillAlter)
     expect(getComponentToken('Tag', token).defaultColor).toBe(token.colorText)
     expect(getComponentToken('Tag', token).closeIconColor).toBe('#111111')
+
+    expect(getComponentToken('Avatar', token).containerSize).toBe(token.controlHeight)
+    expect(getComponentToken('Avatar', token).containerSizeLG).toBe(token.controlHeightLG)
+    expect(getComponentToken('Avatar', token).containerSizeSM).toBe(token.controlHeightSM)
+    expect(getComponentToken('Avatar', token).textFontSize).toBe(token.fontSize)
+    expect(getComponentToken('Avatar', token).iconFontSize).toBe(
+      Math.round((token.fontSizeLG + token.fontSizeXL) / 2),
+    )
+    expect(getComponentToken('Avatar', token).groupOverlapping).toBe(-6)
+    expect(getComponentToken('Avatar', token).groupSpace).toBe(6)
+    expect(getComponentToken('Avatar', token).groupBorderColor).toBe(token.colorBorderBg)
 
     expect(getComponentToken('Badge', token).overflowIndicatorHeight).toBe(24)
     expect(getComponentToken('Badge', token).dotSize).toBe(8)

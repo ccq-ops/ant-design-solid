@@ -549,6 +549,21 @@ export interface AlertComponentToken extends ComponentTokenBase {
   errorBorderColor: string
 }
 
+export interface AvatarComponentToken extends ComponentTokenBase {
+  containerSize: number
+  containerSizeLG: number
+  containerSizeSM: number
+  textFontSize: number
+  textFontSizeLG: number
+  textFontSizeSM: number
+  iconFontSize: number
+  iconFontSizeLG: number | string
+  iconFontSizeSM: number
+  groupSpace: number
+  groupOverlapping: number
+  groupBorderColor: string
+}
+
 export interface MessageComponentToken extends ComponentTokenBase {
   noticePadding: number
   noticeBorderRadius: number
@@ -784,7 +799,7 @@ export interface ComponentTokenMap {
   Addon?: ComponentTokenBase
   Alert: AlertComponentToken
   Anchor?: ComponentTokenBase
-  Avatar?: ComponentTokenBase
+  Avatar: AvatarComponentToken
   BackTop?: ComponentTokenBase
   Badge: BadgeComponentToken
   BorderBeam?: BorderBeamComponentToken

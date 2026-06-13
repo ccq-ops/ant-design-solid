@@ -1,10 +1,16 @@
 import { createSignal } from 'solid-js'
 import { fireEvent, render } from '@solidjs/testing-library'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Avatar } from '../index'
 
 describe('Avatar', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+    document.body.innerHTML = ''
+  })
+
   it('renders text fallback children', () => {
     const result = render(() => <Avatar>JD</Avatar>)
 
@@ -41,7 +47,44 @@ describe('Avatar', () => {
     const result = render(() => <Avatar size={48}>N</Avatar>)
     const avatar = result.container.firstElementChild as HTMLElement
 
-    expect(avatar).toHaveStyle({ width: '48px', height: '48px', 'line-height': '48px' })
+    expect(avatar).toHaveStyle({ width: '48px', height: '48px', 'font-size': '18px' })
+  })
+
+  it('uses medium as the default size and supports default as a compatibility alias', () => {
+    const result = render(() => (
+      <>
+        <Avatar>M</Avatar>
+        <Avatar size="medium">M</Avatar>
+        <Avatar size="default">D</Avatar>
+      </>
+    ))
+    const avatars = result.container.querySelectorAll('.ads-avatar')
+
+    avatars.forEach((avatar) => {
+      expect(avatar.className).not.toContain('ads-avatar-sm')
+      expect(avatar.className).not.toContain('ads-avatar-lg')
+    })
+  })
+
+  it('resolves responsive size objects from active breakpoints', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: query.includes('768px'),
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    )
+
+    const result = render(() => <Avatar size={{ xs: 24, md: 48 }}>R</Avatar>)
+    const avatar = result.container.firstElementChild as HTMLElement
+
+    expect(avatar).toHaveStyle({ width: '48px', height: '48px' })
   })
 
   it('uses default circle shape and default size without size classes', () => {
@@ -71,6 +114,68 @@ describe('Avatar', () => {
     expect(avatars[1]).toHaveClass('ads-avatar-circle')
   })
 
+  it('passes image attributes to the rendered img element', () => {
+    const result = render(() => (
+      <Avatar
+        src="https://example.com/avatar.png"
+        srcSet="avatar@2x.png 2x"
+        alt="Jane Doe"
+        draggable={false}
+        crossOrigin="anonymous"
+      />
+    ))
+    const image = result.getByAltText('Jane Doe')
+
+    expect(image).toHaveAttribute('srcset', 'avatar@2x.png 2x')
+    expect(image).toHaveAttribute('draggable', 'false')
+    expect(image).toHaveAttribute('crossorigin', 'anonymous')
+  })
+
+  it('keeps a failed image when onError returns false', () => {
+    const onError = vi.fn(() => false)
+    const result = render(() => (
+      <Avatar src="https://example.invalid/avatar.png" alt="Jane Doe" onError={onError}>
+        JD
+      </Avatar>
+    ))
+
+    fireEvent.error(result.getByAltText('Jane Doe'))
+
+    expect(onError).toHaveBeenCalled()
+    expect(result.getByAltText('Jane Doe')).toBeInTheDocument()
+    expect(result.queryByText('JD')).toBeNull()
+  })
+
+  it('renders element src directly', () => {
+    const result = render(() => (
+      <Avatar src={<img src="custom-avatar.png" alt="Custom avatar" data-testid="custom-src" />} />
+    ))
+
+    expect(result.getByTestId('custom-src')).toHaveAttribute('src', 'custom-avatar.png')
+  })
+
+  it('scales text children using the configured gap', () => {
+    const originalOffsetWidth = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetWidth',
+    )
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+      configurable: true,
+      get() {
+        return (this as HTMLElement).classList.contains('ads-avatar-string') ? 80 : 40
+      },
+    })
+
+    const result = render(() => <Avatar gap={4}>Long Name</Avatar>)
+    const text = result.getByText('Long Name')
+
+    expect(text).toHaveStyle({ transform: 'scale(0.4)' })
+
+    if (originalOffsetWidth) {
+      Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth)
+    }
+  })
+
   it('inherits group size and shape for visible child avatars and overflow avatar', () => {
     const result = render(() => (
       <Avatar.Group maxCount={1} size="large" shape="square">
@@ -97,8 +202,8 @@ describe('Avatar', () => {
     ))
     const avatars = result.container.querySelectorAll('.ads-avatar')
 
-    expect(avatars[0]).toHaveStyle({ width: '48px', height: '48px', 'line-height': '48px' })
-    expect(avatars[1]).toHaveStyle({ width: '48px', height: '48px', 'line-height': '48px' })
+    expect(avatars[0]).toHaveStyle({ width: '48px', height: '48px' })
+    expect(avatars[1]).toHaveStyle({ width: '48px', height: '48px' })
   })
 
   it('applies maxStyle to overflow avatar', () => {
@@ -177,5 +282,44 @@ describe('Avatar', () => {
     expect(result.queryByText('C')).toBeNull()
     expect(result.queryByText('D')).toBeNull()
     expect(result.getByText('+2')).toHaveClass('ads-avatar-string')
+  })
+
+  it('supports group max object and shows hidden avatars in a popover', () => {
+    const result = render(() => (
+      <Avatar.Group
+        max={{
+          count: 2,
+          style: { color: 'red' },
+          popover: { trigger: 'click', placement: 'bottom' },
+        }}
+      >
+        <Avatar>A</Avatar>
+        <Avatar>B</Avatar>
+        <Avatar>C</Avatar>
+        <Avatar>D</Avatar>
+      </Avatar.Group>
+    ))
+    const overflow = result.getByText('+2')
+
+    expect(result.queryByText('C')).toBeNull()
+    expect(overflow.parentElement).toHaveStyle({ color: 'rgb(255, 0, 0)' })
+
+    fireEvent.click(result.container.querySelector('.ads-popover-trigger')!)
+
+    expect(document.body.querySelector('.ads-avatar-group-popover')).toHaveTextContent('C')
+    expect(document.body.querySelector('.ads-avatar-group-popover')).toHaveTextContent('D')
+  })
+
+  it('keeps deprecated group max popover props as compatibility aliases', () => {
+    const result = render(() => (
+      <Avatar.Group maxCount={1} maxPopoverTrigger="click" maxPopoverPlacement="bottom">
+        <Avatar>A</Avatar>
+        <Avatar>B</Avatar>
+      </Avatar.Group>
+    ))
+
+    fireEvent.click(result.container.querySelector('.ads-popover-trigger')!)
+
+    expect(document.body.querySelector('.ads-avatar-group-popover')).toHaveTextContent('B')
   })
 })

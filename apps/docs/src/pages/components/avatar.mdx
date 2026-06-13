@@ -1,125 +1,220 @@
 # Avatar
 
-### Sizes
+Avatars can be used to represent people or objects. They support images, icons, characters, and grouped overflow.
+
+### Basic
 
 ```tsx
 import { Avatar, Space } from '@ant-design-solid/core'
 
-const Demo1 = function () {
+const Demo = function () {
   return (
-    <Space align="center" wrap>
-      <Avatar size="small">S</Avatar>
-      <Avatar>M</Avatar>
-      <Avatar size="large">L</Avatar>
-      <Avatar size={56}>56</Avatar>
+    <Space wrap size={16}>
+      <Avatar size={64} icon={<span>U</span>} />
+      <Avatar size="large" icon={<span>U</span>} />
+      <Avatar icon={<span>U</span>} />
+      <Avatar size="small" icon={<span>U</span>} />
     </Space>
   )
 }
 
-export default Demo1
+export default Demo
 ```
 
-### Shapes
+### Type
 
 ```tsx
 import { Avatar, Space } from '@ant-design-solid/core'
 
-const Demo2 = function () {
+const Demo = function () {
   return (
-    <Space align="center" wrap>
+    <Space wrap size={16}>
+      <Avatar icon={<span>U</span>} />
       <Avatar>U</Avatar>
-      <Avatar shape="square">U</Avatar>
-      <Avatar shape="square" size="large">
-        AB
-      </Avatar>
+      <Avatar size={40}>USER</Avatar>
+      <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
+      <Avatar style={{ background: '#fde3cf', color: '#f56a00' }}>U</Avatar>
+      <Avatar style={{ background: '#87d068' }} icon={<span>U</span>} />
     </Space>
   )
 }
 
-export default Demo2
+export default Demo
 ```
 
-### Image fallback
+### Shape
 
 ```tsx
 import { Avatar, Space } from '@ant-design-solid/core'
 
-const Demo3 = function () {
+const Demo = function () {
   return (
-    <Space align="center" wrap>
+    <Space wrap size={16}>
+      <Avatar icon={<span>U</span>} />
+      <Avatar shape="square" icon={<span>U</span>} />
+      <Avatar size="large" icon={<span>U</span>} />
+      <Avatar size="large" shape="square" icon={<span>U</span>} />
+    </Space>
+  )
+}
+
+export default Demo
+```
+
+### Autoset Font Size
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Avatar, Button, Space } from '@ant-design-solid/core'
+
+const users = ['U', 'Lucy', 'Tom', 'Edward']
+
+const Demo = function () {
+  const [index, setIndex] = createSignal(0)
+
+  return (
+    <Space align="center">
+      <Avatar style={{ background: '#f56a00' }} size="large" gap={4}>
+        {users[index()]}
+      </Avatar>
+      <Button onClick={() => setIndex((index() + 1) % users.length)}>Change</Button>
+    </Space>
+  )
+}
+
+export default Demo
+```
+
+### Responsive Size
+
+```tsx
+import { Avatar } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return <Avatar size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}>U</Avatar>
+}
+
+export default Demo
+```
+
+### Image Fallback
+
+```tsx
+import { Avatar, Space } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Space wrap>
       <Avatar src="https://example.invalid/missing-avatar.png" alt="Jane Doe">
         JD
       </Avatar>
-      <span>When the image fails to load, Avatar falls back to text.</span>
+      <Avatar src="https://example.invalid/missing-avatar.png" alt="Jane Doe" icon={<span>U</span>}>
+        JD
+      </Avatar>
+      <Avatar src="https://example.invalid/keep-image.png" alt="Keep image" onError={() => false}>
+        Hidden
+      </Avatar>
     </Space>
   )
 }
 
-export default Demo3
+export default Demo
 ```
 
-### Icon and text
+### Avatar.Group
 
 ```tsx
-import { Avatar, Space } from '@ant-design-solid/core'
+import { Avatar } from '@ant-design-solid/core'
 
-function UserIcon() {
-  return <span aria-hidden="true">👤</span>
-}
-
-const Demo4 = function () {
+const Demo = function () {
   return (
-    <Space align="center" wrap>
-      <Avatar icon={<UserIcon />} />
-      <Avatar>Tom</Avatar>
+    <Avatar.Group>
+      <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
+      <Avatar style={{ background: '#f56a00' }}>K</Avatar>
+      <Avatar style={{ background: '#87d068' }} icon={<span>U</span>} />
       <Avatar style={{ background: '#1677ff' }}>A</Avatar>
-    </Space>
-  )
-}
-
-export default Demo4
-```
-
-### Group overflow
-
-```tsx
-import { Avatar, Space } from '@ant-design-solid/core'
-
-const Demo5 = function () {
-  return (
-    <Avatar.Group maxCount={3} size="large">
-      <Avatar>A</Avatar>
-      <Avatar>B</Avatar>
-      <Avatar>C</Avatar>
-      <Avatar>D</Avatar>
-      <Avatar>E</Avatar>
     </Avatar.Group>
   )
 }
 
-export default Demo5
+export default Demo
+```
+
+### Avatar.Group Max
+
+```tsx
+import { Avatar } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Avatar.Group
+      max={{
+        count: 2,
+        style: { color: '#f56a00', background: '#fde3cf' },
+        popover: { trigger: 'click', placement: 'top' },
+      }}
+    >
+      <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
+      <Avatar style={{ background: '#f56a00' }}>K</Avatar>
+      <Avatar style={{ background: '#87d068' }} icon={<span>U</span>} />
+      <Avatar style={{ background: '#1677ff' }}>A</Avatar>
+    </Avatar.Group>
+  )
+}
+
+export default Demo
 ```
 
 ## API
 
 ### Avatar
 
-| Property   | Description                                                   | Type                                        | Default     |
-| ---------- | ------------------------------------------------------------- | ------------------------------------------- | ----------- |
-| `size`     | Avatar size or custom pixel size.                             | `'small' \| 'default' \| 'large' \| number` | `'default'` |
-| `shape`    | Avatar shape.                                                 | `'circle' \| 'square'`                      | `'circle'`  |
-| `src`      | Image URL. Falls back to icon or children after load failure. | `string`                                    | `-`         |
-| `alt`      | Alternate text for the image avatar.                          | `string`                                    | `-`         |
-| `icon`     | Icon content shown when no valid image is available.          | `JSX.Element`                               | `-`         |
-| `gap`      | Reserved text gap configuration.                              | `number`                                    | `-`         |
-| `children` | Text or custom content shown inside the avatar.               | `JSX.Element`                               | `-`         |
+| Property      | Description                                                           | Type                                                                                                                                                        | Default    |
+| ------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `alt`         | Alternate text describing the image.                                  | `string`                                                                                                                                                    | `-`        |
+| `gap`         | Letter type unit distance between left and right sides.               | `number`                                                                                                                                                    | `4`        |
+| `icon`        | Custom icon for an icon avatar.                                       | `JSX.Element`                                                                                                                                               | `-`        |
+| `shape`       | Avatar shape.                                                         | `'circle' \| 'square'`                                                                                                                                      | `'circle'` |
+| `size`        | Avatar size. `default` is kept as a compatibility alias for `medium`. | `number \| 'large' \| 'medium' \| 'default' \| 'small' \| { xs?: number; sm?: number; md?: number; lg?: number; xl?: number; xxl?: number; xxxl?: number }` | `'medium'` |
+| `src`         | Image URL or image element.                                           | `string \| JSX.Element`                                                                                                                                     | `-`        |
+| `srcSet`      | Image source set for different screen resolutions.                    | `string`                                                                                                                                                    | `-`        |
+| `draggable`   | Whether the picture is draggable.                                     | `boolean \| 'true' \| 'false'`                                                                                                                              | `true`     |
+| `crossOrigin` | CORS setting for the image.                                           | `'' \| 'anonymous' \| 'use-credentials'`                                                                                                                    | `-`        |
+| `onError`     | Handler when image loading fails. Return `false` to prevent fallback. | `() => boolean`                                                                                                                                             | `-`        |
+| `class`       | Custom root class in Solid style.                                     | `string`                                                                                                                                                    | `-`        |
+| `rootClass`   | Extra root class.                                                     | `string`                                                                                                                                                    | `-`        |
+| `prefixCls`   | Custom component class prefix.                                        | `string`                                                                                                                                                    | `-`        |
+
+`icon` and `children` can be used as image load failure fallback, with priority `icon` > `children`.
 
 ### Avatar.Group
 
-| Property   | Description                                                            | Type                                        | Default |
-| ---------- | ---------------------------------------------------------------------- | ------------------------------------------- | ------- |
-| `maxCount` | Maximum number of avatars to show before rendering an overflow avatar. | `number`                                    | `-`     |
-| `maxStyle` | Inline style applied to the overflow avatar.                           | `JSX.CSSProperties`                         | `-`     |
-| `size`     | Shared size applied to avatars in the group.                           | `'small' \| 'default' \| 'large' \| number` | `-`     |
-| `shape`    | Shared shape applied to avatars in the group.                          | `'circle' \| 'square'`                      | `-`     |
-| `children` | Avatar items rendered in the group.                                    | `JSX.Element`                               | `-`     |
+| Property              | Description                                         | Type                                                                    | Default    |
+| --------------------- | --------------------------------------------------- | ----------------------------------------------------------------------- | ---------- |
+| `max`                 | Maximum display configuration.                      | `{ count?: number; style?: JSX.CSSProperties; popover?: PopoverProps }` | `-`        |
+| `maxCount`            | Deprecated. Use `max={{ count: number }}`.          | `number`                                                                | `-`        |
+| `maxPopoverPlacement` | Deprecated. Use `max={{ popover: { placement } }}`. | `'top' \| 'bottom'`                                                     | `'top'`    |
+| `maxPopoverTrigger`   | Deprecated. Use `max={{ popover: { trigger } }}`.   | `'hover' \| 'focus' \| 'click' \| 'contextMenu' \| Array`               | `'hover'`  |
+| `maxStyle`            | Deprecated. Use `max={{ style: CSSProperties }}`.   | `JSX.CSSProperties`                                                     | `-`        |
+| `size`                | Shared avatar size.                                 | Same as Avatar `size`                                                   | `'medium'` |
+| `shape`               | Shared avatar shape.                                | `'circle' \| 'square'`                                                  | `'circle'` |
+| `class`               | Custom root class in Solid style.                   | `string`                                                                | `-`        |
+| `rootClass`           | Extra root class.                                   | `string`                                                                | `-`        |
+| `prefixCls`           | Custom component class prefix.                      | `string`                                                                | `-`        |
+
+## Design Token
+
+| Token              | Description                                 | Default   |
+| ------------------ | ------------------------------------------- | --------- |
+| `containerSize`    | Size of Avatar.                             | `32`      |
+| `containerSizeLG`  | Size of large Avatar.                       | `40`      |
+| `containerSizeSM`  | Size of small Avatar.                       | `24`      |
+| `textFontSize`     | Font size of Avatar text.                   | `14`      |
+| `textFontSizeLG`   | Font size of large Avatar text.             | `14`      |
+| `textFontSizeSM`   | Font size of small Avatar text.             | `14`      |
+| `iconFontSize`     | Font size of Avatar icon.                   | `18`      |
+| `iconFontSizeLG`   | Font size of large Avatar icon.             | `24`      |
+| `iconFontSizeSM`   | Font size of small Avatar icon.             | `14`      |
+| `groupSpace`       | Spacing between avatars in a group popover. | `4`       |
+| `groupOverlapping` | Overlapping of avatars in a group.          | `-8`      |
+| `groupBorderColor` | Border color of avatars in a group.         | `#ffffff` |
