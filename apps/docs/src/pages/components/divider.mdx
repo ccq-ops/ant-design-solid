@@ -3,15 +3,21 @@
 ### Basic
 
 ```tsx
-import { Divider, Space } from '@ant-design-solid/core'
+import { Divider } from '@ant-design-solid/core'
 
 const Demo1 = function () {
   return (
-    <div>
-      Text
+    <>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
       <Divider />
-      Text
-    </div>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+    </>
   )
 }
 
@@ -21,32 +27,83 @@ export default Demo1
 ### With text
 
 ```tsx
-import { Divider, Space } from '@ant-design-solid/core'
+import { Divider } from '@ant-design-solid/core'
 
 const Demo2 = function () {
   return (
-    <div>
-      <Divider orientation="left">Left</Divider>
-      <Divider>Center</Divider>
-      <Divider orientation="right">Right</Divider>
-    </div>
+    <>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider>Text</Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider titlePlacement="start">Left Text</Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider titlePlacement="end">Right Text</Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider titlePlacement="start" styles={{ content: { margin: 0 } }}>
+        Left Text margin with 0
+      </Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider titlePlacement="end" styles={{ content: { margin: '0 50px' } }}>
+        Right Text margin with 50px
+      </Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+    </>
   )
 }
 
 export default Demo2
 ```
 
-### Variants
+### Plain
 
 ```tsx
-import { Divider, Space } from '@ant-design-solid/core'
+import { Divider } from '@ant-design-solid/core'
 
 const Demo3 = function () {
   return (
-    <div>
-      <Divider dashed />
-      <Divider plain>Plain Text</Divider>
-    </div>
+    <>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider plain>Text</Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider titlePlacement="start" plain>
+        Left Text
+      </Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider titlePlacement="end" plain>
+        Right Text
+      </Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+    </>
   )
 }
 
@@ -56,29 +113,122 @@ export default Demo3
 ### Vertical
 
 ```tsx
-import { Divider, Space } from '@ant-design-solid/core'
+import { Divider } from '@ant-design-solid/core'
 
 const Demo4 = function () {
   return (
-    <Space>
-      <span>A</span>
-      <Divider type="vertical" />
-      <span>B</span>
-      <Divider type="vertical" dashed />
-      <span>C</span>
-    </Space>
+    <>
+      Text
+      <Divider orientation="vertical" />
+      <a href="#" aria-label="Ant Design component examples">
+        Link
+      </a>
+      <Divider vertical />
+      <a href="#" aria-label="Ant Design component examples">
+        Link
+      </a>
+    </>
   )
 }
 
 export default Demo4
 ```
 
+### Variant
+
+```tsx
+import { Divider } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider style={{ 'border-color': '#7cb305' }}>Solid</Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider variant="dotted" style={{ 'border-color': '#7cb305' }}>
+        Dotted
+      </Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider variant="dashed" style={{ 'border-color': '#7cb305' }} dashed>
+        Dashed
+      </Divider>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+    </>
+  )
+}
+
+export default Demo5
+```
+
+### Size
+
+```tsx
+import { Divider } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider size="small" />
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider size="medium" />
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+      <Divider size="large" />
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+        ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+      </p>
+    </>
+  )
+}
+
+export default Demo6
+```
+
 ## API
 
-| Property      | Description                                             | Type                            | Default        |
-| ------------- | ------------------------------------------------------- | ------------------------------- | -------------- |
-| `type`        | Divider direction.                                      | `'horizontal' \| 'vertical'`    | `'horizontal'` |
-| `orientation` | Text orientation for horizontal dividers with children. | `'left' \| 'center' \| 'right'` | `'center'`     |
-| `dashed`      | Uses a dashed divider line.                             | `boolean`                       | `false`        |
-| `plain`       | Uses plain text styling for divider content.            | `boolean`                       | `false`        |
-| `children`    | Text or content rendered inside a horizontal divider.   | `JSX.Element`                   | `-`            |
+| Property            | Description                                                      | Type                                                                                                 | Default        |
+| ------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------- |
+| `children`          | Text or content rendered inside a horizontal divider.            | `JSX.Element`                                                                                        | `-`            |
+| `class`             | Root class name.                                                 | `string`                                                                                             | `-`            |
+| `classNames`        | Semantic class names.                                            | `{ root?: string; rail?: string; content?: string } \| (info) => …`                                  | `-`            |
+| `dashed`            | Uses a dashed divider line. `variant` is preferred for new code. | `boolean`                                                                                            | `false`        |
+| `orientation`       | Divider direction.                                               | `'horizontal' \| 'vertical'`                                                                         | `'horizontal'` |
+| `orientationMargin` | Margin for text placed at the start or end.                      | `string \| number`                                                                                   | `-`            |
+| `plain`             | Uses plain text styling for divider content.                     | `boolean`                                                                                            | `false`        |
+| `prefixCls`         | Custom component class prefix.                                   | `string`                                                                                             | `-`            |
+| `rootClass`         | Extra root class name.                                           | `string`                                                                                             | `-`            |
+| `size`              | Horizontal divider spacing size.                                 | `'small' \| 'medium' \| 'middle' \| 'large'`                                                         | `-`            |
+| `styles`            | Semantic styles.                                                 | `{ root?: JSX.CSSProperties; rail?: JSX.CSSProperties; content?: JSX.CSSProperties } \| (info) => …` | `-`            |
+| `titlePlacement`    | Text placement for horizontal dividers with children.            | `'left' \| 'right' \| 'center' \| 'start' \| 'end'`                                                  | `'center'`     |
+| `variant`           | Divider line style.                                              | `'dashed' \| 'dotted' \| 'solid'`                                                                    | `'solid'`      |
+| `vertical`          | Shortcut for `orientation="vertical"`.                           | `boolean`                                                                                            | `false`        |
+
+## Design Token
+
+| Token                  | Description                            | Default          |
+| ---------------------- | -------------------------------------- | ---------------- |
+| `textPaddingInline`    | Horizontal padding of text.            | `'1em'`          |
+| `orientationMargin`    | Distance between text and edge.        | `0.05`           |
+| `verticalMarginInline` | Horizontal margin of vertical Divider. | `token.marginXS` |

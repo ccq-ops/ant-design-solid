@@ -1,4 +1,5 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useDividerStyle(prefixCls: string) {
@@ -7,6 +8,7 @@ export function useDividerStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['Divider', prefixCls] },
     () => {
       const t = token()
+      const dt = getComponentToken('Divider', t)
       return {
         [`.${prefixCls}`]: {
           'box-sizing': 'border-box',
@@ -16,7 +18,10 @@ export function useDividerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
           'line-height': t.lineHeight,
-          'border-block-start': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-block-start': `${t.lineWidth}px solid ${t.colorSplit}`,
+        },
+        [`.${prefixCls}-rail`]: {
+          'border-block-start': `${t.lineWidth}px solid ${t.colorSplit}`,
         },
         [`.${prefixCls}-horizontal`]: {
           display: 'flex',
@@ -24,34 +29,50 @@ export function useDividerStyle(prefixCls: string) {
           width: '100%',
           'min-width': '100%',
           margin: `${t.marginLG}px 0`,
-          '&::before, &::after': {
-            position: 'relative',
-            width: '50%',
-            'border-block-start': `${t.lineWidth}px solid transparent`,
-            'border-block-start-color': 'inherit',
-            transform: 'translateY(50%)',
-            content: '""',
-          },
+        },
+        [`.${prefixCls}-horizontal.${prefixCls}-sm`]: {
+          'margin-block': `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-horizontal.${prefixCls}-md`]: {
+          'margin-block': `${t.margin}px`,
         },
         [`.${prefixCls}-horizontal.${prefixCls}-with-text`]: {
           display: 'flex',
           'align-items': 'center',
-          margin: `${t.marginLG}px 0`,
-          color: t.colorText,
+          margin: `${t.margin}px 0`,
+          color: t.colorTextHeading,
           'font-weight': 500,
-          'font-size': `${t.fontSize + 2}px`,
+          'font-size': `${t.fontSizeLG}px`,
           'white-space': 'nowrap',
           'text-align': 'center',
-          border: 0,
+          'border-block-start': `0 ${t.colorSplit}`,
         },
-        [`.${prefixCls}-inner-text`]: { display: 'inline-block', padding: `0 ${t.padding}px` },
-        [`.${prefixCls}-with-text-left::before`]: { width: '5%' },
-        [`.${prefixCls}-with-text-left::after`]: { width: '95%' },
-        [`.${prefixCls}-with-text-right::before`]: { width: '95%' },
-        [`.${prefixCls}-with-text-right::after`]: { width: '5%' },
+        [`.${prefixCls}-horizontal.${prefixCls}-with-text .${prefixCls}-rail-start, .${prefixCls}-horizontal.${prefixCls}-with-text .${prefixCls}-rail-end`]:
+          {
+            width: '50%',
+            'border-block-start-color': 'inherit',
+            'border-block-end': 0,
+          },
+        [`.${prefixCls}-with-text-start .${prefixCls}-rail-start`]: {
+          width: `calc(${dt.orientationMargin} * 100%)`,
+        },
+        [`.${prefixCls}-with-text-start .${prefixCls}-rail-end`]: {
+          width: `calc(100% - ${dt.orientationMargin} * 100%)`,
+        },
+        [`.${prefixCls}-with-text-end .${prefixCls}-rail-start`]: {
+          width: `calc(100% - ${dt.orientationMargin} * 100%)`,
+        },
+        [`.${prefixCls}-with-text-end .${prefixCls}-rail-end`]: {
+          width: `calc(${dt.orientationMargin} * 100%)`,
+        },
+        [`.${prefixCls}-inner-text`]: {
+          display: 'inline-block',
+          'padding-block': 0,
+          'padding-inline': `${dt.textPaddingInline}`,
+        },
         [`.${prefixCls}-plain.${prefixCls}-with-text`]: {
           color: t.colorText,
-          'font-weight': 400,
+          'font-weight': 'normal',
           'font-size': `${t.fontSize}px`,
         },
         [`.${prefixCls}-vertical`]: {
@@ -59,16 +80,65 @@ export function useDividerStyle(prefixCls: string) {
           top: '-0.06em',
           display: 'inline-block',
           height: '0.9em',
-          margin: `0 ${t.marginXS}px`,
+          'margin-inline': `${dt.verticalMarginInline}`,
+          'margin-block': 0,
           'vertical-align': 'middle',
-          'border-block-start': 0,
-          'border-inline-start': `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+          'border-top': 0,
+          'border-inline-start': `${t.lineWidth}px solid ${t.colorSplit}`,
         },
         [`.${prefixCls}-dashed`]: {
-          'border-block-start-style': 'dashed',
-          '&::before, &::after': { 'border-block-start-style': 'dashed' },
+          background: 'none',
+          'border-color': t.colorSplit,
+          'border-style': 'dashed',
+          'border-width': `${t.lineWidth}px 0 0`,
+          [`.${prefixCls}-rail`]: {
+            'border-block-start': `${t.lineWidth}px dashed ${t.colorSplit}`,
+          },
         },
-        [`.${prefixCls}-vertical.${prefixCls}-dashed`]: { 'border-inline-start-style': 'dashed' },
+        [`.${prefixCls}-horizontal.${prefixCls}-with-text.${prefixCls}-dashed .${prefixCls}-rail-start, .${prefixCls}-horizontal.${prefixCls}-with-text.${prefixCls}-dashed .${prefixCls}-rail-end`]:
+          {
+            'border-style': 'dashed none none',
+          },
+        [`.${prefixCls}-vertical.${prefixCls}-dashed`]: {
+          'border-inline-start-width': t.lineWidth,
+          'border-inline-end': 0,
+          'border-block-start': 0,
+          'border-block-end': 0,
+        },
+        [`.${prefixCls}-dotted`]: {
+          background: 'none',
+          'border-color': t.colorSplit,
+          'border-style': 'dotted',
+          'border-width': `${t.lineWidth}px 0 0`,
+          [`.${prefixCls}-rail`]: {
+            'border-block-start': `${t.lineWidth}px dotted ${t.colorSplit}`,
+          },
+        },
+        [`.${prefixCls}-horizontal.${prefixCls}-with-text.${prefixCls}-dotted .${prefixCls}-rail-start, .${prefixCls}-horizontal.${prefixCls}-with-text.${prefixCls}-dotted .${prefixCls}-rail-end`]:
+          {
+            'border-style': 'dotted none none',
+          },
+        [`.${prefixCls}-vertical.${prefixCls}-dotted`]: {
+          'border-inline-start-width': t.lineWidth,
+          'border-inline-end': 0,
+          'border-block-start': 0,
+          'border-block-end': 0,
+        },
+        [`.${prefixCls}-horizontal.${prefixCls}-with-text-start.${prefixCls}-no-default-orientation-margin-start`]:
+          {
+            [`.${prefixCls}-rail-start`]: { width: 0 },
+            [`.${prefixCls}-rail-end`]: { width: '100%' },
+            [`.${prefixCls}-inner-text`]: { 'padding-inline-start': 0 },
+          },
+        [`.${prefixCls}-horizontal.${prefixCls}-with-text-end.${prefixCls}-no-default-orientation-margin-end`]:
+          {
+            [`.${prefixCls}-rail-start`]: { width: '100%' },
+            [`.${prefixCls}-rail-end`]: { width: 0 },
+            [`.${prefixCls}-inner-text`]: { 'padding-inline-end': 0 },
+          },
+        [`.${prefixCls}-rtl`]: {
+          direction: 'rtl',
+        },
       }
     },
   )

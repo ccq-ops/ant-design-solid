@@ -344,15 +344,26 @@ export interface GridComponentToken extends ComponentTokenBase {
 }
 
 export interface FormComponentToken extends ComponentTokenBase {
-  labelColor: string
-  labelFontSize: number
-  labelHeight: number
-  labelColonMarginInlineStart: number
-  labelColonMarginInlineEnd: number
+  /** Required mark color. */
   labelRequiredMarkColor: string
+  /** Label color. */
+  labelColor: string
+  /** Label font size. */
+  labelFontSize: number
+  /** Label height. */
+  labelHeight: number
+  /** Label colon margin-inline-start. */
+  labelColonMarginInlineStart: number
+  /** Label colon margin-inline-end. */
+  labelColonMarginInlineEnd: number
+  /** Form item margin bottom. */
   itemMarginBottom: number
+  /** Inline layout form item margin bottom. */
   inlineItemMarginBottom: number
+  /** Vertical layout label padding. */
   verticalLabelPadding: number
+  /** Vertical layout label margin. */
+  verticalLabelMargin: number
   explainColor: string
   extraColor: string
   feedbackIconSize: number
@@ -518,6 +529,12 @@ export interface CardComponentToken extends ComponentTokenBase {
   headerBorderBottom: string
 }
 
+export interface DividerComponentToken extends ComponentTokenBase {
+  textPaddingInline: string | number
+  orientationMargin: number
+  verticalMarginInline: string | number
+}
+
 export interface PopoverComponentToken extends ComponentTokenBase {
   bg: string
   borderRadius: number
@@ -633,7 +650,7 @@ export interface ComponentTokenMap {
   Collapse?: ComponentTokenBase
   DatePicker?: ComponentTokenBase
   Descriptions?: ComponentTokenBase
-  Divider?: ComponentTokenBase
+  Divider: DividerComponentToken
   Drawer: DrawerComponentToken
   Dropdown: DropdownComponentToken
   Empty?: ComponentTokenBase

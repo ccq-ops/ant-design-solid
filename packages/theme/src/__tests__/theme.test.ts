@@ -245,6 +245,8 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Form', token).labelColonMarginInlineStart).toBe(token.marginXXS / 2)
     expect(getComponentToken('Form', token).labelColonMarginInlineEnd).toBe(token.marginXS)
     expect(getComponentToken('Form', token).inlineItemMarginBottom).toBe(0)
+    expect(getComponentToken('Form', token).verticalLabelPadding).toBe(token.paddingXS)
+    expect(getComponentToken('Form', token).verticalLabelMargin).toBe(0)
     expect(getComponentToken('Form', token).extraColor).toBe(token.colorTextDescription)
     expect(getComponentToken('Form', token).feedbackIconSize).toBe(token.fontSize)
     expect(getComponentToken('Form', token).feedbackIconMarginInlineStart).toBe(token.marginXS)
@@ -284,6 +286,22 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('InputNumber', token).paddingInline).toBe(token.paddingSM)
   })
 
+  it('matches Ant Design Form component token defaults', () => {
+    const token = mergeTheme()
+    const form = getComponentToken('Form', token)
+
+    expect(form.labelRequiredMarkColor).toBe(token.colorError)
+    expect(form.labelColor).toBe(token.colorTextHeading)
+    expect(form.labelFontSize).toBe(token.fontSize)
+    expect(form.labelHeight).toBe(token.controlHeight)
+    expect(form.labelColonMarginInlineStart).toBe(token.marginXXS / 2)
+    expect(form.labelColonMarginInlineEnd).toBe(token.marginXS)
+    expect(form.itemMarginBottom).toBe(token.marginLG)
+    expect(form.inlineItemMarginBottom).toBe(0)
+    expect(form.verticalLabelPadding).toBe(token.paddingXS)
+    expect(form.verticalLabelMargin).toBe(0)
+  })
+
   it('derives feedback component token defaults and applies overrides', () => {
     const token = mergeTheme({
       components: {
@@ -292,6 +310,7 @@ describe('@ant-design-solid/theme', () => {
         Notification: { width: 420 },
         Modal: { titleFontSize: 18 },
         Drawer: { draggerSize: 10, footerPaddingBlock: 12 },
+        Divider: { orientationMargin: 0.1 },
         Popconfirm: { width: 240 },
       },
     })
@@ -308,6 +327,9 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Drawer', token).footerPaddingBlock).toBe(12)
     expect(getComponentToken('Drawer', token).footerPaddingInline).toBe(token.paddingLG)
     expect(getComponentToken('Drawer', token).draggerSize).toBe(10)
+    expect(getComponentToken('Divider', token).orientationMargin).toBe(0.1)
+    expect(getComponentToken('Divider', token).textPaddingInline).toBe('1em')
+    expect(getComponentToken('Divider', token).verticalMarginInline).toBe(`${token.marginXS}px`)
     expect(getComponentToken('Popconfirm', token).width).toBe(240)
     expect(getComponentToken('Popconfirm', token).bg).toBe(token.colorBgElevated)
   })
