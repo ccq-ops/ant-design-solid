@@ -142,7 +142,7 @@ describe('DatePicker picker variants', () => {
     const year = screen.getByRole('button', { name: '2028' })
 
     expect(month.querySelector('.ads-date-picker-cell-inner')).toHaveTextContent('2026-06')
-    expect(quarter.querySelector('.ads-date-picker-cell-inner')).toHaveTextContent('2026-Q3')
+    expect(quarter.querySelector('.ads-date-picker-cell-inner')?.textContent).toBe('Q3')
     expect(year.querySelector('.ads-date-picker-cell-inner')).toHaveTextContent('2028')
     expect(month).toHaveClass('ads-date-picker-variant-cell')
     expect(quarter).toHaveClass('ads-date-picker-variant-cell')

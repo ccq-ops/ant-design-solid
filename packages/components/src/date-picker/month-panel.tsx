@@ -43,6 +43,10 @@ export function MonthPanel(props: MonthPanelProps) {
       : cellDate.format('YYYY-MM')
   }
 
+  function cellText(cellDate: dayjs.Dayjs): string {
+    return picker() === 'quarter' ? `Q${cellDate.quarter()}` : cellLabel(cellDate)
+  }
+
   function renderCellContent(cellDate: dayjs.Dayjs, originNode: JSX.Element): JSX.Element {
     if (!props.cellRender) return originNode
     return props.cellRender(cellDate, {
@@ -84,7 +88,7 @@ export function MonthPanel(props: MonthPanelProps) {
               }}
             >
               <span class={`${props.prefixCls}-cell-inner`}>
-                {renderCellContent(cellDate, label())}
+                {renderCellContent(cellDate, cellText(cellDate))}
               </span>
             </button>
           )
