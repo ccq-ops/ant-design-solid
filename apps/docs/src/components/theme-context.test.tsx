@@ -37,8 +37,8 @@ describe('DocsThemeProvider', () => {
     const toggle = result.getByRole('button', { name: 'Toggle' })
 
     expect(toggle).toHaveAttribute('data-mode', 'light')
-    expect(toggle).toHaveAttribute('data-background', '#ffffff')
-    expect(toggle).toHaveAttribute('data-text', '#000000')
+    expect(toggle).toHaveAttribute('data-background', '#fff')
+    expect(toggle).toHaveAttribute('data-text', '#000')
     expect(document.documentElement).toHaveAttribute('data-theme', 'light')
   })
 
@@ -54,8 +54,8 @@ describe('DocsThemeProvider', () => {
     await Promise.resolve()
 
     expect(toggle).toHaveAttribute('data-mode', 'dark')
-    expect(toggle).toHaveAttribute('data-background', '#141414')
-    expect(toggle).toHaveAttribute('data-text', '#ffffff')
+    expect(toggle).toHaveAttribute('data-background', '#000')
+    expect(toggle).toHaveAttribute('data-text', '#fff')
     expect(toggle).toHaveAttribute('data-container', '#141414')
     expect(toggle).toHaveAttribute('data-elevated', '#1f1f1f')
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
