@@ -1,5 +1,7 @@
 import { render, waitFor } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
+import { ConfigProvider } from '../../config-provider'
+import { Card } from '../../card'
 import { BorderBeam } from '../index'
 
 const beamSelector = '.ads-border-beam'
@@ -112,6 +114,66 @@ describe('BorderBeam', () => {
           '--ads-border-beam-inset-offset',
         ),
       ).toBe('calc(-1 * 2em)')
+    })
+  })
+
+  it('merges ConfigProvider borderBeam class and style before local props', async () => {
+    const result = render(() => (
+      <ConfigProvider
+        borderBeam={{
+          class: 'context-beam',
+          style: {
+            opacity: 0.4,
+            padding: '3px',
+          },
+        }}
+      >
+        <BorderBeam class="local-beam" style={{ opacity: 0.8 }}>
+          <div>content</div>
+        </BorderBeam>
+      </ConfigProvider>
+    ))
+
+    await waitFor(() => {
+      const beam = getBeam(result.container)
+
+      expect(beam).toHaveClass('context-beam')
+      expect(beam).toHaveClass('local-beam')
+      expect(beam).toHaveStyle({ opacity: '0.8', padding: '3px' })
+    })
+  })
+
+  it('uses component lineWidth token for beam padding', async () => {
+    render(() => (
+      <ConfigProvider theme={{ components: { BorderBeam: { lineWidth: 3 } } }}>
+        <BorderBeam>
+          <div>content</div>
+        </BorderBeam>
+      </ConfigProvider>
+    ))
+
+    await waitFor(() => {
+      const styles = Array.from(document.head.querySelectorAll('style'))
+        .map((style) => style.textContent ?? '')
+        .join('\n')
+
+      expect(styles).toContain('padding:3px')
+    })
+  })
+
+  it('decorates Card as a positioned host container', async () => {
+    const result = render(() => (
+      <BorderBeam>
+        <Card title="Workspace overview">content</Card>
+      </BorderBeam>
+    ))
+
+    await waitFor(() => {
+      const card = result.container.querySelector<HTMLElement>('.ads-card')!
+      const beam = getBeam(result.container)
+
+      expect(beam.parentElement).toBe(card)
+      expect(getComputedStyle(card).position).toBe('relative')
     })
   })
 })

@@ -1,4 +1,5 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 import { MAX_BEAM_COLOR_STOP_PERCENT } from './util'
 
@@ -8,6 +9,7 @@ export function useBorderBeamStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['BorderBeam', prefixCls] },
     () => {
       const t = token()
+      const borderBeam = getComponentToken('BorderBeam', t) ?? {}
       const defaultBeamGradient = `linear-gradient(to left, ${t.colorPrimary} 0%, ${t.colorPrimaryHover} ${MAX_BEAM_COLOR_STOP_PERCENT}%, transparent)`
 
       return {
@@ -27,7 +29,7 @@ export function useBorderBeamStyle(prefixCls: string) {
           'z-index': 1,
           overflow: 'hidden',
           'pointer-events': 'none',
-          padding: `${t.lineWidth}px`,
+          padding: `${borderBeam.lineWidth ?? t.lineWidth}px`,
         },
         [`@supports ((mask-composite: exclude) or (-webkit-mask-composite: xor))`]: {
           [`.${prefixCls}`]: {

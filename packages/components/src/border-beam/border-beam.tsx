@@ -32,15 +32,28 @@ function getBorderRadius(host: HTMLElement): string {
 
 function mergeStyle(
   base: JSX.CSSProperties,
-  style: BorderBeamProps['style'],
+  ...styles: Array<BorderBeamProps['style']>
 ): JSX.CSSProperties | string {
-  if (typeof style === 'string') {
-    const declarations = Object.entries(base)
+  const merged = { ...base }
+  const stringStyles: string[] = []
+
+  styles.forEach((style) => {
+    if (!style) return
+    if (typeof style === 'string') {
+      stringStyles.push(style)
+      return
+    }
+    Object.assign(merged, style)
+  })
+
+  if (stringStyles.length) {
+    const declarations = Object.entries(merged)
       .map(([key, value]) => `${key}: ${value}`)
       .join('; ')
-    return `${declarations}; ${style}`
+    return `${declarations}; ${stringStyles.join('; ')}`
   }
-  return { ...base, ...style }
+
+  return merged
 }
 
 export function BorderBeam(props: BorderBeamProps) {
@@ -54,6 +67,7 @@ export function BorderBeam(props: BorderBeamProps) {
     'outset',
   ])
   const config = useConfig()
+  const componentConfig = () => config.borderBeam()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-border-beam`
   const [, hashId] = useBorderBeamStyle(prefixCls())
   let markerRef: HTMLSpanElement | undefined
@@ -74,7 +88,7 @@ export function BorderBeam(props: BorderBeamProps) {
     }
     const gradient = beamGradient()
     if (gradient) cssVars['--ads-border-beam-beam-gradient'] = gradient
-    return mergeStyle(cssVars, local.style)
+    return mergeStyle(cssVars, componentConfig().style, local.style)
   }
 
   onMount(() => {
@@ -98,7 +112,7 @@ export function BorderBeam(props: BorderBeamProps) {
       () => (
         <div
           aria-hidden="true"
-          class={classNames(prefixCls(), hashId(), local.class)}
+          class={classNames(prefixCls(), hashId(), componentConfig().class, local.class)}
           classList={local.classList}
           style={beamStyle()}
         />

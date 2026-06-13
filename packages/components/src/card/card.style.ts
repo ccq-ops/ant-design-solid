@@ -16,6 +16,7 @@ export function useCardStyle(prefixCls: string) {
         'font-size': `${t.fontSize}px`,
         'font-family': t.fontFamily,
         'line-height': t.lineHeight,
+        position: 'relative',
         background: t.colorBgContainer,
         'border-radius': `${t.borderRadiusLG}px`,
         transition: `box-shadow ${t.motionDurationMid} ${t.motionEaseInOut}, border-color ${t.motionDurationMid} ${t.motionEaseInOut}`,

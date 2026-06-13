@@ -631,6 +631,8 @@ export interface BadgeComponentToken extends ComponentTokenBase {
   statusSize: number
 }
 
+export interface BorderBeamComponentToken extends ComponentTokenBase {}
+
 export interface FloatButtonComponentToken extends ComponentTokenBase {
   size: number
   iconSize: number
@@ -785,7 +787,7 @@ export interface ComponentTokenMap {
   Avatar?: ComponentTokenBase
   BackTop?: ComponentTokenBase
   Badge: BadgeComponentToken
-  BorderBeam?: ComponentTokenBase
+  BorderBeam?: BorderBeamComponentToken
   Button: ButtonComponentToken
   Breadcrumb?: BreadcrumbComponentToken
   Calendar?: ComponentTokenBase

@@ -199,7 +199,7 @@ describe('@ant-design-solid/theme', () => {
   it('merges global and component token overrides', () => {
     const config: ThemeConfig = {
       token: { colorPrimary: '#722ed1', borderRadius: 8 },
-      components: { Button: { borderRadius: 10 } },
+      components: { Button: { borderRadius: 10 }, BorderBeam: { lineWidth: 3 } },
     }
 
     const merged = mergeTheme(config)
@@ -208,6 +208,7 @@ describe('@ant-design-solid/theme', () => {
     expect(merged.colorPrimary).toBe('#722ed1')
     expect(merged.borderRadius).toBe(8)
     expect(button.borderRadius).toBe(10)
+    expect(getComponentToken('BorderBeam', merged).lineWidth).toBe(3)
   })
 
   it('applies theme algorithms and keeps token overrides', () => {

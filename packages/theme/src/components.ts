@@ -75,6 +75,7 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       separatorColor: token.colorTextDescription,
       separatorMargin: token.marginXS,
     },
+    BorderBeam: {},
     Carousel: {
       arrowSize: 16,
       arrowOffset: token.marginXS,
