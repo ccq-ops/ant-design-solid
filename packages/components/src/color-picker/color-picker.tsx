@@ -120,6 +120,7 @@ export function ColorPicker(props: ColorPickerProps) {
   let activeDragCleanup: (() => void) | undefined
   let suppressBlurTarget: HTMLInputElement | undefined
   let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
+  let interactiveTriggerElement: HTMLElement | undefined
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
@@ -914,12 +915,35 @@ export function ColorPicker(props: ColorPickerProps) {
   }
   const customTriggerProps = rest as JSX.HTMLAttributes<HTMLSpanElement>
   const customTrigger = () => resolvedChildren()
+  const syncInteractiveTriggerElement = (): void => {
+    interactiveTriggerElement?.setAttribute('aria-haspopup', 'dialog')
+    interactiveTriggerElement?.setAttribute('aria-expanded', open() ? 'true' : 'false')
+    if (disabled()) {
+      interactiveTriggerElement?.setAttribute('aria-disabled', 'true')
+    } else {
+      interactiveTriggerElement?.removeAttribute('aria-disabled')
+    }
+
+    if (
+      interactiveTriggerElement instanceof HTMLButtonElement ||
+      interactiveTriggerElement instanceof HTMLInputElement ||
+      interactiveTriggerElement instanceof HTMLSelectElement ||
+      interactiveTriggerElement instanceof HTMLTextAreaElement
+    ) {
+      interactiveTriggerElement.disabled = disabled()
+    }
+  }
   const updateInteractiveCustomChild = (): void => {
-    setHasInteractiveCustomChild(Boolean(triggerRef?.querySelector(interactiveChildSelector)))
+    interactiveTriggerElement =
+      triggerRef?.querySelector<HTMLElement>(interactiveChildSelector) ?? undefined
+    setHasInteractiveCustomChild(Boolean(interactiveTriggerElement))
+    syncInteractiveTriggerElement()
   }
 
   createEffect(() => {
     customTrigger()
+    open()
+    disabled()
     updateInteractiveCustomChild()
   })
 
@@ -942,6 +966,9 @@ export function ColorPicker(props: ColorPickerProps) {
             aria-expanded={open() ? 'true' : 'false'}
             aria-disabled={disabled() ? 'true' : undefined}
             onClick={handleTriggerClick}
+            onKeyDown={(event) => {
+              ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+            }}
             onMouseEnter={handleHoverEnter}
             onMouseLeave={handleHoverLeave}
           >

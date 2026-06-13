@@ -293,6 +293,15 @@ describe('ColorPicker trigger', () => {
 })
 
 describe('ColorPicker v6 API compatibility', () => {
+  it('calls onKeyDown on the default trigger', () => {
+    const onKeyDown = vi.fn()
+    const result = render(() => <ColorPicker defaultValue="#1677ff" onKeyDown={onKeyDown} />)
+
+    fireEvent.keyDown(result.getByRole('button', { name: /color picker/i }), { key: 'ArrowDown' })
+
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+  })
+
   it('renders custom trigger children without nesting native buttons', () => {
     const result = render(() => (
       <ColorPicker defaultValue="#1677ff">
@@ -307,6 +316,40 @@ describe('ColorPicker v6 API compatibility', () => {
 
     fireEvent.click(trigger)
     expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+  })
+
+  it('syncs popup semantics to an interactive custom trigger child', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('disables interactive custom trigger child buttons', () => {
+    const onClick = vi.fn()
+    const result = render(() => (
+      <ColorPicker disabled onClick={onClick}>
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).toBeDisabled()
+    expect(trigger).toHaveAttribute('aria-disabled', 'true')
+
+    fireEvent.click(trigger)
+
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
   })
 
   it('opens custom non-interactive trigger children with Enter and Space', () => {
