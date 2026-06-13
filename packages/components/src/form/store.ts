@@ -384,7 +384,10 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           revalidateDependencies([name])
         })
       },
-      getFieldsValue(nameListOrConfig?: true | FieldName[] | GetFieldsValueConfig, filter?: FilterFunc) {
+      getFieldsValue(
+        nameListOrConfig?: true | FieldName[] | GetFieldsValueConfig,
+        filter?: FilterFunc,
+      ) {
         const currentValues = untrack(() => values())
         if (nameListOrConfig === true) {
           if (!filter) return cloneFormValues(currentValues)
@@ -401,10 +404,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           if (nameListOrConfig.strict) return pickValues(currentValues, matchingNames)
           return pickValues(currentValues, matchingNames)
         }
-        return pickValues(
-          currentValues,
-          getFilteredRegisteredNames(),
-        )
+        return pickValues(currentValues, getFilteredRegisteredNames())
       },
       setFieldsValue(nextValues) {
         batch(() => {
@@ -482,7 +482,10 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             if ('errors' in field && !areStringArraysEqual(record.state.errors, field.errors)) {
               record.setErrors(field.errors ?? [])
             }
-            if ('warnings' in field && !areStringArraysEqual(record.state.warnings, field.warnings)) {
+            if (
+              'warnings' in field &&
+              !areStringArraysEqual(record.state.warnings, field.warnings)
+            ) {
               setRecordWarnings(record, field.warnings ?? [])
             }
             if (field.touched !== undefined && record.state.touched !== field.touched) {
