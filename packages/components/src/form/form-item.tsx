@@ -374,7 +374,7 @@ export function FormItem(props: FormItemProps) {
         props.hidden && `${prefixCls()}-item-hidden`,
         semanticClassNames().root,
       )}
-      style={{ ...(semanticStyles().root ?? {}), ...(props.hidden ? { display: 'none' } : {}) }}
+      style={{ ...semanticStyles().root, ...(props.hidden ? { display: 'none' } : undefined) }}
       onFocusOut={validateOnBlur}
     >
       <Show when={props.label || props.label === null}>
