@@ -86,6 +86,7 @@ export function ColorPicker(props: ColorPickerProps) {
     'class',
     'style',
     'onClick',
+    'onKeyDown',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-color-picker`
@@ -884,6 +885,9 @@ export function ColorPicker(props: ColorPickerProps) {
 
   const renderedPanel = () =>
     local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
+  const [hasInteractiveCustomChild, setHasInteractiveCustomChild] = createSignal(false)
+  const interactiveChildSelector =
+    'button, a[href], input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])'
   const triggerClass = () =>
     classNames(
       prefixCls(),
@@ -894,11 +898,30 @@ export function ColorPicker(props: ColorPickerProps) {
       local.class,
     )
   const handleTriggerClick = (event: MouseEvent): void => {
+    if (disabled()) return
     ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
     if (event.defaultPrevented || local.trigger === 'hover') return
     setOpen(!open())
   }
+  const handleTriggerKeyDown = (event: KeyboardEvent): void => {
+    ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
+    if (event.defaultPrevented) return
+    if (event.key !== 'Enter' && event.key !== ' ') return
+
+    event.preventDefault()
+    if (disabled() || local.trigger === 'hover') return
+    setOpen(!open())
+  }
+  const customTriggerProps = rest as JSX.HTMLAttributes<HTMLSpanElement>
   const customTrigger = () => resolvedChildren()
+  const updateInteractiveCustomChild = (): void => {
+    setHasInteractiveCustomChild(Boolean(triggerRef?.querySelector(interactiveChildSelector)))
+  }
+
+  createEffect(() => {
+    customTrigger()
+    updateInteractiveCustomChild()
+  })
 
   return (
     <ZIndexContext.Provider value={contextZIndex}>
@@ -935,18 +958,21 @@ export function ColorPicker(props: ColorPickerProps) {
         }
       >
         <span
+          {...customTriggerProps}
           ref={(element) => {
             triggerRef = element
+            updateInteractiveCustomChild()
           }}
-          role="button"
+          role={hasInteractiveCustomChild() ? undefined : 'button'}
           class={triggerClass()}
           style={local.style}
-          tabIndex={disabled() ? undefined : 0}
+          tabIndex={hasInteractiveCustomChild() || disabled() ? undefined : 0}
           aria-label="Color Picker"
           aria-haspopup="dialog"
           aria-expanded={open() ? 'true' : 'false'}
           aria-disabled={disabled() ? 'true' : undefined}
           onClick={handleTriggerClick}
+          onKeyDown={hasInteractiveCustomChild() ? undefined : handleTriggerKeyDown}
           onMouseEnter={handleHoverEnter}
           onMouseLeave={handleHoverLeave}
         >

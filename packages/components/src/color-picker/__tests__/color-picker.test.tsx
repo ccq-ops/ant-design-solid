@@ -303,9 +303,43 @@ describe('ColorPicker v6 API compatibility', () => {
     const trigger = result.getByRole('button', { name: 'Pick brand color' })
     expect(trigger.closest('button')).toBe(trigger)
     expect(trigger.parentElement?.closest('button')).toBeNull()
+    expect(trigger.parentElement?.closest('[role="button"]')).toBeNull()
 
     fireEvent.click(trigger)
     expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+  })
+
+  it('opens custom non-interactive trigger children with Enter and Space', () => {
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff">
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    fireEvent.keyDown(trigger, { key: 'Enter' })
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    fireEvent.keyDown(trigger, { key: ' ' })
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('does not call onClick or open from a disabled custom trigger', () => {
+    const onClick = vi.fn()
+    const result = render(() => (
+      <ColorPicker disabled onClick={onClick}>
+        <span>Pick brand color</span>
+      </ColorPicker>
+    ))
+
+    const trigger = result.getByRole('button', { name: /color picker/i })
+
+    fireEvent.click(trigger)
+    fireEvent.keyDown(trigger, { key: 'Enter' })
+
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
   })
 
   it('calls onFormatChange when uncontrolled format changes', () => {
