@@ -49,6 +49,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain(
       '.ads-date-picker-variant-cell.ads-date-picker-cell-selected .ads-date-picker-cell-inner{background:#1677ff;color:#ffffff;',
     )
+    expect(css).toContain('.ads-date-picker-quarter-grid{grid-template-columns:repeat(4, 1fr);')
     expect(css).toContain(
       '.ads-date-picker-week-row:hover .ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-disabled){background:rgba(0,0,0,0.04);',
     )
