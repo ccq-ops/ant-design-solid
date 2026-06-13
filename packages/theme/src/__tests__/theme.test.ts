@@ -233,6 +233,7 @@ describe('@ant-design-solid/theme', () => {
         Checkbox: { checkColor: '#111111' },
         Radio: { dotSize: 10 },
         Switch: { handleSize: 16 },
+        Input: { activeBorderColor: '#531dab', paddingInlineLG: 16 },
         InputNumber: { handleWidth: 28, activeBorderColor: '#722ed1' },
       },
     })
@@ -247,6 +248,28 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Radio', token).size).toBe(16)
     expect(getComponentToken('Switch', token).handleSize).toBe(16)
     expect(getComponentToken('Switch', token).trackMinWidth).toBe(44)
+    expect(getComponentToken('Input', token).activeBorderColor).toBe('#531dab')
+    expect(getComponentToken('Input', token).activeShadow).toBe(
+      `0 0 0 ${token.controlOutlineWidth}px ${token.controlOutline}`,
+    )
+    expect(getComponentToken('Input', token).errorActiveShadow).toBe(
+      `0 0 0 ${token.controlOutlineWidth}px ${token.colorErrorOutline}`,
+    )
+    expect(getComponentToken('Input', token).warningActiveShadow).toBe(
+      `0 0 0 ${token.controlOutlineWidth}px ${token.colorWarningOutline}`,
+    )
+    expect(getComponentToken('Input', token).addonBg).toBe(token.colorFillAlter)
+    expect(getComponentToken('Input', token).inputFontSize).toBe(token.fontSize)
+    expect(getComponentToken('Input', token).inputFontSizeSM).toBe(token.fontSize)
+    expect(getComponentToken('Input', token).inputFontSizeLG).toBe(token.fontSizeLG)
+    expect(getComponentToken('Input', token).paddingBlock).toBe(4)
+    expect(getComponentToken('Input', token).paddingBlockSM).toBe(0)
+    expect(getComponentToken('Input', token).paddingBlockLG).toBe(7)
+    expect(getComponentToken('Input', token).paddingInline).toBe(token.paddingSM - token.lineWidth)
+    expect(getComponentToken('Input', token).paddingInlineLG).toBe(16)
+    expect(getComponentToken('Input', token).paddingInlineSM).toBe(
+      token.controlPaddingHorizontalSM - token.lineWidth,
+    )
     expect(getComponentToken('InputNumber', token).handleWidth).toBe(28)
     expect(getComponentToken('InputNumber', token).activeBorderColor).toBe('#722ed1')
     expect(getComponentToken('InputNumber', token).inputFontSize).toBe(token.fontSize)

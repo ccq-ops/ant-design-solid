@@ -159,7 +159,7 @@ const Demo8 = function () {
       <Input showCount maxLength={20} defaultValue="Count me" />
       <Input
         showCount={{
-          formatter: ({ count, maxLength }) => '${count}/${maxLength} chars',
+          formatter: ({ count, maxLength }) => `${count}/${maxLength} chars`,
         }}
         count={{ max: 10, strategy: (value) => Array.from(value).length }}
         defaultValue="Custom"
@@ -182,8 +182,8 @@ const Demo9 = function () {
   return (
     <Input
       defaultValue="Semantic DOM"
-      classNames={{ wrapper: 'ring-1 ring-blue-200', input: 'text-blue-600' }}
-      styles={{ wrapper: { width: '320px' } }}
+      classNames={{ root: 'ring-1 ring-blue-200', input: 'text-blue-600' }}
+      styles={{ root: { width: '320px' } }}
     />
   )
 }
@@ -191,7 +191,7 @@ const Demo9 = function () {
 export default Demo9
 ```
 
-### TextArea
+### Addons and group
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -201,7 +201,30 @@ import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
 const Demo10 = function () {
   return (
     <Space direction="vertical" class="w-96">
-      <Input.TextArea showCount maxLength={120} defaultValue="Write something" />
+      <Input addonBefore="https://" addonAfter=".com" defaultValue="ant-design-solid" />
+      <Input.Group compact>
+        <Input class="w-28" defaultValue="0571" />
+        <Input class="w-48" defaultValue="26888888" />
+      </Input.Group>
+    </Space>
+  )
+}
+
+export default Demo10
+```
+
+### TextArea
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Input, Space } from '@ant-design-solid/core'
+import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
+
+const Demo11 = function () {
+  return (
+    <Space direction="vertical" size="large" class="w-96">
+      <Input.TextArea size="large" rows={3} placeholder="Large textarea" />
+      <Input.TextArea showCount rows={3} maxLength={120} defaultValue="Write something" />
       <Input.TextArea
         autoSize={{ minRows: 2, maxRows: 4 }}
         allowClear
@@ -212,7 +235,7 @@ const Demo10 = function () {
   )
 }
 
-export default Demo10
+export default Demo11
 ```
 
 ### Search
@@ -238,16 +261,22 @@ function SearchDemo() {
         loading
         onSearch={(value) => setMessage(`Button search: ${value}`)}
       />
+      <Input.Search
+        enterButton="Go"
+        classNames={{ button: 'bg-blue-600 text-white' }}
+        styles={{ button: { width: '72px' } }}
+        placeholder="Styled search button"
+      />
       <span class="text-sm text-gray-500">{message()}</span>
     </Space>
   )
 }
 
-const Demo11 = function () {
+const Demo12 = function () {
   return <SearchDemo />
 }
 
-export default Demo11
+export default Demo12
 ```
 
 ### Password
@@ -264,6 +293,11 @@ function PasswordDemo() {
     <Space direction="vertical" class="w-80">
       <Input.Password placeholder="Password" />
       <Input.Password
+        action="hover"
+        suffix={<span class="text-xs text-gray-500">hold</span>}
+        placeholder="Hover to reveal"
+      />
+      <Input.Password
         visibilityToggle={{ visible: visible(), onVisibleChange: setVisible }}
         iconRender={(nextVisible) => <span>{nextVisible ? 'Hide' : 'Show'}</span>}
         defaultValue="controlled"
@@ -275,11 +309,11 @@ function PasswordDemo() {
   )
 }
 
-const Demo12 = function () {
+const Demo13 = function () {
   return <PasswordDemo />
 }
 
-export default Demo12
+export default Demo13
 ```
 
 ### OTP
@@ -298,6 +332,7 @@ function OTPDemo() {
       <Input.OTP
         length={6}
         defaultValue="123456"
+        type="tel"
         mask="•"
         separator={(index) => (index === 2 ? <span>-</span> : null)}
       />
@@ -306,11 +341,11 @@ function OTPDemo() {
   )
 }
 
-const Demo13 = function () {
+const Demo14 = function () {
   return <OTPDemo />
 }
 
-export default Demo13
+export default Demo14
 ```
 
 ### In Form
@@ -320,7 +355,7 @@ import { createSignal } from 'solid-js'
 import { Form, Input, Space } from '@ant-design-solid/core'
 import { SearchOutlined, UserOutlined } from '@ant-design-solid/icons'
 
-const Demo14 = function () {
+const Demo15 = function () {
   return (
     <Form initialValues={{ email: 'hello@example.com', bio: 'Solid user' }}>
       <Form.Item label="Email" name="email">
@@ -333,30 +368,46 @@ const Demo14 = function () {
   )
 }
 
-export default Demo14
+export default Demo15
 ```
 
 ## API
 
 ### Input
 
-| Property       | Description                                                                                                        | Type                                                                   | Default    |
-| -------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ---------- |
-| `size`         | Input size. Defaults to the current ConfigProvider component size.                                                 | `'small' \| 'middle' \| 'large'`                                       | `-`        |
-| `status`       | Validation visual status.                                                                                          | `'error' \| 'warning'`                                                 | `-`        |
-| `variant`      | Visual variant of the input wrapper.                                                                               | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`               | `outlined` |
-| `prefix`       | Element rendered before the input value.                                                                           | `JSX.Element`                                                          | `-`        |
-| `suffix`       | Element rendered after the input value.                                                                            | `JSX.Element`                                                          | `-`        |
-| `allowClear`   | Shows a clear button when the input has a value. Object form customizes the icon or disables the clear affordance. | `boolean \| { clearIcon?: JSX.Element; disabled?: boolean }`           | `false`    |
-| `showCount`    | Shows the current character count. Object form customizes count rendering.                                         | `boolean \| { formatter?: (info: CountFormatterInfo) => JSX.Element }` | `false`    |
-| `count`        | Character count configuration for custom max, count strategy, display and exceed formatting.                       | `CountConfig`                                                          | `-`        |
-| `classNames`   | Semantic class names for wrapper, input, prefix, suffix, clear and count nodes.                                    | `InputSemanticClassNames`                                              | `-`        |
-| `styles`       | Semantic inline styles for wrapper, input, prefix, suffix, clear and count nodes.                                  | `InputSemanticStyles`                                                  | `-`        |
-| `value`        | Controlled input value.                                                                                            | `string \| number`                                                     | `-`        |
-| `defaultValue` | Initial uncontrolled input value.                                                                                  | `string \| number`                                                     | `-`        |
-| `onChange`     | Callback when the input value changes.                                                                             | `(event: Event) => void`                                               | `-`        |
-| `onPressEnter` | Callback when Enter is pressed.                                                                                    | `(event: KeyboardEvent) => void`                                       | `-`        |
-| `onClear`      | Callback when the clear button is clicked.                                                                         | `() => void`                                                           | `-`        |
+| Property        | Description                                                                                                         | Type                                                                   | Default    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------- |
+| `size`          | Input size. Defaults to the current ConfigProvider component size.                                                  | `'small' \| 'middle' \| 'large'`                                       | `-`        |
+| `status`        | Validation visual status.                                                                                           | `'error' \| 'warning'`                                                 | `-`        |
+| `variant`       | Visual variant of the input wrapper.                                                                                | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`               | `outlined` |
+| `bordered`      | Compatibility alias. `false` maps to `variant="borderless"` when `variant` is not set.                              | `boolean`                                                              | `true`     |
+| `addonBefore`   | Compatibility addon rendered before the input. Prefer `Space.Compact` for new layouts.                              | `JSX.Element`                                                          | `-`        |
+| `addonAfter`    | Compatibility addon rendered after the input. Prefer `Space.Compact` for new layouts.                               | `JSX.Element`                                                          | `-`        |
+| `prefix`        | Element rendered before the input value.                                                                            | `JSX.Element`                                                          | `-`        |
+| `suffix`        | Element rendered after the input value.                                                                             | `JSX.Element`                                                          | `-`        |
+| `allowClear`    | Shows a clear button when the input has a value. Object form customizes the icon or disables the clear affordance.  | `boolean \| { clearIcon?: JSX.Element; disabled?: boolean }`           | `false`    |
+| `showCount`     | Shows the current character count. Object form customizes count rendering.                                          | `boolean \| { formatter?: (info: CountFormatterInfo) => JSX.Element }` | `false`    |
+| `count`         | Character count configuration for custom max, count strategy, display and exceed formatting.                        | `CountConfig`                                                          | `-`        |
+| `classNames`    | Semantic class names for root, input, prefix, suffix, clear and count nodes. `wrapper` remains as a legacy alias.   | `InputSemanticClassNames \| ((info) => InputSemanticClassNames)`       | `-`        |
+| `styles`        | Semantic inline styles for root, input, prefix, suffix, clear and count nodes. `wrapper` remains as a legacy alias. | `InputSemanticStyles \| ((info) => InputSemanticStyles)`               | `-`        |
+| `rootClassName` | Compatibility class applied to the root wrapper. Use `class` for regular Solid styling.                             | `string`                                                               | `-`        |
+| `prefixCls`     | Custom CSS class prefix for advanced compatibility.                                                                 | `string`                                                               | `-`        |
+| `htmlSize`      | Native input `size` attribute.                                                                                      | `number`                                                               | `-`        |
+| `value`         | Controlled input value.                                                                                             | `string \| number`                                                     | `-`        |
+| `defaultValue`  | Initial uncontrolled input value.                                                                                   | `string \| number`                                                     | `-`        |
+| `onChange`      | Callback when the input value changes.                                                                              | `(event: Event) => void`                                               | `-`        |
+| `onPressEnter`  | Callback when Enter is pressed.                                                                                     | `(event: KeyboardEvent) => void`                                       | `-`        |
+| `onClear`       | Callback when the clear button is clicked.                                                                          | `() => void`                                                           | `-`        |
+
+### Input.Group
+
+Deprecated compatibility wrapper. Prefer `Space.Compact` for new code.
+
+| Property    | Description                   | Type                             | Default |
+| ----------- | ----------------------------- | -------------------------------- | ------- |
+| `compact`   | Enables compact group layout. | `boolean`                        | `false` |
+| `size`      | Group size.                   | `'small' \| 'middle' \| 'large'` | `-`     |
+| `prefixCls` | Custom CSS class prefix.      | `string`                         | `-`     |
 
 ### CountConfig
 
@@ -369,31 +420,38 @@ export default Demo14
 
 ### Input.TextArea
 
-| Property       | Description                                                                | Type                                                                   | Default    |
-| -------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------- |
-| `autoSize`     | Autosize textarea rows. Object form supports minRows and maxRows.          | `boolean \| { minRows?: number; maxRows?: number }`                    | `false`    |
-| `allowClear`   | Shows a clear button when the textarea has a value.                        | `boolean \| { clearIcon?: JSX.Element; disabled?: boolean }`           | `false`    |
-| `showCount`    | Shows the current character count. Object form customizes count rendering. | `boolean \| { formatter?: (info: CountFormatterInfo) => JSX.Element }` | `false`    |
-| `count`        | Character count configuration shared with Input.                           | `CountConfig`                                                          | `-`        |
-| `variant`      | Visual variant of the textarea.                                            | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`               | `outlined` |
-| `status`       | Validation visual status.                                                  | `'error' \| 'warning'`                                                 | `-`        |
-| `classNames`   | Semantic class names for wrapper, textarea, clear and count nodes.         | `TextAreaSemanticClassNames`                                           | `-`        |
-| `styles`       | Semantic inline styles for wrapper, textarea, clear and count nodes.       | `TextAreaSemanticStyles`                                               | `-`        |
-| `value`        | Controlled textarea value.                                                 | `string \| number`                                                     | `-`        |
-| `defaultValue` | Initial uncontrolled textarea value.                                       | `string \| number`                                                     | `-`        |
-| `onPressEnter` | Callback when Enter is pressed.                                            | `(event: KeyboardEvent) => void`                                       | `-`        |
-| `onClear`      | Callback when the clear button is clicked.                                 | `() => void`                                                           | `-`        |
+| Property        | Description                                                                | Type                                                                   | Default    |
+| --------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------- |
+| `autoSize`      | Autosize textarea rows. Object form supports minRows and maxRows.          | `boolean \| { minRows?: number; maxRows?: number }`                    | `false`    |
+| `size`          | TextArea size. Defaults to the current ConfigProvider component size.      | `'small' \| 'middle' \| 'large'`                                       | `-`        |
+| `allowClear`    | Shows a clear button when the textarea has a value.                        | `boolean \| { clearIcon?: JSX.Element; disabled?: boolean }`           | `false`    |
+| `showCount`     | Shows the current character count. Object form customizes count rendering. | `boolean \| { formatter?: (info: CountFormatterInfo) => JSX.Element }` | `false`    |
+| `count`         | Character count configuration shared with Input.                           | `CountConfig`                                                          | `-`        |
+| `variant`       | Visual variant of the textarea.                                            | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`               | `outlined` |
+| `status`        | Validation visual status.                                                  | `'error' \| 'warning'`                                                 | `-`        |
+| `classNames`    | Semantic class names for root, textarea, clear and count nodes.            | `TextAreaSemanticClassNames \| ((info) => TextAreaSemanticClassNames)` | `-`        |
+| `styles`        | Semantic inline styles for root, textarea, clear and count nodes.          | `TextAreaSemanticStyles \| ((info) => TextAreaSemanticStyles)`         | `-`        |
+| `rootClassName` | Compatibility class applied to the root wrapper.                           | `string`                                                               | `-`        |
+| `prefixCls`     | Custom CSS class prefix for advanced compatibility.                        | `string`                                                               | `-`        |
+| `value`         | Controlled textarea value.                                                 | `string \| number`                                                     | `-`        |
+| `defaultValue`  | Initial uncontrolled textarea value.                                       | `string \| number`                                                     | `-`        |
+| `onPressEnter`  | Callback when Enter is pressed.                                            | `(event: KeyboardEvent) => void`                                       | `-`        |
+| `onResize`      | Callback when the textarea resize event fires.                             | `(size: { width: number; height: number }) => void`                    | `-`        |
+| `onClear`       | Callback when the clear button is clicked.                                 | `() => void`                                                           | `-`        |
 
 ### Input.Search
 
 Supports all Input props plus the following props.
 
-| Property      | Description                                                                                               | Type                                                           | Default |
-| ------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------- |
-| `enterButton` | Render a search button after the input. True renders the default button text; JSX customizes the content. | `boolean \| JSX.Element`                                       | `false` |
-| `loading`     | Shows loading state on the search icon or enter button.                                                   | `boolean`                                                      | `false` |
-| `searchIcon`  | Custom search icon when enterButton is not used.                                                          | `JSX.Element`                                                  | `-`     |
-| `onSearch`    | Callback when clicking search, pressing Enter, or clearing the input.                                     | `(value, event, info: { source: "input" \| "clear" }) => void` | `-`     |
+| Property         | Description                                                                                                     | Type                                                               | Default |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------- |
+| `enterButton`    | Render a search button after the input. True renders the default button text; string or JSX customizes content. | `boolean \| string \| JSX.Element`                                 | `false` |
+| `loading`        | Shows loading state on the search icon or enter button.                                                         | `boolean`                                                          | `false` |
+| `searchIcon`     | Custom search icon when enterButton is not used.                                                                | `JSX.Element`                                                      | `-`     |
+| `inputPrefixCls` | Custom CSS class prefix for the internal input.                                                                 | `string`                                                           | `-`     |
+| `classNames`     | Semantic class names including Input nodes and `button`.                                                        | `SearchSemanticClassNames \| ((info) => SearchSemanticClassNames)` | `-`     |
+| `styles`         | Semantic inline styles including Input nodes and `button`.                                                      | `SearchSemanticStyles \| ((info) => SearchSemanticStyles)`         | `-`     |
+| `onSearch`       | Callback when clicking search, pressing Enter, or clearing the input.                                           | `(value, event?, info?: { source?: "input" \| "clear" }) => void`  | `-`     |
 
 ### Input.Password
 
@@ -401,24 +459,51 @@ Supports most Input props plus password visibility controls.
 
 | Property           | Description                                                              | Type                                                                             | Default |
 | ------------------ | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ------- |
+| `action`           | Trigger action for toggling password visibility.                         | `'click' \| 'hover'`                                                             | `click` |
+| `suffix`           | Extra suffix content rendered before the visibility toggle.              | `JSX.Element`                                                                    | `-`     |
+| `inputPrefixCls`   | Custom CSS class prefix for the internal input.                          | `string`                                                                         | `-`     |
 | `iconRender`       | Custom password visibility toggle icon.                                  | `(visible: boolean) => JSX.Element`                                              | `-`     |
 | `visibilityToggle` | Whether to show the toggle icon, or controlled visibility configuration. | `boolean \| { visible?: boolean; onVisibleChange?: (visible: boolean) => void }` | `true`  |
 
 ### Input.OTP
 
-| Property       | Description                                                     | Type                                                     | Default    |
-| -------------- | --------------------------------------------------------------- | -------------------------------------------------------- | ---------- |
-| `length`       | Number of OTP input boxes.                                      | `number`                                                 | `6`        |
-| `mask`         | Masks displayed characters without changing the original value. | `boolean \| string`                                      | `false`    |
-| `formatter`    | Formats each displayed character.                               | `(value: string) => string`                              | `-`        |
-| `separator`    | Renders a separator after the input at the specified index.     | `JSX.Element \| ((index: number) => JSX.Element)`        | `-`        |
-| `autoComplete` | Autocomplete attribute for OTP autofill, such as one-time-code. | `string`                                                 | `-`        |
-| `value`        | Controlled OTP value.                                           | `string`                                                 | `-`        |
-| `defaultValue` | Initial uncontrolled OTP value.                                 | `string`                                                 | `-`        |
-| `size`         | Size of each OTP input.                                         | `'small' \| 'middle' \| 'large'`                         | `middle`   |
-| `status`       | Validation visual status.                                       | `'error' \| 'warning'`                                   | `-`        |
-| `variant`      | Visual variant of OTP inputs.                                   | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'` | `outlined` |
-| `classNames`   | Semantic class names for wrapper, input and separator nodes.    | `OTPSemanticClassNames`                                  | `-`        |
-| `styles`       | Semantic inline styles for wrapper, input and separator nodes.  | `OTPSemanticStyles`                                      | `-`        |
-| `onInput`      | Callback on every OTP input value update.                       | `(value: string[]) => void`                              | `-`        |
-| `onChange`     | Callback when all OTP fields are filled.                        | `(value: string) => void`                                | `-`        |
+| Property        | Description                                                     | Type                                                         | Default    |
+| --------------- | --------------------------------------------------------------- | ------------------------------------------------------------ | ---------- |
+| `length`        | Number of OTP input boxes.                                      | `number`                                                     | `6`        |
+| `mask`          | Masks displayed characters without changing the original value. | `boolean \| string`                                          | `false`    |
+| `formatter`     | Formats each displayed character.                               | `(value: string) => string`                                  | `-`        |
+| `separator`     | Renders a separator after the input at the specified index.     | `JSX.Element \| ((index: number) => JSX.Element)`            | `-`        |
+| `autoComplete`  | Autocomplete attribute for OTP autofill, such as one-time-code. | `string`                                                     | `-`        |
+| `type`          | Native input type for each OTP field.                           | `string`                                                     | `-`        |
+| `value`         | Controlled OTP value.                                           | `string`                                                     | `-`        |
+| `defaultValue`  | Initial uncontrolled OTP value.                                 | `string`                                                     | `-`        |
+| `size`          | Size of each OTP input.                                         | `'small' \| 'middle' \| 'large'`                             | `middle`   |
+| `status`        | Validation visual status.                                       | `'error' \| 'warning'`                                       | `-`        |
+| `variant`       | Visual variant of OTP inputs.                                   | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`     | `outlined` |
+| `classNames`    | Semantic class names for root, input and separator nodes.       | `OTPSemanticClassNames \| ((info) => OTPSemanticClassNames)` | `-`        |
+| `styles`        | Semantic inline styles for root, input and separator nodes.     | `OTPSemanticStyles \| ((info) => OTPSemanticStyles)`         | `-`        |
+| `rootClassName` | Compatibility class applied to the root wrapper.                | `string`                                                     | `-`        |
+| `prefixCls`     | Custom CSS class prefix for advanced compatibility.             | `string`                                                     | `-`        |
+| `onInput`       | Callback on every OTP input value update.                       | `(value: string[]) => void`                                  | `-`        |
+| `onChange`      | Callback when all OTP fields are filled.                        | `(value: string) => void`                                    | `-`        |
+
+### Ref
+
+| Component                                   | Ref API                                                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `Input` / `Input.Search` / `Input.Password` | `{ focus(options), blur(), select(), setSelectionRange(start, end, direction), input, nativeElement }` |
+| `Input.TextArea`                            | `{ focus(options), blur(), resizableTextArea, nativeElement }`                                         |
+| `Input.OTP`                                 | `{ focus(), blur(), nativeElement }`                                                                   |
+
+`focus` supports `{ preventScroll?: boolean; cursor?: 'start' | 'end' | 'all' }` for `Input` and `TextArea`.
+
+### Semantic DOM
+
+| Component        | Keys                                                            |
+| ---------------- | --------------------------------------------------------------- |
+| `Input`          | `root`, `input`, `prefix`, `suffix`, `clear`, `count`           |
+| `Input.Search`   | `root`, `input`, `prefix`, `suffix`, `clear`, `count`, `button` |
+| `Input.TextArea` | `root`, `textarea`, `clear`, `count`                            |
+| `Input.OTP`      | `root`, `input`, `separator`                                    |
+
+`wrapper` is still accepted as a legacy alias for `root`.

@@ -1,4 +1,4 @@
-import { createEffect, createSignal, splitProps } from 'solid-js'
+import { createEffect, createMemo, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { CloseCircleFilled } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
@@ -7,13 +7,25 @@ import { classNames } from '../shared/class-names'
 import { useInputStyle } from './input.style'
 import {
   applyExceedFormatter,
+  assignRef,
   formatCount,
+  focusInput,
   getAllowClearConfig,
   getCount,
   getMaxLength,
+  resolveClassNames,
+  resolveStyles,
+  rootClass,
+  rootStyle,
   shouldShowCount,
 } from './utils'
-import type { AutoSizeConfig, TextAreaProps } from './interface'
+import type {
+  AutoSizeConfig,
+  TextAreaProps,
+  TextAreaRef,
+  TextAreaSemanticClassNames,
+  TextAreaSemanticStyles,
+} from './interface'
 
 function getAutoSizeConfig(
   autoSize: boolean | AutoSizeConfig | undefined,
@@ -24,10 +36,15 @@ function getAutoSizeConfig(
 
 export function TextArea(props: TextAreaProps) {
   const [local, rest] = splitProps(props, [
+    'ref',
+    'rootClassName',
+    'prefixCls',
     'value',
     'defaultValue',
     'showCount',
+    'size',
     'status',
+    'bordered',
     'class',
     'disabled',
     'onInput',
@@ -42,19 +59,22 @@ export function TextArea(props: TextAreaProps) {
     'autoSize',
     'classNames',
     'styles',
+    'onResize',
   ])
   const config = useConfig()
   const formItem = useFormItemControl()
-  const prefixCls = () => `${config.prefixCls()}-input`
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-input`
   const [, hashId] = useInputStyle(prefixCls())
   const [innerValue, setInnerValue] = createSignal(String(local.defaultValue ?? ''))
+  let rootRef: HTMLSpanElement | undefined
   let textAreaRef: HTMLTextAreaElement | undefined
 
   const value = () => {
     if (formItem?.valuePropName() === 'value') return String(formItem.value() ?? '')
     return String(local.value ?? innerValue())
   }
-  const variant = () => local.variant ?? 'outlined'
+  const size = () => local.size ?? config.componentSize()
+  const variant = () => local.variant ?? (local.bordered === false ? 'borderless' : 'outlined')
   const allowClearConfig = () => getAllowClearConfig(local.allowClear)
   const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
   const maxLength = () => getMaxLength(rest.maxLength, local.count)
@@ -63,6 +83,30 @@ export function TextArea(props: TextAreaProps) {
   const autoSizeConfig = () => getAutoSizeConfig(local.autoSize)
   const rows = () => autoSizeConfig()?.minRows ?? rest.rows
   const lineHeight = 24
+  const semanticProps = (): TextAreaProps => ({
+    ...props,
+    value: value(),
+    size: size(),
+    variant: variant(),
+  })
+  const semanticClassNames = createMemo<TextAreaSemanticClassNames>(() =>
+    resolveClassNames(local.classNames, semanticProps()),
+  )
+  const semanticStyles = createMemo<TextAreaSemanticStyles>(() =>
+    resolveStyles(local.styles, semanticProps()),
+  )
+
+  const textAreaApiRef: TextAreaRef = {
+    focus: (options) => focusInput(textAreaRef, options),
+    blur: () => textAreaRef?.blur(),
+    get resizableTextArea() {
+      return { textArea: textAreaRef }
+    },
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  assignRef(local.ref, textAreaApiRef)
 
   createEffect(() => {
     if (textAreaRef) textAreaRef.value = value()
@@ -117,8 +161,13 @@ export function TextArea(props: TextAreaProps) {
 
   return (
     <span
+      ref={(el) => {
+        rootRef = el
+      }}
       class={classNames(
         `${prefixCls()}-textarea-wrapper`,
+        size() === 'small' && `${prefixCls()}-textarea-wrapper-sm`,
+        size() === 'large' && `${prefixCls()}-textarea-wrapper-lg`,
         local.status && `${prefixCls()}-status-${local.status}`,
         local.disabled && `${prefixCls()}-disabled`,
         `${prefixCls()}-variant-${variant()}`,
@@ -126,9 +175,10 @@ export function TextArea(props: TextAreaProps) {
           characterCount() > maxLength()! &&
           `${prefixCls()}-count-exceed`,
         hashId(),
-        local.classNames?.wrapper,
+        local.rootClassName,
+        rootClass(semanticClassNames()),
       )}
-      style={local.styles?.wrapper}
+      style={rootStyle(semanticStyles())}
     >
       <textarea
         {...rest}
@@ -136,9 +186,9 @@ export function TextArea(props: TextAreaProps) {
           textAreaRef = el
         }}
         rows={rows()}
-        class={classNames(`${prefixCls()}-textarea`, local.class, local.classNames?.textarea)}
+        class={classNames(`${prefixCls()}-textarea`, local.class, semanticClassNames().textarea)}
         style={{
-          ...local.styles?.textarea,
+          ...semanticStyles().textarea,
           ...(autoSizeConfig()?.maxRows
             ? { 'max-height': `${autoSizeConfig()!.maxRows! * lineHeight}px`, 'overflow-y': 'auto' }
             : {}),
@@ -169,13 +219,19 @@ export function TextArea(props: TextAreaProps) {
           syncForm(event, 'onBlur')
         }}
         onKeyDown={handleKeyDown as JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent>}
+        onResize={() =>
+          local.onResize?.({
+            width: textAreaRef?.offsetWidth ?? 0,
+            height: textAreaRef?.offsetHeight ?? 0,
+          })
+        }
       />
       {showClear() && (
         <button
           type="button"
           aria-label="clear textarea"
-          class={classNames(`${prefixCls()}-clear`, local.classNames?.clear)}
-          style={local.styles?.clear}
+          class={classNames(`${prefixCls()}-clear`, semanticClassNames().clear)}
+          style={semanticStyles().clear}
           onClick={clearValue}
         >
           {allowClearConfig()?.clearIcon ?? <CloseCircleFilled />}
@@ -183,8 +239,8 @@ export function TextArea(props: TextAreaProps) {
       )}
       {shouldShowCount(local.showCount, local.count) && (
         <span
-          class={classNames(`${prefixCls()}-textarea-count`, local.classNames?.count)}
-          style={local.styles?.count}
+          class={classNames(`${prefixCls()}-textarea-count`, semanticClassNames().count)}
+          style={semanticStyles().count}
         >
           {formatCount(local.showCount, local.count, countInfo())}
         </span>

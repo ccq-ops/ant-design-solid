@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js'
+import { createSignal, splitProps } from 'solid-js'
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design-solid/icons'
 import { Input } from './input'
 import type { PasswordProps, VisibilityToggle } from './interface'
@@ -8,23 +8,31 @@ function isVisibilityConfig(value: PasswordProps['visibilityToggle']): value is 
 }
 
 export function Password(props: PasswordProps) {
+  const [local, inputProps] = splitProps(props, [
+    'inputPrefixCls',
+    'action',
+    'iconRender',
+    'visibilityToggle',
+    'suffix',
+  ])
   const [innerVisible, setInnerVisible] = createSignal(false)
-  const visibilityEnabled = () => props.visibilityToggle !== false
+  const visibilityEnabled = () => local.visibilityToggle !== false
+  const action = () => local.action ?? 'click'
   const visible = () =>
-    isVisibilityConfig(props.visibilityToggle) && props.visibilityToggle.visible !== undefined
-      ? props.visibilityToggle.visible
+    isVisibilityConfig(local.visibilityToggle) && local.visibilityToggle.visible !== undefined
+      ? local.visibilityToggle.visible
       : innerVisible()
   const iconRender = () =>
-    props.iconRender ??
+    local.iconRender ??
     ((nextVisible: boolean) => (nextVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />))
   const setVisible = (nextVisible: boolean) => {
     if (
-      !(isVisibilityConfig(props.visibilityToggle) && props.visibilityToggle.visible !== undefined)
+      !(isVisibilityConfig(local.visibilityToggle) && local.visibilityToggle.visible !== undefined)
     ) {
       setInnerVisible(nextVisible)
     }
-    if (isVisibilityConfig(props.visibilityToggle))
-      props.visibilityToggle.onVisibleChange?.(nextVisible)
+    if (isVisibilityConfig(local.visibilityToggle))
+      local.visibilityToggle.onVisibleChange?.(nextVisible)
   }
   const toggle = () => setVisible(!visible())
   const toggleButton = () =>
@@ -33,11 +41,33 @@ export function Password(props: PasswordProps) {
         type="button"
         aria-label="toggle password visibility"
         class="ads-input-password-icon"
-        onClick={toggle}
+        onClick={() => {
+          if (action() === 'click') toggle()
+        }}
+        onMouseEnter={() => {
+          if (action() === 'hover') setVisible(true)
+        }}
+        onMouseLeave={() => {
+          if (action() === 'hover') setVisible(false)
+        }}
       >
         {iconRender()(visible())}
       </button>
     ) : undefined
 
-  return <Input {...props} type={visible() ? 'text' : 'password'} suffix={toggleButton()} />
+  const suffix = () => (
+    <span class="ads-input-password-suffix">
+      {local.suffix}
+      {toggleButton()}
+    </span>
+  )
+
+  return (
+    <Input
+      {...inputProps}
+      prefixCls={local.inputPrefixCls ?? inputProps.prefixCls}
+      type={visible() ? 'text' : 'password'}
+      suffix={suffix()}
+    />
+  )
 }

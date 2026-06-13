@@ -2,6 +2,22 @@ import type { JSX } from 'solid-js'
 import type { ComponentSize } from '@ant-design-solid/theme'
 
 export type InputVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
+export type InputSemanticKey =
+  | 'root'
+  | 'wrapper'
+  | 'input'
+  | 'prefix'
+  | 'suffix'
+  | 'clear'
+  | 'count'
+export type TextAreaSemanticKey = 'root' | 'wrapper' | 'textarea' | 'clear' | 'count'
+export type SearchSemanticKey = InputSemanticKey | 'button'
+export type OTPSemanticKey = 'root' | 'wrapper' | 'input' | 'separator'
+
+export interface InputFocusOptions {
+  preventScroll?: boolean
+  cursor?: 'start' | 'end' | 'all'
+}
 
 export interface CountConfig {
   max?: number
@@ -29,30 +45,56 @@ export interface AllowClearConfig {
 
 export type AllowClear = boolean | AllowClearConfig
 
-export interface InputSemanticClassNames {
-  wrapper?: string
-  input?: string
-  prefix?: string
-  suffix?: string
-  clear?: string
-  count?: string
+export type InputSemanticClassNames = Partial<Record<InputSemanticKey, string>>
+export type InputSemanticStyles = Partial<Record<InputSemanticKey, JSX.CSSProperties>>
+export type TextAreaSemanticClassNames = Partial<Record<TextAreaSemanticKey, string>>
+export type TextAreaSemanticStyles = Partial<Record<TextAreaSemanticKey, JSX.CSSProperties>>
+export type SearchSemanticClassNames = Partial<Record<SearchSemanticKey, string>>
+export type SearchSemanticStyles = Partial<Record<SearchSemanticKey, JSX.CSSProperties>>
+export type OTPSemanticClassNames = Partial<Record<OTPSemanticKey, string>>
+export type OTPSemanticStyles = Partial<Record<OTPSemanticKey, JSX.CSSProperties>>
+export type SemanticInfo<P> = { props: P }
+export type SemanticClassNamesConfig<P, T> = T | ((info: SemanticInfo<P>) => T)
+export type SemanticStylesConfig<P, T> = T | ((info: SemanticInfo<P>) => T)
+
+export interface InputRef {
+  focus: (options?: InputFocusOptions) => void
+  blur: () => void
+  setSelectionRange: (
+    start: number,
+    end: number,
+    direction?: 'forward' | 'backward' | 'none',
+  ) => void
+  select: () => void
+  input?: HTMLInputElement | null
+  nativeElement?: HTMLElement | null
 }
 
-export interface InputSemanticStyles {
-  wrapper?: JSX.CSSProperties
-  input?: JSX.CSSProperties
-  prefix?: JSX.CSSProperties
-  suffix?: JSX.CSSProperties
-  clear?: JSX.CSSProperties
-  count?: JSX.CSSProperties
+export interface TextAreaRef {
+  focus: (options?: InputFocusOptions) => void
+  blur: () => void
+  resizableTextArea?: { textArea?: HTMLTextAreaElement }
+  nativeElement?: HTMLElement | null
+}
+
+export interface OTPRef {
+  focus: () => void
+  blur: () => void
+  nativeElement?: HTMLDivElement
 }
 
 export interface InputProps extends Omit<
   JSX.InputHTMLAttributes<HTMLInputElement>,
-  'size' | 'prefix' | 'value' | 'onInput' | 'onChange' | 'onBlur' | 'onKeyDown'
+  'size' | 'prefix' | 'value' | 'onInput' | 'onChange' | 'onBlur' | 'onKeyDown' | 'ref'
 > {
+  ref?: ((ref: InputRef) => void) | { current?: InputRef } | InputRef
+  rootClassName?: string
+  prefixCls?: string
   size?: ComponentSize
   status?: 'error' | 'warning'
+  addonBefore?: JSX.Element
+  addonAfter?: JSX.Element
+  bordered?: boolean
   prefix?: JSX.Element
   suffix?: JSX.Element
   allowClear?: AllowClear
@@ -61,28 +103,15 @@ export interface InputProps extends Omit<
   variant?: InputVariant
   showCount?: ShowCount
   count?: CountConfig
-  classNames?: InputSemanticClassNames
-  styles?: InputSemanticStyles
+  htmlSize?: number
+  classNames?: SemanticClassNamesConfig<InputProps, InputSemanticClassNames>
+  styles?: SemanticStylesConfig<InputProps, InputSemanticStyles>
   onInput?: JSX.EventHandler<HTMLInputElement, InputEvent>
   onChange?: JSX.EventHandler<HTMLInputElement, Event>
   onBlur?: JSX.EventHandler<HTMLInputElement, FocusEvent>
   onKeyDown?: JSX.EventHandler<HTMLInputElement, KeyboardEvent>
   onPressEnter?: JSX.EventHandler<HTMLInputElement, KeyboardEvent>
   onClear?: () => void
-}
-
-export interface TextAreaSemanticClassNames {
-  wrapper?: string
-  textarea?: string
-  clear?: string
-  count?: string
-}
-
-export interface TextAreaSemanticStyles {
-  wrapper?: JSX.CSSProperties
-  textarea?: JSX.CSSProperties
-  clear?: JSX.CSSProperties
-  count?: JSX.CSSProperties
 }
 
 export interface AutoSizeConfig {
@@ -92,34 +121,43 @@ export interface AutoSizeConfig {
 
 export interface TextAreaProps extends Omit<
   JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
-  'value' | 'onInput' | 'onChange' | 'onBlur' | 'onKeyDown'
+  'value' | 'onInput' | 'onChange' | 'onBlur' | 'onKeyDown' | 'onResize' | 'ref'
 > {
+  ref?: ((ref: TextAreaRef) => void) | { current?: TextAreaRef } | TextAreaRef
+  rootClassName?: string
+  prefixCls?: string
   value?: string | number
   defaultValue?: string | number
   showCount?: ShowCount
+  size?: ComponentSize
   status?: 'error' | 'warning'
+  bordered?: boolean
   allowClear?: AllowClear
   variant?: InputVariant
   count?: CountConfig
   autoSize?: boolean | AutoSizeConfig
-  classNames?: TextAreaSemanticClassNames
-  styles?: TextAreaSemanticStyles
+  classNames?: SemanticClassNamesConfig<TextAreaProps, TextAreaSemanticClassNames>
+  styles?: SemanticStylesConfig<TextAreaProps, TextAreaSemanticStyles>
   onInput?: JSX.EventHandler<HTMLTextAreaElement, InputEvent>
   onChange?: JSX.EventHandler<HTMLTextAreaElement, Event>
   onBlur?: JSX.EventHandler<HTMLTextAreaElement, FocusEvent>
   onKeyDown?: JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent>
   onPressEnter?: JSX.EventHandler<HTMLTextAreaElement, KeyboardEvent>
+  onResize?: (size: { width: number; height: number }) => void
   onClear?: () => void
 }
 
-export interface SearchProps extends InputProps {
-  enterButton?: JSX.Element | boolean
+export interface SearchProps extends Omit<InputProps, 'classNames' | 'styles'> {
+  inputPrefixCls?: string
+  enterButton?: JSX.Element | string | boolean
   loading?: boolean
   searchIcon?: JSX.Element
+  classNames?: SemanticClassNamesConfig<SearchProps, SearchSemanticClassNames>
+  styles?: SemanticStylesConfig<SearchProps, SearchSemanticStyles>
   onSearch?: (
     value: string,
-    event: MouseEvent | KeyboardEvent | Event,
-    info: { source: 'input' | 'clear' },
+    event?: MouseEvent | KeyboardEvent | Event,
+    info?: { source?: 'input' | 'clear' },
   ) => void
 }
 
@@ -128,40 +166,40 @@ export interface VisibilityToggle {
   onVisibleChange?: (visible: boolean) => void
 }
 
-export interface PasswordProps extends Omit<InputProps, 'type' | 'suffix'> {
+export interface PasswordProps extends Omit<InputProps, 'type'> {
+  inputPrefixCls?: string
+  action?: 'click' | 'hover'
   iconRender?: (visible: boolean) => JSX.Element
   visibilityToggle?: boolean | VisibilityToggle
 }
 
-export interface OTPSemanticClassNames {
-  wrapper?: string
-  input?: string
-  separator?: string
-}
-
-export interface OTPSemanticStyles {
-  wrapper?: JSX.CSSProperties
-  input?: JSX.CSSProperties
-  separator?: JSX.CSSProperties
-}
-
 export interface OTPProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onInput' | 'onChange' | 'defaultValue'
+  'onInput' | 'onChange' | 'defaultValue' | 'ref'
 > {
+  ref?: ((ref: OTPRef) => void) | { current?: OTPRef } | OTPRef
+  prefixCls?: string
+  rootClassName?: string
   autoComplete?: string
-  classNames?: OTPSemanticClassNames
-  styles?: OTPSemanticStyles
+  classNames?: SemanticClassNamesConfig<OTPProps, OTPSemanticClassNames>
+  styles?: SemanticStylesConfig<OTPProps, OTPSemanticStyles>
   defaultValue?: string
   disabled?: boolean
   formatter?: (value: string) => string
   separator?: JSX.Element | ((index: number) => JSX.Element)
   mask?: boolean | string
   length?: number
+  type?: JSX.InputHTMLAttributes<HTMLInputElement>['type']
   status?: 'error' | 'warning'
   size?: ComponentSize
   variant?: InputVariant
   value?: string
   onChange?: (value: string) => void
   onInput?: (value: string[]) => void
+}
+
+export interface GroupProps extends JSX.HTMLAttributes<HTMLSpanElement> {
+  prefixCls?: string
+  size?: ComponentSize | 'default'
+  compact?: boolean
 }

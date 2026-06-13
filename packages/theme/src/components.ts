@@ -31,10 +31,37 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       paddingInline: token.padding,
     },
     Input: {
+      paddingBlock: Math.max(
+        Math.round(((token.controlHeight - token.fontSize * token.lineHeight) / 2) * 10) / 10 -
+          token.lineWidth,
+        0,
+      ),
+      paddingBlockSM: Math.max(
+        Math.round(((token.controlHeightSM - token.fontSize * token.lineHeight) / 2) * 10) / 10 -
+          token.lineWidth,
+        0,
+      ),
+      paddingBlockLG: Math.max(
+        Math.ceil(((token.controlHeightLG - token.fontSizeLG * token.lineHeightLG) / 2) * 10) / 10 -
+          token.lineWidth,
+        0,
+      ),
+      paddingInline: token.paddingSM - token.lineWidth,
+      paddingInlineSM: token.controlPaddingHorizontalSM - token.lineWidth,
+      paddingInlineLG: token.controlPaddingHorizontal - token.lineWidth,
       activeBorderColor: token.colorPrimary,
+      activeBg: token.colorBgContainer,
+      activeShadow: `0 0 0 ${token.controlOutlineWidth}px ${token.controlOutline}`,
+      addonBg: token.colorFillAlter,
+      clearBg: token.colorFillQuaternary,
+      errorActiveShadow: `0 0 0 ${token.controlOutlineWidth}px ${token.colorErrorOutline}`,
       hoverBorderColor: token.colorPrimaryHover,
+      hoverBg: token.colorBgContainer,
       clearIconColor: token.colorTextDisabled,
-      paddingInline: token.paddingSM,
+      inputFontSize: token.fontSize,
+      inputFontSizeLG: token.fontSizeLG,
+      inputFontSizeSM: token.fontSize,
+      warningActiveShadow: `0 0 0 ${token.controlOutlineWidth}px ${token.colorWarningOutline}`,
     },
     InputNumber: {
       activeBorderColor: token.colorPrimary,

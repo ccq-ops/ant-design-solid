@@ -280,9 +280,24 @@ export interface ButtonComponentToken extends ComponentTokenBase {
 
 export interface InputComponentToken extends ComponentTokenBase {
   activeBorderColor: string
+  activeBg: string
+  activeShadow: string
+  addonBg: string
+  clearBg: string
+  errorActiveShadow: string
   hoverBorderColor: string
+  hoverBg: string
   clearIconColor: string
+  inputFontSize: number
+  inputFontSizeLG: number
+  inputFontSizeSM: number
+  paddingBlock: number
+  paddingBlockLG: number
+  paddingBlockSM: number
   paddingInline: number
+  paddingInlineLG: number
+  paddingInlineSM: number
+  warningActiveShadow: string
 }
 
 export interface InputNumberComponentToken extends ComponentTokenBase {
