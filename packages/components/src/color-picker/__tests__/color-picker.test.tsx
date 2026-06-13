@@ -465,7 +465,7 @@ describe('ColorPicker v6 API compatibility', () => {
     expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
   })
 
-  it('opens custom aria-role trigger children with Enter and Space from the wrapper', () => {
+  it('opens custom aria-role trigger children with Enter and Space without wrapper role nesting', () => {
     const result = render(() => (
       <ColorPicker defaultValue="#1677ff">
         <span role="button" tabIndex={0}>
@@ -474,14 +474,22 @@ describe('ColorPicker v6 API compatibility', () => {
       </ColorPicker>
     ))
 
-    const trigger = result.getAllByRole('button', { name: /pick brand color/i })[0]
+    const roleButtons = result.getAllByRole('button', { name: /pick brand color/i })
+    expect(roleButtons).toHaveLength(1)
+
+    const trigger = roleButtons[0]
     expect(trigger).toHaveAttribute('role', 'button')
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger.parentElement?.closest('[role="button"]')).toBeNull()
 
-    fireEvent.keyDown(trigger as HTMLElement, { key: 'Enter' })
+    fireEvent.keyDown(trigger, { key: 'Enter' })
     expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
 
-    fireEvent.keyDown(trigger as HTMLElement, { key: ' ' })
+    fireEvent.keyDown(trigger, { key: ' ' })
     expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('uses visible custom trigger text as the accessible name', () => {

@@ -891,7 +891,7 @@ export function ColorPicker(props: ColorPickerProps) {
     local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
   const [hasInteractiveCustomChild, setHasInteractiveCustomChild] = createSignal(false)
   const interactiveChildSelector =
-    'button, a[href], input, select, textarea, summary'
+    'button, a[href], input, select, textarea, summary, [role="button"], [role="link"]'
   const triggerClass = () =>
     classNames(
       prefixCls(),
@@ -910,7 +910,8 @@ export function ColorPicker(props: ColorPickerProps) {
   const handleTriggerKeyDown = (event: KeyboardEvent): void => {
     ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
     if (event.defaultPrevented) return
-    if (hasInteractiveCustomChild()) return
+    if (hasInteractiveCustomChild() && !isAriaRoleInteractiveElement(interactiveTriggerElement))
+      return
     if (event.key !== 'Enter' && event.key !== ' ') return
 
     event.preventDefault()
@@ -919,6 +920,11 @@ export function ColorPicker(props: ColorPickerProps) {
   }
   const customTriggerProps = rest as JSX.HTMLAttributes<HTMLSpanElement>
   const customTrigger = () => resolvedChildren()
+  const isAriaRoleInteractiveElement = (element: HTMLElement | undefined): boolean => {
+    const role = element?.getAttribute('role')
+
+    return role === 'button' || role === 'link'
+  }
   const syncInteractiveTriggerElement = (): void => {
     interactiveTriggerElement?.setAttribute('aria-haspopup', 'dialog')
     interactiveTriggerElement?.setAttribute('aria-expanded', open() ? 'true' : 'false')
