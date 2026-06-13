@@ -1,18 +1,22 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ConfigProvider } from '../../config-provider'
 import { Select } from '../../select'
 import { Drawer } from '../drawer'
 
 describe('Drawer', () => {
   beforeEach(() => {
     cleanup()
+    vi.useRealTimers()
     document.body.innerHTML = ''
     document.body.style.overflow = ''
   })
 
   afterEach(() => {
     cleanup()
+    vi.useRealTimers()
     document.body.style.overflow = ''
   })
 
@@ -43,10 +47,10 @@ describe('Drawer', () => {
     expect(onClose).toHaveBeenCalledTimes(3)
   })
 
-  it('respects maskClosable and keyboard false', () => {
+  it('respects mask closable and keyboard false', () => {
     const onClose = vi.fn()
     render(() => (
-      <Drawer open maskClosable={false} keyboard={false} onClose={onClose}>
+      <Drawer open mask={{ closable: false }} keyboard={false} onClose={onClose}>
         Body
       </Drawer>
     ))
@@ -57,13 +61,14 @@ describe('Drawer', () => {
     expect(onClose).not.toHaveBeenCalled()
   })
 
-  it('supports placement sizing and destroyOnClose', () => {
+  it('supports placement sizing and destroyOnHidden', () => {
+    vi.useFakeTimers()
     function Demo() {
       const [open, setOpen] = createSignal(true)
       return (
         <>
           <button onClick={() => setOpen(false)}>Close</button>
-          <Drawer open={open()} placement="bottom" height={240} destroyOnClose>
+          <Drawer open={open()} placement="bottom" size={240} destroyOnHidden>
             Body
           </Drawer>
         </>
@@ -77,10 +82,13 @@ describe('Drawer', () => {
 
     fireEvent.click(screen.getByText('Close'))
 
+    expect(screen.getByText('Body')).toBeInTheDocument()
+    vi.advanceTimersByTime(500)
     expect(screen.queryByText('Body')).toBeNull()
   })
 
   it('calls afterOpenChange when open changes', () => {
+    vi.useFakeTimers()
     const afterOpenChange = vi.fn()
     function Demo() {
       const [open, setOpen] = createSignal(false)
@@ -97,6 +105,8 @@ describe('Drawer', () => {
     render(() => <Demo />)
     fireEvent.click(screen.getByText('Open'))
 
+    expect(afterOpenChange).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(500)
     expect(afterOpenChange).toHaveBeenLastCalledWith(true)
   })
 
@@ -121,6 +131,7 @@ describe('Drawer', () => {
   })
 
   it('retains non-destroyed content hidden after close', () => {
+    vi.useFakeTimers()
     function Demo() {
       const [open, setOpen] = createSignal(true)
       return (
@@ -137,6 +148,8 @@ describe('Drawer', () => {
     fireEvent.click(screen.getByText('Hide'))
 
     expect(screen.getByText('Retained body')).toBeInTheDocument()
+    expect(document.body.querySelector('.ads-drawer-root')).not.toHaveStyle('display: none')
+    vi.advanceTimersByTime(500)
     expect(document.body.querySelector('.ads-drawer-root')).toHaveStyle('display: none')
   })
 
@@ -178,9 +191,9 @@ describe('Drawer', () => {
     expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(root.style.zIndex))
   })
 
-  it('supports size presets and custom size over deprecated width and height', () => {
+  it('supports size presets and custom sizes', () => {
     const { unmount } = render(() => (
-      <Drawer open size="large" width={320}>
+      <Drawer open size="large">
         Body
       </Drawer>
     ))
@@ -189,7 +202,7 @@ describe('Drawer', () => {
     unmount()
 
     render(() => (
-      <Drawer open placement="top" size="50%" height={240}>
+      <Drawer open placement="top" size="50%">
         Body
       </Drawer>
     ))
@@ -202,41 +215,70 @@ describe('Drawer', () => {
       <Drawer
         open
         title="Styled"
-        rootClassName="custom-root"
+        rootClass="custom-root"
         rootStyle={{ 'pointer-events': 'none' }}
         classNames={{
+          root: 'semantic-root',
           mask: 'custom-mask',
           wrapper: 'custom-wrapper',
+          section: 'custom-section',
           header: 'custom-header',
+          title: 'custom-title',
+          extra: 'custom-extra',
           body: 'custom-body',
           footer: 'custom-footer',
+          close: 'custom-close',
         }}
         styles={{
+          root: { outline: '1px solid red' },
           mask: { opacity: 0.5 },
           wrapper: { color: 'red' },
+          section: { background: 'rgb(250, 250, 250)' },
           header: { 'min-height': '11px' },
+          title: { color: 'blue' },
+          extra: { color: 'green' },
           body: { padding: '12px' },
           footer: { 'min-height': '13px' },
+          close: { color: 'purple' },
         }}
+        extra="Extra"
         footer="Footer"
       >
         Body
       </Drawer>
     ))
 
-    expect(document.body.querySelector('.ads-drawer-root')).toHaveClass('custom-root')
+    expect(document.body.querySelector('.ads-drawer-root')).toHaveClass(
+      'custom-root',
+      'semantic-root',
+    )
     expect(document.body.querySelector<HTMLElement>('.custom-root')).toHaveStyle(
       'pointer-events: none',
     )
+    expect(document.body.querySelector<HTMLElement>('.custom-root')).toHaveStyle(
+      'outline: 1px solid red',
+    )
     expect(document.body.querySelector('.ads-drawer-mask')).toHaveClass('custom-mask')
     expect(document.body.querySelector<HTMLElement>('.ads-drawer-mask')).toHaveStyle('opacity: 0.5')
-    expect(document.body.querySelector('.ads-drawer')).toHaveClass('custom-wrapper')
-    expect(document.body.querySelector<HTMLElement>('.ads-drawer')).toHaveStyle(
+    expect(document.body.querySelector('.ads-drawer-content-wrapper')).toHaveClass('custom-wrapper')
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-content-wrapper')).toHaveStyle(
       'color: rgb(255, 0, 0)',
+    )
+    expect(document.body.querySelector('.ads-drawer-section')).toHaveClass('custom-section')
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-section')).toHaveStyle(
+      'background: rgb(250, 250, 250)',
     )
     expect(document.body.querySelector('.ads-drawer-header')).toHaveClass('custom-header')
     expect(document.body.querySelector<HTMLElement>('.ads-drawer-header')).toHaveStyle(
       'min-height: 11px',
+    )
+    expect(document.body.querySelector('.ads-drawer-title')).toHaveClass('custom-title')
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-title')).toHaveStyle(
+      'color: rgb(0, 0, 255)',
+    )
+    expect(document.body.querySelector('.ads-drawer-extra')).toHaveClass('custom-extra')
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-extra')).toHaveStyle(
+      'color: rgb(0, 128, 0)',
     )
     expect(document.body.querySelector('.ads-drawer-body')).toHaveClass('custom-body')
     expect(document.body.querySelector<HTMLElement>('.ads-drawer-body')).toHaveStyle(
@@ -245,6 +287,10 @@ describe('Drawer', () => {
     expect(document.body.querySelector('.ads-drawer-footer')).toHaveClass('custom-footer')
     expect(document.body.querySelector<HTMLElement>('.ads-drawer-footer')).toHaveStyle(
       'min-height: 13px',
+    )
+    expect(document.body.querySelector('.ads-drawer-close')).toHaveClass('custom-close')
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-close')).toHaveStyle(
+      'color: rgb(128, 0, 128)',
     )
   })
 
@@ -272,7 +318,26 @@ describe('Drawer', () => {
     expect(result.container.querySelector('.ads-drawer-root')).toBeInTheDocument()
   })
 
+  it('uses absolute positioning for getContainer false inline rendering', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <section data-testid="host">
+          <Drawer open getContainer={false}>
+            Inline
+          </Drawer>
+        </section>
+      </StyleProvider>
+    ))
+
+    expect(screen.getByTestId('host').querySelector('.ads-drawer-root')).toHaveClass(
+      'ads-drawer-inline',
+    )
+    expect(extractStyle(cache)).toContain('.ads-drawer-root.ads-drawer-inline{position:absolute;')
+  })
+
   it('force renders closed content and destroyOnHidden removes hidden content', () => {
+    vi.useFakeTimers()
     const { unmount } = render(() => (
       <Drawer open={false} forceRender>
         Pre-rendered
@@ -298,7 +363,71 @@ describe('Drawer', () => {
     render(() => <Demo />)
     fireEvent.click(screen.getByText('Hide'))
 
+    expect(screen.getByText('Destroy hidden')).toBeInTheDocument()
+    vi.advanceTimersByTime(500)
     expect(screen.queryByText('Destroy hidden')).toBeNull()
+  })
+
+  it('applies antd-style mask and panel motion classes while opening and closing', () => {
+    vi.useFakeTimers()
+    function Demo() {
+      const [open, setOpen] = createSignal(false)
+      return (
+        <>
+          <button onClick={() => setOpen(true)}>Open</button>
+          <button onClick={() => setOpen(false)}>Close</button>
+          <Drawer open={open()} placement="right">
+            Body
+          </Drawer>
+        </>
+      )
+    }
+
+    render(() => <Demo />)
+    fireEvent.click(screen.getByText('Open'))
+
+    const root = document.body.querySelector('.ads-drawer-root')!
+    const mask = document.body.querySelector('.ads-drawer-mask')!
+    const wrapper = document.body.querySelector('.ads-drawer-content-wrapper')!
+
+    expect(root).not.toHaveStyle('display: none')
+    expect(mask).toHaveClass('ads-drawer-mask-motion-enter')
+    expect(mask).not.toHaveClass('ads-drawer-mask-motion-enter-active')
+    expect(wrapper).toHaveClass('ads-drawer-panel-motion-right-enter')
+    expect(wrapper).not.toHaveClass('ads-drawer-panel-motion-right-enter-active')
+
+    vi.advanceTimersByTime(0)
+
+    expect(mask).toHaveClass('ads-drawer-mask-motion-enter', 'ads-drawer-mask-motion-enter-active')
+    expect(wrapper).toHaveClass(
+      'ads-drawer-panel-motion-right-enter',
+      'ads-drawer-panel-motion-right-enter-active',
+    )
+
+    vi.advanceTimersByTime(500)
+
+    expect(mask).not.toHaveClass('ads-drawer-mask-motion-enter')
+    expect(wrapper).not.toHaveClass('ads-drawer-panel-motion-right-enter')
+
+    fireEvent.click(screen.getByText('Close'))
+
+    expect(root).not.toHaveStyle('display: none')
+    expect(mask).toHaveClass('ads-drawer-mask-motion-leave')
+    expect(mask).not.toHaveClass('ads-drawer-mask-motion-leave-active')
+    expect(wrapper).toHaveClass('ads-drawer-panel-motion-right-leave')
+    expect(wrapper).not.toHaveClass('ads-drawer-panel-motion-right-leave-active')
+
+    vi.advanceTimersByTime(0)
+
+    expect(mask).toHaveClass('ads-drawer-mask-motion-leave', 'ads-drawer-mask-motion-leave-active')
+    expect(wrapper).toHaveClass(
+      'ads-drawer-panel-motion-right-leave',
+      'ads-drawer-panel-motion-right-leave-active',
+    )
+
+    vi.advanceTimersByTime(500)
+
+    expect(root).toHaveStyle('display: none')
   })
 
   it('supports object closable options and object mask options', () => {
@@ -308,7 +437,8 @@ describe('Drawer', () => {
         open
         title="Options"
         onClose={onClose}
-        closable={{ disabled: true, closeIcon: 'X', placement: 'start' }}
+        closeIcon="X"
+        closable={{ disabled: true, placement: 'end' }}
         mask={{ enabled: true, blur: true, closable: false }}
       >
         Body
@@ -317,9 +447,7 @@ describe('Drawer', () => {
 
     expect(screen.getByRole('button', { name: 'close drawer' })).toHaveTextContent('X')
     expect(document.body.querySelector('.ads-drawer-close')).toHaveAttribute('disabled')
-    expect(document.body.querySelector('.ads-drawer-header')).toHaveClass(
-      'ads-drawer-header-close-start',
-    )
+    expect(document.body.querySelector('.ads-drawer-close')).toHaveClass('ads-drawer-close-end')
     expect(document.body.querySelector('.ads-drawer-mask')).toHaveClass('ads-drawer-mask-blur')
 
     fireEvent.click(screen.getByRole('button', { name: 'close drawer' }))
@@ -350,16 +478,13 @@ describe('Drawer', () => {
   })
 
   it('supports focus management and returns focus after close', () => {
+    vi.useFakeTimers()
     function Demo() {
       const [open, setOpen] = createSignal(false)
       return (
         <>
           <button onClick={() => setOpen(true)}>Trigger</button>
-          <Drawer
-            open={open()}
-            focusable={{ focusTriggerAfterClose: true }}
-            onClose={() => setOpen(false)}
-          >
+          <Drawer open={open()} onClose={() => setOpen(false)}>
             <button>Inside</button>
           </Drawer>
         </>
@@ -375,6 +500,8 @@ describe('Drawer', () => {
 
     fireEvent.keyDown(document, { key: 'Escape' })
 
+    expect(trigger).not.toHaveFocus()
+    vi.advanceTimersByTime(500)
     expect(trigger).toHaveFocus()
   })
 
@@ -395,12 +522,12 @@ describe('Drawer', () => {
     const onResize = vi.fn()
     const onResizeEnd = vi.fn()
     render(() => (
-      <Drawer open width={300} maxSize={320} resizable={{ onResizeStart, onResize, onResizeEnd }}>
+      <Drawer open size={300} maxSize={320} resizable={{ onResizeStart, onResize, onResizeEnd }}>
         Body
       </Drawer>
     ))
 
-    const handle = document.body.querySelector<HTMLElement>('.ads-drawer-resize-handle')!
+    const handle = document.body.querySelector<HTMLElement>('.ads-drawer-resizable-dragger')!
     fireEvent.pointerDown(handle, { clientX: 0, clientY: 0, pointerId: 1 })
     fireEvent.pointerMove(document, { clientX: -50, clientY: 0 })
     fireEvent.pointerUp(document)
@@ -409,5 +536,84 @@ describe('Drawer', () => {
     expect(onResize).toHaveBeenLastCalledWith(320)
     expect(onResizeEnd).toHaveBeenCalledTimes(1)
     expect(screen.getByRole('dialog')).toHaveStyle('width: 320px')
+  })
+
+  it('supports semantic dragger classes and styles', () => {
+    render(() => (
+      <Drawer
+        open
+        resizable
+        classNames={{ dragger: 'custom-dragger' }}
+        styles={{ dragger: { background: 'red' } }}
+      >
+        Body
+      </Drawer>
+    ))
+
+    const dragger = document.body.querySelector<HTMLElement>('.ads-drawer-resizable-dragger')!
+    expect(dragger).toHaveClass('custom-dragger')
+    expect(dragger).toHaveStyle('background: red')
+  })
+
+  it('merges ConfigProvider drawer defaults with local props', () => {
+    const onClose = vi.fn()
+    render(() => (
+      <ConfigProvider
+        drawer={{
+          class: 'global-panel',
+          rootClass: 'global-root',
+          style: { color: 'red' },
+          rootStyle: { 'pointer-events': 'none' },
+          classNames: { header: 'global-header', close: 'global-close' },
+          styles: { header: { 'min-height': '15px' }, close: { color: 'blue' } },
+          closable: { disabled: true, placement: 'end' },
+          mask: { blur: true, closable: false },
+          focusable: { focusTriggerAfterClose: false },
+        }}
+      >
+        <Drawer
+          open
+          title="Global"
+          class="local-panel"
+          rootClass="local-root"
+          classNames={{ header: 'local-header' }}
+          onClose={onClose}
+        >
+          Body
+        </Drawer>
+      </ConfigProvider>
+    ))
+
+    expect(document.body.querySelector('.ads-drawer-root')).toHaveClass('global-root', 'local-root')
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-root')).toHaveStyle(
+      'pointer-events: none',
+    )
+    expect(document.body.querySelector('.ads-drawer-content-wrapper')).toHaveClass(
+      'global-panel',
+      'local-panel',
+    )
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-content-wrapper')).toHaveStyle(
+      'color: rgb(255, 0, 0)',
+    )
+    expect(document.body.querySelector('.ads-drawer-header')).toHaveClass(
+      'global-header',
+      'local-header',
+    )
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-header')).toHaveStyle(
+      'min-height: 15px',
+    )
+    expect(document.body.querySelector('.ads-drawer-close')).toHaveClass(
+      'global-close',
+      'ads-drawer-close-end',
+    )
+    expect(document.body.querySelector<HTMLElement>('.ads-drawer-close')).toHaveStyle(
+      'color: rgb(0, 0, 255)',
+    )
+    expect(document.body.querySelector('.ads-drawer-mask')).toHaveClass('ads-drawer-mask-blur')
+
+    fireEvent.click(document.body.querySelector('.ads-drawer-mask')!)
+    fireEvent.click(screen.getByRole('button', { name: 'close drawer' }))
+
+    expect(onClose).not.toHaveBeenCalled()
   })
 })

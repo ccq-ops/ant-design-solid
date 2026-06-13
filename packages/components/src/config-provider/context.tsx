@@ -1,6 +1,6 @@
 import { createContext, createMemo, useContext } from 'solid-js'
 import { mergeTheme, type ComponentSize, type ThemeConfig } from '@ant-design-solid/theme'
-import type { ConfigContextValue, EmptyConfig, TooltipConfig } from './interface'
+import type { ConfigContextValue, DrawerConfig, EmptyConfig, TooltipConfig } from './interface'
 import type { NotificationConfig } from '../notification/interface'
 import type { MessageConfigOptions } from '../message/interface'
 const emptyTheme: ThemeConfig = {}
@@ -11,6 +11,7 @@ const emptyMessage: Pick<
   'class' | 'className' | 'style' | 'classNames' | 'styles'
 > = {}
 const emptyEmpty: EmptyConfig = {}
+const emptyDrawer: DrawerConfig = {}
 export const defaultConfigContext: ConfigContextValue = {
   prefixCls: () => 'ads',
   componentSize: () => 'middle' as ComponentSize,
@@ -21,6 +22,7 @@ export const defaultConfigContext: ConfigContextValue = {
   notification: () => emptyNotification,
   message: () => emptyMessage,
   empty: () => emptyEmpty,
+  drawer: () => emptyDrawer,
 }
 export const ConfigContext = createContext<ConfigContextValue>(defaultConfigContext)
 export function useConfig(): ConfigContextValue {
@@ -48,6 +50,7 @@ export function createConfigValue(
     notification?: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>
     message?: Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
     empty?: EmptyConfig
+    drawer?: DrawerConfig
   },
 ): ConfigContextValue {
   const theme = createMemo(() => mergeThemeConfig(parent.theme(), props.theme ?? {}))
@@ -55,6 +58,7 @@ export function createConfigValue(
   const notification = createMemo(() => ({ ...parent.notification(), ...props.notification }))
   const message = createMemo(() => ({ ...parent.message(), ...props.message }))
   const empty = createMemo(() => ({ ...parent.empty(), ...props.empty }))
+  const drawer = createMemo(() => ({ ...parent.drawer(), ...props.drawer }))
   return {
     prefixCls: createMemo(() => props.prefixCls ?? parent.prefixCls()),
     componentSize: createMemo(() => props.componentSize ?? parent.componentSize()),
@@ -66,5 +70,6 @@ export function createConfigValue(
     notification,
     message,
     empty,
+    drawer,
   }
 }

@@ -35,6 +35,9 @@ import { useDrawerStyle } from './drawer.style'
 const drawerStack: object[] = []
 const defaultDrawerSize = 378
 const largeDrawerSize = 736
+const drawerMotionDuration = 500
+type MotionStatus = 'enter' | 'enter-active' | 'stable' | 'leave' | 'leave-active'
+type MotionPhase = 'enter' | 'leave'
 
 interface DrawerPushContextValue {
   registerChild: (item: object) => void
@@ -69,6 +72,7 @@ function isHorizontalPlacement(placement: DrawerPlacement): boolean {
 function normalizeSize(size: DrawerProps['size']): number | string | undefined {
   if (size === 'default') return defaultDrawerSize
   if (size === 'large') return largeDrawerSize
+  if (typeof size === 'string' && /^\d+(\.\d+)?$/.test(size)) return Number(size)
   return size
 }
 
@@ -104,6 +108,30 @@ function resolveSemanticStyles(
   return typeof value === 'function' ? value({ props }) : (value ?? {})
 }
 
+function mergeSemanticClassNames(
+  ...values: Array<Partial<Record<string, string>>>
+): Partial<Record<string, string>> {
+  const merged: Partial<Record<string, string>> = {}
+  values.forEach((value) => {
+    Object.keys(value).forEach((key) => {
+      merged[key] = classNames(merged[key], value[key])
+    })
+  })
+  return merged
+}
+
+function mergeSemanticStyles(
+  ...values: Array<Partial<Record<string, JSX.CSSProperties>>>
+): Partial<Record<string, JSX.CSSProperties>> {
+  const merged: Partial<Record<string, JSX.CSSProperties>> = {}
+  values.forEach((value) => {
+    Object.keys(value).forEach((key) => {
+      merged[key] = { ...merged[key], ...value[key] }
+    })
+  })
+  return merged
+}
+
 function resolveContainer(getContainer: DrawerProps['getContainer']): HTMLElement | undefined {
   if (!canUseDom()) return undefined
   if (getContainer === undefined) return document.body
@@ -132,20 +160,18 @@ export function Drawer(props: DrawerProps) {
     'title',
     'placement',
     'size',
-    'width',
-    'height',
+    'defaultSize',
     'closable',
+    'closeIcon',
     'mask',
-    'maskClosable',
     'keyboard',
-    'destroyOnClose',
     'destroyOnHidden',
     'forceRender',
     'extra',
     'footer',
     'zIndex',
     'getContainer',
-    'rootClassName',
+    'rootClass',
     'rootStyle',
     'classNames',
     'styles',
@@ -159,36 +185,92 @@ export function Drawer(props: DrawerProps) {
     'afterOpenChange',
     'children',
     'class',
-    'className',
     'classList',
     'style',
     'aria-label',
     'aria-labelledby',
   ])
   const config = useConfig()
+  const drawerConfig = config.drawer
   const parentPushContext = useContext(DrawerPushContext)
   const prefixCls = () => `${config.prefixCls()}-drawer`
-  const watermarkPanelRef = useWatermarkPanelRef(`.${prefixCls()}-content`)
+  const watermarkPanelRef = useWatermarkPanelRef(`.${prefixCls()}-section`)
   const [, hashId] = useDrawerStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Drawer', local.zIndex)
   const titleId = createUniqueId()
   const stackItem = {}
   const [retained, setRetained] = createSignal(Boolean(local.open || local.forceRender))
+  const [visible, setVisible] = createSignal(Boolean(local.open))
+  const [motionStatus, setMotionStatus] = createSignal<MotionStatus>(
+    local.open ? 'enter' : 'stable',
+  )
   const [childPushCount, setChildPushCount] = createSignal(0)
   const [resizedSize, setResizedSize] = createSignal<number>()
   let locked = false
-  let wasOpen = Boolean(local.open)
+  let wasOpen = false
+  let motionTimer: ReturnType<typeof setTimeout> | undefined
+  let motionFrameTimer: ReturnType<typeof setTimeout> | undefined
   let dialogRef: HTMLDivElement | undefined
   let lastActiveElement: HTMLElement | undefined
 
   const placement = () => local.placement ?? 'right'
-  const closableConfig = createMemo(() => normalizeClosable(local.closable))
-  const maskConfig = createMemo(() => normalizeMask(local.mask))
+  const closableConfig = createMemo(() =>
+    normalizeClosable(local.closable ?? drawerConfig().closable),
+  )
+  const maskConfig = createMemo(() => normalizeMask(local.mask ?? drawerConfig().mask))
   const pushConfig = createMemo(() => normalizePush(local.push))
-  const semanticClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
-  const semanticStyles = createMemo(() => resolveSemanticStyles(local.styles, props))
-  const destroyOnHidden = () => Boolean(local.destroyOnHidden ?? local.destroyOnClose)
-  const focusTrapEnabled = () => local.focusable?.trap !== false
+  const semanticClassNames = createMemo(() =>
+    mergeSemanticClassNames(
+      resolveSemanticClassNames(drawerConfig().classNames, props),
+      resolveSemanticClassNames(local.classNames, props),
+    ),
+  )
+  const semanticStyles = createMemo(() =>
+    mergeSemanticStyles(
+      resolveSemanticStyles(drawerConfig().styles, props),
+      resolveSemanticStyles(local.styles, props),
+    ),
+  )
+  const destroyOnHidden = () => Boolean(local.destroyOnHidden)
+  const focusableConfig = () => ({
+    trap: maskConfig().enabled,
+    focusTriggerAfterClose: true,
+    ...drawerConfig().focusable,
+    ...local.focusable,
+  })
+  const focusTrapEnabled = () => focusableConfig().trap !== false
+  const motionClass = (name: string, target: MotionStatus) => {
+    if (target === 'stable') return undefined
+    if (target === 'enter-active') return `${name}-enter ${name}-enter-active`
+    if (target === 'leave-active') return `${name}-leave ${name}-leave-active`
+    return `${name}-${target}`
+  }
+  const maskMotionClass = () => motionClass(`${prefixCls()}-mask-motion`, motionStatus())
+  const panelMotionClass = () =>
+    motionClass(`${prefixCls()}-panel-motion-${placement()}`, motionStatus())
+  const finishMotion = (status: MotionPhase) => {
+    if (status === 'enter' && local.open) {
+      setMotionStatus('stable')
+      local.afterOpenChange?.(true)
+      return
+    }
+    if (status === 'leave' && !local.open) {
+      setMotionStatus('stable')
+      setVisible(false)
+      if (destroyOnHidden() && !local.forceRender) setRetained(false)
+      local.afterOpenChange?.(false)
+      if (focusableConfig().focusTriggerAfterClose) lastActiveElement?.focus?.()
+    }
+  }
+  const startMotion = (status: MotionPhase) => {
+    if (motionTimer) clearTimeout(motionTimer)
+    if (motionFrameTimer) clearTimeout(motionFrameTimer)
+    setMotionStatus(status)
+    motionFrameTimer = setTimeout(() => {
+      setMotionStatus(status === 'enter' ? 'enter-active' : 'leave-active')
+    }, 0)
+    motionTimer = setTimeout(() => finishMotion(status), drawerMotionDuration)
+  }
 
   const pushContext: DrawerPushContextValue = {
     registerChild(_item) {
@@ -204,6 +286,7 @@ export function Drawer(props: DrawerProps) {
 
     if (open) {
       setRetained(true)
+      setVisible(true)
       if (!locked) {
         lastActiveElement = canUseDom()
           ? ((document.activeElement as HTMLElement | null) ?? undefined)
@@ -220,11 +303,15 @@ export function Drawer(props: DrawerProps) {
       locked = false
     }
 
-    if (open !== wasOpen) {
-      if (!open && destroyOnHidden() && !local.forceRender) setRetained(false)
-      local.afterOpenChange?.(open)
-      if (!open && local.focusable?.focusTriggerAfterClose) lastActiveElement?.focus?.()
+    if (open && !wasOpen) {
+      startMotion('enter')
     }
+
+    if (!open && wasOpen) {
+      setVisible(true)
+      startMotion('leave')
+    }
+
     wasOpen = open
   })
 
@@ -261,6 +348,8 @@ export function Drawer(props: DrawerProps) {
   })
 
   onCleanup(() => {
+    if (motionTimer) clearTimeout(motionTimer)
+    if (motionFrameTimer) clearTimeout(motionFrameTimer)
     cleanupKeydown()
     if (locked) {
       unlockBodyScroll()
@@ -272,15 +361,16 @@ export function Drawer(props: DrawerProps) {
   const baseSizeValue = () => {
     const size = normalizeSize(local.size)
     if (size !== undefined) return size
-    return isHorizontalPlacement(placement()) ? local.width : local.height
+    return local.defaultSize
   }
 
-  const baseNumericSize = () => numericCssLength(baseSizeValue(), defaultDrawerSize)
+  const baseNumericSize = () =>
+    numericCssLength(baseSizeValue(), local.defaultSize ?? defaultDrawerSize)
   const currentSize = () => resizedSize() ?? baseNumericSize()
   const currentCssSize = () =>
     resizedSize() !== undefined
       ? `${resizedSize()}px`
-      : toCssLength(baseSizeValue(), defaultDrawerSize)
+      : toCssLength(baseSizeValue(), local.defaultSize ?? defaultDrawerSize)
 
   const pushTransform = () => {
     if (!childPushCount()) return undefined
@@ -292,7 +382,7 @@ export function Drawer(props: DrawerProps) {
     return `translateY(${sign}${distance})`
   }
 
-  const drawerStyle = () => {
+  const wrapperStyle = () => {
     const side = placement()
     const size = isHorizontalPlacement(side)
       ? { width: currentCssSize() }
@@ -301,18 +391,22 @@ export function Drawer(props: DrawerProps) {
     return {
       ...size,
       ...(transform ? { transform } : {}),
+      ...drawerConfig().style,
       ...local.style,
       ...semanticStyles().wrapper,
     }
   }
   const rootStyle = () => ({
     'z-index': zIndex,
-    display: local.open ? undefined : 'none',
+    display: visible() ? undefined : 'none',
+    ...drawerConfig().rootStyle,
     ...local.rootStyle,
+    ...semanticStyles().root,
   })
   const titleLabelId = () => local['aria-labelledby'] ?? (local.title ? titleId : undefined)
-  const shouldRender = () => Boolean(local.open) || retained() || Boolean(local.forceRender)
-  const maskClosable = () => maskConfig().closable ?? local.maskClosable ?? true
+  const shouldRender = () =>
+    Boolean(local.open) || visible() || retained() || Boolean(local.forceRender)
+  const maskClosable = () => maskConfig().closable ?? true
 
   const onResizePointerDown = (event: PointerEvent) => {
     if (!local.resizable) return
@@ -352,58 +446,66 @@ export function Drawer(props: DrawerProps) {
     return (
       <button
         type="button"
-        class={`${prefixCls()}-close`}
+        class={classNames(
+          `${prefixCls()}-close`,
+          config.placement === 'end' && `${prefixCls()}-close-end`,
+          semanticClassNames().close,
+        )}
+        style={semanticStyles().close}
         aria-label="close drawer"
         disabled={config.disabled}
         onClick={(event) => {
           if (!config.disabled) local.onClose?.(event)
         }}
       >
-        {config.closeIcon ?? <CloseOutlined />}
+        {local.closeIcon ?? config.closeIcon ?? <CloseOutlined />}
       </button>
     )
   }
 
-  const content = () => (
+  const section = () => (
     <div
-      class={classNames(`${prefixCls()}-content`, semanticClassNames().content)}
+      class={classNames(`${prefixCls()}-section`, semanticClassNames().section)}
       style={{
-        'min-height': semanticStyles().content?.['min-height'],
-        ...semanticStyles().content,
+        'min-height': semanticStyles().section?.['min-height'],
+        ...semanticStyles().section,
       }}
     >
       <Show when={local.title || local.extra || closableConfig()}>
         <div
-          class={classNames(
-            `${prefixCls()}-header`,
-            closableConfig() &&
-              (closableConfig() as DrawerClosableConfig).placement === 'start' &&
-              `${prefixCls()}-header-close-start`,
-            semanticClassNames().header,
-          )}
+          class={classNames(`${prefixCls()}-header`, semanticClassNames().header)}
           style={{
             'min-height': semanticStyles().header?.['min-height'],
             ...semanticStyles().header,
           }}
         >
-          <Show
-            when={Boolean(
-              closableConfig() && (closableConfig() as DrawerClosableConfig).placement === 'start',
-            )}
-          >
-            {closeButton()}
-          </Show>
-          <Show when={local.title} fallback={<span class={`${prefixCls()}-title`} />}>
-            <div id={titleId} class={`${prefixCls()}-title`}>
+          <div class={`${prefixCls()}-header-title`}>
+            <Show
+              when={Boolean(
+                closableConfig() && (closableConfig() as DrawerClosableConfig).placement !== 'end',
+              )}
+            >
+              {closeButton()}
+            </Show>
+            <div
+              id={titleId}
+              class={classNames(`${prefixCls()}-title`, semanticClassNames().title)}
+              style={semanticStyles().title}
+            >
               {local.title}
             </div>
-          </Show>
+          </div>
           <Show when={local.extra}>
-            <div class={`${prefixCls()}-extra`}>{local.extra}</div>
+            <div
+              class={classNames(`${prefixCls()}-extra`, semanticClassNames().extra)}
+              style={semanticStyles().extra}
+            >
+              {local.extra}
+            </div>
           </Show>
           <Show
             when={Boolean(
-              !closableConfig() || (closableConfig() as DrawerClosableConfig).placement !== 'start',
+              closableConfig() && (closableConfig() as DrawerClosableConfig).placement === 'end',
             )}
           >
             {closeButton()}
@@ -420,7 +522,7 @@ export function Drawer(props: DrawerProps) {
       >
         <Show when={local.loading} fallback={local.children}>
           <div class={`${prefixCls()}-loading`}>
-            <Skeleton active paragraph={{ rows: 4 }} />
+            <Skeleton active title={false} paragraph={{ rows: 5 }} />
           </div>
         </Show>
       </div>
@@ -453,25 +555,28 @@ export function Drawer(props: DrawerProps) {
         class={classNames(
           prefixCls(),
           `${prefixCls()}-${placement()}`,
+          `${prefixCls()}-content-wrapper`,
           local.resizable && `${prefixCls()}-resizable`,
+          panelMotionClass(),
           semanticClassNames().wrapper,
-          semanticClassNames().section,
+          drawerConfig().class,
           local.class,
-          local.className,
         )}
         classList={local.classList}
-        style={drawerStyle()}
+        style={wrapperStyle()}
       >
         <Show when={local.resizable}>
           <div
             class={classNames(
-              `${prefixCls()}-resize-handle`,
-              `${prefixCls()}-resize-handle-${placement()}`,
+              `${prefixCls()}-resizable-dragger`,
+              `${prefixCls()}-resizable-dragger-${placement()}`,
+              semanticClassNames().dragger,
             )}
+            style={semanticStyles().dragger}
             onPointerDown={onResizePointerDown}
           />
         </Show>
-        {content()}
+        {section()}
       </div>
     )
     return local.drawerRender ? local.drawerRender(node) : node
@@ -482,7 +587,15 @@ export function Drawer(props: DrawerProps) {
       <DrawerPushContext.Provider value={pushContext}>
         <Show when={shouldRender()}>
           <div
-            class={classNames(`${prefixCls()}-root`, hashId(), local.rootClassName)}
+            class={classNames(
+              `${prefixCls()}-root`,
+              `${prefixCls()}-${placement()}`,
+              local.getContainer === false && `${prefixCls()}-inline`,
+              hashId(),
+              drawerConfig().rootClass,
+              local.rootClass,
+              semanticClassNames().root,
+            )}
             style={rootStyle()}
           >
             <Show when={maskConfig().enabled ?? true}>
@@ -490,6 +603,7 @@ export function Drawer(props: DrawerProps) {
                 class={classNames(
                   `${prefixCls()}-mask`,
                   maskConfig().blur && `${prefixCls()}-mask-blur`,
+                  maskMotionClass(),
                   semanticClassNames().mask,
                 )}
                 style={semanticStyles().mask}

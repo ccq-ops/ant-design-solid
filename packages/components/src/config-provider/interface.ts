@@ -13,6 +13,13 @@ import type {
   EmptySemanticStylesConfig,
   EmptyProps,
 } from '../empty/interface'
+import type {
+  DrawerClosableConfig,
+  DrawerFocusableConfig,
+  DrawerMaskConfig,
+  DrawerSemanticClassNames,
+  DrawerSemanticStyles,
+} from '../drawer/interface'
 
 export interface TooltipConfig {
   unique?: boolean
@@ -32,6 +39,18 @@ export interface EmptyConfig {
   styles?: EmptySemanticStylesConfig
 }
 
+export interface DrawerConfig {
+  class?: string
+  rootClass?: string
+  style?: JSX.CSSProperties
+  rootStyle?: JSX.CSSProperties
+  classNames?: DrawerSemanticClassNames
+  styles?: DrawerSemanticStyles
+  closable?: boolean | DrawerClosableConfig
+  mask?: boolean | DrawerMaskConfig
+  focusable?: DrawerFocusableConfig
+}
+
 export interface ConfigProviderProps {
   prefixCls?: string
   componentSize?: ComponentSize
@@ -42,6 +61,7 @@ export interface ConfigProviderProps {
   notification?: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>
   message?: Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
   empty?: EmptyConfig
+  drawer?: DrawerConfig
   children?: JSX.Element
 }
 export interface ConfigContextValue {
@@ -57,4 +77,5 @@ export interface ConfigContextValue {
     Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
   >
   empty: Accessor<EmptyConfig>
+  drawer: Accessor<DrawerConfig>
 }

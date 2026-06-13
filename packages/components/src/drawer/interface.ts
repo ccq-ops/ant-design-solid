@@ -3,13 +3,17 @@ import type { JSX } from 'solid-js'
 export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom'
 export type DrawerSize = 'default' | 'large' | number | string
 export type DrawerSemanticDOM =
+  | 'root'
   | 'mask'
   | 'wrapper'
-  | 'content'
+  | 'section'
   | 'header'
+  | 'title'
+  | 'extra'
   | 'body'
   | 'footer'
-  | 'section'
+  | 'dragger'
+  | 'close'
 
 export type DrawerSemanticClassNames =
   | Partial<Record<DrawerSemanticDOM, string>>
@@ -53,20 +57,18 @@ export interface DrawerProps {
   title?: JSX.Element
   placement?: DrawerPlacement
   size?: DrawerSize
-  width?: number | string
-  height?: number | string
+  defaultSize?: number
   closable?: boolean | DrawerClosableConfig
+  closeIcon?: JSX.Element
   mask?: boolean | DrawerMaskConfig
-  maskClosable?: boolean
   keyboard?: boolean
-  destroyOnClose?: boolean
   destroyOnHidden?: boolean
   forceRender?: boolean
   extra?: JSX.Element
   footer?: JSX.Element
   zIndex?: number
   getContainer?: DrawerGetContainer
-  rootClassName?: string
+  rootClass?: string
   rootStyle?: JSX.CSSProperties
   classNames?: DrawerSemanticClassNames
   styles?: DrawerSemanticStyles
@@ -80,7 +82,6 @@ export interface DrawerProps {
   afterOpenChange?: (open: boolean) => void
   children?: JSX.Element
   class?: string
-  className?: string
   classList?: Record<string, boolean | undefined>
   style?: JSX.CSSProperties
   'aria-label'?: string
