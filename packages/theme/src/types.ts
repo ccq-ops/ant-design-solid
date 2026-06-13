@@ -636,14 +636,22 @@ export interface TagComponentToken extends ComponentTokenBase {
 }
 
 export interface BadgeComponentToken extends ComponentTokenBase {
+  indicatorZIndex: number | string
+  indicatorHeight: number
+  indicatorHeightSM: number
   overflowIndicatorHeight: number
   overflowIndicatorHeightSm: number
   dotSize: number
   textFontSize: number
   textFontSizeSm: number
+  textFontWeight: number | string
   colorBg: string
   colorText: string
   statusSize: number
+  paddingInline: number | string
+  badgeRibbonOffset: number
+  badgeRibbonCornerTransform: string
+  badgeRibbonCornerFilter: string
 }
 
 export interface BorderBeamComponentToken extends ComponentTokenBase {}

@@ -6,6 +6,7 @@ import type {
 } from '@ant-design-solid/theme'
 import type { AlertProps } from '../alert/interface'
 import type { AnchorProps } from '../anchor/interface'
+import type { BadgeProps, RibbonProps } from '../badge/interface'
 import type { BreadcrumbProps } from '../breadcrumb/interface'
 import type { ButtonProps } from '../button/interface'
 import type { CardMetaProps, CardProps } from '../card/interface'
@@ -107,7 +108,7 @@ export type AlertConfig = ComponentStyleConfig &
     errorIcon?: JSX.Element
   }
 export type AnchorConfig = ComponentStyleConfig & PickProps<AnchorProps, 'classNames' | 'styles'>
-export type BadgeConfig = ComponentStyleConfig
+export type BadgeConfig = ComponentStyleConfig & PickProps<BadgeProps, 'classNames' | 'styles'>
 export type BorderBeamConfig = ComponentStyleConfig
 export type BreadcrumbConfig = ComponentStyleConfig & PickProps<BreadcrumbProps, 'separator'>
 export type ButtonConfig = ComponentStyleConfig &
@@ -242,7 +243,7 @@ export type ProgressConfig = ComponentStyleConfig
 export type QRcodeConfig = ComponentStyleConfig & PickProps<QRCodeProps, 'classNames' | 'styles'>
 export type RadioConfig = ComponentStyleConfig & PickProps<RadioProps, 'classNames' | 'styles'>
 export type ResultConfig = ComponentStyleConfig & PickProps<ResultProps, 'classNames' | 'styles'>
-export type RibbonConfig = ComponentStyleConfig
+export type RibbonConfig = ComponentStyleConfig & PickProps<RibbonProps, 'classNames' | 'styles'>
 export type SegmentedConfig = ComponentStyleConfig &
   PickProps<SegmentedProps, 'classNames' | 'styles'>
 export type SelectConfig = ComponentStyleConfig &
