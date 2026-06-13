@@ -198,7 +198,7 @@ export function DatePanel(props: DatePanelProps) {
         class={
           picker() === 'week' || props.showWeek
             ? `${props.prefixCls}-grid ${props.prefixCls}-week-grid ${props.prefixCls}-week-rows`
-            : `${props.prefixCls}-grid`
+            : `${props.prefixCls}-grid ${props.prefixCls}-date-grid`
         }
       >
         <Show

@@ -17,7 +17,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
 
     const css = extractStyle(cache)
     expect(css).toContain(
-      '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0,0,0,0.04);',
+      '.ads-date-picker-date-grid .ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0,0,0,0.04);',
     )
     expect(css).toContain('.ads-date-picker-month-button:hover{background:rgba(0,0,0,0.04);')
     expect(css).toContain('.ads-date-picker-preset:hover{background:rgba(0,0,0,0.04);')
@@ -38,6 +38,12 @@ describe('DatePicker custom rendering and visual APIs', () => {
     )
     expect(css).toContain('.ads-date-picker-empty-cell{min-height:24px;')
     expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0,0,0,0.02);')
+    expect(css).not.toContain(
+      '.ads-date-picker-week-grid .ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover',
+    )
+    expect(css).not.toContain(
+      '.ads-date-picker-variant-grid .ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover',
+    )
   })
 
   it('aligns week and variant picker cell styles with antd panels', () => {
