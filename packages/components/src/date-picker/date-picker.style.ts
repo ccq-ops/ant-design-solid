@@ -490,6 +490,10 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-cell-disabled:hover`]: {
           background: 'transparent',
         },
+        [`.${prefixCls}-cell-out-of-view:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-range-start):not(.${prefixCls}-cell-range-end)`]:
+          {
+            color: t.colorTextDisabled,
+          },
         [`.${prefixCls}-time-panel`]: {
           display: 'flex',
           gap: `${t.marginXS}px`,

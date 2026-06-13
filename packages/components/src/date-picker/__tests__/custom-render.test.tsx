@@ -175,7 +175,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
 
     expect(screen.getByLabelText('wrapped panel')).toBeInTheDocument()
     expect(screen.getByText('extra footer')).toBeInTheDocument()
-    expect(screen.getByTestId('cell-1')).toHaveTextContent('1')
+    expect(screen.getByRole('button', { name: '2026-06-01' })).toContainElement(
+      screen.getAllByTestId('cell-1')[0],
+    )
 
     unmount()
     cleanup()

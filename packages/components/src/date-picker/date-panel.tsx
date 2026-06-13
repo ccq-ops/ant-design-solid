@@ -11,16 +11,15 @@ import { semanticClass, semanticStyle } from './semantic'
 
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 
-function monthDates(value: dayjs.Dayjs): Array<dayjs.Dayjs | null> {
+function monthDates(value: dayjs.Dayjs): dayjs.Dayjs[] {
   const firstDate = monthStart(value)
-  const dates: Array<dayjs.Dayjs | null> = Array.from({ length: firstDate.day() }, () => null)
-  for (let day = 1; day <= firstDate.daysInMonth(); day += 1) dates.push(firstDate.date(day))
-  return dates
+  const panelStart = firstDate.subtract(firstDate.day(), 'day')
+  return Array.from({ length: 42 }, (_, index) => panelStart.add(index, 'day'))
 }
 
-function monthWeekRows(value: dayjs.Dayjs): Array<Array<dayjs.Dayjs | null>> {
+function monthWeekRows(value: dayjs.Dayjs): Array<dayjs.Dayjs[]> {
   const cells = monthDates(value)
-  const rows: Array<Array<dayjs.Dayjs | null>> = []
+  const rows: dayjs.Dayjs[][] = []
   for (let index = 0; index < cells.length; index += 7) {
     rows.push(cells.slice(index, index + 7))
   }
@@ -66,11 +65,11 @@ export function DatePanel(props: DatePanelProps) {
     return cellDate.date()
   }
 
-  function firstDateInRow(row: Array<dayjs.Dayjs | null>): dayjs.Dayjs | undefined {
-    return row.find((date): date is dayjs.Dayjs => Boolean(date))
+  function firstDateInRow(row: dayjs.Dayjs[]): dayjs.Dayjs | undefined {
+    return row[0]
   }
 
-  function renderWeekButton(row: Array<dayjs.Dayjs | null>): JSX.Element {
+  function renderWeekButton(row: dayjs.Dayjs[]): JSX.Element {
     const firstDate = firstDateInRow(row)
     if (!firstDate)
       return <div class={`${props.prefixCls}-empty-cell ${props.prefixCls}-week-cell`} />
@@ -106,11 +105,11 @@ export function DatePanel(props: DatePanelProps) {
     )
   }
 
-  function weekStartForRow(row: Array<dayjs.Dayjs | null>): dayjs.Dayjs | undefined {
+  function weekStartForRow(row: dayjs.Dayjs[]): dayjs.Dayjs | undefined {
     return firstDateInRow(row)?.startOf('week')
   }
 
-  function weekRowSelected(row: Array<dayjs.Dayjs | null>): boolean {
+  function weekRowSelected(row: dayjs.Dayjs[]): boolean {
     const weekStart = weekStartForRow(row)
     if (!weekStart) return false
     return Array.isArray(props.selectedValue)
@@ -118,9 +117,9 @@ export function DatePanel(props: DatePanelProps) {
       : samePickerValue(props.selectedValue, weekStart, 'week')
   }
 
-  function renderDateCell(date: dayjs.Dayjs | null): JSX.Element {
-    if (!date) return <div class={`${props.prefixCls}-empty-cell`} />
+  function renderDateCell(date: dayjs.Dayjs): JSX.Element {
     const dateString = () => date.format('YYYY-MM-DD')
+    const outOfView = () => !date.isSame(props.viewDate, 'month')
     const cellDisabled = () => Boolean(props.disabledDate?.(date, { type: picker() }))
     const selected = () =>
       Array.isArray(props.selectedValue)
@@ -156,6 +155,7 @@ export function DatePanel(props: DatePanelProps) {
           props.classNames,
           `${props.prefixCls}-cell`,
           samePickerValue(today(), date, 'date') && `${props.prefixCls}-cell-today`,
+          outOfView() && `${props.prefixCls}-cell-out-of-view`,
           selected() && `${props.prefixCls}-cell-selected`,
           rangeStart() && `${props.prefixCls}-cell-range-start`,
           rangeEnd() && `${props.prefixCls}-cell-range-end`,

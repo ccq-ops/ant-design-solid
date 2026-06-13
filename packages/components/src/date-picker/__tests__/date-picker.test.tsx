@@ -24,6 +24,25 @@ describe('DatePicker dayjs value model', () => {
     await waitFor(() => expect(screen.queryByText('2026-06')).not.toBeInTheDocument())
   })
 
+  it('renders previous and next month dates in the date panel with muted styling', () => {
+    render(() => <DatePicker defaultOpen defaultPickerValue={dayjs('2021-06-01')} />)
+
+    const previousMonthSunday = screen.getByRole('button', { name: '2021-05-30' })
+    const previousMonthMonday = screen.getByRole('button', { name: '2021-05-31' })
+    const nextMonthDate = screen.getByRole('button', { name: '2021-07-10' })
+
+    expect(document.body.querySelector('.ads-date-picker-empty-cell')).toBeNull()
+    expect(
+      document.body.querySelectorAll('.ads-date-picker-date-grid .ads-date-picker-cell'),
+    ).toHaveLength(42)
+    expect(previousMonthSunday).toHaveTextContent('30')
+    expect(previousMonthMonday).toHaveTextContent('31')
+    expect(nextMonthDate).toHaveTextContent('10')
+    expect(previousMonthSunday).toHaveClass('ads-date-picker-cell-out-of-view')
+    expect(previousMonthMonday).toHaveClass('ads-date-picker-cell-out-of-view')
+    expect(nextMonthDate).toHaveClass('ads-date-picker-cell-out-of-view')
+  })
+
   it('selects a date with the first click after the input blurs to the panel', async () => {
     const onChange = vi.fn()
     render(() => <DatePicker defaultValue={dayjs('2026-06-01')} onChange={onChange} />)
