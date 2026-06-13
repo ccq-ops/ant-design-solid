@@ -8,6 +8,11 @@ import type {
 } from '../tooltip/interface'
 import type { NotificationConfig } from '../notification/interface'
 import type { MessageConfigOptions } from '../message/interface'
+import type {
+  EmptySemanticClassNamesConfig,
+  EmptySemanticStylesConfig,
+  EmptyProps,
+} from '../empty/interface'
 
 export interface TooltipConfig {
   unique?: boolean
@@ -19,6 +24,14 @@ export interface TooltipConfig {
   styles?: TooltipSemanticStylesConfig
 }
 
+export interface EmptyConfig {
+  class?: string
+  style?: JSX.CSSProperties
+  image?: EmptyProps['image']
+  classNames?: EmptySemanticClassNamesConfig
+  styles?: EmptySemanticStylesConfig
+}
+
 export interface ConfigProviderProps {
   prefixCls?: string
   componentSize?: ComponentSize
@@ -28,6 +41,7 @@ export interface ConfigProviderProps {
   tooltip?: TooltipConfig
   notification?: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>
   message?: Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
+  empty?: EmptyConfig
   children?: JSX.Element
 }
 export interface ConfigContextValue {
@@ -42,4 +56,5 @@ export interface ConfigContextValue {
   message: Accessor<
     Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
   >
+  empty: Accessor<EmptyConfig>
 }

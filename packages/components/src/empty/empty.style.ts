@@ -8,7 +8,7 @@ export function useEmptyStyle(prefixCls: string) {
     return {
       [`.${prefixCls}`]: {
         'box-sizing': 'border-box',
-        margin: `${t.margin}px 0`,
+        'margin-inline': `${t.marginXS}px`,
         padding: 0,
         color: t.colorText,
         'font-size': `${t.fontSize}px`,
@@ -17,15 +17,17 @@ export function useEmptyStyle(prefixCls: string) {
         'text-align': 'center',
       },
       [`.${prefixCls}-image`]: {
-        height: 100,
+        height: `${t.controlHeightLG * 2.5}px`,
         'margin-bottom': `${t.marginXS}px`,
         display: 'flex',
         'align-items': 'center',
         'justify-content': 'center',
+        opacity: t.opacityImage,
       },
       [`.${prefixCls}-image > svg`]: {
         height: '100%',
         'max-width': '100%',
+        margin: 'auto',
       },
       [`.${prefixCls}-image > img`]: {
         height: '100%',
@@ -33,10 +35,27 @@ export function useEmptyStyle(prefixCls: string) {
         'object-fit': 'contain',
       },
       [`.${prefixCls}-description`]: {
-        color: t.colorTextSecondary,
+        color: t.colorTextDescription,
       },
       [`.${prefixCls}-footer`]: {
         'margin-top': `${t.margin}px`,
+      },
+      [`.${prefixCls}-normal`]: {
+        'margin-block': `${t.marginXL}px`,
+        color: t.colorTextDescription,
+      },
+      [`.${prefixCls}-normal .${prefixCls}-description`]: {
+        color: t.colorTextDescription,
+      },
+      [`.${prefixCls}-normal .${prefixCls}-image`]: {
+        height: `${t.controlHeightLG}px`,
+      },
+      [`.${prefixCls}-small`]: {
+        'margin-block': `${t.marginXS}px`,
+        color: t.colorTextDescription,
+      },
+      [`.${prefixCls}-small .${prefixCls}-image`]: {
+        height: `${t.controlHeightLG * 0.875}px`,
       },
     }
   })

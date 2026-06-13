@@ -1,6 +1,6 @@
 import { createContext, createMemo, useContext } from 'solid-js'
 import { mergeTheme, type ComponentSize, type ThemeConfig } from '@ant-design-solid/theme'
-import type { ConfigContextValue, TooltipConfig } from './interface'
+import type { ConfigContextValue, EmptyConfig, TooltipConfig } from './interface'
 import type { NotificationConfig } from '../notification/interface'
 import type { MessageConfigOptions } from '../message/interface'
 const emptyTheme: ThemeConfig = {}
@@ -10,6 +10,7 @@ const emptyMessage: Pick<
   MessageConfigOptions,
   'class' | 'className' | 'style' | 'classNames' | 'styles'
 > = {}
+const emptyEmpty: EmptyConfig = {}
 export const defaultConfigContext: ConfigContextValue = {
   prefixCls: () => 'ads',
   componentSize: () => 'middle' as ComponentSize,
@@ -19,6 +20,7 @@ export const defaultConfigContext: ConfigContextValue = {
   tooltip: () => emptyTooltip,
   notification: () => emptyNotification,
   message: () => emptyMessage,
+  empty: () => emptyEmpty,
 }
 export const ConfigContext = createContext<ConfigContextValue>(defaultConfigContext)
 export function useConfig(): ConfigContextValue {
@@ -45,12 +47,14 @@ export function createConfigValue(
     tooltip?: TooltipConfig
     notification?: Pick<NotificationConfig, 'closeIcon' | 'classNames' | 'styles'>
     message?: Pick<MessageConfigOptions, 'class' | 'className' | 'style' | 'classNames' | 'styles'>
+    empty?: EmptyConfig
   },
 ): ConfigContextValue {
   const theme = createMemo(() => mergeThemeConfig(parent.theme(), props.theme ?? {}))
   const tooltip = createMemo(() => ({ ...parent.tooltip(), ...props.tooltip }))
   const notification = createMemo(() => ({ ...parent.notification(), ...props.notification }))
   const message = createMemo(() => ({ ...parent.message(), ...props.message }))
+  const empty = createMemo(() => ({ ...parent.empty(), ...props.empty }))
   return {
     prefixCls: createMemo(() => props.prefixCls ?? parent.prefixCls()),
     componentSize: createMemo(() => props.componentSize ?? parent.componentSize()),
@@ -61,5 +65,6 @@ export function createConfigValue(
     tooltip,
     notification,
     message,
+    empty,
   }
 }
