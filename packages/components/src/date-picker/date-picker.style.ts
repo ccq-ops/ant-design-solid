@@ -150,7 +150,7 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-multiple-tag:hover`]: {
           borderColor: t.colorBorder,
-          background: t.colorFillAlter,
+          background: dp.cellHoverBg,
         },
         [`.${prefixCls}-input`]: {
           flex: '1 1 auto',
@@ -274,7 +274,7 @@ export function useDatePickerStyle(prefixCls: string) {
           cursor: 'pointer',
         },
         [`.${prefixCls}-preset:hover`]: {
-          background: t.colorFillAlter,
+          background: dp.cellHoverBg,
         },
         [`.${prefixCls}-header`]: {
           display: 'flex',
@@ -298,7 +298,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'line-height': '1',
         },
         [`.${prefixCls}-month-button:hover`]: {
-          background: t.colorFillAlter,
+          background: dp.cellHoverBg,
         },
         [`.${prefixCls}-weekdays`]: {
           display: 'grid',
@@ -518,7 +518,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
         },
         [`.${prefixCls}-time-cell:hover`]: {
-          background: t.colorFillAlter,
+          background: dp.cellHoverBg,
         },
         [`.${prefixCls}-time-cell-selected`]: {
           color: t.colorBgContainer,

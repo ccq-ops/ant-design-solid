@@ -19,6 +19,10 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain(
       '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0,0,0,0.04);',
     )
+    expect(css).toContain('.ads-date-picker-month-button:hover{background:rgba(0,0,0,0.04);')
+    expect(css).toContain('.ads-date-picker-preset:hover{background:rgba(0,0,0,0.04);')
+    expect(css).toContain('.ads-date-picker-time-cell:hover{background:rgba(0,0,0,0.04);')
+    expect(css).toContain('.ads-date-picker-multiple-tag:hover{background:rgba(0,0,0,0.04);')
     expect(css).toContain(
       '.ads-date-picker-cell-selected:hover, .ads-date-picker-cell-selected:active{background:#1677ff;color:#ffffff;',
     )
