@@ -25,6 +25,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain(
       '.ads-date-picker-cell-range-start:hover, .ads-date-picker-cell-range-start:active, .ads-date-picker-cell-range-end:hover, .ads-date-picker-cell-range-end:active{background:#1677ff;color:#ffffff;',
     )
+    expect(css).toContain('.ads-date-picker-grid{display:grid;gap:0;')
     expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0,0,0,0.02);')
   })
 
