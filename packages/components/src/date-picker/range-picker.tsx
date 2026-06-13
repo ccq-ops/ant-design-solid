@@ -9,7 +9,7 @@ import {
 } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic, isServer } from 'solid-js/web'
-import { CalendarOutlined, SwapRightOutlined } from '@ant-design-solid/icons'
+import { CalendarOutlined, CloseCircleFilled, SwapRightOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -669,7 +669,11 @@ export function RangePicker(props: RangePickerProps) {
             aria-label={local.locale?.lang?.clear ?? 'Clear date range'}
             onClick={clearRange}
           >
-            {typeof local.allowClear === 'object' ? local.allowClear.clearIcon : '×'}
+            {typeof local.allowClear === 'object' ? (
+              local.allowClear.clearIcon
+            ) : (
+              <CloseCircleFilled />
+            )}
           </button>
         </Show>
       </div>

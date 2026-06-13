@@ -142,6 +142,16 @@ describe('RangePicker', () => {
     expect(inputs[1]).toHaveValue('')
   })
 
+  it('uses the same default clear icon as DatePicker for the full range clear button', () => {
+    render(() => <RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]} />)
+
+    const clearButton = screen.getByRole('button', { name: 'Clear date range' })
+
+    expect(clearButton).toHaveClass('ads-date-picker-clear-overlay')
+    expect(clearButton.querySelector('svg')).toBeInTheDocument()
+    expect(clearButton).not.toHaveTextContent('×')
+  })
+
   it('passes range metadata to focus and blur callbacks', () => {
     const onFocus = vi.fn()
     const onBlur = vi.fn()
