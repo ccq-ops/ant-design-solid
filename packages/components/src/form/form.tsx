@@ -2,11 +2,7 @@ import { createEffect, createMemo, onCleanup, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import {
-  FormContext,
-  FormLayoutContext,
-  useFormProviderContext,
-} from './context'
+import { FormContext, FormLayoutContext, useFormProviderContext } from './context'
 import {
   destroyForm,
   registerFormOwner,
@@ -160,7 +156,13 @@ export function FormRoot(props: FormProps) {
   })
 
   const rootClass = () =>
-    classNames(prefixCls(), `${prefixCls()}-${layout()}`, hashId(), semanticClassNames().root, local.class)
+    classNames(
+      prefixCls(),
+      `${prefixCls()}-${layout()}`,
+      hashId(),
+      semanticClassNames().root,
+      local.class,
+    )
   const rootStyle = () => {
     const semanticStyle = semanticStyles().root
     if (!semanticStyle) return mergeStyle(local.style as JSX.CSSProperties | string | undefined)
@@ -205,9 +207,7 @@ export function FormRoot(props: FormProps) {
 
   return (
     <FormContext.Provider value={form()}>
-      <FormLayoutContext.Provider value={layoutContext}>
-        {renderRoot()}
-      </FormLayoutContext.Provider>
+      <FormLayoutContext.Provider value={layoutContext}>{renderRoot()}</FormLayoutContext.Provider>
     </FormContext.Provider>
   )
 }

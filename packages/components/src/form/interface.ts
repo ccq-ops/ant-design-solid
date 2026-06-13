@@ -210,7 +210,10 @@ export interface FormProviderProps {
 
 export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   form?: FormInstance
-  component?: false | keyof JSX.IntrinsicElements | ((props: JSX.HTMLAttributes<HTMLElement>) => JSX.Element)
+  component?:
+    | false
+    | keyof JSX.IntrinsicElements
+    | ((props: JSX.HTMLAttributes<HTMLElement>) => JSX.Element)
   name?: string
   fields?: FieldData[]
   initialValues?: FormValues

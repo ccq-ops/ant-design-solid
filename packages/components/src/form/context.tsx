@@ -105,6 +105,8 @@ export function FormProvider(props: FormProviderProps): JSX.Element {
   }
 
   return (
-    <FormProviderContext.Provider value={contextValue}>{props.children}</FormProviderContext.Provider>
+    <FormProviderContext.Provider value={contextValue}>
+      {props.children}
+    </FormProviderContext.Provider>
   )
 }

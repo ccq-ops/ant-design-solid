@@ -647,7 +647,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         return () => {
           const index = providerCallbackEntries.findIndex((entry) => entry.id === id)
           if (index >= 0) providerCallbackEntries.splice(index, 1)
-          providerCallbacks = providerCallbackEntries[providerCallbackEntries.length - 1]?.callbacks ?? {}
+          providerCallbacks =
+            providerCallbackEntries[providerCallbackEntries.length - 1]?.callbacks ?? {}
         }
       },
     }
@@ -664,10 +665,7 @@ export function setFormInitialValues(form: FormInstance, initialValues?: FormVal
   ;(form as InternalFormInstance).setInitialValues?.(initialValues)
 }
 
-export function setFormCallbacks(
-  form: FormInstance,
-  callbacks: FormCallbacks,
-): () => void {
+export function setFormCallbacks(form: FormInstance, callbacks: FormCallbacks): () => void {
   return (form as InternalFormInstance).setCallbacks?.(callbacks) ?? (() => undefined)
 }
 

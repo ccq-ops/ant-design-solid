@@ -7,7 +7,13 @@ describe('FormInstance advanced getFieldsValue', () => {
   it('filters fields by touched and validating meta', () => {
     const [form] = useForm()
     const getFieldsValue = form.getFieldsValue as unknown as (
-      nameList?: true | unknown[] | { strict?: boolean; filter?: (meta: { touched: boolean; validating: boolean }) => boolean },
+      nameList?:
+        | true
+        | unknown[]
+        | {
+            strict?: boolean
+            filter?: (meta: { touched: boolean; validating: boolean }) => boolean
+          },
       filter?: (meta: { touched: boolean; validating: boolean }) => boolean,
     ) => unknown
 
@@ -22,7 +28,10 @@ describe('FormInstance advanced getFieldsValue', () => {
       </Form>
     ))
 
-    form.setFields([{ name: 'a', touched: true }, { name: 'b', validating: true }])
+    form.setFields([
+      { name: 'a', touched: true },
+      { name: 'b', validating: true },
+    ])
 
     expect(getFieldsValue({ filter: (meta) => meta.touched })).toEqual({ a: 'A' })
     expect(getFieldsValue(['a', 'b'], (meta) => meta.validating)).toEqual({ b: 'B' })

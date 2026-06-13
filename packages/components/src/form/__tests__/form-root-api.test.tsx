@@ -80,8 +80,7 @@ describe('Form root v6 APIs', () => {
       expect(scrollIntoView).toHaveBeenCalled()
       expect(focus).toHaveBeenCalled()
     } finally {
-      fieldElement!.scrollIntoView =
-        originalScrollIntoView ?? Element.prototype.scrollIntoView
+      fieldElement!.scrollIntoView = originalScrollIntoView ?? Element.prototype.scrollIntoView
       input.focus = originalFocus
     }
   })

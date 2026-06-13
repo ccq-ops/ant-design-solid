@@ -394,7 +394,10 @@ describe('FormInstance advanced getFieldsValue', () => {
       </Form>
     ))
 
-    form.setFields([{ name: 'a', touched: true }, { name: 'b', validating: true }])
+    form.setFields([
+      { name: 'a', touched: true },
+      { name: 'b', validating: true },
+    ])
 
     expect(form.getFieldsValue({ filter: (meta) => meta.touched })).toEqual({ a: 'A' })
     expect(form.getFieldsValue(['a', 'b'], (meta) => meta.validating)).toEqual({ b: 'B' })
@@ -560,7 +563,9 @@ describe('Form.Item v6 APIs', () => {
       </Form>
     ))
 
-    expect(result.getByText('Username').closest('.ads-form-item')).toHaveClass('ads-form-item-vertical')
+    expect(result.getByText('Username').closest('.ads-form-item')).toHaveClass(
+      'ads-form-item-vertical',
+    )
     expect(result.getByText('Username').closest('.ads-form-item')).toHaveClass('item-root')
     expect(result.getByText('Username').closest('label')).toHaveClass('item-label')
     expect(result.getByText('Extra')).toHaveClass('item-extra')
@@ -603,7 +608,11 @@ describe('Form.Item v6 APIs', () => {
 
   it('renders function requiredMark output', () => {
     const result = render(() => (
-      <Form requiredMark={(label, info) => <span data-testid="mark">{info.required ? 'R' : label}</span>}>
+      <Form
+        requiredMark={(label, info) => (
+          <span data-testid="mark">{info.required ? 'R' : label}</span>
+        )}
+      >
         <Form.Item label="Username" name="username" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
@@ -621,16 +630,10 @@ Append to `validation.test.ts`:
 
 ```ts
 it('uses validate message templates with custom variables and escaped placeholders', async () => {
-  const result = await validateValue(
-    'username',
-    '',
-    {},
-    [{ required: true }],
-    {
-      validateMessages: { required: '${label} is required, \\${label} stays literal' },
-      messageVariables: { label: 'User name' },
-    },
-  )
+  const result = await validateValue('username', '', {}, [{ required: true }], {
+    validateMessages: { required: '${label} is required, \\${label} stays literal' },
+    messageVariables: { label: 'User name' },
+  })
 
   expect(result.errors).toEqual(['User name is required, ${label} stays literal'])
 })
