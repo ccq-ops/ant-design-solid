@@ -1,4 +1,6 @@
+import type { ComponentSize } from '@ant-design-solid/theme'
 import type { Accessor, JSX } from 'solid-js'
+import type { TooltipProps } from '../tooltip'
 
 export type NamePath = string | number | Array<string | number>
 export type InternalNamePath = Array<string | number>
@@ -8,6 +10,28 @@ export type FormValues = Record<string, FieldValue>
 export type ValidateStatus = 'success' | 'warning' | 'error' | 'validating'
 export type FormLayout = 'horizontal' | 'vertical' | 'inline'
 export type RequiredMark = boolean | 'optional'
+export type FormVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
+export type FormSemanticSlot = 'root'
+
+export type FormSemanticClassNamesMap = Partial<Record<FormSemanticSlot, string>>
+export type FormSemanticStylesMap = Partial<Record<FormSemanticSlot, JSX.CSSProperties>>
+export interface SemanticInfo {
+  props: FormProps
+}
+export type FormSemanticClassNames =
+  | FormSemanticClassNamesMap
+  | ((info: SemanticInfo) => FormSemanticClassNamesMap)
+export type FormSemanticStyles =
+  | FormSemanticStylesMap
+  | ((info: SemanticInfo) => FormSemanticStylesMap)
+export type FeedbackIcons = Partial<Record<ValidateStatus, JSX.Element>>
+export type FormTooltipProps = string | Omit<TooltipProps, 'children'>
+export type FilterFunc = (meta: { touched: boolean; validating: boolean }) => boolean
+
+export interface GetFieldsValueConfig {
+  strict?: boolean
+  filter?: FilterFunc
+}
 
 export interface FormLayoutContextValue {
   layout: Accessor<FormLayout>
@@ -86,7 +110,7 @@ export interface FieldMeta {
 export interface FormInstance {
   getFieldValue: (name: FieldName) => FieldValue
   setFieldValue: (name: FieldName, value: FieldValue) => void
-  getFieldsValue: (nameList?: true | FieldName[]) => FormValues
+  getFieldsValue: (nameList?: true | FieldName[] | GetFieldsValueConfig) => FormValues
   setFieldsValue: (values: FormValues) => void
   setFields: (fields: FieldData[]) => void
   resetFields: (names?: FieldName[]) => void
@@ -158,8 +182,29 @@ export interface FormErrorListProps {
   warnings?: JSX.Element[]
 }
 
+export interface FormProviderProps {
+  children?: JSX.Element
+  onFormChange?: (
+    name: string,
+    info: {
+      changedFields: FieldData[]
+      forms: Record<string, FormInstance>
+    },
+  ) => void
+  onFormFinish?: (
+    name: string,
+    info: {
+      values: FormValues
+      forms: Record<string, FormInstance>
+    },
+  ) => void
+}
+
 export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   form?: FormInstance
+  component?: false | keyof JSX.IntrinsicElements
+  name?: string
+  fields?: FieldData[]
   initialValues?: FormValues
   onFinish?: (values: FormValues) => void
   onFinishFailed?: (errorInfo: ValidateErrorInfo) => void
@@ -172,6 +217,18 @@ export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   validateTrigger?: string | string[]
   labelCol?: unknown
   wrapperCol?: unknown
+  classNames?: FormSemanticClassNames
+  styles?: FormSemanticStyles
+  clearOnDestroy?: boolean
+  scrollToFirstError?: boolean | (ScrollIntoViewOptions & { focus?: boolean })
+  disabled?: boolean
+  size?: ComponentSize
+  variant?: FormVariant
+  feedbackIcons?: FeedbackIcons
+  labelWrap?: boolean
+  tooltip?: FormTooltipProps
+  preserve?: boolean
+  validateMessages?: Record<string, string>
   children?: JSX.Element
 }
 

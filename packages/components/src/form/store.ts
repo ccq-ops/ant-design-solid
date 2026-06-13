@@ -15,8 +15,10 @@ import type {
   FieldError,
   FieldName,
   FieldValue,
+  FilterFunc,
   FormInstance,
   FormValues,
+  GetFieldsValueConfig,
   InternalNamePath,
   ValidateConfig,
   ValidateErrorInfo,
@@ -24,6 +26,7 @@ import type {
 
 interface CreateFormOptions {
   initialValues?: FormValues
+  clearOnDestroy?: boolean
   onFinish?: (values: FormValues) => void
   onFinishFailed?: (errorInfo: ValidateErrorInfo) => void
   onValuesChange?: (changedValues: FormValues, allValues: FormValues) => void
@@ -33,6 +36,14 @@ interface CreateFormOptions {
 interface InternalFormInstance extends FormInstance {
   setInitialValues?: (values?: FormValues) => void
   setCallbacks?: (callbacks: Omit<CreateFormOptions, 'initialValues'>) => void
+  setControlledFields?: (fields: FieldData[]) => void
+  destroy?: () => void
+  registerFormOwner?: () => () => void
+  setProviderCallbacks?: (callbacks: {
+    name?: string
+    onFieldsChange?: (changedFields: FieldData[]) => void
+    onFinish?: (values: FormValues) => void
+  }) => void
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -63,11 +74,17 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     let formInitialValues = cloneFormValues(options.initialValues ?? {})
     const [values, setValues] = createSignal<FormValues>(cloneFormValues(formInitialValues))
     let callbacks: Omit<CreateFormOptions, 'initialValues'> = {
+      clearOnDestroy: options.clearOnDestroy,
       onFinish: options.onFinish,
       onFinishFailed: options.onFinishFailed,
       onValuesChange: options.onValuesChange,
       onFieldsChange: options.onFieldsChange,
     }
+    let providerCallbacks: {
+      name?: string
+      onFieldsChange?: (changedFields: FieldData[]) => void
+      onFinish?: (values: FormValues) => void
+    } = {}
     const fields = new Map<string, FieldRecord>()
     const errorSignals = new Map<string, [Accessor<string[]>, (errors: string[]) => void]>()
     const warningSignals = new Map<string, [Accessor<string[]>, (warnings: string[]) => void]>()
@@ -75,6 +92,11 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     const validationSequences = new WeakMap<FieldRecord, number>()
     const subscribers = new Set<(previousValues?: FormValues) => void>()
     const fieldInstances = new Map<string, HTMLElement>()
+    let ownerCount = 0
+
+    function getFieldFilter(config?: GetFieldsValueConfig): FilterFunc | undefined {
+      return config?.filter
+    }
 
     function notifySubscribers(previousValues?: FormValues): void {
       for (const listener of subscribers) listener(previousValues)
@@ -155,10 +177,9 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
 
     function notifyFieldsChange(changedRecords: FieldRecord[]) {
       if (changedRecords.length === 0) return
-      callbacks.onFieldsChange?.(
-        changedRecords.map((record) => fieldRecordToData(record, values())),
-        getAllFieldData(),
-      )
+      const changedFields = changedRecords.map((record) => fieldRecordToData(record, values()))
+      callbacks.onFieldsChange?.(changedFields, getAllFieldData())
+      if (providerCallbacks.name) providerCallbacks.onFieldsChange?.(changedFields)
     }
 
     function clearRecordValidation(record: FieldRecord) {
@@ -319,6 +340,20 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       getFieldsValue(nameList) {
         if (nameList === true) return cloneFormValues(values())
         if (Array.isArray(nameList)) return pickValues(values(), nameList)
+        if (nameList && typeof nameList === 'object') {
+          const filter = getFieldFilter(nameList)
+          const matchingNames = Array.from(fields.values())
+            .filter((record) =>
+              filter
+                ? filter({
+                    touched: record.state.touched,
+                    validating: record.state.validating,
+                  })
+                : true,
+            )
+            .map((record) => record.state.name)
+          return pickValues(values(), matchingNames)
+        }
         return pickValues(
           values(),
           Array.from(fields.values()).map((record) => record.state.name),
@@ -374,6 +409,33 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           if (nextFields.some((field) => 'value' in field)) notifySubscribers(previousValues)
         })
       },
+      setControlledFields(nextFields) {
+        batch(() => {
+          const previousValues = cloneFormValues(values())
+          let hasValueChange = false
+          for (const field of nextFields) {
+            const key = getFieldKey(field.name)
+            let record = fields.get(key)
+            if (!record) {
+              record = createFieldRecord(
+                { name: field.name, rules: [] },
+                ensureErrorSignal(field.name),
+              )
+              fields.set(key, record)
+            }
+            if ('value' in field) {
+              setValues((currentValues) => setValue(currentValues, field.name, field.value))
+              record.state.dirty = true
+              hasValueChange = true
+            }
+            if (field.errors) record.setErrors(field.errors)
+            if (field.warnings) setRecordWarnings(record, field.warnings)
+            if (field.touched !== undefined) record.state.touched = field.touched
+            if (field.validating !== undefined) setRecordValidating(record, field.validating)
+          }
+          if (hasValueChange) notifySubscribers(previousValues)
+        })
+      },
       resetFields(names) {
         const targetRecords = getRegisteredRecords(names)
         batch(() => {
@@ -408,14 +470,20 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         const syncResult = validateFieldNamesSync(targetNames)
         if (syncResult) {
           if (syncResult.errorFields.length > 0) callbacks.onFinishFailed?.(syncResult)
-          else callbacks.onFinish?.(syncResult.values)
+          else {
+            callbacks.onFinish?.(syncResult.values)
+            providerCallbacks.onFinish?.(syncResult.values)
+          }
           return
         }
         void validateFieldNames(targetNames)
           .then((result) => {
             if (result.errorFields.length > 0 || result.outOfDate)
               callbacks.onFinishFailed?.(result)
-            else callbacks.onFinish?.(result.values)
+            else {
+              callbacks.onFinish?.(result.values)
+              providerCallbacks.onFinish?.(result.values)
+            }
           })
           .catch((error: unknown) => {
             callbacks.onFinishFailed?.({
@@ -539,6 +607,33 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       setCallbacks(nextCallbacks) {
         callbacks = nextCallbacks
       },
+      registerFormOwner() {
+        ownerCount += 1
+        let active = true
+        return () => {
+          if (!active) return
+          active = false
+          ownerCount = Math.max(0, ownerCount - 1)
+        }
+      },
+      destroy() {
+        if (ownerCount > 0 || !callbacks.clearOnDestroy) return
+        batch(() => {
+          const nextValues = cloneFormValues(formInitialValues)
+          for (const key of Object.keys(nextValues)) delete nextValues[key]
+          setValues(nextValues)
+          for (const record of fields.values()) {
+            record.state.touched = false
+            record.state.validated = false
+            record.state.dirty = false
+            clearRecordValidation(record)
+          }
+          notifySubscribers()
+        })
+      },
+      setProviderCallbacks(nextProviderCallbacks) {
+        providerCallbacks = nextProviderCallbacks
+      },
     }
 
     return form
@@ -558,4 +653,27 @@ export function setFormCallbacks(
   callbacks: Omit<CreateFormOptions, 'initialValues'>,
 ): void {
   ;(form as InternalFormInstance).setCallbacks?.(callbacks)
+}
+
+export function setFormControlledFields(form: FormInstance, fields: FieldData[]): void {
+  ;(form as InternalFormInstance).setControlledFields?.(fields)
+}
+
+export function destroyForm(form: FormInstance): void {
+  ;(form as InternalFormInstance).destroy?.()
+}
+
+export function registerFormOwner(form: FormInstance): () => void {
+  return (form as InternalFormInstance).registerFormOwner?.() ?? (() => undefined)
+}
+
+export function setFormProviderCallbacks(
+  form: FormInstance,
+  callbacks: {
+    name?: string
+    onFieldsChange?: (changedFields: FieldData[]) => void
+    onFinish?: (values: FormValues) => void
+  },
+): void {
+  ;(form as InternalFormInstance).setProviderCallbacks?.(callbacks)
 }

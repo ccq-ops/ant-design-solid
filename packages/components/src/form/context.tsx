@@ -1,9 +1,12 @@
 import { createContext, useContext } from 'solid-js'
-import type { Accessor } from 'solid-js'
+import type { Accessor, JSX } from 'solid-js'
 import type {
+  FieldData,
   FormInstance,
   FormItemControl,
   FormLayoutContextValue,
+  FormProviderProps,
+  FormValues,
   NamePath,
   ValidateStatus,
 } from './interface'
@@ -26,6 +29,17 @@ export function useFormLayoutContext(): FormLayoutContextValue {
 export const FormContext = createContext<FormInstance>()
 export function useFormContext(): FormInstance | undefined {
   return useContext(FormContext)
+}
+
+export interface FormProviderContextValue {
+  registerForm: (name: string, form: FormInstance) => () => void
+  triggerFormChange: (name: string, changedFields: FieldData[]) => void
+  triggerFormFinish: (name: string, values: FormValues) => void
+}
+
+export const FormProviderContext = createContext<FormProviderContextValue>()
+export function useFormProviderContext(): FormProviderContextValue | undefined {
+  return useContext(FormProviderContext)
 }
 
 export function useFormInstance(): FormInstance {
@@ -59,4 +73,38 @@ export function useFormItemStatus(): FormItemStatusContextValue {
 export const FormListContext = createContext<NamePath>()
 export function useFormListPrefix(): NamePath | undefined {
   return useContext(FormListContext)
+}
+
+export function FormProvider(props: FormProviderProps): JSX.Element {
+  let forms: Record<string, FormInstance> = {}
+
+  const snapshotForms = () => ({ ...forms })
+
+  const contextValue: FormProviderContextValue = {
+    registerForm(name, form) {
+      forms = { ...forms, [name]: form }
+      return () => {
+        if (forms[name] !== form) return
+        const nextForms = { ...forms }
+        delete nextForms[name]
+        forms = nextForms
+      }
+    },
+    triggerFormChange(name, changedFields) {
+      props.onFormChange?.(name, {
+        changedFields,
+        forms: snapshotForms(),
+      })
+    },
+    triggerFormFinish(name, values) {
+      props.onFormFinish?.(name, {
+        values,
+        forms: snapshotForms(),
+      })
+    },
+  }
+
+  return (
+    <FormProviderContext.Provider value={contextValue}>{props.children}</FormProviderContext.Provider>
+  )
 }
