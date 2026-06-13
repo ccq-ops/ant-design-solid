@@ -24,8 +24,16 @@ export type FormSemanticClassNames =
 export type FormSemanticStyles =
   | FormSemanticStylesMap
   | ((info: SemanticInfo) => FormSemanticStylesMap)
-export type FeedbackIcons = Partial<Record<ValidateStatus, JSX.Element>>
-export type FormTooltipProps = string | Omit<TooltipProps, 'children'>
+export type FeedbackIconRender = (info: {
+  status: ValidateStatus
+  errors: JSX.Element[]
+  warnings: JSX.Element[]
+}) => Partial<Record<ValidateStatus, JSX.Element>>
+export type FeedbackIcons = Partial<Record<ValidateStatus, JSX.Element>> | FeedbackIconRender
+export interface FormTooltipConfig extends Omit<TooltipProps, 'children'> {
+  icon?: JSX.Element
+}
+export type FormTooltipProps = JSX.Element | FormTooltipConfig
 export type FilterFunc = (meta: { touched: boolean; validating: boolean }) => boolean
 
 export interface GetFieldsValueConfig {
@@ -202,7 +210,7 @@ export interface FormProviderProps {
 
 export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   form?: FormInstance
-  component?: false | keyof JSX.IntrinsicElements
+  component?: false | keyof JSX.IntrinsicElements | ((props: JSX.HTMLAttributes<HTMLElement>) => JSX.Element)
   name?: string
   fields?: FieldData[]
   initialValues?: FormValues
