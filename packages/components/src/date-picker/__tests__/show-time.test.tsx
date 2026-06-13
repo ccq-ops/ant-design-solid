@@ -39,11 +39,22 @@ describe('DatePicker showTime', () => {
     expect(onOk).toHaveBeenLastCalledWith(nextValue)
   })
 
-  it('places the time panel to the right of the date panel', () => {
+  it('uses the default date panel as the left showTime panel', () => {
     const cache = createCache()
     render(() => (
       <StyleProvider cache={cache}>
-        <DatePicker showTime defaultOpen defaultPickerValue={dayjs('2026-06-01')} />
+        <DatePicker
+          showTime
+          defaultOpen
+          defaultPickerValue={dayjs('2026-06-01')}
+          components={{
+            panel: (props) => (
+              <section data-testid="custom-panel" aria-label="custom panel">
+                {props.children}
+              </section>
+            ),
+          }}
+        />
       </StyleProvider>
     ))
 
@@ -54,6 +65,11 @@ describe('DatePicker showTime', () => {
     const css = extractStyle(cache)
 
     expect(dropdown).toHaveClass('ads-date-picker-dropdown-with-time')
+    expect(datePanel).toContainElement(screen.getByTestId('custom-panel'))
+    expect(screen.getByTestId('custom-panel')).not.toContainElement(timePanel)
+    expect(screen.getByTestId('custom-panel').children).toHaveLength(2)
+    expect(screen.getByTestId('custom-panel').children[0]).toHaveClass('ads-date-picker-weekdays')
+    expect(screen.getByTestId('custom-panel').children[1]).toHaveClass('ads-date-picker-grid')
     expect(datePanel).toContainElement(screen.getByRole('button', { name: '2026-06-15' }))
     expect(panelBody).toContainElement(timePanel)
     expect(Array.from(panelBody?.children ?? [])).toEqual([datePanel, timePanel])

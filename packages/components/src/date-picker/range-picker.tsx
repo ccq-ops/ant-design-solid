@@ -700,6 +700,22 @@ export function RangePicker(props: RangePickerProps) {
             panelRender={local.panelRender}
             locale={locale()}
             showTime={showTimeEnabled()}
+            timePanel={
+              <Show when={showTimeEnabled()}>
+                <TimePanel
+                  prefixCls={prefixCls()}
+                  value={selectedOrPendingRange()[sideIndex(activeRange())]}
+                  showTime={local.showTime}
+                  disabledTime={local.disabledTime?.(
+                    selectedOrPendingRange()[sideIndex(activeRange())],
+                    activeRange(),
+                    { from: fromForSide(activeRange()) },
+                  )}
+                  locale={locale()}
+                  onSelectTime={selectTime}
+                />
+              </Show>
+            }
             prevIcon={local.prevIcon}
             superPreviousIcon={local.superPrevIcon}
             nextIcon={local.nextIcon}
@@ -721,21 +737,7 @@ export function RangePicker(props: RangePickerProps) {
             onNext={nextPanel}
             onSuperNext={superNextPanel}
           >
-            <div class={`${prefixCls()}-panel-date`}>{rangePanelNode()}</div>
-            <Show when={showTimeEnabled()}>
-              <TimePanel
-                prefixCls={prefixCls()}
-                value={selectedOrPendingRange()[sideIndex(activeRange())]}
-                showTime={local.showTime}
-                disabledTime={local.disabledTime?.(
-                  selectedOrPendingRange()[sideIndex(activeRange())],
-                  activeRange(),
-                  { from: fromForSide(activeRange()) },
-                )}
-                locale={locale()}
-                onSelectTime={selectTime}
-              />
-            </Show>
+            {rangePanelNode()}
           </PickerPanel>
         </InternalPortal>
       </Show>

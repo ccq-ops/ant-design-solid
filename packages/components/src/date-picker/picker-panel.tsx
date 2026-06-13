@@ -47,6 +47,7 @@ export interface PickerPanelProps {
   mode?: PickerMode
   needConfirm?: boolean
   showTime?: boolean
+  timePanel?: JSX.Element
   showNow?: boolean
   showToday?: boolean
   todayDisabled?: boolean
@@ -164,6 +165,19 @@ export function PickerPanel(props: PickerPanelProps) {
     )
   }
 
+  const panelBody = () => {
+    const content = panelContent()
+    if (!props.showTime || !props.timePanel) {
+      return <div class={`${props.prefixCls}-panel-body`}>{content}</div>
+    }
+    return (
+      <div class={`${props.prefixCls}-panel-body`}>
+        <div class={`${props.prefixCls}-panel-date`}>{content}</div>
+        {props.timePanel}
+      </div>
+    )
+  }
+
   const panel = () => (
     <div
       ref={props.ref}
@@ -220,7 +234,7 @@ export function PickerPanel(props: PickerPanelProps) {
         styles={props.styles}
         onSelect={props.onPresetSelect}
       />
-      <div class={`${props.prefixCls}-panel-body`}>{panelContent()}</div>
+      {panelBody()}
       <Show
         when={props.renderExtraFooter || props.needConfirm || props.showTime || props.showToday}
       >

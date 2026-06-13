@@ -619,6 +619,18 @@ function DatePickerBase(props: DatePickerProps) {
             locale={locale()}
             needConfirm={local.needConfirm}
             showTime={showTimeEnabled()}
+            timePanel={
+              <Show when={showTimeEnabled()}>
+                <TimePanel
+                  prefixCls={prefixCls()}
+                  value={pendingValue() ?? selectedDate()}
+                  showTime={local.showTime}
+                  disabledTime={local.disabledTime?.(pendingValue() ?? selectedDate())}
+                  locale={locale()}
+                  onSelectTime={selectTime}
+                />
+              </Show>
+            }
             prevIcon={local.prevIcon}
             superPreviousIcon={local.superPrevIcon}
             nextIcon={local.nextIcon}
@@ -641,17 +653,7 @@ function DatePickerBase(props: DatePickerProps) {
             onNext={nextPanel}
             onSuperNext={superNextPanel}
           >
-            <div class={`${prefixCls()}-panel-date`}>{panelNode()}</div>
-            <Show when={showTimeEnabled()}>
-              <TimePanel
-                prefixCls={prefixCls()}
-                value={pendingValue() ?? selectedDate()}
-                showTime={local.showTime}
-                disabledTime={local.disabledTime?.(pendingValue() ?? selectedDate())}
-                locale={locale()}
-                onSelectTime={selectTime}
-              />
-            </Show>
+            {panelNode()}
           </PickerPanel>
         </InternalPortal>
       </Show>
