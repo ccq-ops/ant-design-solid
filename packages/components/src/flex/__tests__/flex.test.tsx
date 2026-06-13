@@ -1,4 +1,5 @@
 import { render } from '@solidjs/testing-library'
+import type { JSX } from 'solid-js'
 import { describe, expect, it } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Flex } from '../index'
@@ -54,6 +55,76 @@ describe('Flex', () => {
       </Flex>
     ))
     expect(result.getByTestId('flex').tagName).toBe('SECTION')
+  })
+
+  it('supports custom component prop in Solid style', () => {
+    function Article(props: JSX.HTMLAttributes<HTMLElement>) {
+      return <article {...props} data-custom-component="true" />
+    }
+
+    const result = render(() => (
+      <Flex component={Article} data-testid="flex">
+        Article content
+      </Flex>
+    ))
+    const flex = result.getByTestId('flex')
+    expect(flex.tagName).toBe('ARTICLE')
+    expect(flex).toHaveAttribute('data-custom-component', 'true')
+  })
+
+  it('supports orientation and lets it override vertical', () => {
+    const result = render(() => (
+      <>
+        <Flex orientation="vertical" data-testid="vertical">
+          Item
+        </Flex>
+        <Flex orientation="horizontal" vertical data-testid="horizontal">
+          Item
+        </Flex>
+      </>
+    ))
+
+    expect(result.getByTestId('vertical')).toHaveClass('ads-flex-vertical')
+    expect(result.getByTestId('vertical').style.flexDirection).toBe('column')
+    expect(result.getByTestId('vertical').style.alignItems).toBe('stretch')
+    expect(result.getByTestId('horizontal')).not.toHaveClass('ads-flex-vertical')
+    expect(result.getByTestId('horizontal').style.flexDirection).toBe('row')
+  })
+
+  it('supports flex, rootClassName, v6 gap aliases and css string gaps', () => {
+    const result = render(() => (
+      <>
+        <Flex flex="1 1 auto" rootClassName="root-flex" gap="medium" data-testid="medium">
+          Item
+        </Flex>
+        <Flex gap="8px 16px" data-testid="string-gap">
+          Item
+        </Flex>
+      </>
+    ))
+
+    expect(result.getByTestId('medium')).toHaveClass('root-flex')
+    expect(result.getByTestId('medium').style.flex).toBe('1 1 auto')
+    expect(result.getByTestId('medium').style.gap).toBe('16px')
+    expect(result.getByTestId('string-gap').style.gap).toBe('8px 16px')
+  })
+
+  it('accepts full css justify and align values', () => {
+    const result = render(() => (
+      <>
+        <Flex justify="start" align="self-end" data-testid="logical">
+          Item
+        </Flex>
+        <Flex justify="normal" align="normal" data-testid="normal">
+          Item
+        </Flex>
+      </>
+    ))
+
+    expect(result.getByTestId('logical').style.justifyContent).toBe('start')
+    expect(result.getByTestId('logical').style.alignItems).toBe('self-end')
+    expect(result.getByTestId('normal').style.justifyContent).toBe('normal')
+    expect(result.getByTestId('normal').style.alignItems).toBe('normal')
   })
 
   it('merges user style after computed style', () => {

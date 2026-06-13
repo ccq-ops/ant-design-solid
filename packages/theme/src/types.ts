@@ -329,6 +329,11 @@ export interface SpaceComponentToken extends ComponentTokenBase {
   gapMiddle: number
   gapLarge: number
 }
+export interface FlexComponentToken extends ComponentTokenBase {
+  flexGapSM: number
+  flexGap: number
+  flexGapLG: number
+}
 export interface TypographyComponentToken extends ComponentTokenBase {
   titleMarginBottom: number
   titleFontWeight: number
@@ -611,7 +616,7 @@ export interface ComponentTokenMap {
   Drawer?: ComponentTokenBase
   Dropdown: DropdownComponentToken
   Empty?: ComponentTokenBase
-  Flex?: ComponentTokenBase
+  Flex: FlexComponentToken
   FloatButton: FloatButtonComponentToken
   Form: FormComponentToken
   Grid: GridComponentToken

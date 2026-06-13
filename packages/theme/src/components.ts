@@ -87,6 +87,7 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       paddingInlineSM: token.paddingXS,
     },
     Space: { gapSmall: token.marginXS, gapMiddle: token.marginSM, gapLarge: token.margin },
+    Flex: { flexGapSM: token.paddingXS, flexGap: token.padding, flexGapLG: token.paddingLG },
     Typography: {
       titleMarginBottom: token.marginSM,
       titleFontWeight: 600,

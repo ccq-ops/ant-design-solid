@@ -1,16 +1,41 @@
 # Flex
 
+Flex arranges content with CSS flexbox and Ant Design style spacing, direction, wrapping, and alignment props.
+
 ### Basic
 
 ```tsx
-import { Button, Flex } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Flex, Radio } from '@ant-design-solid/core'
+
+const baseStyle = {
+  width: '25%',
+  height: '54px',
+}
 
 const Demo1 = function () {
+  const [orientation, setOrientation] = createSignal<'horizontal' | 'vertical'>('horizontal')
+
   return (
-    <Flex gap="large" wrap>
-      <Button>One</Button>
-      <Button>Two</Button>
-      <Button>Three</Button>
+    <Flex gap="medium" vertical>
+      <Radio.Group
+        value={orientation()}
+        onChange={(value) => setOrientation(value as 'horizontal' | 'vertical')}
+        options={[
+          { label: 'horizontal', value: 'horizontal' },
+          { label: 'vertical', value: 'vertical' },
+        ]}
+      />
+      <Flex orientation={orientation()}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            style={{
+              ...baseStyle,
+              'background-color': index % 2 ? '#1677ff' : '#1677ffbf',
+            }}
+          />
+        ))}
+      </Flex>
     </Flex>
   )
 }
@@ -18,16 +43,36 @@ const Demo1 = function () {
 export default Demo1
 ```
 
-### Vertical
+### Gap
 
 ```tsx
-import { Button, Flex } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Button, Flex, Radio, Slider } from '@ant-design-solid/core'
+import type { FlexProps } from '@ant-design-solid/core'
 
 const Demo2 = function () {
+  const [gapSize, setGapSize] = createSignal<FlexProps['gap']>('small')
+  const [customGapSize, setCustomGapSize] = createSignal(0)
+
   return (
-    <Flex vertical gap={8} align="flex-start">
-      <Button>A</Button>
-      <Button>B</Button>
+    <Flex gap="medium" vertical>
+      <Radio.Group
+        value={String(gapSize())}
+        onChange={(value) => setGapSize(value as FlexProps['gap'])}
+        options={['small', 'medium', 'large', 'customize'].map((size) => ({
+          label: size,
+          value: size,
+        }))}
+      />
+      {gapSize() === 'customize' && (
+        <Slider value={customGapSize()} onChange={(value) => setCustomGapSize(value as number)} />
+      )}
+      <Flex gap={gapSize() !== 'customize' ? gapSize() : customGapSize()}>
+        <Button type="primary">Primary</Button>
+        <Button>Default</Button>
+        <Button type="dashed">Dashed</Button>
+        <Button type="link">Link</Button>
+      </Flex>
     </Flex>
   )
 }
@@ -38,13 +83,52 @@ export default Demo2
 ### Alignment
 
 ```tsx
-import { Button, Flex } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Button, Flex, Segmented } from '@ant-design-solid/core'
+import type { FlexProps } from '@ant-design-solid/core'
+
+const boxStyle = {
+  width: '100%',
+  height: '120px',
+  'border-radius': '6px',
+  border: '1px solid #40a9ff',
+}
+
+const justifyOptions = [
+  'flex-start',
+  'center',
+  'flex-end',
+  'space-between',
+  'space-around',
+  'space-evenly',
+]
+
+const alignOptions = ['flex-start', 'center', 'flex-end']
 
 const Demo3 = function () {
+  const [justify, setJustify] = createSignal<FlexProps['justify']>('flex-start')
+  const [align, setAlign] = createSignal<FlexProps['align']>('flex-start')
+
   return (
-    <Flex justify="space-between" align="center" class="w-full bg-gray-100 p-3">
-      <span>Left</span>
-      <Button type="primary">Right</Button>
+    <Flex gap="medium" align="start" vertical>
+      <span>Select justify:</span>
+      <Segmented
+        options={justifyOptions}
+        value={justify()}
+        onChange={(value) => setJustify(value as FlexProps['justify'])}
+      />
+      <span>Select align:</span>
+      <Segmented
+        options={alignOptions}
+        value={align()}
+        onChange={(value) => setAlign(value as FlexProps['align'])}
+      />
+      <Flex style={boxStyle} justify={justify()} align={align()}>
+        <Button type="primary">Primary</Button>
+        <Button type="primary">Primary</Button>
+        <Button type="primary">Primary</Button>
+        <Button type="primary">Primary</Button>
+      </Flex>
     </Flex>
   )
 }
@@ -52,16 +136,17 @@ const Demo3 = function () {
 export default Demo3
 ```
 
-### Semantic element
+### Wrap
 
 ```tsx
 import { Button, Flex } from '@ant-design-solid/core'
 
 const Demo4 = function () {
   return (
-    <Flex component="section" gap={[8, 16]} wrap="wrap-reverse">
-      <span>Section</span>
-      <span>content</span>
+    <Flex wrap gap="small">
+      {Array.from({ length: 24 }).map(() => (
+        <Button type="primary">Button</Button>
+      ))}
     </Flex>
   )
 }
@@ -69,14 +154,87 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+### Combination
+
+```tsx
+import { Button, Card, Flex, Typography } from '@ant-design-solid/core'
+
+const cardStyle = {
+  width: '620px',
+}
+
+const imgStyle = {
+  display: 'block',
+  width: '273px',
+}
+
+const Demo5 = function () {
+  return (
+    <Card hoverable style={cardStyle} styles={{ body: { padding: 0, overflow: 'hidden' } }}>
+      <Flex justify="space-between">
+        <img
+          draggable={false}
+          alt="avatar"
+          src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+          style={imgStyle}
+        />
+        <Flex vertical align="flex-end" justify="space-between" style={{ padding: '32px' }}>
+          <Typography.Title level={3}>
+            "antd is an enterprise-class UI design language and React UI library."
+          </Typography.Title>
+          <Button type="primary" href="https://ant.design" target="_blank">
+            Get Started
+          </Button>
+        </Flex>
+      </Flex>
+    </Card>
+  )
+}
+
+export default Demo5
+```
+
+### Semantic element
+
+```tsx
+import type { JSX } from 'solid-js'
+import { Button, Flex } from '@ant-design-solid/core'
+
+function Article(props: JSX.HTMLAttributes<HTMLElement>) {
+  return <article {...props} />
+}
+
+const Demo6 = function () {
+  return (
+    <Flex component={Article} rootClassName="demo-flex-root" gap="8px 16px" wrap>
+      <Button>Custom component</Button>
+      <Button>Solid class</Button>
+    </Flex>
+  )
+}
+
+export default Demo6
+```
+
 ## API
 
-| Property    | Description                                            | Type                                                                                            | Default    |
-| ----------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ---------- |
-| `vertical`  | Stacks children vertically.                            | `boolean`                                                                                       | `false`    |
-| `wrap`      | Controls flex wrapping. Boolean true maps to wrap.     | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'`                                               | `-`        |
-| `justify`   | Maps to CSS justify-content.                           | `'flex-start' \| 'center' \| 'flex-end' \| 'space-between' \| 'space-around' \| 'space-evenly'` | `-`        |
-| `align`     | Maps to CSS align-items.                               | `'flex-start' \| 'center' \| 'flex-end' \| 'stretch' \| 'baseline'`                             | `-`        |
-| `gap`       | Horizontal and vertical gap. Presets use Space tokens. | `'small' \| 'middle' \| 'large' \| number \| [number, number]`                                  | `'middle'` |
-| `component` | HTML element used as the wrapper.                      | `keyof JSX.IntrinsicElements`                                                                   | `'div'`    |
-| `prefixCls` | Custom CSS class prefix.                               | `string`                                                                                        | `-`        |
+| Property        | Description                                                               | Type                                                                                                                                                              | Default        |
+| --------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `align`         | Cross-axis alignment. Maps to CSS `align-items`.                          | `'center' \| 'start' \| 'end' \| 'flex-start' \| 'flex-end' \| 'self-start' \| 'self-end' \| 'baseline' \| 'normal' \| 'stretch'`                                 | `flex-start`   |
+| `component`     | Wrapper element or Solid component.                                       | `ValidComponent`                                                                                                                                                  | `'div'`        |
+| `flex`          | CSS `flex` shorthand applied to the root element.                         | `JSX.CSSProperties['flex']`                                                                                                                                       | `-`            |
+| `gap`           | Gap between items. Presets use Flex component tokens.                     | `'small' \| 'middle' \| 'medium' \| 'large' \| number \| string \| [number, number]`                                                                              | `'medium'`     |
+| `justify`       | Main-axis alignment. Maps to CSS `justify-content`.                       | `'flex-start' \| 'flex-end' \| 'start' \| 'end' \| 'center' \| 'space-between' \| 'space-around' \| 'space-evenly' \| 'stretch' \| 'normal' \| 'left' \| 'right'` | `-`            |
+| `orientation`   | Direction of the flex layout. Takes priority over `vertical`.             | `'horizontal' \| 'vertical'`                                                                                                                                      | `'horizontal'` |
+| `prefixCls`     | Custom CSS class prefix.                                                  | `string`                                                                                                                                                          | `-`            |
+| `rootClassName` | Extra root class. Solid consumers should continue using `class` normally. | `string`                                                                                                                                                          | `-`            |
+| `vertical`      | Shorthand for vertical orientation.                                       | `boolean`                                                                                                                                                         | `false`        |
+| `wrap`          | Controls flex wrapping. Boolean true maps to `wrap`.                      | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'`                                                                                                                 | `-`            |
+
+## Design Token
+
+| Token       | Description | Default alias |
+| ----------- | ----------- | ------------- |
+| `flexGapSM` | Small gap.  | `paddingXS`   |
+| `flexGap`   | Middle gap. | `padding`     |
+| `flexGapLG` | Large gap.  | `paddingLG`   |
