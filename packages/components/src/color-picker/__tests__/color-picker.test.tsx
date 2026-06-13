@@ -293,15 +293,16 @@ describe('ColorPicker trigger', () => {
 })
 
 describe('ColorPicker v6 API compatibility', () => {
-  it('renders custom trigger children while preserving popup behavior', () => {
+  it('renders custom trigger children without nesting native buttons', () => {
     const result = render(() => (
       <ColorPicker defaultValue="#1677ff">
-        <span>Custom trigger</span>
+        <button type="button">Pick brand color</button>
       </ColorPicker>
     ))
 
-    const trigger = result.getByRole('button', { name: /color picker/i })
-    expect(result.getByText('Custom trigger')).toBeInTheDocument()
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+    expect(trigger.closest('button')).toBe(trigger)
+    expect(trigger.parentElement?.closest('button')).toBeNull()
 
     fireEvent.click(trigger)
     expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()

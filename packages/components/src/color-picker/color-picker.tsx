@@ -1,6 +1,7 @@
 import {
   For,
   Show,
+  children as resolveChildren,
   createEffect,
   createRenderEffect,
   createSignal,
@@ -109,10 +110,11 @@ export function ColorPicker(props: ColorPickerProps) {
     brightness: '100',
   })
   const [position, setPosition] = createSignal<JSX.CSSProperties>(emptyPosition())
+  const resolvedChildren = resolveChildren(() => local.children)
   const valueControlled = () => 'value' in props
   const openControlled = () => 'open' in props
   const formatControlled = () => 'format' in props
-  let triggerRef: HTMLButtonElement | undefined
+  let triggerRef: HTMLElement | undefined
   let popupRef: HTMLDivElement | undefined
   let activeDragCleanup: (() => void) | undefined
   let suppressBlurTarget: HTMLInputElement | undefined
@@ -127,7 +129,7 @@ export function ColorPicker(props: ColorPickerProps) {
   const format = () => local.format ?? innerFormat()
   const placement = () => local.placement ?? 'bottomLeft'
 
-  function updatePosition(element?: HTMLButtonElement | Event): void {
+  function updatePosition(element?: HTMLElement | Event): void {
     const target = element instanceof HTMLElement ? element : triggerRef
     if (!canUseDom() || !target) return
     setPosition({
@@ -882,58 +884,75 @@ export function ColorPicker(props: ColorPickerProps) {
 
   const renderedPanel = () =>
     local.panelRender?.(renderPanel(), { components: { picker: renderPanel() } }) ?? renderPanel()
+  const triggerClass = () =>
+    classNames(
+      prefixCls(),
+      size() === 'small' && `${prefixCls()}-sm`,
+      size() === 'large' && `${prefixCls()}-lg`,
+      disabled() && `${prefixCls()}-disabled`,
+      hashId(),
+      local.class,
+    )
+  const handleTriggerClick = (event: MouseEvent): void => {
+    ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
+    if (event.defaultPrevented || local.trigger === 'hover') return
+    setOpen(!open())
+  }
+  const customTrigger = () => resolvedChildren()
 
   return (
     <ZIndexContext.Provider value={contextZIndex}>
-      <button
-        {...rest}
-        ref={(element) => {
-          triggerRef = element
-        }}
-        type="button"
-        class={classNames(
-          prefixCls(),
-          size() === 'small' && `${prefixCls()}-sm`,
-          size() === 'large' && `${prefixCls()}-lg`,
-          disabled() && `${prefixCls()}-disabled`,
-          hashId(),
-          local.class,
-        )}
-        style={local.style}
-        disabled={disabled()}
-        aria-label="Color Picker"
-        aria-haspopup="dialog"
-        aria-expanded={open() ? 'true' : 'false'}
-        aria-disabled={disabled() ? 'true' : undefined}
-        onClick={(event) => {
-          ;(local.onClick as ((event: MouseEvent) => void) | undefined)?.(event)
-          if (event.defaultPrevented || local.trigger === 'hover') return
-          setOpen(!open())
-        }}
-        onMouseEnter={handleHoverEnter}
-        onMouseLeave={handleHoverLeave}
+      <Show
+        when={customTrigger()}
+        fallback={
+          <button
+            {...rest}
+            ref={(element) => {
+              triggerRef = element
+            }}
+            type="button"
+            class={triggerClass()}
+            style={local.style}
+            disabled={disabled()}
+            aria-label="Color Picker"
+            aria-haspopup="dialog"
+            aria-expanded={open() ? 'true' : 'false'}
+            aria-disabled={disabled() ? 'true' : undefined}
+            onClick={handleTriggerClick}
+            onMouseEnter={handleHoverEnter}
+            onMouseLeave={handleHoverLeave}
+          >
+            <span class={`${prefixCls()}-color-block`} aria-hidden="true">
+              <span
+                class={`${prefixCls()}-color-block-inner`}
+                style={{ background: colorToCss(mergedColor()) }}
+              />
+            </span>
+            {local.showText && (
+              <span class={`${prefixCls()}-text`}>{renderText(local.showText, mergedColor())}</span>
+            )}
+          </button>
+        }
       >
-        <Show
-          when={local.children}
-          fallback={
-            <>
-              <span class={`${prefixCls()}-color-block`} aria-hidden="true">
-                <span
-                  class={`${prefixCls()}-color-block-inner`}
-                  style={{ background: colorToCss(mergedColor()) }}
-                />
-              </span>
-              {local.showText && (
-                <span class={`${prefixCls()}-text`}>
-                  {renderText(local.showText, mergedColor())}
-                </span>
-              )}
-            </>
-          }
+        <span
+          ref={(element) => {
+            triggerRef = element
+          }}
+          role="button"
+          class={triggerClass()}
+          style={local.style}
+          tabIndex={disabled() ? undefined : 0}
+          aria-label="Color Picker"
+          aria-haspopup="dialog"
+          aria-expanded={open() ? 'true' : 'false'}
+          aria-disabled={disabled() ? 'true' : undefined}
+          onClick={handleTriggerClick}
+          onMouseEnter={handleHoverEnter}
+          onMouseLeave={handleHoverLeave}
         >
-          {local.children}
-        </Show>
-      </button>
+          {customTrigger()}
+        </span>
+      </Show>
       <Show when={open()}>
         <InternalPortal
           mount={() =>
