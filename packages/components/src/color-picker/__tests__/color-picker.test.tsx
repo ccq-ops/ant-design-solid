@@ -201,6 +201,25 @@ describe('Color utilities', () => {
       'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
     )
   })
+
+  it('normalizes one-stop gradients to a single color', () => {
+    const color = parseColor([{ color: '#1677ff', percent: 50 }])!
+
+    expect(color.isGradient()).toBe(false)
+    expect(color.toHexString()).toBe('#1677ff')
+    expect(color.toCssString()).toBe('rgb(22, 119, 255)')
+  })
+
+  it('normalizes gradients with only one valid stop to a single color', () => {
+    const color = parseColor([
+      { color: 'not-a-color', percent: 0 },
+      { color: '#1677ff', percent: 50 },
+    ])!
+
+    expect(color.isGradient()).toBe(false)
+    expect(color.toHexString()).toBe('#1677ff')
+    expect(color.toCssString()).toBe('rgb(22, 119, 255)')
+  })
 })
 
 describe('ColorPicker trigger', () => {

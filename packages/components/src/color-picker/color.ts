@@ -184,6 +184,10 @@ export class Color {
 
     parsedColors.sort((a, b) => a.percent - b.percent)
 
+    if (parsedColors.length === 1) {
+      return parsedColors[0].color
+    }
+
     return new Color(parsedColors[0].color.toRgb(), parsedColors)
   }
 
