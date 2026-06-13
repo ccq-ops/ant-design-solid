@@ -229,7 +229,7 @@ export function useDatePickerStyle(prefixCls: string) {
           insetInlineEnd: `${dp.paddingInlineLG}px`,
         },
         [`.${prefixCls}-week-cell`]: {
-          color: t.colorTextSecondary,
+          color: t.colorText,
         },
         [`.${prefixCls}-clear:hover`]: {
           color: t.colorText,
@@ -308,6 +308,11 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-weekdays-with-week`]: {
           gap: `${t.marginXXS}px`,
           'grid-template-columns': `52px repeat(7, ${dp.cellHeight}px)`,
+        },
+        [`.${prefixCls}-week-column-header`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
         },
         [`.${prefixCls}-weekday`]: {
           color: t.colorTextSecondary,
