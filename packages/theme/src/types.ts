@@ -359,6 +359,18 @@ export interface DatePickerComponentToken extends ComponentTokenBase {
   withoutTimeCellHeight: number
 }
 
+export interface ColorPickerComponentToken extends ComponentTokenBase {
+  colorPickerWidth: number
+  colorPickerHandlerSize: number
+  colorPickerHandlerSizeSM: number
+  colorPickerAlphaInputWidth: number
+  colorPickerInputNumberHandleWidth: number
+  colorPickerPresetColorSize: number
+  colorPickerInsetShadow: string
+  colorPickerSliderHeight: number
+  colorPickerPreviewSize: number
+}
+
 export interface SpaceComponentToken extends ComponentTokenBase {
   gapSmall: number
   gapMiddle: number
@@ -698,7 +710,7 @@ export interface ComponentTokenMap {
   Carousel?: ComponentTokenBase
   Cascader?: ComponentTokenBase
   Checkbox: CheckboxComponentToken
-  ColorPicker?: ComponentTokenBase
+  ColorPicker: ColorPickerComponentToken
   Collapse?: ComponentTokenBase
   DatePicker: DatePickerComponentToken
   Descriptions: DescriptionsComponentToken
