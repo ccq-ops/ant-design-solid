@@ -555,6 +555,101 @@ describe('ColorPicker v6 API compatibility', () => {
 })
 
 describe('ColorPicker popup', () => {
+  it('applies root and popup semantic classes and styles', () => {
+    const result = render(() => (
+      <ColorPicker
+        defaultOpen
+        defaultValue="#1677ff"
+        rootClass="root-extra"
+        class="trigger-extra"
+        style={{ width: '123px' }}
+        popupClass="popup-extra"
+        popupStyle={{ width: '234px' }}
+        classNames={({ props }) => ({
+          root: props.disabled ? 'root-disabled' : 'root-slot',
+          popup: { root: 'popup-root-slot' },
+          popupOverlayInner: 'popup-inner-slot',
+        })}
+        styles={({ props }) => ({
+          root: { color: props.disabled ? 'gray' : 'red' },
+          popup: { root: { height: '45px' } },
+          popupOverlayInner: { padding: '9px' },
+        })}
+      />
+    ))
+
+    const trigger = result.getByRole('button', { name: /color picker/i })
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    const inner = popup.querySelector('.ads-color-picker-popup-inner') as HTMLElement
+
+    expect(trigger).toHaveClass('ads-color-picker', 'root-extra', 'trigger-extra', 'root-slot')
+    expect(trigger).toHaveStyle({ width: '123px', color: 'rgb(255, 0, 0)' })
+    expect(popup).toHaveClass('ads-color-picker-popup', 'popup-extra', 'popup-root-slot')
+    expect(popup).toHaveStyle({ width: '234px', height: '45px' })
+    expect(inner).toHaveClass('ads-color-picker-popup-inner', 'popup-inner-slot')
+    expect(inner).toHaveStyle({ padding: '9px' })
+  })
+
+  it('positions rightTop with adjusted placement and renders centered arrows', () => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 200 })
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff" placement="rightTop" arrow={{ pointAtCenter: true }} />
+    ))
+    const trigger = result.getByRole('button', { name: /color picker/i })
+    mockRect(trigger, { left: 180, top: 40, width: 30, height: 20 })
+
+    fireEvent.click(trigger)
+
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    expect(popup).toHaveClass('ads-color-picker-leftTop', 'ads-color-picker-arrow-point-at-center')
+    expect(popup).toHaveStyle({
+      top: '40px',
+      left: '176px',
+      transform: 'translateX(-100%)',
+    })
+    expect(popup.querySelector('.ads-color-picker-arrow')).toBeInTheDocument()
+  })
+
+  it('hides the popup arrow when arrow is false', () => {
+    render(() => <ColorPicker defaultOpen defaultValue="#1677ff" arrow={false} />)
+
+    const popup = screen.getByRole('dialog', { name: 'Color Picker Panel' })
+    expect(popup.querySelector('.ads-color-picker-arrow')).toBeNull()
+  })
+
+  it('keeps a hidden popup mounted when destroyOnHidden is false', () => {
+    const [open, setOpen] = createSignal(true)
+    render(() => (
+      <ColorPicker open={open()} destroyOnHidden={false} defaultValue="#1677ff" allowClear />
+    ))
+
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    setOpen(false)
+
+    const popup = document.body.querySelector('.ads-color-picker-popup') as HTMLElement
+    expect(popup).toHaveClass('ads-color-picker-popup-hidden')
+    expect(popup).toHaveAttribute('aria-hidden', 'true')
+    expect(popup.querySelector('.ads-color-picker-clear')).toHaveTextContent('Clear color')
+  })
+
+  it('removes a hidden popup when destroyTooltipOnHide is enabled with keepParent', () => {
+    const [open, setOpen] = createSignal(true)
+    render(() => (
+      <ColorPicker
+        open={open()}
+        destroyTooltipOnHide={{ keepParent: true }}
+        defaultValue="#1677ff"
+      />
+    ))
+
+    expect(screen.getByRole('dialog', { name: 'Color Picker Panel' })).toBeInTheDocument()
+
+    setOpen(false)
+
+    expect(document.body.querySelector('.ads-color-picker-popup')).toBeNull()
+  })
+
   it('opens from trigger and closes from trigger, Escape, and outside pointer down', () => {
     const onOpenChange = vi.fn()
     const result = render(() => <ColorPicker defaultValue="#1677ff" onOpenChange={onOpenChange} />)

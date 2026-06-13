@@ -64,7 +64,6 @@ export function useColorPickerStyle(prefixCls: string) {
           position: 'fixed',
           'box-sizing': 'border-box',
           minWidth: '180px',
-          padding: `${t.paddingSM}px`,
           border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
           'border-radius': `${t.borderRadius}px`,
           background: t.colorBgElevated,
@@ -72,6 +71,68 @@ export function useColorPickerStyle(prefixCls: string) {
           color: t.colorText,
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
+        },
+        [`.${prefixCls}-popup-hidden`]: {
+          opacity: 0,
+          visibility: 'hidden',
+          'pointer-events': 'none',
+        },
+        [`.${prefixCls}-popup-inner`]: {
+          position: 'relative',
+          'z-index': 1,
+          padding: `${t.paddingSM}px`,
+          'border-radius': `${t.borderRadius}px`,
+          background: 'inherit',
+        },
+        [`.${prefixCls}-arrow`]: {
+          position: 'absolute',
+          width: 8,
+          height: 8,
+          background: 'inherit',
+          transform: 'rotate(45deg)',
+        },
+        [`.${prefixCls}-top .${prefixCls}-arrow, .${prefixCls}-topLeft .${prefixCls}-arrow, .${prefixCls}-topRight .${prefixCls}-arrow`]:
+          {
+            bottom: -4,
+          },
+        [`.${prefixCls}-bottom .${prefixCls}-arrow, .${prefixCls}-bottomLeft .${prefixCls}-arrow, .${prefixCls}-bottomRight .${prefixCls}-arrow`]:
+          {
+            top: -4,
+          },
+        [`.${prefixCls}-left .${prefixCls}-arrow, .${prefixCls}-leftTop .${prefixCls}-arrow, .${prefixCls}-leftBottom .${prefixCls}-arrow`]:
+          {
+            right: -4,
+          },
+        [`.${prefixCls}-right .${prefixCls}-arrow, .${prefixCls}-rightTop .${prefixCls}-arrow, .${prefixCls}-rightBottom .${prefixCls}-arrow`]:
+          {
+            left: -4,
+          },
+        [`.${prefixCls}-top .${prefixCls}-arrow, .${prefixCls}-bottom .${prefixCls}-arrow`]: {
+          left: '50%',
+          transform: 'translateX(-50%) rotate(45deg)',
+        },
+        [`.${prefixCls}-topLeft .${prefixCls}-arrow, .${prefixCls}-bottomLeft .${prefixCls}-arrow`]:
+          {
+            left: 12,
+          },
+        [`.${prefixCls}-topRight .${prefixCls}-arrow, .${prefixCls}-bottomRight .${prefixCls}-arrow`]:
+          {
+            right: 12,
+          },
+        [`.${prefixCls}-left .${prefixCls}-arrow, .${prefixCls}-right .${prefixCls}-arrow`]: {
+          top: '50%',
+          transform: 'translateY(-50%) rotate(45deg)',
+        },
+        [`.${prefixCls}-leftTop .${prefixCls}-arrow, .${prefixCls}-rightTop .${prefixCls}-arrow`]: {
+          top: 12,
+        },
+        [`.${prefixCls}-leftBottom .${prefixCls}-arrow, .${prefixCls}-rightBottom .${prefixCls}-arrow`]:
+          {
+            bottom: 12,
+          },
+        [`.${prefixCls}-arrow-point-at-center .${prefixCls}-arrow`]: {
+          left: '50%',
+          top: '50%',
         },
         [`.${prefixCls}-panel`]: {
           display: 'flex',

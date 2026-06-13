@@ -16,7 +16,7 @@ import {
   addDocumentPointerDown,
   addPositionUpdateListeners,
 } from '../shared/overlay'
-import { getTooltipPosition } from '../shared/placement'
+import { getAdjustedTooltipPlacement, getTooltipPosition } from '../shared/placement'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { ZIndexContext, useZIndex } from '../shared/z-index'
 import { Color, clamp, colorToCss, normalizeHsb, parseColor } from './color'
@@ -27,6 +27,35 @@ import type { ColorPickerFormat } from './interface'
 
 function emptyPosition(): JSX.CSSProperties {
   return { position: 'fixed', top: '0px', left: '0px' }
+}
+
+function mergeStyle(
+  ...styles: Array<JSX.CSSProperties | string | undefined>
+): JSX.CSSProperties | string | undefined {
+  const stringStyle = styles.find((style): style is string => typeof style === 'string')
+  const objectStyles = styles.filter((style): style is JSX.CSSProperties => !!style)
+
+  if (stringStyle) return stringStyle
+  if (!objectStyles.length) return undefined
+
+  return Object.assign({}, ...objectStyles)
+}
+
+function resolveMaybeFn<T>(
+  value: T | ((info: { props: ColorPickerProps }) => T) | undefined,
+  props: ColorPickerProps,
+): T | undefined {
+  return typeof value === 'function'
+    ? (value as (info: { props: ColorPickerProps }) => T)({ props })
+    : value
+}
+
+function showArrow(arrow: ColorPickerProps['arrow']): boolean {
+  return arrow !== false
+}
+
+function pointAtCenter(arrow: ColorPickerProps['arrow']): boolean {
+  return typeof arrow === 'object' && Boolean(arrow.pointAtCenter)
 }
 
 function renderText(showText: ColorPickerProps['showText'], color: Color | undefined): JSX.Element {
@@ -98,6 +127,7 @@ export function ColorPicker(props: ColorPickerProps) {
     initialColor?.toHsb() ?? { h: 0, s: 0, b: 100, a: 1 },
   )
   const [innerOpen, setInnerOpen] = createSignal(Boolean(local.defaultOpen))
+  const [hasRenderedPopup, setHasRenderedPopup] = createSignal(Boolean(local.defaultOpen))
   const [innerFormat, setInnerFormat] = createSignal<ColorPickerFormat>(
     local.defaultFormat ?? 'hex',
   )
@@ -131,13 +161,43 @@ export function ColorPicker(props: ColorPickerProps) {
   const open = () => (openControlled() ? Boolean(local.open) : innerOpen())
   const format = () => local.format ?? innerFormat()
   const placement = () => local.placement ?? 'bottomLeft'
+  const semanticClassNames = () => resolveMaybeFn(local.classNames, props) ?? {}
+  const semanticStyles = () => resolveMaybeFn(local.styles, props) ?? {}
+  const destroyOnHidden = () => {
+    if (local.destroyOnHidden !== undefined) return local.destroyOnHidden
+    if (typeof local.destroyTooltipOnHide === 'boolean') return local.destroyTooltipOnHide
+    if (local.destroyTooltipOnHide) return true
+    return false
+  }
+  const shouldRenderPopup = () => open() || (hasRenderedPopup() && !destroyOnHidden())
+  const popupVisible = () => open()
+  const adjustedPlacement = () => {
+    const target = triggerRef
+
+    if (!canUseDom() || !target) return placement()
+
+    return getAdjustedTooltipPlacement(
+      target.getBoundingClientRect(),
+      placement(),
+      4,
+      local.autoAdjustOverflow,
+    )
+  }
 
   function updatePosition(element?: HTMLElement | Event): void {
     const target = element instanceof HTMLElement ? element : triggerRef
     if (!canUseDom() || !target) return
+    const targetRect = target.getBoundingClientRect()
+    const nextPlacement = getAdjustedTooltipPlacement(
+      targetRect,
+      placement(),
+      4,
+      local.autoAdjustOverflow,
+    )
+
     setPosition({
       position: 'fixed',
-      ...getTooltipPosition(target.getBoundingClientRect(), placement(), 4),
+      ...getTooltipPosition(targetRect, nextPlacement, 4),
     })
   }
 
@@ -190,7 +250,10 @@ export function ColorPicker(props: ColorPickerProps) {
   })
 
   createRenderEffect(() => {
-    if (open()) updatePosition()
+    if (!open()) return
+
+    setHasRenderedPopup(true)
+    updatePosition()
   })
 
   createRenderEffect(() => {
@@ -899,6 +962,8 @@ export function ColorPicker(props: ColorPickerProps) {
       size() === 'large' && `${prefixCls()}-lg`,
       disabled() && `${prefixCls()}-disabled`,
       hashId(),
+      local.rootClass,
+      semanticClassNames().root,
       local.class,
     )
   const handleTriggerClick = (event: MouseEvent): void => {
@@ -980,7 +1045,7 @@ export function ColorPicker(props: ColorPickerProps) {
             }}
             type="button"
             class={triggerClass()}
-            style={local.style}
+            style={mergeStyle(semanticStyles().root, local.style)}
             disabled={disabled()}
             aria-label="Color Picker"
             aria-haspopup="dialog"
@@ -1014,7 +1079,7 @@ export function ColorPicker(props: ColorPickerProps) {
           }}
           role={hasInteractiveCustomChild() ? undefined : 'button'}
           class={triggerClass()}
-          style={local.style}
+          style={mergeStyle(semanticStyles().root, local.style)}
           tabIndex={hasInteractiveCustomChild() || disabled() ? undefined : 0}
           aria-label={customTriggerProps['aria-label']}
           aria-haspopup="dialog"
@@ -1028,7 +1093,7 @@ export function ColorPicker(props: ColorPickerProps) {
           {customTrigger()}
         </span>
       </Show>
-      <Show when={open()}>
+      <Show when={shouldRenderPopup()}>
         <InternalPortal
           mount={() =>
             local.getPopupContainer?.(triggerRef) ?? config.getPopupContainer?.(triggerRef)
@@ -1040,17 +1105,38 @@ export function ColorPicker(props: ColorPickerProps) {
             }}
             role="dialog"
             aria-label="Color Picker Panel"
+            aria-hidden={popupVisible() ? undefined : 'true'}
             class={classNames(
               `${prefixCls()}-popup`,
-              `${prefixCls()}-${placement()}`,
+              `${prefixCls()}-${adjustedPlacement()}`,
+              !popupVisible() && `${prefixCls()}-popup-hidden`,
+              showArrow(local.arrow) && `${prefixCls()}-with-arrow`,
+              pointAtCenter(local.arrow) && `${prefixCls()}-arrow-point-at-center`,
               hashId(),
               local.popupClass,
+              semanticClassNames().popup?.root,
             )}
-            style={{ ...position(), 'z-index': zIndex, ...local.popupStyle }}
+            style={mergeStyle(
+              position(),
+              { 'z-index': zIndex },
+              semanticStyles().popup?.root,
+              local.popupStyle,
+            )}
             onMouseEnter={handleHoverEnter}
             onMouseLeave={handleHoverLeave}
           >
-            {renderedPanel()}
+            <Show when={showArrow(local.arrow)}>
+              <div class={`${prefixCls()}-arrow`} />
+            </Show>
+            <div
+              class={classNames(
+                `${prefixCls()}-popup-inner`,
+                semanticClassNames().popupOverlayInner,
+              )}
+              style={semanticStyles().popupOverlayInner}
+            >
+              {renderedPanel()}
+            </div>
           </div>
         </InternalPortal>
       </Show>
