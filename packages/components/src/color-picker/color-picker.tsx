@@ -1,5 +1,4 @@
 import {
-  For,
   Show,
   children as resolveChildren,
   createEffect,
@@ -26,6 +25,7 @@ import { useColorPickerStyle } from './color-picker.style'
 import { GradientSlider } from './gradient-slider'
 import type { ColorPickerProps } from './interface'
 import type { ColorPickerFormat, ColorPickerMode } from './interface'
+import { Presets } from './presets'
 
 function emptyPosition(): JSX.CSSProperties {
   return { position: 'fixed', top: '0px', left: '0px' }
@@ -478,12 +478,6 @@ export function ColorPicker(props: ColorPickerProps) {
     syncDraftToSource()
   }
 
-  function presetColorLabel(
-    value: NonNullable<ColorPickerProps['presets']>[number]['colors'][number],
-  ): string {
-    return typeof value === 'string' ? value : colorToCss(parseColor(value))
-  }
-
   function selectPreset(
     value: NonNullable<ColorPickerProps['presets']>[number]['colors'][number],
   ): void {
@@ -492,6 +486,19 @@ export function ColorPicker(props: ColorPickerProps) {
     const nextColor = parseColor(value)
 
     if (!nextColor) return
+
+    if (nextColor.isGradient()) {
+      setInnerMode('gradient')
+      if (!valueControlled()) {
+        setInnerColor(nextColor)
+        setInnerHsb(nextColor.getColors()[0].color.toHsb())
+      }
+      setActiveGradientIndex(0)
+      local.onChange?.(nextColor, nextColor.toCssString())
+      local.onChangeComplete?.(nextColor)
+      syncDraftToSource()
+      return
+    }
 
     completeInputCommit(emitColor(nextColor.toHsb()))
   }
@@ -1052,36 +1059,12 @@ export function ColorPicker(props: ColorPickerProps) {
   function renderPresets(): JSX.Element {
     return (
       <Show when={presetList().length > 0}>
-        <div class={`${prefixCls()}-presets`}>
-          <For each={presetList()}>
-            {(preset) => (
-              <div class={`${prefixCls()}-preset`}>
-                <Show when={preset.label}>
-                  <div class={`${prefixCls()}-preset-label`}>{preset.label}</div>
-                </Show>
-                <div class={`${prefixCls()}-preset-colors`}>
-                  <For each={preset.colors}>
-                    {(presetColor) => (
-                      <button
-                        type="button"
-                        class={`${prefixCls()}-preset-color`}
-                        aria-label={`Select preset color ${presetColorLabel(presetColor)}`}
-                        title={presetColorLabel(presetColor)}
-                        disabled={disabled()}
-                        onClick={() => selectPreset(presetColor)}
-                      >
-                        <span
-                          class={`${prefixCls()}-preset-color-inner`}
-                          style={{ background: colorToCss(parseColor(presetColor)) }}
-                        />
-                      </button>
-                    )}
-                  </For>
-                </div>
-              </div>
-            )}
-          </For>
-        </div>
+        <Presets
+          prefixCls={prefixCls()}
+          presets={presetList()}
+          disabled={disabled()}
+          onSelect={selectPreset}
+        />
       </Show>
     )
   }

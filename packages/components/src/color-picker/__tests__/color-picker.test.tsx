@@ -1433,6 +1433,39 @@ describe('ColorPicker gradient mode', () => {
   })
 })
 
+it('supports preset defaultOpen and gradient preset values', () => {
+  const onChange = vi.fn()
+  render(() => (
+    <ColorPicker
+      defaultOpen
+      mode={['single', 'gradient']}
+      onChange={onChange}
+      presets={[
+        {
+          label: 'Brand',
+          defaultOpen: false,
+          key: 'brand',
+          colors: [
+            [
+              { color: '#1677ff', percent: 0 },
+              { color: '#52c41a', percent: 100 },
+            ],
+          ],
+        },
+      ]}
+    />
+  ))
+
+  expect(latestPanel().queryByRole('button', { name: /select preset color/i })).toBeNull()
+
+  fireEvent.click(latestPanel().getByRole('button', { name: 'Brand' }))
+  fireEvent.click(latestPanel().getByRole('button', { name: /select preset color/i }))
+
+  expect(onChange.mock.calls.at(-1)?.[1]).toBe(
+    'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+  )
+})
+
 it('uses explicit zIndex and custom popup container', () => {
   const popupContainer = document.createElement('div')
   document.body.appendChild(popupContainer)
