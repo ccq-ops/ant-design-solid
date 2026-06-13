@@ -60,11 +60,13 @@ describe('DatePicker showTime', () => {
 
     const dropdown = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')
     const panelBody = document.body.querySelector<HTMLElement>('.ads-date-picker-panel-body')
+    const header = document.body.querySelector<HTMLElement>('.ads-date-picker-header')
     const datePanel = document.body.querySelector<HTMLElement>('.ads-date-picker-panel-date')
     const timePanel = document.body.querySelector<HTMLElement>('.ads-date-picker-time-panel')
     const css = extractStyle(cache)
 
     expect(dropdown).toHaveClass('ads-date-picker-dropdown-with-time')
+    expect(datePanel).toContainElement(header)
     expect(datePanel).toContainElement(screen.getByTestId('custom-panel'))
     expect(screen.getByTestId('custom-panel')).not.toContainElement(timePanel)
     expect(screen.getByTestId('custom-panel').children).toHaveLength(2)
@@ -76,9 +78,20 @@ describe('DatePicker showTime', () => {
     expect(Array.from(panelBody?.children ?? [])).toEqual([datePanel, timePanel])
     expect(css).toContain('.ads-date-picker-panel-body-with-time{display:flex;')
     expect(css).not.toContain('.ads-date-picker-panel-body-with-time{align-items:stretch;')
-    expect(css).toContain('.ads-date-picker-panel-date{flex:1 1 auto;width:100%;')
+    expect(css).toContain('.ads-date-picker-panel-date{flex:0 0 256px;width:256px;')
     expect(css).toContain('.ads-date-picker-time-panel{border-left:')
     expect(css).not.toContain('.ads-date-picker-time-panel{display:flex;gap:8px;margin-top:')
+  })
+
+  it('keeps the header outside the panel body when showTime is disabled', () => {
+    render(() => <DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} />)
+
+    const dropdown = document.body.querySelector<HTMLElement>('.ads-date-picker-dropdown')
+    const panelBody = document.body.querySelector<HTMLElement>('.ads-date-picker-panel-body')
+    const header = document.body.querySelector<HTMLElement>('.ads-date-picker-header')
+
+    expect(dropdown?.children[0]).toBe(header)
+    expect(panelBody).not.toContainElement(header)
   })
 
   it('keeps the default date panel stacked when showTime is disabled', () => {

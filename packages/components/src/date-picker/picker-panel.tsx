@@ -172,11 +172,52 @@ export function PickerPanel(props: PickerPanelProps) {
     }
     return (
       <div class={`${props.prefixCls}-panel-body ${props.prefixCls}-panel-body-with-time`}>
-        <div class={`${props.prefixCls}-panel-date`}>{content}</div>
+        <div class={`${props.prefixCls}-panel-date`}>
+          {panelHeader()}
+          {content}
+        </div>
         {props.timePanel}
       </div>
     )
   }
+
+  const panelHeader = () => (
+    <div class={`${props.prefixCls}-header`}>
+      <button
+        type="button"
+        aria-label={superPreviousLabel(props.locale, props.mode)}
+        class={`${props.prefixCls}-super-month-button`}
+        onClick={props.onSuperPrevious}
+      >
+        {props.superPreviousIcon ?? '«'}
+      </button>
+      <button
+        type="button"
+        aria-label={previousLabel(props.locale, props.mode)}
+        class={`${props.prefixCls}-month-button`}
+        onClick={props.onPrevious}
+      >
+        {props.prevIcon ?? '‹'}
+      </button>
+      <div class={`${props.prefixCls}-month-label`}>{panelLabel(props.viewDate, props.mode)}</div>
+      <button
+        type="button"
+        aria-label={nextLabel(props.locale, props.mode)}
+        class={`${props.prefixCls}-month-button`}
+        onClick={props.onNext}
+      >
+        {props.nextIcon ?? '›'}
+      </button>
+      <button
+        type="button"
+        aria-label={superNextLabel(props.locale, props.mode)}
+        class={`${props.prefixCls}-super-month-button`}
+        onClick={props.onSuperNext}
+      >
+        {props.superNextIcon ?? '»'}
+      </button>
+    </div>
+  )
 
   const panel = () => (
     <div
@@ -192,41 +233,7 @@ export function PickerPanel(props: PickerPanelProps) {
       style={props.style}
       onMouseDown={(event) => event.preventDefault()}
     >
-      <div class={`${props.prefixCls}-header`}>
-        <button
-          type="button"
-          aria-label={superPreviousLabel(props.locale, props.mode)}
-          class={`${props.prefixCls}-super-month-button`}
-          onClick={props.onSuperPrevious}
-        >
-          {props.superPreviousIcon ?? '«'}
-        </button>
-        <button
-          type="button"
-          aria-label={previousLabel(props.locale, props.mode)}
-          class={`${props.prefixCls}-month-button`}
-          onClick={props.onPrevious}
-        >
-          {props.prevIcon ?? '‹'}
-        </button>
-        <div class={`${props.prefixCls}-month-label`}>{panelLabel(props.viewDate, props.mode)}</div>
-        <button
-          type="button"
-          aria-label={nextLabel(props.locale, props.mode)}
-          class={`${props.prefixCls}-month-button`}
-          onClick={props.onNext}
-        >
-          {props.nextIcon ?? '›'}
-        </button>
-        <button
-          type="button"
-          aria-label={superNextLabel(props.locale, props.mode)}
-          class={`${props.prefixCls}-super-month-button`}
-          onClick={props.onSuperNext}
-        >
-          {props.superNextIcon ?? '»'}
-        </button>
-      </div>
+      <Show when={!props.showTime || !props.timePanel}>{panelHeader()}</Show>
       <PresetsPanel
         prefixCls={props.prefixCls}
         presets={props.presets}

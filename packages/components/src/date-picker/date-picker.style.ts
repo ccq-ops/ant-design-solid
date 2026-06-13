@@ -252,8 +252,8 @@ export function useDatePickerStyle(prefixCls: string) {
           display: 'flex',
         },
         [`.${prefixCls}-panel-date`]: {
-          flex: '1 1 auto',
-          width: '100%',
+          flex: '0 0 256px',
+          width: '256px',
         },
         [`.${prefixCls}-presets`]: {
           display: 'flex',
