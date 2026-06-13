@@ -205,6 +205,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
       '.ads-date-picker-footer-centered .ads-date-picker-footer-extra{justify-content:center;width:100%;',
     )
     expect(css).toContain(
+      '.ads-date-picker-footer-centered .ads-date-picker-today{justify-content:center;width:100%;',
+    )
+    expect(css).toContain(
       '.ads-date-picker-today, .ads-date-picker-now{align-items:center;background:transparent;border:0;color:#1677ff;cursor:pointer;display:inline-flex;line-height:1;padding:0;',
     )
     expect(css).toContain(

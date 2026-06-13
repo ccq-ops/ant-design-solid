@@ -420,6 +420,10 @@ export function useDatePickerStyle(prefixCls: string) {
           width: '100%',
           'justify-content': 'center',
         },
+        [`.${prefixCls}-footer-centered .${prefixCls}-today`]: {
+          width: '100%',
+          'justify-content': 'center',
+        },
         [`.${prefixCls}-today, .${prefixCls}-now`]: {
           display: 'inline-flex',
           'align-items': 'center',
