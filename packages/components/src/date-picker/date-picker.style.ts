@@ -117,8 +117,9 @@ export function useDatePickerStyle(prefixCls: string) {
           'padding-right': `${dp.paddingInlineLG + t.controlHeightSM}px`,
         },
         [`.${prefixCls}-multiple .${prefixCls}-input`]: {
-          flex: '0 1 24px',
-          width: '24px',
+          flex: '1 1 auto',
+          width: 'auto',
+          'min-width': '24px',
         },
         [`.${prefixCls}-multiple .${prefixCls}-suffix`]: {
           position: 'absolute',

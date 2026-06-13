@@ -61,6 +61,23 @@ describe('DatePicker multiple selection', () => {
     expect(screen.getByRole('button', { name: 'Remove 2026-06' })).toBeInTheDocument()
   })
 
+  it('lets the multiple input fill available selector space', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker multiple placeholder="Select multiple dates" />
+      </StyleProvider>
+    ))
+
+    const input = screen.getByRole('textbox')
+    const css = extractStyle(cache)
+
+    expect(input).toHaveAttribute('placeholder', 'Select multiple dates')
+    expect(css).toContain(
+      '.ads-date-picker-multiple .ads-date-picker-input{flex:1 1 auto;min-width:24px;width:auto;',
+    )
+  })
+
   it('keeps suffix and clear icons fixed on the right side', () => {
     const cache = createCache()
     const result = render(() => (
