@@ -66,6 +66,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
       '.ads-date-picker-week-row{border-radius:4px;display:grid;gap:4px;grid-template-columns:52px repeat(7, 24px);',
     )
     expect(css).toContain('.ads-date-picker-week-row .ads-date-picker-cell{width:24px;')
+    expect(css).toContain(
+      '.ads-date-picker-week-row .ads-date-picker-week-cell{align-items:center;display:inline-flex;justify-content:center;width:100%;',
+    )
     expect(css).toContain('.ads-date-picker-week-row-selected{background:#1677ff;')
     expect(css).toContain(
       '.ads-date-picker-week-row-selected .ads-date-picker-cell-selected{background:transparent;color:#ffffff;font-weight:600;',
