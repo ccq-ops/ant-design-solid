@@ -346,10 +346,12 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-week-row .${prefixCls}-cell`]: {
           width: `${dp.cellHeight}px`,
         },
-        [`.${prefixCls}-week-row:hover .${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled)`]:
-          {
-            background: dp.cellHoverBg,
-          },
+        [`.${prefixCls}-week-row:hover`]: {
+          background: dp.cellHoverBg,
+        },
+        [`.${prefixCls}-week-row:hover .${prefixCls}-cell:not(.${prefixCls}-cell-disabled)`]: {
+          background: 'transparent',
+        },
         [`.${prefixCls}-week-row-selected`]: {
           background: dp.activeBorderColor,
         },
