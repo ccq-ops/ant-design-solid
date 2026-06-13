@@ -18,9 +18,15 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
         },
+        [`.${prefixCls}-with-time`]: {
+          width: '200px',
+        },
 
         [`.${prefixCls}-range`]: {
           width: '260px',
+        },
+        [`.${prefixCls}-range-with-time`]: {
+          width: '360px',
         },
         [`.${prefixCls}-range .${prefixCls}-selector`]: {
           'justify-content': 'flex-start',

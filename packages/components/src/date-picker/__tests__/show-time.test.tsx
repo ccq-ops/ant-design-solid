@@ -39,6 +39,40 @@ describe('DatePicker showTime', () => {
     expect(onOk).toHaveBeenLastCalledWith(nextValue)
   })
 
+  it('uses a wider selector by default when showTime is enabled', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker showTime defaultValue={dayjs('2026-06-15 09:30:00')} />
+      </StyleProvider>
+    ))
+
+    const root = result.container.querySelector<HTMLElement>('.ads-date-picker')
+    const input = result.container.querySelector<HTMLInputElement>('.ads-date-picker-input')
+    const css = extractStyle(cache)
+
+    expect(root).toHaveClass('ads-date-picker-with-time')
+    expect(input?.value).toBe('2026-06-15 09:30:00')
+    expect(css).toContain('.ads-date-picker-with-time{width:200px;')
+    expect(css).toContain('.ads-date-picker-range-with-time{width:360px;')
+  })
+
+  it('uses a wider range selector by default when showTime is enabled', () => {
+    const result = render(() => (
+      <RangePicker
+        showTime
+        defaultValue={[dayjs('2026-06-10 08:00:00'), dayjs('2026-06-15 18:30:00')]}
+      />
+    ))
+
+    const root = result.container.querySelector<HTMLElement>('.ads-date-picker-range')
+    const inputs = result.container.querySelectorAll<HTMLInputElement>('.ads-date-picker-input')
+
+    expect(root).toHaveClass('ads-date-picker-range-with-time')
+    expect(inputs[0]?.value).toBe('2026-06-10 08:00:00')
+    expect(inputs[1]?.value).toBe('2026-06-15 18:30:00')
+  })
+
   it('uses the default date panel as the left showTime panel', () => {
     const cache = createCache()
     render(() => (

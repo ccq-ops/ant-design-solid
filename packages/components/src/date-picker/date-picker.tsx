@@ -519,6 +519,7 @@ function DatePickerBase(props: DatePickerProps) {
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         multiple() && `${prefixCls()}-multiple`,
+        showTimeEnabled() && `${prefixCls()}-with-time`,
         ...rootVariantClass(prefixCls(), local.status, local.variant, local.size),
         hashId(),
         local.class,

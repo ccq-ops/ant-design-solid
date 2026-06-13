@@ -556,6 +556,7 @@ export function RangePicker(props: RangePickerProps) {
         resolvedClassNames(),
         prefixCls(),
         `${prefixCls()}-range`,
+        showTimeEnabled() && `${prefixCls()}-range-with-time`,
         allDisabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         ...rootVariantClass(prefixCls(), local.status, local.variant, local.size),
