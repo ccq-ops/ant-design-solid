@@ -154,6 +154,53 @@ describe('Color utilities', () => {
     expect(parseColor(null)).toBeUndefined()
     expect(colorToCss(undefined)).toBe('transparent')
   })
+
+  it('creates gradient colors and returns css gradient output', () => {
+    const color = parseColor([
+      { color: '#1677ff', percent: 0 },
+      { color: 'rgba(82, 196, 26, 0.5)', percent: 100 },
+    ])
+
+    expect(color?.isGradient()).toBe(true)
+    expect(color?.getColors().map((item) => [item.color.toHexString(), item.percent])).toEqual([
+      ['#1677ff', 0],
+      ['#52c41a', 100],
+    ])
+    expect(color?.toCssString()).toBe(
+      'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgba(82, 196, 26, 0.5) 100%)',
+    )
+  })
+
+  it('compares single and gradient colors by normalized value', () => {
+    const single = parseColor('#1677ff')!
+    const sameSingle = parseColor({ r: 22, g: 119, b: 255 })!
+    const gradient = parseColor([
+      { color: '#1677ff', percent: 0 },
+      { color: '#52c41a', percent: 100 },
+    ])!
+    const sameGradient = parseColor([
+      { color: '#1677ff', percent: 0 },
+      { color: '#52c41a', percent: 100 },
+    ])!
+
+    expect(single.equals(sameSingle)).toBe(true)
+    expect(single.equals(gradient)).toBe(false)
+    expect(gradient.equals(sameGradient)).toBe(true)
+  })
+
+  it('normalizes gradient percents and keeps first color methods compatible', () => {
+    const color = parseColor([
+      { color: '#1677ff', percent: -10 },
+      { color: '#52c41a', percent: 140 },
+    ])!
+
+    expect(color.getColors().map((item) => item.percent)).toEqual([0, 100])
+    expect(color.toHexString()).toBe('#1677ff')
+    expect(color.toRgbString()).toBe('rgb(22, 119, 255)')
+    expect(colorToCss(color)).toBe(
+      'linear-gradient(90deg, rgb(22, 119, 255) 0%, rgb(82, 196, 26) 100%)',
+    )
+  })
 })
 
 describe('ColorPicker trigger', () => {
