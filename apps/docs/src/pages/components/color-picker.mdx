@@ -1,12 +1,11 @@
 # ColorPicker
 
-Provide color selection with presets, alpha, formats, and controlled state.
+Provide color selection with presets, alpha, formats, controlled state, and gradient colors.
 
 ### Basic
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker } from '@ant-design-solid/core'
 
 const Demo1 = function () {
   return <ColorPicker defaultValue="#1677ff" />
@@ -15,23 +14,17 @@ const Demo1 = function () {
 export default Demo1
 ```
 
-### Controlled
+### Size
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
 
 const Demo2 = function () {
-  const [value, setValue] = createSignal('#1677ff')
-
   return (
-    <Space direction="vertical">
-      <ColorPicker
-        value={value()}
-        showText
-        onChange={(color) => setValue(color?.toHexString() ?? '')}
-      />
-      <span>Current value: {value()}</span>
+    <Space align="center">
+      <ColorPicker size="small" defaultValue="#1677ff" />
+      <ColorPicker defaultValue="#1677ff" />
+      <ColorPicker size="large" defaultValue="#1677ff" />
     </Space>
   )
 }
@@ -39,17 +32,19 @@ const Demo2 = function () {
 export default Demo2
 ```
 
-### Formats
+### Controlled
 
 ```tsx
 import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
 
 const Demo3 = function () {
+  const [value, setValue] = createSignal('#1677ff')
+
   return (
-    <Space>
-      <ColorPicker defaultValue="rgba(22, 119, 255, 0.7)" defaultFormat="rgb" />
-      <ColorPicker defaultValue="#52c41a" format="hsb" />
+    <Space direction="vertical">
+      <ColorPicker value={value()} showText onChange={(color, css) => setValue(css)} />
+      <span>Current value: {value()}</span>
     </Space>
   )
 }
@@ -57,26 +52,137 @@ const Demo3 = function () {
 export default Demo3
 ```
 
-### Disabled alpha
+### Gradient
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker } from '@ant-design-solid/core'
 
 const Demo4 = function () {
-  return <ColorPicker disabledAlpha defaultValue="#52c41a" />
+  return (
+    <ColorPicker
+      mode={['single', 'gradient']}
+      defaultValue={[
+        { color: '#1677ff', percent: 0 },
+        { color: '#52c41a', percent: 100 },
+      ]}
+      showText={(color) => color?.toCssString()}
+    />
+  )
 }
 
 export default Demo4
 ```
 
+### Custom Trigger
+
+```tsx
+import { ColorPicker } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <ColorPicker defaultValue="#1677ff">
+      <button type="button">Pick brand color</button>
+    </ColorPicker>
+  )
+}
+
+export default Demo5
+```
+
+### Disabled
+
+```tsx
+import { ColorPicker, Space } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Space>
+      <ColorPicker defaultValue="#1677ff" disabled />
+      <ColorPicker defaultValue="#1677ff" disabled showText />
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+### Trigger
+
+```tsx
+import { ColorPicker, Space } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Space>
+      <ColorPicker defaultValue="#1677ff" trigger="click" />
+      <ColorPicker defaultValue="#52c41a" trigger="hover" />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+### Disabled Alpha
+
+```tsx
+import { ColorPicker } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return <ColorPicker disabledAlpha defaultValue="rgba(22, 119, 255, 0.6)" />
+}
+
+export default Demo8
+```
+
+### Clear
+
+```tsx
+import { ColorPicker } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return <ColorPicker allowClear defaultValue="#1677ff" showText />
+}
+
+export default Demo9
+```
+
+### Format
+
+```tsx
+import { ColorPicker, Space } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Space>
+      <ColorPicker defaultValue="#1677ff" defaultFormat="hex" />
+      <ColorPicker defaultValue="#1677ff" defaultFormat="rgb" />
+      <ColorPicker defaultValue="#1677ff" defaultFormat="hsb" />
+    </Space>
+  )
+}
+
+export default Demo10
+```
+
+### Disabled Format
+
+```tsx
+import { ColorPicker } from '@ant-design-solid/core'
+
+const Demo11 = function () {
+  return <ColorPicker defaultValue="#1677ff" defaultFormat="rgb" disabledFormat />
+}
+
+export default Demo11
+```
+
 ### Presets
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker } from '@ant-design-solid/core'
 
-const Demo5 = function () {
+const Demo12 = function () {
   return (
     <ColorPicker
       presets={[
@@ -84,79 +190,51 @@ const Demo5 = function () {
           label: 'Recommended',
           colors: ['#1677ff', '#52c41a', '#faad14', '#ff4d4f'],
         },
+        {
+          label: 'Gradients',
+          colors: [
+            [
+              { color: '#1677ff', percent: 0 },
+              { color: '#52c41a', percent: 100 },
+            ],
+          ],
+        },
       ]}
     />
   )
 }
 
-export default Demo5
+export default Demo12
 ```
 
-### Show text
+### Show Text
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
 
-const Demo6 = function () {
+const Demo13 = function () {
   return (
-    <ColorPicker defaultValue="#722ed1" showText={(color) => <span>{color?.toHexString()}</span>} />
-  )
-}
-
-export default Demo6
-```
-
-### Allow clear
-
-```tsx
-import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
-
-const Demo7 = function () {
-  return <ColorPicker allowClear defaultValue="#1677ff" showText />
-}
-
-export default Demo7
-```
-
-### Controlled open
-
-```tsx
-import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
-
-const Demo8 = function () {
-  const [open, setOpen] = createSignal(false)
-
-  return (
-    <Space>
-      <ColorPicker open={open()} onOpenChange={setOpen} defaultValue="#1677ff" />
-      <span>Open: {String(open())}</span>
+    <Space direction="vertical">
+      <ColorPicker defaultValue="#1677ff" showText />
+      <ColorPicker defaultValue="#722ed1" showText={(color) => color?.toRgbString()} />
     </Space>
   )
 }
 
-export default Demo8
+export default Demo13
 ```
 
-### Custom panel render
+### Custom Panel
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker } from '@ant-design-solid/core'
 
-const Demo9 = function () {
+const Demo14 = function () {
   return (
     <ColorPicker
+      defaultValue="#1677ff"
       panelRender={(panel) => (
-        <div
-          style={{
-            border: '1px solid #1677ff',
-            padding: '8px',
-            'border-radius': '8px',
-          }}
-        >
+        <div style={{ padding: '8px', border: '1px solid #1677ff', 'border-radius': '8px' }}>
           {panel}
         </div>
       )}
@@ -164,54 +242,97 @@ const Demo9 = function () {
   )
 }
 
-export default Demo9
+export default Demo14
 ```
 
-### Hover trigger
+### Placement
 
 ```tsx
-import { createSignal } from 'solid-js'
 import { ColorPicker, Space } from '@ant-design-solid/core'
 
-const Demo10 = function () {
-  return <ColorPicker trigger="hover" defaultValue="#1677ff" />
+const Demo15 = function () {
+  return (
+    <Space wrap>
+      <ColorPicker defaultValue="#1677ff" placement="bottomLeft" />
+      <ColorPicker defaultValue="#1677ff" placement="bottomRight" />
+      <ColorPicker defaultValue="#1677ff" placement="topLeft" />
+      <ColorPicker defaultValue="#1677ff" placement="rightTop" />
+    </Space>
+  )
 }
 
-export default Demo10
+export default Demo15
 ```
 
 ## API
 
 ### ColorPicker
 
-| Property            | Description                                                     | Type                                                                      | Default               |
-| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- | --------------------- |
-| `value`             | Controlled color value.                                         | `ColorPickerValue`                                                        | `-`                   |
-| `defaultValue`      | Initial color value for uncontrolled usage.                     | `ColorPickerValue`                                                        | `-`                   |
-| `onChange`          | Called when the color changes with Color object and hex string. | `(value: Color \| undefined, hex: string) => void`                        | `-`                   |
-| `onChangeComplete`  | Called after a committed color change.                          | `(value: Color \| undefined) => void`                                     | `-`                   |
-| `open`              | Controlled popup open state.                                    | `boolean`                                                                 | `-`                   |
-| `defaultOpen`       | Initial popup open state.                                       | `boolean`                                                                 | `false`               |
-| `onOpenChange`      | Called when popup open state changes.                           | `(open: boolean) => void`                                                 | `-`                   |
-| `disabled`          | Disables the picker.                                            | `boolean`                                                                 | `false`               |
-| `size`              | Picker size.                                                    | `'small' \| 'middle' \| 'large'`                                          | `ConfigProvider size` |
-| `placement`         | Popup placement.                                                | `DropdownPlacement`                                                       | `'bottomLeft'`        |
-| `trigger`           | Interaction that opens the popup.                               | `'click' \| 'hover'`                                                      | `'click'`             |
-| `format`            | Controlled color input format.                                  | `'hex' \| 'rgb' \| 'hsb'`                                                 | `'hex'`               |
-| `defaultFormat`     | Initial color input format.                                     | `'hex' \| 'rgb' \| 'hsb'`                                                 | `'hex'`               |
-| `disabledAlpha`     | Disables alpha editing.                                         | `boolean`                                                                 | `false`               |
-| `allowClear`        | Shows a clear button.                                           | `boolean`                                                                 | `false`               |
-| `showText`          | Shows selected color text or custom text renderer.              | `boolean \| ((color: Color \| undefined) => JSX.Element)`                 | `-`                   |
-| `presets`           | Preset color groups.                                            | `ColorPickerPreset[]`                                                     | `-`                   |
-| `panelRender`       | Custom panel renderer.                                          | `(panel: JSX.Element, extra: ColorPickerPanelRenderExtra) => JSX.Element` | `-`                   |
-| `popupClass`        | Additional popup class.                                         | `string`                                                                  | `-`                   |
-| `popupStyle`        | Popup inline style.                                             | `JSX.CSSProperties`                                                       | `-`                   |
-| `zIndex`            | Custom popup z-index.                                           | `number`                                                                  | `-`                   |
-| `getPopupContainer` | Returns popup portal container.                                 | `(triggerNode?: HTMLElement) => HTMLElement`                              | `-`                   |
+| Property               | Description                                                     | Type                                                                                    | Default          |
+| ---------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------------- |
+| `mode`                 | Color editing mode.                                             | `'single' \| 'gradient' \| Array<'single' \| 'gradient'>`                               | `'single'`       |
+| `value`                | Controlled color value.                                         | `ColorPickerValue`                                                                      | `-`              |
+| `defaultValue`         | Initial color value for uncontrolled usage.                     | `ColorPickerValue`                                                                      | `-`              |
+| `children`             | Custom trigger content.                                         | `JSX.Element`                                                                           | `-`              |
+| `open`                 | Controlled popup open state.                                    | `boolean`                                                                               | `-`              |
+| `defaultOpen`          | Initial popup open state.                                       | `boolean`                                                                               | `false`          |
+| `disabled`             | Disable the picker.                                             | `boolean`                                                                               | `false`          |
+| `placement`            | Popup placement.                                                | `TooltipPlacement`                                                                      | `'bottomLeft'`   |
+| `trigger`              | Interaction that opens the popup.                               | `'click' \| 'hover'`                                                                    | `'click'`        |
+| `format`               | Controlled color input format.                                  | `'hex' \| 'rgb' \| 'hsb'`                                                               | `-`              |
+| `defaultFormat`        | Initial color input format.                                     | `'hex' \| 'rgb' \| 'hsb'`                                                               | `'hex'`          |
+| `disabledFormat`       | Disable format switching.                                       | `boolean`                                                                               | `false`          |
+| `disabledAlpha`        | Disable alpha editing.                                          | `boolean`                                                                               | `false`          |
+| `allowClear`           | Show a clear button.                                            | `boolean`                                                                               | `false`          |
+| `arrow`                | Show and configure popup arrow.                                 | `boolean \| { pointAtCenter?: boolean }`                                                | `true`           |
+| `showText`             | Show selected color text or custom text renderer.               | `boolean \| ((color: Color \| undefined) => JSX.Element)`                               | `-`              |
+| `presets`              | Preset color groups.                                            | `ColorPickerPreset[]`                                                                   | `-`              |
+| `panelRender`          | Custom panel renderer.                                          | `(panel: JSX.Element, extra: ColorPickerPanelRenderExtra) => JSX.Element`               | `-`              |
+| `class`                | Trigger class name.                                             | `string`                                                                                | `-`              |
+| `rootClass`            | Additional trigger root class.                                  | `string`                                                                                | `-`              |
+| `classNames`           | Semantic class names.                                           | `ColorPickerSemanticClassNames \| ((info: { props }) => ColorPickerSemanticClassNames)` | `-`              |
+| `styles`               | Semantic inline styles.                                         | `ColorPickerSemanticStyles \| ((info: { props }) => ColorPickerSemanticStyles)`         | `-`              |
+| `popupClass`           | Additional popup class.                                         | `string`                                                                                | `-`              |
+| `popupStyle`           | Popup inline style.                                             | `JSX.CSSProperties`                                                                     | `-`              |
+| `zIndex`               | Custom popup z-index.                                           | `number`                                                                                | `-`              |
+| `getPopupContainer`    | Return popup portal container.                                  | `(triggerNode?: HTMLElement) => HTMLElement \| ShadowRoot`                              | `ConfigProvider` |
+| `autoAdjustOverflow`   | Automatically adjust placement when popup overflows.            | `boolean \| { adjustX?: boolean; adjustY?: boolean }`                                   | `true`           |
+| `destroyOnHidden`      | Destroy popup content when hidden.                              | `boolean`                                                                               | `false`          |
+| `destroyTooltipOnHide` | Deprecated alias for `destroyOnHidden`.                         | `boolean \| { keepParent?: boolean }`                                                   | `false`          |
+| `onOpenChange`         | Called when popup open state changes.                           | `(open: boolean) => void`                                                               | `-`              |
+| `onFormatChange`       | Called when uncontrolled format changes.                        | `(format?: 'hex' \| 'rgb' \| 'hsb') => void`                                            | `-`              |
+| `onChange`             | Called when the color changes with Color object and CSS string. | `(value: Color \| undefined, css: string) => void`                                      | `-`              |
+| `onChangeComplete`     | Called after a committed color change.                          | `(value: Color \| undefined) => void`                                                   | `-`              |
+| `onClear`              | Called after the color is cleared.                              | `() => void`                                                                            | `-`              |
 
 ### ColorPickerPreset
 
-| Property | Description          | Type          | Default |
-| -------- | -------------------- | ------------- | ------- |
-| `label`  | Preset group label.  | `JSX.Element` | `-`     |
-| `colors` | Preset color values. | `string[]`    | `-`     |
+| Property      | Description                          | Type                 | Default |
+| ------------- | ------------------------------------ | -------------------- | ------- |
+| `label`       | Preset group label.                  | `JSX.Element`        | `-`     |
+| `colors`      | Preset single colors or gradients.   | `ColorPickerValue[]` | `-`     |
+| `defaultOpen` | Whether the group is initially open. | `boolean`            | `true`  |
+| `key`         | Stable group key for open state.     | `string \| number`   | `index` |
+
+### ColorPickerValue
+
+| Type           | Shape                                                                                                                   |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Single color   | `string \| { r: number; g: number; b: number; a?: number } \| { h: number; s: number; b: number; a?: number } \| Color` |
+| Gradient color | `Array<{ color: SingleColorPickerValue; percent: number }>`                                                             |
+| Empty          | `null \| undefined`                                                                                                     |
+
+### Color
+
+| Method          | Description                                  | Return                      |
+| --------------- | -------------------------------------------- | --------------------------- |
+| `toHex()`       | Return hex without `#`.                      | `string`                    |
+| `toHexString()` | Return hex with `#`.                         | `string`                    |
+| `toRgb()`       | Return normalized RGB channels.              | `{ r; g; b; a }`            |
+| `toRgbString()` | Return CSS rgb or rgba string.               | `string`                    |
+| `toHsb()`       | Return normalized HSB channels.              | `{ h; s; b; a }`            |
+| `toHsbString()` | Return hsb or hsba string.                   | `string`                    |
+| `toCssString()` | Return rgb/rgba or linear-gradient string.   | `string`                    |
+| `isGradient()`  | Whether the value represents a gradient.     | `boolean`                   |
+| `getColors()`   | Return gradient stops or current color.      | `ParsedGradientColorStop[]` |
+| `equals(color)` | Compare normalized single or gradient value. | `boolean`                   |
