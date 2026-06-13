@@ -414,11 +414,14 @@ export function useDatePickerStyle(prefixCls: string) {
           gap: `${t.marginXS}px`,
         },
         [`.${prefixCls}-today, .${prefixCls}-now`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
           border: '0',
           padding: '0',
           background: 'transparent',
           color: t.colorPrimary,
           cursor: 'pointer',
+          'line-height': '1',
         },
         [`.${prefixCls}-today:disabled`]: {
           color: t.colorTextDisabled,

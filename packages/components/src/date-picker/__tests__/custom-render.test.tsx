@@ -203,7 +203,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(dayjs.isDayjs(nextValue)).toBe(true)
     expect(nextString).toBe(dayjs().format('YYYY-MM-DD'))
     expect(css).toContain(
-      '.ads-date-picker-today, .ads-date-picker-now{background:transparent;border:0;color:#1677ff;cursor:pointer;padding:0;',
+      '.ads-date-picker-today, .ads-date-picker-now{align-items:center;background:transparent;border:0;color:#1677ff;cursor:pointer;display:inline-flex;line-height:1;padding:0;',
     )
     expect(css).toContain(
       '.ads-date-picker-today:disabled{color:rgba(0,0,0,0.25);cursor:not-allowed;pointer-events:none;',
