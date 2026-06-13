@@ -272,6 +272,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'margin-bottom': `${t.marginXS}px`,
         },
         [`.${prefixCls}-weekdays-with-week`]: {
+          gap: `${t.marginXXS}px`,
           'grid-template-columns': `52px repeat(7, ${dp.cellHeight}px)`,
         },
         [`.${prefixCls}-weekday`]: {
@@ -296,7 +297,7 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-week-row`]: {
           display: 'grid',
           'grid-template-columns': `52px repeat(7, ${dp.cellHeight}px)`,
-          gap: `${t.marginXS}px`,
+          gap: `${t.marginXXS}px`,
           'border-radius': `${t.borderRadiusSM}px`,
         },
         [`.${prefixCls}-week-row .${prefixCls}-cell`]: {
