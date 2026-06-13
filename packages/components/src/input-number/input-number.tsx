@@ -146,10 +146,12 @@ export function InputNumber(props: InputNumberProps) {
   let rootRef: HTMLSpanElement | undefined
   let inputRef: HTMLInputElement | undefined
   const controls = () => local.controls !== false && !local.readOnly
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
   const readOnly = () => Boolean(local.readOnly)
-  const size = () => local.size ?? config.componentSize()
-  const variant = () => local.variant ?? (local.bordered === false ? 'borderless' : 'outlined')
+  const size = () => local.size ?? formItem?.size?.() ?? config.componentSize()
+  const variant = () =>
+    local.variant ??
+    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? 'outlined'))
   const keyboard = () => local.keyboard !== false
   const changeOnBlur = () => local.changeOnBlur !== false
   const stringMode = () => Boolean(local.stringMode)

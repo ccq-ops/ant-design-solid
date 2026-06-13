@@ -76,6 +76,9 @@ export interface FormLayoutContextValue {
   labelWrap: Accessor<boolean | undefined>
   tooltip: Accessor<FormTooltipProps | undefined>
   validateMessages: Accessor<ValidateMessages | undefined>
+  disabled: Accessor<boolean | undefined>
+  size: Accessor<ComponentSize | undefined>
+  variant: Accessor<FormVariant | undefined>
 }
 
 export interface ValidateConfig {
@@ -188,6 +191,9 @@ export interface FormItemControl {
   validate: (sourceTrigger?: string) => void
   errors: Accessor<string[]>
   status: Accessor<ValidateStatus | undefined>
+  disabled: Accessor<boolean | undefined>
+  size: Accessor<ComponentSize | undefined>
+  variant: Accessor<FormVariant | undefined>
 }
 
 export interface FormListField {

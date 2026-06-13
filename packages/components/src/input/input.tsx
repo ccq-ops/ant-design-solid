@@ -49,8 +49,9 @@ export function Input(props: InputProps) {
     }
     return String(local.value ?? innerValue())
   }
-  const size = () => local.size ?? config.componentSize()
-  const variant = () => local.variant ?? 'outlined'
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.() ?? config.componentSize()
+  const variant = () => local.variant ?? formItem?.variant?.() ?? 'outlined'
   const allowClearConfig = () => getAllowClearConfig(local.allowClear)
   const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
   const showSuffixWithClear = () => Boolean(local.suffix && showClear())
@@ -109,7 +110,7 @@ export function Input(props: InputProps) {
         size() === 'small' && `${prefixCls()}-sm`,
         size() === 'large' && `${prefixCls()}-lg`,
         local.status && `${prefixCls()}-status-${local.status}`,
-        local.disabled && `${prefixCls()}-disabled`,
+        disabled() && `${prefixCls()}-disabled`,
         `${prefixCls()}-variant-${variant()}`,
         maxLength() !== undefined &&
           characterCount() > maxLength()! &&
@@ -135,7 +136,7 @@ export function Input(props: InputProps) {
         }}
         class={classNames(prefixCls(), local.classNames?.input)}
         style={local.styles?.input}
-        disabled={local.disabled}
+        disabled={disabled()}
         value={value()}
         onInput={(event) => {
           setNextValue(event.currentTarget.value)

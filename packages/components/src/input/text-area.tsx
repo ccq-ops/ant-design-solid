@@ -54,7 +54,8 @@ export function TextArea(props: TextAreaProps) {
     if (formItem?.valuePropName() === 'value') return String(formItem.value() ?? '')
     return String(local.value ?? innerValue())
   }
-  const variant = () => local.variant ?? 'outlined'
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const variant = () => local.variant ?? formItem?.variant?.() ?? 'outlined'
   const allowClearConfig = () => getAllowClearConfig(local.allowClear)
   const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
   const maxLength = () => getMaxLength(rest.maxLength, local.count)
@@ -120,7 +121,7 @@ export function TextArea(props: TextAreaProps) {
       class={classNames(
         `${prefixCls()}-textarea-wrapper`,
         local.status && `${prefixCls()}-status-${local.status}`,
-        local.disabled && `${prefixCls()}-disabled`,
+        disabled() && `${prefixCls()}-disabled`,
         `${prefixCls()}-variant-${variant()}`,
         maxLength() !== undefined &&
           characterCount() > maxLength()! &&
@@ -144,10 +145,10 @@ export function TextArea(props: TextAreaProps) {
             : {}),
           ...(local.autoSize ? { resize: 'none' } : {}),
         }}
-        disabled={local.disabled}
+        disabled={disabled()}
         value={value()}
         onInput={(event) => {
-          if (local.disabled) {
+          if (disabled()) {
             resetDisabledValue()
             return
           }
@@ -156,7 +157,7 @@ export function TextArea(props: TextAreaProps) {
           syncForm(event, 'onInput')
         }}
         onChange={(event) => {
-          if (local.disabled) {
+          if (disabled()) {
             resetDisabledValue()
             return
           }

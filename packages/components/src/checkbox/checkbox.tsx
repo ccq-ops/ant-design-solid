@@ -28,7 +28,7 @@ export function CheckboxRoot(props: CheckboxProps) {
   const [pendingBlurChecked, setPendingBlurChecked] = createSignal<boolean>()
   let inputRef: HTMLInputElement | undefined
 
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
 
   const checked = () => {
     if (formItem?.valuePropName() === 'checked' && formItem.trigger() === 'onBlur')

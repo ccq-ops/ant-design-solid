@@ -306,6 +306,9 @@ export function FormItem(props: FormItemProps) {
       validate,
       errors,
       status: mergedStatus,
+      disabled: () => layout.disabled(),
+      size: () => layout.size(),
+      variant: () => layout.variant(),
     }
   })
 

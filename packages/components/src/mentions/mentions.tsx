@@ -323,10 +323,11 @@ function MentionsRoot(props: MentionsProps) {
     if (textareaRef) textareaRef.value = value()
   })
 
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.()
   const split = () => local.split ?? ' '
   const placement = () => local.placement ?? 'bottom'
-  const variant = () => local.variant ?? 'outlined'
+  const variant = () => local.variant ?? formItem?.variant?.() ?? 'outlined'
   const allowClearConfig = () => getAllowClearConfig(local.allowClear)
   const showClear = () => Boolean(allowClearConfig() && !allowClearConfig()?.disabled && value())
   const autoSizeConfig = () => getAutoSizeConfig(local.autoSize)
@@ -570,7 +571,7 @@ function MentionsRoot(props: MentionsProps) {
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         popupOpen() && `${prefixCls()}-open`,
-        local.size && `${prefixCls()}-${local.size}`,
+        size() && `${prefixCls()}-${size()}`,
         local.status && `${prefixCls()}-status-${local.status}`,
         `${prefixCls()}-${variant()}`,
         maxLength() !== undefined &&

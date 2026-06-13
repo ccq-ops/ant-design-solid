@@ -188,7 +188,11 @@ export function TreeSelect(props: TreeSelectProps) {
       setInnerValue(formItem.value() as TreeSelectValue)
   })
 
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.()
+  const variant = () =>
+    local.variant ??
+    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? 'outlined'))
   const sourceTreeData = createMemo(() =>
     local.treeData !== undefined ? local.treeData : collectTreeSelectChildren(local.children),
   )
@@ -521,11 +525,9 @@ export function TreeSelect(props: TreeSelectProps) {
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         showClear() && `${prefixCls()}-has-clear`,
-        local.size && local.size !== 'middle' && `${prefixCls()}-${local.size}`,
+        size() && size() !== 'middle' && `${prefixCls()}-${size()}`,
         local.status && `${prefixCls()}-status-${local.status}`,
-        local.bordered === false
-          ? `${prefixCls()}-borderless`
-          : `${prefixCls()}-${local.variant ?? 'outlined'}`,
+        local.bordered === false ? `${prefixCls()}-borderless` : `${prefixCls()}-${variant()}`,
         hashId(),
         local.class,
         local.classNames?.root,

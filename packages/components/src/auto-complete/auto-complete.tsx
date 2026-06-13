@@ -84,7 +84,9 @@ export function AutoComplete(props: AutoCompleteProps) {
       setInnerValue(String(formItem.value() ?? ''))
   })
 
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.()
+  const variant = () => local.variant ?? formItem?.variant?.() ?? 'outlined'
   const allowClear = () => Boolean(local.allowClear)
   const clearIcon = () =>
     typeof local.allowClear === 'object' && local.allowClear.clearIcon ? (
@@ -313,9 +315,9 @@ export function AutoComplete(props: AutoCompleteProps) {
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
-        local.size && `${prefixCls()}-${local.size}`,
+        size() && `${prefixCls()}-${size()}`,
         local.status && `${prefixCls()}-status-${local.status}`,
-        `${prefixCls()}-${local.variant ?? 'outlined'}`,
+        `${prefixCls()}-${variant()}`,
         hashId(),
         local.class,
       )}

@@ -237,7 +237,11 @@ function SelectBase(props: SelectProps) {
       setInnerValue(formItem.value() as SelectValue)
   })
 
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.()
+  const variant = () =>
+    local.variant ??
+    (local.bordered === false ? 'borderless' : (formItem?.variant?.() ?? 'outlined'))
   const searchConfig = () => mergedSearchConfig(local)
   const searchEnabled = () => isSearchEnabled(local)
   const searchValue = () =>
@@ -564,11 +568,9 @@ function SelectBase(props: SelectProps) {
         disabled() && `${prefixCls()}-disabled`,
         open() && `${prefixCls()}-open`,
         multiple() && `${prefixCls()}-multiple`,
-        normalizeSize(local.size) && `${prefixCls()}-${normalizeSize(local.size)}`,
+        normalizeSize(size()) && `${prefixCls()}-${normalizeSize(size())}`,
         local.status && `${prefixCls()}-status-${local.status}`,
-        local.bordered === false
-          ? `${prefixCls()}-borderless`
-          : `${prefixCls()}-${local.variant ?? 'outlined'}`,
+        local.bordered === false ? `${prefixCls()}-borderless` : `${prefixCls()}-${variant()}`,
         hashId(),
         local.rootClassName,
         local.class,

@@ -93,6 +93,9 @@ export function FormRoot(props: FormProps) {
   const labelWrap = () => local.labelWrap
   const tooltip = () => local.tooltip
   const validateMessages = () => local.validateMessages
+  const disabled = () => local.disabled
+  const size = () => local.size
+  const variant = () => local.variant
   const layoutContext = {
     layout,
     requiredMark,
@@ -105,6 +108,9 @@ export function FormRoot(props: FormProps) {
     labelWrap,
     tooltip,
     validateMessages,
+    disabled,
+    size,
+    variant,
   }
 
   let unregisterCallbacks: (() => void) | undefined
