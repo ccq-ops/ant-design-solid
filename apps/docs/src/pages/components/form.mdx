@@ -953,50 +953,262 @@ const Demo22 = function () {
 export default Demo22
 ```
 
+### Disabled, size, and variants
+
+```tsx
+import { Form, Input, InputNumber, Select, Space } from '@ant-design-solid/core'
+
+const Demo23 = function () {
+  return (
+    <Form disabled size="large" variant="filled" initialValues={{ amount: 12 }}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item label="Username" name="username">
+          <Input placeholder="Disabled large filled input" />
+        </Form.Item>
+        <Form.Item label="Amount" name="amount">
+          <InputNumber class="w-full" />
+        </Form.Item>
+        <Form.Item label="Plan" name="plan">
+          <Select options={[{ label: 'Starter', value: 'starter' }]} />
+        </Form.Item>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo23
+```
+
+### Semantic slots
+
+```tsx
+import { Form, Input, Space } from '@ant-design-solid/core'
+
+const Demo24 = function () {
+  return (
+    <Form
+      class="custom-form"
+      classNames={{ root: 'semantic-form-root' }}
+      styles={{ root: { maxWidth: '360px' } }}
+    >
+      <Form.Item
+        label="Username"
+        name="username"
+        classNames={{
+          root: 'semantic-item-root',
+          label: 'semantic-item-label',
+          content: 'semantic-item-content',
+          extra: 'semantic-item-extra',
+        }}
+        styles={{ content: { maxWidth: '280px' } }}
+        extra="Semantic slots use Solid class and style props."
+      >
+        <Input placeholder="Semantic item" />
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default Demo24
+```
+
+### Validate messages
+
+```tsx
+import { Button, Form, Input, Space } from '@ant-design-solid/core'
+
+const Demo25 = function () {
+  return (
+    <Form validateMessages={{ required: '${label} needs ${reason}' }}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item
+          label="Username"
+          name="username"
+          messageVariables={{ reason: 'attention' }}
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+        <Button htmlType="submit">Submit</Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo25
+```
+
+### Form.Provider
+
+```tsx
+import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+
+const Demo26 = function () {
+  return (
+    <Form.Provider
+      onFormChange={(name) => message.info(`${name} changed`)}
+      onFormFinish={(name, info) => message.success(`${name}: ${info.values.username}`)}
+    >
+      <Form name="profile" initialValues={{ username: 'Ada' }}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Username" name="username">
+            <Input />
+          </Form.Item>
+          <Button htmlType="submit">Submit profile</Button>
+        </Space>
+      </Form>
+    </Form.Provider>
+  )
+}
+
+export default Demo26
+```
+
+### Controlled fields
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Form, Input, Space } from '@ant-design-solid/core'
+import type { FieldData } from '@ant-design-solid/core'
+
+const Demo27 = function () {
+  const [fields, setFields] = createSignal<FieldData[]>([
+    { name: 'username', value: 'Ada', touched: true },
+  ])
+
+  return (
+    <Space direction="vertical" class="w-90">
+      <Form fields={fields()} onFieldsChange={(changed) => setFields(changed)}>
+        <Form.Item label="Username" name="username">
+          <Input />
+        </Form.Item>
+      </Form>
+      <Button onClick={() => setFields([{ name: 'username', value: 'Grace' }])}>Set fields</Button>
+    </Space>
+  )
+}
+
+export default Demo27
+```
+
+### Submit scroll and clear on destroy
+
+```tsx
+import { Show, createSignal } from 'solid-js'
+import { Button, Form, Input, Space, useForm } from '@ant-design-solid/core'
+
+const Demo28 = function () {
+  const [form] = useForm()
+  const [visible, setVisible] = createSignal(true)
+
+  return (
+    <Space direction="vertical" class="w-90">
+      <Show when={visible()}>
+        <Form form={form} scrollToFirstError={{ focus: true }} clearOnDestroy>
+          <Form.Item name="target" rules={[{ required: true, message: 'Target is required' }]}>
+            <Input placeholder="Submit scroll target" />
+          </Form.Item>
+          <Button htmlType="submit">Submit</Button>
+        </Form>
+      </Show>
+      <Button onClick={() => setVisible((value) => !value)}>Toggle form</Button>
+    </Space>
+  )
+}
+
+export default Demo28
+```
+
+### Feedback icons
+
+```tsx
+import { Button, Form, Input, Space } from '@ant-design-solid/core'
+
+const Demo29 = function () {
+  return (
+    <Form feedbackIcons={{ error: <span>!</span>, success: <span>ok</span> }}>
+      <Space direction="vertical" class="w-90">
+        <Form.Item
+          label="Username"
+          name="username"
+          hasFeedback
+          rules={[{ required: true, message: 'Username is required' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Button htmlType="submit">Submit</Button>
+      </Space>
+    </Form>
+  )
+}
+
+export default Demo29
+```
+
 ## API
 
 ### Form
 
 | Property                | Description                                                                     | Type                                                           | Default        |
 | ----------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- |
+| `component`             | Root element. Use `false` to render no root DOM node.                           | `false \| keyof JSX.IntrinsicElements \| Component`            | `'form'`       |
 | `form`                  | External form instance created by useForm or createFormInstance.                | `FormInstance`                                                 | `-`            |
+| `name`                  | Form name used by Form.Provider callbacks.                                      | `string`                                                       | `-`            |
+| `fields`                | Controlled field state.                                                         | `FieldData[]`                                                  | `-`            |
 | `initialValues`         | Initial field values applied when the form is mounted.                          | `FormValues`                                                   | `-`            |
 | `layout`                | Form layout mode.                                                               | `'horizontal' \| 'vertical' \| 'inline'`                       | `'horizontal'` |
-| `requiredMark`          | Required mark display style for Form.Item labels.                               | `boolean \| 'optional'`                                        | `true`         |
-| `validateTrigger`       | Default event name or names that trigger validation for child Form.Item fields. | `string \| string[]`                                           | `'onChange'`   |
+| `requiredMark`          | Required mark display style for labels.                                         | `boolean \| 'optional' \| ((label, info) => JSX.Element)`      | `true`         |
+| `validateTrigger`       | Default event name or names that trigger validation for child Form.Item fields. | `string \| string[]`                                           | item trigger   |
+| `validateMessages`      | Validation message templates.                                                   | `ValidateMessages`                                             | `-`            |
+| `disabled`              | Default disabled state for Form-integrated controls.                            | `boolean`                                                      | `false`        |
+| `size`                  | Default size for Form-integrated controls.                                      | `'small' \| 'middle' \| 'large'`                               | config size    |
+| `variant`               | Default variant for supported Form-integrated controls.                         | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`       | `'outlined'`   |
+| `feedbackIcons`         | Feedback icons for Form.Item with `hasFeedback`.                                | `FeedbackIcons`                                                | built-in icons |
+| `classNames / styles`   | Semantic class and style maps.                                                  | `{ root?: string } / { root?: JSX.CSSProperties }`             | `-`            |
+| `scrollToFirstError`    | Scroll to the first failed field after submit.                                  | `boolean \| (ScrollIntoViewOptions & { focus?: boolean })`     | `false`        |
+| `clearOnDestroy`        | Clear values when the last Form owner using the instance unmounts.              | `boolean`                                                      | `false`        |
+| `preserve`              | Default value preservation hint for fields.                                     | `boolean`                                                      | `true`         |
 | `labelCol / wrapperCol` | Common label and control layout metadata passed to form items.                  | `unknown`                                                      | `-`            |
+| `labelAlign / colon`    | Common label alignment and colon display.                                       | `'left' \| 'right' / boolean`                                  | `right / true` |
+| `labelWrap / tooltip`   | Common label wrapping and tooltip.                                              | `boolean / FormTooltip`                                        | `-`            |
 | `onFinish`              | Called with all values after validation succeeds on submit.                     | `(values: FormValues) => void`                                 | `-`            |
 | `onFinishFailed`        | Called with values and error fields after validation fails.                     | `(errorInfo: ValidateErrorInfo) => void`                       | `-`            |
-| `onValuesChange`        | Called whenever a registered field updates its value.                           | `(changedValues: FormValues, allValues: FormValues) => void`   | `-`            |
-| `onFieldsChange`        | Called when registered field values or field state change.                      | `(changedFields: FieldData[], allFields: FieldData[]) => void` | `-`            |
+| `onValuesChange`        | Called whenever a field updates its value.                                      | `(changedValues: FormValues, allValues: FormValues) => void`   | `-`            |
+| `onFieldsChange`        | Called when field values or field state change.                                 | `(changedFields: FieldData[], allFields: FieldData[]) => void` | `-`            |
 
 ### Form.Item
 
-| Property                       | Description                                                                                   | Type                                                | Default                           |
-| ------------------------------ | --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------- |
-| `label`                        | Label displayed before the field control.                                                     | `JSX.Element`                                       | `-`                               |
-| `name`                         | Field name used to read and write values in the form store.                                   | `NamePath`                                          | `-`                               |
-| `rules`                        | Validation rules for this field.                                                              | `Rule[]`                                            | `-`                               |
-| `required`                     | Adds a required rule and displays the required mark.                                          | `boolean`                                           | `false`                           |
-| `help`                         | Custom help text shown below the control.                                                     | `JSX.Element`                                       | `-`                               |
-| `validateStatus`               | Manually sets validation visual state.                                                        | `'success' \| 'warning' \| 'error' \| 'validating'` | `-`                               |
-| `valuePropName`                | Prop name used by child controls for their value.                                             | `string`                                            | `'value'`                         |
-| `trigger`                      | Child event name that updates the field value.                                                | `string`                                            | `'onChange'`                      |
-| `validateTrigger`              | Event name or names that trigger validation.                                                  | `string \| string[]`                                | `Form validateTrigger or trigger` |
-| `shouldUpdate`                 | For unnamed render areas, re-render when form values change or when a predicate returns true. | `boolean \| ((prevValues, nextValues) => boolean)`  | `-`                               |
-| `labelCol / wrapperCol`        | Item-level label and control layout metadata.                                                 | `unknown`                                           | `-`                               |
-| `labelAlign / colon / tooltip` | Override label alignment, colon display, or render extra label help for this item.            | `'left' \| 'right' / boolean / JSX.Element`         | `-`                               |
-| `getValueFromEvent`            | Customize how a field value is extracted from control events.                                 | `(...args: unknown[]) => unknown`                   | `-`                               |
-| `getValueProps`                | Customize props derived from the current field value.                                         | `(value: unknown) => Record<string, unknown>`       | `-`                               |
-| `normalize`                    | Normalize a value before storing it in the form.                                              | `(value, prevValue, allValues) => unknown`          | `-`                               |
-| `dependencies`                 | Revalidate this field when dependent fields update.                                           | `NamePath[]`                                        | `-`                               |
-| `validateFirst`                | Stop validation on the first failing rule, or run rules in parallel.                          | `boolean \| 'parallel'`                             | `false`                           |
-| `validateDebounce`             | Debounce triggered validation by the given milliseconds.                                      | `number`                                            | `-`                               |
-| `preserve`                     | Keep a field value when the field is unmounted.                                               | `boolean`                                           | `true`                            |
-| `noStyle`                      | Register a field without rendering the styled Form.Item wrapper.                              | `boolean`                                           | `false`                           |
-| `hidden`                       | Hide the field while still collecting and validating its value.                               | `boolean`                                           | `false`                           |
-| `extra`                        | Extra prompt content shown below validation help.                                             | `JSX.Element`                                       | `-`                               |
-| `initialValue`                 | Initial value for this field.                                                                 | `unknown`                                           | `-`                               |
+| Property                | Description                                                                                   | Type                                                | Default                           |
+| ----------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------- |
+| `label`                 | Label displayed before the field control. Use `null` to render an empty label slot.           | `JSX.Element`                                       | `-`                               |
+| `htmlFor`               | `for` attribute on the label element.                                                         | `string`                                            | `-`                               |
+| `name`                  | Field name used to read and write values in the form store.                                   | `NamePath`                                          | `-`                               |
+| `rules`                 | Validation rules for this field.                                                              | `Rule[]`                                            | `-`                               |
+| `required`              | Adds a required rule and displays the required mark.                                          | `boolean`                                           | `false`                           |
+| `messageVariables`      | Variables used by validate message templates.                                                 | `Record<string, string>`                            | `-`                               |
+| `help`                  | Custom help text shown below the control.                                                     | `JSX.Element`                                       | first error/warning               |
+| `validateStatus`        | Manually sets validation visual state.                                                        | `'success' \| 'warning' \| 'error' \| 'validating'` | `-`                               |
+| `hasFeedback`           | Show feedback icon for the current validation status.                                         | `boolean \| { icons?: FeedbackIcons }`              | `false`                           |
+| `layout`                | Item-level layout override.                                                                   | `'horizontal' \| 'vertical' \| 'inline'`            | Form layout                       |
+| `classNames / styles`   | Semantic slots: root, label, content, help, helpItem, extra, feedbackIcon.                    | `Partial<Record<FormItemSemanticSlot, ...>>`        | `-`                               |
+| `valuePropName`         | Prop name used by child controls for their value.                                             | `string`                                            | `'value'`                         |
+| `trigger`               | Child event name that updates the field value.                                                | `string`                                            | `'onChange'`                      |
+| `validateTrigger`       | Event name or names that trigger validation.                                                  | `string \| string[]`                                | `Form validateTrigger or trigger` |
+| `shouldUpdate`          | For unnamed render areas, re-render when form values change or when a predicate returns true. | `boolean \| ((prevValues, nextValues) => boolean)`  | `-`                               |
+| `labelCol / wrapperCol` | Item-level label and control layout metadata.                                                 | `unknown`                                           | `-`                               |
+| `labelAlign / colon`    | Override label alignment or colon display.                                                    | `'left' \| 'right' / boolean`                       | Form value                        |
+| `labelWrap / tooltip`   | Override label wrapping or render extra label help.                                           | `boolean / FormTooltip`                             | Form value                        |
+| `getValueFromEvent`     | Customize how a field value is extracted from control events.                                 | `(...args: unknown[]) => unknown`                   | `-`                               |
+| `getValueProps`         | Customize props derived from the current field value.                                         | `(value: unknown) => Record<string, unknown>`       | `-`                               |
+| `normalize`             | Normalize a value before storing it in the form.                                              | `(value, prevValue, allValues) => unknown`          | `-`                               |
+| `dependencies`          | Revalidate this field when dependent fields update.                                           | `NamePath[]`                                        | `-`                               |
+| `validateFirst`         | Stop validation on the first failing rule, or run rules in parallel.                          | `boolean \| 'parallel'`                             | `false`                           |
+| `validateDebounce`      | Debounce triggered validation by the given milliseconds.                                      | `number`                                            | `-`                               |
+| `preserve`              | Keep a field value when the field is unmounted.                                               | `boolean`                                           | `true`                            |
+| `noStyle`               | Register a field without rendering the styled Form.Item wrapper.                              | `boolean`                                           | `false`                           |
+| `hidden`                | Hide the field while still collecting and validating its value.                               | `boolean`                                           | `false`                           |
+| `extra`                 | Extra prompt content shown below validation help.                                             | `JSX.Element`                                       | `-`                               |
+| `initialValue`          | Initial value for this field.                                                                 | `unknown`                                           | `-`                               |
 
 ### Form.List
 
@@ -1006,24 +1218,49 @@ export default Demo22
 | `initialValue` | Initial array value for the list.                                                 | `unknown[]` | `-`     |
 | `rules`        | List-level validation rules exposed through render meta.errors and meta.warnings. | `Rule[]`    | `-`     |
 
+### Form.ErrorList
+
+| Property   | Description                 | Type            | Default |
+| ---------- | --------------------------- | --------------- | ------- |
+| `errors`   | Error messages to render.   | `JSX.Element[]` | `[]`    |
+| `warnings` | Warning messages to render. | `JSX.Element[]` | `[]`    |
+
+### Form.Provider
+
+| Property       | Description                                               | Type                                             | Default |
+| -------------- | --------------------------------------------------------- | ------------------------------------------------ | ------- |
+| `onFormChange` | Called when a named descendant form changes fields.       | `(name, info: { changedFields, forms }) => void` | `-`     |
+| `onFormFinish` | Called when a named descendant form submits successfully. | `(name, info: { values, forms }) => void`        | `-`     |
+
+### Hooks
+
+| API                    | Description                                   | Type                                           |
+| ---------------------- | --------------------------------------------- | ---------------------------------------------- |
+| `Form.useForm`         | Create or reuse a FormInstance.               | `(form?: FormInstance) => [FormInstance]`      |
+| `Form.useFormInstance` | Read the nearest FormInstance from context.   | `() => FormInstance`                           |
+| `Form.useWatch`        | Watch a field name or selector.               | `(nameOrSelector, formOrOptions?) => Accessor` |
+| `Form.Item.useStatus`  | Read validation status, errors, and warnings. | `() => { status, errors, warnings }`           |
+
 ### FormInstance
 
-| Property           | Description                                                                | Type                                                                                       | Default |
-| ------------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------- |
-| `getFieldValue`    | Reads one field value.                                                     | `(name: NamePath) => unknown`                                                              | `-`     |
-| `setFieldValue`    | Sets one field value and clears its errors.                                | `(name: NamePath, value: unknown) => void`                                                 | `-`     |
-| `getFieldsValue`   | Returns registered field values, selected values, or all values with true. | `(nameList?: true \| NamePath[]) => FormValues`                                            | `-`     |
-| `setFieldsValue`   | Merges multiple values into the form store.                                | `(values: FormValues) => void`                                                             | `-`     |
-| `setFields`        | Sets field values or field state such as errors and touched.               | `(fields: FieldData[]) => void`                                                            | `-`     |
-| `resetFields`      | Resets all fields or the provided field names to their initial values.     | `(names?: NamePath[]) => void`                                                             | `-`     |
-| `validateFields`   | Validates all fields or selected fields and resolves with values.          | `(names?: NamePath[], config?: ValidateConfig) => Promise<FormValues>`                     | `-`     |
-| `getFieldError`    | Returns current errors for one field.                                      | `(name: NamePath) => string[]`                                                             | `-`     |
-| `getFieldsError`   | Returns error and warning state for registered fields.                     | `(names?: NamePath[]) => FieldError[]`                                                     | `-`     |
-| `scrollToField`    | Scrolls a registered field element into view and can focus its control.    | `(name: NamePath, options?: ScrollIntoViewOptions \| { focus?: boolean }) => void`         | `-`     |
-| `getFieldInstance` | Returns the registered field DOM element when available.                   | `(name: NamePath) => unknown`                                                              | `-`     |
-| `isFieldTouched`   | Checks whether a field has been touched.                                   | `(name: NamePath) => boolean`                                                              | `-`     |
-| `isFieldsTouched`  | Checks whether any or all fields have been touched.                        | `(allTouched?: boolean) => boolean; (names?: NamePath[], allTouched?: boolean) => boolean` | `-`     |
-| `submit`           | Runs validation and calls onFinish or onFinishFailed.                      | `() => void`                                                                               | `-`     |
+| Property            | Description                                                                    | Type                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `getFieldValue`     | Reads one field value.                                                         | `(name: NamePath) => unknown`                                                              |
+| `setFieldValue`     | Sets one field value and clears its errors.                                    | `(name: NamePath, value: unknown) => void`                                                 |
+| `getFieldsValue`    | Returns registered values, selected values, all values, or filtered snapshots. | `() / (true, filter?) / (NamePath[], filter?) / ({ strict, filter })`                      |
+| `setFieldsValue`    | Merges multiple values into the form store.                                    | `(values: FormValues) => void`                                                             |
+| `setFields`         | Sets field values or field state such as errors and touched.                   | `(fields: FieldData[]) => void`                                                            |
+| `resetFields`       | Resets all fields or the provided field names to their initial values.         | `(names?: NamePath[]) => void`                                                             |
+| `validateFields`    | Validates all fields or selected fields and resolves with values.              | `(names?: NamePath[], config?: ValidateConfig) => Promise<FormValues>`                     |
+| `getFieldError`     | Returns current errors for one field.                                          | `(name: NamePath) => string[]`                                                             |
+| `getFieldsError`    | Returns error and warning state.                                               | `(names?: NamePath[]) => FieldError[]`                                                     |
+| `getFieldWarnings`  | Returns current warnings for one field.                                        | `(name: NamePath) => string[]`                                                             |
+| `scrollToField`     | Scrolls a registered field element into view and can focus its control.        | `(name: NamePath, options?: ScrollIntoViewOptions \| { focus?: boolean }) => void`         |
+| `getFieldInstance`  | Returns the registered field DOM element when available.                       | `(name: NamePath) => unknown`                                                              |
+| `isFieldTouched`    | Checks whether a field has been touched.                                       | `(name: NamePath) => boolean`                                                              |
+| `isFieldsTouched`   | Checks whether any or all fields have been touched.                            | `(allTouched?: boolean) => boolean; (names?: NamePath[], allTouched?: boolean) => boolean` |
+| `isFieldValidating` | Checks whether a field is validating.                                          | `(name: NamePath) => boolean`                                                              |
+| `submit`            | Runs validation and calls onFinish or onFinishFailed.                          | `() => void`                                                                               |
 
 ### Rule
 
@@ -1033,7 +1270,57 @@ export default Demo22
 | `type`            | Checks the runtime value type.                                                                                                                 | `'string' \| 'number' \| 'boolean' \| 'array' \| 'object' \| 'email' \| 'url' \| 'enum'` | `-`     |
 | `min / max / len` | Validates string length, array length, or numeric value depending on the field.                                                                | `number`                                                                                 | `-`     |
 | `pattern`         | Requires the value to match a regular expression.                                                                                              | `RegExp`                                                                                 | `-`     |
-| `message`         | Error message shown when the rule fails.                                                                                                       | `string`                                                                                 | `-`     |
+| `message`         | Error message shown when the rule fails.                                                                                                       | `string \| JSX.Element`                                                                  | `-`     |
 | `fields`          | Object or array child rules keyed by property name or numeric index string.                                                                    | `Record<string, Rule>`                                                                   | `-`     |
 | `defaultField`    | Rule applied to each item when validating an array value.                                                                                      | `Rule`                                                                                   | `-`     |
 | `validator`       | Custom validator. Return a string, throw, or reject to report an error. Set validator.legacy = true to use the old (value, values) call shape. | `(rule, value, values?) => string \| void \| Promise<void>`                              | `-`     |
+| `warningOnly`     | Store a failed rule result as warning instead of error.                                                                                        | `boolean`                                                                                | `false` |
+| `validateTrigger` | Override the validation trigger for this rule.                                                                                                 | `string \| string[]`                                                                     | `-`     |
+| `validateFirst`   | Stop validation on first failure or validate in parallel.                                                                                      | `boolean \| 'parallel'`                                                                  | `false` |
+| `transform`       | Transform the value before this rule validates it.                                                                                             | `(value) => unknown`                                                                     | `-`     |
+
+### ValidateMessages
+
+Templates support `${name}`, `${label}`, `${min}`, `${max}`, `${len}`, `${enum}`, `${pattern}`, and item `messageVariables`. Escape placeholders with `\\${label}`.
+
+| Key          | Description                   |
+| ------------ | ----------------------------- |
+| `required`   | Required rule message.        |
+| `whitespace` | Whitespace rule message.      |
+| `enum`       | Enum rule message.            |
+| `pattern`    | Pattern rule message.         |
+| `string`     | String type rule message.     |
+| `number`     | Number type rule message.     |
+| `boolean`    | Boolean type rule message.    |
+| `array`      | Array type rule message.      |
+| `object`     | Object type rule message.     |
+| `email`      | Email type rule message.      |
+| `url`        | URL type rule message.        |
+| `len`        | Length equality rule message. |
+| `min`        | Minimum rule message.         |
+| `max`        | Maximum rule message.         |
+
+### WatchOptions
+
+| Property   | Description                                    | Type           | Default |
+| ---------- | ---------------------------------------------- | -------------- | ------- |
+| `form`     | Form instance to watch outside a Form subtree. | `FormInstance` | context |
+| `preserve` | Watch unregistered values from the full store. | `boolean`      | `false` |
+
+### Design Tokens
+
+| Token                           | Default                      |
+| ------------------------------- | ---------------------------- |
+| `labelColor`                    | `token.colorText`            |
+| `labelFontSize`                 | `token.fontSize`             |
+| `labelHeight`                   | `token.controlHeight`        |
+| `labelColonMarginInlineStart`   | `token.marginXXS / 2`        |
+| `labelColonMarginInlineEnd`     | `token.marginXS`             |
+| `labelRequiredMarkColor`        | `token.colorError`           |
+| `itemMarginBottom`              | `token.marginLG`             |
+| `inlineItemMarginBottom`        | `0`                          |
+| `verticalLabelPadding`          | `token.paddingXS`            |
+| `explainColor`                  | `token.colorError`           |
+| `extraColor`                    | `token.colorTextDescription` |
+| `feedbackIconSize`              | `token.fontSize`             |
+| `feedbackIconMarginInlineStart` | `token.marginXS`             |
