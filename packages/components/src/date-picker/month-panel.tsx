@@ -83,7 +83,9 @@ export function MonthPanel(props: MonthPanelProps) {
                 if (!cellDisabled()) props.onSelect?.(cellDate)
               }}
             >
-              {renderCellContent(cellDate, label())}
+              <span class={`${props.prefixCls}-cell-inner`}>
+                {renderCellContent(cellDate, label())}
+              </span>
             </button>
           )
         }}

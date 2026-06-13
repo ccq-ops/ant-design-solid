@@ -205,9 +205,6 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-lg .${prefixCls}-clear-overlay`]: {
           insetInlineEnd: `${dp.paddingInlineLG}px`,
         },
-        [`.${prefixCls}-variant-cell`]: {
-          height: `${dp.withoutTimeCellHeight}px`,
-        },
         [`.${prefixCls}-week-cell`]: {
           color: t.colorTextSecondary,
         },
@@ -291,6 +288,21 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-week-grid`]: {
           'grid-template-columns': '52px repeat(7, 1fr)',
         },
+        [`.${prefixCls}-week-rows`]: {
+          display: 'flex',
+          'flex-direction': 'column',
+          gap: `${t.marginXS}px`,
+        },
+        [`.${prefixCls}-week-row`]: {
+          display: 'grid',
+          'grid-template-columns': '52px repeat(7, 1fr)',
+          gap: `${t.marginXS}px`,
+          'border-radius': `${t.borderRadiusSM}px`,
+        },
+        [`.${prefixCls}-week-row:hover .${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled)`]:
+          {
+            background: dp.cellHoverBg,
+          },
         [`.${prefixCls}-variant-grid`]: {
           display: 'grid',
           'grid-template-columns': 'repeat(3, 1fr)',
@@ -300,6 +312,10 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-quarter-grid`]: {
           'grid-template-columns': 'repeat(2, 1fr)',
         },
+        [`.${prefixCls}-month-grid, .${prefixCls}-year-grid, .${prefixCls}-quarter-grid, .${prefixCls}-decade-grid`]:
+          {
+            padding: `0 ${t.paddingXS}px`,
+          },
         [`.${prefixCls}-cell`]: {
           width: `${dp.cellWidth}px`,
           height: `${dp.cellHeight}px`,
@@ -311,9 +327,62 @@ export function useDatePickerStyle(prefixCls: string) {
           'font-size': `${t.fontSize}px`,
           'line-height': '1',
         },
+        [`.${prefixCls}-cell-inner`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          'min-width': `${dp.cellHeight}px`,
+          height: `${dp.cellHeight}px`,
+          padding: `0 ${t.paddingXS}px`,
+          'border-radius': `${t.borderRadius}px`,
+          'box-sizing': 'border-box',
+        },
         [`.${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-range-start):not(.${prefixCls}-cell-range-end):hover`]:
           {
             background: dp.cellHoverBg,
+          },
+        [`.${prefixCls}-variant-cell`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          width: '100%',
+          height: `${dp.withoutTimeCellHeight}px`,
+          background: 'transparent',
+        },
+        [`.${prefixCls}-variant-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled):hover`]:
+          {
+            background: 'transparent',
+          },
+        [`.${prefixCls}-variant-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled):hover .${prefixCls}-cell-inner`]:
+          {
+            background: dp.cellHoverBg,
+          },
+        [`.${prefixCls}-variant-cell:active`]: {
+          background: 'transparent',
+        },
+        [`.${prefixCls}-variant-cell:active .${prefixCls}-cell-inner`]: {
+          color: t.colorBgContainer,
+          background: dp.activeBorderColor,
+        },
+        [`.${prefixCls}-variant-cell.${prefixCls}-cell-selected`]: {
+          background: 'transparent',
+          color: t.colorText,
+          'font-weight': '400',
+        },
+        [`.${prefixCls}-variant-cell.${prefixCls}-cell-selected .${prefixCls}-cell-inner`]: {
+          color: t.colorBgContainer,
+          background: dp.activeBorderColor,
+          'font-weight': '600',
+        },
+        [`.${prefixCls}-variant-cell.${prefixCls}-cell-selected:hover, .${prefixCls}-variant-cell.${prefixCls}-cell-selected:active`]:
+          {
+            background: 'transparent',
+            color: t.colorText,
+          },
+        [`.${prefixCls}-variant-cell.${prefixCls}-cell-selected:hover .${prefixCls}-cell-inner, .${prefixCls}-variant-cell.${prefixCls}-cell-selected:active .${prefixCls}-cell-inner`]:
+          {
+            background: dp.activeBorderColor,
+            color: t.colorBgContainer,
           },
         [`.${prefixCls}-cell:active`]: {
           color: t.colorBgContainer,

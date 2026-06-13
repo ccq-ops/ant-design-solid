@@ -28,6 +28,30 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0,0,0,0.02);')
   })
 
+  it('aligns week and variant picker cell styles with antd panels', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker picker="month" defaultOpen defaultValue={dayjs('2026-06-01')} />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ads-date-picker-variant-cell{align-items:center;background:transparent;display:inline-flex;height:66px;justify-content:center;width:100%;',
+    )
+    expect(css).toContain('.ads-date-picker-cell-inner{')
+    expect(css).toContain('align-items:center;border-radius:6px;')
+    expect(css).toContain('display:inline-flex;height:24px;justify-content:center;')
+    expect(css).toContain('min-width:24px;padding:0 8px;')
+    expect(css).toContain(
+      '.ads-date-picker-variant-cell.ads-date-picker-cell-selected .ads-date-picker-cell-inner{background:#1677ff;color:#ffffff;',
+    )
+    expect(css).toContain(
+      '.ads-date-picker-week-row:hover .ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-disabled){background:rgba(0,0,0,0.04);',
+    )
+  })
+
   it('keeps suffix icon visible and overlays clear icon on selector hover', () => {
     const cache = createCache()
     const result = render(() => (

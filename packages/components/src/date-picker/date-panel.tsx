@@ -185,7 +185,7 @@ export function DatePanel(props: DatePanelProps) {
       <div
         class={
           picker() === 'week' || props.showWeek
-            ? `${props.prefixCls}-grid ${props.prefixCls}-week-grid`
+            ? `${props.prefixCls}-grid ${props.prefixCls}-week-grid ${props.prefixCls}-week-rows`
             : `${props.prefixCls}-grid`
         }
       >
@@ -195,10 +195,10 @@ export function DatePanel(props: DatePanelProps) {
         >
           <For each={weekRows()}>
             {(row) => (
-              <>
+              <div class={`${props.prefixCls}-week-row`}>
                 {renderWeekButton(row)}
                 <For each={row}>{(date) => renderDateCell(date)}</For>
-              </>
+              </div>
             )}
           </For>
         </Show>

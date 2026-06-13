@@ -66,7 +66,7 @@ export function DecadePanel(props: DecadePanelProps) {
               style={semanticStyle('cell', props.styles)}
               onClick={() => props.onSelect?.(cellDate())}
             >
-              {label()}
+              <span class={`${props.prefixCls}-cell-inner`}>{label()}</span>
             </button>
           )
         }}

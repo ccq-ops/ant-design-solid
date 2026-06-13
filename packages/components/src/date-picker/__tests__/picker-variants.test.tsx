@@ -106,6 +106,49 @@ describe('DatePicker picker variants', () => {
     expect(nextString.startsWith('2026-')).toBe(true)
   })
 
+  it('uses antd-like cells for week, month, quarter, and year panels', () => {
+    const { unmount } = render(() => (
+      <DatePicker picker="week" defaultOpen defaultPickerValue={dayjs('2026-06-01')} />
+    ))
+
+    expect(document.body.querySelector('.ads-date-picker-week-row')).toBeInTheDocument()
+
+    unmount()
+    render(() => (
+      <>
+        <DatePicker
+          picker="month"
+          defaultOpen
+          defaultPickerValue={dayjs('2026-01-01')}
+          defaultValue={dayjs('2026-06-01')}
+        />
+        <DatePicker
+          picker="quarter"
+          defaultOpen
+          defaultPickerValue={dayjs('2026-01-01')}
+          defaultValue={dayjs('2026-07-01')}
+        />
+        <DatePicker
+          picker="year"
+          defaultOpen
+          defaultPickerValue={dayjs('2026-01-01')}
+          defaultValue={dayjs('2028-01-01')}
+        />
+      </>
+    ))
+
+    const month = screen.getByRole('button', { name: '2026-06' })
+    const quarter = screen.getByRole('button', { name: '2026-Q3' })
+    const year = screen.getByRole('button', { name: '2028' })
+
+    expect(month.querySelector('.ads-date-picker-cell-inner')).toHaveTextContent('2026-06')
+    expect(quarter.querySelector('.ads-date-picker-cell-inner')).toHaveTextContent('2026-Q3')
+    expect(year.querySelector('.ads-date-picker-cell-inner')).toHaveTextContent('2028')
+    expect(month).toHaveClass('ads-date-picker-variant-cell')
+    expect(quarter).toHaveClass('ads-date-picker-variant-cell')
+    expect(year).toHaveClass('ads-date-picker-variant-cell')
+  })
+
   it('keeps controlled pickerValue visible while reporting panel navigation', () => {
     const onPanelChange = vi.fn()
     render(() => (
