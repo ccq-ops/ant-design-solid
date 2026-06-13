@@ -1,4 +1,5 @@
 import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@ant-design-solid/theme'
 import { useToken } from '../config-provider'
 
 export function useBreadcrumbStyle(prefixCls: string) {
@@ -7,12 +8,21 @@ export function useBreadcrumbStyle(prefixCls: string) {
     { theme: 'default', token: token(), path: ['Breadcrumb', prefixCls] },
     () => {
       const t = token()
+      const bt = getComponentToken('Breadcrumb', t) ?? {
+        itemColor: t.colorTextDescription,
+        lastItemColor: t.colorText,
+        iconFontSize: t.fontSize,
+        linkColor: t.colorTextDescription,
+        linkHoverColor: t.colorText,
+        separatorColor: t.colorTextDescription,
+        separatorMargin: t.marginXS,
+      }
       return {
         [`.${prefixCls}`]: {
           'box-sizing': 'border-box',
           margin: 0,
           padding: 0,
-          color: t.colorTextSecondary,
+          color: bt.itemColor,
           'font-size': `${t.fontSize}px`,
           'font-family': t.fontFamily,
           'line-height': t.lineHeight,
@@ -29,15 +39,18 @@ export function useBreadcrumbStyle(prefixCls: string) {
           'align-items': 'center',
         },
         [`.${prefixCls}-link`]: {
-          color: t.colorTextSecondary,
+          display: 'inline-flex',
+          'align-items': 'center',
+          gap: `${t.marginXXS}px`,
+          color: bt.linkColor,
           'text-decoration': 'none',
           transition: `color ${t.motionDurationMid} ${t.motionEaseInOut}`,
         },
         [`.${prefixCls}-link[href], .${prefixCls}-link-clickable`]: {
           cursor: 'pointer',
-          '&:hover': {
-            color: t.colorPrimaryHover,
-          },
+        },
+        [`.${prefixCls}-link[href]:hover, .${prefixCls}-link-clickable:hover`]: {
+          color: bt.linkHoverColor,
         },
         [`.${prefixCls}-link-clickable`]: {
           background: 'transparent',
@@ -47,21 +60,40 @@ export function useBreadcrumbStyle(prefixCls: string) {
           'font-family': 'inherit',
           'line-height': 'inherit',
         },
+        [`.${prefixCls}-overlay-link`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          gap: `${t.marginXXS}px`,
+        },
+        [`.${prefixCls}-dropdown-icon`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'line-height': 1,
+          color: bt.itemColor,
+          'font-size': `${bt.iconFontSize}px`,
+        },
+        [`.${prefixCls}-overlay-link:hover .${prefixCls}-link, .${prefixCls}-overlay-link:hover .${prefixCls}-dropdown-icon`]:
+          {
+            color: bt.linkHoverColor,
+          },
         [`.${prefixCls}-link-clickable:focus-visible, .${prefixCls}-link[href]:focus-visible`]: {
           outline: `${t.lineWidth}px solid ${t.colorPrimary}`,
           'outline-offset': '2px',
           'border-radius': `${t.borderRadius}px`,
         },
         [`.${prefixCls}-link[aria-current="page"]`]: {
-          color: t.colorText,
+          color: bt.lastItemColor,
           cursor: 'default',
           '&:hover': {
-            color: t.colorText,
+            color: bt.lastItemColor,
           },
         },
+        [`.${prefixCls}-item:last-child .${prefixCls}-link`]: {
+          color: bt.lastItemColor,
+        },
         [`.${prefixCls}-separator`]: {
-          margin: `0 ${t.marginXS}px`,
-          color: t.colorTextDisabled,
+          margin: `0 ${bt.separatorMargin}px`,
+          color: bt.separatorColor,
         },
         [`.${prefixCls}-item:last-child > .${prefixCls}-separator`]: {
           display: 'none',

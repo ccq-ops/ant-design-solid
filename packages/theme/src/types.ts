@@ -314,6 +314,16 @@ export interface ButtonComponentToken extends ComponentTokenBase {
   dashedBgDisabled: string
 }
 
+export interface BreadcrumbComponentToken extends ComponentTokenBase {
+  itemColor: string
+  lastItemColor: string
+  iconFontSize: number
+  linkColor: string
+  linkHoverColor: string
+  separatorColor: string
+  separatorMargin: number
+}
+
 export interface CarouselComponentToken extends ComponentTokenBase {
   dotWidth?: number | string
   dotHeight?: number | string
@@ -777,7 +787,7 @@ export interface ComponentTokenMap {
   Badge: BadgeComponentToken
   BorderBeam?: ComponentTokenBase
   Button: ButtonComponentToken
-  Breadcrumb?: ComponentTokenBase
+  Breadcrumb?: BreadcrumbComponentToken
   Calendar?: ComponentTokenBase
   Card: CardComponentToken
   Carousel: CarouselComponentToken

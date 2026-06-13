@@ -66,6 +66,15 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       defaultBgDisabled: token.colorBgContainerDisabled,
       dashedBgDisabled: token.colorBgContainerDisabled,
     },
+    Breadcrumb: {
+      itemColor: token.colorTextDescription,
+      lastItemColor: token.colorText,
+      iconFontSize: token.fontSize,
+      linkColor: token.colorTextDescription,
+      linkHoverColor: token.colorText,
+      separatorColor: token.colorTextDescription,
+      separatorMargin: token.marginXS,
+    },
     Carousel: {
       arrowSize: 16,
       arrowOffset: token.marginXS,
