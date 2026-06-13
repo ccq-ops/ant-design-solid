@@ -61,7 +61,8 @@ export function RadioGroup(props: RadioGroupProps) {
   const [innerValue, setInnerValue] = createSignal<OptionValue | undefined>(local.defaultValue)
   const [restoreTick, setRestoreTick] = createSignal(0)
   const [buttonChildCount, setButtonChildCount] = createSignal(0)
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.()
   const isButton = () => local.optionType === 'button'
   const hasButtonChildren = () => buttonChildCount() > 0
   const isButtonCompact = () => isButton() || hasButtonChildren()
@@ -125,7 +126,7 @@ export function RadioGroup(props: RadioGroupProps) {
         isButtonCompact() && `${groupPrefixCls()}-button-compact`,
         local.block && `${groupPrefixCls()}-block`,
         `${groupPrefixCls()}-${orientation()}`,
-        local.size && `${groupPrefixCls()}-${local.size}`,
+        size() && `${groupPrefixCls()}-${size()}`,
         isButtonCompact() && `${groupPrefixCls()}-${buttonStyle()}`,
         hashId(),
         local.class,

@@ -31,7 +31,7 @@ export function CheckboxGroup(props: CheckboxGroupProps) {
   const groupPrefixCls = () => `${checkboxPrefixCls()}-group`
   const [, hashId] = useCheckboxStyle(checkboxPrefixCls())
   const [innerValue, setInnerValue] = createSignal<OptionValue[]>(local.defaultValue ?? [])
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
 
   createEffect(() => {
     const formValue = formItem?.value()

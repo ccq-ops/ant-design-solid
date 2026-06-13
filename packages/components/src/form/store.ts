@@ -1,6 +1,6 @@
-import { batch, createRoot, createSignal, type Accessor } from 'solid-js'
+import { batch, createRoot, createSignal, untrack, type Accessor } from 'solid-js'
 import { createFieldRecord, fieldRecordToData, getFieldKey, type FieldRecord } from './field-store'
-import { matchNamePath } from './name-path'
+import { getNamePath, matchNamePath } from './name-path'
 import {
   cloneFormValues,
   deleteValue,
@@ -15,8 +15,10 @@ import type {
   FieldError,
   FieldName,
   FieldValue,
+  FilterFunc,
   FormInstance,
   FormValues,
+  GetFieldsValueConfig,
   InternalNamePath,
   ValidateConfig,
   ValidateErrorInfo,
@@ -24,15 +26,27 @@ import type {
 
 interface CreateFormOptions {
   initialValues?: FormValues
+  clearOnDestroy?: boolean
   onFinish?: (values: FormValues) => void
   onFinishFailed?: (errorInfo: ValidateErrorInfo) => void
   onValuesChange?: (changedValues: FormValues, allValues: FormValues) => void
   onFieldsChange?: (changedFields: FieldData[], allFields: FieldData[]) => void
 }
 
+type FormCallbacks = Omit<CreateFormOptions, 'initialValues'>
+type ProviderCallbacks = {
+  name?: string
+  onFieldsChange?: (changedFields: FieldData[]) => void
+  onFinish?: (values: FormValues) => void
+}
+
 interface InternalFormInstance extends FormInstance {
   setInitialValues?: (values?: FormValues) => void
-  setCallbacks?: (callbacks: Omit<CreateFormOptions, 'initialValues'>) => void
+  setCallbacks?: (callbacks: FormCallbacks) => () => void
+  setControlledFields?: (fields: FieldData[]) => void
+  destroy?: (clearOnDestroy?: boolean) => void
+  registerFormOwner?: () => () => void
+  setProviderCallbacks?: (callbacks: ProviderCallbacks) => () => void
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -62,12 +76,17 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     let sourceInitialValues = options.initialValues
     let formInitialValues = cloneFormValues(options.initialValues ?? {})
     const [values, setValues] = createSignal<FormValues>(cloneFormValues(formInitialValues))
-    let callbacks: Omit<CreateFormOptions, 'initialValues'> = {
+    const defaultCallbacks: FormCallbacks = {
+      clearOnDestroy: options.clearOnDestroy,
       onFinish: options.onFinish,
       onFinishFailed: options.onFinishFailed,
       onValuesChange: options.onValuesChange,
       onFieldsChange: options.onFieldsChange,
     }
+    let callbacks: FormCallbacks = defaultCallbacks
+    let providerCallbacks: ProviderCallbacks = {}
+    const callbackEntries: Array<{ id: symbol; callbacks: FormCallbacks }> = []
+    const providerCallbackEntries: Array<{ id: symbol; callbacks: ProviderCallbacks }> = []
     const fields = new Map<string, FieldRecord>()
     const errorSignals = new Map<string, [Accessor<string[]>, (errors: string[]) => void]>()
     const warningSignals = new Map<string, [Accessor<string[]>, (warnings: string[]) => void]>()
@@ -75,6 +94,22 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     const validationSequences = new WeakMap<FieldRecord, number>()
     const subscribers = new Set<(previousValues?: FormValues) => void>()
     const fieldInstances = new Map<string, HTMLElement>()
+    const registeredFieldKeys = new Set<string>()
+    let ownerCount = 0
+
+    function getFieldFilter(config?: GetFieldsValueConfig): FilterFunc | undefined {
+      return config?.filter
+    }
+
+    function areStringArraysEqual(
+      first: readonly string[] | undefined,
+      second: readonly string[] | undefined,
+    ): boolean {
+      if (first === second) return true
+      const left = first ?? []
+      const right = second ?? []
+      return left.length === right.length && left.every((value, index) => value === right[index])
+    }
 
     function notifySubscribers(previousValues?: FormValues): void {
       for (const listener of subscribers) listener(previousValues)
@@ -142,6 +177,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
 
     function getRegisteredRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
+      const records = Array.from(registeredFieldKeys, (key) => fields.get(key)).filter(
+        (record): record is FieldRecord => record !== undefined,
+      )
+      if (!nameList) return records
+      return records.filter((record) =>
+        nameList.some((name) => matchNamePath(name, record.state.name, recursive)),
+      )
+    }
+
+    function getFieldRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
       const records = Array.from(fields.values())
       if (!nameList) return records
       return records.filter((record) =>
@@ -149,16 +194,39 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       )
     }
 
+    function getRegisteredFieldData(nameList?: FieldName[], recursive = false): FieldData[] {
+      const currentValues = untrack(() => values())
+      return getRegisteredRecords(nameList, recursive).map((record) =>
+        fieldRecordToData(record, currentValues),
+      )
+    }
+
+    function getFilteredRegisteredNames(
+      nameList?: FieldName[],
+      filter?: FilterFunc,
+    ): InternalNamePath[] {
+      return getRegisteredFieldData(nameList)
+        .filter((field) =>
+          filter
+            ? filter({
+                touched: field.touched ?? false,
+                validating: field.validating ?? false,
+              })
+            : true,
+        )
+        .map((field) => getNamePath(field.name))
+    }
+
     function getAllFieldData(): FieldData[] {
-      return Array.from(fields.values()).map((record) => fieldRecordToData(record, values()))
+      const currentValues = untrack(() => values())
+      return getFieldRecords().map((record) => fieldRecordToData(record, currentValues))
     }
 
     function notifyFieldsChange(changedRecords: FieldRecord[]) {
       if (changedRecords.length === 0) return
-      callbacks.onFieldsChange?.(
-        changedRecords.map((record) => fieldRecordToData(record, values())),
-        getAllFieldData(),
-      )
+      const changedFields = changedRecords.map((record) => fieldRecordToData(record, values()))
+      callbacks.onFieldsChange?.(changedFields, getAllFieldData())
+      if (providerCallbacks.name) providerCallbacks.onFieldsChange?.(changedFields)
     }
 
     function clearRecordValidation(record: FieldRecord) {
@@ -254,7 +322,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             getValue(values(), record.state.name),
             values(),
             record.meta.rules,
-            { form, validateFirst: record.meta.validateFirst },
+            {
+              form,
+              validateFirst: record.meta.validateFirst,
+              validateMessages: record.meta.validateMessages,
+              messageVariables: {
+                label: String(record.meta.label ?? record.state.name.join('.')),
+                name: record.state.name.join('.'),
+                ...record.meta.messageVariables,
+              },
+            },
           )
           if (!isCurrentValidation(record, sequence)) {
             outOfDate = true
@@ -293,7 +370,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           getValue(values(), record.state.name),
           values(),
           record.meta.rules,
-          { form, validateFirst: record.meta.validateFirst },
+          {
+            form,
+            validateFirst: record.meta.validateFirst,
+            validateMessages: record.meta.validateMessages,
+            messageVariables: {
+              label: String(record.meta.label ?? record.state.name.join('.')),
+              name: record.state.name.join('.'),
+              ...record.meta.messageVariables,
+            },
+          },
         )
         if (!result) return undefined
         results.set(record, result)
@@ -316,13 +402,27 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           revalidateDependencies([name])
         })
       },
-      getFieldsValue(nameList) {
-        if (nameList === true) return cloneFormValues(values())
-        if (Array.isArray(nameList)) return pickValues(values(), nameList)
-        return pickValues(
-          values(),
-          Array.from(fields.values()).map((record) => record.state.name),
-        )
+      getFieldsValue(
+        nameListOrConfig?: true | FieldName[] | GetFieldsValueConfig,
+        filter?: FilterFunc,
+      ) {
+        const currentValues = untrack(() => values())
+        if (nameListOrConfig === true) {
+          if (!filter) return cloneFormValues(currentValues)
+          return pickValues(currentValues, getFilteredRegisteredNames(undefined, filter))
+        }
+        if (Array.isArray(nameListOrConfig)) {
+          if (!filter) return pickValues(currentValues, nameListOrConfig)
+          return pickValues(currentValues, getFilteredRegisteredNames(nameListOrConfig, filter))
+        }
+        if (nameListOrConfig && typeof nameListOrConfig === 'object') {
+          const fieldFilter = getFieldFilter(nameListOrConfig)
+          if (!fieldFilter && !nameListOrConfig.strict) return cloneFormValues(currentValues)
+          const matchingNames = getFilteredRegisteredNames(undefined, fieldFilter)
+          if (nameListOrConfig.strict) return pickValues(currentValues, matchingNames)
+          return pickValues(currentValues, matchingNames)
+        }
+        return pickValues(currentValues, getFilteredRegisteredNames())
       },
       setFieldsValue(nextValues) {
         batch(() => {
@@ -363,8 +463,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             if ('value' in field) {
               setValues((currentValues) => setValue(currentValues, field.name, field.value))
             }
-            if (field.errors) record.setErrors(field.errors)
-            if (field.warnings) setRecordWarnings(record, field.warnings)
+            if ('errors' in field) record.setErrors(field.errors ?? [])
+            if ('warnings' in field) setRecordWarnings(record, field.warnings ?? [])
             if (field.touched !== undefined) record.state.touched = field.touched
             if (field.validating !== undefined) setRecordValidating(record, field.validating)
             if ('value' in field) record.state.dirty = true
@@ -372,6 +472,51 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           }
           notifyFieldsChange(changedRecords)
           if (nextFields.some((field) => 'value' in field)) notifySubscribers(previousValues)
+        })
+      },
+      setControlledFields(nextFields) {
+        batch(() => {
+          const previousValues = untrack(() => cloneFormValues(values()))
+          let nextValues = untrack(() => values())
+          let hasValueChange = false
+          for (const field of nextFields) {
+            const key = getFieldKey(field.name)
+            let record = fields.get(key)
+            if (!record) {
+              record = createFieldRecord(
+                { name: field.name, rules: [] },
+                ensureErrorSignal(field.name),
+              )
+              fields.set(key, record)
+            }
+            if ('value' in field) {
+              const currentValue = getValue(nextValues, field.name)
+              if (!Object.is(currentValue, field.value)) {
+                nextValues = setValue(nextValues, field.name, field.value)
+                record.state.dirty = true
+                hasValueChange = true
+              }
+            }
+            if ('errors' in field && !areStringArraysEqual(record.state.errors, field.errors)) {
+              record.setErrors(field.errors ?? [])
+            }
+            if (
+              'warnings' in field &&
+              !areStringArraysEqual(record.state.warnings, field.warnings)
+            ) {
+              setRecordWarnings(record, field.warnings ?? [])
+            }
+            if (field.touched !== undefined && record.state.touched !== field.touched) {
+              record.state.touched = field.touched
+            }
+            if (field.validating !== undefined && record.state.validating !== field.validating) {
+              setRecordValidating(record, field.validating)
+            }
+          }
+          if (hasValueChange) {
+            setValues(nextValues)
+            notifySubscribers(previousValues)
+          }
         })
       },
       resetFields(names) {
@@ -408,14 +553,20 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         const syncResult = validateFieldNamesSync(targetNames)
         if (syncResult) {
           if (syncResult.errorFields.length > 0) callbacks.onFinishFailed?.(syncResult)
-          else callbacks.onFinish?.(syncResult.values)
+          else {
+            callbacks.onFinish?.(syncResult.values)
+            providerCallbacks.onFinish?.(syncResult.values)
+          }
           return
         }
         void validateFieldNames(targetNames)
           .then((result) => {
             if (result.errorFields.length > 0 || result.outOfDate)
               callbacks.onFinishFailed?.(result)
-            else callbacks.onFinish?.(result.values)
+            else {
+              callbacks.onFinish?.(result.values)
+              providerCallbacks.onFinish?.(result.values)
+            }
           })
           .catch((error: unknown) => {
             callbacks.onFinishFailed?.({
@@ -432,12 +583,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         const record = existing ?? createFieldRecord(meta, ensureErrorSignal(meta.name))
         record.meta = meta
         fields.set(key, record)
+        registeredFieldKeys.add(key)
         if (meta.initialValue !== undefined && getValue(values(), meta.name) === undefined) {
           setValues((currentValues) => setValue(currentValues, meta.name, meta.initialValue))
           notifySubscribers()
         }
         return () => {
           if (fields.get(key) !== record) return
+          registeredFieldKeys.delete(key)
           fields.delete(key)
           if (record.meta.preserve === false) {
             batch(() => {
@@ -459,7 +612,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         return [...(fields.get(key)?.state.errors ?? errorSignals.get(key)?.[0]() ?? [])]
       },
       getFieldsError(nameList) {
-        return getRegisteredRecords(nameList).map((record) => ({
+        return getFieldRecords(nameList).map((record) => ({
           name: [...record.state.name],
           errors: [...record.state.errors],
           warnings: [...record.state.warnings],
@@ -506,7 +659,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         return fields.get(getFieldKey(name))?.state.touched ?? false
       },
       isFieldsTouched(nameListOrAllTouched?: FieldName[] | boolean, allTouched = false) {
-        const records = getRegisteredRecords(
+        const records = getFieldRecords(
           Array.isArray(nameListOrAllTouched) ? nameListOrAllTouched : undefined,
         )
         const requireAllTouched =
@@ -537,7 +690,49 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         formInitialValues = nextInitialValuesClone
       },
       setCallbacks(nextCallbacks) {
+        const id = Symbol('form-callbacks')
+        callbackEntries.push({ id, callbacks: nextCallbacks })
         callbacks = nextCallbacks
+        return () => {
+          const index = callbackEntries.findIndex((entry) => entry.id === id)
+          if (index >= 0) callbackEntries.splice(index, 1)
+          callbacks = callbackEntries[callbackEntries.length - 1]?.callbacks ?? defaultCallbacks
+        }
+      },
+      registerFormOwner() {
+        ownerCount += 1
+        let active = true
+        return () => {
+          if (!active) return
+          active = false
+          ownerCount = Math.max(0, ownerCount - 1)
+        }
+      },
+      destroy(clearOnDestroy = callbacks.clearOnDestroy) {
+        if (ownerCount > 0 || !clearOnDestroy) return
+        batch(() => {
+          const nextValues = cloneFormValues(formInitialValues)
+          for (const key of Object.keys(nextValues)) delete nextValues[key]
+          setValues(nextValues)
+          for (const record of fields.values()) {
+            record.state.touched = false
+            record.state.validated = false
+            record.state.dirty = false
+            clearRecordValidation(record)
+          }
+          notifySubscribers()
+        })
+      },
+      setProviderCallbacks(nextProviderCallbacks) {
+        const id = Symbol('form-provider-callbacks')
+        providerCallbackEntries.push({ id, callbacks: nextProviderCallbacks })
+        providerCallbacks = nextProviderCallbacks
+        return () => {
+          const index = providerCallbackEntries.findIndex((entry) => entry.id === id)
+          if (index >= 0) providerCallbackEntries.splice(index, 1)
+          providerCallbacks =
+            providerCallbackEntries[providerCallbackEntries.length - 1]?.callbacks ?? {}
+        }
       },
     }
 
@@ -553,9 +748,25 @@ export function setFormInitialValues(form: FormInstance, initialValues?: FormVal
   ;(form as InternalFormInstance).setInitialValues?.(initialValues)
 }
 
-export function setFormCallbacks(
+export function setFormCallbacks(form: FormInstance, callbacks: FormCallbacks): () => void {
+  return (form as InternalFormInstance).setCallbacks?.(callbacks) ?? (() => undefined)
+}
+
+export function setFormControlledFields(form: FormInstance, fields: FieldData[]): void {
+  ;(form as InternalFormInstance).setControlledFields?.(fields)
+}
+
+export function destroyForm(form: FormInstance, clearOnDestroy?: boolean): void {
+  ;(form as InternalFormInstance).destroy?.(clearOnDestroy)
+}
+
+export function registerFormOwner(form: FormInstance): () => void {
+  return (form as InternalFormInstance).registerFormOwner?.() ?? (() => undefined)
+}
+
+export function setFormProviderCallbacks(
   form: FormInstance,
-  callbacks: Omit<CreateFormOptions, 'initialValues'>,
-): void {
-  ;(form as InternalFormInstance).setCallbacks?.(callbacks)
+  callbacks: ProviderCallbacks,
+): () => void {
+  return (form as InternalFormInstance).setProviderCallbacks?.(callbacks) ?? (() => undefined)
 }

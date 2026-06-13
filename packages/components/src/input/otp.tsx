@@ -1,5 +1,6 @@
 import { For, createMemo, createSignal } from 'solid-js'
 import { useConfig } from '../config-provider'
+import { useFormItemControl } from '../form/context'
 import { classNames } from '../shared/class-names'
 import { useInputStyle } from './input.style'
 import { assignRef, resolveClassNames, resolveStyles, rootClass, rootStyle } from './utils'
@@ -19,13 +20,15 @@ function getDisplayValue(value: string, mask: OTPProps['mask'], formatter: OTPPr
 
 export function OTP(props: OTPProps) {
   const config = useConfig()
+  const formItem = useFormItemControl()
   const prefixCls = () => props.prefixCls ?? `${config.prefixCls()}-input`
   const [, hashId] = useInputStyle(prefixCls())
   const [innerValue, setInnerValue] = createSignal(props.defaultValue ?? '')
   const length = () => props.length ?? 6
   const values = () => splitValue(props.value ?? innerValue(), length())
-  const size = () => props.size ?? config.componentSize()
-  const variant = () => props.variant ?? 'outlined'
+  const disabled = () => props.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => props.size ?? formItem?.size?.() ?? config.componentSize()
+  const variant = () => props.variant ?? formItem?.variant?.() ?? 'outlined'
   const indexes = () => Array.from({ length: length() }, (_, index) => index)
   const inputRefs: HTMLInputElement[] = []
   let rootRef: HTMLDivElement | undefined
@@ -107,7 +110,7 @@ export function OTP(props: OTPProps) {
         size() === 'small' && `${prefixCls()}-otp-sm`,
         size() === 'large' && `${prefixCls()}-otp-lg`,
         props.status && `${prefixCls()}-status-${props.status}`,
-        props.disabled && `${prefixCls()}-disabled`,
+        disabled() && `${prefixCls()}-disabled`,
         `${prefixCls()}-variant-${variant()}`,
         hashId(),
         props.rootClassName,
@@ -130,7 +133,7 @@ export function OTP(props: OTPProps) {
               style={semanticStyles().input}
               type={props.type}
               value={getDisplayValue(values()[index], props.mask, props.formatter)}
-              disabled={props.disabled}
+              disabled={disabled()}
               autocomplete={props.autoComplete}
               inputMode="numeric"
               maxLength={1}

@@ -27,6 +27,16 @@ export function useFormStyle(prefixCls: string) {
         {
           visibility: 'hidden',
         },
+      [`.${prefixCls}-item-vertical`]: {
+        display: 'block',
+        'align-items': 'flex-start',
+      },
+      [`.${prefixCls}-item-vertical .${prefixCls}-item-label`]: {
+        height: 'auto',
+        margin: 0,
+        padding: `0 0 ${formToken.verticalLabelPadding}px`,
+        'text-align': 'left',
+      },
       [`.${prefixCls}-horizontal .${prefixCls}-item`]: {
         display: 'flex',
         'align-items': 'flex-start',
@@ -35,7 +45,7 @@ export function useFormStyle(prefixCls: string) {
       [`.${prefixCls}-horizontal .${prefixCls}-item-label`]: {
         display: 'inline-flex',
         'align-items': 'center',
-        height: t.controlHeight,
+        height: formToken.labelHeight,
         'margin-bottom': 0,
       },
       [`.${prefixCls}-inline`]: {
@@ -45,7 +55,7 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-inline .${prefixCls}-item`]: {
         display: 'flex',
-        'margin-bottom': 0,
+        'margin-bottom': formToken.inlineItemMarginBottom,
       },
       [`.${prefixCls}-item`]: { 'margin-bottom': formToken.itemMarginBottom },
       [`.${prefixCls}-item-hidden`]: {
@@ -53,13 +63,17 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-label`]: {
         color: formToken.labelColor,
+        'font-size': formToken.labelFontSize,
         'white-space': 'nowrap',
+      },
+      [`.${prefixCls}-item-label-wrap`]: {
+        'white-space': 'normal',
       },
       [`.${prefixCls}-item-label.${prefixCls}-item-required::before`]: {
         display: 'inline-block',
         'margin-inline-end': t.marginXS / 2,
         color: formToken.labelRequiredMarkColor,
-        'font-size': t.fontSize,
+        'font-size': formToken.labelFontSize,
         'font-family': 'sans-serif',
         'line-height': 1,
         content: '"*"',
@@ -76,8 +90,8 @@ export function useFormStyle(prefixCls: string) {
       },
       [`.${prefixCls}-item-label-colon .${prefixCls}-item-label-content::after`]: {
         content: '":"',
-        'margin-inline-start': t.marginXS / 4,
-        'margin-inline-end': t.marginXS,
+        'margin-inline-start': formToken.labelColonMarginInlineStart,
+        'margin-inline-end': formToken.labelColonMarginInlineEnd,
       },
       [`.${prefixCls}-item-optional`]: {
         color: t.colorTextSecondary,
@@ -87,15 +101,46 @@ export function useFormStyle(prefixCls: string) {
       [`.${prefixCls}-item-control`]: {
         flex: 1,
       },
+      [`.${prefixCls}-item-control-input`]: {
+        display: 'flex',
+        'align-items': 'center',
+      },
+      [`.${prefixCls}-item-feedback-icon`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'font-size': formToken.feedbackIconSize,
+        'margin-inline-start': formToken.feedbackIconMarginInlineStart,
+        'line-height': 1,
+      },
+      [`.${prefixCls}-item-feedback-icon-success`]: {
+        color: t.colorSuccess,
+      },
+      [`.${prefixCls}-item-feedback-icon-warning`]: {
+        color: t.colorWarning,
+      },
+      [`.${prefixCls}-item-feedback-icon-error`]: {
+        color: t.colorError,
+      },
+      [`.${prefixCls}-item-feedback-icon-validating`]: {
+        color: t.colorPrimary,
+      },
       [`.${prefixCls}-item-explain`]: {
         'font-size': 12,
         'margin-top': 4,
+      },
+      [`.${prefixCls}-item-explain-item + .${prefixCls}-item-explain-item`]: {
+        'margin-top': 2,
       },
       [`.${prefixCls}-item-explain-error`]: {
         color: formToken.explainColor,
       },
       [`.${prefixCls}-item-explain-warning`]: {
         color: t.colorWarning,
+      },
+      [`.${prefixCls}-item-extra`]: {
+        color: formToken.extraColor,
+        'font-size': 12,
+        'margin-top': 4,
       },
     }
   })

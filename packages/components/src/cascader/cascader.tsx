@@ -147,7 +147,9 @@ const CascaderBase = (props: CascaderProps) => {
   })
 
   const options = () => local.options ?? []
-  const disabled = () => Boolean(local.disabled)
+  const disabled = () => local.disabled ?? formItem?.disabled?.() ?? false
+  const size = () => local.size ?? formItem?.size?.() ?? 'middle'
+  const variant = () => local.variant ?? formItem?.variant?.() ?? 'outlined'
   const multiple = () => Boolean(local.multiple)
   const isValueControlled = () => 'value' in props
   const isOpenControlled = () => 'open' in props
@@ -424,8 +426,8 @@ const CascaderBase = (props: CascaderProps) => {
       {...rest}
       class={classNames(
         prefixCls(),
-        `${prefixCls()}-${local.size ?? 'middle'}`,
-        `${prefixCls()}-${local.variant ?? 'outlined'}`,
+        `${prefixCls()}-${size()}`,
+        `${prefixCls()}-${variant()}`,
         local.status && `${prefixCls()}-status-${local.status}`,
         multiple() && `${prefixCls()}-multiple`,
         disabled() && `${prefixCls()}-disabled`,

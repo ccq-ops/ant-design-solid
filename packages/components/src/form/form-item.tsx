@@ -1,6 +1,13 @@
-import { createEffect, createMemo, createSignal, on, onCleanup, Show, untrack } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, on, onCleanup, Show, untrack } from 'solid-js'
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  ExclamationCircleFilled,
+  LoadingOutlined,
+} from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { Tooltip } from '../tooltip'
 import {
   FormItemContext,
   FormItemStatusContext,
@@ -14,7 +21,9 @@ import type {
   FieldName,
   FieldValue,
   FormItemControl,
+  FormItemHasFeedback,
   FormItemProps,
+  FormTooltipConfig,
   Rule,
   ValidateStatus,
 } from './interface'
@@ -81,6 +90,38 @@ function serializeLayoutValue(value: unknown): string | undefined {
   }
 }
 
+function isTooltipConfig(value: FormItemProps['tooltip']): value is FormTooltipConfig {
+  if (typeof Node !== 'undefined' && value instanceof Node) return false
+  return Boolean(
+    value &&
+    typeof value === 'object' &&
+    !('t' in value) &&
+    ('title' in value || 'icon' in value || 'placement' in value),
+  )
+}
+
+function renderTooltip(tooltip: FormItemProps['tooltip']) {
+  if (!tooltip) return undefined
+  if (!isTooltipConfig(tooltip)) return tooltip
+  const { icon, title, ...rest } = tooltip
+  return (
+    <Tooltip title={title} {...rest}>
+      <span>{icon ?? '?'}</span>
+    </Tooltip>
+  )
+}
+
+function resolveFeedbackIcons(
+  icons: FormItemHasFeedback,
+  formIcons: ReturnType<ReturnType<typeof useFormLayoutContext>['feedbackIcons']>,
+  info: { status: ValidateStatus; errors: JSX.Element[]; warnings: JSX.Element[] },
+) {
+  const itemIcons = typeof icons === 'object' ? icons.icons : undefined
+  const source = itemIcons ?? formIcons
+  if (typeof source === 'function') return source(info)
+  return source
+}
+
 export function FormItem(props: FormItemProps) {
   const form = useFormContext()
   const config = useConfig()
@@ -103,8 +144,17 @@ export function FormItem(props: FormItemProps) {
   const showOptionalMark = () => layout.requiredMark() === 'optional' && !isRequired()
   const mergedLabelAlign = () => props.labelAlign ?? layout.labelAlign()
   const mergedColon = () => props.colon ?? layout.colon()
+  const mergedLayout = () => props.layout ?? layout.layout()
+  const mergedLabelWrap = () => props.labelWrap ?? layout.labelWrap()
+  const mergedTooltip = () => props.tooltip ?? layout.tooltip()
   const labelCol = () => serializeLayoutValue(props.labelCol ?? layout.labelCol())
   const wrapperCol = () => serializeLayoutValue(props.wrapperCol ?? layout.wrapperCol())
+  const semanticClassNames = createMemo(() =>
+    typeof props.classNames === 'function' ? props.classNames({ props }) : (props.classNames ?? {}),
+  )
+  const semanticStyles = createMemo(() =>
+    typeof props.styles === 'function' ? props.styles({ props }) : (props.styles ?? {}),
+  )
 
   const warnings = () => {
     const name = fieldName()
@@ -120,6 +170,31 @@ export function FormItem(props: FormItemProps) {
     if (errors().length > 0) return 'error'
     if (warnings().length > 0) return 'warning'
     return undefined
+  }
+  const feedbackIcon = () => {
+    const status = mergedStatus()
+    if (!props.hasFeedback || !status) return undefined
+    const info = {
+      status,
+      errors: errors() as JSX.Element[],
+      warnings: warnings() as JSX.Element[],
+    }
+    const icons = resolveFeedbackIcons(props.hasFeedback, layout.feedbackIcons(), info)
+    return (
+      icons?.[status] ??
+      {
+        success: <CheckCircleFilled />,
+        warning: <ExclamationCircleFilled />,
+        error: <CloseCircleFilled />,
+        validating: <LoadingOutlined />,
+      }[status]
+    )
+  }
+  const requiredMark = () => layout.requiredMark()
+  const labelContent = () => {
+    const mark = requiredMark()
+    if (typeof mark === 'function') return mark(props.label, { required: isRequired() })
+    return props.label
   }
 
   let unregisterField: (() => void) | undefined
@@ -141,6 +216,9 @@ export function FormItem(props: FormItemProps) {
           dependencies: props.dependencies,
           validateTrigger: validateTrigger(),
           validateFirst: props.validateFirst,
+          label: props.label,
+          messageVariables: props.messageVariables,
+          validateMessages: layout.validateMessages(),
         }
         unregisterField = untrack(() => form.registerField(registeredMeta as FieldMeta))
       },
@@ -158,6 +236,9 @@ export function FormItem(props: FormItemProps) {
     registeredMeta.dependencies = props.dependencies
     registeredMeta.validateTrigger = validateTrigger()
     registeredMeta.validateFirst = props.validateFirst
+    registeredMeta.label = props.label
+    registeredMeta.messageVariables = props.messageVariables
+    registeredMeta.validateMessages = layout.validateMessages()
   })
   onCleanup(() => unregisterField?.())
 
@@ -225,6 +306,9 @@ export function FormItem(props: FormItemProps) {
       validate,
       errors,
       status: mergedStatus,
+      disabled: () => layout.disabled(),
+      size: () => layout.size(),
+      variant: () => layout.variant(),
     }
   })
 
@@ -284,49 +368,108 @@ export function FormItem(props: FormItemProps) {
       }}
       class={classNames(
         `${prefixCls()}-item`,
+        `${prefixCls()}-item-${mergedLayout()}`,
         `${prefixCls()}-item-label-${mergedLabelAlign()}`,
         mergedStatus() && `${prefixCls()}-item-has-${mergedStatus()}`,
         props.hidden && `${prefixCls()}-item-hidden`,
+        semanticClassNames().root,
       )}
-      style={props.hidden ? { display: 'none' } : undefined}
+      style={{ ...semanticStyles().root, ...(props.hidden ? { display: 'none' } : undefined) }}
       onFocusOut={validateOnBlur}
     >
-      <Show when={props.label}>
+      <Show when={props.label || props.label === null}>
         <label
+          for={props.htmlFor}
           data-label-col={labelCol()}
           class={classNames(
             `${prefixCls()}-item-label`,
             `${prefixCls()}-item-label-${mergedLabelAlign()}`,
+            mergedLabelWrap() && `${prefixCls()}-item-label-wrap`,
             mergedColon() && `${prefixCls()}-item-label-colon`,
             isRequired() && `${prefixCls()}-item-required`,
-            layout.requiredMark() === false && `${prefixCls()}-item-required-mark-hidden`,
-            layout.requiredMark() === 'optional' && `${prefixCls()}-item-required-mark-optional`,
+            requiredMark() === false && `${prefixCls()}-item-required-mark-hidden`,
+            requiredMark() === 'optional' && `${prefixCls()}-item-required-mark-optional`,
+            typeof requiredMark() === 'function' && `${prefixCls()}-item-required-mark-custom`,
+            semanticClassNames().label,
           )}
+          style={semanticStyles().label}
         >
-          <span class={`${prefixCls()}-item-label-content`}>{props.label}</span>
-          <Show when={props.tooltip}>
-            <span class={`${prefixCls()}-item-tooltip`}>{props.tooltip}</span>
+          <span class={`${prefixCls()}-item-label-content`}>{labelContent()}</span>
+          <Show when={mergedTooltip()}>
+            <span class={`${prefixCls()}-item-tooltip`}>{renderTooltip(mergedTooltip())}</span>
           </Show>
           <Show when={showOptionalMark()}>
             <span class={`${prefixCls()}-item-optional`}>(optional)</span>
           </Show>
         </label>
       </Show>
-      <div class={`${prefixCls()}-item-control`} data-wrapper-col={wrapperCol()}>
-        {providers()}
+      <div
+        class={classNames(`${prefixCls()}-item-control`, semanticClassNames().content)}
+        style={semanticStyles().content}
+        data-wrapper-col={wrapperCol()}
+      >
+        <div class={`${prefixCls()}-item-control-input`}>
+          {providers()}
+          <Show when={feedbackIcon()}>
+            <span
+              class={classNames(
+                `${prefixCls()}-item-feedback-icon`,
+                `${prefixCls()}-item-feedback-icon-${mergedStatus()}`,
+                semanticClassNames().feedbackIcon,
+              )}
+              style={semanticStyles().feedbackIcon}
+            >
+              {feedbackIcon()}
+            </span>
+          </Show>
+        </div>
         <Show when={props.help ?? errors()[0] ?? warnings()[0]}>
           <div
             class={classNames(
               `${prefixCls()}-item-explain`,
               mergedStatus() === 'error' && `${prefixCls()}-item-explain-error`,
               mergedStatus() === 'warning' && `${prefixCls()}-item-explain-warning`,
+              semanticClassNames().help,
             )}
+            style={semanticStyles().help}
           >
-            {props.help ?? errors()[0] ?? warnings()[0]}
+            <Show
+              when={props.help}
+              fallback={
+                <For each={errors().length > 0 ? errors() : warnings()}>
+                  {(message) => (
+                    <div
+                      class={classNames(
+                        `${prefixCls()}-item-explain-item`,
+                        semanticClassNames().helpItem,
+                      )}
+                      style={semanticStyles().helpItem}
+                    >
+                      {message}
+                    </div>
+                  )}
+                </For>
+              }
+            >
+              <div
+                class={classNames(
+                  `${prefixCls()}-item-explain-item`,
+                  semanticClassNames().helpItem,
+                )}
+                style={semanticStyles().helpItem}
+              >
+                {props.help}
+              </div>
+            </Show>
           </div>
         </Show>
         <Show when={props.extra}>
-          <div class={`${prefixCls()}-item-extra`}>{props.extra}</div>
+          <div
+            class={classNames(`${prefixCls()}-item-extra`, semanticClassNames().extra)}
+            style={semanticStyles().extra}
+          >
+            {props.extra}
+          </div>
         </Show>
       </div>
     </div>

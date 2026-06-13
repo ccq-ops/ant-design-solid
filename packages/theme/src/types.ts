@@ -345,10 +345,18 @@ export interface GridComponentToken extends ComponentTokenBase {
 
 export interface FormComponentToken extends ComponentTokenBase {
   labelColor: string
+  labelFontSize: number
+  labelHeight: number
+  labelColonMarginInlineStart: number
+  labelColonMarginInlineEnd: number
   labelRequiredMarkColor: string
   itemMarginBottom: number
+  inlineItemMarginBottom: number
   verticalLabelPadding: number
   explainColor: string
+  extraColor: string
+  feedbackIconSize: number
+  feedbackIconMarginInlineStart: number
 }
 
 export interface SelectComponentToken extends ComponentTokenBase {

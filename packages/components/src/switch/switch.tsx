@@ -46,8 +46,9 @@ export function Switch(props: SwitchProps) {
   const [pendingBlurChecked, setPendingBlurChecked] = createSignal<boolean>()
   let buttonRef: HTMLButtonElement | undefined
 
-  const disabled = () => Boolean(local.disabled || local.loading)
-  const size = () => local.size ?? config.componentSize()
+  const disabled = () =>
+    (local.disabled ?? formItem?.disabled?.() ?? false) || Boolean(local.loading)
+  const size = () => local.size ?? formItem?.size?.() ?? config.componentSize()
   const controlledChecked = () => local.checked ?? local.value
   const checked = () => {
     if (formItem?.valuePropName() === 'checked' && formItem.trigger() === 'onBlur')
