@@ -121,6 +121,9 @@ export function ColorPicker(props: ColorPickerProps) {
   let suppressBlurTarget: HTMLInputElement | undefined
   let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
   let interactiveTriggerElement: HTMLElement | undefined
+  let originalInteractiveTriggerDisabled = false
+  let restoreInteractiveTriggerDisabled: (() => void) | undefined
+  let customTriggerClickCaptureCleanup: (() => void) | undefined
 
   const size = () => local.size ?? config.componentSize()
   const disabled = () => Boolean(local.disabled)
@@ -208,6 +211,10 @@ export function ColorPicker(props: ColorPickerProps) {
     clearHoverCloseTimer()
     activeDragCleanup?.()
     activeDragCleanup = undefined
+    restoreInteractiveTriggerDisabled?.()
+    restoreInteractiveTriggerDisabled = undefined
+    customTriggerClickCaptureCleanup?.()
+    customTriggerClickCaptureCleanup = undefined
   })
 
   function emitColor(nextHsb: HsbColor): Color {
@@ -907,6 +914,7 @@ export function ColorPicker(props: ColorPickerProps) {
   const handleTriggerKeyDown = (event: KeyboardEvent): void => {
     ;(local.onKeyDown as ((event: KeyboardEvent) => void) | undefined)?.(event)
     if (event.defaultPrevented) return
+    if (hasInteractiveCustomChild()) return
     if (event.key !== 'Enter' && event.key !== ' ') return
 
     event.preventDefault()
@@ -915,6 +923,13 @@ export function ColorPicker(props: ColorPickerProps) {
   }
   const customTriggerProps = rest as JSX.HTMLAttributes<HTMLSpanElement>
   const customTrigger = () => resolvedChildren()
+  const supportsDisabled = (
+    element: HTMLElement | undefined,
+  ): element is HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement =>
+    element instanceof HTMLButtonElement ||
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLSelectElement ||
+    element instanceof HTMLTextAreaElement
   const syncInteractiveTriggerElement = (): void => {
     interactiveTriggerElement?.setAttribute('aria-haspopup', 'dialog')
     interactiveTriggerElement?.setAttribute('aria-expanded', open() ? 'true' : 'false')
@@ -924,20 +939,47 @@ export function ColorPicker(props: ColorPickerProps) {
       interactiveTriggerElement?.removeAttribute('aria-disabled')
     }
 
-    if (
-      interactiveTriggerElement instanceof HTMLButtonElement ||
-      interactiveTriggerElement instanceof HTMLInputElement ||
-      interactiveTriggerElement instanceof HTMLSelectElement ||
-      interactiveTriggerElement instanceof HTMLTextAreaElement
-    ) {
-      interactiveTriggerElement.disabled = disabled()
+    if (supportsDisabled(interactiveTriggerElement)) {
+      if (!restoreInteractiveTriggerDisabled) {
+        const element = interactiveTriggerElement
+        const originalDisabled = element.disabled
+
+        originalInteractiveTriggerDisabled = originalDisabled
+        restoreInteractiveTriggerDisabled = () => {
+          element.disabled = originalDisabled
+        }
+      }
+
+      interactiveTriggerElement.disabled = originalInteractiveTriggerDisabled || disabled()
     }
   }
   const updateInteractiveCustomChild = (): void => {
-    interactiveTriggerElement =
+    const nextInteractiveTriggerElement =
       triggerRef?.querySelector<HTMLElement>(interactiveChildSelector) ?? undefined
+
+    if (nextInteractiveTriggerElement !== interactiveTriggerElement) {
+      restoreInteractiveTriggerDisabled?.()
+      restoreInteractiveTriggerDisabled = undefined
+      interactiveTriggerElement = nextInteractiveTriggerElement
+    }
+
     setHasInteractiveCustomChild(Boolean(interactiveTriggerElement))
     syncInteractiveTriggerElement()
+  }
+  const addCustomTriggerClickCapture = (element: HTMLElement): void => {
+    customTriggerClickCaptureCleanup?.()
+
+    const handleClickCapture = (event: MouseEvent) => {
+      if (!disabled()) return
+
+      event.preventDefault()
+      event.stopPropagation()
+    }
+
+    element.addEventListener('click', handleClickCapture, { capture: true })
+    customTriggerClickCaptureCleanup = () => {
+      element.removeEventListener('click', handleClickCapture, { capture: true })
+    }
   }
 
   createEffect(() => {
@@ -988,6 +1030,7 @@ export function ColorPicker(props: ColorPickerProps) {
           {...customTriggerProps}
           ref={(element) => {
             triggerRef = element
+            addCustomTriggerClickCapture(element)
             updateInteractiveCustomChild()
           }}
           role={hasInteractiveCustomChild() ? undefined : 'button'}
@@ -999,7 +1042,7 @@ export function ColorPicker(props: ColorPickerProps) {
           aria-expanded={open() ? 'true' : 'false'}
           aria-disabled={disabled() ? 'true' : undefined}
           onClick={handleTriggerClick}
-          onKeyDown={hasInteractiveCustomChild() ? undefined : handleTriggerKeyDown}
+          onKeyDown={handleTriggerKeyDown}
           onMouseEnter={handleHoverEnter}
           onMouseLeave={handleHoverLeave}
         >

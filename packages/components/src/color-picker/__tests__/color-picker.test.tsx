@@ -352,6 +352,59 @@ describe('ColorPicker v6 API compatibility', () => {
     expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
   })
 
+  it('preserves custom trigger child disabled state when ColorPicker disabled toggles', () => {
+    const [disabled, setDisabled] = createSignal(false)
+    const result = render(() => (
+      <ColorPicker disabled={disabled()}>
+        <button type="button" disabled>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).toBeDisabled()
+
+    setDisabled(true)
+    expect(trigger).toBeDisabled()
+
+    setDisabled(false)
+    expect(trigger).toBeDisabled()
+  })
+
+  it('suppresses child and ColorPicker clicks for disabled interactive custom children', () => {
+    const childClick = vi.fn()
+    const onClick = vi.fn()
+    render(() => (
+      <ColorPicker disabled onClick={onClick}>
+        <button type="button" onClick={childClick}>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pick brand color' }))
+
+    expect(childClick).not.toHaveBeenCalled()
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog', { name: 'Color Picker Panel' })).toBeNull()
+  })
+
+  it('calls onKeyDown from an interactive custom trigger child', () => {
+    const onKeyDown = vi.fn()
+    const result = render(() => (
+      <ColorPicker defaultValue="#1677ff" onKeyDown={onKeyDown}>
+        <button type="button">Pick brand color</button>
+      </ColorPicker>
+    ))
+
+    fireEvent.keyDown(result.getByRole('button', { name: 'Pick brand color' }), {
+      key: 'ArrowDown',
+    })
+
+    expect(onKeyDown).toHaveBeenCalledTimes(1)
+  })
+
   it('opens custom non-interactive trigger children with Enter and Space', () => {
     const result = render(() => (
       <ColorPicker defaultValue="#1677ff">
