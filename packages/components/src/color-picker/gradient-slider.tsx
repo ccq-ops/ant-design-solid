@@ -105,7 +105,9 @@ export function GradientSlider(props: GradientSliderProps): JSX.Element {
 
   return (
     <div
-      ref={sliderRef}
+      ref={(element) => {
+        sliderRef = element
+      }}
       role="slider"
       aria-label="Gradient stops"
       aria-valuemin="0"
