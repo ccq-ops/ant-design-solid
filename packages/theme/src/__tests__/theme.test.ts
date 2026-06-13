@@ -282,6 +282,7 @@ describe('@ant-design-solid/theme', () => {
         Table: { headerBg: '#fafafa', cellPadding: 20 },
         Tag: { borderRadius: 12, closeIconColor: '#111111' },
         Badge: { overflowIndicatorHeight: 24, dotSize: 8 },
+        FloatButton: { size: 48, iconSize: 20 },
         Layout: { headerBg: '#10239e', triggerHeight: 56 },
       },
     })
@@ -300,6 +301,11 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Badge', token).dotSize).toBe(8)
     expect(getComponentToken('Badge', token).colorBg).toBe(token.colorError)
     expect(getComponentToken('Badge', token).colorText).toBe('#ffffff')
+
+    expect(getComponentToken('FloatButton', token).size).toBe(48)
+    expect(getComponentToken('FloatButton', token).iconSize).toBe(20)
+    expect(getComponentToken('FloatButton', token).insetBlockEnd).toBe(token.marginXXL)
+    expect(getComponentToken('FloatButton', token).insetInlineEnd).toBe(token.marginLG)
 
     expect(getComponentToken('Layout', token).bodyBg).toBe(token.colorBgLayout)
     expect(getComponentToken('Layout', token).headerBg).toBe('#10239e')

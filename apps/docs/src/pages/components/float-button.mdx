@@ -5,84 +5,369 @@ FloatButton renders floating quick actions and a back-to-top affordance.
 ### Basic
 
 ```tsx
-import { FloatButton, Space } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+import { QuestionCircleOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
+
+const floatStyle = { position: 'absolute', right: '24px', bottom: '24px' }
 
 const Demo1 = function () {
   return (
-    <Space>
-      <FloatButton icon="?" description="Help" />
-      <span>The button is fixed at the lower right of the viewport.</span>
-    </Space>
+    <div style={boxStyle}>
+      <FloatButton icon={<QuestionCircleOutlined />} style={floatStyle} />
+    </div>
   )
 }
 
 export default Demo1
 ```
 
-### Link
+### Type
 
 ```tsx
-import { FloatButton, Space } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
 
 const Demo2 = function () {
-  return <FloatButton href="https://example.com" target="_blank" icon="↗" description="Open" />
+  return (
+    <div style={boxStyle}>
+      <FloatButton
+        icon={<QuestionCircleOutlined />}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+      <FloatButton
+        type="primary"
+        icon={<PlusOutlined />}
+        style={{ position: 'absolute', right: '88px', bottom: '24px' }}
+      />
+    </div>
+  )
 }
 
 export default Demo2
 ```
 
-### Group
+### Shape And Content
 
 ```tsx
-import { FloatButton, Space } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+import { CustomerServiceOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
 
 const Demo3 = function () {
   return (
-    <FloatButton.Group shape="square">
-      <FloatButton type="primary" icon="+" description="New" />
-      <FloatButton icon="?" description="Help" />
-    </FloatButton.Group>
+    <div style={boxStyle}>
+      <FloatButton
+        shape="square"
+        icon={<CustomerServiceOutlined />}
+        content="Help"
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+      <FloatButton
+        shape="square"
+        content="Docs"
+        style={{ position: 'absolute', right: '88px', bottom: '24px' }}
+      />
+    </div>
   )
 }
 
 export default Demo3
 ```
 
-### BackTop
+### Tooltip
 
 ```tsx
-import { FloatButton, Space } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+import { QuestionCircleOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
 
 const Demo4 = function () {
   return (
-<p>Scroll down and the back-to-top button appears after the configured threshold.</p>
-        <FloatButton.BackTop visibilityHeight={200} />
+    <div style={boxStyle}>
+      <FloatButton
+        icon={<QuestionCircleOutlined />}
+        tooltip={{ title: 'Questions?', placement: 'left' }}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+    </div>
   )
 }
 
 export default Demo4
 ```
 
+### Badge
+
+```tsx
+import { FloatButton } from '@ant-design-solid/core'
+import { BellOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
+
+const Demo5 = function () {
+  return (
+    <div style={boxStyle}>
+      <FloatButton
+        icon={<BellOutlined />}
+        badge={{ count: 5 }}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+    </div>
+  )
+}
+
+export default Demo5
+```
+
+### Link
+
+```tsx
+import { FloatButton } from '@ant-design-solid/core'
+import { LinkOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
+
+const Demo6 = function () {
+  return (
+    <div style={boxStyle}>
+      <FloatButton
+        href="https://example.com"
+        target="_blank"
+        icon={<LinkOutlined />}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+    </div>
+  )
+}
+
+export default Demo6
+```
+
+### Group
+
+```tsx
+import { FloatButton } from '@ant-design-solid/core'
+import { CommentOutlined, CustomerServiceOutlined, PlusOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '220px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
+
+const Demo7 = function () {
+  return (
+    <div style={boxStyle}>
+      <FloatButton.Group
+        shape="square"
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      >
+        <FloatButton type="primary" icon={<PlusOutlined />} />
+        <FloatButton icon={<CustomerServiceOutlined />} />
+        <FloatButton icon={<CommentOutlined />} />
+      </FloatButton.Group>
+    </div>
+  )
+}
+
+export default Demo7
+```
+
+### Menu Mode
+
+```tsx
+import { FloatButton } from '@ant-design-solid/core'
+import {
+  CommentOutlined,
+  CustomerServiceOutlined,
+  FileTextOutlined,
+  MenuOutlined,
+} from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '220px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
+
+const Demo8 = function () {
+  return (
+    <div style={boxStyle}>
+      <FloatButton.Group
+        trigger="click"
+        type="primary"
+        icon={<MenuOutlined />}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      >
+        <FloatButton icon={<CustomerServiceOutlined />} tooltip="Service" />
+        <FloatButton icon={<CommentOutlined />} tooltip="Feedback" />
+        <FloatButton icon={<FileTextOutlined />} tooltip="Docs" />
+      </FloatButton.Group>
+    </div>
+  )
+}
+
+export default Demo8
+```
+
+### BackTop
+
+```tsx
+import { FloatButton } from '@ant-design-solid/core'
+
+const scrollBoxStyle = {
+  position: 'relative',
+  height: '220px',
+  overflow: 'auto',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+  padding: '16px',
+}
+
+const Demo9 = function () {
+  let container
+
+  return (
+    <div ref={container} style={scrollBoxStyle}>
+      <p>Scroll down and the back-to-top button appears after the configured threshold.</p>
+      <div style={{ height: '360px' }} />
+      <FloatButton.BackTop
+        visibilityHeight={120}
+        target={() => container}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+    </div>
+  )
+}
+
+export default Demo9
+```
+
+### Semantic Styles
+
+```tsx
+import { FloatButton } from '@ant-design-solid/core'
+import { QuestionCircleOutlined } from '@ant-design-solid/icons'
+
+const boxStyle = {
+  position: 'relative',
+  height: '160px',
+  overflow: 'hidden',
+  border: '1px dashed #d9d9d9',
+  'border-radius': '8px',
+  background: '#fafafa',
+}
+
+const Demo10 = function () {
+  return (
+    <div style={boxStyle}>
+      <FloatButton
+        icon={<QuestionCircleOutlined />}
+        content="Help"
+        classNames={{ root: 'custom-float-button', content: 'custom-float-button-content' }}
+        styles={{ content: { color: '#1677ff' } }}
+        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+      />
+    </div>
+  )
+}
+
+export default Demo10
+```
+
 ## API
 
 ### FloatButton
 
-| Property      | Description                                            | Type                     | Default     |
-| ------------- | ------------------------------------------------------ | ------------------------ | ----------- |
-| `type`        | Float button visual type.                              | `'default' \| 'primary'` | `'default'` |
-| `shape`       | Float button shape.                                    | `'circle' \| 'square'`   | `'circle'`  |
-| `icon`        | Icon content rendered inside the button.               | `JSX.Element`            | `-`         |
-| `description` | Description content rendered below or beside the icon. | `JSX.Element`            | `-`         |
-| `tooltip`     | Native title text for the floating action.             | `string`                 | `-`         |
-| `href`        | Renders the float button as a link when provided.      | `string`                 | `-`         |
-| `target`      | Anchor target when href is provided.                   | `string`                 | `-`         |
+| Property      | Description                                                              | Type                                                                                                      | Default                             |
+| ------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `type`        | Float button visual type.                                                | `'default' \| 'primary'`                                                                                  | `'default'`                         |
+| `shape`       | Float button shape.                                                      | `'circle' \| 'square'`                                                                                    | `'circle'`                          |
+| `icon`        | Icon content rendered inside the button.                                 | `JSX.Element`                                                                                             | default icon when no content is set |
+| `content`     | Text and other content rendered in the button.                           | `JSX.Element`                                                                                             | `-`                                 |
+| `description` | Deprecated. Use `content` instead.                                       | `JSX.Element`                                                                                             | `-`                                 |
+| `tooltip`     | Tooltip content or Tooltip props. String values also set native `title`. | `JSX.Element \| Omit<TooltipProps, 'children'>`                                                           | `-`                                 |
+| `href`        | Renders the float button as a link when provided.                        | `string`                                                                                                  | `-`                                 |
+| `target`      | Anchor target when href is provided.                                     | `string`                                                                                                  | `-`                                 |
+| `badge`       | Badge props attached to the button.                                      | `Omit<BadgeProps, 'status' \| 'text' \| 'title' \| 'children'>`                                           | `-`                                 |
+| `disabled`    | Whether the button is disabled.                                          | `boolean`                                                                                                 | `false`                             |
+| `htmlType`    | Original HTML button type.                                               | `'button' \| 'submit' \| 'reset'`                                                                         | `'button'`                          |
+| `classNames`  | Semantic class names for internal nodes.                                 | `Record<'root' \| 'icon' \| 'content', string> \| (info) => Record<string, string>`                       | `-`                                 |
+| `styles`      | Semantic styles for internal nodes.                                      | `Record<'root' \| 'icon' \| 'content', JSX.CSSProperties> \| (info) => Record<string, JSX.CSSProperties>` | `-`                                 |
+| `class`       | Root class name.                                                         | `string`                                                                                                  | `-`                                 |
+| `style`       | Root inline style.                                                       | `JSX.CSSProperties \| string`                                                                             | `-`                                 |
+| `onClick`     | Click callback.                                                          | `(event: MouseEvent) => void`                                                                             | `-`                                 |
 
 ### FloatButton.Group
 
-| Property   | Description                                   | Type                   | Default |
-| ---------- | --------------------------------------------- | ---------------------- | ------- |
-| `shape`    | Shared shape applied to buttons in the group. | `'circle' \| 'square'` | `-`     |
-| `children` | FloatButton items rendered in the group.      | `JSX.Element`          | `-`     |
+| Property       | Description                                       | Type                                                                                                                                                              | Default    |
+| -------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `shape`        | Shared shape applied to buttons in the group.     | `'circle' \| 'square'`                                                                                                                                            | `'circle'` |
+| `trigger`      | Action that opens or closes menu mode.            | `'click' \| 'hover'`                                                                                                                                              | `-`        |
+| `open`         | Controlled menu open state. Use with `trigger`.   | `boolean`                                                                                                                                                         | `-`        |
+| `onOpenChange` | Callback executed when menu open state changes.   | `(open: boolean) => void`                                                                                                                                         | `-`        |
+| `placement`    | Menu placement relative to the trigger button.    | `'top' \| 'left' \| 'right' \| 'bottom'`                                                                                                                          | `'top'`    |
+| `closeIcon`    | Close icon used by menu mode.                     | `JSX.Element`                                                                                                                                                     | close icon |
+| `children`     | FloatButton items rendered in the group.          | `JSX.Element`                                                                                                                                                     | `-`        |
+| `classNames`   | Semantic class names for group and trigger nodes. | `Record<'root' \| 'list' \| 'item' \| 'itemIcon' \| 'itemContent' \| 'trigger' \| 'triggerIcon' \| 'triggerContent', string> \| (info) => Record<string, string>` | `-`        |
+| `styles`       | Semantic styles for group and trigger nodes.      | `Record<string, JSX.CSSProperties> \| (info) => Record<string, JSX.CSSProperties>`                                                                                | `-`        |
+
+Menu mode also accepts FloatButton trigger props such as `type`, `icon`, `content`, `tooltip`, `badge`, `disabled`, `htmlType`, and `onClick`.
 
 ### FloatButton.BackTop
 
@@ -90,5 +375,8 @@ export default Demo4
 | ------------------ | ------------------------------------------------------- | -------------------------------------------------- | -------- |
 | `visibilityHeight` | Scroll threshold before the back-to-top button appears. | `number`                                           | `400`    |
 | `target`           | Function returning the scroll container.                | `() => Window \| HTMLElement \| undefined \| null` | `window` |
-| `duration`         | Reserved scroll duration configuration.                 | `number`                                           | `-`      |
-| `children`         | Custom back-to-top icon content.                        | `JSX.Element`                                      | `-`      |
+| `duration`         | Time to return to top in milliseconds.                  | `number`                                           | `450`    |
+| `icon`             | Custom back-to-top icon.                                | `JSX.Element`                                      | top icon |
+| `children`         | Deprecated custom back-to-top icon content.             | `JSX.Element`                                      | `-`      |
+
+BackTop also accepts FloatButton props such as `type`, `shape`, `content`, `tooltip`, `badge`, `disabled`, `classNames`, `styles`, `class`, `style`, and `onClick`.

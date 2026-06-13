@@ -176,6 +176,12 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       colorText: '#ffffff',
       statusSize: 6,
     },
+    FloatButton: {
+      size: token.controlHeightLG,
+      iconSize: token.fontSizeIcon * 1.5,
+      insetBlockEnd: token.marginXXL,
+      insetInlineEnd: token.marginLG,
+    },
     Tabs: {
       itemColor: token.colorText,
       itemSelectedColor: token.colorPrimary,

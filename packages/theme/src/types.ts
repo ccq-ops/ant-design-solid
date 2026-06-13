@@ -446,6 +446,13 @@ export interface BadgeComponentToken extends ComponentTokenBase {
   statusSize: number
 }
 
+export interface FloatButtonComponentToken extends ComponentTokenBase {
+  size: number
+  iconSize: number
+  insetBlockEnd: number
+  insetInlineEnd: number
+}
+
 export interface TabsComponentToken extends ComponentTokenBase {
   itemColor: string
   itemSelectedColor: string
@@ -590,7 +597,7 @@ export interface ComponentTokenMap {
   Dropdown: DropdownComponentToken
   Empty?: ComponentTokenBase
   Flex?: ComponentTokenBase
-  FloatButton?: ComponentTokenBase
+  FloatButton: FloatButtonComponentToken
   Form: FormComponentToken
   Grid: GridComponentToken
   Image?: ComponentTokenBase
