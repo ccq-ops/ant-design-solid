@@ -196,18 +196,26 @@ describe('DatePicker custom rendering and visual APIs', () => {
       </StyleProvider>
     ))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Today' }))
-
     const css = extractStyle(cache)
-    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
-    expect(dayjs.isDayjs(nextValue)).toBe(true)
-    expect(nextString).toBe(dayjs().format('YYYY-MM-DD'))
+    expect(document.body.querySelector('.ads-date-picker-footer')).toHaveClass(
+      'ads-date-picker-footer-centered',
+    )
+    expect(css).toContain('.ads-date-picker-footer-centered{justify-content:center;')
+    expect(css).toContain(
+      '.ads-date-picker-footer-centered .ads-date-picker-footer-extra{justify-content:center;width:100%;',
+    )
     expect(css).toContain(
       '.ads-date-picker-today, .ads-date-picker-now{align-items:center;background:transparent;border:0;color:#1677ff;cursor:pointer;display:inline-flex;line-height:1;padding:0;',
     )
     expect(css).toContain(
       '.ads-date-picker-today:disabled{color:rgba(0,0,0,0.25);cursor:not-allowed;pointer-events:none;',
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Today' }))
+
+    const [nextValue, nextString] = onChange.mock.lastCall as [Dayjs, string]
+    expect(dayjs.isDayjs(nextValue)).toBe(true)
+    expect(nextString).toBe(dayjs().format('YYYY-MM-DD'))
   })
 
   it('disables the default Today shortcut when today is disabled', () => {

@@ -150,6 +150,9 @@ function superNextLabel(locale: DatePickerLocale | undefined, mode: PickerMode =
 }
 
 export function PickerPanel(props: PickerPanelProps) {
+  const centeredFooter = () =>
+    props.showToday && !props.renderExtraFooter && !props.needConfirm && !props.showTime
+
   const panelContent = () => {
     const Component = props.components?.[props.mode ?? 'date'] ?? props.components?.panel
     return Component ? (
@@ -221,7 +224,12 @@ export function PickerPanel(props: PickerPanelProps) {
         when={props.renderExtraFooter || props.needConfirm || props.showTime || props.showToday}
       >
         <div
-          class={semanticClass('footer', props.classNames, `${props.prefixCls}-footer`)}
+          class={semanticClass(
+            'footer',
+            props.classNames,
+            `${props.prefixCls}-footer`,
+            centeredFooter() && `${props.prefixCls}-footer-centered`,
+          )}
           style={semanticStyle('footer', props.styles)}
         >
           <div class={`${props.prefixCls}-footer-extra`}>
