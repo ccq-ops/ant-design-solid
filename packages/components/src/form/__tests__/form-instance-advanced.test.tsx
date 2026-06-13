@@ -44,4 +44,18 @@ describe('FormInstance advanced getFieldsValue', () => {
     })
     expect(form.getFieldsValue(true)).toEqual({ user: { name: 'Ada', hidden: 'secret' } })
   })
+
+  it('keeps unmounted setFields records in field-state APIs without making them registered values', () => {
+    const [form] = useForm()
+
+    form.setFields([{ name: 'detached', value: 'value', errors: ['Broken'], touched: true }])
+
+    expect(form.getFieldError('detached')).toEqual(['Broken'])
+    expect(form.getFieldsError()).toEqual([
+      { name: ['detached'], errors: ['Broken'], warnings: [] },
+    ])
+    expect(form.isFieldsTouched(['detached'], true)).toBe(true)
+    expect(form.getFieldsValue()).toEqual({})
+    expect(form.getFieldsValue(true)).toEqual({ detached: 'value' })
+  })
 })

@@ -186,6 +186,14 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
       )
     }
 
+    function getFieldRecords(nameList?: FieldName[], recursive = false): FieldRecord[] {
+      const records = Array.from(fields.values())
+      if (!nameList) return records
+      return records.filter((record) =>
+        nameList.some((name) => matchNamePath(name, record.state.name, recursive)),
+      )
+    }
+
     function getRegisteredFieldData(nameList?: FieldName[], recursive = false): FieldData[] {
       const currentValues = untrack(() => values())
       return getRegisteredRecords(nameList, recursive).map((record) =>
@@ -210,7 +218,8 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
     }
 
     function getAllFieldData(): FieldData[] {
-      return getRegisteredFieldData()
+      const currentValues = untrack(() => values())
+      return getFieldRecords().map((record) => fieldRecordToData(record, currentValues))
     }
 
     function notifyFieldsChange(changedRecords: FieldRecord[]) {
@@ -582,7 +591,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         return [...(fields.get(key)?.state.errors ?? errorSignals.get(key)?.[0]() ?? [])]
       },
       getFieldsError(nameList) {
-        return getRegisteredRecords(nameList).map((record) => ({
+        return getFieldRecords(nameList).map((record) => ({
           name: [...record.state.name],
           errors: [...record.state.errors],
           warnings: [...record.state.warnings],
@@ -629,7 +638,7 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
         return fields.get(getFieldKey(name))?.state.touched ?? false
       },
       isFieldsTouched(nameListOrAllTouched?: FieldName[] | boolean, allTouched = false) {
-        const records = getRegisteredRecords(
+        const records = getFieldRecords(
           Array.isArray(nameListOrAllTouched) ? nameListOrAllTouched : undefined,
         )
         const requireAllTouched =
