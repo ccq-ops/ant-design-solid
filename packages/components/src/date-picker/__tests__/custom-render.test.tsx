@@ -50,6 +50,14 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain(
       '.ads-date-picker-week-row:hover .ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-disabled){background:rgba(0,0,0,0.04);',
     )
+    expect(css).toContain(
+      '.ads-date-picker-weekdays-with-week{grid-template-columns:52px repeat(7, 24px);',
+    )
+    expect(css).toContain('.ads-date-picker-week-grid{display:block;')
+    expect(css).toContain(
+      '.ads-date-picker-week-row{border-radius:4px;display:grid;gap:8px;grid-template-columns:52px repeat(7, 24px);',
+    )
+    expect(css).toContain('.ads-date-picker-week-row .ads-date-picker-cell{width:24px;')
   })
 
   it('keeps suffix icon visible and overlays clear icon on selector hover', () => {

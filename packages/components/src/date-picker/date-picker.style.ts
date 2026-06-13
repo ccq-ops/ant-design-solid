@@ -272,7 +272,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'margin-bottom': `${t.marginXS}px`,
         },
         [`.${prefixCls}-weekdays-with-week`]: {
-          'grid-template-columns': '52px repeat(7, 1fr)',
+          'grid-template-columns': `52px repeat(7, ${dp.cellHeight}px)`,
         },
         [`.${prefixCls}-weekday`]: {
           color: t.colorTextSecondary,
@@ -286,7 +286,7 @@ export function useDatePickerStyle(prefixCls: string) {
           gap: `${t.marginXS}px`,
         },
         [`.${prefixCls}-week-grid`]: {
-          'grid-template-columns': '52px repeat(7, 1fr)',
+          display: 'block',
         },
         [`.${prefixCls}-week-rows`]: {
           display: 'flex',
@@ -295,9 +295,12 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-week-row`]: {
           display: 'grid',
-          'grid-template-columns': '52px repeat(7, 1fr)',
+          'grid-template-columns': `52px repeat(7, ${dp.cellHeight}px)`,
           gap: `${t.marginXS}px`,
           'border-radius': `${t.borderRadiusSM}px`,
+        },
+        [`.${prefixCls}-week-row .${prefixCls}-cell`]: {
+          width: `${dp.cellHeight}px`,
         },
         [`.${prefixCls}-week-row:hover .${prefixCls}-cell:not(.${prefixCls}-cell-selected):not(.${prefixCls}-cell-disabled)`]:
           {
