@@ -16,8 +16,8 @@ describe('DatePicker custom rendering and visual APIs', () => {
     ))
 
     const css = extractStyle(cache)
-    expect(css).not.toContain(
-      '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover',
+    expect(css).toContain(
+      '.ads-date-picker-cell:not(.ads-date-picker-cell-selected):not(.ads-date-picker-cell-range-start):not(.ads-date-picker-cell-range-end):hover{background:rgba(0,0,0,0.04);',
     )
     expect(css).toContain(
       '.ads-date-picker-cell-selected:hover, .ads-date-picker-cell-selected:active{background:#1677ff;color:#ffffff;',
