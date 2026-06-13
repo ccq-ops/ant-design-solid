@@ -40,9 +40,6 @@ export interface PickerInputProps {
 }
 
 export function PickerInput(props: PickerInputProps) {
-  const multipleInputEmpty = () =>
-    Boolean(props.multiple && props.value === '' && !props.multipleValues?.length)
-
   return (
     <>
       <Show when={props.prefix}>
@@ -65,9 +62,7 @@ export function PickerInput(props: PickerInputProps) {
         ref={props.inputRef}
         role="textbox"
         aria-label={props.ariaLabel}
-        class={`${props.inputClass ?? `${props.prefixCls}-input`}${
-          multipleInputEmpty() ? ` ${props.prefixCls}-input-empty` : ''
-        }`}
+        class={props.inputClass ?? `${props.prefixCls}-input`}
         style={props.inputStyle}
         value={props.value}
         placeholder={props.placeholder}

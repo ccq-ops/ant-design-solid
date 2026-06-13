@@ -120,10 +120,6 @@ export function useDatePickerStyle(prefixCls: string) {
           flex: '0 1 24px',
           width: '24px',
         },
-        [`.${prefixCls}-multiple .${prefixCls}-input-empty`]: {
-          flex: '1 1 auto',
-          width: 'auto',
-        },
         [`.${prefixCls}-multiple .${prefixCls}-suffix`]: {
           position: 'absolute',
           insetInlineEnd: `${dp.paddingInline}px`,
