@@ -245,10 +245,10 @@ export function useDatePickerStyle(prefixCls: string) {
         },
         [`.${prefixCls}-panel-body`]: {
           display: 'flex',
-          'align-items': 'stretch',
         },
         [`.${prefixCls}-panel-date`]: {
-          flex: '0 0 auto',
+          flex: '1 1 auto',
+          width: '100%',
         },
         [`.${prefixCls}-presets`]: {
           display: 'flex',
