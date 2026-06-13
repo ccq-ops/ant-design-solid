@@ -102,10 +102,29 @@ export function useDatePickerStyle(prefixCls: string) {
           'justify-content': 'flex-start',
           'flex-wrap': 'wrap',
           padding: `${dp.paddingBlock}px ${dp.paddingInline}px`,
+          'padding-right': `${dp.paddingInline + t.controlHeightSM}px`,
+        },
+        [`.${prefixCls}-multiple.${prefixCls}-sm .${prefixCls}-selector`]: {
+          'padding-right': `${dp.paddingInlineSM + t.controlHeightSM}px`,
+        },
+        [`.${prefixCls}-multiple.${prefixCls}-lg .${prefixCls}-selector`]: {
+          'padding-right': `${dp.paddingInlineLG + t.controlHeightSM}px`,
         },
         [`.${prefixCls}-multiple .${prefixCls}-input`]: {
           flex: '0 1 24px',
           width: '24px',
+        },
+        [`.${prefixCls}-multiple .${prefixCls}-suffix`]: {
+          position: 'absolute',
+          insetInlineEnd: `${dp.paddingInline}px`,
+          top: '50%',
+          transform: 'translateY(-50%)',
+        },
+        [`.${prefixCls}-multiple.${prefixCls}-sm .${prefixCls}-suffix`]: {
+          insetInlineEnd: `${dp.paddingInlineSM}px`,
+        },
+        [`.${prefixCls}-multiple.${prefixCls}-lg .${prefixCls}-suffix`]: {
+          insetInlineEnd: `${dp.paddingInlineLG}px`,
         },
         [`.${prefixCls}-multiple-tags`]: {
           display: 'inline-flex',

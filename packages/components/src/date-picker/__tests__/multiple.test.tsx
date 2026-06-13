@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import dayjs, { type Dayjs } from 'dayjs'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -58,6 +59,32 @@ describe('DatePicker multiple selection', () => {
     render(() => <DatePicker multiple picker="month" defaultValue={[dayjs('2026-06-01')]} />)
 
     expect(screen.getByRole('button', { name: 'Remove 2026-06' })).toBeInTheDocument()
+  })
+
+  it('keeps suffix and clear icons fixed on the right side', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker multiple defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-02')]} allowClear />
+      </StyleProvider>
+    ))
+
+    const selector = result.container.querySelector<HTMLElement>('.ads-date-picker-selector')
+    const suffix = result.container.querySelector<HTMLElement>('.ads-date-picker-suffix')
+    const clear = screen.getByRole('button', { name: 'Clear date' })
+    const css = extractStyle(cache)
+
+    expect(selector).toContainElement(suffix)
+    expect(selector).toContainElement(clear)
+    expect(clear).toHaveClass('ads-date-picker-clear-overlay')
+    expect(css).toContain('.ads-date-picker-multiple .ads-date-picker-selector{')
+    expect(css).toContain('padding-right:36px;')
+    expect(css).toContain(
+      '.ads-date-picker-multiple .ads-date-picker-suffix{inset-inline-end:12px;position:absolute;top:50%;',
+    )
+    expect(css).toContain(
+      '.ads-date-picker-multiple.ads-date-picker-sm .ads-date-picker-suffix{inset-inline-end:8px;',
+    )
   })
 
   it('keeps insertion order when order is false', () => {
