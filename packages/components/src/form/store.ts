@@ -386,7 +386,9 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           return pickValues(currentValues, getFilteredRegisteredNames(nameListOrConfig, filter))
         }
         if (nameListOrConfig && typeof nameListOrConfig === 'object') {
-          const matchingNames = getFilteredRegisteredNames(undefined, getFieldFilter(nameListOrConfig))
+          const fieldFilter = getFieldFilter(nameListOrConfig)
+          if (!fieldFilter && !nameListOrConfig.strict) return cloneFormValues(currentValues)
+          const matchingNames = getFilteredRegisteredNames(undefined, fieldFilter)
           if (nameListOrConfig.strict) return pickValues(currentValues, matchingNames)
           return pickValues(currentValues, matchingNames)
         }

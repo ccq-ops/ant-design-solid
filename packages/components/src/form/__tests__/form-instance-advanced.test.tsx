@@ -38,6 +38,10 @@ describe('FormInstance advanced getFieldsValue', () => {
     ))
 
     expect(form.getFieldsValue({ strict: true })).toEqual({ user: { name: 'Ada' } })
+    expect(form.getFieldsValue({})).toEqual({ user: { name: 'Ada', hidden: 'secret' } })
+    expect(form.getFieldsValue({ strict: false })).toEqual({
+      user: { name: 'Ada', hidden: 'secret' },
+    })
     expect(form.getFieldsValue(true)).toEqual({ user: { name: 'Ada', hidden: 'secret' } })
   })
 })
