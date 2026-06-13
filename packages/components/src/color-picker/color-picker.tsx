@@ -121,7 +121,7 @@ export function ColorPicker(props: ColorPickerProps) {
   let suppressBlurTarget: HTMLInputElement | undefined
   let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
   let interactiveTriggerElement: HTMLElement | undefined
-  let originalInteractiveTriggerDisabled = false
+  let colorPickerAppliedInteractiveDisabled = false
   let restoreInteractiveTriggerDisabled: (() => void) | undefined
   let customTriggerClickCaptureCleanup: (() => void) | undefined
 
@@ -942,15 +942,22 @@ export function ColorPicker(props: ColorPickerProps) {
     if (supportsDisabled(interactiveTriggerElement)) {
       if (!restoreInteractiveTriggerDisabled) {
         const element = interactiveTriggerElement
-        const originalDisabled = element.disabled
 
-        originalInteractiveTriggerDisabled = originalDisabled
         restoreInteractiveTriggerDisabled = () => {
-          element.disabled = originalDisabled
+          if (colorPickerAppliedInteractiveDisabled) element.disabled = false
+          colorPickerAppliedInteractiveDisabled = false
         }
       }
 
-      interactiveTriggerElement.disabled = originalInteractiveTriggerDisabled || disabled()
+      if (disabled()) {
+        if (!interactiveTriggerElement.disabled) {
+          interactiveTriggerElement.disabled = true
+          colorPickerAppliedInteractiveDisabled = true
+        }
+      } else if (colorPickerAppliedInteractiveDisabled) {
+        interactiveTriggerElement.disabled = false
+        colorPickerAppliedInteractiveDisabled = false
+      }
     }
   }
   const updateInteractiveCustomChild = (): void => {

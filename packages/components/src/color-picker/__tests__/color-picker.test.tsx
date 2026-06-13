@@ -372,6 +372,27 @@ describe('ColorPicker v6 API compatibility', () => {
     expect(trigger).toBeDisabled()
   })
 
+  it('preserves owner-updated custom trigger child disabled state during ColorPicker sync', () => {
+    const [childDisabled, setChildDisabled] = createSignal(false)
+    const [open, setOpen] = createSignal(false)
+    const result = render(() => (
+      <ColorPicker open={open()}>
+        <button type="button" disabled={childDisabled()}>
+          Pick brand color
+        </button>
+      </ColorPicker>
+    ))
+    const trigger = result.getByRole('button', { name: 'Pick brand color' })
+
+    expect(trigger).not.toBeDisabled()
+
+    setChildDisabled(true)
+    expect(trigger).toBeDisabled()
+
+    setOpen(true)
+    expect(trigger).toBeDisabled()
+  })
+
   it('suppresses child and ColorPicker clicks for disabled interactive custom children', () => {
     const childClick = vi.fn()
     const onClick = vi.fn()
