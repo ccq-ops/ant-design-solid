@@ -71,13 +71,33 @@ describe('DatePicker showTime', () => {
     expect(screen.getByTestId('custom-panel').children[0]).toHaveClass('ads-date-picker-weekdays')
     expect(screen.getByTestId('custom-panel').children[1]).toHaveClass('ads-date-picker-grid')
     expect(datePanel).toContainElement(screen.getByRole('button', { name: '2026-06-15' }))
+    expect(panelBody).toHaveClass('ads-date-picker-panel-body-with-time')
     expect(panelBody).toContainElement(timePanel)
     expect(Array.from(panelBody?.children ?? [])).toEqual([datePanel, timePanel])
-    expect(css).toContain('.ads-date-picker-panel-body{display:flex;')
-    expect(css).not.toContain('.ads-date-picker-panel-body{align-items:stretch;')
+    expect(css).toContain('.ads-date-picker-panel-body-with-time{display:flex;')
+    expect(css).not.toContain('.ads-date-picker-panel-body-with-time{align-items:stretch;')
     expect(css).toContain('.ads-date-picker-panel-date{flex:1 1 auto;width:100%;')
     expect(css).toContain('.ads-date-picker-time-panel{border-left:')
     expect(css).not.toContain('.ads-date-picker-time-panel{display:flex;gap:8px;margin-top:')
+  })
+
+  it('keeps the default date panel stacked when showTime is disabled', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} />
+      </StyleProvider>
+    ))
+
+    const panelBody = document.body.querySelector<HTMLElement>('.ads-date-picker-panel-body')
+    const css = extractStyle(cache)
+
+    expect(panelBody).not.toHaveClass('ads-date-picker-panel-body-with-time')
+    expect(Array.from(panelBody?.children ?? [])).toHaveLength(2)
+    expect(panelBody?.children[0]).toHaveClass('ads-date-picker-weekdays')
+    expect(panelBody?.children[1]).toHaveClass('ads-date-picker-grid')
+    expect(css).not.toContain('.ads-date-picker-panel-body{display:flex;')
+    expect(css).toContain('.ads-date-picker-panel-body-with-time{display:flex;')
   })
 
   it('marks disabled time options as disabled and prevents selection', () => {

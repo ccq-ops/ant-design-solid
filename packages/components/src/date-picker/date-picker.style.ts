@@ -248,7 +248,7 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-dropdown-with-time`]: {
           width: 'auto',
         },
-        [`.${prefixCls}-panel-body`]: {
+        [`.${prefixCls}-panel-body-with-time`]: {
           display: 'flex',
         },
         [`.${prefixCls}-panel-date`]: {

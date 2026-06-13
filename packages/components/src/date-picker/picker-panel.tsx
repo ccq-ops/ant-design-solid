@@ -171,7 +171,7 @@ export function PickerPanel(props: PickerPanelProps) {
       return <div class={`${props.prefixCls}-panel-body`}>{content}</div>
     }
     return (
-      <div class={`${props.prefixCls}-panel-body`}>
+      <div class={`${props.prefixCls}-panel-body ${props.prefixCls}-panel-body-with-time`}>
         <div class={`${props.prefixCls}-panel-date`}>{content}</div>
         {props.timePanel}
       </div>
