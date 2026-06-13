@@ -89,6 +89,10 @@ export function FormRoot(props: FormProps) {
   const labelCol = () => local.labelCol
   const wrapperCol = () => local.wrapperCol
   const validateTrigger = () => local.validateTrigger
+  const feedbackIcons = () => local.feedbackIcons
+  const labelWrap = () => local.labelWrap
+  const tooltip = () => local.tooltip
+  const validateMessages = () => local.validateMessages
   const layoutContext = {
     layout,
     requiredMark,
@@ -97,6 +101,10 @@ export function FormRoot(props: FormProps) {
     labelCol,
     wrapperCol,
     validateTrigger,
+    feedbackIcons,
+    labelWrap,
+    tooltip,
+    validateMessages,
   }
 
   let unregisterCallbacks: (() => void) | undefined

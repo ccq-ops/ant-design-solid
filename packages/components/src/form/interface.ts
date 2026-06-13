@@ -9,9 +9,20 @@ export type FieldValue = unknown
 export type FormValues = Record<string, FieldValue>
 export type ValidateStatus = 'success' | 'warning' | 'error' | 'validating'
 export type FormLayout = 'horizontal' | 'vertical' | 'inline'
-export type RequiredMark = boolean | 'optional'
+export type RequiredMark =
+  | boolean
+  | 'optional'
+  | ((label: JSX.Element, info: { required: boolean }) => JSX.Element)
 export type FormVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
 export type FormSemanticSlot = 'root'
+export type FormItemSemanticSlot =
+  | 'root'
+  | 'label'
+  | 'content'
+  | 'help'
+  | 'helpItem'
+  | 'extra'
+  | 'feedbackIcon'
 
 export type FormSemanticClassNamesMap = Partial<Record<FormSemanticSlot, string>>
 export type FormSemanticStylesMap = Partial<Record<FormSemanticSlot, JSX.CSSProperties>>
@@ -34,7 +45,19 @@ export interface FormTooltipConfig extends Omit<TooltipProps, 'children'> {
   icon?: JSX.Element
 }
 export type FormTooltipProps = JSX.Element | FormTooltipConfig
+export type FormTooltip = FormTooltipProps
 export type FilterFunc = (meta: { touched: boolean; validating: boolean }) => boolean
+export type ValidateMessages = Partial<Record<string, string>>
+
+export type FormItemSemanticClassNamesMap = Partial<Record<FormItemSemanticSlot, string>>
+export type FormItemSemanticStylesMap = Partial<Record<FormItemSemanticSlot, JSX.CSSProperties>>
+export type FormItemSemanticClassNames =
+  | FormItemSemanticClassNamesMap
+  | ((info: { props: FormItemProps }) => FormItemSemanticClassNamesMap)
+export type FormItemSemanticStyles =
+  | FormItemSemanticStylesMap
+  | ((info: { props: FormItemProps }) => FormItemSemanticStylesMap)
+export type FormItemHasFeedback = boolean | { icons?: FeedbackIcons }
 
 export interface GetFieldsValueConfig {
   strict?: boolean
@@ -49,6 +72,10 @@ export interface FormLayoutContextValue {
   labelCol: Accessor<unknown>
   wrapperCol: Accessor<unknown>
   validateTrigger: Accessor<string | string[] | undefined>
+  feedbackIcons: Accessor<FeedbackIcons | undefined>
+  labelWrap: Accessor<boolean | undefined>
+  tooltip: Accessor<FormTooltipProps | undefined>
+  validateMessages: Accessor<ValidateMessages | undefined>
 }
 
 export interface ValidateConfig {
@@ -67,7 +94,7 @@ export interface RuleConfig {
   pattern?: RegExp
   whitespace?: boolean
   transform?: (value: FieldValue) => FieldValue
-  message?: string
+  message?: string | JSX.Element
   warningOnly?: boolean
   validateTrigger?: string | string[]
   validateFirst?: boolean | 'parallel'
@@ -113,6 +140,9 @@ export interface FieldMeta {
   dependencies?: NamePath[]
   validateTrigger?: string | string[]
   validateFirst?: boolean | 'parallel'
+  label?: JSX.Element
+  messageVariables?: Record<string, string>
+  validateMessages?: ValidateMessages
 }
 
 export interface FormInstance {
@@ -242,7 +272,7 @@ export interface FormProps extends JSX.FormHTMLAttributes<HTMLFormElement> {
   labelWrap?: boolean
   tooltip?: FormTooltipProps
   preserve?: boolean
-  validateMessages?: Record<string, string>
+  validateMessages?: ValidateMessages
   children?: JSX.Element
 }
 
@@ -271,7 +301,14 @@ export interface FormItemProps {
   wrapperCol?: unknown
   labelAlign?: 'left' | 'right'
   colon?: boolean
-  tooltip?: JSX.Element
+  tooltip?: FormTooltip
+  htmlFor?: string
+  layout?: FormLayout
+  labelWrap?: boolean
+  messageVariables?: Record<string, string>
+  hasFeedback?: FormItemHasFeedback
+  classNames?: FormItemSemanticClassNames
+  styles?: FormItemSemanticStyles
   shouldUpdate?: boolean | ((prevValues: FormValues, nextValues: FormValues) => boolean)
   children?: JSX.Element | ((control: FormItemControl) => JSX.Element)
 }

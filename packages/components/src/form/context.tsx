@@ -19,6 +19,10 @@ const defaultFormLayoutContext: FormLayoutContextValue = {
   labelCol: () => undefined,
   wrapperCol: () => undefined,
   validateTrigger: () => undefined,
+  feedbackIcons: () => undefined,
+  labelWrap: () => undefined,
+  tooltip: () => undefined,
+  validateMessages: () => undefined,
 }
 
 export const FormLayoutContext = createContext<FormLayoutContextValue>(defaultFormLayoutContext)

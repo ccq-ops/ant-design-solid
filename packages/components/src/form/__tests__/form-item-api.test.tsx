@@ -8,7 +8,6 @@ describe('Form.Item v6 APIs', () => {
   it('applies htmlFor and renders a label placeholder when label is null', () => {
     const result = render(() => (
       <Form>
-        {/* @ts-expect-error RED test for pending Form.Item htmlFor support */}
         <Form.Item label="Username" htmlFor="username-input">
           <Input id="username-input" />
         </Form.Item>
@@ -26,17 +25,14 @@ describe('Form.Item v6 APIs', () => {
     const result = render(() => (
       <Form layout="horizontal">
         <Form.Item
-          // @ts-expect-error RED test for pending Form.Item layout support
           layout="vertical"
           label="Username"
-          // @ts-expect-error RED test for pending Form.Item semantic slot support
           classNames={{
             root: 'item-root',
             label: 'item-label',
             content: 'item-content',
             extra: 'item-extra',
           }}
-          // @ts-expect-error RED test for pending Form.Item semantic slot support
           styles={{ content: { color: 'rgb(4, 5, 6)' } }}
           extra="Extra"
         >
@@ -45,7 +41,9 @@ describe('Form.Item v6 APIs', () => {
       </Form>
     ))
 
-    expect(result.getByText('Username').closest('.ads-form-item')).toHaveClass('ads-form-item-vertical')
+    expect(result.getByText('Username').closest('.ads-form-item')).toHaveClass(
+      'ads-form-item-vertical',
+    )
     expect(result.getByText('Username').closest('.ads-form-item')).toHaveClass('item-root')
     expect(result.getByText('Username').closest('label')).toHaveClass('item-label')
     expect(result.getByText('Extra')).toHaveClass('item-extra')
@@ -57,7 +55,6 @@ describe('Form.Item v6 APIs', () => {
         <Form.Item
           label="Username"
           name="username"
-          // @ts-expect-error RED test for pending Form.Item messageVariables support
           messageVariables={{ another: 'attention' }}
           rules={[{ required: true }]}
         >
@@ -75,12 +72,7 @@ describe('Form.Item v6 APIs', () => {
   it('renders feedback icon when hasFeedback is enabled', async () => {
     const result = render(() => (
       <Form feedbackIcons={{ error: <span data-testid="form-error-icon">E</span> }}>
-        <Form.Item
-          name="username"
-          // @ts-expect-error RED test for pending Form.Item hasFeedback support
-          hasFeedback
-          rules={[{ required: true, message: 'Required' }]}
-        >
+        <Form.Item name="username" hasFeedback rules={[{ required: true, message: 'Required' }]}>
           <Input />
         </Form.Item>
         <Button htmlType="submit">Submit</Button>
@@ -95,8 +87,9 @@ describe('Form.Item v6 APIs', () => {
   it('renders function requiredMark output', () => {
     const result = render(() => (
       <Form
-        // @ts-expect-error RED test for pending function-valued requiredMark support
-        requiredMark={(label, info) => <span data-testid="mark">{info.required ? 'R' : label}</span>}
+        requiredMark={(label, info) => (
+          <span data-testid="mark">{info.required ? 'R' : label}</span>
+        )}
       >
         <Form.Item label="Username" name="username" rules={[{ required: true }]}>
           <Input />

@@ -322,7 +322,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
             getValue(values(), record.state.name),
             values(),
             record.meta.rules,
-            { form, validateFirst: record.meta.validateFirst },
+            {
+              form,
+              validateFirst: record.meta.validateFirst,
+              validateMessages: record.meta.validateMessages,
+              messageVariables: {
+                label: String(record.meta.label ?? record.state.name.join('.')),
+                name: record.state.name.join('.'),
+                ...record.meta.messageVariables,
+              },
+            },
           )
           if (!isCurrentValidation(record, sequence)) {
             outOfDate = true
@@ -361,7 +370,16 @@ export function createFormInstance(options: CreateFormOptions = {}): FormInstanc
           getValue(values(), record.state.name),
           values(),
           record.meta.rules,
-          { form, validateFirst: record.meta.validateFirst },
+          {
+            form,
+            validateFirst: record.meta.validateFirst,
+            validateMessages: record.meta.validateMessages,
+            messageVariables: {
+              label: String(record.meta.label ?? record.state.name.join('.')),
+              name: record.state.name.join('.'),
+              ...record.meta.messageVariables,
+            },
+          },
         )
         if (!result) return undefined
         results.set(record, result)

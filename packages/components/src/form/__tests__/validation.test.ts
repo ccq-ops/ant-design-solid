@@ -187,16 +187,10 @@ describe('form validation v2', () => {
   })
 
   it('uses validate message templates with custom variables and escaped placeholders', async () => {
-    const result = await validateValue(
-      'username',
-      '',
-      {},
-      [{ required: true }],
-      {
-        validateMessages: { required: '${label} is required, \\${label} stays literal' },
-        messageVariables: { label: 'User name' },
-      },
-    )
+    const result = await validateValue('username', '', {}, [{ required: true }], {
+      validateMessages: { required: '${label} is required, \\${label} stays literal' },
+      messageVariables: { label: 'User name' },
+    })
 
     expect(result.errors).toEqual(['User name is required, ${label} stays literal'])
   })

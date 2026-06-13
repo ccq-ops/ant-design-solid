@@ -1,8 +1,17 @@
-import type { FieldValue, FormInstance, FormValues, Rule, RuleConfig } from './interface'
+import type {
+  FieldValue,
+  FormInstance,
+  FormValues,
+  Rule,
+  RuleConfig,
+  ValidateMessages,
+} from './interface'
 
 export interface ValidateValueOptions {
   form?: FormInstance
   validateFirst?: boolean | 'parallel'
+  validateMessages?: ValidateMessages
+  messageVariables?: Record<string, string>
 }
 
 export interface ValidateValueResult {
@@ -42,9 +51,65 @@ function isUrl(value: FieldValue): boolean {
   }
 }
 
-function messageOf(name: string, rule: RuleConfig, fallback: string): string {
+const defaultValidateMessages: ValidateMessages = {
+  required: '${name} is required',
+  whitespace: '${name} cannot be blank',
+  enum: '${name} is not in enum',
+  pattern: '${name} format is invalid',
+  string: '${name} is not a valid string',
+  number: '${name} is not a valid number',
+  boolean: '${name} is not a valid boolean',
+  array: '${name} is not an array',
+  object: '${name} is not an object',
+  email: '${name} is not a valid email',
+  url: '${name} is not a valid url',
+  len: '${name} must be ${len} characters',
+  min: '${name} must be at least ${min} characters',
+  max: '${name} must be at most ${max} characters',
+}
+
+export function formatValidateMessage(
+  template: string,
+  variables: Record<string, string | number | undefined>,
+): string {
+  const escapedToken = '\u0000ADS_FORM_ESCAPED_PLACEHOLDER\u0000'
+  return template
+    .replace(/\\\$\{/g, escapedToken)
+    .replace(/\$\{([^}]+)\}/g, (match, key: string) => {
+      const value = variables[key]
+      return value === undefined ? match : String(value)
+    })
+    .replace(new RegExp(escapedToken, 'g'), '${')
+}
+
+function getValidateMessage(
+  messageKey: string,
+  fallback: string,
+  options: ValidateValueOptions,
+): string {
+  return options.validateMessages?.[messageKey] ?? defaultValidateMessages[messageKey] ?? fallback
+}
+
+function messageOf(
+  name: string,
+  rule: RuleConfig,
+  messageKey: string,
+  fallback: string,
+  options: ValidateValueOptions,
+): string {
   if (typeof rule.message === 'string') return rule.message
-  return fallback.replace('${name}', name)
+  const template = getValidateMessage(messageKey, fallback, options)
+  const variables = {
+    name,
+    label: name,
+    min: rule.min,
+    max: rule.max,
+    len: rule.len,
+    enum: rule.enum?.join(', '),
+    pattern: rule.pattern?.toString(),
+    ...options.messageVariables,
+  }
+  return formatValidateMessage(template, variables)
 }
 
 function resolveRule(rule: Rule, form?: FormInstance): RuleConfig {
@@ -61,66 +126,77 @@ function validateRuleBase(
   name: string,
   rawValue: FieldValue,
   rule: RuleConfig,
+  options: ValidateValueOptions,
 ): [FieldValue, string | undefined] {
   const value = rule.transform ? rule.transform(rawValue) : rawValue
 
-  if (rule.required && isEmpty(value)) return [value, messageOf(name, rule, `${name} is required`)]
+  if (rule.required && isEmpty(value))
+    return [value, messageOf(name, rule, 'required', `${name} is required`, options)]
   if (isEmpty(value)) return [value, undefined]
 
   if (rule.whitespace && typeof value === 'string' && value.trim() === '') {
-    return [value, messageOf(name, rule, `${name} cannot be blank`)]
+    return [value, messageOf(name, rule, 'whitespace', `${name} cannot be blank`, options)]
   }
 
   if (rule.type === 'array' && !Array.isArray(value)) {
-    return [value, messageOf(name, rule, `${name} is not an array`)]
+    return [value, messageOf(name, rule, 'array', `${name} is not an array`, options)]
   }
   if (rule.type === 'object' && !isObject(value)) {
-    return [value, messageOf(name, rule, `${name} is not an object`)]
+    return [value, messageOf(name, rule, 'object', `${name} is not an object`, options)]
   }
   if (rule.type === 'email' && !isEmail(value)) {
-    return [value, messageOf(name, rule, `${name} is not a valid email`)]
+    return [value, messageOf(name, rule, 'email', `${name} is not a valid email`, options)]
   }
   if (rule.type === 'url' && !isUrl(value)) {
-    return [value, messageOf(name, rule, `${name} is not a valid url`)]
+    return [value, messageOf(name, rule, 'url', `${name} is not a valid url`, options)]
   }
   if (rule.enum && !rule.enum.includes(value)) {
-    return [value, messageOf(name, rule, `${name} is not in enum`)]
+    return [value, messageOf(name, rule, 'enum', `${name} is not in enum`, options)]
   }
   if (
     rule.type &&
     !['array', 'object', 'email', 'url', 'enum'].includes(rule.type) &&
     typeof value !== rule.type
   ) {
-    return [value, messageOf(name, rule, `${name} is not a valid ${rule.type}`)]
+    return [value, messageOf(name, rule, rule.type, `${name} is not a valid ${rule.type}`, options)]
   }
 
   if (typeof value === 'number') {
     if (rule.len !== undefined && value !== rule.len) {
-      return [value, messageOf(name, rule, `${name} must equal ${rule.len}`)]
+      return [value, messageOf(name, rule, 'len', `${name} must equal ${rule.len}`, options)]
     }
     if (rule.min !== undefined && value < rule.min) {
-      return [value, messageOf(name, rule, `${name} must be at least ${rule.min}`)]
+      return [value, messageOf(name, rule, 'min', `${name} must be at least ${rule.min}`, options)]
     }
     if (rule.max !== undefined && value > rule.max) {
-      return [value, messageOf(name, rule, `${name} must be at most ${rule.max}`)]
+      return [value, messageOf(name, rule, 'max', `${name} must be at most ${rule.max}`, options)]
     }
   }
 
   const length = getLength(value)
   if (length !== undefined) {
     if (rule.len !== undefined && length !== rule.len) {
-      return [value, messageOf(name, rule, `${name} must be ${rule.len} characters`)]
+      return [
+        value,
+        messageOf(name, rule, 'len', `${name} must be ${rule.len} characters`, options),
+      ]
     }
     if (rule.min !== undefined && length < rule.min) {
-      return [value, messageOf(name, rule, `${name} must be at least ${rule.min} characters`)]
+      return [
+        value,
+        messageOf(name, rule, 'min', `${name} must be at least ${rule.min} characters`, options),
+      ]
     }
     if (rule.max !== undefined && length > rule.max) {
-      return [value, messageOf(name, rule, `${name} must be at most ${rule.max} characters`)]
+      return [
+        value,
+        messageOf(name, rule, 'max', `${name} must be at most ${rule.max} characters`, options),
+      ]
     }
   }
 
   if (rule.pattern && typeof value === 'string' && !rule.pattern.test(value)) {
-    return [value, messageOf(name, rule, `${name} format is invalid`)]
+    return [value, messageOf(name, rule, 'pattern', `${name} format is invalid`, options)]
   }
 
   return [value, undefined]
@@ -131,8 +207,9 @@ async function validateRule(
   rawValue: FieldValue,
   values: FormValues,
   rule: RuleConfig,
+  options: ValidateValueOptions,
 ): Promise<string[]> {
-  const [value, baseError] = validateRuleBase(name, rawValue, rule)
+  const [value, baseError] = validateRuleBase(name, rawValue, rule, options)
   if (baseError) return [baseError]
 
   const nestedErrors: string[] = []
@@ -144,6 +221,7 @@ async function validateRule(
           value[index],
           values,
           resolveRule(rule.defaultField),
+          options,
         )),
       )
     }
@@ -156,6 +234,7 @@ async function validateRule(
           readChildValue(value, key),
           values,
           resolveRule(rule.fields[key]),
+          options,
         )),
       )
     }
@@ -197,15 +276,20 @@ function appendResult(
   ;(rule.warningOnly ? result.warnings : result.errors).push(...messages)
 }
 
-function validateNestedRulesSync(name: string, value: FieldValue, rule: RuleConfig): string[] {
+function validateNestedRulesSync(
+  name: string,
+  value: FieldValue,
+  rule: RuleConfig,
+  options: ValidateValueOptions,
+): string[] {
   const errors: string[] = []
   if (rule.defaultField && Array.isArray(value)) {
     const nestedRule = resolveRule(rule.defaultField)
     if (nestedRule.validator) return []
     for (let index = 0; index < value.length; index += 1) {
-      const [, error] = validateRuleBase(`${name}.${index}`, value[index], nestedRule)
+      const [, error] = validateRuleBase(`${name}.${index}`, value[index], nestedRule, options)
       if (error) errors.push(error)
-      errors.push(...validateNestedRulesSync(`${name}.${index}`, value[index], nestedRule))
+      errors.push(...validateNestedRulesSync(`${name}.${index}`, value[index], nestedRule, options))
     }
   }
   if (rule.fields && value && typeof value === 'object') {
@@ -213,9 +297,9 @@ function validateNestedRulesSync(name: string, value: FieldValue, rule: RuleConf
       const nestedRule = resolveRule(rule.fields[key])
       if (nestedRule.validator) return []
       const childValue = readChildValue(value, key)
-      const [, error] = validateRuleBase(`${name}.${key}`, childValue, nestedRule)
+      const [, error] = validateRuleBase(`${name}.${key}`, childValue, nestedRule, options)
       if (error) errors.push(error)
-      errors.push(...validateNestedRulesSync(`${name}.${key}`, childValue, nestedRule))
+      errors.push(...validateNestedRulesSync(`${name}.${key}`, childValue, nestedRule, options))
     }
   }
   return errors
@@ -237,8 +321,8 @@ export function validateValueSync(
     options.validateFirst ?? resolvedRules.find((rule) => rule.validateFirst)?.validateFirst
 
   for (const rule of resolvedRules) {
-    const [, error] = validateRuleBase(name, value, rule)
-    const nestedErrors = !error ? validateNestedRulesSync(name, value, rule) : []
+    const [, error] = validateRuleBase(name, value, rule, options)
+    const nestedErrors = !error ? validateNestedRulesSync(name, value, rule, options) : []
     const messages = error ? [error] : nestedErrors
     appendResult(result, rule, messages)
     if (messages.length > 0 && validateFirst && !rule.warningOnly) break
@@ -261,7 +345,7 @@ export async function validateValue(
 
   if (validateFirst === 'parallel') {
     const results = await Promise.all(
-      resolvedRules.map((rule) => validateRule(name, value, values, rule)),
+      resolvedRules.map((rule) => validateRule(name, value, values, rule, options)),
     )
     const firstErrorIndex = results.findIndex(
       (errors, index) => errors.length > 0 && !resolvedRules[index].warningOnly,
@@ -276,7 +360,7 @@ export async function validateValue(
   }
 
   for (const rule of resolvedRules) {
-    const errors = await validateRule(name, value, values, rule)
+    const errors = await validateRule(name, value, values, rule, options)
     appendResult(result, rule, errors)
     if (errors.length > 0 && validateFirst && !rule.warningOnly) break
   }

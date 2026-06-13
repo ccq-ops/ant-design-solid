@@ -27,6 +27,16 @@ export function useFormStyle(prefixCls: string) {
         {
           visibility: 'hidden',
         },
+      [`.${prefixCls}-item-vertical`]: {
+        display: 'block',
+        'align-items': 'flex-start',
+      },
+      [`.${prefixCls}-item-vertical .${prefixCls}-item-label`]: {
+        height: 'auto',
+        margin: 0,
+        padding: `0 0 ${formToken.verticalLabelPadding}px`,
+        'text-align': 'left',
+      },
       [`.${prefixCls}-horizontal .${prefixCls}-item`]: {
         display: 'flex',
         'align-items': 'flex-start',
@@ -54,6 +64,9 @@ export function useFormStyle(prefixCls: string) {
       [`.${prefixCls}-item-label`]: {
         color: formToken.labelColor,
         'white-space': 'nowrap',
+      },
+      [`.${prefixCls}-item-label-wrap`]: {
+        'white-space': 'normal',
       },
       [`.${prefixCls}-item-label.${prefixCls}-item-required::before`]: {
         display: 'inline-block',
@@ -87,15 +100,45 @@ export function useFormStyle(prefixCls: string) {
       [`.${prefixCls}-item-control`]: {
         flex: 1,
       },
+      [`.${prefixCls}-item-control-input`]: {
+        display: 'flex',
+        'align-items': 'center',
+        gap: t.marginXS,
+      },
+      [`.${prefixCls}-item-feedback-icon`]: {
+        display: 'inline-flex',
+        'align-items': 'center',
+        'line-height': 1,
+      },
+      [`.${prefixCls}-item-feedback-icon-success`]: {
+        color: t.colorSuccess,
+      },
+      [`.${prefixCls}-item-feedback-icon-warning`]: {
+        color: t.colorWarning,
+      },
+      [`.${prefixCls}-item-feedback-icon-error`]: {
+        color: t.colorError,
+      },
+      [`.${prefixCls}-item-feedback-icon-validating`]: {
+        color: t.colorPrimary,
+      },
       [`.${prefixCls}-item-explain`]: {
         'font-size': 12,
         'margin-top': 4,
+      },
+      [`.${prefixCls}-item-explain-item + .${prefixCls}-item-explain-item`]: {
+        'margin-top': 2,
       },
       [`.${prefixCls}-item-explain-error`]: {
         color: formToken.explainColor,
       },
       [`.${prefixCls}-item-explain-warning`]: {
         color: t.colorWarning,
+      },
+      [`.${prefixCls}-item-extra`]: {
+        color: t.colorTextDescription,
+        'font-size': 12,
+        'margin-top': 4,
       },
     }
   })
