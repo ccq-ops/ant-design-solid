@@ -374,7 +374,7 @@ export function useDatePickerStyle(prefixCls: string) {
           gap: `${t.marginXXS}px`,
           padding: `${t.paddingXXS}px 0`,
         },
-        [`.${prefixCls}-quarter-grid`]: {
+        [`.${prefixCls}-variant-grid.${prefixCls}-quarter-grid`]: {
           'grid-template-columns': 'repeat(4, 1fr)',
         },
         [`.${prefixCls}-month-grid, .${prefixCls}-year-grid, .${prefixCls}-quarter-grid, .${prefixCls}-decade-grid`]:

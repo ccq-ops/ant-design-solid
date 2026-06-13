@@ -58,7 +58,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).toContain(
       '.ads-date-picker-variant-grid{display:grid;gap:4px;grid-template-columns:repeat(3, 1fr);padding:4px 0;',
     )
-    expect(css).toContain('.ads-date-picker-quarter-grid{grid-template-columns:repeat(4, 1fr);')
+    expect(css).toContain(
+      '.ads-date-picker-variant-grid.ads-date-picker-quarter-grid{grid-template-columns:repeat(4, 1fr);',
+    )
     expect(css).toContain(
       '.ads-date-picker-week-row:not(.ads-date-picker-week-row-selected):hover{background:rgba(0,0,0,0.04);',
     )
