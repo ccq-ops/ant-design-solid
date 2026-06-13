@@ -106,6 +106,25 @@ describe('DatePicker picker variants', () => {
     expect(nextString.startsWith('2026-')).toBe(true)
   })
 
+  it('marks the selected week on the row instead of painting each cell background', () => {
+    render(() => (
+      <DatePicker
+        picker="week"
+        defaultOpen
+        defaultPickerValue={dayjs('2026-06-01')}
+        defaultValue={dayjs('2026-06-10')}
+      />
+    ))
+
+    const weekButton = screen.getByRole('button', { name: '2026-week-24' })
+    const row = weekButton.closest('.ads-date-picker-week-row')
+    const dateCell = screen.getByRole('button', { name: '2026-06-10' })
+
+    expect(row).toHaveClass('ads-date-picker-week-row-selected')
+    expect(weekButton).toHaveClass('ads-date-picker-cell-selected')
+    expect(dateCell).toHaveClass('ads-date-picker-cell-selected')
+  })
+
   it('uses antd-like cells for week, month, quarter, and year panels', () => {
     const { unmount } = render(() => (
       <DatePicker picker="week" defaultOpen defaultPickerValue={dayjs('2026-06-01')} />

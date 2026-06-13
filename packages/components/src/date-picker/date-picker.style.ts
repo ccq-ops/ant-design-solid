@@ -350,6 +350,19 @@ export function useDatePickerStyle(prefixCls: string) {
           {
             background: dp.cellHoverBg,
           },
+        [`.${prefixCls}-week-row-selected`]: {
+          background: dp.activeBorderColor,
+        },
+        [`.${prefixCls}-week-row-selected .${prefixCls}-cell-selected`]: {
+          background: 'transparent',
+          color: t.colorBgContainer,
+          'font-weight': '600',
+        },
+        [`.${prefixCls}-week-row-selected .${prefixCls}-cell-selected:hover, .${prefixCls}-week-row-selected .${prefixCls}-cell-selected:active`]:
+          {
+            background: 'transparent',
+            color: t.colorBgContainer,
+          },
         [`.${prefixCls}-variant-grid`]: {
           display: 'grid',
           'grid-template-columns': 'repeat(3, 1fr)',

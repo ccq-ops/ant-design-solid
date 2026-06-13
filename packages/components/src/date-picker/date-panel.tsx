@@ -106,6 +106,18 @@ export function DatePanel(props: DatePanelProps) {
     )
   }
 
+  function weekStartForRow(row: Array<dayjs.Dayjs | null>): dayjs.Dayjs | undefined {
+    return firstDateInRow(row)?.startOf('week')
+  }
+
+  function weekRowSelected(row: Array<dayjs.Dayjs | null>): boolean {
+    const weekStart = weekStartForRow(row)
+    if (!weekStart) return false
+    return Array.isArray(props.selectedValue)
+      ? props.selectedValue.some((value) => samePickerValue(value, weekStart, 'week'))
+      : samePickerValue(props.selectedValue, weekStart, 'week')
+  }
+
   function renderDateCell(date: dayjs.Dayjs | null): JSX.Element {
     if (!date) return <div class={`${props.prefixCls}-empty-cell`} />
     const dateString = () => date.format('YYYY-MM-DD')
@@ -195,7 +207,11 @@ export function DatePanel(props: DatePanelProps) {
         >
           <For each={weekRows()}>
             {(row) => (
-              <div class={`${props.prefixCls}-week-row`}>
+              <div
+                class={`${props.prefixCls}-week-row${
+                  weekRowSelected(row) ? ` ${props.prefixCls}-week-row-selected` : ''
+                }`}
+              >
                 {renderWeekButton(row)}
                 <For each={row}>{(date) => renderDateCell(date)}</For>
               </div>
