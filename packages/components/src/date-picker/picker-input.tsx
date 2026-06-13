@@ -1,4 +1,4 @@
-import { CloseCircleFilled } from '@ant-design-solid/icons'
+import { CalendarOutlined, CloseCircleFilled } from '@ant-design-solid/icons'
 import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import type { dayjs } from './date-utils'
@@ -90,9 +90,7 @@ export function PickerInput(props: PickerInputProps) {
           {props.clearIcon ?? <CloseCircleFilled />}
         </button>
       </Show>
-      <Show when={props.suffixIcon}>
-        <span class={`${props.prefixCls}-suffix`}>{props.suffixIcon}</span>
-      </Show>
+      <span class={`${props.prefixCls}-suffix`}>{props.suffixIcon ?? <CalendarOutlined />}</span>
     </>
   )
 }

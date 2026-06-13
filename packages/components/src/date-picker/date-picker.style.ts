@@ -35,6 +35,7 @@ export function useDatePickerStyle(prefixCls: string) {
           'white-space': 'nowrap',
         },
         [`.${prefixCls}-selector`]: {
+          position: 'relative',
           display: 'inline-flex',
           'align-items': 'center',
           'justify-content': 'space-between',
@@ -149,7 +150,12 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-suffix`]: {
           display: 'inline-flex',
           'align-items': 'center',
+          'justify-content': 'center',
+          flex: '0 0 16px',
+          width: '16px',
+          height: '16px',
           color: t.colorTextSecondary,
+          'line-height': '1',
         },
         [`.${prefixCls}-placeholder`]: {
           color: t.colorTextDisabled,
@@ -158,6 +164,11 @@ export function useDatePickerStyle(prefixCls: string) {
           color: t.colorText,
         },
         [`.${prefixCls}-clear`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          width: '16px',
+          height: '16px',
           border: '0',
           padding: '0',
           background: 'transparent',
@@ -165,6 +176,27 @@ export function useDatePickerStyle(prefixCls: string) {
           cursor: 'pointer',
           'font-size': `${t.fontSize}px`,
           'line-height': '1',
+        },
+        [`.${prefixCls}-clear-overlay`]: {
+          position: 'absolute',
+          insetInlineEnd: `${dp.paddingInline}px`,
+          top: '50%',
+          'z-index': 1,
+          transform: 'translateY(-50%)',
+          opacity: 0,
+          'pointer-events': 'none',
+          transition: `opacity ${t.motionDurationMid} ${t.motionEaseInOut}, color ${t.motionDurationMid} ${t.motionEaseInOut}`,
+        },
+        [`.${prefixCls}-selector:hover .${prefixCls}-clear-overlay, .${prefixCls}-selector:focus-within .${prefixCls}-clear-overlay`]:
+          {
+            opacity: 1,
+            'pointer-events': 'auto',
+          },
+        [`.${prefixCls}-sm .${prefixCls}-clear-overlay`]: {
+          insetInlineEnd: `${dp.paddingInlineSM}px`,
+        },
+        [`.${prefixCls}-lg .${prefixCls}-clear-overlay`]: {
+          insetInlineEnd: `${dp.paddingInlineLG}px`,
         },
         [`.${prefixCls}-variant-cell`]: {
           height: `${dp.withoutTimeCellHeight}px`,

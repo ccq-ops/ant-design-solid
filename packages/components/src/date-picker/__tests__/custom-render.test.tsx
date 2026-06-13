@@ -28,6 +28,35 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(css).not.toContain('.ads-date-picker-cell:hover{background:rgba(0,0,0,0.02);')
   })
 
+  it('keeps suffix icon visible and overlays clear icon on selector hover', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker
+          defaultValue={dayjs('2026-06-01')}
+          allowClear={{ clearIcon: <span data-testid="clear-icon">clear</span> }}
+        />
+      </StyleProvider>
+    ))
+
+    const selector = result.container.querySelector<HTMLElement>('.ads-date-picker-selector')
+    const suffix = result.container.querySelector<HTMLElement>('.ads-date-picker-suffix')
+    const clear = result.container.querySelector<HTMLElement>('.ads-date-picker-clear')
+    const css = extractStyle(cache)
+
+    expect(selector).toContainElement(suffix)
+    expect(selector).toContainElement(clear)
+    expect(suffix?.querySelector('svg')).toBeInTheDocument()
+    expect(clear).toHaveClass('ads-date-picker-clear-overlay')
+    expect(screen.getByTestId('clear-icon')).toBeInTheDocument()
+    expect(css).toContain('.ads-date-picker-clear-overlay{')
+    expect(css).toContain('position:absolute;')
+    expect(css).toContain('opacity:0;pointer-events:none;')
+    expect(css).toContain(
+      '.ads-date-picker-selector:hover .ads-date-picker-clear-overlay, .ads-date-picker-selector:focus-within .ads-date-picker-clear-overlay{opacity:1;pointer-events:auto;',
+    )
+  })
+
   it('consumes DatePicker component token overrides', () => {
     const cache = createCache()
     render(() => (
@@ -284,6 +313,28 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(screen.getAllByTestId('range-clear-icon')).toHaveLength(3)
     expect(screen.getByTestId('range-prev-icon')).toBeInTheDocument()
     expect(screen.getByTestId('range-next-icon')).toBeInTheDocument()
+  })
+
+  it('overlays the full range clear icon on the fixed suffix icon', () => {
+    const result = render(() => (
+      <RangePicker
+        defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-30')]}
+        allowClear={{ clearIcon: <span data-testid="range-clear-icon">clear</span> }}
+      />
+    ))
+
+    const selector = result.container.querySelector<HTMLElement>('.ads-date-picker-selector')
+    const suffix = result.container.querySelector<HTMLElement>('.ads-date-picker-suffix')
+    const clearButtons = result.container.querySelectorAll<HTMLElement>('.ads-date-picker-clear')
+    const fullClear = Array.from(clearButtons).find((button) =>
+      button.classList.contains('ads-date-picker-clear-overlay'),
+    )
+
+    expect(selector).toContainElement(suffix)
+    expect(selector).toContainElement(fullClear ?? null)
+    expect(suffix?.querySelector('svg')).toBeInTheDocument()
+    expect(fullClear).toHaveAttribute('aria-label', 'Clear date range')
+    expect(screen.getByTestId('range-clear-icon')).toBeInTheDocument()
   })
 
   it('passes originNode to month and year cellRender', () => {

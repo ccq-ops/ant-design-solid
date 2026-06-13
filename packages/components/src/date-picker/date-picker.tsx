@@ -556,7 +556,12 @@ function DatePickerBase(props: DatePickerProps) {
           ariaLabel={ariaLabel()}
           inputClass={semanticClass('input', resolvedClassNames(), `${prefixCls()}-input`)}
           inputStyle={semanticStyle('input', resolvedStyles())}
-          clearClass={semanticClass('clear', resolvedClassNames(), `${prefixCls()}-clear`)}
+          clearClass={semanticClass(
+            'clear',
+            resolvedClassNames(),
+            `${prefixCls()}-clear`,
+            `${prefixCls()}-clear-overlay`,
+          )}
           clearStyle={semanticStyle('clear', resolvedStyles())}
           inputRef={(element) => {
             inputRef = element

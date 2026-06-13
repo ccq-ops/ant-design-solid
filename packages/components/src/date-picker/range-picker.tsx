@@ -9,7 +9,7 @@ import {
 } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic, isServer } from 'solid-js/web'
-import { SwapRightOutlined } from '@ant-design-solid/icons'
+import { CalendarOutlined, SwapRightOutlined } from '@ant-design-solid/icons'
 import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -653,13 +653,16 @@ export function RangePicker(props: RangePickerProps) {
           }}
           onClear={(event) => clearSide('end', event)}
         />
-        <Show when={local.suffixIcon}>
-          <span class={`${prefixCls()}-suffix`}>{local.suffixIcon}</span>
-        </Show>
+        <span class={`${prefixCls()}-suffix`}>{local.suffixIcon ?? <CalendarOutlined />}</span>
         <Show when={local.allowClear !== false && (selectedRange()[0] || selectedRange()[1])}>
           <button
             type="button"
-            class={semanticClass('clear', resolvedClassNames(), `${prefixCls()}-clear`)}
+            class={semanticClass(
+              'clear',
+              resolvedClassNames(),
+              `${prefixCls()}-clear`,
+              `${prefixCls()}-clear-overlay`,
+            )}
             style={semanticStyle('clear', resolvedStyles())}
             aria-label={local.locale?.lang?.clear ?? 'Clear date range'}
             onClick={clearRange}
