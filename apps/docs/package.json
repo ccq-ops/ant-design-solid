@@ -18,14 +18,11 @@
     "@solidjs/start": "2.0.0-alpha.3",
     "dayjs": "^1.11.13",
     "nitro": "3.0.260610-beta",
-    "shiki": "^4.2.0",
     "solid-js": "latest"
   },
   "devDependencies": {
     "@iconify-json/ri": "^1.2.10",
-    "@mdx-js/rollup": "^3.1.1",
     "@tailwindcss/vite": "^4.3.0",
-    "remark-gfm": "^4.0.1",
     "resolve": "^1.22.12",
     "tailwindcss": "^4.3.0",
     "typescript": "latest",
