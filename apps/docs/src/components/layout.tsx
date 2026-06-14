@@ -1,7 +1,7 @@
 import { MoonOutlined, SunOutlined } from '@ant-design-solid/icons'
 import { A, useLocation } from '@solidjs/router'
 import { For, Show, createEffect, createMemo, type JSX } from 'solid-js'
-import { sideNavGroups, topNavItems } from '../routes'
+import { sideNavGroups, topNavItems } from '../solidbase-theme/route-data'
 import { useDocsTheme } from './theme-context'
 
 const sidebarLinkClass =

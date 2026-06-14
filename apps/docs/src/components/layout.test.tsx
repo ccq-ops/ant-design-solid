@@ -54,7 +54,7 @@ vi.mock('@solidjs/router', async () => {
   return { A, useLocation }
 })
 
-vi.mock('../routes', () => ({
+vi.mock('../solidbase-theme/route-data', () => ({
   topNavItems: [
     { group: 'components', path: '/components/alert', label: 'Components' },
     { group: 'docs', path: '/docs/getting-started', label: 'Docs' },
