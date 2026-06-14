@@ -4,6 +4,7 @@ test('drawer getContainer false renders inside current container on docs page', 
   page,
 }) => {
   await page.goto('/components/drawer')
+  await page.locator('html[data-docs-hydrated="true"]').waitFor()
 
   const heading = page.getByRole('heading', { name: 'Render In Current Container' })
   await heading.scrollIntoViewIfNeeded()

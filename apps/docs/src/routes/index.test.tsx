@@ -1,7 +1,7 @@
 import { fireEvent } from '@solidjs/testing-library'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderDocsPage } from '../test-utils/render-docs-page'
-import Home from './index.mdx'
+import Home from './index'
 
 const navigate = vi.hoisted(() => vi.fn())
 

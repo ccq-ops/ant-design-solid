@@ -32,7 +32,7 @@ function resolveGap(size: SpaceSize | undefined, token: GlobalToken): [number, n
 
 function isRenderableItem(item: unknown) {
   if (item === null || item === undefined || item === false) return false
-  if (item instanceof Text && item.data === '') return false
+  if (typeof Text !== 'undefined' && item instanceof Text && item.data === '') return false
   return true
 }
 

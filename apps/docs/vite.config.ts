@@ -8,7 +8,7 @@ import { antDesignSolidTheme } from './src/solidbase-theme'
 
 const solidBase = createSolidBase(antDesignSolidTheme)
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   oxc: { jsx: 'preserve' },
   plugins: [
     solidBase.plugin({
@@ -29,7 +29,7 @@ export default defineConfig({
       },
     }),
     solidStart(solidBase.startConfig({ ssr: true })),
-    nitro({ prerender: { crawlLinks: true } }),
+    command === 'build' && nitro({ prerender: { crawlLinks: true } }),
     tailwindcss(),
   ],
   resolve: {
@@ -55,4 +55,4 @@ export default defineConfig({
     },
   },
   server: { port: 5173 },
-})
+}))
