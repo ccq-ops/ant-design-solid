@@ -4,6 +4,7 @@ import defaultTheme from '@kobalte/solidbase/default-theme'
 import { defineConfig } from 'vitest/config'
 import solid from 'vite-plugin-solid'
 import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
+import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
 import { docsThemeConfig } from './solidbase-theme-config'
 
 const solidBase = createSolidBase(defaultTheme)
@@ -24,6 +25,7 @@ export default defineConfig({
       themeConfig: docsThemeConfig,
     }),
     solidbaseDefaultThemeJsx(),
+    solidbaseDefaultThemePreview(),
     solid({ extensions: ['.md', '.mdx'] }),
   ],
   resolve: {

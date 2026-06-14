@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
+import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
 import { docsThemeConfig } from './solidbase-theme-config'
 
 const solidBase = createSolidBase(defaultTheme)
@@ -26,6 +27,7 @@ export default defineConfig(({ command }) => ({
       themeConfig: docsThemeConfig,
     }),
     solidbaseDefaultThemeJsx(),
+    solidbaseDefaultThemePreview(),
     solidStart(solidBase.startConfig({ ssr: true })),
     command === 'build' && nitro({ prerender: { crawlLinks: true } }),
     tailwindcss(),
