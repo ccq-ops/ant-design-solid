@@ -11,5 +11,11 @@ test('button docs page hydrates and renders demos', async ({ page }) => {
   await expect(page.getByRole('complementary').getByRole('link', { name: 'Drawer' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Primary Button' })).toBeVisible()
   await expect(page.locator('[data-preview-stage]').first()).toBeVisible()
+
+  await expect(page.locator('aside').first()).toHaveCSS('display', 'flex')
+  await expect(page.getByRole('button', { name: 'Primary Button' })).toHaveCSS(
+    'background-color',
+    'rgb(22, 119, 255)',
+  )
   expect(pageErrors).toEqual([])
 })
