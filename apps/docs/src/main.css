@@ -42,7 +42,8 @@ a {
   --docs-float-shadow: 0 20px 70px rgba(15, 23, 42, 0.06);
 }
 
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+:root[data-theme='sdark'] {
   color-scheme: dark;
   --docs-bg: #0f1115;
   --docs-surface: rgba(20, 20, 20, 0.9);
@@ -150,37 +151,56 @@ a {
   background-color: var(--docs-surface-solid) !important;
 }
 
+[data-preview-stage] > div {
+  display: block;
+  align-items: initial;
+  justify-content: initial;
+}
+
 :root[data-theme='dark'] .bg-white,
-:root[data-theme='dark'] .bg-white\/90 {
+:root[data-theme='dark'] .bg-white\/90,
+:root[data-theme='sdark'] .bg-white,
+:root[data-theme='sdark'] .bg-white\/90 {
   background-color: var(--docs-surface) !important;
 }
 
-:root[data-theme='dark'] .bg-slate-50 {
+:root[data-theme='dark'] .bg-slate-50,
+:root[data-theme='sdark'] .bg-slate-50 {
   background-color: var(--docs-surface-subtle) !important;
 }
 
 :root[data-theme='dark'] .text-black\/65,
 :root[data-theme='dark'] .text-gray-500,
-:root[data-theme='dark'] .text-gray-700 {
+:root[data-theme='dark'] .text-gray-700,
+:root[data-theme='sdark'] .text-black\/65,
+:root[data-theme='sdark'] .text-gray-500,
+:root[data-theme='sdark'] .text-gray-700 {
   color: var(--docs-text-secondary) !important;
 }
 
-:root[data-theme='dark'] .text-gray-400 {
+:root[data-theme='dark'] .text-gray-400,
+:root[data-theme='sdark'] .text-gray-400 {
   color: var(--docs-text-tertiary) !important;
 }
 
-:root[data-theme='dark'] .border-gray-200 {
+:root[data-theme='dark'] .border-gray-200,
+:root[data-theme='sdark'] .border-gray-200 {
   border-color: var(--docs-border) !important;
 }
 
 :root[data-theme='dark'] .hover\:bg-gray-200:hover,
 :root[data-theme='dark'] .hover\:bg-blue-50:hover,
-:root[data-theme='dark'] .bg-blue-50 {
+:root[data-theme='dark'] .bg-blue-50,
+:root[data-theme='sdark'] .hover\:bg-gray-200:hover,
+:root[data-theme='sdark'] .hover\:bg-blue-50:hover,
+:root[data-theme='sdark'] .bg-blue-50 {
   background-color: var(--docs-primary-soft-strong) !important;
 }
 
 :root[data-theme='dark'] pre.shiki,
-:root[data-theme='dark'] pre.shiki span {
+:root[data-theme='dark'] pre.shiki span,
+:root[data-theme='sdark'] pre.shiki,
+:root[data-theme='sdark'] pre.shiki span {
   background-color: var(--docs-surface-subtle) !important;
 }
 

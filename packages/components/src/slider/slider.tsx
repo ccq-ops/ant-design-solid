@@ -234,6 +234,8 @@ export function Slider(props: SliderProps) {
   }
 
   function removeDocumentListeners(): void {
+    if (typeof document === 'undefined') return
+
     document.removeEventListener('pointermove', handleDocumentPointerMove)
     document.removeEventListener('pointerup', handleDocumentPointerUp)
     document.removeEventListener('pointercancel', handleDocumentPointerUp)
@@ -281,6 +283,8 @@ export function Slider(props: SliderProps) {
     setDragState(state)
     const target = eventTargetElement(event)
     target?.setPointerCapture?.(event.pointerId)
+    if (typeof document === 'undefined') return
+
     document.addEventListener('pointermove', handleDocumentPointerMove)
     document.addEventListener('pointerup', handleDocumentPointerUp)
     document.addEventListener('pointercancel', handleDocumentPointerUp)

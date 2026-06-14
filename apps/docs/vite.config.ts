@@ -1,12 +1,14 @@
 import { fileURLToPath, URL } from 'node:url'
 import { createSolidBase } from '@kobalte/solidbase/config'
+import defaultTheme from '@kobalte/solidbase/default-theme'
 import { solidStart } from '@solidjs/start/config'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
-import { antDesignSolidTheme } from './src/solidbase-theme'
+import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
+import { docsThemeConfig } from './solidbase-theme-config'
 
-const solidBase = createSolidBase(antDesignSolidTheme)
+const solidBase = createSolidBase(defaultTheme)
 
 export default defineConfig(({ command }) => ({
   oxc: { jsx: 'preserve' },
@@ -21,13 +23,9 @@ export default defineConfig(({ command }) => ({
           languageSwitcher: false,
         },
       },
-      themeConfig: {
-        nav: [
-          { text: 'Components', link: '/components/button' },
-          { text: 'Docs', link: '/docs/getting-started' },
-        ],
-      },
+      themeConfig: docsThemeConfig,
     }),
+    solidbaseDefaultThemeJsx(),
     solidStart(solidBase.startConfig({ ssr: true })),
     command === 'build' && nitro({ prerender: { crawlLinks: true } }),
     tailwindcss(),

@@ -1,5 +1,6 @@
-import { createContext, createEffect, createMemo, createSignal, useContext } from 'solid-js'
 import { ConfigProvider } from '@ant-design-solid/core'
+import { setTheme } from '@kobalte/solidbase/client'
+import { createContext, createMemo, createSignal, onCleanup, onMount, useContext } from 'solid-js'
 import type { Accessor, JSX } from 'solid-js'
 import { darkAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
 
@@ -10,19 +11,14 @@ type DocsThemeContextValue = {
   toggleTheme: () => void
 }
 
-const storageKey = 'ant-design-solid-docs-theme'
 const DocsThemeContext = createContext<DocsThemeContextValue>()
 
-function isDocsThemeMode(value: string | null): value is DocsThemeMode {
-  return value === 'light' || value === 'dark'
-}
+function getCurrentMode(): DocsThemeMode {
+  if (typeof document === 'undefined') return 'light'
 
-function getInitialMode(): DocsThemeMode {
-  if (typeof localStorage === 'undefined') return 'light'
+  const theme = document.documentElement.dataset.theme
 
-  const persistedMode = localStorage.getItem(storageKey)
-
-  return isDocsThemeMode(persistedMode) ? persistedMode : 'light'
+  return theme === 'dark' || theme === 'sdark' ? 'dark' : 'light'
 }
 
 function themeConfigForMode(mode: DocsThemeMode): ThemeConfig {
@@ -44,18 +40,28 @@ export function useDocsTheme() {
 }
 
 export function DocsThemeProvider(props: { children?: JSX.Element }) {
-  const [mode, setMode] = createSignal<DocsThemeMode>(getInitialMode())
+  const [mode, setMode] = createSignal<DocsThemeMode>(getCurrentMode())
   const theme = createMemo(() => themeConfigForMode(mode()))
   const value: DocsThemeContextValue = {
     mode,
-    toggleTheme: () => setMode((current) => (current === 'light' ? 'dark' : 'light')),
+    toggleTheme: () => {
+      const nextMode = mode() === 'light' ? 'dark' : 'light'
+
+      setMode(nextMode)
+      setTheme(nextMode)
+    },
   }
 
-  createEffect(() => {
-    const currentMode = mode()
+  onMount(() => {
+    setMode(getCurrentMode())
 
-    document.documentElement.dataset.theme = currentMode
-    localStorage.setItem(storageKey, currentMode)
+    const observer = new MutationObserver(() => setMode(getCurrentMode()))
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+    onCleanup(() => observer.disconnect())
   })
 
   return (

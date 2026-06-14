@@ -746,7 +746,8 @@ export default Demo10
 
 export const MenuDemo011 = (() => {
   function currentTheme() {
-      return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+      const theme = document.documentElement.dataset.theme;
+      return theme === 'dark' || theme === 'sdark' ? 'dark' : 'light';
   }
   const Demo11 = function () {
       const [menuTheme, setMenuTheme] = createSignal(currentTheme());
@@ -783,7 +784,8 @@ import { Menu } from '@ant-design-solid/core'
 import { createSignal, onCleanup, onMount } from 'solid-js'
 
 function currentTheme() {
-  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
+  const theme = document.documentElement.dataset.theme
+  return theme === 'dark' || theme === 'sdark' ? 'dark' : 'light'
 }
 
 const Demo11 = function () {

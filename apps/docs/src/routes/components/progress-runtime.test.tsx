@@ -30,9 +30,8 @@ describe('Progress docs page', () => {
     expect(result.getByRole('heading', { name: 'Stroke linecap', level: 3 })).toBeInTheDocument()
     expect(result.getByRole('heading', { name: 'Size', level: 3 })).toBeInTheDocument()
     expect(result.getByRole('heading', { name: 'Hidden info', level: 3 })).toBeInTheDocument()
-    expect(result.getAllByText('Example')).toHaveLength(11)
-    for (const exampleLabel of result.getAllByText('Example')) {
-      expect(exampleLabel.closest('section')).not.toHaveAttribute('aria-label')
-    }
+    expect(result.container.querySelectorAll('[data-preview-root]')).toHaveLength(11)
+    expect(result.container.querySelectorAll('[data-preview-stage]')).toHaveLength(11)
+    expect(result.container.querySelectorAll('[data-preview-panel]')).toHaveLength(11)
   })
 })

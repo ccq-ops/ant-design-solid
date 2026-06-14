@@ -18,9 +18,8 @@ describe('Masonry docs page', () => {
     expect(result.getByRole('heading', { name: 'Dynamic items', level: 3 })).toBeInTheDocument()
     expect(result.getByRole('heading', { name: 'Semantic styles', level: 3 })).toBeInTheDocument()
     expect(result.getByRole('heading', { name: 'Layout change', level: 3 })).toBeInTheDocument()
-    expect(result.getAllByText('Example')).toHaveLength(7)
-    for (const exampleLabel of result.getAllByText('Example')) {
-      expect(exampleLabel.closest('section')).not.toHaveAttribute('aria-label')
-    }
+    expect(result.container.querySelectorAll('[data-preview-root]')).toHaveLength(7)
+    expect(result.container.querySelectorAll('[data-preview-stage]')).toHaveLength(7)
+    expect(result.container.querySelectorAll('[data-preview-panel]')).toHaveLength(7)
   })
 })

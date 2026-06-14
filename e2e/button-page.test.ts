@@ -8,6 +8,7 @@ test('button docs page hydrates and renders demos', async ({ page }) => {
   await page.locator('html[data-docs-hydrated="true"]').waitFor()
 
   await expect(page.getByRole('heading', { name: 'Button', level: 1 })).toBeVisible()
+  await expect(page.getByRole('complementary').getByRole('link', { name: 'Drawer' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Primary Button' })).toBeVisible()
   await expect(page.locator('[data-preview-stage]').first()).toBeVisible()
   expect(pageErrors).toEqual([])

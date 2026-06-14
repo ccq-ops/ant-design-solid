@@ -421,4 +421,21 @@ describe('Slider', () => {
     sliderRef.current?.blur()
     expect(blur).toHaveBeenCalledOnce()
   })
+
+  it('does not require document during cleanup', () => {
+    const result = render(() => <Slider defaultValue={10} />)
+    const originalDocument = globalThis.document
+
+    try {
+      Reflect.deleteProperty(globalThis, 'document')
+
+      expect(() => result.unmount()).not.toThrow()
+    } finally {
+      Object.defineProperty(globalThis, 'document', {
+        value: originalDocument,
+        configurable: true,
+        writable: true,
+      })
+    }
+  })
 })

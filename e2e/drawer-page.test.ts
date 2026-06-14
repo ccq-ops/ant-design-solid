@@ -10,7 +10,7 @@ test('drawer getContainer false renders inside current container on docs page', 
   await heading.scrollIntoViewIfNeeded()
 
   const preview = heading
-    .locator('xpath=following-sibling::section[1]')
+    .locator('xpath=following-sibling::*[@data-preview-root][1]')
     .locator('[data-preview-stage]')
   await preview.getByRole('button', { name: 'Open' }).click()
 

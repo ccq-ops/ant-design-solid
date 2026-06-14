@@ -25,6 +25,7 @@ function ThemeProbe() {
 beforeEach(() => {
   localStorage.clear()
   document.documentElement.removeAttribute('data-theme')
+  document.cookie = 'theme=; max-age=0; path=/'
 })
 
 describe('DocsThemeProvider', () => {
@@ -39,10 +40,10 @@ describe('DocsThemeProvider', () => {
     expect(toggle).toHaveAttribute('data-mode', 'light')
     expect(toggle).toHaveAttribute('data-background', '#fff')
     expect(toggle).toHaveAttribute('data-text', '#000')
-    expect(document.documentElement).toHaveAttribute('data-theme', 'light')
+    expect(document.documentElement).not.toHaveAttribute('data-theme')
   })
 
-  it('toggles to dark mode, persists preference, and exposes dark tokens', async () => {
+  it('toggles to dark mode and exposes dark tokens', async () => {
     const result = render(() => (
       <DocsThemeProvider>
         <ThemeProbe />
@@ -58,12 +59,10 @@ describe('DocsThemeProvider', () => {
     expect(toggle).toHaveAttribute('data-text', '#fff')
     expect(toggle).toHaveAttribute('data-container', '#141414')
     expect(toggle).toHaveAttribute('data-elevated', '#1f1f1f')
-    expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
-    expect(localStorage.getItem('ant-design-solid-docs-theme')).toBe('dark')
   })
 
-  it('uses a persisted dark preference as the initial mode', () => {
-    localStorage.setItem('ant-design-solid-docs-theme', 'dark')
+  it('uses the SolidBase dark theme as the initial mode', () => {
+    document.documentElement.dataset.theme = 'dark'
 
     const result = render(() => (
       <DocsThemeProvider>
@@ -75,8 +74,22 @@ describe('DocsThemeProvider', () => {
     expect(toggle).toHaveAttribute('data-mode', 'dark')
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
   })
+
+  it('uses the SolidBase system dark theme as dark mode', () => {
+    document.documentElement.dataset.theme = 'sdark'
+
+    const result = render(() => (
+      <DocsThemeProvider>
+        <ThemeProbe />
+      </DocsThemeProvider>
+    ))
+    const toggle = result.getByRole('button', { name: 'Toggle' })
+
+    expect(toggle).toHaveAttribute('data-mode', 'dark')
+  })
+
   it('uses the dark theme algorithm in dark mode', () => {
-    localStorage.setItem('ant-design-solid-docs-theme', 'dark')
+    document.documentElement.dataset.theme = 'dark'
     let bg = ''
     let elevated = ''
 

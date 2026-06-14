@@ -17,9 +17,8 @@ describe('Divider docs page', () => {
     expect(result.getByRole('heading', { name: 'Vertical', level: 3 })).toBeInTheDocument()
     expect(result.getByRole('heading', { name: 'Variant', level: 3 })).toBeInTheDocument()
     expect(result.getByRole('heading', { name: 'Size', level: 3 })).toBeInTheDocument()
-    expect(result.getAllByText('Example')).toHaveLength(6)
-    for (const exampleLabel of result.getAllByText('Example')) {
-      expect(exampleLabel.closest('section')).not.toHaveAttribute('aria-label')
-    }
+    expect(result.container.querySelectorAll('[data-preview-root]')).toHaveLength(6)
+    expect(result.container.querySelectorAll('[data-preview-stage]')).toHaveLength(6)
+    expect(result.container.querySelectorAll('[data-preview-panel]')).toHaveLength(6)
   })
 })

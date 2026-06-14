@@ -1,10 +1,12 @@
 import { fileURLToPath, URL } from 'node:url'
 import { createSolidBase } from '@kobalte/solidbase/config'
+import defaultTheme from '@kobalte/solidbase/default-theme'
 import { defineConfig } from 'vitest/config'
 import solid from 'vite-plugin-solid'
-import { antDesignSolidTheme } from './src/solidbase-theme'
+import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
+import { docsThemeConfig } from './solidbase-theme-config'
 
-const solidBase = createSolidBase(antDesignSolidTheme)
+const solidBase = createSolidBase(defaultTheme)
 
 export default defineConfig({
   oxc: { jsx: 'preserve' },
@@ -19,13 +21,9 @@ export default defineConfig({
           languageSwitcher: false,
         },
       },
-      themeConfig: {
-        nav: [
-          { text: 'Components', link: '/components/button' },
-          { text: 'Docs', link: '/docs/getting-started' },
-        ],
-      },
+      themeConfig: docsThemeConfig,
     }),
+    solidbaseDefaultThemeJsx(),
     solid({ extensions: ['.md', '.mdx'] }),
   ],
   resolve: {
@@ -54,10 +52,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     css: false,
-    setupFiles: [],
+    setupFiles: ['./src/test-utils/setup-dom.ts'],
     server: {
       deps: {
-        inline: ['@ant-design/colors'],
+        inline: ['@ant-design/colors', '@bprogress/core'],
       },
     },
     coverage: {
