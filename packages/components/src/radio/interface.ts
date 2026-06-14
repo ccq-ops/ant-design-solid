@@ -4,8 +4,8 @@ import type { OptionInput, OptionValue } from '../shared/options'
 export type RadioSize = 'large' | 'medium' | 'small'
 export type RadioButtonStyle = 'outline' | 'solid'
 export type RadioOrientation = 'horizontal' | 'vertical'
-export type RadioSemanticDOM = 'wrapper' | 'input'
-export type RadioGroupSemanticDOM = 'wrapper'
+export type RadioSemanticDOM = 'root' | 'icon' | 'label' | 'wrapper' | 'input'
+export type RadioGroupSemanticDOM = 'root' | 'wrapper'
 
 export type RadioSemanticClassNames =
   | Partial<Record<RadioSemanticDOM, string>>
@@ -40,12 +40,14 @@ export interface RadioProps extends Omit<
   disabled?: boolean
   value?: OptionValue
   prefixCls?: string
+  rootClass?: string
   children?: JSX.Element
   class?: string
   style?: JSX.CSSProperties
   classNames?: RadioSemanticClassNames
   styles?: RadioSemanticStyles
   ref?: { current?: RadioRef } | ((ref: RadioRef) => void)
+  skipGroup?: boolean
   onChange?: JSX.EventHandler<HTMLInputElement, Event>
 }
 
@@ -62,6 +64,7 @@ export interface RadioGroupProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>
   vertical?: boolean
   size?: RadioSize
   prefixCls?: string
+  rootClass?: string
   children?: JSX.Element
   classNames?: RadioGroupSemanticClassNames
   styles?: RadioGroupSemanticStyles

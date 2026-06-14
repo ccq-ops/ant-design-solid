@@ -235,7 +235,7 @@ describe('@ant-design-solid/theme', () => {
         Select: { optionSelectedBg: '#d6e4ff' },
         AutoComplete: { activeBorderColor: '#0958d9', optionSelectedBg: '#e6f4ff' },
         Checkbox: { checkColor: '#111111' },
-        Radio: { dotSize: 10 },
+        Radio: { dotSize: 10, buttonPaddingInline: 18 },
         Switch: { handleSize: 16 },
         Input: { activeBorderColor: '#531dab', paddingInlineLG: 16 },
         InputNumber: { handleWidth: 28, activeBorderColor: '#722ed1' },
@@ -268,7 +268,11 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Checkbox', token).checkColor).toBe('#111111')
     expect(getComponentToken('Checkbox', token).size).toBe(16)
     expect(getComponentToken('Radio', token).dotSize).toBe(10)
-    expect(getComponentToken('Radio', token).size).toBe(16)
+    expect(getComponentToken('Radio', token).radioSize).toBe(16)
+    expect(getComponentToken('Radio', token).dotColorDisabled).toBe(token.colorTextDisabled)
+    expect(getComponentToken('Radio', token).buttonBg).toBe(token.colorBgContainer)
+    expect(getComponentToken('Radio', token).buttonPaddingInline).toBe(18)
+    expect(getComponentToken('Radio', token).wrapperMarginInlineEnd).toBe(token.marginXS)
     expect(getComponentToken('Switch', token).handleSize).toBe(16)
     expect(getComponentToken('Switch', token).trackMinWidth).toBe(44)
     expect(getComponentToken('Input', token).activeBorderColor).toBe('#531dab')

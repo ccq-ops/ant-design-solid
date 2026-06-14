@@ -7,12 +7,16 @@ import { callRef, useRadioGroupContext } from './context'
 import { useRadioStyle } from './radio.style'
 import type { RadioProps, RadioSemanticClassNames, RadioSemanticStyles } from './interface'
 
-function resolveClassNames(props: RadioProps): Partial<Record<'wrapper' | 'input', string>> {
+function resolveClassNames(
+  props: RadioProps,
+): Partial<Record<'root' | 'icon' | 'label' | 'wrapper' | 'input', string>> {
   if (typeof props.classNames === 'function') return props.classNames({ props })
   return props.classNames ?? {}
 }
 
-function resolveStyles(props: RadioProps): Partial<Record<'wrapper' | 'input', JSX.CSSProperties>> {
+function resolveStyles(
+  props: RadioProps,
+): Partial<Record<'root' | 'icon' | 'label' | 'wrapper' | 'input', JSX.CSSProperties>> {
   if (typeof props.styles === 'function') return props.styles({ props })
   return props.styles ?? {}
 }
@@ -24,6 +28,7 @@ export function RadioRoot(props: RadioProps) {
     'disabled',
     'value',
     'prefixCls',
+    'rootClass',
     'children',
     'title',
     'class',
@@ -31,6 +36,7 @@ export function RadioRoot(props: RadioProps) {
     'classNames',
     'styles',
     'ref',
+    'skipGroup',
     'onChange',
   ])
   const config = useConfig()
@@ -40,11 +46,13 @@ export function RadioRoot(props: RadioProps) {
   const [innerChecked, setInnerChecked] = createSignal(Boolean(local.defaultChecked))
   let inputRef: HTMLInputElement | undefined
 
-  const disabled = () => Boolean(local.disabled ?? group?.disabled())
+  const groupContext = () => (local.skipGroup ? undefined : group)
+  const disabled = () => Boolean(local.disabled ?? groupContext()?.disabled())
   const checked = () => {
-    if (group && local.value !== undefined) {
-      group.restoreTick()
-      return group.value() === local.value
+    const currentGroup = groupContext()
+    if (currentGroup && local.value !== undefined) {
+      currentGroup.restoreTick()
+      return currentGroup.value() === local.value
     }
     return local.checked !== undefined ? Boolean(local.checked) : innerChecked()
   }
@@ -71,10 +79,12 @@ export function RadioRoot(props: RadioProps) {
         checked() && `${prefixCls()}-checked`,
         disabled() && `${prefixCls()}-disabled`,
         hashId(),
+        local.rootClass,
         local.class,
+        semanticClassNames().root,
         semanticClassNames().wrapper,
       )}
-      style={{ ...local.style, ...semanticStyles().wrapper }}
+      style={{ ...local.style, ...semanticStyles().root, ...semanticStyles().wrapper }}
       title={local.title}
     >
       <input
@@ -83,12 +93,16 @@ export function RadioRoot(props: RadioProps) {
           inputRef = el
         }}
         type="radio"
-        class={classNames(`${prefixCls()}-input`, semanticClassNames().input)}
-        style={semanticStyles().input}
+        class={classNames(
+          `${prefixCls()}-input`,
+          semanticClassNames().icon,
+          semanticClassNames().input,
+        )}
+        style={{ ...semanticStyles().icon, ...semanticStyles().input }}
         disabled={disabled()}
         checked={checked()}
         value={local.value == null ? undefined : String(local.value)}
-        name={rest.name ?? group?.name()}
+        name={rest.name ?? groupContext()?.name()}
         onClick={(event) => {
           if (!disabled()) return
           setTimeout(() => {
@@ -100,13 +114,17 @@ export function RadioRoot(props: RadioProps) {
             event.currentTarget.checked = checked()
             return
           }
-          if (group && local.value !== undefined) group.updateValue(local.value, event)
+          const currentGroup = groupContext()
+          if (currentGroup && local.value !== undefined)
+            currentGroup.updateValue(local.value, event)
           else if (local.checked === undefined) setInnerChecked(true)
           callHandler(local.onChange, event)
-          if (local.checked !== undefined || group) event.currentTarget.checked = checked()
+          if (local.checked !== undefined || currentGroup) event.currentTarget.checked = checked()
         }}
       />
-      {local.children}
+      <span class={semanticClassNames().label} style={semanticStyles().label}>
+        {local.children}
+      </span>
     </label>
   )
 }

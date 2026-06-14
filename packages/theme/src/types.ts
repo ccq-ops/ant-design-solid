@@ -557,8 +557,23 @@ export interface CheckboxComponentToken extends ComponentTokenBase {
 }
 
 export interface RadioComponentToken extends ComponentTokenBase {
+  radioSize: number
   size: number
   dotSize: number
+  dotColorDisabled: string
+  buttonBg: string
+  buttonCheckedBg: string
+  buttonColor: string
+  buttonPaddingInline: number
+  buttonCheckedBgDisabled: string
+  buttonCheckedColorDisabled: string
+  buttonSolidCheckedColor: string
+  buttonSolidCheckedBg: string
+  buttonSolidCheckedHoverBg: string
+  buttonSolidCheckedActiveBg: string
+  wrapperMarginInlineEnd: number
+  radioColor: string
+  radioBgColor: string
 }
 
 export interface SwitchComponentToken extends ComponentTokenBase {

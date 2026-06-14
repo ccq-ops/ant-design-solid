@@ -9,6 +9,7 @@ import { RadioRoot } from './radio'
 import { useRadioStyle } from './radio.style'
 import type {
   RadioGroupProps,
+  RadioProps,
   RadioGroupSemanticClassNames,
   RadioGroupSemanticStyles,
 } from './interface'
@@ -20,12 +21,14 @@ function nextGroupName() {
   return `radio-group-${groupNameSeed}`
 }
 
-function resolveClassNames(props: RadioGroupProps): Partial<Record<'wrapper', string>> {
+function resolveClassNames(props: RadioGroupProps): Partial<Record<'root' | 'wrapper', string>> {
   if (typeof props.classNames === 'function') return props.classNames({ props })
   return props.classNames ?? {}
 }
 
-function resolveStyles(props: RadioGroupProps): Partial<Record<'wrapper', JSX.CSSProperties>> {
+function resolveStyles(
+  props: RadioGroupProps,
+): Partial<Record<'root' | 'wrapper', JSX.CSSProperties>> {
   if (typeof props.styles === 'function') return props.styles({ props })
   return props.styles ?? {}
 }
@@ -44,6 +47,7 @@ export function RadioGroup(props: RadioGroupProps) {
     'vertical',
     'size',
     'prefixCls',
+    'rootClass',
     'children',
     'class',
     'style',
@@ -129,30 +133,52 @@ export function RadioGroup(props: RadioGroupProps) {
         size() && `${groupPrefixCls()}-${size()}`,
         isButtonCompact() && `${groupPrefixCls()}-${buttonStyle()}`,
         hashId(),
+        local.rootClass,
         local.class,
+        semanticClassNames().root,
         semanticClassNames().wrapper,
       )}
-      style={{ ...(local.style as JSX.CSSProperties | undefined), ...semanticStyles().wrapper }}
+      style={{
+        ...(local.style as JSX.CSSProperties | undefined),
+        ...semanticStyles().root,
+        ...semanticStyles().wrapper,
+      }}
       onFocusOut={handleBlur}
     >
       <RadioGroupContext.Provider value={context}>
         <For each={normalizeOptions(local.options)}>
-          {(option) => (
-            <RadioRoot
-              checked={value() === option.value}
-              disabled={disabled() || Boolean(option.disabled)}
-              value={option.value}
-              id={option.id}
-              required={option.required}
-              title={option.title}
-              class={option.class}
-              style={option.style}
-              prefixCls={isButton() ? `${radioPrefixCls()}-button-wrapper` : radioPrefixCls()}
-              onChange={option.onChange}
-            >
-              {option.label}
-            </RadioRoot>
-          )}
+          {(option) => {
+            const optionClassNames = option.classNames
+            const optionStyles = option.styles
+
+            return (
+              <RadioRoot
+                checked={value() === option.value}
+                disabled={disabled() || Boolean(option.disabled)}
+                value={option.value}
+                id={option.id}
+                required={option.required}
+                title={option.title}
+                rootClass={option.rootClass}
+                class={option.class}
+                style={option.style}
+                classNames={
+                  typeof optionClassNames === 'function'
+                    ? () => optionClassNames({ option })
+                    : (optionClassNames as RadioProps['classNames'])
+                }
+                styles={
+                  typeof optionStyles === 'function'
+                    ? () => optionStyles({ option })
+                    : (optionStyles as RadioProps['styles'])
+                }
+                prefixCls={isButton() ? `${radioPrefixCls()}-button-wrapper` : radioPrefixCls()}
+                onChange={option.onChange}
+              >
+                {option.label}
+              </RadioRoot>
+            )
+          }}
         </For>
         {local.children}
       </RadioGroupContext.Provider>

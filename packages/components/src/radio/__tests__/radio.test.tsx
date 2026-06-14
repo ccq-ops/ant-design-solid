@@ -105,6 +105,39 @@ describe('Radio', () => {
     expect(document.activeElement).not.toBe(input)
   })
 
+  it('supports antd v6 semantic classNames and styles aliases', () => {
+    render(() => (
+      <Radio
+        classNames={{ root: 'custom-root', icon: 'custom-icon', label: 'custom-label' }}
+        styles={{ root: { color: 'red' }, icon: { margin: '1px' }, label: { color: 'blue' } }}
+      >
+        Semantic
+      </Radio>
+    ))
+
+    const input = screen.getByRole('radio', { name: 'Semantic' }) as HTMLInputElement
+    const wrapper = input.closest('label')!
+
+    expect(wrapper).toHaveClass('custom-root')
+    expect(wrapper.style.color).toBe('red')
+    expect(input).toHaveClass('custom-icon')
+    expect(input).toHaveStyle({ margin: '1px' })
+    expect(wrapper.querySelector('.custom-label')).toHaveStyle({ color: 'rgb(0, 0, 255)' })
+  })
+
+  it('supports rootClass for the radio wrapper', () => {
+    const result = render(() => (
+      <Radio rootClass="custom-root-class" class="custom-class">
+        Root class
+      </Radio>
+    ))
+
+    const wrapper = result.getByRole('radio', { name: 'Root class' }).closest('label')!
+
+    expect(wrapper).toHaveClass('custom-root-class')
+    expect(wrapper).toHaveClass('custom-class')
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <Radio prefixCls="custom-radio">Prop prefix</Radio>)
     expect(withProp.container.querySelector('.custom-radio')).toBeTruthy()
@@ -139,6 +172,32 @@ describe('Radio', () => {
     expect(a.checked).toBe(false)
     expect(b.checked).toBe(true)
     expect(onChange).toHaveBeenLastCalledWith('b')
+  })
+
+  it('supports skipGroup to keep a radio independent inside a group', () => {
+    const onGroupChange = vi.fn()
+    const onRadioChange = vi.fn()
+    const result = render(() => (
+      <Radio.Group defaultValue="a" onChange={onGroupChange}>
+        <Radio value="a">A</Radio>
+        <Radio value="b" skipGroup onChange={onRadioChange}>
+          B
+        </Radio>
+      </Radio.Group>
+    ))
+    const a = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
+    const b = result.getByRole('radio', { name: 'B' }) as HTMLInputElement
+
+    expect(a.checked).toBe(true)
+    expect(b.checked).toBe(false)
+    expect(b.name).toBe('')
+
+    fireEvent.click(b)
+
+    expect(a.checked).toBe(true)
+    expect(b.checked).toBe(true)
+    expect(onGroupChange).not.toHaveBeenCalled()
+    expect(onRadioChange).toHaveBeenCalledOnce()
   })
 
   it('passes group name and disabled state to child radios', () => {
@@ -224,6 +283,35 @@ describe('Radio', () => {
     fireEvent.click(input)
 
     expect(optionChange).toHaveBeenCalledOnce()
+  })
+
+  it('passes option rootClass and semantic customizations to option radios', () => {
+    const result = render(() => (
+      <Radio.Group
+        options={[
+          {
+            label: 'A',
+            value: 'a',
+            rootClass: 'option-root',
+            classNames: {
+              root: 'option-semantic-root',
+              icon: 'option-icon',
+              label: 'option-label',
+            },
+            styles: { root: { color: 'green' }, icon: { margin: '2px' } },
+          },
+        ]}
+      />
+    ))
+    const input = result.getByRole('radio', { name: 'A' }) as HTMLInputElement
+    const wrapper = input.closest('label')!
+
+    expect(wrapper).toHaveClass('option-root')
+    expect(wrapper).toHaveClass('option-semantic-root')
+    expect(wrapper.style.color).toBe('green')
+    expect(input).toHaveClass('option-icon')
+    expect(input).toHaveStyle({ margin: '2px' })
+    expect(wrapper.querySelector('.option-label')).toBeTruthy()
   })
 })
 
@@ -365,6 +453,22 @@ describe('Radio.Group', () => {
     expect(result.container.querySelector('.ads-radio-group-button')).toBeTruthy()
     expect(result.container.querySelectorAll('.ads-radio-button-wrapper')).toHaveLength(2)
     expect(result.container.querySelector('.ads-radio-button-wrapper-checked')).toBeTruthy()
+  })
+
+  it('supports group rootClass and semantic root aliases', () => {
+    const result = render(() => (
+      <Radio.Group
+        rootClass="group-root-class"
+        classNames={{ root: 'group-root' }}
+        styles={{ root: { margin: '4px' } }}
+        options={[{ label: 'A', value: 'a' }]}
+      />
+    ))
+    const group = result.container.querySelector('.ads-radio-group') as HTMLElement
+
+    expect(group).toHaveClass('group-root-class')
+    expect(group).toHaveClass('group-root')
+    expect(group).toHaveStyle({ margin: '4px' })
   })
 
   it('clears Form.Item group display when resetFields resets to undefined', () => {

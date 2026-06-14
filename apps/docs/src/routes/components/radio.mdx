@@ -3,7 +3,7 @@ title: Radio
 group: Data Entry
 ---
 
-import { Button, Form, Radio, Space } from '@ant-design-solid/core'
+import { Button, Flex, Form, Input, Radio, Space } from '@ant-design-solid/core'
 import { createSignal } from 'solid-js'
 
 # Radio
@@ -17,14 +17,11 @@ Radio lets users choose one option from a mutually exclusive set.
 <RadioDemo001 />
 
 export const RadioDemo001 = (() => {
-  const Demo1 = function () {
-      return (<Radio.Group defaultValue="a">
-        <Radio value="a">A</Radio>
-        <Radio value="b">B</Radio>
-      </Radio.Group>);
-  };
+  const Demo = function () {
+    return <Radio>Radio</Radio>
+  }
 
-return Demo1
+return Demo
 })()
 
 ---
@@ -32,299 +29,11 @@ return Demo1
 ```tsx
 import { Radio } from '@ant-design-solid/core'
 
-const Demo1 = function () {
-  return (
-    <Radio.Group defaultValue="a">
-      <Radio value="a">A</Radio>
-      <Radio value="b">B</Radio>
-    </Radio.Group>
-  )
+const Demo = function () {
+  return <Radio>Radio</Radio>
 }
 
-export default Demo1
-```
-
-:::
-
-### Group
-
-:::preview
-
-<RadioDemo002 />
-
-export const RadioDemo002 = (() => {
-  const options = [
-      { label: 'A', value: 'a' },
-      { label: 'B', value: 'b' },
-      { label: 'Disabled', value: 'disabled', disabled: true },
-  ];
-  const Demo2 = function () {
-      return (<Space direction="vertical">
-        <Radio.Group options={options} defaultValue="a"/>
-        <Radio.Group optionType="button" options={options} defaultValue="b"/>
-      </Space>);
-  };
-
-return Demo2
-})()
-
----
-
-```tsx
-import { Radio, Space } from '@ant-design-solid/core'
-
-const options = [
-  { label: 'A', value: 'a' },
-  { label: 'B', value: 'b' },
-  { label: 'Disabled', value: 'disabled', disabled: true },
-]
-
-const Demo2 = function () {
-  return (
-    <Space direction="vertical">
-      <Radio.Group options={options} defaultValue="a" />
-      <Radio.Group optionType="button" options={options} defaultValue="b" />
-    </Space>
-  )
-}
-
-export default Demo2
-```
-
-:::
-
-### Radio.Button
-
-:::preview
-
-<RadioDemo003 />
-
-export const RadioDemo003 = (() => {
-  const Demo3 = function () {
-      return (<Space direction="vertical">
-        <Radio.Group defaultValue="apple" name="fruit">
-          <Radio.Button value="apple">Apple</Radio.Button>
-          <Radio.Button value="orange">Orange</Radio.Button>
-          <Radio.Button value="pear">Pear</Radio.Button>
-        </Radio.Group>
-        <Radio.Group defaultValue="left">
-          <Radio value="left">Left</Radio>
-          <Radio value="center">Center</Radio>
-          <Radio value="right">Right</Radio>
-        </Radio.Group>
-      </Space>);
-  };
-
-return Demo3
-})()
-
----
-
-```tsx
-import { Radio, Space } from '@ant-design-solid/core'
-
-const Demo3 = function () {
-  return (
-    <Space direction="vertical">
-      <Radio.Group defaultValue="apple" name="fruit">
-        <Radio.Button value="apple">Apple</Radio.Button>
-        <Radio.Button value="orange">Orange</Radio.Button>
-        <Radio.Button value="pear">Pear</Radio.Button>
-      </Radio.Group>
-      <Radio.Group defaultValue="left">
-        <Radio value="left">Left</Radio>
-        <Radio value="center">Center</Radio>
-        <Radio value="right">Right</Radio>
-      </Radio.Group>
-    </Space>
-  )
-}
-
-export default Demo3
-```
-
-:::
-
-### Button style
-
-:::preview
-
-<RadioDemo004 />
-
-export const RadioDemo004 = (() => {
-  const outlineOptions = [
-      { label: 'Apple', value: 'apple' },
-      { label: 'Orange', value: 'orange' },
-      { label: 'Disabled', value: 'disabled', disabled: true },
-  ];
-  const solidOptions = [
-      { label: 'Hangzhou', value: 'hangzhou' },
-      { label: 'Shanghai', value: 'shanghai' },
-      { label: 'Disabled', value: 'disabled', disabled: true },
-  ];
-  const Demo4 = function () {
-      return (<Space direction="vertical">
-        <Radio.Group optionType="button" buttonStyle="outline" name="button-style-outline" options={outlineOptions} defaultValue="apple"/>
-        <Radio.Group name="button-style-solid" optionType="button" buttonStyle="solid" options={solidOptions} defaultValue="shanghai"/>
-      </Space>);
-  };
-
-return Demo4
-})()
-
----
-
-```tsx
-import { Radio, Space } from '@ant-design-solid/core'
-
-const outlineOptions = [
-  { label: 'Apple', value: 'apple' },
-  { label: 'Orange', value: 'orange' },
-  { label: 'Disabled', value: 'disabled', disabled: true },
-]
-
-const solidOptions = [
-  { label: 'Hangzhou', value: 'hangzhou' },
-  { label: 'Shanghai', value: 'shanghai' },
-  { label: 'Disabled', value: 'disabled', disabled: true },
-]
-
-const Demo4 = function () {
-  return (
-    <Space direction="vertical">
-      <Radio.Group
-        optionType="button"
-        buttonStyle="outline"
-        name="button-style-outline"
-        options={outlineOptions}
-        defaultValue="apple"
-      />
-      <Radio.Group
-        name="button-style-solid"
-        optionType="button"
-        buttonStyle="solid"
-        options={solidOptions}
-        defaultValue="shanghai"
-      />
-    </Space>
-  )
-}
-
-export default Demo4
-```
-
-:::
-
-### Sizes
-
-:::preview
-
-<RadioDemo005 />
-
-export const RadioDemo005 = (() => {
-  const options = [
-      { label: 'A', value: 'a' },
-      { label: 'B', value: 'b' },
-      { label: 'C', value: 'c' },
-  ];
-  const Demo5 = function () {
-      return (<Space direction="vertical">
-        <Radio.Group name="radio-size-small" size="small" optionType="button" options={options} defaultValue="a"/>
-        <Radio.Group name="radio-size-medium" size="medium" optionType="button" options={options} defaultValue="b"/>
-        <Radio.Group name="radio-size-large" size="large" optionType="button" options={options} defaultValue="c"/>
-      </Space>);
-  };
-
-return Demo5
-})()
-
----
-
-```tsx
-import { Radio, Space } from '@ant-design-solid/core'
-
-const options = [
-  { label: 'A', value: 'a' },
-  { label: 'B', value: 'b' },
-  { label: 'C', value: 'c' },
-]
-
-const Demo5 = function () {
-  return (
-    <Space direction="vertical">
-      <Radio.Group
-        name="radio-size-small"
-        size="small"
-        optionType="button"
-        options={options}
-        defaultValue="a"
-      />
-      <Radio.Group
-        name="radio-size-medium"
-        size="medium"
-        optionType="button"
-        options={options}
-        defaultValue="b"
-      />
-      <Radio.Group
-        name="radio-size-large"
-        size="large"
-        optionType="button"
-        options={options}
-        defaultValue="c"
-      />
-    </Space>
-  )
-}
-
-export default Demo5
-```
-
-:::
-
-### Block and vertical
-
-:::preview
-
-<RadioDemo006 />
-
-export const RadioDemo006 = (() => {
-  const options = [
-      { label: 'Daily', value: 'daily' },
-      { label: 'Weekly', value: 'weekly' },
-      { label: 'Monthly', value: 'monthly' },
-  ];
-  const Demo6 = function () {
-      return (<Space direction="vertical" style={{ width: '360px' }}>
-        <Radio.Group block optionType="button" options={options} defaultValue="daily"/>
-        <Radio.Group vertical options={options} defaultValue="weekly"/>
-      </Space>);
-  };
-
-return Demo6
-})()
-
----
-
-```tsx
-import { Radio, Space } from '@ant-design-solid/core'
-
-const options = [
-  { label: 'Daily', value: 'daily' },
-  { label: 'Weekly', value: 'weekly' },
-  { label: 'Monthly', value: 'monthly' },
-]
-
-const Demo6 = function () {
-  return (
-    <Space direction="vertical" style={{ width: '360px' }}>
-      <Radio.Group block optionType="button" options={options} defaultValue="daily" />
-      <Radio.Group vertical options={options} defaultValue="weekly" />
-    </Space>
-  )
-}
-
-export default Demo6
+export default Demo
 ```
 
 :::
@@ -333,70 +42,153 @@ export default Demo6
 
 :::preview
 
-<RadioDemo007 />
+<RadioDemo002 />
 
-export const RadioDemo007 = (() => {
-  const options = [
-      { label: 'A', value: 'a' },
-      { label: 'B', value: 'b' },
-      { label: 'Disabled', value: 'disabled', disabled: true },
-  ];
-  const Demo7 = function () {
-      return (<Space direction="vertical">
-        <Radio disabled>Disabled</Radio>
-        <Radio.Group disabled options={options} defaultValue="a"/>
-      </Space>);
-  };
+export const RadioDemo002 = (() => {
+  const Demo = function () {
+    const [disabled, setDisabled] = createSignal(true)
 
-return Demo7
+    return (
+      <>
+        <Radio defaultChecked={false} disabled={disabled()}>
+          Disabled
+        </Radio>
+        <Radio defaultChecked disabled={disabled()}>
+          Disabled
+        </Radio>
+        <br />
+        <Button type="primary" onClick={() => setDisabled(!disabled())} style={{ marginTop: 16 }}>
+          Toggle disabled
+        </Button>
+      </>
+    )
+
+}
+
+return Demo
 })()
 
 ---
 
 ```tsx
-import { Radio, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Button, Radio } from '@ant-design-solid/core'
 
-const options = [
-  { label: 'A', value: 'a' },
-  { label: 'B', value: 'b' },
-  { label: 'Disabled', value: 'disabled', disabled: true },
-]
+const Demo = function () {
+  const [disabled, setDisabled] = createSignal(true)
 
-const Demo7 = function () {
   return (
-    <Space direction="vertical">
-      <Radio disabled>Disabled</Radio>
-      <Radio.Group disabled options={options} defaultValue="a" />
-    </Space>
+    <>
+      <Radio defaultChecked={false} disabled={disabled()}>
+        Disabled
+      </Radio>
+      <Radio defaultChecked disabled={disabled()}>
+        Disabled
+      </Radio>
+      <br />
+      <Button type="primary" onClick={() => setDisabled(!disabled())} style={{ marginTop: 16 }}>
+        Toggle disabled
+      </Button>
+    </>
   )
 }
 
-export default Demo7
+export default Demo
 ```
 
 :::
 
-### Controlled
+### Radio.Group
 
 :::preview
 
-<RadioDemo008 />
+<RadioDemo003 />
 
-export const RadioDemo008 = (() => {
+export const RadioDemo003 = (() => {
+  const Demo = function () {
+    const [value, setValue] = createSignal(1)
+
+    return (
+      <Radio.Group onChange={setValue} value={value()}>
+        <Radio value={1}>A</Radio>
+        <Radio value={2}>B</Radio>
+        <Radio value={3}>C</Radio>
+        <Radio value={4}>D</Radio>
+      </Radio.Group>
+    )
+
+}
+
+return Demo
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Radio } from '@ant-design-solid/core'
+
+const Demo = function () {
+  const [value, setValue] = createSignal(1)
+
+  return (
+    <Radio.Group onChange={setValue} value={value()}>
+      <Radio value={1}>A</Radio>
+      <Radio value={2}>B</Radio>
+      <Radio value={3}>C</Radio>
+      <Radio value={4}>D</Radio>
+    </Radio.Group>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Radio.Group Options
+
+:::preview
+
+<RadioDemo004 />
+
+export const RadioDemo004 = (() => {
+  const plainOptions = ['Apple', 'Pear', 'Orange']
   const options = [
-      { label: 'A', value: 'a' },
-      { label: 'B', value: 'b' },
-      { label: 'Disabled', value: 'disabled', disabled: true },
-  ];
-  const Demo8 = function () {
-      const [value, setValue] = createSignal('a');
-      return (<Space direction="vertical">
-        <Radio.Group value={value()} onChange={setValue} options={options}/>
-        <span>Selected: {String(value())}</span>
-      </Space>);
-  };
+    { label: 'Apple', value: 'Apple', class: 'label-1' },
+    { label: 'Pear', value: 'Pear', class: 'label-2' },
+    { label: 'Orange', value: 'Orange', title: 'Orange', class: 'label-3' },
+  ]
+  const optionsWithDisabled = [
+    { label: 'Apple', value: 'Apple', class: 'label-1' },
+    { label: 'Pear', value: 'Pear', class: 'label-2' },
+    { label: 'Orange', value: 'Orange', class: 'label-3', disabled: true },
+  ]
 
-return Demo8
+const Demo = function () {
+const [value1, setValue1] = createSignal('Apple')
+const [value2, setValue2] = createSignal('Apple')
+const [value3, setValue3] = createSignal('Apple')
+const [value4, setValue4] = createSignal('Apple')
+
+    return (
+      <Space direction="vertical">
+        <Radio.Group options={plainOptions} onChange={setValue1} value={value1()} />
+        <Radio.Group options={optionsWithDisabled} onChange={setValue2} value={value2()} />
+        <Radio.Group options={options} onChange={setValue3} value={value3()} optionType="button" />
+        <Radio.Group
+          options={optionsWithDisabled}
+          onChange={setValue4}
+          value={value4()}
+          optionType="button"
+          buttonStyle="solid"
+        />
+      </Space>
+    )
+
+}
+
+return Demo
 })()
 
 ---
@@ -405,51 +197,461 @@ return Demo8
 import { createSignal } from 'solid-js'
 import { Radio, Space } from '@ant-design-solid/core'
 
+const plainOptions = ['Apple', 'Pear', 'Orange']
 const options = [
-  { label: 'A', value: 'a' },
-  { label: 'B', value: 'b' },
-  { label: 'Disabled', value: 'disabled', disabled: true },
+  { label: 'Apple', value: 'Apple', class: 'label-1' },
+  { label: 'Pear', value: 'Pear', class: 'label-2' },
+  { label: 'Orange', value: 'Orange', title: 'Orange', class: 'label-3' },
+]
+const optionsWithDisabled = [
+  { label: 'Apple', value: 'Apple', class: 'label-1' },
+  { label: 'Pear', value: 'Pear', class: 'label-2' },
+  { label: 'Orange', value: 'Orange', class: 'label-3', disabled: true },
 ]
 
-const Demo8 = function () {
-  const [value, setValue] = createSignal('a')
+const Demo = function () {
+  const [value1, setValue1] = createSignal('Apple')
+  const [value2, setValue2] = createSignal('Apple')
+  const [value3, setValue3] = createSignal('Apple')
+  const [value4, setValue4] = createSignal('Apple')
 
   return (
     <Space direction="vertical">
-      <Radio.Group value={value()} onChange={setValue} options={options} />
-      <span>Selected: {String(value())}</span>
+      <Radio.Group options={plainOptions} onChange={setValue1} value={value1()} />
+      <Radio.Group options={optionsWithDisabled} onChange={setValue2} value={value2()} />
+      <Radio.Group options={options} onChange={setValue3} value={value3()} optionType="button" />
+      <Radio.Group
+        options={optionsWithDisabled}
+        onChange={setValue4}
+        value={value4()}
+        optionType="button"
+        buttonStyle="solid"
+      />
     </Space>
   )
 }
 
-export default Demo8
+export default Demo
 ```
 
 :::
 
-### Option customization
+### More
+
+:::preview
+
+<RadioDemo005 />
+
+export const RadioDemo005 = (() => {
+  const labelStyle = {
+    height: '32px',
+    'line-height': '32px',
+  }
+  const buttonOptions = [
+    { label: 'Apple', value: 'Apple', class: 'label-1' },
+    { label: 'Pear', value: 'Pear', class: 'label-2' },
+    { label: 'Orange', value: 'Orange', title: 'Orange', class: 'label-3' },
+  ]
+
+const Demo = function () {
+const [value, setValue] = createSignal(1)
+
+    return (
+      <Flex align="start" gap="large">
+        <div style={{ flex: 1 }}>
+          <Radio.Group
+            vertical
+            onChange={setValue}
+            value={value()}
+            options={[
+              { value: 1, style: labelStyle, label: 'Option A' },
+              { value: 2, style: labelStyle, label: 'Option B' },
+              { value: 3, style: labelStyle, label: 'Option C' },
+              {
+                value: 4,
+                style: labelStyle,
+                label: (
+                  <>
+                    More...
+                    {value() === 4 && (
+                      <Input
+                        variant="filled"
+                        placeholder="please input"
+                        style={{ width: '120px', 'margin-inline-start': '12px' }}
+                      />
+                    )}
+                  </>
+                ),
+              },
+            ]}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Radio.Group options={buttonOptions} optionType="button" vertical />
+        </div>
+      </Flex>
+    )
+
+}
+
+return Demo
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Flex, Input, Radio } from '@ant-design-solid/core'
+
+const labelStyle = {
+  height: '32px',
+  'line-height': '32px',
+}
+const buttonOptions = [
+  { label: 'Apple', value: 'Apple', class: 'label-1' },
+  { label: 'Pear', value: 'Pear', class: 'label-2' },
+  { label: 'Orange', value: 'Orange', title: 'Orange', class: 'label-3' },
+]
+
+const Demo = function () {
+  const [value, setValue] = createSignal(1)
+
+  return (
+    <Flex align="start" gap="large">
+      <div style={{ flex: 1 }}>
+        <Radio.Group
+          vertical
+          onChange={setValue}
+          value={value()}
+          options={[
+            { value: 1, style: labelStyle, label: 'Option A' },
+            { value: 2, style: labelStyle, label: 'Option B' },
+            { value: 3, style: labelStyle, label: 'Option C' },
+            {
+              value: 4,
+              style: labelStyle,
+              label: (
+                <>
+                  More...
+                  {value() === 4 && (
+                    <Input
+                      variant="filled"
+                      placeholder="please input"
+                      style={{ width: '120px', 'margin-inline-start': '12px' }}
+                    />
+                  )}
+                </>
+              ),
+            },
+          ]}
+        />
+      </div>
+      <div style={{ flex: 1 }}>
+        <Radio.Group options={buttonOptions} optionType="button" vertical />
+      </div>
+    </Flex>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Radio.Button
+
+:::preview
+
+<RadioDemo006 />
+
+export const RadioDemo006 = (() => {
+  const Demo = function () {
+    return (
+      <Flex vertical gap="medium">
+        <Radio.Group defaultValue="a">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b">Shanghai</Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+        <Radio.Group defaultValue="a">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b" disabled>
+            Shanghai
+          </Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+        <Radio.Group disabled defaultValue="a">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b">Shanghai</Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+      </Flex>
+    )
+  }
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Flex, Radio } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Flex vertical gap="medium">
+      <Radio.Group defaultValue="a">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b">Shanghai</Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+      <Radio.Group defaultValue="a">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b" disabled>
+          Shanghai
+        </Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+      <Radio.Group disabled defaultValue="a">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b">Shanghai</Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+    </Flex>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Solid Radio.Button
+
+:::preview
+
+<RadioDemo007 />
+
+export const RadioDemo007 = (() => {
+  const Demo = function () {
+    return (
+      <Flex vertical gap="medium">
+        <Radio.Group defaultValue="a" buttonStyle="solid">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b">Shanghai</Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+        <Radio.Group defaultValue="c" buttonStyle="solid">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b" disabled>
+            Shanghai
+          </Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+      </Flex>
+    )
+  }
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Flex, Radio } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Flex vertical gap="medium">
+      <Radio.Group defaultValue="a" buttonStyle="solid">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b">Shanghai</Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+      <Radio.Group defaultValue="c" buttonStyle="solid">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b" disabled>
+          Shanghai
+        </Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+    </Flex>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Size
+
+:::preview
+
+<RadioDemo008 />
+
+export const RadioDemo008 = (() => {
+  const Demo = function () {
+    return (
+      <Flex vertical gap="medium">
+        <Radio.Group defaultValue="a" size="large">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b">Shanghai</Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+        <Radio.Group defaultValue="a">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b">Shanghai</Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+        <Radio.Group defaultValue="a" size="small">
+          <Radio.Button value="a">Hangzhou</Radio.Button>
+          <Radio.Button value="b">Shanghai</Radio.Button>
+          <Radio.Button value="c">Beijing</Radio.Button>
+          <Radio.Button value="d">Chengdu</Radio.Button>
+        </Radio.Group>
+      </Flex>
+    )
+  }
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Flex, Radio } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Flex vertical gap="medium">
+      <Radio.Group defaultValue="a" size="large">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b">Shanghai</Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+      <Radio.Group defaultValue="a">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b">Shanghai</Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+      <Radio.Group defaultValue="a" size="small">
+        <Radio.Button value="a">Hangzhou</Radio.Button>
+        <Radio.Button value="b">Shanghai</Radio.Button>
+        <Radio.Button value="c">Beijing</Radio.Button>
+        <Radio.Button value="d">Chengdu</Radio.Button>
+      </Radio.Group>
+    </Flex>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Block
 
 :::preview
 
 <RadioDemo009 />
 
 export const RadioDemo009 = (() => {
-  const Demo9 = function () {
-      return (<Radio.Group defaultValue="a" options={[
-              {
-                  label: 'Styled option',
-                  value: 'a',
-                  class: 'custom-radio-option',
-                  style: { color: '#1677ff' },
-                  title: 'Custom title',
-                  id: 'custom-radio-option',
-                  required: true,
-              },
-              { label: 'Normal option', value: 'b' },
-          ]}/>);
-  };
+  const options = [
+    { label: 'Apple', value: 'Apple' },
+    { label: 'Pear', value: 'Pear' },
+    { label: 'Orange', value: 'Orange' },
+  ]
 
-return Demo9
+const Demo = function () {
+return (
+
+<Flex vertical gap="medium">
+<Radio.Group block options={options} defaultValue="Apple" />
+<Radio.Group
+block
+options={options}
+defaultValue="Apple"
+optionType="button"
+buttonStyle="solid"
+/>
+<Radio.Group block options={options} defaultValue="Pear" optionType="button" />
+</Flex>
+)
+}
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Flex, Radio } from '@ant-design-solid/core'
+
+const options = [
+  { label: 'Apple', value: 'Apple' },
+  { label: 'Pear', value: 'Pear' },
+  { label: 'Orange', value: 'Orange' },
+]
+
+const Demo = function () {
+  return (
+    <Flex vertical gap="medium">
+      <Radio.Group block options={options} defaultValue="Apple" />
+      <Radio.Group
+        block
+        options={options}
+        defaultValue="Apple"
+        optionType="button"
+        buttonStyle="solid"
+      />
+      <Radio.Group block options={options} defaultValue="Pear" optionType="button" />
+    </Flex>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Name
+
+:::preview
+
+<RadioDemo010 />
+
+export const RadioDemo010 = (() => {
+  const Demo = function () {
+    return (
+      <Radio.Group
+        name="radiogroup"
+        defaultValue={1}
+        options={[
+          { value: 1, label: 'A' },
+          { value: 2, label: 'B' },
+          { value: 3, label: 'C' },
+          { value: 4, label: 'D' },
+        ]}
+      />
+    )
+  }
+
+return Demo
 })()
 
 ---
@@ -457,127 +659,147 @@ return Demo9
 ```tsx
 import { Radio } from '@ant-design-solid/core'
 
-const Demo9 = function () {
+const Demo = function () {
   return (
     <Radio.Group
-      defaultValue="a"
+      name="radiogroup"
+      defaultValue={1}
       options={[
-        {
-          label: 'Styled option',
-          value: 'a',
-          class: 'custom-radio-option',
-          style: { color: '#1677ff' },
-          title: 'Custom title',
-          id: 'custom-radio-option',
-          required: true,
-        },
-        { label: 'Normal option', value: 'b' },
+        { value: 1, label: 'A' },
+        { value: 2, label: 'B' },
+        { value: 3, label: 'C' },
+        { value: 4, label: 'D' },
       ]}
     />
   )
 }
 
-export default Demo9
+export default Demo
 ```
 
 :::
 
-### Semantic styles
-
-:::preview
-
-<RadioDemo010 />
-
-export const RadioDemo010 = (() => {
-  const Demo10 = function () {
-      return (<Space direction="vertical">
-        <Radio classNames={{ wrapper: 'custom-radio-wrapper', input: 'custom-radio-input' }} styles={{ wrapper: { color: '#1677ff' }, input: { accentColor: '#1677ff' } }}>
-          Custom radio
-        </Radio>
-        <Radio.Group classNames={{ wrapper: 'custom-radio-group' }} styles={{ wrapper: { padding: '8px', border: '1px dashed #1677ff' } }} options={[
-              { label: 'A', value: 'a' },
-              { label: 'B', value: 'b' },
-          ]} defaultValue="a"/>
-      </Space>);
-  };
-
-return Demo10
-})()
-
----
-
-```tsx
-import { Radio, Space } from '@ant-design-solid/core'
-
-const Demo10 = function () {
-  return (
-    <Space direction="vertical">
-      <Radio
-        classNames={{ wrapper: 'custom-radio-wrapper', input: 'custom-radio-input' }}
-        styles={{ wrapper: { color: '#1677ff' }, input: { accentColor: '#1677ff' } }}
-      >
-        Custom radio
-      </Radio>
-      <Radio.Group
-        classNames={{ wrapper: 'custom-radio-group' }}
-        styles={{ wrapper: { padding: '8px', border: '1px dashed #1677ff' } }}
-        options={[
-          { label: 'A', value: 'a' },
-          { label: 'B', value: 'b' },
-        ]}
-        defaultValue="a"
-      />
-    </Space>
-  )
-}
-
-export default Demo10
-```
-
-:::
-
-### Focus and blur
+### Style And Class
 
 :::preview
 
 <RadioDemo011 />
 
 export const RadioDemo011 = (() => {
-  const Demo11 = function () {
-      const radioRef = {};
-      return (<Space>
-        <Radio ref={radioRef}>Focusable</Radio>
-        <Button onClick={() => radioRef.current?.focus()}>Focus</Button>
-        <Button onClick={() => radioRef.current?.blur()}>Blur</Button>
-      </Space>);
-  };
+  const styles = {
+    icon: {
+      'border-radius': '6px',
+    },
+    label: {
+      color: 'blue',
+    },
+  }
 
-return Demo11
+const Demo = function () {
+const [value, setValue] = createSignal('styles')
+
+    const classNames = (info) => {
+      if (info.props.checked) {
+        return {
+          root: 'custom-radio-root',
+          icon: 'custom-radio-icon custom-radio-icon-checked',
+          label: 'custom-radio-label custom-radio-label-checked',
+        }
+      }
+      return {
+        root: 'custom-radio-root',
+        icon: 'custom-radio-icon',
+        label: 'custom-radio-label',
+      }
+    }
+
+    return (
+      <Flex vertical gap="medium">
+        <Radio
+          name="style-class"
+          styles={styles}
+          checked={value() === 'styles'}
+          onChange={() => setValue('styles')}
+        >
+          Object styles
+        </Radio>
+        <Radio
+          name="style-class"
+          classNames={classNames}
+          checked={value() === 'classNames'}
+          onChange={() => setValue('classNames')}
+        >
+          Function classNames
+        </Radio>
+      </Flex>
+    )
+
+}
+
+return Demo
 })()
 
 ---
 
 ```tsx
-import { Radio, Space, Button } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Flex, Radio } from '@ant-design-solid/core'
 
-const Demo11 = function () {
-  const radioRef = {}
+const styles = {
+  icon: {
+    'border-radius': '6px',
+  },
+  label: {
+    color: 'blue',
+  },
+}
+
+const Demo = function () {
+  const [value, setValue] = createSignal('styles')
+
+  const classNames = (info) => {
+    if (info.props.checked) {
+      return {
+        root: 'custom-radio-root',
+        icon: 'custom-radio-icon custom-radio-icon-checked',
+        label: 'custom-radio-label custom-radio-label-checked',
+      }
+    }
+    return {
+      root: 'custom-radio-root',
+      icon: 'custom-radio-icon',
+      label: 'custom-radio-label',
+    }
+  }
 
   return (
-    <Space>
-      <Radio ref={radioRef}>Focusable</Radio>
-      <Button onClick={() => radioRef.current?.focus()}>Focus</Button>
-      <Button onClick={() => radioRef.current?.blur()}>Blur</Button>
-    </Space>
+    <Flex vertical gap="medium">
+      <Radio
+        name="style-class"
+        styles={styles}
+        checked={value() === 'styles'}
+        onChange={() => setValue('styles')}
+      >
+        Object styles
+      </Radio>
+      <Radio
+        name="style-class"
+        classNames={classNames}
+        checked={value() === 'classNames'}
+        onChange={() => setValue('classNames')}
+      >
+        Function classNames
+      </Radio>
+    </Flex>
   )
 }
 
-export default Demo11
+export default Demo
 ```
 
 :::
 
-### In Form
+### Focus And Form
 
 :::preview
 
@@ -585,25 +807,38 @@ export default Demo11
 
 export const RadioDemo012 = (() => {
   const options = [
-      { label: 'A', value: 'a' },
-      { label: 'B', value: 'b' },
-      { label: 'Disabled', value: 'disabled', disabled: true },
-  ];
-  const Demo12 = function () {
-      return (<Form initialValues={{ choice: 'a' }}>
-        <Form.Item name="choice">
-          <Radio.Group options={options}/>
-        </Form.Item>
-      </Form>);
-  };
+    { label: 'A', value: 'a' },
+    { label: 'B', value: 'b' },
+    { label: 'Disabled', value: 'disabled', disabled: true },
+  ]
 
-return Demo12
+const Demo = function () {
+const radioRef = {}
+
+    return (
+      <Space direction="vertical">
+        <Space>
+          <Radio ref={radioRef}>Focusable</Radio>
+          <Button onClick={() => radioRef.current?.focus()}>Focus</Button>
+          <Button onClick={() => radioRef.current?.blur()}>Blur</Button>
+        </Space>
+        <Form initialValues={{ choice: 'a' }}>
+          <Form.Item name="choice">
+            <Radio.Group options={options} />
+          </Form.Item>
+        </Form>
+      </Space>
+    )
+
+}
+
+return Demo
 })()
 
 ---
 
 ```tsx
-import { Form, Radio } from '@ant-design-solid/core'
+import { Button, Form, Radio, Space } from '@ant-design-solid/core'
 
 const options = [
   { label: 'A', value: 'a' },
@@ -611,78 +846,127 @@ const options = [
   { label: 'Disabled', value: 'disabled', disabled: true },
 ]
 
-const Demo12 = function () {
+const Demo = function () {
+  const radioRef = {}
+
   return (
-    <Form initialValues={{ choice: 'a' }}>
-      <Form.Item name="choice">
-        <Radio.Group options={options} />
-      </Form.Item>
-    </Form>
+    <Space direction="vertical">
+      <Space>
+        <Radio ref={radioRef}>Focusable</Radio>
+        <Button onClick={() => radioRef.current?.focus()}>Focus</Button>
+        <Button onClick={() => radioRef.current?.blur()}>Blur</Button>
+      </Space>
+      <Form initialValues={{ choice: 'a' }}>
+        <Form.Item name="choice">
+          <Radio.Group options={options} />
+        </Form.Item>
+      </Form>
+    </Space>
   )
 }
 
-export default Demo12
+export default Demo
 ```
 
 :::
 
 ## API
 
+Common props such as `id`, `name`, `title`, `autofocus`, keyboard handlers, and focus/blur
+handlers follow Solid DOM prop names and are passed to the native input or group wrapper where
+appropriate.
+
 ### Radio / Radio.Button
 
-| Property         | Description                                              | Type                                                                                                      | Default |
-| ---------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------- |
-| `checked`        | Controlled checked state.                                | `boolean`                                                                                                 | `-`     |
-| `defaultChecked` | Initial checked state for uncontrolled usage.            | `boolean`                                                                                                 | `false` |
-| `disabled`       | Disables the radio.                                      | `boolean`                                                                                                 | `false` |
-| `value`          | Radio option value.                                      | `string \| number \| boolean`                                                                             | `-`     |
-| `prefixCls`      | Custom CSS class prefix.                                 | `string`                                                                                                  | `-`     |
-| `children`       | Radio label content.                                     | `JSX.Element`                                                                                             | `-`     |
-| `classNames`     | Semantic class names for the wrapper and native input.   | `Partial<Record<'wrapper' \| 'input', string>> \| ((info: { props }) => Partial<Record<...>>)`            | `-`     |
-| `styles`         | Semantic inline styles for the wrapper and native input. | `Partial<Record<'wrapper' \| 'input', JSX.CSSProperties>> \| ((info: { props }) => Partial<Record<...>>)` | `-`     |
-| `ref`            | Imperative ref for focus and blur methods.               | `{ current?: RadioRef } \| ((ref: RadioRef) => void)`                                                     | `-`     |
-| `onChange`       | Called when the native radio change event fires.         | `JSX.EventHandler<HTMLInputElement, Event>`                                                               | `-`     |
+| Property         | Description                                                                                                                | Type                                                                                                                        | Default |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `checked`        | Controlled checked state.                                                                                                  | `boolean`                                                                                                                   | `false` |
+| `class`          | Additional Solid-style class for the radio wrapper.                                                                        | `string`                                                                                                                    | `-`     |
+| `classNames`     | Semantic class names. antd v6 keys are `root`, `icon`, and `label`; legacy `wrapper` and `input` keys are also accepted.   | `Partial<Record<SemanticDOM, string>> \| ((info: { props }) => Partial<Record<SemanticDOM, string>>)`                       | `-`     |
+| `defaultChecked` | Initial checked state for uncontrolled usage.                                                                              | `boolean`                                                                                                                   | `false` |
+| `disabled`       | Disable radio.                                                                                                             | `boolean`                                                                                                                   | `false` |
+| `rootClass`      | Additional class for the radio root wrapper. Solid-style replacement for antd React `rootClassName`.                       | `string`                                                                                                                    | `-`     |
+| `skipGroup`      | Prevents a radio inside `Radio.Group` from reading group value, name, and disabled state.                                  | `boolean`                                                                                                                   | `false` |
+| `styles`         | Semantic inline styles. antd v6 keys are `root`, `icon`, and `label`; legacy `wrapper` and `input` keys are also accepted. | `Partial<Record<SemanticDOM, JSX.CSSProperties>> \| ((info: { props }) => Partial<Record<SemanticDOM, JSX.CSSProperties>>)` | `-`     |
+| `value`          | Value used for comparison when inside a group.                                                                             | `string \| number \| boolean`                                                                                               | `-`     |
+| `onChange`       | Called when the native radio change event fires.                                                                           | `JSX.EventHandler<HTMLInputElement, Event>`                                                                                 | `-`     |
 
 ### Radio.Group
 
-| Property       | Description                                                                                              | Type                                                                                           | Default        |
-| -------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------- |
-| `value`        | Controlled selected value.                                                                               | `string \| number \| boolean`                                                                  | `-`            |
-| `defaultValue` | Initial selected value for uncontrolled usage.                                                           | `string \| number \| boolean`                                                                  | `-`            |
-| `options`      | Options rendered as radios.                                                                              | `OptionInput[]`                                                                                | `-`            |
-| `disabled`     | Disables all radios in the group.                                                                        | `boolean`                                                                                      | `false`        |
-| `optionType`   | Renders options as standard radios or button-style radios.                                               | `'default' \| 'button'`                                                                        | `'default'`    |
-| `buttonStyle`  | Style variant for button-style radios.                                                                   | `'outline' \| 'solid'`                                                                         | `'outline'`    |
-| `block`        | Makes button-style radios fill the group width.                                                          | `boolean`                                                                                      | `false`        |
-| `name`         | Sets the `name` attribute for all inner radio inputs. A generated name is used when omitted.             | `string`                                                                                       | generated      |
-| `orientation`  | Group layout direction. Takes priority over `vertical`.                                                  | `'horizontal' \| 'vertical'`                                                                   | `'horizontal'` |
-| `vertical`     | Shortcut for vertical layout when `orientation` is not provided.                                         | `boolean`                                                                                      | `false`        |
-| `size`         | Size for button-style radios.                                                                            | `'small' \| 'medium' \| 'large'`                                                               | `-`            |
-| `prefixCls`    | Custom radio CSS class prefix.                                                                           | `string`                                                                                       | `-`            |
-| `children`     | Custom `Radio` or `Radio.Button` children.                                                               | `JSX.Element`                                                                                  | `-`            |
-| `classNames`   | Semantic class names for the group wrapper.                                                              | `Partial<Record<'wrapper', string>> \| ((info: { props }) => Partial<Record<...>>)`            | `-`            |
-| `styles`       | Semantic inline styles for the group wrapper.                                                            | `Partial<Record<'wrapper', JSX.CSSProperties>> \| ((info: { props }) => Partial<Record<...>>)` | `-`            |
-| `onChange`     | Called with the next selected value. This keeps the Solid-style value callback instead of an antd event. | `(checkedValue: OptionValue) => void`                                                          | `-`            |
+Radio group can wrap a group of `Radio`.
 
-### OptionInput
+| Property       | Description                                                                                                          | Type                                                                                                                                        | Default        |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `block`        | Option to fit radio group width to its parent width.                                                                 | `boolean`                                                                                                                                   | `false`        |
+| `buttonStyle`  | The style type of radio button.                                                                                      | `'outline' \| 'solid'`                                                                                                                      | `'outline'`    |
+| `class`        | Additional Solid-style class for the group wrapper.                                                                  | `string`                                                                                                                                    | `-`            |
+| `classNames`   | Semantic class names for the group root. `wrapper` is accepted as a legacy alias.                                    | `Partial<Record<'root' \| 'wrapper', string>> \| ((info: { props }) => Partial<Record<'root' \| 'wrapper', string>>)`                       | `-`            |
+| `defaultValue` | Default selected value.                                                                                              | `string \| number \| boolean`                                                                                                               | `-`            |
+| `disabled`     | Disable all radio buttons.                                                                                           | `boolean`                                                                                                                                   | `false`        |
+| `name`         | The `name` property of all `input[type="radio"]` children. If not set, it will fallback to a generated name.         | `string`                                                                                                                                    | generated      |
+| `options`      | Set children optional.                                                                                               | `Array<string \| number \| boolean \| Option>`                                                                                              | `-`            |
+| `optionType`   | Set radio option type.                                                                                               | `'default' \| 'button'`                                                                                                                     | `'default'`    |
+| `orientation`  | Orientation. Takes priority over `vertical`.                                                                         | `'horizontal' \| 'vertical'`                                                                                                                | `'horizontal'` |
+| `rootClass`    | Additional class for the group root wrapper. Solid-style replacement for antd React `rootClassName`.                 | `string`                                                                                                                                    | `-`            |
+| `size`         | The size of radio button style.                                                                                      | `'large' \| 'medium' \| 'small'`                                                                                                            | `-`            |
+| `styles`       | Semantic inline styles for the group root. `wrapper` is accepted as a legacy alias.                                  | `Partial<Record<'root' \| 'wrapper', JSX.CSSProperties>> \| ((info: { props }) => Partial<Record<'root' \| 'wrapper', JSX.CSSProperties>>)` | `-`            |
+| `value`        | Controlled selected value.                                                                                           | `string \| number \| boolean`                                                                                                               | `-`            |
+| `vertical`     | If true, the radio group will be vertical. Simultaneously existing with `orientation`, `orientation` takes priority. | `boolean`                                                                                                                                   | `false`        |
+| `onChange`     | Called with the next selected value. This keeps the Solid-style value callback instead of an antd React event.       | `(checkedValue: OptionValue) => void`                                                                                                       | `-`            |
 
-| Property                      | Description                                    | Type                                        | Default |
-| ----------------------------- | ---------------------------------------------- | ------------------------------------------- | ------- |
-| `string \| number \| boolean` | Primitive option used as both label and value. | `OptionInput`                               | `-`     |
-| `label`                       | Option label content for object options.       | `JSX.Element`                               | `-`     |
-| `value`                       | Option value.                                  | `string \| number \| boolean`               | `-`     |
-| `disabled`                    | Disables this option.                          | `boolean`                                   | `false` |
-| `style`                       | Inline style for this option wrapper.          | `JSX.CSSProperties`                         | `-`     |
-| `class`                       | Additional Solid-style class for this option.  | `string`                                    | `-`     |
-| `title`                       | Title attribute for this option wrapper.       | `string`                                    | `-`     |
-| `id`                          | Id attribute for this option input.            | `string`                                    | `-`     |
-| `required`                    | Required attribute for this option input.      | `boolean`                                   | `false` |
-| `onChange`                    | Called when this option changes.               | `JSX.EventHandler<HTMLInputElement, Event>` | `-`     |
+### Option
 
-### RadioRef
+| Property                      | Description                                                | Type                                        | Default |
+| ----------------------------- | ---------------------------------------------------------- | ------------------------------------------- | ------- |
+| `string \| number \| boolean` | Primitive option used as both label and value.             | `OptionInput`                               | `-`     |
+| `label`                       | The text or node used to display as the radio option.      | `JSX.Element`                               | `-`     |
+| `value`                       | The value associated with the radio option.                | `string \| number \| boolean`               | `-`     |
+| `class`                       | Additional Solid-style class for the radio option wrapper. | `string`                                    | `-`     |
+| `classNames`                  | Semantic class names for this option radio.                | `Radio['classNames']`                       | `-`     |
+| `disabled`                    | Specifies whether the radio option is disabled.            | `boolean`                                   | `false` |
+| `id`                          | Adds the radio id attribute value.                         | `string`                                    | `-`     |
+| `required`                    | Specifies whether the radio option is required.            | `boolean`                                   | `false` |
+| `rootClass`                   | Additional root class for this option radio.               | `string`                                    | `-`     |
+| `style`                       | The style to apply to the radio option wrapper.            | `JSX.CSSProperties`                         | `-`     |
+| `styles`                      | Semantic inline styles for this option radio.              | `Radio['styles']`                           | `-`     |
+| `title`                       | Adds the title attribute value.                            | `string`                                    | `-`     |
+| `onChange`                    | Triggered when this option changes.                        | `JSX.EventHandler<HTMLInputElement, Event>` | `-`     |
 
-| Method          | Description                              |
+## Methods
+
+### Radio
+
+| Name            | Description                              |
 | --------------- | ---------------------------------------- |
-| `focus()`       | Focuses the native radio input.          |
-| `blur()`        | Blurs the native radio input.            |
+| `blur()`        | Remove focus.                            |
+| `focus()`       | Get focus.                               |
 | `nativeElement` | Native radio input element when mounted. |
+
+## Semantic DOM
+
+| Key     | Node                       |
+| ------- | -------------------------- |
+| `root`  | The outer label wrapper.   |
+| `icon`  | The native radio input.    |
+| `label` | The label content wrapper. |
+
+Legacy keys `wrapper` and `input` are retained as aliases for `root` and `icon`.
+
+## Design Token
+
+| Token                        | Description                                            | Default                           |
+| ---------------------------- | ------------------------------------------------------ | --------------------------------- |
+| `radioSize`                  | Radio size.                                            | `fontSizeLG`                      |
+| `dotSize`                    | Size of radio dot.                                     | `radioSize - (4 + lineWidth) * 2` |
+| `dotColorDisabled`           | Color of disabled radio dot.                           | `colorTextDisabled`               |
+| `buttonBg`                   | Background color of radio button.                      | `colorBgContainer`                |
+| `buttonCheckedBg`            | Background color of checked radio button.              | `colorBgContainer`                |
+| `buttonColor`                | Color of radio button text.                            | `colorText`                       |
+| `buttonPaddingInline`        | Horizontal padding of radio button.                    | `padding - lineWidth`             |
+| `buttonCheckedBgDisabled`    | Background color of checked and disabled radio button. | `controlItemBgActiveDisabled`     |
+| `buttonCheckedColorDisabled` | Color of checked and disabled radio button text.       | `colorTextDisabled`               |
+| `buttonSolidCheckedColor`    | Color of checked solid radio button text.              | `colorTextLightSolid`             |
+| `buttonSolidCheckedBg`       | Background color of checked solid radio button.        | `colorPrimary`                    |
+| `buttonSolidCheckedHoverBg`  | Hover background color of checked solid radio button.  | `colorPrimaryHover`               |
+| `buttonSolidCheckedActiveBg` | Active background color of checked solid radio button. | `colorPrimaryActive`              |
+| `wrapperMarginInlineEnd`     | Margin right of radio button.                          | `marginXS`                        |
