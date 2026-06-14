@@ -42,6 +42,17 @@ export function useTimePickerStyle(prefixCls: string) {
           background: t.colorFillAlter,
           cursor: 'not-allowed',
         },
+        [`.${prefixCls}-input`]: {
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          margin: '-1px',
+          padding: '0',
+          border: '0',
+          overflow: 'hidden',
+          clip: 'rect(0 0 0 0)',
+          'white-space': 'nowrap',
+        },
         [`.${prefixCls}-placeholder`]: {
           color: t.colorTextDisabled,
         },

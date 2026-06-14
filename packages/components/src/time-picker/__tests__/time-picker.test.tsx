@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
@@ -407,6 +408,28 @@ describe('TimePicker', () => {
     render(() => <TimePicker inputReadOnly />)
 
     expect(screen.getByRole('textbox', { hidden: true })).toHaveAttribute('readonly')
+  })
+
+  it('keeps the internal input mirror visually hidden', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <TimePicker defaultValue={dayjs('2026-06-11 12:00:00')} />
+        <TimePicker.RangePicker
+          defaultValue={[dayjs('2026-06-11 09:00:00'), dayjs('2026-06-11 18:00:00')]}
+        />
+      </StyleProvider>
+    ))
+
+    const inputs = screen.getAllByRole('textbox', { hidden: true })
+    const css = extractStyle(cache)
+
+    expect(inputs).toHaveLength(2)
+    expect(inputs[0]).toHaveValue('12:00:00')
+    expect(inputs[1]).toHaveValue('09:00:00 - 18:00:00')
+    expect(css).toContain(
+      '.ads-time-picker-input{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;white-space:nowrap;width:1px;',
+    )
   })
 
   it('supports changeOnScroll by selecting the scrolled option', () => {
