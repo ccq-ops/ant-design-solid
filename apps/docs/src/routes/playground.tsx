@@ -1,8 +1,9 @@
-import { createEffect, createMemo, createSignal } from 'solid-js'
+import { createEffect, createMemo, createSignal, onMount } from 'solid-js'
 import { useLocation } from '@solidjs/router'
 import { Input } from '@ant-design-solid/core'
-import { sourceCodeFromLocationSearch } from '../docs-theme/preview-utils'
+import { getDemoSource } from './playground-registry'
 import { compilePlaygroundSource } from './playground-runtime'
+import './playground.css'
 
 const playgroundPanelClass =
   'min-w-0 rounded-lg border border-[color-mix(in_hsl,var(--sb-decoration-color)_18%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_94%,transparent)] p-4'
@@ -11,15 +12,36 @@ const playgroundErrorClass =
 
 export default function PlaygroundPage() {
   const location = useLocation()
-  const sourceCodeFromQuery = createMemo(() => sourceCodeFromLocationSearch(location.search))
-  const [sourceCode, setSourceCode] = createSignal(sourceCodeFromQuery())
+  const sourceFromLocation = createMemo(() => getDemoSource(location.search))
+  const [sourceCode, setSourceCode] = createSignal(sourceFromLocation().source)
+  const [canRenderPreview, setCanRenderPreview] = createSignal(false)
   const result = createMemo(() => compilePlaygroundSource(sourceCode()))
 
+  onMount(() => {
+    setCanRenderPreview(true)
+  })
+
   createEffect(() => {
-    setSourceCode(sourceCodeFromQuery())
+    setSourceCode(sourceFromLocation().source)
   })
 
   const renderPreview = () => {
+    const source = sourceFromLocation()
+
+    if (source.sourceType === 'missing-demo') {
+      return (
+        <pre class={playgroundErrorClass} role="alert">
+          <code>{source.error}</code>
+        </pre>
+      )
+    }
+
+    if (!canRenderPreview()) {
+      return (
+        <div class="mt-2 flex min-h-96 items-center justify-center overflow-auto rounded-md border border-[color-mix(in_hsl,var(--sb-decoration-color)_14%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_96%,transparent)] p-6" />
+      )
+    }
+
     const compiled = result()
 
     if (!compiled.ok) {

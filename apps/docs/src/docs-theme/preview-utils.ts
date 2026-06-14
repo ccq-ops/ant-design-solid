@@ -1,4 +1,5 @@
 import type { JSX } from 'solid-js'
+import { demoIdFromSource, getDemoSource } from '../routes/playground-registry'
 
 const playgroundPath = '/playground'
 
@@ -43,12 +44,17 @@ export function sourceCodeFromElement(element: HTMLElement | undefined): string 
 
 export function playgroundHref(code: string) {
   const params = new URLSearchParams()
+  const demoId = demoIdFromSource(code)
 
-  params.set('code', code)
+  if (demoId) {
+    params.set('demo', demoId)
+  } else {
+    params.set('code', code)
+  }
 
   return `${playgroundPath}?${params.toString()}`
 }
 
 export function sourceCodeFromLocationSearch(search: string) {
-  return new URLSearchParams(search).get('code') ?? ''
+  return getDemoSource(search).source
 }

@@ -1,8 +1,29 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
+import { getDemoSourceById } from '../routes/playground-registry'
 import { PreviewPanel } from './mdx-components'
 
 describe('Docs PreviewPanel', () => {
+  it('links registered source code to the playground by demo id', () => {
+    const source = getDemoSourceById('components/divider/basic')?.source ?? ''
+
+    const result = render(() => (
+      <PreviewPanel>
+        <pre>
+          <code>{source}</code>
+        </pre>
+      </PreviewPanel>
+    ))
+
+    const link = result.getByRole('link', { name: 'Open in playground' })
+    const href = link.getAttribute('href') ?? ''
+    const params = new URLSearchParams(href.split('?')[1])
+
+    expect(href.startsWith('/playground?')).toBe(true)
+    expect(params.get('demo')).toBe('components/divider/basic')
+    expect(params.has('code')).toBe(false)
+  })
+
   it('collapses source code by default and expands it on demand', () => {
     const result = render(() => (
       <PreviewPanel>
@@ -30,7 +51,7 @@ describe('Docs PreviewPanel', () => {
     expect(source).toBeVisible()
   })
 
-  it('links the source code to the playground with encoded code', () => {
+  it('falls back to encoded source code when source is not registered', () => {
     const result = render(() => (
       <PreviewPanel>
         <pre>

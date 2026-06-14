@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { fireEvent, render } from '@solidjs/testing-library'
 import { MemoryRouter, Route, createMemoryHistory } from '@solidjs/router'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -6,6 +8,32 @@ import PlaygroundPage from './playground'
 describe('Playground page', () => {
   beforeEach(() => {
     window.history.replaceState(null, '', '/playground')
+  })
+
+  it('keeps a route css import for SolidStart route preload requests', () => {
+    const routeSource = readFileSync(join(process.cwd(), 'src/routes/playground.tsx'), 'utf8')
+
+    expect(routeSource).toContain("import './playground.css'")
+  })
+
+  it('loads a registered demo id into an editable playground', () => {
+    const history = createMemoryHistory()
+
+    history.set({
+      value: '/?demo=components/divider/basic',
+      replace: true,
+    })
+
+    const result = render(() => (
+      <MemoryRouter history={history}>
+        <Route path="/" component={PlaygroundPage} />
+      </MemoryRouter>
+    ))
+    const editor = result.getByLabelText('Playground source') as HTMLTextAreaElement
+
+    expect(editor.value).toContain("import { Divider } from '@ant-design-solid/core'")
+    expect(editor.value).toContain('export default Demo1')
+    expect(result.queryByRole('alert')).toBeNull()
   })
 
   it('loads the code query param into an editable playground', () => {
@@ -84,5 +112,22 @@ const Demo1 = function () {
       await result.findByRole('button', { name: 'Loaded after navigation' }),
     ).toBeInTheDocument()
     expect(editor.value).toBe(source)
+  })
+
+  it('shows a readable error when a demo id cannot be found', () => {
+    const history = createMemoryHistory()
+
+    history.set({
+      value: '/?demo=missing/demo',
+      replace: true,
+    })
+
+    const result = render(() => (
+      <MemoryRouter history={history}>
+        <Route path="/" component={PlaygroundPage} />
+      </MemoryRouter>
+    ))
+
+    expect(result.getByRole('alert')).toHaveTextContent('Playground demo not found: missing/demo')
   })
 })

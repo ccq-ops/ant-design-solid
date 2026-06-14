@@ -10,3 +10,7 @@ declare module '*.mdx' {
   const MDXComponent: Component<Record<string, unknown>>
   export default MDXComponent
 }
+
+declare module 'virtual:docs-playground-registry' {
+  export const demoSources: Array<{ id: string; source: string }>
+}

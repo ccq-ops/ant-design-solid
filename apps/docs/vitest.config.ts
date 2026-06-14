@@ -3,6 +3,7 @@ import { createSolidBase } from '@kobalte/solidbase/config'
 import { defineConfig } from 'vitest/config'
 import solid from 'vite-plugin-solid'
 import { docsTheme } from './src/docs-theme/theme'
+import { playgroundRegistryPlugin } from './playground-registry-plugin'
 import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
 import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
 import { docsThemeConfig } from './solidbase-theme-config'
@@ -26,6 +27,7 @@ export default defineConfig({
     }),
     solidbaseDefaultThemeJsx(),
     solidbaseDefaultThemePreview(),
+    playgroundRegistryPlugin(),
     solid({ extensions: ['.md', '.mdx'] }),
   ],
   resolve: {

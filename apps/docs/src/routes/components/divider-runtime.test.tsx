@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renderDocsPage } from '../../test-utils/render-docs-page'
+import { getDemoSourceById } from '../playground-registry'
 import { compilePlaygroundSource } from '../playground-runtime'
 import DividerPage from './divider.mdx'
 
@@ -34,16 +35,15 @@ describe('Divider docs page', () => {
       'aria-expanded',
       'false',
     )
-    expect(params.get('code')).toContain("import { Divider } from '@ant-design-solid/core'")
-    expect(params.get('code')).toContain('export default Demo')
-    expect(params.get('code')).not.toContain('.expressive-code')
+    expect(params.get('demo')).toBe('components/divider/basic')
+    expect(params.has('code')).toBe(false)
   })
 
   it('links playground code that can be compiled by the runtime', () => {
     const result = renderDividerPage()
     const link = result.getAllByRole('link', { name: 'Open in playground' })[0]
     const params = new URLSearchParams(link.getAttribute('href')?.split('?')[1] ?? '')
-    const code = params.get('code')
+    const code = getDemoSourceById(params.get('demo') ?? '')?.source
 
     expect(code).toBeTruthy()
 
