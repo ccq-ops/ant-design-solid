@@ -703,7 +703,7 @@ export const SelectDemo015 = (() => {
       { label: 'Research', value: 'research' },
   ];
   const Demo15 = function () {
-      return (<Select class="w-80" mode="multiple" defaultValue={['design', 'engineering', 'research']} maxTagCount={2} maxTagPlaceholder={(omitted) => `+ ${omitted.length} more`} tagRender={(props) => (<button type="button" class="rounded bg-blue-50 px-2 text-blue-700" onClick={props.onClose}>
+      return (<Select class="w-80" mode="multiple" defaultValue={['design', 'engineering', 'research']} maxTagCount={2} maxTagPlaceholder={(omitted) => `+ ${omitted.length} more`} tagRender={(props) => (<button type="button" class="rounded bg-blue-50 px-2 text-blue-700 dark:bg-blue-950/40 dark:text-blue-200" onClick={props.onClose}>
             {props.label}
           </button>)} options={options}/>);
   };
@@ -731,7 +731,11 @@ const Demo15 = function () {
       maxTagCount={2}
       maxTagPlaceholder={(omitted) => `+ ${omitted.length} more`}
       tagRender={(props) => (
-        <button type="button" class="rounded bg-blue-50 px-2 text-blue-700" onClick={props.onClose}>
+        <button
+          type="button"
+          class="rounded bg-blue-50 px-2 text-blue-700 dark:bg-blue-950/40 dark:text-blue-200"
+          onClick={props.onClose}
+        >
           {props.label}
         </button>
       )}

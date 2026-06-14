@@ -10,6 +10,7 @@ const autoCompleteSource = readPageSource('./auto-complete.mdx')
 const cardSource = readPageSource('./card.mdx')
 const gridSource = readPageSource('./grid.mdx')
 const menuSource = readPageSource('./menu.mdx')
+const selectSource = readPageSource('./select.mdx')
 const tabsSource = readPageSource('./tabs.mdx')
 const slate950TextClass = `text-slate-${950}`
 
@@ -46,6 +47,14 @@ describe('component docs Tailwind migration', () => {
     expectSourceWithoutInlineStyle(menuSource, 'menu docs')
     expect(cardSource).toContain('class="w-80"')
     expect(menuSource).toContain('class="w-60"')
+  })
+
+  it('keeps select custom tags readable in dark mode', () => {
+    const customTagsSource = getSectionSource(selectSource, 'Custom tags')
+
+    expect(customTagsSource).toContain(
+      'class="rounded bg-blue-50 px-2 text-blue-700 dark:bg-blue-950/40 dark:text-blue-200"',
+    )
   })
 
   it('keeps the editable tabs demo stateful and uses the default add icon', () => {
