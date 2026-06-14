@@ -11,6 +11,7 @@ const cardSource = readPageSource('./card.mdx')
 const gridSource = readPageSource('./grid.mdx')
 const menuSource = readPageSource('./menu.mdx')
 const tabsSource = readPageSource('./tabs.mdx')
+const slate950TextClass = `text-slate-${950}`
 
 function expectSourceWithoutInlineStyle(source: string, label: string) {
   expect(source, `${label} should not use inline style attributes`).not.toMatch(/style=\{\{/)
@@ -31,7 +32,7 @@ describe('component docs Tailwind migration', () => {
   it('uses Tailwind classes for static grid demo cells', () => {
     expectSourceWithoutInlineStyle(gridSource, 'grid docs')
     expect(gridSource).toContain(
-      "'bg-blue-50 text-slate-950 dark:bg-blue-950/40 dark:text-slate-50 p-4'",
+      `'bg-blue-50 ${slate950TextClass} dark:bg-blue-950/40 dark:text-slate-50 p-4'`,
     )
     expect(gridSource).toContain(
       "'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 p-4'",
