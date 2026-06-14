@@ -1,8 +1,28 @@
+import { Button, Form, Radio, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Radio
 
 Radio lets users choose one option from a mutually exclusive set.
 
 ### Basic
+
+:::preview
+
+<RadioDemo001 />
+
+export const RadioDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Radio.Group defaultValue="a">
+        <Radio value="a">A</Radio>
+        <Radio value="b">B</Radio>
+      </Radio.Group>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Radio } from '@ant-design-solid/core'
@@ -19,7 +39,31 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Group
+
+:::preview
+
+<RadioDemo002 />
+
+export const RadioDemo002 = (() => {
+  const options = [
+      { label: 'A', value: 'a' },
+      { label: 'B', value: 'b' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+  ];
+  const Demo2 = function () {
+      return (<Space direction="vertical">
+        <Radio.Group options={options} defaultValue="a"/>
+        <Radio.Group optionType="button" options={options} defaultValue="b"/>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -42,7 +86,34 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Radio.Button
+
+:::preview
+
+<RadioDemo003 />
+
+export const RadioDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space direction="vertical">
+        <Radio.Group defaultValue="apple" name="fruit">
+          <Radio.Button value="apple">Apple</Radio.Button>
+          <Radio.Button value="orange">Orange</Radio.Button>
+          <Radio.Button value="pear">Pear</Radio.Button>
+        </Radio.Group>
+        <Radio.Group defaultValue="left">
+          <Radio value="left">Left</Radio>
+          <Radio value="center">Center</Radio>
+          <Radio value="right">Right</Radio>
+        </Radio.Group>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -67,7 +138,36 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Button style
+
+:::preview
+
+<RadioDemo004 />
+
+export const RadioDemo004 = (() => {
+  const outlineOptions = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+  ];
+  const solidOptions = [
+      { label: 'Hangzhou', value: 'hangzhou' },
+      { label: 'Shanghai', value: 'shanghai' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+  ];
+  const Demo4 = function () {
+      return (<Space direction="vertical">
+        <Radio.Group optionType="button" buttonStyle="outline" name="button-style-outline" options={outlineOptions} defaultValue="apple"/>
+        <Radio.Group name="button-style-solid" optionType="button" buttonStyle="solid" options={solidOptions} defaultValue="shanghai"/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -108,7 +208,32 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Sizes
+
+:::preview
+
+<RadioDemo005 />
+
+export const RadioDemo005 = (() => {
+  const options = [
+      { label: 'A', value: 'a' },
+      { label: 'B', value: 'b' },
+      { label: 'C', value: 'c' },
+  ];
+  const Demo5 = function () {
+      return (<Space direction="vertical">
+        <Radio.Group name="radio-size-small" size="small" optionType="button" options={options} defaultValue="a"/>
+        <Radio.Group name="radio-size-medium" size="medium" optionType="button" options={options} defaultValue="b"/>
+        <Radio.Group name="radio-size-large" size="large" optionType="button" options={options} defaultValue="c"/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -150,7 +275,31 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Block and vertical
+
+:::preview
+
+<RadioDemo006 />
+
+export const RadioDemo006 = (() => {
+  const options = [
+      { label: 'Daily', value: 'daily' },
+      { label: 'Weekly', value: 'weekly' },
+      { label: 'Monthly', value: 'monthly' },
+  ];
+  const Demo6 = function () {
+      return (<Space direction="vertical" style={{ width: '360px' }}>
+        <Radio.Group block optionType="button" options={options} defaultValue="daily"/>
+        <Radio.Group vertical options={options} defaultValue="weekly"/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -173,7 +322,31 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<RadioDemo007 />
+
+export const RadioDemo007 = (() => {
+  const options = [
+      { label: 'A', value: 'a' },
+      { label: 'B', value: 'b' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+  ];
+  const Demo7 = function () {
+      return (<Space direction="vertical">
+        <Radio disabled>Disabled</Radio>
+        <Radio.Group disabled options={options} defaultValue="a"/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -196,7 +369,32 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<RadioDemo008 />
+
+export const RadioDemo008 = (() => {
+  const options = [
+      { label: 'A', value: 'a' },
+      { label: 'B', value: 'b' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+  ];
+  const Demo8 = function () {
+      const [value, setValue] = createSignal('a');
+      return (<Space direction="vertical">
+        <Radio.Group value={value()} onChange={setValue} options={options}/>
+        <span>Selected: {String(value())}</span>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -222,7 +420,34 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Option customization
+
+:::preview
+
+<RadioDemo009 />
+
+export const RadioDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Radio.Group defaultValue="a" options={[
+              {
+                  label: 'Styled option',
+                  value: 'a',
+                  class: 'custom-radio-option',
+                  style: { color: '#1677ff' },
+                  title: 'Custom title',
+                  id: 'custom-radio-option',
+                  required: true,
+              },
+              { label: 'Normal option', value: 'b' },
+          ]}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Radio } from '@ant-design-solid/core'
@@ -250,7 +475,31 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<RadioDemo010 />
+
+export const RadioDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Space direction="vertical">
+        <Radio classNames={{ wrapper: 'custom-radio-wrapper', input: 'custom-radio-input' }} styles={{ wrapper: { color: '#1677ff' }, input: { accentColor: '#1677ff' } }}>
+          Custom radio
+        </Radio>
+        <Radio.Group classNames={{ wrapper: 'custom-radio-group' }} styles={{ wrapper: { padding: '8px', border: '1px dashed #1677ff' } }} options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+          ]} defaultValue="a"/>
+      </Space>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Radio, Space } from '@ant-design-solid/core'
@@ -280,7 +529,28 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Focus and blur
+
+:::preview
+
+<RadioDemo011 />
+
+export const RadioDemo011 = (() => {
+  const Demo11 = function () {
+      const radioRef = {};
+      return (<Space>
+        <Radio ref={radioRef}>Focusable</Radio>
+        <Button onClick={() => radioRef.current?.focus()}>Focus</Button>
+        <Button onClick={() => radioRef.current?.blur()}>Blur</Button>
+      </Space>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Radio, Space, Button } from '@ant-design-solid/core'
@@ -300,7 +570,32 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### In Form
+
+:::preview
+
+<RadioDemo012 />
+
+export const RadioDemo012 = (() => {
+  const options = [
+      { label: 'A', value: 'a' },
+      { label: 'B', value: 'b' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+  ];
+  const Demo12 = function () {
+      return (<Form initialValues={{ choice: 'a' }}>
+        <Form.Item name="choice">
+          <Radio.Group options={options}/>
+        </Form.Item>
+      </Form>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Form, Radio } from '@ant-design-solid/core'
@@ -323,6 +618,8 @@ const Demo12 = function () {
 
 export default Demo12
 ```
+
+:::
 
 ## API
 

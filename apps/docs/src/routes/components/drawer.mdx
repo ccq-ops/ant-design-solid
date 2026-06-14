@@ -1,8 +1,35 @@
+import { Button, Drawer, Radio, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Drawer
 
 Drawer renders a slide-out panel for contextual tasks without leaving the page. It follows the antd v6 Drawer API shape while using Solid conventions such as `class` and `rootClass`.
 
 ### Basic
+
+:::preview
+
+<DrawerDemo001 />
+
+export const DrawerDemo001 = (() => {
+  const Demo1 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button type="primary" onClick={() => setOpen(true)}>
+          Open
+        </Button>
+        <Drawer title="Basic Drawer" open={open()} onClose={() => setOpen(false)}>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Drawer>
+      </>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -28,7 +55,42 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<DrawerDemo002 />
+
+export const DrawerDemo002 = (() => {
+  const Demo2 = function () {
+      const [open, setOpen] = createSignal(false);
+      const [placement, setPlacement] = createSignal('right');
+      return (<>
+        <Space>
+          <Radio.Group value={placement()} onChange={(value) => setPlacement(value)}>
+            <Radio value="top">top</Radio>
+            <Radio value="right">right</Radio>
+            <Radio value="bottom">bottom</Radio>
+            <Radio value="left">left</Radio>
+          </Radio.Group>
+          <Button type="primary" onClick={() => setOpen(true)}>
+            Open
+          </Button>
+        </Space>
+        <Drawer title="Basic Drawer" placement={placement()} closable={false} open={open()} onClose={() => setOpen(false)}>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Drawer>
+      </>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Drawer, Radio, Space } from '@ant-design-solid/core'
@@ -73,7 +135,48 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Extra Actions
+
+:::preview
+
+<DrawerDemo003 />
+
+export const DrawerDemo003 = (() => {
+  const Demo3 = function () {
+      const [open, setOpen] = createSignal(false);
+      const [placement, setPlacement] = createSignal('right');
+      const close = () => setOpen(false);
+      return (<>
+        <Space>
+          <Radio.Group value={placement()} onChange={(value) => setPlacement(value)}>
+            <Radio value="top">top</Radio>
+            <Radio value="right">right</Radio>
+            <Radio value="bottom">bottom</Radio>
+            <Radio value="left">left</Radio>
+          </Radio.Group>
+          <Button type="primary" onClick={() => setOpen(true)}>
+            Open
+          </Button>
+        </Space>
+        <Drawer title="Drawer with extra actions" placement={placement()} size={500} open={open()} onClose={close} extra={<Space>
+              <Button onClick={close}>Cancel</Button>
+              <Button type="primary" onClick={close}>
+                OK
+              </Button>
+            </Space>}>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Drawer>
+      </>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Drawer, Radio, Space } from '@ant-design-solid/core'
@@ -127,7 +230,31 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Loading
+
+:::preview
+
+<DrawerDemo004 />
+
+export const DrawerDemo004 = (() => {
+  const Demo4 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button type="primary" onClick={() => setOpen(true)}>
+          Open loading drawer
+        </Button>
+        <Drawer title="Loading Drawer" open={open()} loading onClose={() => setOpen(false)}>
+          <p>Some contents...</p>
+        </Drawer>
+      </>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -151,7 +278,30 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Customized Close Icon And Mask
+
+:::preview
+
+<DrawerDemo005 />
+
+export const DrawerDemo005 = (() => {
+  const Demo5 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button onClick={() => setOpen(true)}>Open custom drawer</Button>
+        <Drawer title="Custom close" open={open()} closeIcon={<span>Close</span>} closable={{ placement: 'end' }} mask={{ blur: true, closable: false }} onClose={() => setOpen(false)}>
+          <p>The close button is rendered at the end of the header.</p>
+          <p>The blurred mask does not close the drawer when clicked.</p>
+        </Drawer>
+      </>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -181,7 +331,42 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Render In Current Container
+
+:::preview
+
+<DrawerDemo006 />
+
+export const DrawerDemo006 = (() => {
+  const Demo6 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<div style={{
+              position: 'relative',
+              height: '200px',
+              padding: '48px',
+              overflow: 'hidden',
+              background: 'rgba(0, 0, 0, 0.02)',
+              border: '1px solid #f0f0f0',
+              'border-radius': '8px',
+          }}>
+        Render in this
+        <div style={{ 'margin-top': '16px' }}>
+          <Button type="primary" onClick={() => setOpen(true)}>
+            Open
+          </Button>
+        </div>
+        <Drawer title="Basic Drawer" placement="right" closable={false} open={open()} getContainer={false} onClose={() => setOpen(false)}>
+          <p>Some contents...</p>
+        </Drawer>
+      </div>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -225,7 +410,37 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Multi-Level Drawer
+
+:::preview
+
+<DrawerDemo007 />
+
+export const DrawerDemo007 = (() => {
+  const Demo7 = function () {
+      const [open, setOpen] = createSignal(false);
+      const [childrenDrawer, setChildrenDrawer] = createSignal(false);
+      return (<>
+        <Button type="primary" onClick={() => setOpen(true)}>
+          Open drawer
+        </Button>
+        <Drawer title="Multi-level drawer" size={520} closable={false} open={open()} onClose={() => setOpen(false)}>
+          <Button type="primary" onClick={() => setChildrenDrawer(true)}>
+            Two-level drawer
+          </Button>
+          <Drawer title="Two-level Drawer" size={320} closable={false} open={childrenDrawer()} onClose={() => setChildrenDrawer(false)}>
+            This is two-level drawer
+          </Drawer>
+        </Drawer>
+      </>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -267,7 +482,37 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Semantic Styling
+
+:::preview
+
+<DrawerDemo008 />
+
+export const DrawerDemo008 = (() => {
+  const Demo8 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button onClick={() => setOpen(true)}>Open styled drawer</Button>
+        <Drawer title="Semantic styling" open={open()} rootClass="demo-drawer-root" classNames={{
+              header: 'demo-drawer-header',
+              title: 'demo-drawer-title',
+              body: 'demo-drawer-body',
+              close: 'demo-drawer-close',
+          }} styles={{
+              header: { 'border-bottom': '2px solid #1677ff' },
+              body: { background: 'rgba(0, 0, 0, 0.02)' },
+          }} onClose={() => setOpen(false)}>
+          Style semantic parts with classNames and styles instead of relying on internal DOM depth.
+        </Drawer>
+      </>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -304,7 +549,29 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Destroy On Hidden And Force Render
+
+:::preview
+
+<DrawerDemo009 />
+
+export const DrawerDemo009 = (() => {
+  const Demo9 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button onClick={() => setOpen(true)}>Open destroy drawer</Button>
+        <Drawer title="Destroy on hidden" open={open()} destroyOnHidden onClose={() => setOpen(false)}>
+          Children are removed from the DOM after the drawer closes.
+        </Drawer>
+      </>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -331,7 +598,29 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Custom Render And Focus Return
+
+:::preview
+
+<DrawerDemo010 />
+
+export const DrawerDemo010 = (() => {
+  const Demo10 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button onClick={() => setOpen(true)}>Open custom render drawer</Button>
+        <Drawer title="Custom render" open={open()} drawerRender={(node) => <div class="rounded ring-4 ring-blue-100">{node}</div>} onClose={() => setOpen(false)}>
+          The drawer panel node is wrapped with drawerRender. Focus returns to the trigger by default.
+        </Drawer>
+      </>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Drawer } from '@ant-design-solid/core'
@@ -358,7 +647,33 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Resizable
+
+:::preview
+
+<DrawerDemo011 />
+
+export const DrawerDemo011 = (() => {
+  const Demo11 = function () {
+      const [open, setOpen] = createSignal(false);
+      const [size, setSize] = createSignal(378);
+      return (<>
+        <Space>
+          <Button onClick={() => setOpen(true)}>Open resizable drawer</Button>
+          <span>Current size: {size()}px</span>
+        </Space>
+        <Drawer title="Resizable drawer" open={open()} size={size()} resizable={{ onResize: setSize }} maxSize={720} onClose={() => setOpen(false)}>
+          Drag the handle on the drawer edge to resize it.
+        </Drawer>
+      </>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Button, Drawer, Space } from '@ant-design-solid/core'
@@ -390,6 +705,8 @@ const Demo11 = function () {
 
 export default Demo11
 ```
+
+:::
 
 ## API
 

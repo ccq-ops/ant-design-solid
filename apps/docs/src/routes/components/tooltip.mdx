@@ -1,6 +1,25 @@
+import { Button, ConfigProvider, Space, Tooltip } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Tooltip
 
 ### Hover
+
+:::preview
+
+<TooltipDemo001 />
+
+export const TooltipDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Tooltip title="Helpful text">
+        <Button>Hover</Button>
+      </Tooltip>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -17,7 +36,36 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Triggers
+
+:::preview
+
+<TooltipDemo002 />
+
+export const TooltipDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space wrap>
+        <Tooltip trigger="click" title="Clicked">
+          <Button>Click</Button>
+        </Tooltip>
+        <Tooltip trigger="focus" title="Focused">
+          <Button>Focus</Button>
+        </Tooltip>
+        <Tooltip trigger="contextMenu" title="Context menu">
+          <Button>Context menu</Button>
+        </Tooltip>
+        <Tooltip trigger={['hover', 'focus']} title="Hover or focus">
+          <Button>Multiple</Button>
+        </Tooltip>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
@@ -44,7 +92,41 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<TooltipDemo003 />
+
+export const TooltipDemo003 = (() => {
+  const Demo3 = function () {
+      const placements = [
+          'topLeft',
+          'top',
+          'topRight',
+          'leftTop',
+          'left',
+          'leftBottom',
+          'rightTop',
+          'right',
+          'rightBottom',
+          'bottomLeft',
+          'bottom',
+          'bottomRight',
+      ];
+      return (<Space wrap>
+        {placements.map((placement) => (<Tooltip placement={placement} title={placement}>
+            <Button>{placement}</Button>
+          </Tooltip>))}
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
@@ -79,7 +161,29 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<TooltipDemo004 />
+
+export const TooltipDemo004 = (() => {
+  const Demo4 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Tooltip open={open()} onOpenChange={setOpen} title="Controlled text">
+          <Button>Controlled</Button>
+        </Tooltip>
+        <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -101,7 +205,25 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Semantic Slots
+
+:::preview
+
+<TooltipDemo005 />
+
+export const TooltipDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Tooltip title="Styled text" color="#1677ff" arrow={{ pointAtCenter: true }} classNames={{ root: 'demo-tooltip-root', container: 'demo-tooltip-container' }} styles={{ container: { 'font-weight': 600 } }}>
+        <Button>Styled</Button>
+      </Tooltip>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Tooltip } from '@ant-design-solid/core'
@@ -123,7 +245,33 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Arrow And Color
+
+:::preview
+
+<TooltipDemo006 />
+
+export const TooltipDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space wrap>
+        <Tooltip title="Custom color" color="#1677ff">
+          <Button>Blue</Button>
+        </Tooltip>
+        <Tooltip title="No arrow" arrow={false}>
+          <Button>No arrow</Button>
+        </Tooltip>
+        <Tooltip title="Point at center" arrow={{ pointAtCenter: true }} placement="bottomRight">
+          <Button>Centered arrow</Button>
+        </Tooltip>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Space, Tooltip } from '@ant-design-solid/core'
@@ -147,7 +295,31 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Fresh Content
+
+:::preview
+
+<TooltipDemo007 />
+
+export const TooltipDemo007 = (() => {
+  const Demo7 = function () {
+      const [open, setOpen] = createSignal(false);
+      const [count, setCount] = createSignal(0);
+      return (<Space>
+        <Tooltip open={open()} onOpenChange={setOpen} fresh title={() => `Count: ${count()}`}>
+          <Button>Fresh tooltip</Button>
+        </Tooltip>
+        <Button onClick={() => setCount((value) => value + 1)}>Update</Button>
+        <Button onClick={() => setOpen((value) => !value)}>{open() ? 'Close' : 'Open'}</Button>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -171,7 +343,29 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Destroy On Hidden
+
+:::preview
+
+<TooltipDemo008 />
+
+export const TooltipDemo008 = (() => {
+  const Demo8 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Tooltip open={open()} onOpenChange={setOpen} destroyOnHidden title="Unmounts when hidden">
+          <Button>Destroy on hidden</Button>
+        </Tooltip>
+        <Button onClick={() => setOpen((value) => !value)}>{open() ? 'Close' : 'Open'}</Button>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -193,7 +387,32 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Global Tooltip Config
+
+:::preview
+
+<TooltipDemo009 />
+
+export const TooltipDemo009 = (() => {
+  const Demo9 = function () {
+      return (<ConfigProvider tooltip={{ unique: true, trigger: 'click', arrow: false }}>
+        <Space>
+          <Tooltip title="First tooltip">
+            <Button>First</Button>
+          </Tooltip>
+          <Tooltip title="Second tooltip">
+            <Button>Second</Button>
+          </Tooltip>
+        </Space>
+      </ConfigProvider>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, Space, Tooltip } from '@ant-design-solid/core'
@@ -216,7 +435,33 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Custom Container And Ref
+
+:::preview
+
+<TooltipDemo010 />
+
+export const TooltipDemo010 = (() => {
+  const Demo10 = function () {
+      let container;
+      let tooltip;
+      return (<Space>
+        <div ref={container}/>
+        <Tooltip ref={(ref) => {
+              tooltip = ref;
+          }} title="Mounted into a custom container" getPopupContainer={() => container ?? document.body}>
+          <Button>Custom container</Button>
+        </Tooltip>
+        <Button onClick={() => tooltip?.forceAlign()}>Align</Button>
+      </Space>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Space, Tooltip, type TooltipRef } from '@ant-design-solid/core'
@@ -244,6 +489,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

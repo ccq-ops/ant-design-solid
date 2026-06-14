@@ -1,6 +1,23 @@
+import { Pagination, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Pagination
 
 ### Basic
+
+:::preview
+
+<PaginationDemo001 />
+
+export const PaginationDemo001 = (() => {
+  const Demo1 = function () {
+      return <Pagination total={50}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -13,7 +30,23 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### More pages
+
+:::preview
+
+<PaginationDemo002 />
+
+export const PaginationDemo002 = (() => {
+  const Demo2 = function () {
+      return <Pagination total={500} defaultCurrent={6}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -26,7 +59,27 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<PaginationDemo003 />
+
+export const PaginationDemo003 = (() => {
+  const Demo3 = function () {
+      const [current, setCurrent] = createSignal(2);
+      return (<Space direction="vertical">
+        <Pagination current={current()} total={80} onChange={setCurrent}/>
+        <span>Current page: {current()}</span>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -46,7 +99,27 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Align
+
+:::preview
+
+<PaginationDemo004 />
+
+export const PaginationDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space direction="vertical" style={{ width: '100%' }}>
+        <Pagination align="start" total={80}/>
+        <Pagination align="center" total={80}/>
+        <Pagination align="end" total={80}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -65,7 +138,27 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<PaginationDemo005 />
+
+export const PaginationDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical">
+        <Pagination size="large" total={80}/>
+        <Pagination size="medium" total={80}/>
+        <Pagination size="small" total={80}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -84,7 +177,26 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Simple
+
+:::preview
+
+<PaginationDemo006 />
+
+export const PaginationDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space direction="vertical">
+        <Pagination simple total={50}/>
+        <Pagination simple={{ readOnly: true }} total={50}/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -102,7 +214,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Size changer
+
+:::preview
+
+<PaginationDemo007 />
+
+export const PaginationDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space direction="vertical">
+        <Pagination total={51}/>
+        <Pagination total={80} totalBoundaryShowSizeChanger={100}/>
+        <Pagination total={200} showSizeChanger={{ 'aria-label': 'Items per page' }} pageSizeOptions={[10, 25, 50]}/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -125,7 +257,25 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Custom size changer
+
+:::preview
+
+<PaginationDemo008 />
+
+export const PaginationDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Pagination total={200} showSizeChanger pageSizeOptions={[10, 25, 50]} sizeChangerRender={({ pageSize, options, onSizeChange }) => (<button type="button" onClick={() => onSizeChange(25)}>
+            {pageSize} per page ({options.map((option) => option.value).join(', ')})
+          </button>)}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -149,7 +299,26 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Quick jumper
+
+:::preview
+
+<PaginationDemo009 />
+
+export const PaginationDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Space direction="vertical">
+        <Pagination total={200} showQuickJumper/>
+        <Pagination total={200} showQuickJumper={{ goButton: <button type="button">Go</button> }}/>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -167,7 +336,23 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Total number
+
+:::preview
+
+<PaginationDemo010 />
+
+export const PaginationDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Pagination total={200} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}/>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -185,7 +370,26 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Less items and hidden title
+
+:::preview
+
+<PaginationDemo011 />
+
+export const PaginationDemo011 = (() => {
+  const Demo11 = function () {
+      return (<Space direction="vertical">
+        <Pagination total={500} defaultCurrent={25} showLessItems/>
+        <Pagination total={80} showTitle={false}/>
+      </Space>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -203,7 +407,33 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Custom item render
+
+:::preview
+
+<PaginationDemo012 />
+
+export const PaginationDemo012 = (() => {
+  const Demo12 = function () {
+      return (<Pagination total={300} defaultCurrent={15} itemRender={(page, type, originalElement) => {
+              if (type === 'prev')
+                  return <span>Previous</span>;
+              if (type === 'next')
+                  return <span>Next</span>;
+              if (type === 'jump-prev')
+                  return <span>Back {page}</span>;
+              if (type === 'jump-next')
+                  return <span>Forward {page}</span>;
+              return <strong>{page}</strong>;
+          }}/>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -228,7 +458,26 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Custom icons and jumpers
+
+:::preview
+
+<PaginationDemo013 />
+
+export const PaginationDemo013 = (() => {
+  const Demo13 = function () {
+      return (<Space direction="vertical">
+        <Pagination total={300} defaultCurrent={15} prevIcon={<span>Prev</span>} nextIcon={<span>Next</span>} jumpPrevIcon={<span>-5</span>} jumpNextIcon={<span>+5</span>}/>
+        <Pagination total={300} defaultCurrent={15} showPrevNextJumpers={false}/>
+      </Space>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -253,7 +502,32 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Locale
+
+:::preview
+
+<PaginationDemo014 />
+
+export const PaginationDemo014 = (() => {
+  const Demo14 = function () {
+      return (<Pagination total={120} showQuickJumper={{ goButton: <button type="button">Ir</button> }} showSizeChanger locale={{
+              items_per_page: '/ pagina',
+              jump_to: 'Ir a',
+              page: 'Pagina',
+              prev_page: 'Pagina anterior',
+              next_page: 'Pagina siguiente',
+              prev_5: 'Retroceder 5 paginas',
+              next_5: 'Avanzar 5 paginas',
+              page_size: 'Tamano de pagina',
+          }}/>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -282,7 +556,36 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<PaginationDemo015 />
+
+export const PaginationDemo015 = (() => {
+  const Demo15 = function () {
+      return (<Space direction="vertical">
+        <Pagination total={80} rootClass="custom-pagination-root" classNames={{
+              root: 'custom-pagination',
+              itemButton: 'custom-page-button',
+          }} styles={{
+              root: { 'justify-content': 'center' },
+              itemButton: { 'border-radius': '999px' },
+          }}/>
+        <Pagination total={80} size="small" classNames={({ props }) => ({
+              root: props.size === 'small' ? 'compact-pagination' : 'default-pagination',
+          })} styles={({ props }) => ({
+              root: { color: props.size === 'small' ? 'red' : 'blue' },
+          })}/>
+      </Space>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -320,7 +623,23 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<PaginationDemo016 />
+
+export const PaginationDemo016 = (() => {
+  const Demo16 = function () {
+      return <Pagination disabled total={80} defaultCurrent={3}/>;
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -333,7 +652,23 @@ const Demo16 = function () {
 export default Demo16
 ```
 
+:::
+
 ### Hide on single page
+
+:::preview
+
+<PaginationDemo017 />
+
+export const PaginationDemo017 = (() => {
+  const Demo17 = function () {
+      return <Pagination total={5} hideOnSinglePage/>;
+  };
+
+  return Demo17
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -346,7 +681,23 @@ const Demo17 = function () {
 export default Demo17
 ```
 
+:::
+
 ### Prefix
+
+:::preview
+
+<PaginationDemo018 />
+
+export const PaginationDemo018 = (() => {
+  const Demo18 = function () {
+      return (<Pagination total={100} showSizeChanger prefixCls="custom-pagination" selectPrefixCls="custom-select" rootClass="custom-root"/>);
+  };
+
+  return Demo18
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -366,6 +717,8 @@ const Demo18 = function () {
 
 export default Demo18
 ```
+
+:::
 
 ## API
 

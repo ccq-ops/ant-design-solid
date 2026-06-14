@@ -1,8 +1,28 @@
+import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
+
 # Theming
 
 Use ConfigProvider to override seed tokens and component tokens.
 
 ### Custom primary color
+
+:::preview
+
+<ThemingDemo001 />
+
+export const ThemingDemo001 = (() => {
+  const Demo1 = function () {
+      return (<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
+        <Space>
+          <Button type="primary">Purple Button</Button>
+        </Space>
+      </ConfigProvider>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
@@ -19,3 +39,5 @@ const Demo1 = function () {
 
 export default Demo1
 ```
+
+:::

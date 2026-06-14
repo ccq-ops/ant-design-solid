@@ -1,8 +1,30 @@
+import { Button, message, Popconfirm, Space } from '@ant-design-solid/core'
+import { WarningFilled } from '@ant-design-solid/icons'
+import { createSignal } from 'solid-js'
+
 # Popconfirm
 
 Popconfirm asks users to confirm a potentially risky action.
 
 ### Basic
+
+:::preview
+
+<PopconfirmDemo001 />
+
+export const PopconfirmDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Popconfirm title="Delete?" description="This action cannot be undone." onConfirm={() => {
+              message.success('Deleted');
+          }}>
+        <Button danger>Delete</Button>
+      </Popconfirm>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -25,7 +47,42 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<PopconfirmDemo002 />
+
+export const PopconfirmDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space wrap>
+        <Popconfirm placement="top" title="Top placement">
+          <Button>Top</Button>
+        </Popconfirm>
+        <Popconfirm placement="bottom" title="Bottom placement">
+          <Button>Bottom</Button>
+        </Popconfirm>
+        <Popconfirm placement="left" title="Left placement">
+          <Button>Left</Button>
+        </Popconfirm>
+        <Popconfirm placement="right" title="Right placement">
+          <Button>Right</Button>
+        </Popconfirm>
+        <Popconfirm placement="topLeft" title="Top left placement">
+          <Button>TopLeft</Button>
+        </Popconfirm>
+        <Popconfirm placement="bottomRight" title="Bottom right placement">
+          <Button>BottomRight</Button>
+        </Popconfirm>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Popconfirm, Space } from '@ant-design-solid/core'
@@ -58,7 +115,27 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Custom text
+
+:::preview
+
+<PopconfirmDemo003 />
+
+export const PopconfirmDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Popconfirm title="Publish changes?" description="Visitors will see the new version." okText="Publish" cancelText="Keep draft" onConfirm={() => {
+              message.success('Published');
+          }}>
+        <Button type="primary">Publish</Button>
+      </Popconfirm>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Popconfirm, message } from '@ant-design-solid/core'
@@ -82,7 +159,30 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Custom buttons and icon
+
+:::preview
+
+<PopconfirmDemo004 />
+
+export const PopconfirmDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space>
+        <Popconfirm title="Archive this item?" description="You can restore it later from the archive." okText="Archive" okType="dashed" okButtonProps={{ class: 'archive-ok' }} cancelButtonProps={{ danger: true }} icon={<WarningFilled />} onConfirm={() => message.success('Archived')}>
+          <Button>Archive</Button>
+        </Popconfirm>
+        <Popconfirm title="Run without confirmation?" showCancel={false} okText="Run" onConfirm={() => message.success('Started')}>
+          <Button type="primary">Run</Button>
+        </Popconfirm>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { WarningFilled } from '@ant-design-solid/icons'
@@ -118,7 +218,30 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Trigger
+
+:::preview
+
+<PopconfirmDemo005 />
+
+export const PopconfirmDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space>
+        <Popconfirm trigger="hover" mouseEnterDelay={0.1} title="Hovered confirmation" onConfirm={() => message.success('Confirmed')}>
+          <Button>Hover</Button>
+        </Popconfirm>
+        <Popconfirm trigger="contextMenu" title="Context menu confirmation" onConfirm={() => message.success('Confirmed')}>
+          <Button>Right click</Button>
+        </Popconfirm>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Popconfirm, Space, message } from '@ant-design-solid/core'
@@ -148,7 +271,31 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<PopconfirmDemo006 />
+
+export const PopconfirmDemo006 = (() => {
+  const Demo6 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Popconfirm open={open()} onOpenChange={setOpen} title="Controlled popup" onConfirm={() => {
+              setOpen(false);
+          }} onCancel={() => setOpen(false)}>
+          <Button>Controlled</Button>
+        </Popconfirm>
+        <Button onClick={() => setOpen(true)}>Open from outside</Button>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -178,7 +325,30 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Async confirm
+
+:::preview
+
+<PopconfirmDemo007 />
+
+export const PopconfirmDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Popconfirm title="Save changes?" description="The popup closes after the promise resolves." onConfirm={() => new Promise((resolve) => {
+              window.setTimeout(() => {
+                  message.success('Saved');
+                  resolve();
+              }, 600);
+          })}>
+        <Button>Async save</Button>
+      </Popconfirm>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, Popconfirm, message } from '@ant-design-solid/core'
@@ -205,7 +375,32 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<PopconfirmDemo008 />
+
+export const PopconfirmDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Popconfirm title={() => 'Deploy now?'} description={() => 'The production environment will receive this version.'} rootClass="deploy-popconfirm" classNames={{
+              title: 'deploy-popconfirm-title',
+              buttons: 'deploy-popconfirm-actions',
+          }} styles={{
+              root: { width: '320px' },
+              icon: { color: '#1677ff' },
+              description: { color: '#595959' },
+          }}>
+        <Button type="primary">Deploy</Button>
+      </Popconfirm>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, Popconfirm } from '@ant-design-solid/core'
@@ -233,6 +428,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

@@ -1,8 +1,27 @@
+import { Button, Popover, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Popover
 
 Popover displays rich floating content around a trigger element.
 
 ### Basic
+
+:::preview
+
+<PopoverDemo001 />
+
+export const PopoverDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Popover title="Title" content="Helpful content">
+        <Button>Hover me</Button>
+      </Popover>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Popover } from '@ant-design-solid/core'
@@ -18,7 +37,33 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Trigger
+
+:::preview
+
+<PopoverDemo002 />
+
+export const PopoverDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space wrap>
+        <Popover trigger="click" title="Click" content="Clicked content">
+          <Button>Click</Button>
+        </Popover>
+        <Popover trigger="focus" title="Focus" content="Focused content">
+          <Button>Focus</Button>
+        </Popover>
+        <Popover trigger="contextMenu" title="Context menu" content="Opened by right click">
+          <Button>Right click</Button>
+        </Popover>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Popover, Space } from '@ant-design-solid/core'
@@ -42,7 +87,25 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Multiple Triggers
+
+:::preview
+
+<PopoverDemo003 />
+
+export const PopoverDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Popover trigger={['hover', 'focus']} content="Hover or focus can open this popover">
+        <Button>Multiple triggers</Button>
+      </Popover>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Popover } from '@ant-design-solid/core'
@@ -58,7 +121,39 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<PopoverDemo004 />
+
+export const PopoverDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space wrap>
+        <Popover placement="top" content="Top content">
+          <Button>Top</Button>
+        </Popover>
+        <Popover placement="bottom" content="Bottom content">
+          <Button>Bottom</Button>
+        </Popover>
+        <Popover placement="left" content="Left content">
+          <Button>Left</Button>
+        </Popover>
+        <Popover placement="right" content="Right content">
+          <Button>Right</Button>
+        </Popover>
+        <Popover placement="bottomRight" content="Bottom right content">
+          <Button>Bottom right</Button>
+        </Popover>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Popover, Space } from '@ant-design-solid/core'
@@ -88,7 +183,29 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<PopoverDemo005 />
+
+export const PopoverDemo005 = (() => {
+  const Demo5 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Popover open={open()} onOpenChange={setOpen} content="Controlled content">
+          <Button>Controlled</Button>
+        </Popover>
+        <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -110,7 +227,30 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Arrow
+
+:::preview
+
+<PopoverDemo006 />
+
+export const PopoverDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space wrap>
+        <Popover content="No arrow" arrow={false}>
+          <Button>No arrow</Button>
+        </Popover>
+        <Popover content="Point at center" arrow={{ pointAtCenter: true }} placement="bottomRight">
+          <Button>Point at center</Button>
+        </Popover>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Popover, Space } from '@ant-design-solid/core'
@@ -131,7 +271,30 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Custom Positioning
+
+:::preview
+
+<PopoverDemo007 />
+
+export const PopoverDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space wrap>
+        <Popover content="Auto adjusts when near the viewport edge" autoAdjustOverflow>
+          <Button>Auto adjust</Button>
+        </Popover>
+        <Popover content="Offset by align" align={{ offset: [12, 8] }}>
+          <Button>Aligned</Button>
+        </Popover>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, Popover, Space } from '@ant-design-solid/core'
@@ -152,7 +315,33 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Semantic Styles
+
+:::preview
+
+<PopoverDemo008 />
+
+export const PopoverDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Popover title="Semantic title" content="Semantic content" classNames={{
+              root: 'custom-popover-root',
+              title: 'custom-popover-title',
+              content: 'custom-popover-content',
+          }} styles={{
+              root: { width: '260px' },
+              title: { color: '#1677ff' },
+              content: { 'line-height': 1.7 },
+          }}>
+        <Button>Customized</Button>
+      </Popover>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, Popover } from '@ant-design-solid/core'
@@ -181,7 +370,29 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Fresh And Destroy
+
+:::preview
+
+<PopoverDemo009 />
+
+export const PopoverDemo009 = (() => {
+  const Demo9 = function () {
+      const [count, setCount] = createSignal(0);
+      return (<Space>
+        <Popover content={() => `Count: ${count()}`} fresh destroyOnHidden>
+          <Button>Fresh content</Button>
+        </Popover>
+        <Button onClick={() => setCount((value) => value + 1)}>Update</Button>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -203,7 +414,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Container And Layer
+
+:::preview
+
+<PopoverDemo010 />
+
+export const PopoverDemo010 = (() => {
+  const Demo10 = function () {
+      return (<div id="popover-container" style={{ position: 'relative' }}>
+        <Popover content="Mounted inside the nearest container" color="#1677ff" zIndex={1400} getPopupContainer={(node) => node?.parentElement ?? document.body}>
+          <Button>Custom container</Button>
+        </Popover>
+      </div>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Popover } from '@ant-design-solid/core'
@@ -225,6 +456,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

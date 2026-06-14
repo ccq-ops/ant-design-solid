@@ -1,8 +1,37 @@
+import { TreeSelect } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { FolderOutlined } from '@ant-design-solid/icons'
+
 # TreeSelect
 
 Select values from hierarchical tree data.
 
 ### Basic
+
+:::preview
+
+<TreeSelectDemo001 />
+
+export const TreeSelectDemo001 = (() => {
+  const treeData = [
+      {
+          title: 'Asia',
+          value: 'asia',
+          children: [
+              { title: 'China', value: 'china' },
+              { title: 'Japan', value: 'japan', disabled: true },
+          ],
+      },
+      { title: 'Europe', value: 'europe' },
+  ];
+  const Demo = function () {
+      return <TreeSelect placeholder="Select area" treeData={treeData}/>;
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -26,7 +55,34 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Multiple
+
+:::preview
+
+<TreeSelectDemo002 />
+
+export const TreeSelectDemo002 = (() => {
+  const treeData = [
+      {
+          title: 'Asia',
+          value: 'asia',
+          children: [
+              { title: 'China', value: 'china' },
+              { title: 'Japan', value: 'japan' },
+          ],
+      },
+      { title: 'Europe', value: 'europe' },
+  ];
+  const Demo = function () {
+      return (<TreeSelect multiple allowClear defaultExpandedKeys={['asia']} placeholder="Select areas" treeData={treeData}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -58,7 +114,33 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Checkable
+
+:::preview
+
+<TreeSelectDemo003 />
+
+export const TreeSelectDemo003 = (() => {
+  const treeData = [
+      {
+          title: 'Libraries',
+          value: 'libraries',
+          children: [
+              { title: 'Solid', value: 'solid' },
+              { title: 'React', value: 'react' },
+          ],
+      },
+  ];
+  const Demo = function () {
+      return (<TreeSelect treeCheckable defaultExpandedKeys={['libraries']} showCheckedStrategy={TreeSelect.SHOW_CHILD} placeholder="Select libraries" treeData={treeData}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -89,7 +171,31 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Search
+
+:::preview
+
+<TreeSelectDemo004 />
+
+export const TreeSelectDemo004 = (() => {
+  const treeData = [
+      {
+          title: 'Asia',
+          value: 'asia',
+          children: [{ title: 'China', value: 'china' }],
+      },
+      { title: 'Europe', value: 'europe' },
+  ];
+  const Demo = function () {
+      return (<TreeSelect showSearch treeNodeFilterProp="title" notFoundContent="No matches" placeholder="Search area" treeData={treeData}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -118,7 +224,30 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<TreeSelectDemo005 />
+
+export const TreeSelectDemo005 = (() => {
+  const treeData = [
+      { title: 'China', value: 'china' },
+      { title: 'Europe', value: 'europe' },
+  ];
+  const Demo = function () {
+      const [value, setValue] = createSignal('europe');
+      const [open, setOpen] = createSignal(false);
+      const [search, setSearch] = createSignal('');
+      return (<TreeSelect showSearch value={value()} open={open()} searchValue={search()} treeData={treeData} onChange={(next) => setValue(next)} onOpenChange={setOpen} onSearch={setSearch}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -151,7 +280,27 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Field Names And Simple Mode
+
+:::preview
+
+<TreeSelectDemo006 />
+
+export const TreeSelectDemo006 = (() => {
+  const flatData = [
+      { id: 1, pId: 0, code: 'asia', name: 'Asia' },
+      { id: 2, pId: 1, code: 'china', name: 'China' },
+  ];
+  const Demo = function () {
+      return (<TreeSelect treeDataSimpleMode fieldNames={{ label: 'name', value: 'code' }} treeData={flatData} placeholder="Simple mode"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -175,7 +324,30 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Custom Render
+
+:::preview
+
+<TreeSelectDemo007 />
+
+export const TreeSelectDemo007 = (() => {
+  const treeData = [
+      {
+          title: 'Asia',
+          value: 'asia',
+          children: [{ title: 'China', value: 'china' }],
+      },
+  ];
+  const Demo = function () {
+      return (<TreeSelect allowClear={{ clearIcon: <span>clear</span> }} prefix={<FolderOutlined />} suffixIcon={<span>open</span>} switcherIcon={<span>+</span>} treeTitleRender={(node) => <strong>{node.title}</strong>} defaultExpandedKeys={['asia']} treeData={treeData}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { FolderOutlined } from '@ant-design-solid/icons'
@@ -206,7 +378,24 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Popup And Semantic Slots
+
+:::preview
+
+<TreeSelectDemo008 />
+
+export const TreeSelectDemo008 = (() => {
+  const treeData = [{ title: 'Europe', value: 'europe' }];
+  const Demo = function () {
+      return (<TreeSelect treeData={treeData} popupMatchSelectWidth={320} popupRender={(origin) => <div class="popup-shell">{origin}</div>} classNames={{ root: 'custom-root', 'popup.root': 'custom-popup' }} styles={{ 'popup.root': { maxHeight: '280px' } }}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -228,7 +417,28 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Status And Variant
+
+:::preview
+
+<TreeSelectDemo009 />
+
+export const TreeSelectDemo009 = (() => {
+  const treeData = [{ title: 'Europe', value: 'europe' }];
+  const Demo = function () {
+      return (<div style={{ display: 'flex', gap: '12px' }}>
+        <TreeSelect size="large" treeData={treeData} placeholder="Large"/>
+        <TreeSelect status="error" treeData={treeData} placeholder="Error"/>
+        <TreeSelect variant="filled" treeData={treeData} placeholder="Filled"/>
+      </div>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -248,7 +458,26 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Label In Value
+
+:::preview
+
+<TreeSelectDemo010 />
+
+export const TreeSelectDemo010 = (() => {
+  const treeData = [{ title: 'China', value: 'china' }];
+  const Demo = function () {
+      return (<TreeSelect labelInValue treeData={treeData} onChange={(value, label, extra) => {
+              console.log(value, label, extra.triggerValue);
+          }}/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { TreeSelect } from '@ant-design-solid/core'
@@ -269,6 +498,8 @@ const Demo = function () {
 
 export default Demo
 ```
+
+:::
 
 ## API
 

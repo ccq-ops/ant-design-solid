@@ -1,8 +1,36 @@
+import { Splitter } from '@ant-design-solid/core'
+
 # Splitter
 
 Splitter separates content into resizable panels.
 
 ### Basic
+
+:::preview
+
+<SplitterDemo001 />
+
+export const SplitterDemo001 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo1 = function () {
+      return (<Splitter style={{ height: '160px' }}>
+        <Splitter.Panel defaultSize="40%" style={panelStyle}>
+          Left
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Right</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -29,7 +57,35 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Vertical
+
+:::preview
+
+<SplitterDemo002 />
+
+export const SplitterDemo002 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo2 = function () {
+      return (<Splitter orientation="vertical" style={{ height: '220px' }}>
+        <Splitter.Panel defaultSize="45%" style={panelStyle}>
+          Top
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Bottom</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -56,7 +112,35 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Min and max
+
+:::preview
+
+<SplitterDemo003 />
+
+export const SplitterDemo003 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo3 = function () {
+      return (<Splitter style={{ height: '160px' }}>
+        <Splitter.Panel defaultSize={160} min={100} max={240} style={panelStyle}>
+          100px - 240px
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Flexible</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -83,7 +167,39 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Collapsible
+
+:::preview
+
+<SplitterDemo004 />
+
+export const SplitterDemo004 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo4 = function () {
+      return (<Splitter collapsible={{ motion: true }} onCollapse={(collapsed, sizes) => {
+              console.log(collapsed, sizes);
+          }} style={{ height: '180px' }}>
+        <Splitter.Panel defaultSize={180} min={80} collapsible={{ end: true }} style={panelStyle}>
+          Left
+        </Splitter.Panel>
+        <Splitter.Panel collapsible={{ start: true, showCollapsibleIcon: 'auto' }} style={panelStyle}>
+          Right
+        </Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -118,7 +234,35 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Lazy drag
+
+:::preview
+
+<SplitterDemo005 />
+
+export const SplitterDemo005 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo5 = function () {
+      return (<Splitter lazy style={{ height: '160px' }}>
+        <Splitter.Panel defaultSize="35%" style={panelStyle}>
+          The panel size updates when dragging ends.
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Content</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -145,7 +289,37 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Dragger
+
+:::preview
+
+<SplitterDemo006 />
+
+export const SplitterDemo006 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo6 = function () {
+      return (<Splitter draggerIcon={<span>||</span>} onDraggerDoubleClick={(index) => {
+              console.log('double click dragger', index);
+          }} style={{ height: '160px' }}>
+        <Splitter.Panel defaultSize={160} style={panelStyle}>
+          Double click the dragger.
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Right</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -178,7 +352,45 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<SplitterDemo007 />
+
+export const SplitterDemo007 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+  };
+  const Demo7 = function () {
+      return (<Splitter classNames={{
+              root: 'docs-splitter-root',
+              panel: 'docs-splitter-panel',
+              dragger: { default: 'docs-splitter-dragger', active: 'docs-splitter-dragger-active' },
+          }} styles={{
+              root: { height: '160px' },
+              panel: { background: 'var(--docs-surface-subtle)' },
+              dragger: {
+                  default: { color: 'var(--docs-text-secondary)' },
+                  active: { color: 'var(--docs-primary)' },
+              },
+          }}>
+        <Splitter.Panel defaultSize="40%" style={panelStyle}>
+          Left
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Right</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -218,7 +430,35 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Destroy hidden content
+
+:::preview
+
+<SplitterDemo008 />
+
+export const SplitterDemo008 = (() => {
+  const panelStyle = {
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+      height: '100%',
+      background: 'var(--docs-surface-subtle)',
+  };
+  const Demo8 = function () {
+      return (<Splitter destroyOnHidden collapsible={{ motion: true }} style={{ height: '160px' }}>
+        <Splitter.Panel defaultSize={160} collapsible={{ end: true }} style={panelStyle}>
+          Hidden content is unmounted after collapse.
+        </Splitter.Panel>
+        <Splitter.Panel style={panelStyle}>Right</Splitter.Panel>
+      </Splitter>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Splitter } from '@ant-design-solid/core'
@@ -244,6 +484,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

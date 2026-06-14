@@ -1,6 +1,32 @@
+import { Divider } from '@ant-design-solid/core'
+
 # Divider
 
 ### Basic
+
+:::preview
+
+<DividerDemo001 />
+
+export const DividerDemo001 = (() => {
+  const Demo1 = function () {
+      return (<>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider />
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+      </>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Divider } from '@ant-design-solid/core'
@@ -24,7 +50,57 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### With text
+
+:::preview
+
+<DividerDemo002 />
+
+export const DividerDemo002 = (() => {
+  const Demo2 = function () {
+      return (<>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider>Text</Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider titlePlacement="start">Left Text</Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider titlePlacement="end">Right Text</Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider titlePlacement="start" styles={{ content: { margin: 0 } }}>
+          Left Text margin with 0
+        </Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider titlePlacement="end" styles={{ content: { margin: '0 50px' } }}>
+          Right Text margin with 50px
+        </Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+      </>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Divider } from '@ant-design-solid/core'
@@ -72,7 +148,47 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Plain
+
+:::preview
+
+<DividerDemo003 />
+
+export const DividerDemo003 = (() => {
+  const Demo3 = function () {
+      return (<>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider plain>Text</Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider titlePlacement="start" plain>
+          Left Text
+        </Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider titlePlacement="end" plain>
+          Right Text
+        </Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+      </>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Divider } from '@ant-design-solid/core'
@@ -110,7 +226,33 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Vertical
+
+:::preview
+
+<DividerDemo004 />
+
+export const DividerDemo004 = (() => {
+  const Demo4 = function () {
+      return (<>
+        Text
+        <Divider orientation="vertical"/>
+        <a href="#" aria-label="Ant Design component examples">
+          Link
+        </a>
+        <Divider vertical/>
+        <a href="#" aria-label="Ant Design component examples">
+          Link
+        </a>
+      </>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Divider } from '@ant-design-solid/core'
@@ -134,7 +276,47 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Variant
+
+:::preview
+
+<DividerDemo005 />
+
+export const DividerDemo005 = (() => {
+  const Demo5 = function () {
+      return (<>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider style={{ 'border-color': '#7cb305' }}>Solid</Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider variant="dotted" style={{ 'border-color': '#7cb305' }}>
+          Dotted
+        </Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider variant="dashed" style={{ 'border-color': '#7cb305' }} dashed>
+          Dashed
+        </Divider>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+      </>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Divider } from '@ant-design-solid/core'
@@ -172,7 +354,43 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<DividerDemo006 />
+
+export const DividerDemo006 = (() => {
+  const Demo6 = function () {
+      return (<>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider size="small"/>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider size="medium"/>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+        <Divider size="large"/>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi
+          ista probare, quae sunt a te dicta? Refert tamen, quo modo.
+        </p>
+      </>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Divider } from '@ant-design-solid/core'
@@ -205,6 +423,8 @@ const Demo6 = function () {
 
 export default Demo6
 ```
+
+:::
 
 ## API
 

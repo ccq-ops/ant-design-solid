@@ -1,8 +1,36 @@
+import { FloatButton } from '@ant-design-solid/core'
+import { BellOutlined, CommentOutlined, CustomerServiceOutlined, FileTextOutlined, LinkOutlined, MenuOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design-solid/icons'
+
 # FloatButton
 
 FloatButton renders floating quick actions and a back-to-top affordance.
 
 ### Basic
+
+:::preview
+
+<FloatButtonDemo001 />
+
+export const FloatButtonDemo001 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const floatStyle = { position: 'absolute', right: '24px', bottom: '24px' };
+  const Demo1 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton icon={<QuestionCircleOutlined />} style={floatStyle}/>
+      </div>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -30,7 +58,34 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Type
+
+:::preview
+
+<FloatButtonDemo002 />
+
+export const FloatButtonDemo002 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo2 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton icon={<QuestionCircleOutlined />} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+        <FloatButton type="primary" icon={<PlusOutlined />} style={{ position: 'absolute', right: '88px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -64,7 +119,34 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Shape And Content
+
+:::preview
+
+<FloatButtonDemo003 />
+
+export const FloatButtonDemo003 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo3 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton shape="square" icon={<CustomerServiceOutlined />} content="Help" style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+        <FloatButton shape="square" content="Docs" style={{ position: 'absolute', right: '88px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -100,7 +182,33 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Tooltip
+
+:::preview
+
+<FloatButtonDemo004 />
+
+export const FloatButtonDemo004 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo4 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton icon={<QuestionCircleOutlined />} tooltip={{ title: 'Questions?', placement: 'left' }} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -130,7 +238,33 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Badge
+
+:::preview
+
+<FloatButtonDemo005 />
+
+export const FloatButtonDemo005 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo5 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton icon={<BellOutlined />} badge={{ count: 5 }} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -160,7 +294,33 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Link
+
+:::preview
+
+<FloatButtonDemo006 />
+
+export const FloatButtonDemo006 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo6 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton href="https://example.com" target="_blank" icon={<LinkOutlined />} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -191,7 +351,37 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Group
+
+:::preview
+
+<FloatButtonDemo007 />
+
+export const FloatButtonDemo007 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '220px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo7 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton.Group shape="square" style={{ position: 'absolute', right: '24px', bottom: '24px' }}>
+          <FloatButton type="primary" icon={<PlusOutlined />}/>
+          <FloatButton icon={<CustomerServiceOutlined />}/>
+          <FloatButton icon={<CommentOutlined />}/>
+        </FloatButton.Group>
+      </div>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -224,7 +414,37 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Menu Mode
+
+:::preview
+
+<FloatButtonDemo008 />
+
+export const FloatButtonDemo008 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '220px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo8 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton.Group trigger="click" type="primary" icon={<MenuOutlined />} style={{ position: 'absolute', right: '24px', bottom: '24px' }}>
+          <FloatButton icon={<CustomerServiceOutlined />} tooltip="Service"/>
+          <FloatButton icon={<CommentOutlined />} tooltip="Feedback"/>
+          <FloatButton icon={<FileTextOutlined />} tooltip="Docs"/>
+        </FloatButton.Group>
+      </div>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -264,7 +484,37 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### BackTop
+
+:::preview
+
+<FloatButtonDemo009 />
+
+export const FloatButtonDemo009 = (() => {
+  const scrollBoxStyle = {
+      position: 'relative',
+      height: '220px',
+      overflow: 'auto',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+      padding: '16px',
+  };
+  const Demo9 = function () {
+      let container;
+      return (<div ref={container} style={scrollBoxStyle}>
+        <p>Scroll down and the back-to-top button appears after the configured threshold.</p>
+        <div style={{ height: '360px' }}/>
+        <FloatButton.BackTop visibilityHeight={120} target={() => container} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -298,7 +548,33 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Semantic Styles
+
+:::preview
+
+<FloatButtonDemo010 />
+
+export const FloatButtonDemo010 = (() => {
+  const boxStyle = {
+      position: 'relative',
+      height: '160px',
+      overflow: 'hidden',
+      border: '1px dashed #d9d9d9',
+      'border-radius': '8px',
+      background: '#fafafa',
+  };
+  const Demo10 = function () {
+      return (<div style={boxStyle}>
+        <FloatButton icon={<QuestionCircleOutlined />} content="Help" classNames={{ root: 'custom-float-button', content: 'custom-float-button-content' }} styles={{ content: { color: '#1677ff' } }} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      </div>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { FloatButton } from '@ant-design-solid/core'
@@ -329,6 +605,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

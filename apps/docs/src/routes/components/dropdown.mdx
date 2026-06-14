@@ -1,6 +1,30 @@
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Dropdown
 
 ### Basic
+
+:::preview
+
+<DropdownDemo001 />
+
+export const DropdownDemo001 = (() => {
+  const items = [
+      { key: '1', label: '1st menu item' },
+      { key: '2', label: '2nd menu item' },
+      { key: '3', label: '3rd menu item' },
+  ];
+  const Demo1 = function () {
+      return (<Dropdown menu={{ items }}>
+        <Button>Hover me</Button>
+      </Dropdown>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Dropdown } from '@ant-design-solid/core'
@@ -22,7 +46,38 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Trigger
+
+:::preview
+
+<DropdownDemo002 />
+
+export const DropdownDemo002 = (() => {
+  const items = [
+      { key: '1', label: 'Click item' },
+      { key: '2', label: 'Hover item' },
+      { key: '3', label: 'Context menu item' },
+  ];
+  const Demo2 = function () {
+      return (<Space>
+        <Dropdown trigger={['click']} menu={{ items }}>
+          <Button>Click</Button>
+        </Dropdown>
+        <Dropdown trigger={['hover']} menu={{ items }}>
+          <Button>Hover</Button>
+        </Dropdown>
+        <Dropdown trigger={['contextMenu']} menu={{ items }}>
+          <Button>Right click</Button>
+        </Dropdown>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Dropdown, Space } from '@ant-design-solid/core'
@@ -52,7 +107,46 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<DropdownDemo003 />
+
+export const DropdownDemo003 = (() => {
+  const items = [
+      { key: '1', label: 'Menu item' },
+      { key: '2', label: 'Menu item' },
+  ];
+  const Demo3 = function () {
+      return (<Space wrap>
+        <Dropdown placement="bottomLeft" menu={{ items }}>
+          <Button>bottomLeft</Button>
+        </Dropdown>
+        <Dropdown placement="bottom" menu={{ items }}>
+          <Button>bottom</Button>
+        </Dropdown>
+        <Dropdown placement="bottomRight" menu={{ items }}>
+          <Button>bottomRight</Button>
+        </Dropdown>
+        <Dropdown placement="topLeft" menu={{ items }}>
+          <Button>topLeft</Button>
+        </Dropdown>
+        <Dropdown placement="top" menu={{ items }}>
+          <Button>top</Button>
+        </Dropdown>
+        <Dropdown placement="topRight" menu={{ items }}>
+          <Button>topRight</Button>
+        </Dropdown>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Dropdown, Space } from '@ant-design-solid/core'
@@ -90,7 +184,34 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Arrow
+
+:::preview
+
+<DropdownDemo004 />
+
+export const DropdownDemo004 = (() => {
+  const items = [
+      { key: '1', label: 'Menu item' },
+      { key: '2', label: 'Menu item' },
+  ];
+  const Demo4 = function () {
+      return (<Space>
+        <Dropdown arrow menu={{ items }}>
+          <Button>Arrow</Button>
+        </Dropdown>
+        <Dropdown arrow={{ pointAtCenter: true }} menu={{ items }}>
+          <Button>Point at center</Button>
+        </Dropdown>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Dropdown, Space } from '@ant-design-solid/core'
@@ -116,7 +237,31 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Selectable
+
+:::preview
+
+<DropdownDemo005 />
+
+export const DropdownDemo005 = (() => {
+  const items = [
+      { key: '1', label: 'Profile' },
+      { key: '2', label: 'Settings' },
+      { type: 'divider' },
+      { key: '3', label: 'Sign out', danger: true },
+  ];
+  const Demo5 = function () {
+      return (<Dropdown menu={{ selectable: true, defaultSelectedKeys: ['1'], items }}>
+        <a>Account</a>
+      </Dropdown>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Dropdown } from '@ant-design-solid/core'
@@ -139,7 +284,36 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Cascading Menu
+
+:::preview
+
+<DropdownDemo006 />
+
+export const DropdownDemo006 = (() => {
+  const items = [
+      {
+          key: 'workspace',
+          label: 'Workspace',
+          children: [
+              { key: 'members', label: 'Members' },
+              { key: 'projects', label: 'Projects' },
+          ],
+      },
+      { key: 'billing', label: 'Billing', extra: '⌘B' },
+  ];
+  const Demo6 = function () {
+      return (<Dropdown menu={{ items }}>
+        <Button>More</Button>
+      </Dropdown>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Dropdown } from '@ant-design-solid/core'
@@ -167,7 +341,32 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Popup Render
+
+:::preview
+
+<DropdownDemo007 />
+
+export const DropdownDemo007 = (() => {
+  const items = [
+      { key: '1', label: 'Menu item' },
+      { key: '2', label: 'Menu item' },
+  ];
+  const Demo7 = function () {
+      return (<Dropdown menu={{ items }} popupRender={(menus) => (<div>
+            {menus}
+            <div style={{ padding: '8px 12px', color: 'rgba(0, 0, 0, 0.45)' }}>Extra content</div>
+          </div>)}>
+        <Button>Custom popup</Button>
+      </Dropdown>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, Dropdown } from '@ant-design-solid/core'
@@ -196,7 +395,29 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Dropdown Button
+
+:::preview
+
+<DropdownDemo008 />
+
+export const DropdownDemo008 = (() => {
+  const items = [
+      { key: '1', label: 'Submit and stay' },
+      { key: '2', label: 'Submit and close' },
+  ];
+  const Demo8 = function () {
+      return (<Dropdown.Button type="primary" menu={{ items }} onClick={() => console.log('submit')}>
+        Submit
+      </Dropdown.Button>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Dropdown } from '@ant-design-solid/core'
@@ -217,7 +438,34 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<DropdownDemo009 />
+
+export const DropdownDemo009 = (() => {
+  const items = [
+      { key: 'edit', label: 'Edit' },
+      { key: 'copy', label: 'Copy' },
+      { key: 'delete', label: 'Delete', danger: true },
+  ];
+  const Demo9 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Dropdown trigger={['click']} open={open()} onOpenChange={(nextOpen) => setOpen(nextOpen)} menu={{ items }}>
+          <Button>Controlled</Button>
+        </Dropdown>
+        <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -249,6 +497,8 @@ const Demo9 = function () {
 
 export default Demo9
 ```
+
+:::
 
 ## API
 

@@ -1,8 +1,30 @@
+import { Transfer } from '@ant-design-solid/core'
+import { createSignal, For } from 'solid-js'
+
 # Transfer
 
 Move items between source and target lists.
 
 ### Basic
+
+:::preview
+
+<TransferDemo001 />
+
+export const TransferDemo001 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+  ];
+  const Demo1 = function () {
+      return <Transfer dataSource={dataSource}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Transfer } from '@ant-design-solid/core'
@@ -20,7 +42,28 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Search
+
+:::preview
+
+<TransferDemo002 />
+
+export const TransferDemo002 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+  ];
+  const Demo2 = function () {
+      return (<Transfer showSearch={{ placeholder: 'Find item', defaultValue: 'a' }} dataSource={dataSource} filterOption={(input, item, direction) => direction === 'left' && String(item.title).toLowerCase().includes(input.toLowerCase())} onSearch={(direction, value) => console.log(direction, value)}/>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Transfer } from '@ant-design-solid/core'
@@ -47,7 +90,33 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Custom render
+
+:::preview
+
+<TransferDemo003 />
+
+export const TransferDemo003 = (() => {
+  const dataSource = [
+      { id: 101, name: 'Alpha', tag: 'Ready' },
+      { id: 102, name: 'Beta', tag: 'Draft' },
+      { id: 103, name: 'Gamma', tag: 'Blocked', disabled: true },
+  ];
+  const Demo3 = function () {
+      return (<Transfer dataSource={dataSource} rowKey={(item) => item.id} render={(item) => ({
+              label: (<span>
+              {item.name} <small>{item.tag}</small>
+            </span>),
+              value: item.name,
+          })} actions={['Add', 'Remove']} titles={['Available', 'Chosen']}/>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Transfer } from '@ant-design-solid/core'
@@ -80,7 +149,29 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<TransferDemo004 />
+
+export const TransferDemo004 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+  ];
+  const Demo4 = function () {
+      const [targetKeys, setTargetKeys] = createSignal(['2']);
+      return (<Transfer dataSource={dataSource} targetKeys={targetKeys()} onChange={(next) => setTargetKeys(next)}/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -108,7 +199,30 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Select all and one way
+
+:::preview
+
+<TransferDemo005 />
+
+export const TransferDemo005 = (() => {
+  const dataSource = Array.from({ length: 8 }, (_, index) => ({
+      key: String(index + 1),
+      title: `Item ${index + 1}`,
+  }));
+  const Demo5 = function () {
+      return (<Transfer oneWay pagination={{ pageSize: 4 }} dataSource={dataSource} actions={['Add']} selectAllLabels={[
+              ({ selectedCount, totalCount }) => `${selectedCount}/${totalCount} selected`,
+              'selected',
+          ]}/>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Transfer } from '@ant-design-solid/core'
@@ -136,7 +250,43 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Custom list body
+
+:::preview
+
+<TransferDemo006 />
+
+export const TransferDemo006 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Third item' },
+  ];
+  const Demo6 = function () {
+      return (<Transfer dataSource={dataSource} footer={(_, info) => <small>{info?.direction} list footer</small>}>
+        {(list) => (<div class="flex flex-col gap-1 p-2">
+            <For each={list.filteredItems}>
+              {(item) => {
+                  const selected = () => list.selectedKeys.includes(item.key);
+                  return (<button type="button" aria-pressed={selected()} class="flex items-center justify-between rounded border px-2 py-1 text-left transition-colors" classList={{
+                          'border-blue-500 bg-blue-50 text-blue-700': selected(),
+                          'border-slate-200 bg-white text-slate-700 hover:border-blue-300': !selected(),
+                      }} onClick={() => list.onItemSelect(item.key, !selected())}>
+                    <span>{item.title}</span>
+                    <span class="text-xs">{selected() ? 'Selected' : 'Select'}</span>
+                  </button>);
+              }}
+            </For>
+          </div>)}
+      </Transfer>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { For } from 'solid-js'
@@ -186,7 +336,30 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Semantic styling
+
+:::preview
+
+<TransferDemo007 />
+
+export const TransferDemo007 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha' },
+      { key: '2', title: 'Beta' },
+      { key: '3', title: 'Gamma' },
+  ];
+  const Demo7 = function () {
+      return (<Transfer class="w-full" status="warning" dataSource={dataSource} locale={{ titles: ['Source', 'Target'], notFoundContent: 'No data' }} classNames={{ root: 'transfer-demo', actions: 'transfer-demo-actions' }} styles={{ section: { width: '240px' }, actions: { margin: '0 8px' } }} listStyle={({ direction }) => ({
+              'min-height': direction === 'left' ? '260px' : '220px',
+          })}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Transfer } from '@ant-design-solid/core'
@@ -215,6 +388,8 @@ const Demo7 = function () {
 
 export default Demo7
 ```
+
+:::
 
 ## API
 

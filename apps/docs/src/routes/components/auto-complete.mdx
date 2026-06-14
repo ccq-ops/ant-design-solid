@@ -1,8 +1,26 @@
+import { AutoComplete, Input } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # AutoComplete
 
 Text input with selectable suggestions.
 
 ### Basic
+
+:::preview
+
+<AutoCompleteDemo001 />
+
+export const AutoCompleteDemo001 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo1 = function () {
+      return <AutoComplete style={{ width: '200px' }} options={options} placeholder="input here"/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -16,7 +34,24 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Non-case-sensitive
+
+:::preview
+
+<AutoCompleteDemo002 />
+
+export const AutoCompleteDemo002 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo2 = function () {
+      return (<AutoComplete style={{ width: '200px' }} options={options} placeholder="try to type `b`" filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}/>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -39,7 +74,26 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Customize Input
+
+:::preview
+
+<AutoCompleteDemo003 />
+
+export const AutoCompleteDemo003 = (() => {
+  const options = [{ value: 'text area option' }, { value: 'another option' }];
+  const Demo3 = function () {
+      return (<AutoComplete options={options}>
+        <Input.TextArea class="custom-textarea" placeholder="textarea here"/>
+      </AutoComplete>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { AutoComplete, Input } from '@ant-design-solid/core'
@@ -57,7 +111,30 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Lookup Patterns
+
+:::preview
+
+<AutoCompleteDemo004 />
+
+export const AutoCompleteDemo004 = (() => {
+  const mockVal = (str, repeat = 1) => ({
+      value: str.repeat(repeat),
+  });
+  const Demo4 = function () {
+      const [options, setOptions] = createSignal([]);
+      const getPanelValue = (searchText) => !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)];
+      return (<AutoComplete options={options()} style={{ width: '200px' }} showSearch={{
+              onSearch: (text) => setOptions(getPanelValue(text)),
+          }} placeholder="input here"/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -88,7 +165,27 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Status
+
+:::preview
+
+<AutoCompleteDemo005 />
+
+export const AutoCompleteDemo005 = (() => {
+  const options = [{ value: 'error' }, { value: 'warning' }];
+  const Demo5 = function () {
+      return (<div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+        <AutoComplete status="error" style={{ width: '200px' }} options={options} placeholder="Error"/>
+        <AutoComplete status="warning" style={{ width: '200px' }} options={options} placeholder="Warning"/>
+      </div>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -117,7 +214,29 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Variants
+
+:::preview
+
+<AutoCompleteDemo006 />
+
+export const AutoCompleteDemo006 = (() => {
+  const options = [{ value: 'outlined' }, { value: 'filled' }, { value: 'borderless' }];
+  const Demo6 = function () {
+      return (<div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+        <AutoComplete variant="outlined" style={{ width: '180px' }} options={options} placeholder="Outlined"/>
+        <AutoComplete variant="filled" style={{ width: '180px' }} options={options} placeholder="Filled"/>
+        <AutoComplete variant="borderless" style={{ width: '180px' }} options={options} placeholder="Borderless"/>
+        <AutoComplete variant="underlined" style={{ width: '180px' }} options={options} placeholder="Underlined"/>
+      </div>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -158,7 +277,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Custom Popup
+
+:::preview
+
+<AutoCompleteDemo007 />
+
+export const AutoCompleteDemo007 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo7 = function () {
+      return (<AutoComplete style={{ width: '220px' }} options={options} placeholder="custom popup" popupRender={(originNode) => (<div>
+            {originNode}
+            <div style={{ padding: '8px', color: '#1677ff' }}>More results</div>
+          </div>)}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -184,7 +323,24 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Popup Width
+
+:::preview
+
+<AutoCompleteDemo008 />
+
+export const AutoCompleteDemo008 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo8 = function () {
+      return (<AutoComplete style={{ width: '200px' }} popupMatchSelectWidth={280} options={options} placeholder="wide popup"/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { AutoComplete } from '@ant-design-solid/core'
@@ -204,6 +360,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

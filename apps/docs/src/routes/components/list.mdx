@@ -1,8 +1,25 @@
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+
 # List
 
 List displays a group of related items with optional headers, actions, and metadata.
 
 ### Data source
+
+:::preview
+
+<ListDemo001 />
+
+export const ListDemo001 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo1 = function () {
+      return (<List dataSource={tasks} renderItem={(item, index) => <List.Item>{`${index + 1}. ${item}`}</List.Item>}/>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Avatar, Button, List, Space } from '@ant-design-solid/core'
@@ -21,7 +38,24 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Bordered with header and footer
+
+:::preview
+
+<ListDemo002 />
+
+export const ListDemo002 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo2 = function () {
+      return (<List bordered header={<strong>Project checklist</strong>} footer="3 items" dataSource={tasks} renderItem={(item) => <List.Item>{item}</List.Item>}/>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Avatar, Button, List, Space } from '@ant-design-solid/core'
@@ -43,7 +77,40 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Meta and actions
+
+:::preview
+
+<ListDemo003 />
+
+export const ListDemo003 = (() => {
+  const users = [
+      {
+          name: 'Ada Lovelace',
+          description: 'Mathematician and first computer programmer.',
+          avatar: 'A',
+      },
+      {
+          name: 'Grace Hopper',
+          description: 'Computer scientist and compiler pioneer.',
+          avatar: 'G',
+      },
+  ];
+  const Demo3 = function () {
+      return (<List dataSource={users} renderItem={(user) => (<List.Item actions={[
+                  <a href={`#edit-${user.avatar}`}>Edit</a>,
+                  <a href={`#view-${user.avatar}`}>View</a>,
+              ]} extra={<Button size="small">Follow</Button>}>
+            <List.Item.Meta avatar={<Avatar>{user.avatar}</Avatar>} title={<a href={`#${user.avatar}`}>{user.name}</a>} description={user.description}/>
+          </List.Item>)}/>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Avatar, Button, List, Space } from '@ant-design-solid/core'
@@ -87,7 +154,27 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Loading and empty
+
+:::preview
+
+<ListDemo004 />
+
+export const ListDemo004 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo4 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <List loading dataSource={tasks} renderItem={(item) => <List.Item>{item}</List.Item>} bordered/>
+        <List dataSource={[]} emptyText="Nothing found" bordered/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Avatar, Button, List, Space } from '@ant-design-solid/core'
@@ -111,7 +198,24 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Pagination
+
+:::preview
+
+<ListDemo005 />
+
+export const ListDemo005 = (() => {
+  const tasks = Array.from({ length: 16 }, (_, index) => `Task ${index + 1}`);
+  const Demo5 = function () {
+      return (<List bordered dataSource={tasks} pagination={{ pageSize: 5, position: 'bottom' }} renderItem={(item) => <List.Item>{item}</List.Item>}/>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { List } from '@ant-design-solid/core'
@@ -132,7 +236,26 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Grid
+
+:::preview
+
+<ListDemo006 />
+
+export const ListDemo006 = (() => {
+  const users = ['Ada Lovelace', 'Grace Hopper', 'Katherine Johnson', 'Margaret Hamilton'];
+  const Demo6 = function () {
+      return (<List grid={{ gutter: [16, 16], xs: 1, sm: 2, md: 2, lg: 4, column: 4 }} dataSource={users} renderItem={(name) => (<List.Item>
+            <List.Item.Meta avatar={<Avatar>{name[0]}</Avatar>} title={name} description="Team member"/>
+          </List.Item>)}/>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Avatar, List } from '@ant-design-solid/core'
@@ -160,7 +283,35 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Vertical
+
+:::preview
+
+<ListDemo007 />
+
+export const ListDemo007 = (() => {
+  const articles = [
+      {
+          title: 'Solid component parity',
+          description: 'Track API compatibility while keeping Solid conventions.',
+      },
+      {
+          title: 'Design token coverage',
+          description: 'Keep component styles aligned with the shared theme.',
+      },
+  ];
+  const Demo7 = function () {
+      return (<List itemLayout="vertical" dataSource={articles} renderItem={(article) => (<List.Item actions={[<a href="#share">Share</a>]} extra={<Button>Open</Button>}>
+            <List.Item.Meta avatar={<Avatar>{article.title[0]}</Avatar>} title={<a href="#article">{article.title}</a>} description={article.description}/>
+          </List.Item>)}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Avatar, Button, List } from '@ant-design-solid/core'
@@ -197,7 +348,24 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Load more
+
+:::preview
+
+<ListDemo008 />
+
+export const ListDemo008 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo8 = function () {
+      return (<List dataSource={tasks} renderItem={(item) => <List.Item>{item}</List.Item>} loadMore={<Button>Load more</Button>}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, List } from '@ant-design-solid/core'
@@ -217,7 +385,23 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Custom loading and locale
+
+:::preview
+
+<ListDemo009 />
+
+export const ListDemo009 = (() => {
+  const Demo9 = function () {
+      return (<List loading={{ spinning: true, tip: 'Fetching rows' }} locale={{ emptyText: 'No matching records' }} dataSource={[]}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { List } from '@ant-design-solid/core'
@@ -235,7 +419,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Semantic item styles
+
+:::preview
+
+<ListDemo010 />
+
+export const ListDemo010 = (() => {
+  const Demo10 = function () {
+      return (<List>
+        <List.Item actions={[<a href="#edit">Edit</a>, <a href="#delete">Delete</a>]} extra={<span>Owner</span>} classNames={{ actions: 'text-blue-600', extra: 'font-medium' }} styles={{ extra: { color: '#1677ff' } }}>
+          Custom semantic slots
+        </List.Item>
+      </List>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { List } from '@ant-design-solid/core'
@@ -257,6 +461,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

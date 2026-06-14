@@ -1,8 +1,49 @@
+import { Button, Carousel, ConfigProvider, Radio, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Carousel
 
 Display a group of content in a carousel with dots, arrows, and autoplay.
 
 ### Basic
+
+:::preview
+
+<CarouselDemo001 />
+
+export const CarouselDemo001 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo1 = function () {
+      const onChange = (currentSlide) => {
+          console.log(currentSlide);
+      };
+      return (<Carousel afterChange={onChange}>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Carousel } from '@ant-design-solid/core'
@@ -42,7 +83,44 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Autoplay
+
+:::preview
+
+<CarouselDemo002 />
+
+export const CarouselDemo002 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo2 = function () {
+      return (<Carousel autoplay>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Carousel } from '@ant-design-solid/core'
@@ -78,7 +156,44 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Dot Duration
+
+:::preview
+
+<CarouselDemo003 />
+
+export const CarouselDemo003 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo3 = function () {
+      return (<Carousel autoplay={{ dotDuration: true }} autoplaySpeed={5000}>
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Carousel } from '@ant-design-solid/core'
@@ -114,7 +229,53 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Position
+
+:::preview
+
+<CarouselDemo004 />
+
+export const CarouselDemo004 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo4 = function () {
+      const [dotPlacement, setDotPlacement] = createSignal('top');
+      return (<>
+        <Radio.Group onChange={(value) => setDotPlacement(value)} value={dotPlacement()} style={{ 'margin-bottom': '8px' }}>
+          <Radio.Button value="top">Top</Radio.Button>
+          <Radio.Button value="bottom">Bottom</Radio.Button>
+          <Radio.Button value="start">Start</Radio.Button>
+          <Radio.Button value="end">End</Radio.Button>
+        </Radio.Group>
+        <Carousel dotPlacement={dotPlacement()}>
+          <div>
+            <h3 style={contentStyle}>1</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>2</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>3</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>4</h3>
+          </div>
+        </Carousel>
+      </>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -168,7 +329,61 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Arrows
+
+:::preview
+
+<CarouselDemo005 />
+
+export const CarouselDemo005 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo5 = function () {
+      return (<>
+        <Carousel arrows infinite={false}>
+          <div>
+            <h3 style={contentStyle}>1</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>2</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>3</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>4</h3>
+          </div>
+        </Carousel>
+        <br />
+        <Carousel arrows dotPlacement="start" infinite={false}>
+          <div>
+            <h3 style={contentStyle}>1</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>2</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>3</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>4</h3>
+          </div>
+        </Carousel>
+      </>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Carousel } from '@ant-design-solid/core'
@@ -221,7 +436,44 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Fade
+
+:::preview
+
+<CarouselDemo006 />
+
+export const CarouselDemo006 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo6 = function () {
+      return (<Carousel effect="fade">
+        <div>
+          <h3 style={contentStyle}>1</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>2</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>3</h3>
+        </div>
+        <div>
+          <h3 style={contentStyle}>4</h3>
+        </div>
+      </Carousel>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Carousel } from '@ant-design-solid/core'
@@ -257,7 +509,54 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Component Token
+
+:::preview
+
+<CarouselDemo007 />
+
+export const CarouselDemo007 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo7 = function () {
+      return (<ConfigProvider theme={{
+              components: {
+                  Carousel: {
+                      dotWidth: 50,
+                      dotHeight: 50,
+                      dotActiveWidth: 80,
+                  },
+              },
+          }}>
+        <Carousel>
+          <div>
+            <h3 style={contentStyle}>1</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>2</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>3</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>4</h3>
+          </div>
+        </Carousel>
+      </ConfigProvider>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Carousel, ConfigProvider } from '@ant-design-solid/core'
@@ -305,7 +604,56 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Imperative Methods
+
+:::preview
+
+<CarouselDemo008 />
+
+export const CarouselDemo008 = (() => {
+  const contentStyle = {
+      margin: 0,
+      height: '160px',
+      color: '#fff',
+      'line-height': '160px',
+      'text-align': 'center',
+      background: '#364d79',
+  };
+  const Demo8 = function () {
+      let carousel;
+      const [current, setCurrent] = createSignal(0);
+      return (<Space direction="vertical" style={{ width: '100%' }}>
+        <Carousel ref={(ref) => {
+              carousel = ref;
+          }} arrows afterChange={setCurrent}>
+          <div>
+            <h3 style={contentStyle}>1</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>2</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>3</h3>
+          </div>
+          <div>
+            <h3 style={contentStyle}>4</h3>
+          </div>
+        </Carousel>
+        <Space>
+          <Button onClick={() => carousel?.prev()}>Previous</Button>
+          <Button onClick={() => carousel?.goTo(1)}>Go to 2</Button>
+          <Button onClick={() => carousel?.next()}>Next</Button>
+          <span>Current: {current() + 1}</span>
+        </Space>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -359,6 +707,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

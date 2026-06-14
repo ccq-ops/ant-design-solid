@@ -1,8 +1,28 @@
+import { Button, Form, Space, Switch } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Switch
 
 Switch toggles a boolean state on or off.
 
 ### Basic
+
+:::preview
+
+<SwitchDemo001 />
+
+export const SwitchDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Space>
+        <Switch checkedChildren="On" unCheckedChildren="Off"/>
+        <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off"/>
+      </Space>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -20,7 +40,27 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<SwitchDemo002 />
+
+export const SwitchDemo002 = (() => {
+  const Demo2 = function () {
+      const [checked, setChecked] = createSignal(true);
+      return (<Space>
+        <Switch checked={checked()} onChange={setChecked}/>
+        <span>{checked() ? 'Enabled' : 'Disabled'}</span>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -40,7 +80,26 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<SwitchDemo003 />
+
+export const SwitchDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space>
+        <Switch disabled/>
+        <Switch disabled defaultChecked/>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -58,7 +117,26 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Loading
+
+:::preview
+
+<SwitchDemo004 />
+
+export const SwitchDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space>
+        <Switch loading/>
+        <Switch loading defaultChecked/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -76,7 +154,27 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Sizes
+
+:::preview
+
+<SwitchDemo005 />
+
+export const SwitchDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space align="center">
+        <Switch size="small" defaultChecked/>
+        <Switch size="medium" defaultChecked/>
+        <Switch defaultChecked/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -95,7 +193,27 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Value aliases
+
+:::preview
+
+<SwitchDemo006 />
+
+export const SwitchDemo006 = (() => {
+  const Demo6 = function () {
+      const [enabled, setEnabled] = createSignal(true);
+      return (<Space>
+        <Switch value={enabled()} onChange={setEnabled} checkedChildren="On" unCheckedChildren="Off"/>
+        <Switch defaultValue checkedChildren="On" unCheckedChildren="Off"/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -120,7 +238,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Click callback
+
+:::preview
+
+<SwitchDemo007 />
+
+export const SwitchDemo007 = (() => {
+  const Demo7 = function () {
+      const [message, setMessage] = createSignal('Ready');
+      return (<Space>
+        <Switch onClick={(checked) => setMessage(`Clicked ${checked ? 'on' : 'off'}`)} onChange={(checked) => setMessage(`Changed ${checked ? 'on' : 'off'}`)}/>
+        <span>{message()}</span>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -143,7 +281,31 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<SwitchDemo008 />
+
+export const SwitchDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Switch defaultChecked checkedChildren="Open" unCheckedChildren="Closed" classNames={{
+              root: 'custom-switch',
+              content: 'custom-switch-content',
+              indicator: 'custom-switch-indicator',
+          }} styles={{
+              root: { minWidth: '72px' },
+              content: { fontWeight: 600 },
+              indicator: { boxShadow: '0 0 0 2px rgba(22, 119, 255, 0.2)' },
+          }}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -172,7 +334,28 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Focus and blur
+
+:::preview
+
+<SwitchDemo009 />
+
+export const SwitchDemo009 = (() => {
+  const Demo9 = function () {
+      let switchRef;
+      return (<Space>
+        <Switch ref={(ref) => (switchRef = ref)} defaultChecked/>
+        <Button onClick={() => switchRef?.focus()}>Focus</Button>
+        <Button onClick={() => switchRef?.blur()}>Blur</Button>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -193,7 +376,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### In Form
+
+:::preview
+
+<SwitchDemo010 />
+
+export const SwitchDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Form initialValues={{ enabled: true }}>
+        <Form.Item label="Enabled" name="enabled" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+      </Form>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -211,6 +414,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

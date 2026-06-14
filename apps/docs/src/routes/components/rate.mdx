@@ -1,6 +1,23 @@
+import { Button, Rate, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Rate
 
 ### Basic
+
+:::preview
+
+<RateDemo001 />
+
+export const RateDemo001 = (() => {
+  const Demo1 = function () {
+      return <Rate defaultValue={3}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -13,7 +30,23 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Half star
+
+:::preview
+
+<RateDemo002 />
+
+export const RateDemo002 = (() => {
+  const Demo2 = function () {
+      return <Rate allowHalf defaultValue={2.5}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -26,7 +59,23 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Disable clear
+
+:::preview
+
+<RateDemo003 />
+
+export const RateDemo003 = (() => {
+  const Demo3 = function () {
+      return <Rate defaultValue={3} allowClear={false}/>;
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -39,7 +88,27 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<RateDemo004 />
+
+export const RateDemo004 = (() => {
+  const Demo4 = function () {
+      const [value, setValue] = createSignal(3);
+      return (<Space direction="vertical">
+        <Rate value={value()} onChange={setValue}/>
+        <span>Current value: {value()}</span>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -59,7 +128,26 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Custom character
+
+:::preview
+
+<RateDemo005 />
+
+export const RateDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical">
+        <Rate character="♡" defaultValue={4}/>
+        <Rate character={({ index }) => index + 1} defaultValue={3}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Rate, Space } from '@ant-design-solid/core'
@@ -76,7 +164,29 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Tooltips
+
+:::preview
+
+<RateDemo006 />
+
+export const RateDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Rate tooltips={[
+              'terrible',
+              'bad',
+              'normal',
+              { title: 'good', placement: 'bottom' },
+              { title: 'wonderful', color: '#1677ff' },
+          ]}/>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Rate } from '@ant-design-solid/core'
@@ -98,7 +208,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Sizes
+
+:::preview
+
+<RateDemo007 />
+
+export const RateDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space direction="vertical">
+        <Rate size="small" defaultValue={3}/>
+        <Rate defaultValue={3}/>
+        <Rate size="large" defaultValue={3}/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Rate, Space } from '@ant-design-solid/core'
@@ -116,7 +246,28 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Keyboard
+
+:::preview
+
+<RateDemo008 />
+
+export const RateDemo008 = (() => {
+  const Demo8 = function () {
+      const [value, setValue] = createSignal(3);
+      return (<Space direction="vertical">
+        <Rate value={value()} onChange={setValue}/>
+        <span>Current value: {value()}</span>
+        <Rate defaultValue={3} keyboard={false}/>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -137,7 +288,28 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Focus
+
+:::preview
+
+<RateDemo009 />
+
+export const RateDemo009 = (() => {
+  const Demo9 = function () {
+      const rateRef = {};
+      return (<Space>
+        <Button onClick={() => rateRef.current?.focus()}>Focus</Button>
+        <Button onClick={() => rateRef.current?.blur()}>Blur</Button>
+        <Rate ref={rateRef} defaultValue={3}/>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Rate, Space, Button } from '@ant-design-solid/core'
@@ -158,7 +330,23 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<RateDemo010 />
+
+export const RateDemo010 = (() => {
+  const Demo10 = function () {
+      return <Rate disabled defaultValue={3}/>;
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Rate } from '@ant-design-solid/core'
@@ -169,6 +357,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

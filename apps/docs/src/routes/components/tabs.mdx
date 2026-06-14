@@ -1,6 +1,29 @@
+import { Tabs } from '@ant-design-solid/core'
+import { FileOutlined, SettingOutlined, UserOutlined } from '@ant-design-solid/icons'
+import { createSignal } from 'solid-js'
+
 # Tabs
 
 ### Basic
+
+:::preview
+
+<TabsDemo001 />
+
+export const TabsDemo001 = (() => {
+  const items = [
+      { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
+      { key: 'usage', label: 'Usage', children: <p>Usage content</p> },
+      { key: 'disabled', label: 'Disabled', disabled: true, children: <p>Disabled content</p> },
+  ];
+  const Demo1 = function () {
+      return <Tabs items={items}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -18,7 +41,28 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<TabsDemo002 />
+
+export const TabsDemo002 = (() => {
+  const items = [
+      { key: 'top', label: 'Top', children: <p>Top content</p> },
+      { key: 'bottom', label: 'Bottom', children: <p>Bottom content</p> },
+      { key: 'side', label: 'Side', children: <p>Side content</p> },
+  ];
+  const Demo2 = function () {
+      return <Tabs tabPlacement="start" items={items}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -36,7 +80,28 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Card And Size
+
+:::preview
+
+<TabsDemo003 />
+
+export const TabsDemo003 = (() => {
+  const items = [
+      { key: 'small', label: 'Small', children: <p>Small card content</p> },
+      { key: 'middle', label: 'Middle', children: <p>Middle card content</p> },
+      { key: 'large', label: 'Large', children: <p>Large card content</p> },
+  ];
+  const Demo3 = function () {
+      return <Tabs type="card" size="large" items={items}/>;
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -54,7 +119,33 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Icon
+
+:::preview
+
+<TabsDemo004 />
+
+export const TabsDemo004 = (() => {
+  const items = [
+      { key: 'profile', icon: <UserOutlined />, label: 'Profile', children: <p>Profile content</p> },
+      { key: 'files', icon: <FileOutlined />, label: 'Files', children: <p>Files content</p> },
+      {
+          key: 'settings',
+          icon: <SettingOutlined />,
+          label: 'Settings',
+          children: <p>Settings content</p>,
+      },
+  ];
+  const Demo4 = function () {
+      return <Tabs items={items}/>;
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { FileOutlined, SettingOutlined, UserOutlined } from '@ant-design-solid/icons'
@@ -78,7 +169,28 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<TabsDemo005 />
+
+export const TabsDemo005 = (() => {
+  const items = [
+      { key: 'overview', label: 'Overview', children: <p>Overview content</p> },
+      { key: 'activity', label: 'Activity', children: <p>Activity content</p> },
+  ];
+  const Demo5 = function () {
+      const [activeKey, setActiveKey] = createSignal('overview');
+      return <Tabs activeKey={activeKey()} items={items} onChange={setActiveKey}/>;
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -98,7 +210,56 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Editable Card
+
+:::preview
+
+<TabsDemo006 />
+
+export const TabsDemo006 = (() => {
+  const items = [
+      { key: 'profile', label: 'Profile', children: <p>Profile content</p> },
+      { key: 'billing', label: 'Billing', children: <p>Billing content</p>, closable: false },
+      { key: 'logs', label: 'Logs', closeIcon: false, children: <p>Logs content</p> },
+  ];
+  const Demo6 = function () {
+      const [activeKey, setActiveKey] = createSignal('profile');
+      const [editableItems, setEditableItems] = createSignal(items);
+      const [nextIndex, setNextIndex] = createSignal(1);
+      const onEdit = (targetKey, action) => {
+          if (action === 'add') {
+              const nextKey = `new-${nextIndex()}`;
+              const nextItem = {
+                  key: nextKey,
+                  label: `New Tab ${nextIndex()}`,
+                  children: <p>New Tab {nextIndex()} content</p>,
+              };
+              setEditableItems((current) => [...current, nextItem]);
+              setActiveKey(nextKey);
+              setNextIndex((index) => index + 1);
+              return;
+          }
+          if (action === 'remove' && typeof targetKey === 'string') {
+              const currentItems = editableItems();
+              const targetIndex = currentItems.findIndex((item) => item.key === targetKey);
+              const nextItems = currentItems.filter((item) => item.key !== targetKey);
+              if (targetKey === activeKey()) {
+                  const nextActiveItem = nextItems[targetIndex] ?? nextItems[targetIndex - 1];
+                  if (nextActiveItem)
+                      setActiveKey(nextActiveItem.key);
+              }
+              setEditableItems(nextItems);
+          }
+      };
+      return (<Tabs type="editable-card" activeKey={activeKey()} items={editableItems()} onChange={setActiveKey} onEdit={onEdit}/>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -158,7 +319,30 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Extra Content
+
+:::preview
+
+<TabsDemo007 />
+
+export const TabsDemo007 = (() => {
+  const items = [
+      { key: 'daily', label: 'Daily', children: <p>Daily content</p> },
+      { key: 'weekly', label: 'Weekly', children: <p>Weekly content</p> },
+  ];
+  const Demo7 = function () {
+      return (<Tabs items={items} tabBarExtraContent={{
+              left: <button type="button">Refresh</button>,
+              right: <button type="button">Export</button>,
+          }}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -183,7 +367,27 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Customized Indicator
+
+:::preview
+
+<TabsDemo008 />
+
+export const TabsDemo008 = (() => {
+  const items = [
+      { key: 'open', label: 'Open', children: <p>Open content</p> },
+      { key: 'closed', label: 'Closed', children: <p>Closed content</p> },
+  ];
+  const Demo8 = function () {
+      return <Tabs items={items} indicator={{ size: (origin) => origin - 16, align: 'center' }}/>;
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -200,7 +404,29 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Custom Tab Bar
+
+:::preview
+
+<TabsDemo009 />
+
+export const TabsDemo009 = (() => {
+  const items = [
+      { key: 'alpha', label: 'Alpha', children: <p>Alpha content</p> },
+      { key: 'beta', label: 'Beta', children: <p>Beta content</p> },
+  ];
+  const Demo9 = function () {
+      return (<Tabs items={items} renderTabBar={(props, DefaultTabBar) => (<div class="custom-tab-bar">
+            <DefaultTabBar {...props}/>
+          </div>)}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -226,7 +452,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Destroy On Hidden
+
+:::preview
+
+<TabsDemo010 />
+
+export const TabsDemo010 = (() => {
+  const items = [
+      { key: 'preview', label: 'Preview', children: <p>Preview content</p> },
+      { key: 'settings', label: 'Settings', forceRender: true, children: <p>Settings content</p> },
+  ];
+  const Demo10 = function () {
+      return <Tabs destroyOnHidden items={items}/>;
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -243,7 +489,38 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Semantic Styles
+
+:::preview
+
+<TabsDemo011 />
+
+export const TabsDemo011 = (() => {
+  const items = [
+      {
+          key: 'first',
+          label: 'First',
+          class: 'custom-pane',
+          children: <p>First content</p>,
+      },
+  ];
+  const Demo11 = function () {
+      return (<Tabs items={items} class="custom-tabs" classNames={{
+              header: 'custom-tabs-header',
+              item: 'custom-tabs-item',
+              popup: { root: 'custom-tabs-popup' },
+          }} styles={{
+              content: { padding: '24px 0' },
+              popup: { root: { minWidth: '160px' } },
+          }}/>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -278,7 +555,28 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Overflow
+
+:::preview
+
+<TabsDemo012 />
+
+export const TabsDemo012 = (() => {
+  const items = Array.from({ length: 24 }, (_, index) => ({
+      key: String(index + 1),
+      label: `Tab ${index + 1}`,
+      children: <p>Tab {index + 1} content</p>,
+  }));
+  const Demo12 = function () {
+      return <Tabs items={items} more={{ icon: <span>More</span>, trigger: 'click' }}/>;
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -296,7 +594,27 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Events
+
+:::preview
+
+<TabsDemo013 />
+
+export const TabsDemo013 = (() => {
+  const items = [
+      { key: 'one', label: 'One', children: <p>Pane one</p> },
+      { key: 'two', label: 'Two', children: <p>Pane two</p> },
+  ];
+  const Demo13 = function () {
+      return (<Tabs items={items} onChange={(activeKey) => console.log('change', activeKey)} onTabClick={(activeKey, event) => console.log('click', activeKey, event.type)} onTabScroll={({ direction }) => console.log('scroll', direction)}/>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Tabs } from '@ant-design-solid/core'
@@ -319,6 +637,8 @@ const Demo13 = function () {
 
 export default Demo13
 ```
+
+:::
 
 ## API
 

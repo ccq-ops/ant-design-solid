@@ -1,3 +1,6 @@
+import { BorderBeam, Button, Card, ConfigProvider, Flex, Segmented, Tag, Typography } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # BorderBeam
 
 Decorative component that renders a moving beam along a container border.
@@ -9,6 +12,26 @@ Decorative component that renders a moving beam along a container border.
 - As a decorative effect, it should not replace focus rings, validation borders, or status feedback.
 
 ### Basic
+
+:::preview
+
+<BorderBeamDemo001 />
+
+export const BorderBeamDemo001 = (() => {
+  const Demo1 = function () {
+      return (<div style={{ width: '360px' }}>
+        <BorderBeam>
+          <Card title="Workspace overview">
+            Review task status, deployment health, and recent automation activity in one panel.
+          </Card>
+        </BorderBeam>
+      </div>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { BorderBeam, Card } from '@ant-design-solid/core'
@@ -28,7 +51,118 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Gradients
+
+:::preview
+
+<BorderBeamDemo002 />
+
+export const BorderBeamDemo002 = (() => {
+  const presets = [
+      {
+          key: 'ocean',
+          name: 'Ocean',
+          usage: 'Dashboard',
+          description: 'A calm blue-green accent that works well for data views and cloud tooling.',
+          color: [
+              { color: '#1677ff', percent: 0 },
+              { color: '#36cfc9', percent: 52 },
+              { color: '#95de64', percent: 100 },
+          ],
+      },
+      {
+          key: 'sunset',
+          name: 'Sunset',
+          usage: 'Upgrade',
+          description: 'A warm highlight for upgrade prompts, featured cards, and marketing blocks.',
+          color: [
+              { color: '#ff7a45', percent: 0 },
+              { color: '#ff4d4f', percent: 49 },
+              { color: '#ff85c0', percent: 100 },
+          ],
+      },
+      {
+          key: 'aurora',
+          name: 'Aurora',
+          usage: 'AI',
+          description: 'A vivid cool-toned beam suited for AI assistants, copilots, and automation panels.',
+          color: [
+              { color: '#7c3aed', percent: 0 },
+              { color: '#06b6d4', percent: 57 },
+              { color: '#67e8f9', percent: 100 },
+          ],
+      },
+      {
+          key: 'forest',
+          name: 'Forest',
+          usage: 'Recommendation',
+          description: 'A bright natural palette that feels good on recommendation and growth-oriented cards.',
+          color: [
+              { color: '#22c55e', percent: 0 },
+              { color: '#a3e635', percent: 54 },
+              { color: '#facc15', percent: 100 },
+          ],
+      },
+      {
+          key: 'ember',
+          name: 'Ember',
+          usage: 'Alert',
+          description: 'A high-energy warm gradient for important alerts, launch cards, and hot paths.',
+          color: [
+              { color: '#fa541c', percent: 0 },
+              { color: '#ff7875', percent: 46 },
+              { color: '#ffd666', percent: 100 },
+          ],
+      },
+      {
+          key: 'nebula',
+          name: 'Nebula',
+          usage: 'Labs',
+          description: 'A cool purple-pink mix that fits experimental modules and product lab surfaces.',
+          color: [
+              { color: '#2f54eb', percent: 0 },
+              { color: '#722ed1', percent: 44 },
+              { color: '#ff85c0', percent: 100 },
+          ],
+      },
+  ];
+  const defaultPresetKey = presets[0].key;
+  const Demo2 = function () {
+      const [currentPresetKey, setCurrentPresetKey] = createSignal(defaultPresetKey);
+      const currentPreset = () => presets.find((preset) => preset.key === currentPresetKey()) ?? presets[0];
+      return (<Flex vertical gap={16} style={{ 'max-width': '480px' }}>
+        <Segmented block options={presets.map((preset) => ({
+              label: preset.name,
+              value: preset.key,
+          }))} value={currentPresetKey()} onChange={(value) => setCurrentPresetKey(value)}/>
+        <BorderBeam color={currentPreset().color}>
+          <Card title={currentPreset().name} extra={<Tag variant="filled">{currentPreset().usage}</Tag>} styles={{
+              body: {
+                  display: 'flex',
+                  'flex-direction': 'column',
+                  gap: '16px',
+              },
+          }}>
+            <Typography.Text type="secondary">{currentPreset().description}</Typography.Text>
+            <Flex gap={8} wrap>
+              {currentPreset().color.map((item) => (<Tag color={item.color} variant="filled">
+                  {item.color} · {item.percent}%
+                </Tag>))}
+            </Flex>
+            <Typography.Text type="secondary">
+              Stop positions use the public 0-100 input range.
+            </Typography.Text>
+          </Card>
+        </BorderBeam>
+      </Flex>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -162,7 +296,46 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Non-uniform radius
+
+:::preview
+
+<BorderBeamDemo003 />
+
+export const BorderBeamDemo003 = (() => {
+  const radius = '20px 20px 0 0';
+  const Demo3 = function () {
+      return (<div style={{ width: '360px' }}>
+        <BorderBeam outset={0}>
+          <Card title="Activity stream" style={{
+              'border-radius': radius,
+              overflow: 'hidden',
+          }} styles={{
+              body: {
+                  display: 'flex',
+                  'flex-direction': 'column',
+                  gap: '16px',
+              },
+          }}>
+            <Typography.Text type="secondary">
+              Use a multi-value `borderRadius` like `20px 20px 0 0` to keep the beam aligned with
+              non-uniform corners.
+            </Typography.Text>
+            <Flex align="center" justify="space-between">
+              <Typography.Text strong>12 running jobs</Typography.Text>
+              <Button type="primary">View queue</Button>
+            </Flex>
+          </Card>
+        </BorderBeam>
+      </div>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { BorderBeam, Button, Card, Flex, Typography } from '@ant-design-solid/core'
@@ -204,7 +377,43 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Line width
+
+:::preview
+
+<BorderBeamDemo004 />
+
+export const BorderBeamDemo004 = (() => {
+  function Panel(props) {
+      return (<div style={{ width: '320px' }}>
+        <BorderBeam>
+          <Card title={props.title}>
+            <Typography.Text type="secondary">{props.desc}</Typography.Text>
+          </Card>
+        </BorderBeam>
+      </div>);
+  }
+  const Demo4 = function () {
+      return (<Flex gap={24} wrap>
+        <Panel title="Default line width" desc="Uses the default global lineWidth token from the current theme."/>
+        <ConfigProvider theme={{
+              components: {
+                  BorderBeam: {
+                      lineWidth: 3,
+                  },
+              },
+          }}>
+          <Panel title="Custom line width" desc="Override lineWidth from theme.token."/>
+        </ConfigProvider>
+      </Flex>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { BorderBeam, Card, ConfigProvider, Flex, Typography } from '@ant-design-solid/core'
@@ -245,6 +454,8 @@ const Demo4 = function () {
 
 export default Demo4
 ```
+
+:::
 
 ## API
 

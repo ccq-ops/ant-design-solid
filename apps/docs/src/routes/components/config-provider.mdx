@@ -1,6 +1,24 @@
+import { Button, ConfigProvider, Form, Input, Select, Space } from '@ant-design-solid/core'
+
 # ConfigProvider
 
 ### Theme
+
+:::preview
+
+<ConfigProviderDemo001 />
+
+export const ConfigProviderDemo001 = (() => {
+  const Demo1 = function () {
+      return (<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
+        <Button type="primary">Custom Theme</Button>
+      </ConfigProvider>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider } from '@ant-design-solid/core'
@@ -16,7 +34,28 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<ConfigProviderDemo002 />
+
+export const ConfigProviderDemo002 = (() => {
+  const Demo2 = function () {
+      return (<ConfigProvider componentSize="large">
+        <Space>
+          <Button>Large</Button>
+          <Button type="primary">Primary</Button>
+        </Space>
+      </ConfigProvider>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
@@ -35,7 +74,28 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<ConfigProviderDemo003 />
+
+export const ConfigProviderDemo003 = (() => {
+  const Demo3 = function () {
+      return (<ConfigProvider componentDisabled>
+        <Space>
+          <Input defaultValue="Disabled by ConfigProvider"/>
+          <Button>Submit</Button>
+        </Space>
+      </ConfigProvider>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, Input, Space } from '@ant-design-solid/core'
@@ -54,7 +114,33 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Variant
+
+:::preview
+
+<ConfigProviderDemo004 />
+
+export const ConfigProviderDemo004 = (() => {
+  const Demo4 = function () {
+      return (<ConfigProvider variant="filled">
+        <Space>
+          <Input placeholder="Filled input"/>
+          <Select placeholder="Filled select" options={[{ label: 'Option', value: 'option' }]}/>
+        </Space>
+        <Form variant="underlined">
+          <Form.Item label="Name">
+            <Input />
+          </Form.Item>
+        </Form>
+      </ConfigProvider>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { ConfigProvider, Form, Input, Select, Space } from '@ant-design-solid/core'
@@ -78,7 +164,29 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Component Config
+
+:::preview
+
+<ConfigProviderDemo005 />
+
+export const ConfigProviderDemo005 = (() => {
+  const Demo5 = function () {
+      return (<ConfigProvider button={{ autoInsertSpace: false, color: 'blue', variant: 'filled' }} input={{ variant: 'filled' }} select={{ variant: 'underlined' }} popupMatchSelectWidth={false}>
+        <Space>
+          <Button>按钮</Button>
+          <Input placeholder="Input"/>
+          <Select placeholder="Select" options={[{ label: 'Option', value: 'option' }]}/>
+        </Space>
+      </ConfigProvider>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, Input, Select, Space } from '@ant-design-solid/core'
@@ -103,6 +211,8 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Static Config
 
 ```tsx
@@ -117,6 +227,21 @@ ConfigProvider.config({
 
 ### Hook
 
+:::preview
+
+<ConfigProviderDemo006 />
+
+export const ConfigProviderDemo006 = (() => {
+  const Demo6 = function () {
+      const config = ConfigProvider.useConfig();
+      return <span>{config.componentSize()}</span>;
+  };
+
+  return Demo6
+})()
+
+---
+
 ```tsx
 import { ConfigProvider } from '@ant-design-solid/core'
 
@@ -128,6 +253,8 @@ const Demo6 = function () {
 
 export default Demo6
 ```
+
+:::
 
 ## API
 

@@ -1,8 +1,28 @@
+import { Button, Card, Space } from '@ant-design-solid/core'
+
 # Space
 
 Space adds consistent gaps between inline or stacked elements.
 
 ### Basic
+
+:::preview
+
+<SpaceDemo001 />
+
+export const SpaceDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Space>
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </Space>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -20,7 +40,27 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Direction
+
+:::preview
+
+<SpaceDemo002 />
+
+export const SpaceDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space direction="vertical">
+        <Button>Top</Button>
+        <Button>Middle</Button>
+        <Button>Bottom</Button>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -38,7 +78,33 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<SpaceDemo003 />
+
+export const SpaceDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space direction="vertical">
+        <Space size="large">
+          <Button>Large</Button>
+          <Button>Gap</Button>
+        </Space>
+        <Space size={['small', 'large']} wrap>
+          <Button>Small x large</Button>
+          <Button>Tuple</Button>
+          <Button>Gap</Button>
+        </Space>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -62,7 +128,29 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Wrap
+
+:::preview
+
+<SpaceDemo004 />
+
+export const SpaceDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space wrap class="max-w-80">
+        <Button>Alpha</Button>
+        <Button>Beta</Button>
+        <Button>Gamma</Button>
+        <Button>Delta</Button>
+        <Button>Epsilon</Button>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -82,7 +170,30 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Alignment
+
+:::preview
+
+<SpaceDemo005 />
+
+export const SpaceDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space align="start">
+        <Card size="small" title="Card">
+          Taller content
+          <br />
+          spans two lines.
+        </Card>
+        <Button>Aligned start</Button>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -103,7 +214,27 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Split
+
+:::preview
+
+<SpaceDemo006 />
+
+export const SpaceDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space split={<span class="text-gray-300">/</span>}>
+        <a href="#home">Home</a>
+        <a href="#docs">Docs</a>
+        <a href="#components">Components</a>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -121,7 +252,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Separator
+
+:::preview
+
+<SpaceDemo007 />
+
+export const SpaceDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space separator={<span class="text-gray-300">/</span>}>
+        <a href="#overview">Overview</a>
+        <a href="#api">API</a>
+        <a href="#examples">Examples</a>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -139,7 +290,27 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Semantic DOM
+
+:::preview
+
+<SpaceDemo008 />
+
+export const SpaceDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Space separator="|" classNames={{ item: 'rounded border border-blue-200 px-2 py-1', split: 'text-gray-300' }} styles={{ item: { background: '#eff6ff' } }}>
+        <span>Draft</span>
+        <span>Review</span>
+        <span>Publish</span>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, Card, Space } from '@ant-design-solid/core'
@@ -161,7 +332,34 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Compact
+
+:::preview
+
+<SpaceDemo009 />
+
+export const SpaceDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Space direction="vertical">
+        <Space.Compact>
+          <Button>Cancel</Button>
+          <Button type="primary">Submit</Button>
+        </Space.Compact>
+
+        <Space.Compact block size="large">
+          <Button>Left</Button>
+          <Space.Addon>Addon</Space.Addon>
+          <Button>Right</Button>
+        </Space.Compact>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Button, Space } from '@ant-design-solid/core'
@@ -186,7 +384,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Vertical Compact
+
+:::preview
+
+<SpaceDemo010 />
+
+export const SpaceDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Space.Compact vertical>
+        <Button>Top</Button>
+        <Button>Middle</Button>
+        <Button>Bottom</Button>
+      </Space.Compact>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Space } from '@ant-design-solid/core'
@@ -203,6 +421,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

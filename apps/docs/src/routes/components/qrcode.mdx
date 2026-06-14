@@ -1,6 +1,22 @@
+import { QRCode, Space } from '@ant-design-solid/core'
+
 # QRCode
 
 ### Basic
+
+:::preview
+
+<QrcodeDemo001 />
+
+export const QrcodeDemo001 = (() => {
+  const Demo1 = function () {
+      return <QRCode value="https://solidjs.com"/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { QRCode } from '@ant-design-solid/core'
@@ -12,7 +28,26 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Custom colors
+
+:::preview
+
+<QrcodeDemo002 />
+
+export const QrcodeDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space>
+        <QRCode value="ant-design-solid" color="#1677ff" bgColor="#f0f5ff"/>
+        <QRCode value="transparent" color="#0958d9" bgColor="transparent" bordered={false}/>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -29,7 +64,26 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Render type
+
+:::preview
+
+<QrcodeDemo003 />
+
+export const QrcodeDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space>
+        <QRCode value="canvas" type="canvas"/>
+        <QRCode value="svg" type="svg"/>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -46,7 +100,26 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Icon
+
+:::preview
+
+<QrcodeDemo004 />
+
+export const QrcodeDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space>
+        <QRCode value="solid" icon="/vite.svg"/>
+        <QRCode value="solid-wide-icon" icon="/vite.svg" iconSize={{ width: 32, height: 24 }}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -63,7 +136,27 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Status
+
+:::preview
+
+<QrcodeDemo005 />
+
+export const QrcodeDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space>
+        <QRCode value="loading" status="loading" size={128}/>
+        <QRCode value="expired" status="expired" size={128}/>
+        <QRCode value="scanned" status="scanned" size={128}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -81,7 +174,23 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Custom status
+
+:::preview
+
+<QrcodeDemo006 />
+
+export const QrcodeDemo006 = (() => {
+  const Demo6 = function () {
+      return (<QRCode value="expired" status="expired" onRefresh={() => console.log('refresh')} statusRender={({ locale, onRefresh }) => (<button onClick={onRefresh}>{locale.refresh}</button>)}/>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -102,7 +211,26 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Error correction
+
+:::preview
+
+<QrcodeDemo007 />
+
+export const QrcodeDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space>
+        <QRCode value="ant-design-solid" errorLevel="L"/>
+        <QRCode value="ant-design-solid" errorLevel="H" boostLevel={false}/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -119,7 +247,23 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Multiple values
+
+:::preview
+
+<QrcodeDemo008 />
+
+export const QrcodeDemo008 = (() => {
+  const Demo8 = function () {
+      return <QRCode value={['https://solidjs.com', 'ant-design-solid']}/>;
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { QRCode } from '@ant-design-solid/core'
@@ -131,7 +275,26 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Quiet zone
+
+:::preview
+
+<QrcodeDemo009 />
+
+export const QrcodeDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Space>
+        <QRCode value="no-margin" marginSize={0}/>
+        <QRCode value="with-margin" marginSize={4}/>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { QRCode, Space } from '@ant-design-solid/core'
@@ -148,7 +311,31 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<QrcodeDemo010 />
+
+export const QrcodeDemo010 = (() => {
+  const Demo10 = function () {
+      return (<QRCode value="semantic" status="loading" classes={{
+              root: 'custom-qrcode',
+              image: 'custom-qrcode-image',
+              cover: 'custom-qrcode-cover',
+          }} styles={{
+              root: { padding: '12px' },
+              image: { opacity: 0.7 },
+              cover: { color: '#0958d9' },
+          }}/>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { QRCode } from '@ant-design-solid/core'
@@ -175,7 +362,23 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Borderless
+
+:::preview
+
+<QrcodeDemo011 />
+
+export const QrcodeDemo011 = (() => {
+  const Demo11 = function () {
+      return <QRCode value="borderless" bordered={false}/>;
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { QRCode } from '@ant-design-solid/core'
@@ -186,6 +389,8 @@ const Demo11 = function () {
 
 export default Demo11
 ```
+
+:::
 
 ## API
 

@@ -1,8 +1,44 @@
+import { Anchor, Card, Space } from '@ant-design-solid/core'
+
 # Anchor
 
 Anchor renders page-section navigation and highlights the current section while scrolling.
 
 ### Basic
+
+:::preview
+
+<AnchorDemo001 />
+
+export const AnchorDemo001 = (() => {
+  const items = [
+      { key: 'part-1', href: '#anchor-basic-part-1', title: 'Part 1' },
+      { key: 'part-2', href: '#anchor-basic-part-2', title: 'Part 2' },
+      { key: 'part-3', href: '#anchor-basic-part-3', title: 'Part 3' },
+  ];
+  const Demo1 = function () {
+      return (<Space align="start" style={{ width: '100%' }}>
+        <Anchor affix={false} showInkInFixed items={items}/>
+        <div style={{ flex: 1 }}>
+          <Card id="anchor-basic-part-1" title="Part 1">
+            Basic section content.
+          </Card>
+          <div style={{ height: '24px' }}/>
+          <Card id="anchor-basic-part-2" title="Part 2">
+            More content for the second anchor.
+          </Card>
+          <div style={{ height: '24px' }}/>
+          <Card id="anchor-basic-part-3" title="Part 3">
+            Final section content.
+          </Card>
+        </div>
+      </Space>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Anchor, Card, Space } from '@ant-design-solid/core'
@@ -37,7 +73,28 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Static Position
+
+:::preview
+
+<AnchorDemo002 />
+
+export const AnchorDemo002 = (() => {
+  const items = [
+      { key: 'basic', href: '#anchor-static-basic', title: 'Basic demo' },
+      { key: 'static', href: '#anchor-static-position', title: 'Static position' },
+      { key: 'api', href: '#anchor-static-api', title: 'API' },
+  ];
+  const Demo2 = function () {
+      return <Anchor affix={false} showInkInFixed items={items}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Anchor } from '@ant-design-solid/core'
@@ -55,7 +112,44 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Customize Container
+
+:::preview
+
+<AnchorDemo003 />
+
+export const AnchorDemo003 = (() => {
+  let containerRef;
+  const items = [
+      { key: 'a', href: '#anchor-container-a', title: 'Section A' },
+      { key: 'b', href: '#anchor-container-b', title: 'Section B' },
+      { key: 'c', href: '#anchor-container-c', title: 'Section C' },
+  ];
+  const Demo3 = function () {
+      return (<div ref={containerRef} style={{ display: 'flex', gap: '24px', height: '240px', overflow: 'auto' }}>
+        <Anchor affix={false} showInkInFixed getContainer={() => containerRef} targetOffset={16} items={items}/>
+        <div style={{ flex: 1 }}>
+          <Card id="anchor-container-a" title="Section A">
+            Container section A.
+          </Card>
+          <div style={{ height: '80px' }}/>
+          <Card id="anchor-container-b" title="Section B">
+            Container section B.
+          </Card>
+          <div style={{ height: '80px' }}/>
+          <Card id="anchor-container-c" title="Section C">
+            Container section C.
+          </Card>
+        </div>
+      </div>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Anchor, Card } from '@ant-design-solid/core'
@@ -101,7 +195,32 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Target Offset
+
+:::preview
+
+<AnchorDemo004 />
+
+export const AnchorDemo004 = (() => {
+  const items = [
+      { key: 'default', href: '#anchor-offset-default', title: 'Default offset' },
+      {
+          key: 'custom',
+          href: '#anchor-offset-custom',
+          title: 'Custom item offset',
+          targetOffset: 80,
+      },
+  ];
+  const Demo4 = function () {
+      return <Anchor targetOffset={24} items={items}/>;
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Anchor } from '@ant-design-solid/core'
@@ -123,7 +242,28 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Horizontal
+
+:::preview
+
+<AnchorDemo005 />
+
+export const AnchorDemo005 = (() => {
+  const items = [
+      { key: 'basic', href: '#anchor-horizontal-basic', title: 'Basic' },
+      { key: 'container', href: '#anchor-horizontal-container', title: 'Container' },
+      { key: 'api', href: '#anchor-horizontal-api', title: 'API' },
+  ];
+  const Demo5 = function () {
+      return <Anchor affix={false} direction="horizontal" showInkInFixed items={items}/>;
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Anchor } from '@ant-design-solid/core'
@@ -141,7 +281,27 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Replace
+
+:::preview
+
+<AnchorDemo006 />
+
+export const AnchorDemo006 = (() => {
+  const items = [
+      { key: 'push', href: '#anchor-replace-push', title: 'Push history' },
+      { key: 'replace', href: '#anchor-replace-replace', title: 'Replace history', replace: true },
+  ];
+  const Demo6 = function () {
+      return <Anchor replace items={items}/>;
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Anchor } from '@ant-design-solid/core'
@@ -158,7 +318,28 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Anchor Link
+
+:::preview
+
+<AnchorDemo007 />
+
+export const AnchorDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Anchor affix={false} showInkInFixed>
+        <Anchor.Link href="#anchor-link-basic" title="Basic"/>
+        <Anchor.Link href="#anchor-link-nested" title="Nested">
+          <Anchor.Link href="#anchor-link-child" title="Child" targetOffset={48}/>
+        </Anchor.Link>
+      </Anchor>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Anchor } from '@ant-design-solid/core'
@@ -177,7 +358,34 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Semantic DOM
+
+:::preview
+
+<AnchorDemo008 />
+
+export const AnchorDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Anchor affix={false} showInkInFixed classNames={{
+              root: 'custom-anchor',
+              item: 'custom-anchor-item',
+              itemTitle: 'custom-anchor-title',
+              indicator: 'custom-anchor-indicator',
+          }} styles={{
+              root: { width: '220px' },
+              indicator: { background: '#722ed1' },
+          }} items={[
+              { key: 'semantic-a', href: '#anchor-semantic-a', title: 'Semantic A' },
+              { key: 'semantic-b', href: '#anchor-semantic-b', title: 'Semantic B' },
+          ]}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Anchor } from '@ant-design-solid/core'
@@ -207,6 +415,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

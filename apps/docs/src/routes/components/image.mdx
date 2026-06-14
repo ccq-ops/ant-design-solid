@@ -1,8 +1,25 @@
+import { Button, Image, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Image
 
 Display images with fallback loading, progressive placeholders, preview operations, and grouped preview.
 
 ### Basic
+
+:::preview
+
+<ImageDemo001 />
+
+export const ImageDemo001 = (() => {
+  const Demo = function () {
+      return (<Image width={240} src="https://dummyimage.com/240x160/e6f4ff/1677ff.png&text=Image" alt="Basic image"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -20,7 +37,23 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Fallback
+
+:::preview
+
+<ImageDemo002 />
+
+export const ImageDemo002 = (() => {
+  const Demo = function () {
+      return (<Image width={240} src="/missing.png" fallback="https://dummyimage.com/240x160/f5f5f5/999.png&text=Fallback" alt="Fallback"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -39,7 +72,23 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Placeholder
+
+:::preview
+
+<ImageDemo003 />
+
+export const ImageDemo003 = (() => {
+  const Demo = function () {
+      return (<Image width={240} height={160} src="https://dummyimage.com/240x160/e6f4ff/1677ff.png&text=Image" placeholder="Loading image" alt="Placeholder"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -59,7 +108,23 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Progress Placeholder
+
+:::preview
+
+<ImageDemo004 />
+
+export const ImageDemo004 = (() => {
+  const Demo = function () {
+      return (<Image width={240} height={160} src="https://dummyimage.com/240x160/e6f4ff/1677ff.png&text=Image" placeholder={{ progress: { percent: 62 } }} alt="Progress placeholder"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -79,7 +144,27 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Preview
+
+:::preview
+
+<ImageDemo005 />
+
+export const ImageDemo005 = (() => {
+  const src = 'https://dummyimage.com/240x160/e6f4ff/1677ff.png&text=Image';
+  const Demo = function () {
+      return (<Space>
+        <Image width={160} src={src} alt="Preview"/>
+        <Image preview={false} width={160} src={src} alt="No preview"/>
+      </Space>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image, Space } from '@ant-design-solid/core'
@@ -98,7 +183,23 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Preview From Different Source
+
+:::preview
+
+<ImageDemo006 />
+
+export const ImageDemo006 = (() => {
+  const Demo = function () {
+      return (<Image width={160} src="https://dummyimage.com/160x100/f6ffed/52c41a.png&text=Thumb" preview={{ src: 'https://dummyimage.com/720x420/e6f4ff/1677ff.png&text=Preview' }} alt="Different source"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -117,7 +218,29 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Preview Group
+
+:::preview
+
+<ImageDemo007 />
+
+export const ImageDemo007 = (() => {
+  const Demo = function () {
+      return (<Image.PreviewGroup>
+        <Space>
+          <Image width={120} src="https://dummyimage.com/120x80/e6f4ff/1677ff.png&text=One" alt="One"/>
+          <Image width={120} src="https://dummyimage.com/120x80/f6ffed/52c41a.png&text=Two" alt="Two"/>
+          <Image width={120} src="https://dummyimage.com/120x80fffbe6/faad14.png&text=Three" alt="Three"/>
+        </Space>
+      </Image.PreviewGroup>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image, Space } from '@ant-design-solid/core'
@@ -149,7 +272,27 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Controlled Preview
+
+:::preview
+
+<ImageDemo008 />
+
+export const ImageDemo008 = (() => {
+  const Demo = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Button onClick={() => setOpen(true)}>Preview</Button>
+        <Image width={120} src="https://dummyimage.com/120x80/e6f4ff/1677ff.png&text=Image" preview={{ open: open(), onOpenChange: setOpen }} alt="Controlled"/>
+      </Space>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Button, Image, Space } from '@ant-design-solid/core'
@@ -174,7 +317,25 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Custom Toolbar
+
+:::preview
+
+<ImageDemo009 />
+
+export const ImageDemo009 = (() => {
+  const Demo = function () {
+      return (<Image width={180} src="https://dummyimage.com/180x120/e6f4ff/1677ff.png&text=Image" preview={{
+              actionsRender: (actions) => <div class="custom-actions">{actions}</div>,
+          }} alt="Custom toolbar"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -195,7 +356,27 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Custom Render And Cover
+
+:::preview
+
+<ImageDemo010 />
+
+export const ImageDemo010 = (() => {
+  const Demo = function () {
+      return (<Image width={180} src="https://dummyimage.com/180x120/e6f4ff/1677ff.png&text=Image" preview={{
+              cover: <span>Preview</span>,
+              mask: false,
+              imageRender: (node) => <div style={{ padding: '24px', background: '#000' }}>{node}</div>,
+          }} alt="Custom render"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -218,7 +399,23 @@ const Demo = function () {
 export default Demo
 ```
 
+:::
+
 ### Semantic DOM
+
+:::preview
+
+<ImageDemo011 />
+
+export const ImageDemo011 = (() => {
+  const Demo = function () {
+      return (<Image width={180} src="https://dummyimage.com/180x120/e6f4ff/1677ff.png&text=Image" classNames={{ root: 'my-image', image: 'my-image-node', popup: { actions: 'my-actions' } }} styles={{ root: { margin: '8px' }, image: { 'object-fit': 'cover' } }} alt="Semantic DOM"/>);
+  };
+
+  return Demo
+})()
+
+---
 
 ```tsx
 import { Image } from '@ant-design-solid/core'
@@ -237,6 +434,8 @@ const Demo = function () {
 
 export default Demo
 ```
+
+:::
 
 ## API
 

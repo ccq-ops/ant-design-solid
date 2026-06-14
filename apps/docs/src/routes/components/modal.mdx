@@ -1,8 +1,37 @@
+import { createSignal } from 'solid-js'
+import { Button, ConfigProvider, message, Modal, Space } from '@ant-design-solid/core'
+
 # Modal
 
 Modal displays important content in a focused dialog above the page.
 
 ### Basic
+
+:::preview
+
+<ModalDemo001 />
+
+export const ModalDemo001 = (() => {
+  const Demo1 = function () {
+      const [basicOpen, setBasicOpen] = createSignal(false);
+      return (<>
+      <Button type="primary" onClick={() => setBasicOpen(true)}>
+            Open modal
+          </Button>
+          <Modal open={basicOpen()} title="Basic modal" onOk={() => {
+              setBasicOpen(false);
+          }} onCancel={() => {
+              setBasicOpen(false);
+          }}>
+            Modal content stays mounted in a portal while open.
+          </Modal>
+    </>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -33,7 +62,36 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Custom footer
+
+:::preview
+
+<ModalDemo002 />
+
+export const ModalDemo002 = (() => {
+  const Demo2 = function () {
+      const [footerOpen, setFooterOpen] = createSignal(false);
+      return (<>
+      <Button onClick={() => setFooterOpen(true)}>Open custom footer</Button>
+          <Modal open={footerOpen()} title="Custom footer" footer={<Space>
+                <Button onClick={() => setFooterOpen(false)}>Close</Button>
+                <Button type="primary" onClick={() => setFooterOpen(false)}>
+                  Apply
+                </Button>
+              </Space>} onCancel={() => {
+              setFooterOpen(false);
+          }}>
+            Replace the default footer with any Solid content.
+          </Modal>
+    </>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -67,7 +125,40 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Footer render function
+
+:::preview
+
+<ModalDemo003 />
+
+export const ModalDemo003 = (() => {
+  const Demo3 = function () {
+      const [buttonsOpen, setButtonsOpen] = createSignal(false);
+      return (<>
+      <Button onClick={() => setButtonsOpen(true)}>Open custom buttons</Button>
+          <Modal open={buttonsOpen()} title="Custom buttons" okText="Publish" cancelText="Back" okType="default" okButtonProps={{ danger: true }} cancelButtonProps={{ type: 'text' }} footer={(_originNode, { OkBtn, CancelBtn }) => (<Space>
+                <Button type="link" onClick={() => message.info('Open help')}>
+                  Help
+                </Button>
+                <CancelBtn />
+                <OkBtn />
+              </Space>)} onOk={() => {
+              message.success('Published');
+              setButtonsOpen(false);
+          }} onCancel={() => {
+              setButtonsOpen(false);
+          }}>
+            Use button props and footer render functions to customize the default actions.
+          </Modal>
+    </>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -111,7 +202,40 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Confirm loading
+
+:::preview
+
+<ModalDemo004 />
+
+export const ModalDemo004 = (() => {
+  const Demo4 = function () {
+      const [loadingOpen, setLoadingOpen] = createSignal(false);
+      const [loading, setLoading] = createSignal(false);
+      function handleLoadingOk() {
+          setLoading(true);
+          window.setTimeout(() => {
+              setLoading(false);
+              setLoadingOpen(false);
+              message.success('Saved');
+          }, 800);
+      }
+      return (<>
+      <Button onClick={() => setLoadingOpen(true)}>Open async modal</Button>
+          <Modal open={loadingOpen()} title="Confirm loading" confirmLoading={loading()} onOk={handleLoadingOk} onCancel={() => {
+              setLoadingOpen(false);
+          }}>
+            Click OK to simulate an async operation.
+          </Modal>
+    </>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -150,7 +274,31 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Custom close and mask
+
+:::preview
+
+<ModalDemo005 />
+
+export const ModalDemo005 = (() => {
+  const Demo5 = function () {
+      const [maskOpen, setMaskOpen] = createSignal(false);
+      return (<>
+      <Button onClick={() => setMaskOpen(true)}>Open locked mask modal</Button>
+      <Modal open={maskOpen()} title="Custom close and mask" mask={{ blur: true, closable: false }} closable={{ closeIcon: <span>Close</span>, onClose: () => message.info('Close clicked') }} onCancel={() => {
+              setMaskOpen(false);
+          }}>
+  The blurred mask is visible, but clicking outside does not close this modal.
+      </Modal>
+    </>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -177,7 +325,56 @@ The blurred mask is visible, but clicking outside does not close this modal.
 export default Demo5
 ```
 
+:::
+
 ### Custom container
+
+:::preview
+
+<ModalDemo006 />
+
+export const ModalDemo006 = (() => {
+  const Demo6 = function () {
+      const [containerOpen, setContainerOpen] = createSignal(false);
+      const [inlineOpen, setInlineOpen] = createSignal(false);
+      let containerRef;
+      return (<>
+      <Space wrap>
+            <Button onClick={() => setContainerOpen(true)}>Mount into container</Button>
+            <Button onClick={() => setInlineOpen(true)}>Render inline</Button>
+          </Space>
+          <div ref={containerRef} style={{
+              position: 'relative',
+              margin: '12px 0',
+              padding: '12px',
+              border: '1px dashed #d9d9d9',
+              'min-height': '48px',
+          }}>
+            Custom container target
+          </div>
+          <Modal open={containerOpen()} title="Custom container" getContainer={() => containerRef} onOk={() => {
+              setContainerOpen(false);
+          }} onCancel={() => {
+              setContainerOpen(false);
+          }}>
+            This modal portal is mounted into the dashed container.
+          </Modal>
+          <div style={{ position: 'relative' }}>
+            <Modal open={inlineOpen()} title="Inline modal" getContainer={false} onOk={() => {
+              setInlineOpen(false);
+          }} onCancel={() => {
+              setInlineOpen(false);
+          }}>
+              Setting getContainer to false renders the modal inline.
+            </Modal>
+          </div>
+    </>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -241,7 +438,38 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Semantic classNames and styles
+
+:::preview
+
+<ModalDemo007 />
+
+export const ModalDemo007 = (() => {
+  const Demo7 = function () {
+      const [semanticOpen, setSemanticOpen] = createSignal(false);
+      return (<>
+      <Button onClick={() => setSemanticOpen(true)}>Open styled modal</Button>
+      <Modal open={semanticOpen()} title="Semantic styles" class="demo-modal" rootClass="demo-root" wrapClass="demo-wrap" classNames={({ props }) => ({
+              body: props.open ? 'demo-body-open' : 'demo-body',
+              footer: 'demo-footer',
+              wrapper: 'demo-wrapper',
+              container: 'demo-container',
+          })} styles={{ body: { background: '#f6ffed' }, title: { color: '#1677ff' } }} onOk={() => {
+              setSemanticOpen(false);
+          }} onCancel={() => {
+              setSemanticOpen(false);
+          }}>
+  Use semantic keys to customize stable parts of the Modal DOM.
+      </Modal>
+    </>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -279,7 +507,29 @@ Use semantic keys to customize stable parts of the Modal DOM.
 export default Demo7
 ```
 
+:::
+
 ### Responsive width and focus
+
+:::preview
+
+<ModalDemo008 />
+
+export const ModalDemo008 = (() => {
+  const Demo12 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<>
+        <Button onClick={() => setOpen(true)}>Open responsive modal</Button>
+        <Modal open={open()} title="Responsive modal" width={{ xs: 280, md: 640, xl: 860 }} focusable={{ trap: true, focusTriggerAfterClose: true }} onOk={() => setOpen(false)} onCancel={() => setOpen(false)}>
+          The width can follow responsive breakpoints, and focus stays inside the dialog while open.
+        </Modal>
+      </>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -308,7 +558,41 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Hook modal
+
+:::preview
+
+<ModalDemo009 />
+
+export const ModalDemo009 = (() => {
+  function HookButtons() {
+      const [modal, contextHolder] = Modal.useModal();
+      async function confirmSave() {
+          const confirmed = await modal.confirm({
+              title: 'Save changes?',
+              content: 'The hook modal receives the surrounding Solid context.',
+              okText: 'Save',
+          });
+          if (confirmed)
+              message.success('Saved');
+      }
+      return (<>
+        {contextHolder}
+        <Button onClick={confirmSave}>Open hook confirm</Button>
+      </>);
+  }
+  const Demo13 = function () {
+      return (<ConfigProvider prefixCls="demo">
+        <HookButtons />
+      </ConfigProvider>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -346,7 +630,53 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Render control
+
+:::preview
+
+<ModalDemo010 />
+
+export const ModalDemo010 = (() => {
+  const Demo8 = function () {
+      const [forceOpen, setForceOpen] = createSignal(false);
+      const [destroyOpen, setDestroyOpen] = createSignal(false);
+      const [renderOpen, setRenderOpen] = createSignal(false);
+      return (<>
+      <Space wrap>
+            <Button onClick={() => setForceOpen(true)}>Force rendered modal</Button>
+            <Button onClick={() => setDestroyOpen(true)}>Destroy on hidden</Button>
+            <Button onClick={() => setRenderOpen(true)}>Wrapped render</Button>
+          </Space>
+          <Modal open={forceOpen()} forceRender title="Force render" afterOpenChange={(open) => message.info(`Force modal open: ${open}`)} onOk={() => {
+              setForceOpen(false);
+          }} onCancel={() => {
+              setForceOpen(false);
+          }}>
+            This modal content is rendered before first open.
+          </Modal>
+          <Modal open={destroyOpen()} destroyOnHidden title="Destroy on hidden" onOk={() => {
+              setDestroyOpen(false);
+          }} onCancel={() => {
+              setDestroyOpen(false);
+          }}>
+            Content is unmounted after the modal is hidden.
+          </Modal>
+          <Modal open={renderOpen()} title="modalRender" modalRender={(node) => <section style={{ border: '2px solid #1677ff' }}>{node}</section>} onOk={() => {
+              setRenderOpen(false);
+          }} onCancel={() => {
+              setRenderOpen(false);
+          }}>
+            modalRender wraps the dialog node.
+          </Modal>
+    </>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -411,7 +741,32 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Static confirm
+
+:::preview
+
+<ModalDemo011 />
+
+export const ModalDemo011 = (() => {
+  const Demo9 = function () {
+      return (<Button danger onClick={() => Modal.confirm({
+              title: 'Delete item?',
+              content: 'This action cannot be undone.',
+              okText: 'Delete',
+              onOk: () => {
+                  message.success('Deleted');
+              },
+          })}>
+        Confirm delete
+      </Button>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -440,7 +795,41 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Static method advanced config
+
+:::preview
+
+<ModalDemo012 />
+
+export const ModalDemo012 = (() => {
+  const Demo10 = function () {
+      function openAdvancedConfirm() {
+          const modal = Modal.confirm({
+              title: 'Archive project?',
+              content: 'You can restore it from the archive later.',
+              icon: <span style={{ color: '#faad14' }}>!</span>,
+              okText: 'Archive',
+              okButtonProps: { danger: true },
+              cancelButtonProps: { type: 'text' },
+              afterClose: () => message.info('Confirm closed'),
+              onOk: (close) => {
+                  message.success('Archived');
+                  close?.();
+              },
+          });
+          window.setTimeout(() => {
+              modal.update((prev) => ({ title: `${prev.title} (updated)` }));
+          }, 600);
+      }
+      return <Button onClick={openAdvancedConfirm}>Open advanced confirm</Button>;
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -473,7 +862,32 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Information methods
+
+:::preview
+
+<ModalDemo013 />
+
+export const ModalDemo013 = (() => {
+  const Demo11 = function () {
+      return (<Space wrap>
+        <Button onClick={() => Modal.info({ title: 'Info', content: 'Useful detail' })}>Info</Button>
+        <Button onClick={() => Modal.success({ title: 'Success', content: 'All done' })}>
+          Success
+        </Button>
+        <Button onClick={() => Modal.warning({ title: 'Warning', content: 'Check this first' })}>
+          Warning
+        </Button>
+        <Button onClick={() => Modal.destroyAll()}>Destroy all</Button>
+      </Space>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -496,6 +910,8 @@ const Demo11 = function () {
 
 export default Demo11
 ```
+
+:::
 
 ## API
 

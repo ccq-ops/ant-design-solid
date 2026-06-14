@@ -1,8 +1,29 @@
+import { Space, Steps } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Steps
 
 Steps display progress through an ordered task and can also act as clickable navigation between stages.
 
 ### Basic
+
+:::preview
+
+<StepsDemo001 />
+
+export const StepsDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Steps current={1} items={[
+              { title: 'Finished', content: 'This step is complete.' },
+              { title: 'In Progress', content: 'This step is running.' },
+              { title: 'Waiting', content: 'This step has not started.' },
+          ]}/>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -23,7 +44,32 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<StepsDemo002 />
+
+export const StepsDemo002 = (() => {
+  const items = [
+      { title: 'Login' },
+      { title: 'Verification' },
+      { title: 'Payment' },
+      { title: 'Done' },
+  ];
+  const Demo2 = function () {
+      return (<div class="flex w-full flex-col gap-4">
+        <Steps current={1} items={items}/>
+        <Steps size="small" current={1} items={items}/>
+      </div>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -47,7 +93,27 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Vertical
+
+:::preview
+
+<StepsDemo003 />
+
+export const StepsDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Steps orientation="vertical" current={1} items={[
+              { title: 'Create project', content: 'Configure the basics.' },
+              { title: 'Invite teammates', content: 'Add collaborators.' },
+              { title: 'Launch', content: 'Publish when ready.' },
+          ]}/>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -69,7 +135,27 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Error status
+
+:::preview
+
+<StepsDemo004 />
+
+export const StepsDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Steps current={1} status="error" items={[
+              { title: 'Finished' },
+              { title: 'Failed', content: 'Review the failed validation.' },
+              { title: 'Waiting' },
+          ]}/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -91,7 +177,32 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Clickable
+
+:::preview
+
+<StepsDemo005 />
+
+export const StepsDemo005 = (() => {
+  const Demo5 = function () {
+      const [current, setCurrent] = createSignal(0);
+      return (<Space direction="vertical" class="w-full">
+        <Steps current={current()} onChange={setCurrent} items={[
+              { title: 'Start', content: 'Create a draft.' },
+              { title: 'Review', content: 'Check the submission.' },
+              { title: 'Disabled', disabled: true, content: 'This step cannot be selected.' },
+              { title: 'Done', content: 'Finish the task.' },
+          ]}/>
+        <span>Current step: {current() + 1}</span>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -120,7 +231,32 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Navigation
+
+:::preview
+
+<StepsDemo006 />
+
+export const StepsDemo006 = (() => {
+  const Demo6 = function () {
+      const [current, setCurrent] = createSignal(0);
+      return (<Space direction="vertical" class="w-full">
+        <Steps type="navigation" current={current()} onChange={setCurrent} items={[
+              { title: 'Profile' },
+              { title: 'Team' },
+              { title: 'Billing' },
+              { title: 'Confirm' },
+          ]}/>
+        <span>Current step: {current() + 1}</span>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -150,7 +286,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Custom icon
+
+:::preview
+
+<StepsDemo007 />
+
+export const StepsDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Steps current={1} items={[
+              { title: 'Upload', icon: '↑' },
+              { title: 'Process', icon: '⚙' },
+              { title: 'Complete', icon: '✓' },
+          ]}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -171,7 +327,25 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Icon render
+
+:::preview
+
+<StepsDemo008 />
+
+export const StepsDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Steps current={1} iconRender={(originNode, info) => (<span class={info.active ? 'scale-105' : 'opacity-80'} title={`Step ${info.index + 1}`}>
+            {originNode}
+          </span>)} items={[{ title: 'Create' }, { title: 'Upload' }, { title: 'Publish' }]}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -193,7 +367,27 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Title placement and progress
+
+:::preview
+
+<StepsDemo009 />
+
+export const StepsDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Steps current={1} percent={60} titlePlacement="vertical" items={[
+              { title: 'Create', subTitle: 'Done' },
+              { title: 'Upload', subTitle: '60%', content: 'Uploading assets.' },
+              { title: 'Publish', content: 'Waiting for upload.' },
+          ]}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -216,7 +410,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Dot style
+
+:::preview
+
+<StepsDemo010 />
+
+export const StepsDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Steps type="dot" current={1} items={[
+              { title: 'Queued', content: 'Waiting for worker.' },
+              { title: 'Running', content: 'Processing data.' },
+              { title: 'Done', content: 'Ready to publish.' },
+          ]}/>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -238,7 +452,29 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Customized dot
+
+:::preview
+
+<StepsDemo011 />
+
+export const StepsDemo011 = (() => {
+  const Demo11 = function () {
+      return (<Steps progressDot={(dot, info) => (<span title={`${info.title} - ${info.status}`} class="inline-flex items-center">
+            {dot}
+          </span>)} items={[
+              { title: 'Design', content: 'Approved' },
+              { title: 'Build', content: 'In progress' },
+              { title: 'Verify', content: 'Waiting' },
+          ]}/>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -263,7 +499,27 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Inline
+
+:::preview
+
+<StepsDemo012 />
+
+export const StepsDemo012 = (() => {
+  const Demo12 = function () {
+      return (<Steps type="inline" current={1} ellipsis offset={2} items={[
+              { title: 'Draft', content: 'Owner editing' },
+              { title: 'Review', content: 'Legal review' },
+              { title: 'Ship', content: 'Ready' },
+          ]}/>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -287,7 +543,23 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Panel
+
+:::preview
+
+<StepsDemo013 />
+
+export const StepsDemo013 = (() => {
+  const Demo13 = function () {
+      return (<Steps type="panel" current={1} items={[{ title: 'Cart' }, { title: 'Address' }, { title: 'Payment' }]}/>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -305,7 +577,27 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Variant
+
+:::preview
+
+<StepsDemo014 />
+
+export const StepsDemo014 = (() => {
+  const items = [{ title: 'Create' }, { title: 'Upload' }, { title: 'Publish' }];
+  const Demo14 = function () {
+      return (<div class="flex w-full flex-col gap-4">
+        <Steps variant="filled" current={1} items={items}/>
+        <Steps variant="outlined" current={1} items={items}/>
+      </div>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -324,7 +616,23 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Initial number
+
+:::preview
+
+<StepsDemo015 />
+
+export const StepsDemo015 = (() => {
+  const Demo15 = function () {
+      return (<Steps initial={2} items={[{ title: 'Step 3' }, { title: 'Step 4' }, { title: 'Step 5' }]}/>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -338,7 +646,38 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Semantic styling
+
+:::preview
+
+<StepsDemo016 />
+
+export const StepsDemo016 = (() => {
+  const Demo16 = function () {
+      return (<Steps current={1} classNames={{
+              root: 'rounded border border-dashed border-blue-200 p-4',
+              itemTitle: 'font-medium',
+              itemSubtitle: 'text-xs',
+          }} styles={{
+              itemContent: { color: '#64748b' },
+          }} items={[
+              {
+                  title: 'Create',
+                  subTitle: 'Owner',
+                  content: 'Draft the request.',
+                  classNames: { itemIcon: 'bg-blue-50' },
+              },
+              { title: 'Review', subTitle: 'Team', content: 'Approve the request.' },
+              { title: 'Publish', subTitle: 'System', content: 'Send the result.' },
+          ]}/>);
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import { Steps } from '@ant-design-solid/core'
@@ -371,6 +710,8 @@ const Demo16 = function () {
 
 export default Demo16
 ```
+
+:::
 
 ## API
 

@@ -1,8 +1,27 @@
+import { Button, Space, Upload } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Upload
 
 Select files, upload them with a default request or custom request, intercept files before upload, and render a configurable upload list.
 
 ### Basic
+
+:::preview
+
+<UploadDemo001 />
+
+export const UploadDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Upload>
+        <Button>Upload file</Button>
+      </Upload>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -18,7 +37,25 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Multiple and max count
+
+:::preview
+
+<UploadDemo002 />
+
+export const UploadDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Upload multiple maxCount={2}>
+        <Button>Keep latest two</Button>
+      </Upload>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -34,7 +71,33 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Manual upload
+
+:::preview
+
+<UploadDemo003 />
+
+export const UploadDemo003 = (() => {
+  const Demo3 = function () {
+      const [files, setFiles] = createSignal([]);
+      return (<Space direction="vertical">
+        <Upload fileList={files()} beforeUpload={() => false} onChange={({ fileList }) => setFiles(fileList)}>
+          <Button>Select without uploading</Button>
+        </Upload>
+        <span>
+          {files()
+              .map((file) => file.name)
+              .join(', ') || 'No files selected'}
+        </span>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -65,7 +128,29 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Transform or ignore files
+
+:::preview
+
+<UploadDemo004 />
+
+export const UploadDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Upload beforeUpload={(file) => {
+              if (file.name.endsWith('.tmp'))
+                  return Upload.LIST_IGNORE;
+              return new File([file], file.name.toLowerCase(), { type: file.type });
+          }}>
+        <Button>Normalize names</Button>
+      </Upload>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -86,7 +171,25 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Default request
+
+:::preview
+
+<UploadDemo005 />
+
+export const UploadDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Upload action="/api/upload" name="asset" method="POST" headers={{ authorization: 'Bearer token' }} data={(file) => ({ uid: file.uid })}>
+        <Button>Upload to server</Button>
+      </Upload>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -108,7 +211,31 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Custom request
+
+:::preview
+
+<UploadDemo006 />
+
+export const UploadDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Upload customRequest={({ onProgress, onSuccess }) => {
+              onProgress({ percent: 35 });
+              window.setTimeout(() => {
+                  onProgress({ percent: 100 });
+                  onSuccess({ ok: true });
+              }, 600);
+          }}>
+        <Button>Upload with progress</Button>
+      </Upload>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -132,7 +259,25 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Dragger
+
+:::preview
+
+<UploadDemo007 />
+
+export const UploadDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Upload.Dragger multiple>
+        <span>Click or drag files to this area</span>
+      </Upload.Dragger>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Upload } from '@ant-design-solid/core'
@@ -148,7 +293,34 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Picture list
+
+:::preview
+
+<UploadDemo008 />
+
+export const UploadDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Upload listType="picture" defaultFileList={[
+              {
+                  uid: '1',
+                  name: 'image.png',
+                  status: 'done',
+                  url: 'https://placehold.co/120x80',
+                  thumbUrl: 'https://placehold.co/120x80',
+                  type: 'image/png',
+              },
+          ]}>
+        <Button>Add image</Button>
+      </Upload>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -176,7 +348,30 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Upload list actions
+
+:::preview
+
+<UploadDemo009 />
+
+export const UploadDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Upload defaultFileList={[{ uid: '1', name: 'report.pdf', status: 'done', url: '/report.pdf' }]} showUploadList={{
+              extra: (file) => <span>{file.status}</span>,
+              showPreviewIcon: true,
+              showDownloadIcon: true,
+              showRemoveIcon: (file) => file.status !== 'uploading',
+          }} onPreview={(file) => console.log('preview', file.name)} onDownload={(file) => console.log('download', file.name)}>
+        <Button>Upload</Button>
+      </Upload>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -202,7 +397,25 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Paste, directory, and semantic styles
+
+:::preview
+
+<UploadDemo010 />
+
+export const UploadDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Upload directory pastable class="upload-root" classNames={{ list: 'upload-list' }} styles={{ item: { minHeight: '36px' } }}>
+        <Button>Select folder or paste files</Button>
+      </Upload>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Upload } from '@ant-design-solid/core'
@@ -223,6 +436,8 @@ const Demo10 = function () {
 
 export default Demo10
 ```
+
+:::
 
 ## API
 

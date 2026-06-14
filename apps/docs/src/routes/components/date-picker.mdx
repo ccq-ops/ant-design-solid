@@ -1,8 +1,27 @@
+import dayjs from 'dayjs'
+import { DatePicker, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { CalendarOutlined, ClockCircleOutlined, DoubleLeftOutlined, DoubleRightOutlined, LeftOutlined, RightOutlined } from '@ant-design-solid/icons'
+
 # DatePicker
 
 Select dates, date ranges, and date-time values. Like antd, DatePicker values are `dayjs` objects rather than strings.
 
 ### Basic dayjs value
+
+:::preview
+
+<DatePickerDemo001 />
+
+export const DatePickerDemo001 = (() => {
+  const Demo1 = function () {
+      return <DatePicker defaultValue={dayjs('2026-06-15')}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -24,7 +43,29 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Controlled open and value
+
+:::preview
+
+<DatePickerDemo002 />
+
+export const DatePickerDemo002 = (() => {
+  const Demo2 = function () {
+      const [value, setValue] = createSignal(dayjs('2026-06-15'));
+      const [open, setOpen] = createSignal(false);
+      const selectedLabel = () => value()?.format('YYYY-MM-DD') ?? 'none';
+      return (<Space direction="vertical">
+        <DatePicker value={value()} open={open()} onChange={setValue} onOpenChange={setOpen}/>
+        <span>Selected date: {selectedLabel()}</span>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -57,7 +98,28 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Picker variants
+
+:::preview
+
+<DatePickerDemo003 />
+
+export const DatePickerDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space wrap>
+        <DatePicker picker="week" defaultValue={dayjs('2026-06-15')}/>
+        <DatePicker picker="month" defaultValue={dayjs('2026-06-01')}/>
+        <DatePicker picker="quarter" defaultValue={dayjs('2026-04-01')}/>
+        <DatePicker picker="year" defaultValue={dayjs('2026-01-01')}/>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -86,7 +148,27 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Format
+
+:::preview
+
+<DatePickerDemo004 />
+
+export const DatePickerDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space direction="vertical">
+        <DatePicker defaultValue={dayjs('2026-06-15')} format="YYYY/MM/DD"/>
+        <DatePicker defaultValue={dayjs('2026-06-15')} format={['YYYY-MM-DD', (date) => date.format('YYYY/MM/DD')]}/>
+        <DatePicker defaultValue={dayjs('2026-06-15')} format={(date) => `June ${date.date()}, ${date.year()}`}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -120,7 +202,40 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Size, status, and variant
+
+:::preview
+
+<DatePickerDemo005 />
+
+export const DatePickerDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical">
+        <Space wrap>
+          <DatePicker size="small"/>
+          <DatePicker size="medium"/>
+          <DatePicker />
+          <DatePicker size="large"/>
+        </Space>
+        <Space wrap>
+          <DatePicker status="error"/>
+          <DatePicker status="warning"/>
+        </Space>
+        <Space wrap>
+          <DatePicker variant="outlined"/>
+          <DatePicker variant="filled"/>
+          <DatePicker variant="borderless"/>
+          <DatePicker variant="underlined"/>
+        </Space>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -161,7 +276,28 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Common input states
+
+:::preview
+
+<DatePickerDemo006 />
+
+export const DatePickerDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space wrap>
+        <DatePicker placeholder="Pick a deadline"/>
+        <DatePicker allowClear defaultValue={dayjs('2026-06-15')}/>
+        <DatePicker disabled defaultValue={dayjs('2026-06-15')}/>
+        <DatePicker inputReadOnly/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -190,7 +326,23 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### RangePicker
+
+:::preview
+
+<DatePickerDemo007 />
+
+export const DatePickerDemo007 = (() => {
+  const Demo7 = function () {
+      return <DatePicker.RangePicker defaultValue={[dayjs('2026-06-01'), dayjs('2026-06-15')]}/>;
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -212,7 +364,27 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### RangePicker variants
+
+:::preview
+
+<DatePickerDemo008 />
+
+export const DatePickerDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Space direction="vertical">
+        <DatePicker.RangePicker picker="month" defaultValue={[dayjs('2026-01-01'), dayjs('2026-06-01')]}/>
+        <DatePicker.RangePicker picker="quarter" defaultValue={[dayjs('2026-01-01'), dayjs('2026-07-01')]}/>
+        <DatePicker.RangePicker picker="year" defaultValue={[dayjs('2024-01-01'), dayjs('2026-01-01')]}/>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -249,7 +421,26 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Disabled date and time
+
+:::preview
+
+<DatePickerDemo009 />
+
+export const DatePickerDemo009 = (() => {
+  const Demo9 = function () {
+      return (<DatePicker showTime disabledDate={(date) => date.isBefore(dayjs('2026-06-01'), 'day') || date.day() === 0} disabledTime={() => ({
+              disabledHours: () => [0, 1, 2, 3, 4, 5, 22, 23],
+              disabledMinutes: (hour) => (hour === 12 ? [0, 15, 30, 45] : []),
+          })}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -280,7 +471,26 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Show time
+
+:::preview
+
+<DatePickerDemo010 />
+
+export const DatePickerDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Space wrap>
+        <DatePicker showTime defaultValue={dayjs('2026-06-15 09:30:00')}/>
+        <DatePicker.RangePicker showTime defaultValue={[dayjs('2026-06-01 09:00:00'), dayjs('2026-06-15 18:00:00')]}/>
+      </Space>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -310,7 +520,28 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Need confirm and onOk
+
+:::preview
+
+<DatePickerDemo011 />
+
+export const DatePickerDemo011 = (() => {
+  const Demo11 = function () {
+      const [confirmedValue, setConfirmedValue] = createSignal(dayjs('2026-06-15 09:30'));
+      const [confirmedLabel, setConfirmedLabel] = createSignal('2026-06-15 09:30:00');
+      return (<Space direction="vertical">
+        <DatePicker showTime needConfirm value={confirmedValue()} onChange={setConfirmedValue} onOk={(date) => setConfirmedLabel(date?.format('YYYY-MM-DD HH:mm:ss') ?? 'none')}/>
+        <span>Confirmed value: {confirmedLabel()}</span>
+      </Space>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -347,7 +578,30 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Multiple
+
+:::preview
+
+<DatePickerDemo012 />
+
+export const DatePickerDemo012 = (() => {
+  const Demo12 = function () {
+      const [multipleValue, setMultipleValue] = createSignal([dayjs('2026-06-10'), dayjs('2026-06-15')]);
+      const multipleLabel = () => multipleValue()
+          .map((date) => date.format('YYYY-MM-DD'))
+          .join(', ') || 'none';
+      return (<Space direction="vertical">
+        <DatePicker multiple value={multipleValue()} onChange={setMultipleValue}/>
+        <span>Selected dates: {multipleLabel()}</span>
+      </Space>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -381,7 +635,38 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Presets
+
+:::preview
+
+<DatePickerDemo013 />
+
+export const DatePickerDemo013 = (() => {
+  const Demo13 = function () {
+      return (<Space direction="vertical">
+        <DatePicker presets={[
+              { label: 'Today', value: () => dayjs() },
+              { label: 'Next week', value: () => dayjs().add(7, 'day') },
+          ]}/>
+        <DatePicker.RangePicker presets={[
+              {
+                  label: 'This month',
+                  value: [dayjs().startOf('month'), dayjs().endOf('month')],
+              },
+              {
+                  label: 'Next 7 days',
+                  value: () => [dayjs(), dayjs().add(7, 'day')],
+              },
+          ]}/>
+      </Space>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -424,7 +709,25 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Custom rendering
+
+:::preview
+
+<DatePickerDemo014 />
+
+export const DatePickerDemo014 = (() => {
+  const Demo14 = function () {
+      return (<DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} cellRender={(current, info) => (<div class={current.date() === 15 ? 'rounded bg-blue-50 text-blue-600' : undefined}>
+            {info.originNode}
+          </div>)} renderExtraFooter={() => <span>Custom footer</span>} panelRender={(panel) => <section aria-label="custom date panel">{panel}</section>}/>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -458,7 +761,36 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Show week and locale
+
+:::preview
+
+<DatePickerDemo015 />
+
+export const DatePickerDemo015 = (() => {
+  const Demo15 = function () {
+      return (<Space direction="vertical">
+        <DatePicker showWeek defaultPickerValue={dayjs('2026-06-01')}/>
+        <DatePicker locale={{
+              lang: {
+                  placeholder: '请选择日期',
+                  now: '此刻',
+                  ok: '确定',
+                  clear: '清除',
+                  week: '周',
+                  previousMonth: '上个月',
+                  nextMonth: '下个月',
+              },
+          }}/>
+      </Space>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -497,7 +829,23 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Custom icons and prefix
+
+:::preview
+
+<DatePickerDemo016 />
+
+export const DatePickerDemo016 = (() => {
+  const Demo16 = function () {
+      return (<DatePicker prefix={<ClockCircleOutlined />} suffixIcon={<CalendarOutlined />} allowClear={{ clearIcon: <span aria-hidden="true">×</span> }} prevIcon={<LeftOutlined />} nextIcon={<RightOutlined />} superPrevIcon={<DoubleLeftOutlined />} superNextIcon={<DoubleRightOutlined />}/>);
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -529,7 +877,31 @@ const Demo16 = function () {
 export default Demo16
 ```
 
+:::
+
 ### Semantic classNames and styles
+
+:::preview
+
+<DatePickerDemo017 />
+
+export const DatePickerDemo017 = (() => {
+  const Demo17 = function () {
+      return (<DatePicker class="date-picker-root" classNames={(info) => ({
+              root: info.props.class,
+              selector: 'shadow-sm',
+              popup: 'date-picker-popup',
+          })} styles={() => ({
+              selector: { 'border-color': '#1677ff' },
+              popup: { width: '320px' },
+              footer: { color: '#1677ff' },
+          })} renderExtraFooter={() => 'Styled footer'}/>);
+  };
+
+  return Demo17
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -566,7 +938,32 @@ const Demo17 = function () {
 export default Demo17
 ```
 
+:::
+
 ### Focus and blur methods
+
+:::preview
+
+<DatePickerDemo018 />
+
+export const DatePickerDemo018 = (() => {
+  const Demo18 = function () {
+      let pickerRef;
+      return (<Space>
+        <DatePicker ref={(ref) => (pickerRef = ref)}/>
+        <button type="button" onClick={() => pickerRef?.focus()}>
+          Focus
+        </button>
+        <button type="button" onClick={() => pickerRef?.blur()}>
+          Blur
+        </button>
+      </Space>);
+  };
+
+  return Demo18
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -599,6 +996,8 @@ const Demo18 = function () {
 
 export default Demo18
 ```
+
+:::
 
 ## API
 

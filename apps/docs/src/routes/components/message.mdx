@@ -1,8 +1,24 @@
+import { Button, ConfigProvider, message, Space } from '@ant-design-solid/core'
+
 # Message
 
 Message provides lightweight global feedback for user actions.
 
 ### Basic
+
+:::preview
+
+<MessageDemo001 />
+
+export const MessageDemo001 = (() => {
+  const Demo1 = function () {
+      return <Button onClick={() => message.info('Hello message')}>Show message</Button>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
@@ -14,7 +30,28 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Types
+
+:::preview
+
+<MessageDemo002 />
+
+export const MessageDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space wrap>
+        <Button onClick={() => message.success('Saved')}>Success</Button>
+        <Button onClick={() => message.error('Failed')}>Error</Button>
+        <Button onClick={() => message.warning('Check input')}>Warning</Button>
+        <Button onClick={() => message.info('Info')}>Info</Button>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
@@ -33,7 +70,25 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Duration
+
+:::preview
+
+<MessageDemo003 />
+
+export const MessageDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Button onClick={() => message.open({ content: 'Closes after 1 second', duration: 1 })}>
+        Short message
+      </Button>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
@@ -49,7 +104,29 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Promise interface
+
+:::preview
+
+<MessageDemo004 />
+
+export const MessageDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Button onClick={() => {
+              message.success('Saved', 1).then(() => {
+                  message.info('Closed');
+              });
+          }}>
+        Save
+      </Button>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
@@ -71,7 +148,28 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Loading
+
+:::preview
+
+<MessageDemo005 />
+
+export const MessageDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Button onClick={() => {
+              const handle = message.loading('Loading');
+              window.setTimeout(() => handle.close(), 1200);
+          }}>
+        Show loading
+      </Button>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
@@ -92,7 +190,35 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Keyed update
+
+:::preview
+
+<MessageDemo006 />
+
+export const MessageDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Button onClick={() => {
+              message.open({
+                  key: 'upload',
+                  type: 'loading',
+                  content: 'Uploading',
+                  duration: 0,
+              });
+              window.setTimeout(() => {
+                  message.open({ key: 'upload', type: 'success', content: 'Uploaded' });
+              }, 1000);
+          }}>
+        Update keyed message
+      </Button>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
@@ -120,7 +246,32 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Hooks usage
+
+:::preview
+
+<MessageDemo007 />
+
+export const MessageDemo007 = (() => {
+  const InnerDemo = function () {
+      const [api, contextHolder] = message.useMessage();
+      return (<>
+        {contextHolder}
+        <Button onClick={() => api.success('Scoped message')}>Show scoped message</Button>
+      </>);
+  };
+  const Demo7 = function () {
+      return (<ConfigProvider message={{ class: 'scoped-message' }}>
+        <InnerDemo />
+      </ConfigProvider>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, message } from '@ant-design-solid/core'
@@ -147,7 +298,27 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Local config
+
+:::preview
+
+<MessageDemo008 />
+
+export const MessageDemo008 = (() => {
+  const Demo8 = function () {
+      const [api, contextHolder] = message.useMessage({ prefixCls: 'local-message' });
+      return (<>
+        {contextHolder}
+        <Button onClick={() => api.success('Local message')}>Show local message</Button>
+      </>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
@@ -166,7 +337,42 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Custom semantic styles
+
+:::preview
+
+<MessageDemo009 />
+
+export const MessageDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Button onClick={() => {
+              message.success({
+                  key: 'semantic',
+                  content: 'Styled by semantic slots',
+                  class: 'my-message',
+                  classNames: ({ props }) => ({
+                      wrapper: props.type === 'success' ? 'my-message-success' : undefined,
+                      title: 'my-message-title',
+                  }),
+                  styles: {
+                      listContent: {
+                          'background-color': '#f6ffed',
+                          border: '1px solid #b7eb8f',
+                      },
+                      title: { color: '#135200' },
+                  },
+              });
+          }}>
+        Custom style
+      </Button>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
@@ -201,7 +407,30 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Stack
+
+:::preview
+
+<MessageDemo010 />
+
+export const MessageDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Button onClick={() => {
+              message.config({ stack: { threshold: 2 } });
+              message.info('First');
+              message.success('Second');
+              message.warning('Third');
+          }}>
+        Show stacked messages
+      </Button>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
@@ -224,7 +453,34 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Global config
+
+:::preview
+
+<MessageDemo011 />
+
+export const MessageDemo011 = (() => {
+  const Demo11 = function () {
+      return (<Button onClick={() => {
+              message.config({
+                  top: 48,
+                  duration: 2,
+                  maxCount: 3,
+                  rtl: false,
+                  transitionName: 'fade-message',
+              });
+              message.info('Configured message');
+          }}>
+        Configure message
+      </Button>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
@@ -250,6 +506,8 @@ const Demo11 = function () {
 
 export default Demo11
 ```
+
+:::
 
 ## API
 

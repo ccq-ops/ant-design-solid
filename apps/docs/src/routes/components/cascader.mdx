@@ -1,8 +1,49 @@
+import { Cascader, Form, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Cascader
 
 Select from a nested set of related options with one menu column per level.
 
 ### Basic
+
+:::preview
+
+<CascaderDemo001 />
+
+export const CascaderDemo001 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              {
+                  value: 'hangzhou',
+                  label: 'Hangzhou',
+                  children: [{ value: 'xihu', label: 'West Lake' }],
+              },
+          ],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [
+              {
+                  value: 'nanjing',
+                  label: 'Nanjing',
+                  children: [{ value: 'zhonghuamen', label: 'Zhong Hua Men' }],
+              },
+          ],
+      },
+  ];
+  const Demo1 = function () {
+      return <Cascader options={options} placeholder="Please select"/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -39,7 +80,37 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Default Value
+
+:::preview
+
+<CascaderDemo002 />
+
+export const CascaderDemo002 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
+          ],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [{ value: 'nanjing', label: 'Nanjing' }],
+      },
+  ];
+  const Demo2 = function () {
+      return <Cascader defaultValue={['zhejiang', 'hangzhou', 'xihu']} options={options}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -66,7 +137,37 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Change On Select
+
+:::preview
+
+<CascaderDemo003 />
+
+export const CascaderDemo003 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
+          ],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [{ value: 'nanjing', label: 'Nanjing' }],
+      },
+  ];
+  const Demo3 = function () {
+      return <Cascader changeOnSelect options={options} placeholder="Please select"/>;
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -93,7 +194,37 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Hover Expand
+
+:::preview
+
+<CascaderDemo004 />
+
+export const CascaderDemo004 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
+          ],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [{ value: 'nanjing', label: 'Nanjing' }],
+      },
+  ];
+  const Demo4 = function () {
+      return <Cascader expandTrigger="hover" options={options} placeholder="Please select"/>;
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -120,7 +251,36 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Disabled Option
+
+:::preview
+
+<CascaderDemo005 />
+
+export const CascaderDemo005 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [{ value: 'hangzhou', label: 'Hangzhou', disabled: true }],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          disabled: true,
+          children: [{ value: 'nanjing', label: 'Nanjing' }],
+      },
+  ];
+  const Demo5 = function () {
+      return <Cascader options={options} placeholder="Please select"/>;
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -146,7 +306,32 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Custom Display Render
+
+:::preview
+
+<CascaderDemo006 />
+
+export const CascaderDemo006 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
+          ],
+      },
+  ];
+  const Demo6 = function () {
+      return (<Cascader defaultValue={['zhejiang', 'hangzhou', 'xihu']} options={options} displayRender={(labels) => labels.at(-1)}/>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -174,7 +359,39 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Search
+
+:::preview
+
+<CascaderDemo007 />
+
+export const CascaderDemo007 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              { value: 'hangzhou', label: 'Hangzhou', children: [{ value: 'xihu', label: 'West Lake' }] },
+          ],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [{ value: 'nanjing', label: 'Nanjing' }],
+      },
+  ];
+  const Demo7 = function () {
+      return (<Cascader showSearch={{
+              filter: (inputValue, path) => path.some((option) => String(option.label).toLowerCase().includes(inputValue.toLowerCase())),
+          }} options={options} placeholder="Search area"/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -212,7 +429,40 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Load Data
+
+:::preview
+
+<CascaderDemo008 />
+
+export const CascaderDemo008 = (() => {
+  const Demo8 = function () {
+      const [options, setOptions] = createSignal([
+          { value: 'zhejiang', label: 'Zhejiang', isLeaf: false },
+          { value: 'jiangsu', label: 'Jiangsu', isLeaf: false },
+      ]);
+      const loadData = async (selectedOptions) => {
+          const target = selectedOptions.at(-1);
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          setOptions((current) => current.map((option) => option.value === target?.value
+              ? {
+                  ...option,
+                  children: [
+                      { label: `${option.label} Dynamic 1`, value: `${option.value}-1` },
+                      { label: `${option.label} Dynamic 2`, value: `${option.value}-2` },
+                  ],
+              }
+              : option));
+      };
+      return <Cascader options={options()} loadData={loadData} placeholder="Please select"/>;
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -248,7 +498,44 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Multiple
+
+:::preview
+
+<CascaderDemo009 />
+
+export const CascaderDemo009 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+              {
+                  value: 'hangzhou',
+                  label: 'Hangzhou',
+                  children: [
+                      { value: 'xihu', label: 'West Lake' },
+                      { value: 'xiasha', label: 'Xia Sha' },
+                  ],
+              },
+          ],
+      },
+      {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [{ value: 'nanjing', label: 'Nanjing' }],
+      },
+  ];
+  const Demo9 = function () {
+      return <Cascader multiple maxTagCount={2} options={options} placeholder="Please select"/>;
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -282,7 +569,35 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Custom Field Names
+
+:::preview
+
+<CascaderDemo010 />
+
+export const CascaderDemo010 = (() => {
+  const options = [
+      {
+          name: 'Zhejiang',
+          id: 'zhejiang',
+          nodes: [{ name: 'Hangzhou', id: 'hangzhou', nodes: [{ name: 'West Lake', id: 'xihu' }] }],
+      },
+      {
+          name: 'Jiangsu',
+          id: 'jiangsu',
+          nodes: [{ name: 'Nanjing', id: 'nanjing' }],
+      },
+  ];
+  const Demo10 = function () {
+      return (<Cascader fieldNames={{ label: 'name', value: 'id', children: 'nodes' }} options={options} placeholder="Please select"/>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -313,7 +628,33 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Custom Dropdown
+
+:::preview
+
+<CascaderDemo011 />
+
+export const CascaderDemo011 = (() => {
+  const options = [
+      {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [{ value: 'hangzhou', label: 'Hangzhou' }],
+      },
+  ];
+  const Demo11 = function () {
+      return (<Cascader options={options} popupRender={(menus) => (<div>
+            {menus}
+            <div style={{ padding: '8px 12px' }}>Custom footer</div>
+          </div>)}/>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -343,7 +684,27 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Custom Option
+
+:::preview
+
+<CascaderDemo012 />
+
+export const CascaderDemo012 = (() => {
+  const options = [
+      { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+      { value: 'jiangsu', label: 'Jiangsu', children: [{ value: 'nanjing', label: 'Nanjing' }] },
+  ];
+  const Demo12 = function () {
+      return <Cascader options={options} optionRender={(option) => <strong>{option.label}</strong>}/>;
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -360,7 +721,31 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<CascaderDemo013 />
+
+export const CascaderDemo013 = (() => {
+  const options = [
+      { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+  ];
+  const Demo13 = function () {
+      return (<Space>
+        <Cascader placement="bottomLeft" options={options}/>
+        <Cascader placement="bottomRight" options={options}/>
+        <Cascader placement="topLeft" options={options}/>
+        <Cascader placement="topRight" options={options}/>
+      </Space>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Cascader, Space } from '@ant-design-solid/core'
@@ -383,7 +768,32 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Status And Variants
+
+:::preview
+
+<CascaderDemo014 />
+
+export const CascaderDemo014 = (() => {
+  const options = [
+      { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+  ];
+  const Demo14 = function () {
+      return (<Space direction="vertical">
+        <Cascader status="error" options={options} placeholder="Error"/>
+        <Cascader status="warning" options={options} placeholder="Warning"/>
+        <Cascader variant="filled" options={options} placeholder="Filled"/>
+        <Cascader variant="borderless" options={options} placeholder="Borderless"/>
+        <Cascader variant="underlined" options={options} placeholder="Underlined"/>
+      </Space>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { Cascader, Space } from '@ant-design-solid/core'
@@ -407,7 +817,27 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Panel
+
+:::preview
+
+<CascaderDemo015 />
+
+export const CascaderDemo015 = (() => {
+  const options = [
+      { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+      { value: 'jiangsu', label: 'Jiangsu', children: [{ value: 'nanjing', label: 'Nanjing' }] },
+  ];
+  const Demo15 = function () {
+      return <Cascader.Panel options={options} onChange={(value) => console.log(value)}/>;
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { Cascader } from '@ant-design-solid/core'
@@ -424,7 +854,31 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Form Usage
+
+:::preview
+
+<CascaderDemo016 />
+
+export const CascaderDemo016 = (() => {
+  const options = [
+      { value: 'zhejiang', label: 'Zhejiang', children: [{ value: 'hangzhou', label: 'Hangzhou' }] },
+  ];
+  const Demo16 = function () {
+      return (<Form onFinish={(values) => console.log(values)}>
+        <Form.Item name="area" label="Area">
+          <Cascader options={options}/>
+        </Form.Item>
+        <button type="submit">Submit</button>
+      </Form>);
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import { Cascader, Form } from '@ant-design-solid/core'
@@ -446,6 +900,8 @@ const Demo16 = function () {
 
 export default Demo16
 ```
+
+:::
 
 ## API
 

@@ -1,8 +1,25 @@
+import { Card, Skeleton, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Skeleton
 
 Skeleton displays placeholder blocks while content is loading.
 
 ### Basic
+
+:::preview
+
+<SkeletonDemo001 />
+
+export const SkeletonDemo001 = (() => {
+  const Demo1 = function () {
+      return <Skeleton />;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Card, Skeleton, Space } from '@ant-design-solid/core'
@@ -15,7 +32,23 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Active Animation
+
+:::preview
+
+<SkeletonDemo002 />
+
+export const SkeletonDemo002 = (() => {
+  const Demo2 = function () {
+      return <Skeleton active/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Card, Skeleton, Space } from '@ant-design-solid/core'
@@ -28,7 +61,23 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Complex Combination
+
+:::preview
+
+<SkeletonDemo003 />
+
+export const SkeletonDemo003 = (() => {
+  const Demo3 = function () {
+      return <Skeleton active avatar title paragraph={{ rows: 4 }}/>;
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Skeleton } from '@ant-design-solid/core'
@@ -40,7 +89,23 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Custom rows
+
+:::preview
+
+<SkeletonDemo004 />
+
+export const SkeletonDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: ['100%', '90%', '70%', '40%'] }}/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Card, Skeleton, Space } from '@ant-design-solid/core'
@@ -58,7 +123,37 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Element Placeholders
+
+:::preview
+
+<SkeletonDemo005 />
+
+export const SkeletonDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical" size="large">
+        <Space align="center">
+          <Skeleton.Button active size="large"/>
+          <Skeleton.Button active shape="round"/>
+          <Skeleton.Button active shape="circle"/>
+        </Space>
+        <Space align="center">
+          <Skeleton.Avatar active size="large"/>
+          <Skeleton.Input active style={{ width: '180px' }}/>
+          <Skeleton.Image active/>
+        </Space>
+        <Skeleton.Node active>
+          <span style={{ color: 'rgba(0, 0, 0, 0.25)', 'font-size': '24px' }}>+</span>
+        </Skeleton.Node>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Skeleton, Space } from '@ant-design-solid/core'
@@ -86,7 +181,26 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Block Elements
+
+:::preview
+
+<SkeletonDemo006 />
+
+export const SkeletonDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Skeleton.Button active block/>
+        <Skeleton.Input active block/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Skeleton, Space } from '@ant-design-solid/core'
@@ -103,7 +217,31 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Loaded content
+
+:::preview
+
+<SkeletonDemo007 />
+
+export const SkeletonDemo007 = (() => {
+  const Demo7 = function () {
+      const [loaded, setLoaded] = createSignal(false);
+      return (<Space direction="vertical" class="w-full">
+        <button type="button" onClick={() => setLoaded((value) => !value)}>
+          Toggle loaded
+        </button>
+        <Skeleton loading={!loaded()} active>
+          <Card title="Loaded">Content is ready.</Card>
+        </Skeleton>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Card, Skeleton, Space } from '@ant-design-solid/core'
@@ -127,7 +265,23 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Round
+
+:::preview
+
+<SkeletonDemo008 />
+
+export const SkeletonDemo008 = (() => {
+  const Demo8 = function () {
+      return <Skeleton round avatar paragraph={{ rows: 3 }}/>;
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Skeleton } from '@ant-design-solid/core'
@@ -139,7 +293,31 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Semantic Styling
+
+:::preview
+
+<SkeletonDemo009 />
+
+export const SkeletonDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Skeleton avatar active classNames={{
+              root: 'custom-skeleton',
+              avatar: 'custom-avatar',
+              title: 'custom-title',
+          }} styles={{
+              root: { padding: '16px', border: '1px solid #f0f0f0', 'border-radius': '8px' },
+              title: { width: '42%' },
+              paragraph: { margin: '12px 0 0' },
+          }}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Skeleton } from '@ant-design-solid/core'
@@ -165,6 +343,8 @@ const Demo9 = function () {
 
 export default Demo9
 ```
+
+:::
 
 ## API
 

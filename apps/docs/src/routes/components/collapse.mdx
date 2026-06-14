@@ -1,8 +1,30 @@
+import { Collapse, Space } from '@ant-design-solid/core'
+
 # Collapse
 
 Collapse displays content areas that can be expanded or collapsed.
 
 ### Basic
+
+:::preview
+
+<CollapseDemo001 />
+
+export const CollapseDemo001 = (() => {
+  const text = `A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.`;
+  const items = [
+      { key: '1', label: 'This is panel header 1', children: <p>{text}</p> },
+      { key: '2', label: 'This is panel header 2', children: <p>{text}</p> },
+      { key: '3', label: 'This is panel header 3', children: <p>{text}</p> },
+  ];
+  const Demo1 = function () {
+      return <Collapse defaultActiveKey={['1']} items={items}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -22,7 +44,32 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<CollapseDemo002 />
+
+export const CollapseDemo002 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'This is large size panel header', children: <p>{text}</p> },
+      { key: '2', label: 'This is large size panel header', children: <p>{text}</p> },
+  ];
+  const Demo2 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Collapse size="large" defaultActiveKey="1" items={items}/>
+        <Collapse defaultActiveKey="1" items={items}/>
+        <Collapse size="small" defaultActiveKey="1" items={items}/>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Collapse, Space } from '@ant-design-solid/core'
@@ -47,7 +94,29 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Accordion
+
+:::preview
+
+<CollapseDemo003 />
+
+export const CollapseDemo003 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'This is panel header 1', children: <p>{text}</p> },
+      { key: '2', label: 'This is panel header 2', children: <p>{text}</p> },
+      { key: '3', label: 'This is panel header 3', children: <p>{text}</p> },
+  ];
+  const Demo3 = function () {
+      return <Collapse accordion defaultActiveKey="1" items={items}/>;
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -67,7 +136,34 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Nested Panel
+
+:::preview
+
+<CollapseDemo004 />
+
+export const CollapseDemo004 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const nestedItems = [{ key: '1', label: 'This is panel nest panel', children: <p>{text}</p> }];
+  const items = [
+      {
+          key: '1',
+          label: 'This is panel header 1',
+          children: <Collapse defaultActiveKey="1" items={nestedItems}/>,
+      },
+      { key: '2', label: 'This is panel header 2', children: <p>{text}</p> },
+      { key: '3', label: 'This is panel header 3', children: <p>{text}</p> },
+  ];
+  const Demo4 = function () {
+      return <Collapse defaultActiveKey="1" items={items}/>;
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -93,7 +189,31 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Borderless And Ghost
+
+:::preview
+
+<CollapseDemo005 />
+
+export const CollapseDemo005 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'This is panel header 1', children: <p>{text}</p> },
+      { key: '2', label: 'This is panel header 2', children: <p>{text}</p> },
+  ];
+  const Demo5 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Collapse bordered={false} defaultActiveKey="1" items={items}/>
+        <Collapse ghost defaultActiveKey="1" items={items}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Collapse, Space } from '@ant-design-solid/core'
@@ -117,7 +237,38 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Custom Panel
+
+:::preview
+
+<CollapseDemo006 />
+
+export const CollapseDemo006 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      {
+          key: '1',
+          label: 'This is panel header 1',
+          children: <p>{text}</p>,
+          extra: <a>More</a>,
+      },
+      {
+          key: '2',
+          label: 'This is panel header 2',
+          children: <p>{text}</p>,
+          style: { background: '#f6ffed' },
+      },
+  ];
+  const Demo6 = function () {
+      return <Collapse defaultActiveKey="1" items={items}/>;
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -146,7 +297,33 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### No Arrow
+
+:::preview
+
+<CollapseDemo007 />
+
+export const CollapseDemo007 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'This is panel header with arrow', children: <p>{text}</p> },
+      {
+          key: '2',
+          label: 'This is panel header without arrow',
+          showArrow: false,
+          children: <p>{text}</p>,
+      },
+  ];
+  const Demo7 = function () {
+      return <Collapse defaultActiveKey="1" items={items}/>;
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -170,7 +347,38 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Extra Node
+
+:::preview
+
+<CollapseDemo008 />
+
+export const CollapseDemo008 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      {
+          key: '1',
+          label: 'This is panel header 1',
+          children: <p>{text}</p>,
+          extra: <button type="button">Edit</button>,
+      },
+      {
+          key: '2',
+          label: 'This is panel header 2',
+          children: <p>{text}</p>,
+          extra: <button type="button">Edit</button>,
+      },
+  ];
+  const Demo8 = function () {
+      return <Collapse defaultActiveKey="1" items={items}/>;
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -199,7 +407,28 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Custom Expand Icon
+
+:::preview
+
+<CollapseDemo009 />
+
+export const CollapseDemo009 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'This is panel header 1', children: <p>{text}</p> },
+      { key: '2', label: 'This is panel header 2', children: <p>{text}</p> },
+  ];
+  const Demo9 = function () {
+      return (<Collapse defaultActiveKey="1" expandIcon={(panel) => (panel.isActive ? '⌄' : '›')} items={items}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -224,7 +453,28 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Expand Icon Placement
+
+:::preview
+
+<CollapseDemo010 />
+
+export const CollapseDemo010 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'This is panel header 1', children: <p>{text}</p> },
+      { key: '2', label: 'This is panel header 2', children: <p>{text}</p> },
+  ];
+  const Demo10 = function () {
+      return <Collapse expandIconPlacement="end" defaultActiveKey="1" items={items}/>;
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -243,7 +493,29 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Collapsible Trigger Area
+
+:::preview
+
+<CollapseDemo011 />
+
+export const CollapseDemo011 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      { key: '1', label: 'Icon only', collapsible: 'icon', children: <p>{text}</p> },
+      { key: '2', label: 'Header only', collapsible: 'header', children: <p>{text}</p> },
+      { key: '3', label: 'Disabled', collapsible: 'disabled', children: <p>{text}</p> },
+  ];
+  const Demo11 = function () {
+      return <Collapse items={items}/>;
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -263,7 +535,28 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Destroy On Hidden
+
+:::preview
+
+<CollapseDemo012 />
+
+export const CollapseDemo012 = (() => {
+  const text = `This panel content is destroyed after the panel is closed.`;
+  const items = [
+      { key: '1', label: 'This is panel header 1', children: <p>{text}</p> },
+      { key: '2', label: 'This is force rendered panel', forceRender: true, children: <p>{text}</p> },
+  ];
+  const Demo12 = function () {
+      return <Collapse destroyOnHidden items={items}/>;
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -282,7 +575,33 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Semantic ClassNames And Styles
+
+:::preview
+
+<CollapseDemo013 />
+
+export const CollapseDemo013 = (() => {
+  const text = `A dog is a type of domesticated animal.`;
+  const items = [
+      {
+          key: '1',
+          label: 'This is styled panel header',
+          children: <p>{text}</p>,
+          classNames: { header: 'custom-panel-header', body: 'custom-panel-body' },
+          styles: { body: { color: '#1677ff' } },
+      },
+  ];
+  const Demo13 = function () {
+      return (<Collapse defaultActiveKey="1" classNames={{ header: 'custom-header', title: 'custom-title', body: 'custom-body' }} styles={{ header: { background: '#f5f5f5' } }} items={items}/>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Collapse } from '@ant-design-solid/core'
@@ -312,6 +631,8 @@ const Demo13 = function () {
 
 export default Demo13
 ```
+
+:::
 
 ## API
 

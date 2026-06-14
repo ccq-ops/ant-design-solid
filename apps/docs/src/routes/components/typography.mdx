@@ -1,8 +1,30 @@
+import { Typography } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Typography
 
 Typography provides article, title, text, link, and paragraph primitives for readable content.
 
 ### Root and title
+
+:::preview
+
+<TypographyDemo001 />
+
+export const TypographyDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Typography component="section">
+        <Typography.Title level={2}>Typography</Typography.Title>
+        <Typography.Paragraph>
+          Compose dense product copy with Solid-style props and Ant Design semantics.
+        </Typography.Paragraph>
+      </Typography>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -21,7 +43,36 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Text types and decorations
+
+:::preview
+
+<TypographyDemo002 />
+
+export const TypographyDemo002 = (() => {
+  const Demo2 = function () {
+      return (<div class="flex flex-wrap gap-4">
+        <Typography.Text>Default text</Typography.Text>
+        <Typography.Text type="secondary">Secondary</Typography.Text>
+        <Typography.Text type="success">Success</Typography.Text>
+        <Typography.Text type="warning">Warning</Typography.Text>
+        <Typography.Text type="danger">Danger</Typography.Text>
+        <Typography.Text code>code</Typography.Text>
+        <Typography.Text mark>mark</Typography.Text>
+        <Typography.Text keyboard>⌘ K</Typography.Text>
+        <Typography.Text underline>underline</Typography.Text>
+        <Typography.Text delete>delete</Typography.Text>
+        <Typography.Text strong>strong</Typography.Text>
+        <Typography.Text italic>italic</Typography.Text>
+      </div>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -48,7 +99,25 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Link
+
+:::preview
+
+<TypographyDemo003 />
+
+export const TypographyDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Typography.Link href="https://ant.design" target="_blank">
+        Ant Design
+      </Typography.Link>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -64,7 +133,31 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Copyable
+
+:::preview
+
+<TypographyDemo004 />
+
+export const TypographyDemo004 = (() => {
+  const Demo4 = function () {
+      return (<div class="flex flex-col gap-3">
+        <Typography.Text copyable>Copy this text</Typography.Text>
+        <Typography.Text copyable={{ text: () => Promise.resolve('Async copy text') }}>
+          Copy async text
+        </Typography.Text>
+        <Typography.Paragraph actions={{ placement: 'start' }} copyable={{ tooltips: false }}>
+          Put the copy action before the content.
+        </Typography.Paragraph>
+      </div>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -86,7 +179,31 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Editable
+
+:::preview
+
+<TypographyDemo005 />
+
+export const TypographyDemo005 = (() => {
+  const Demo5 = function () {
+      const [value, setValue] = createSignal('Click the edit action to change this paragraph.');
+      return (<Typography.Paragraph editable={{
+              text: value(),
+              onChange: setValue,
+              onEnd: () => console.log('edit finished'),
+              autoSize: { minRows: 2, maxRows: 4 },
+          }}>
+        {value()}
+      </Typography.Paragraph>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -111,7 +228,36 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Ellipsis
+
+:::preview
+
+<TypographyDemo006 />
+
+export const TypographyDemo006 = (() => {
+  const Demo6 = function () {
+      return (<div class="flex flex-col gap-3">
+        <Typography.Text ellipsis class="block w-64">
+          This is a very long line of text that will be truncated when it exceeds the available width.
+        </Typography.Text>
+        <Typography.Paragraph class="w-96" ellipsis={{
+              rows: 2,
+              expandable: 'collapsible',
+              suffix: '...',
+              symbol: (expanded) => (expanded ? 'Collapse' : 'More'),
+          }}>
+          Multi-line ellipsis supports rows, suffix text, expandable controls, and controlled expanded
+          state. Text ellipsis intentionally ignores rows and expandable options to match Ant Design.
+        </Typography.Paragraph>
+      </div>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -141,7 +287,29 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Semantic slots
+
+:::preview
+
+<TypographyDemo007 />
+
+export const TypographyDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Typography.Text copyable editable classNames={{
+              root: 'rounded border border-dashed px-2 py-1',
+              actions: 'ml-3',
+              action: 'text-blue-600',
+          }} styles={{ textarea: { width: '260px' } }}>
+        Slot classes and styles target the root, action wrapper, action button, and textarea.
+      </Typography.Text>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Typography } from '@ant-design-solid/core'
@@ -165,6 +333,8 @@ const Demo7 = function () {
 
 export default Demo7
 ```
+
+:::
 
 ## API
 

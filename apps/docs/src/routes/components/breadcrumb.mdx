@@ -1,6 +1,28 @@
+import { Breadcrumb } from '@ant-design-solid/core'
+import { HomeOutlined, UserOutlined } from '@ant-design-solid/icons'
+
 # Breadcrumb
 
 ### Basic
+
+:::preview
+
+<BreadcrumbDemo001 />
+
+export const BreadcrumbDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Breadcrumb items={[
+              { title: 'Home', href: '/' },
+              { title: 'Application Center', href: '/components' },
+              { title: 'Application List', href: '/components/list' },
+              { title: 'An Application' },
+          ]}/>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -21,7 +43,33 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### With an icon
+
+:::preview
+
+<BreadcrumbDemo002 />
+
+export const BreadcrumbDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Breadcrumb items={[
+              { href: '/', title: <HomeOutlined /> },
+              {
+                  href: '/users',
+                  title: (<>
+                <UserOutlined />
+                <span>Application List</span>
+              </>),
+              },
+              { title: 'Application' },
+          ]}/>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -50,7 +98,27 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Separator
+
+:::preview
+
+<BreadcrumbDemo003 />
+
+export const BreadcrumbDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Breadcrumb separator=">" items={[
+              { title: 'Home', href: '/' },
+              { title: 'Application Center', href: '/components' },
+              { title: 'Application List' },
+          ]}/>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -71,7 +139,37 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Dropdown menu
+
+:::preview
+
+<BreadcrumbDemo004 />
+
+export const BreadcrumbDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Breadcrumb items={[
+              { title: 'Ant Design Solid', href: '/' },
+              {
+                  title: 'Component',
+                  href: '/components/',
+                  menu: {
+                      items: [
+                          { key: 'general', title: 'General', path: 'general' },
+                          { key: 'layout', title: 'Layout', path: 'layout' },
+                          { key: 'navigation', title: 'Navigation', path: 'navigation' },
+                      ],
+                  },
+              },
+              { title: 'Breadcrumb' },
+          ]}/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -101,7 +199,29 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Configuring the Separator Independently
+
+:::preview
+
+<BreadcrumbDemo005 />
+
+export const BreadcrumbDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Breadcrumb items={[
+              { title: 'Location', href: '/' },
+              { type: 'separator', separator: ':' },
+              { title: 'Application Center', href: '/components' },
+              { type: 'separator' },
+              { title: 'Application List' },
+          ]}/>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -123,7 +243,29 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Configuring the Separator
+
+:::preview
+
+<BreadcrumbDemo006 />
+
+export const BreadcrumbDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Breadcrumb separator="">
+        <Breadcrumb.Item>Location</Breadcrumb.Item>
+        <Breadcrumb.Separator>:</Breadcrumb.Separator>
+        <Breadcrumb.Item href="/components">Application Center</Breadcrumb.Item>
+        <Breadcrumb.Separator />
+        <Breadcrumb.Item>Application List</Breadcrumb.Item>
+      </Breadcrumb>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -143,7 +285,29 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Separator as string
+
+:::preview
+
+<BreadcrumbDemo007 />
+
+export const BreadcrumbDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Breadcrumb separator="" items={[
+              { title: 'Location', href: '/' },
+              { type: 'separator', separator: ':' },
+              { title: 'Application Center', href: '/components' },
+              { type: 'separator', separator: '' },
+              { title: 'Application List' },
+          ]}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -166,7 +330,32 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Route params and itemRender
+
+:::preview
+
+<BreadcrumbDemo008 />
+
+export const BreadcrumbDemo008 = (() => {
+  const routes = [
+      { title: 'Home', path: '/' },
+      { title: 'Users', path: 'users' },
+      { title: 'User :id', path: ':id' },
+  ];
+  const Demo8 = function () {
+      return (<Breadcrumb items={routes} params={{ id: '42' }} itemRender={(route, _params, _routes, paths) => {
+              const last = paths.length === routes.length;
+              const label = route.title;
+              return last ? (<span>{label}</span>) : (<a href={`#/${paths.filter(Boolean).join('/')}`}>{label}</a>);
+          }}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Breadcrumb } from '@ant-design-solid/core'
@@ -197,6 +386,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

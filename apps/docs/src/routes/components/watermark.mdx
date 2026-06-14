@@ -1,6 +1,27 @@
+import { Button, Modal, Watermark } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Watermark
 
 ### Basic
+
+:::preview
+
+<WatermarkDemo001 />
+
+export const WatermarkDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Watermark content="Ant Design Solid">
+        <div class="h-[180px] docs-surface-solid p-6">
+          A lightweight watermark overlay for protected content.
+        </div>
+      </Watermark>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Watermark } from '@ant-design-solid/core'
@@ -18,7 +39,27 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Multiple lines
+
+:::preview
+
+<WatermarkDemo002 />
+
+export const WatermarkDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Watermark content={['Ant Design Solid', 'Confidential']}>
+        <div class="h-[180px] docs-surface-solid p-6">
+          Multiple text lines are rendered into the repeated watermark tile.
+        </div>
+      </Watermark>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Watermark } from '@ant-design-solid/core'
@@ -36,7 +77,25 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Custom style
+
+:::preview
+
+<WatermarkDemo003 />
+
+export const WatermarkDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Watermark content="Draft" rotate={-12} gap={[64, 64]} font={{ color: 'rgba(22, 119, 255, 0.18)', fontSize: 20 }}>
+        <div class="h-[180px] docs-surface-solid p-6">Customize rotation, gap and text style.</div>
+      </Watermark>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Watermark } from '@ant-design-solid/core'
@@ -57,7 +116,27 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Image
+
+:::preview
+
+<WatermarkDemo004 />
+
+export const WatermarkDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Watermark width={160} height={48} image="https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*lkAoRbywo0oAAAAAAAAAAAAADrJ8AQ/original" content="Ant Design Solid">
+        <div class="h-[180px] docs-surface-solid p-6">
+          Image watermarks fall back to text content when the image fails to load.
+        </div>
+      </Watermark>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Watermark } from '@ant-design-solid/core'
@@ -80,7 +159,27 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Offset
+
+:::preview
+
+<WatermarkDemo005 />
+
+export const WatermarkDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Watermark content="Offset" gap={[80, 80]} offset={[0, 0]}>
+        <div class="h-[180px] docs-surface-solid p-6">
+          Move the repeated watermark grid from the container origin.
+        </div>
+      </Watermark>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Watermark } from '@ant-design-solid/core'
@@ -98,7 +197,33 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Popup inheritance
+
+:::preview
+
+<WatermarkDemo006 />
+
+export const WatermarkDemo006 = (() => {
+  const Demo6 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Watermark content="Confidential">
+        <div class="h-[180px] docs-surface-solid p-6">
+          <Button type="primary" onClick={() => setOpen(true)}>
+            Open modal
+          </Button>
+          <Modal open={open()} title="Inherited watermark" onOk={() => setOpen(false)} onCancel={() => setOpen(false)}>
+            Popup components can inherit the surrounding watermark.
+          </Modal>
+        </div>
+      </Watermark>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -129,7 +254,31 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Disable inheritance
+
+:::preview
+
+<WatermarkDemo007 />
+
+export const WatermarkDemo007 = (() => {
+  const Demo7 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Watermark content="Page only" inherit={false}>
+        <div class="h-[180px] docs-surface-solid p-6">
+          <Button onClick={() => setOpen(true)}>Open modal</Button>
+          <Modal open={open()} title="No inherited watermark" onOk={() => setOpen(false)} onCancel={() => setOpen(false)}>
+            This modal is not covered by the parent watermark.
+          </Modal>
+        </div>
+      </Watermark>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -158,7 +307,27 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Remove callback
+
+:::preview
+
+<WatermarkDemo008 />
+
+export const WatermarkDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Watermark content="Protected" onRemove={() => console.log('watermark removed')}>
+        <div class="h-[180px] docs-surface-solid p-6">
+          The watermark is restored when its overlay node is removed.
+        </div>
+      </Watermark>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Watermark } from '@ant-design-solid/core'
@@ -175,6 +344,8 @@ const Demo8 = function () {
 
 export default Demo8
 ```
+
+:::
 
 ## API
 

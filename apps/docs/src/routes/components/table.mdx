@@ -1,6 +1,36 @@
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Table
 
 ### Basic
+
+:::preview
+
+<TableDemo001 />
+
+export const TableDemo001 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo1 = function () {
+      return <Table columns={columns} dataSource={data}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Badge, Table, Tag } from '@ant-design-solid/core'
@@ -32,7 +62,36 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Bordered small
+
+:::preview
+
+<TableDemo002 />
+
+export const TableDemo002 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo2 = function () {
+      return <Table bordered size="small" columns={columns} dataSource={data}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Badge, Table, Tag } from '@ant-design-solid/core'
@@ -64,7 +123,32 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Empty and loading
+
+:::preview
+
+<TableDemo003 />
+
+export const TableDemo003 = (() => {
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo3 = function () {
+      return (<Table loading={{ spinning: true, tip: 'Loading users...' }} columns={columns} dataSource={[]} locale={{ emptyText: 'No users' }}/>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Badge, Table, Tag } from '@ant-design-solid/core'
@@ -98,7 +182,40 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Pagination
+
+:::preview
+
+<TableDemo004 />
+
+export const TableDemo004 = (() => {
+  const data = Array.from({ length: 12 }, (_, index) => ({
+      key: String(index + 1),
+      name: `User ${index + 1}`,
+      age: 24 + index,
+      role: index % 2 === 0 ? 'Engineer' : 'Designer',
+  }));
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      { title: 'Role', dataIndex: 'role' },
+  ];
+  const Demo4 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={{
+              defaultPageSize: 5,
+              showSizeChanger: true,
+              pageSizeOptions: [5, 10, 20],
+          }} onChange={(pagination, filters, sorter, extra) => {
+              console.log(pagination, filters, sorter, extra.action);
+          }}/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -136,7 +253,52 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Sort and filter
+
+:::preview
+
+<TableDemo005 />
+
+export const TableDemo005 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+      { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+  ];
+  const columns = [
+      {
+          title: 'Name',
+          dataIndex: 'name',
+          sorter: (a, b) => a.name.localeCompare(b.name),
+      },
+      {
+          title: 'Age',
+          dataIndex: 'age',
+          align: 'right',
+          sorter: (a, b) => a.age - b.age,
+          defaultSortOrder: 'ascend',
+      },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          filters: [
+              { text: 'Active', value: 'active' },
+              { text: 'Idle', value: 'idle' },
+          ],
+          onFilter: (value, record) => record.status === value,
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo5 = function () {
+      return <Table columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Badge, Table, Tag } from '@ant-design-solid/core'
@@ -184,7 +346,40 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Nested data
+
+:::preview
+
+<TableDemo006 />
+
+export const TableDemo006 = (() => {
+  const data = [
+      {
+          key: '1',
+          name: 'Ada Lovelace',
+          profile: { email: 'ada@example.com', location: 'London' },
+      },
+      {
+          key: '2',
+          name: 'Grace Hopper',
+          profile: { email: 'grace@example.com', location: 'Arlington' },
+      },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Email', dataIndex: ['profile', 'email'] },
+      { title: 'Location', dataIndex: ['profile', 'location'] },
+  ];
+  const Demo6 = function () {
+      return <Table columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -215,7 +410,39 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Row and cell props
+
+:::preview
+
+<TableDemo007 />
+
+export const TableDemo007 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, priority: 'high' },
+      { key: '2', name: 'Grace Hopper', age: 36, priority: 'normal' },
+  ];
+  const columns = [
+      {
+          title: 'Name',
+          dataIndex: 'name',
+          className: 'name-column',
+          onHeaderCell: () => ({ title: 'User name' }),
+          onCell: (record) => ({ title: `${record.name} profile` }),
+      },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo7 = function () {
+      return (<Table columns={columns} dataSource={data} rowClassName={(record) => (record.priority === 'high' ? 'priority-row' : '')} onRow={(record) => ({
+              onClick: () => console.log('row clicked', record.key),
+          })} pagination={false}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -253,7 +480,35 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Row selection
+
+:::preview
+
+<TableDemo008 />
+
+export const TableDemo008 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo8 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              getCheckboxProps: (record) => ({ disabled: record.key === '2' }),
+              onChange: (keys, rows) => console.log(keys, rows),
+          }}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -286,7 +541,36 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Controlled row selection
+
+:::preview
+
+<TableDemo009 />
+
+export const TableDemo009 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo9 = function () {
+      const [selectedRowKeys, setSelectedRowKeys] = createSignal(['1']);
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              selectedRowKeys: selectedRowKeys(),
+              onChange: (keys) => setSelectedRowKeys(keys),
+          }}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -322,7 +606,50 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Selection actions and custom cells
+
+:::preview
+
+<TableDemo010 />
+
+export const TableDemo010 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo10 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              preserveSelectedRowKeys: true,
+              selections: [
+                  'all',
+                  'invert',
+                  'none',
+                  {
+                      key: 'log',
+                      text: 'Log changeable keys',
+                      onSelect: (changeableRowKeys) => console.log(changeableRowKeys),
+                  },
+              ],
+              renderCell: (checked, record, _index, originNode) => (<span data-selected={checked ? 'yes' : 'no'}>
+              {originNode} {record.name}
+            </span>),
+              onSelectAll: (selected, selectedRows) => console.log(selected, selectedRows),
+              onSelectInvert: (keys) => console.log(keys),
+              onSelectNone: () => console.log('none'),
+          }}/>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -372,7 +699,41 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Selection column customization
+
+:::preview
+
+<TableDemo011 />
+
+export const TableDemo011 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, locked: false },
+      { key: '2', name: 'Grace Hopper', age: 36, locked: true },
+      { key: '3', name: 'Linus Torvalds', age: 28, locked: false },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo11 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              columnTitle: 'Pick',
+              columnWidth: 72,
+              hideSelectAll: true,
+              getTitleCheckboxProps: () => ({ 'aria-label': 'Select available rows' }),
+              getCheckboxProps: (record) => ({
+                  disabled: record.locked,
+                  title: record.locked ? 'Locked row' : 'Selectable row',
+              }),
+          }}/>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -411,7 +772,34 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Expandable rows
+
+:::preview
+
+<TableDemo012 />
+
+export const TableDemo012 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, bio: 'Wrote the first algorithm.' },
+      { key: '2', name: 'Grace Hopper', age: 36, bio: 'Popularized machine-independent languages.' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo12 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} expandable={{
+              defaultExpandedRowKeys: ['1'],
+              expandedRowRender: (record) => <span>{record.bio}</span>,
+          }}/>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -443,7 +831,33 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Controlled expandable rows
+
+:::preview
+
+<TableDemo013 />
+
+export const TableDemo013 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', bio: 'Wrote the first algorithm.' },
+      { key: '2', name: 'Grace Hopper', bio: 'Popularized machine-independent languages.' },
+  ];
+  const columns = [{ title: 'Name', dataIndex: 'name' }];
+  const Demo13 = function () {
+      const [expandedRowKeys, setExpandedRowKeys] = createSignal(['1']);
+      return (<Table columns={columns} dataSource={data} pagination={false} expandable={{
+              expandedRowKeys: expandedRowKeys(),
+              expandedRowRender: (record) => <span>{record.bio}</span>,
+              onExpandedRowsChange: setExpandedRowKeys,
+          }}/>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -476,7 +890,42 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Expand row controls
+
+:::preview
+
+<TableDemo014 />
+
+export const TableDemo014 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, detail: 'Wrote the first algorithm.' },
+      { key: '2', name: 'Grace Hopper', age: 36, detail: 'Popularized compiler tooling.' },
+      { key: '3', name: 'Linus Torvalds', age: 28, detail: '' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo14 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} expandable={{
+              columnTitle: 'More',
+              columnWidth: 64,
+              defaultExpandAllRows: true,
+              expandRowByClick: true,
+              rowExpandable: (record) => Boolean(record.detail),
+              expandedRowClassName: (record) => `expanded-${record.key}`,
+              expandedRowRender: (record, _index, _indent, expanded) => (<span>
+              {expanded ? 'Open' : 'Closed'}: {record.detail}
+            </span>),
+          }}/>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -518,7 +967,34 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Summary
+
+:::preview
+
+<TableDemo015 />
+
+export const TableDemo015 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo15 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} summary={(currentData) => (<tr>
+            <td>Total age</td>
+            <td>{currentData.reduce((sum, record) => sum + record.age, 0)}</td>
+          </tr>)}/>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -552,7 +1028,34 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Scroll
+
+:::preview
+
+<TableDemo016 />
+
+export const TableDemo016 = (() => {
+  const data = Array.from({ length: 12 }, (_, index) => ({
+      key: String(index + 1),
+      name: `User ${index + 1}`,
+      age: 20 + index,
+      address: `Long address line ${index + 1}`,
+  }));
+  const columns = [
+      { title: 'Name', dataIndex: 'name', width: 180 },
+      { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+      { title: 'Address', dataIndex: 'address', width: 520 },
+  ];
+  const Demo16 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 260 }}/>);
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -579,7 +1082,32 @@ const Demo16 = function () {
 export default Demo16
 ```
 
+:::
+
 ### Title and footer
+
+:::preview
+
+<TableDemo017 />
+
+export const TableDemo017 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo17 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={{ defaultPageSize: 2 }} title={(currentData) => `${currentData.length} users on this page`} footer={(currentData) => `Average age ${Math.round(currentData.reduce((sum, record) => sum + record.age, 0) / currentData.length)}`}/>);
+  };
+
+  return Demo17
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -612,7 +1140,43 @@ const Demo17 = function () {
 export default Demo17
 ```
 
+:::
+
 ### Column display controls
+
+:::preview
+
+<TableDemo018 />
+
+export const TableDemo018 = (() => {
+  const data = [
+      {
+          key: '1',
+          name: 'Ada Lovelace',
+          title: 'Mathematician and writer on early computing machines',
+          status: 'active',
+      },
+      {
+          key: '2',
+          name: 'Grace Hopper',
+          title: 'Computer scientist and United States Navy rear admiral',
+          status: 'idle',
+      },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name', rowScope: 'row' },
+      { title: 'Title', dataIndex: 'title', ellipsis: true },
+      { title: 'Internal status', dataIndex: 'status', hidden: true },
+      { title: 'XS only', dataIndex: 'status', responsive: ['xs'] },
+  ];
+  const Demo18 = function () {
+      return <Table columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+  return Demo18
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -646,7 +1210,49 @@ const Demo18 = function () {
 export default Demo18
 ```
 
+:::
+
 ### Merged cells
+
+:::preview
+
+<TableDemo019 />
+
+export const TableDemo019 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', team: 'Research', role: 'Lead' },
+      { key: '2', name: 'Grace Hopper', team: 'Research', role: 'Engineer' },
+      { key: '3', name: 'Linus Torvalds', team: 'Platform', role: 'Maintainer' },
+  ];
+  const columns = [
+      {
+          title: 'Team',
+          dataIndex: 'team',
+          render: (value, _record, index) => index === 0
+              ? { children: String(value), props: { rowSpan: 2 } }
+              : index === 1
+                  ? { children: String(value), props: { rowSpan: 0 } }
+                  : String(value),
+      },
+      {
+          title: 'Name',
+          dataIndex: 'name',
+          render: (value, _record, index) => index === 2 ? { children: String(value), props: { colSpan: 2 } } : String(value),
+      },
+      {
+          title: 'Role',
+          dataIndex: 'role',
+          render: (value, _record, index) => index === 2 ? { children: String(value), props: { colSpan: 0 } } : String(value),
+      },
+  ];
+  const Demo19 = function () {
+      return <Table bordered columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+  return Demo19
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -689,7 +1295,44 @@ const Demo19 = function () {
 export default Demo19
 ```
 
+:::
+
 ### Grouped columns
+
+:::preview
+
+<TableDemo020 />
+
+export const TableDemo020 = (() => {
+  const data = [
+      { key: '1', firstName: 'Ada', lastName: 'Lovelace', age: 32, status: 'active' },
+      { key: '2', firstName: 'Grace', lastName: 'Hopper', age: 36, status: 'idle' },
+      { key: '3', firstName: 'Linus', lastName: 'Torvalds', age: 28, status: 'active' },
+  ];
+  const columns = [
+      {
+          title: 'Name',
+          children: [
+              { title: 'First name', dataIndex: 'firstName' },
+              { title: 'Last name', dataIndex: 'lastName' },
+          ],
+      },
+      {
+          title: 'Details',
+          children: [
+              { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+              { title: 'Status', dataIndex: 'status' },
+          ],
+      },
+  ];
+  const Demo20 = function () {
+      return <Table bordered columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+  return Demo20
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -724,7 +1367,54 @@ const Demo20 = function () {
 export default Demo20
 ```
 
+:::
+
 ### Controlled sort and filter
+
+:::preview
+
+<TableDemo021 />
+
+export const TableDemo021 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+      { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+  ];
+  const Demo21 = function () {
+      const [sortOrder, setSortOrder] = createSignal('ascend');
+      const [filteredStatus, setFilteredStatus] = createSignal([
+          'active',
+      ]);
+      const columns = [
+          { title: 'Name', dataIndex: 'name' },
+          {
+              title: 'Age',
+              dataIndex: 'age',
+              sorter: (a, b) => a.age - b.age,
+              sortOrder: sortOrder(),
+          },
+          {
+              title: 'Status',
+              dataIndex: 'status',
+              filters: [
+                  { text: 'Active', value: 'active' },
+                  { text: 'Idle', value: 'idle' },
+              ],
+              filteredValue: filteredStatus(),
+              onFilter: (value, record) => record.status === value,
+          },
+      ];
+      return (<Table columns={columns} dataSource={data} pagination={false} onChange={(_pagination, filters, sorter) => {
+              setSortOrder(sorter.order);
+              setFilteredStatus(filters.status ?? []);
+          }}/>);
+  };
+
+  return Demo21
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -778,7 +1468,34 @@ const Demo21 = function () {
 export default Demo21
 ```
 
+:::
+
 ### Virtual list
+
+:::preview
+
+<TableDemo022 />
+
+export const TableDemo022 = (() => {
+  const data = Array.from({ length: 1000 }, (_, index) => ({
+      key: String(index + 1),
+      name: `User ${index + 1}`,
+      age: 20 + (index % 40),
+      address: `Building ${index + 1}, Product Avenue`,
+  }));
+  const columns = [
+      { title: 'Name', dataIndex: 'name', width: 180 },
+      { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+      { title: 'Address', dataIndex: 'address', width: 520 },
+  ];
+  const Demo22 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 320 }} virtual/>);
+  };
+
+  return Demo22
+})()
+
+---
 
 ```tsx
 import { Table } from '@ant-design-solid/core'
@@ -810,6 +1527,8 @@ const Demo22 = function () {
 
 export default Demo22
 ```
+
+:::
 
 ## API
 

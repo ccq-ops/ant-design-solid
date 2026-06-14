@@ -1,8 +1,30 @@
+import { Form, Mentions, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # Mentions
 
 Mentions lets users select people or topics while typing in a textarea.
 
 ### Basic
+
+:::preview
+
+<MentionsDemo001 />
+
+export const MentionsDemo001 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+      { label: 'Charlie', value: 'charlie', disabled: true },
+  ];
+  const Demo1 = function () {
+      return <Mentions placeholder="Mention someone with @" options={peopleOptions}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -21,7 +43,28 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Default value and clear
+
+:::preview
+
+<MentionsDemo002 />
+
+export const MentionsDemo002 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+      { label: 'Charlie', value: 'charlie', disabled: true },
+  ];
+  const Demo2 = function () {
+      return <Mentions allowClear defaultValue="Hello @alice " options={peopleOptions}/>;
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -40,7 +83,32 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<MentionsDemo003 />
+
+export const MentionsDemo003 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+      { label: 'Charlie', value: 'charlie', disabled: true },
+  ];
+  const Demo3 = function () {
+      const [value, setValue] = createSignal('Hello @alice ');
+      return (<Space direction="vertical" class="w-80">
+        <Mentions value={value()} onChange={setValue} options={peopleOptions}/>
+        <span>Value: {value()}</span>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -66,7 +134,30 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Multiple prefixes
+
+:::preview
+
+<MentionsDemo004 />
+
+export const MentionsDemo004 = (() => {
+  const topicOptions = [
+      { label: 'Design', value: 'design' },
+      { label: 'Solid', value: 'solid' },
+      { label: 'Components', value: 'components' },
+  ];
+  const Demo4 = function () {
+      return (<Space direction="vertical" class="w-80">
+        <Mentions prefix={['@', '#']} placeholder="Type @ or # to open suggestions" options={topicOptions}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -93,7 +184,35 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Disabled and form
+
+:::preview
+
+<MentionsDemo005 />
+
+export const MentionsDemo005 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+      { label: 'Charlie', value: 'charlie', disabled: true },
+  ];
+  const Demo5 = function () {
+      return (<Space direction="vertical" class="w-80">
+        <Mentions disabled defaultValue="Disabled @alice" options={peopleOptions}/>
+        <Form initialValues={{ comment: 'Hi @bob ' }}>
+          <Form.Item name="comment">
+            <Mentions options={peopleOptions}/>
+          </Form.Item>
+        </Form>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -121,7 +240,34 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Status, size, and variant
+
+:::preview
+
+<MentionsDemo006 />
+
+export const MentionsDemo006 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+      { label: 'Charlie', value: 'charlie' },
+  ];
+  const Demo6 = function () {
+      return (<Space direction="vertical" class="w-80">
+        <Mentions size="small" defaultValue="Small @" options={peopleOptions}/>
+        <Mentions status="warning" defaultValue="Warning @" options={peopleOptions}/>
+        <Mentions status="error" defaultValue="Error @" options={peopleOptions}/>
+        <Mentions variant="filled" defaultValue="Filled @" options={peopleOptions}/>
+        <Mentions variant="underlined" defaultValue="Underlined @" options={peopleOptions}/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Mentions, Space } from '@ant-design-solid/core'
@@ -147,7 +293,30 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Loading and empty
+
+:::preview
+
+<MentionsDemo007 />
+
+export const MentionsDemo007 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+  ];
+  const Demo7 = function () {
+      return (<Space direction="vertical" class="w-80">
+        <Mentions loading defaultValue="Loading @" options={peopleOptions}/>
+        <Mentions defaultValue="No result @z" options={peopleOptions} notFoundContent="No match"/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Mentions, Space } from '@ant-design-solid/core'
@@ -169,7 +338,30 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<MentionsDemo008 />
+
+export const MentionsDemo008 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+  ];
+  const Demo8 = function () {
+      return (<Space direction="vertical" class="w-80">
+        <Mentions placement="top" defaultValue="Open above @" options={peopleOptions}/>
+        <Mentions placement="bottom" defaultValue="Open below @" options={peopleOptions}/>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Mentions, Space } from '@ant-design-solid/core'
@@ -191,7 +383,31 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Textarea features
+
+:::preview
+
+<MentionsDemo009 />
+
+export const MentionsDemo009 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+  ];
+  const Demo9 = function () {
+      const [value, setValue] = createSignal('Press enter or clear @alice ');
+      return (<Space direction="vertical" class="w-80">
+        <Mentions value={value()} onChange={setValue} allowClear={{ clearIcon: <span>clear</span> }} onClear={() => setValue('')} showCount count={{ max: 80 }} autoSize={{ minRows: 2, maxRows: 4 }} onPressEnter={() => console.log('enter')} options={peopleOptions}/>
+        <span>{value()}</span>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -226,7 +442,34 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<MentionsDemo010 />
+
+export const MentionsDemo010 = (() => {
+  const peopleOptions = [
+      { label: 'Alice', value: 'alice' },
+      { label: 'Bob', value: 'bob' },
+  ];
+  const Demo10 = function () {
+      return (<Mentions defaultValue="Custom @" options={peopleOptions} rootClass="mentions-demo-root" popupClass="mentions-demo-popup" classNames={{
+              textarea: 'mentions-demo-textarea',
+              option: 'mentions-demo-option',
+          }} styles={{
+              root: { width: '320px' },
+              popup: { 'max-height': '160px' },
+              option: { 'font-weight': '600' },
+          }}/>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Mentions } from '@ant-design-solid/core'
@@ -259,7 +502,32 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Option children and parser
+
+:::preview
+
+<MentionsDemo011 />
+
+export const MentionsDemo011 = (() => {
+  const Demo11 = function () {
+      const parsed = Mentions.getMentions('Hi @alice and #solid ', { prefix: ['@', '#'] });
+      return (<Space direction="vertical" class="w-80">
+        <Mentions defaultValue="Children @" filterOption={false}>
+          <Mentions.Option value="alice">Alice</Mentions.Option>
+          <Mentions.Option value="bob" disabled>
+            Bob
+          </Mentions.Option>
+        </Mentions>
+        <pre>{JSON.stringify(parsed, null, 2)}</pre>
+      </Space>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Mentions, Space } from '@ant-design-solid/core'
@@ -282,6 +550,8 @@ const Demo11 = function () {
 
 export default Demo11
 ```
+
+:::
 
 ## API
 

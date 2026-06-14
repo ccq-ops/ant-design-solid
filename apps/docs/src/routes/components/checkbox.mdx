@@ -1,8 +1,25 @@
+import { Checkbox, Form, Space } from '@ant-design-solid/core'
+import { createMemo, createSignal } from 'solid-js'
+
 # Checkbox
 
 Checkbox lets users select one or more independent options.
 
 ### Basic
+
+:::preview
+
+<CheckboxDemo001 />
+
+export const CheckboxDemo001 = (() => {
+  const Demo1 = function () {
+      return <Checkbox>Checkbox</Checkbox>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Checkbox } from '@ant-design-solid/core'
@@ -14,7 +31,34 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<CheckboxDemo002 />
+
+export const CheckboxDemo002 = (() => {
+  const Demo2 = function () {
+      const [disabled, setDisabled] = createSignal(false);
+      return (<Space direction="vertical">
+        <Checkbox defaultChecked={false} disabled={disabled()}>
+          Disabled
+        </Checkbox>
+        <Checkbox checked disabled>
+          Checked disabled
+        </Checkbox>
+        <Checkbox checked={disabled()} onChange={(event) => setDisabled(event.currentTarget.checked)}>
+          Disable first checkbox
+        </Checkbox>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -41,7 +85,37 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<CheckboxDemo003 />
+
+export const CheckboxDemo003 = (() => {
+  const Demo3 = function () {
+      const [checked, setChecked] = createSignal(true);
+      const [disabled, setDisabled] = createSignal(false);
+      return (<Space direction="vertical">
+        <Checkbox checked={checked()} disabled={disabled()} onChange={(event) => setChecked(event.currentTarget.checked)}>
+          {checked() ? 'Checked' : 'Unchecked'} - {disabled() ? 'Disabled' : 'Enabled'}
+        </Checkbox>
+        <Space>
+          <Checkbox checked={checked()} onChange={(event) => setChecked(event.currentTarget.checked)}>
+            Checked
+          </Checkbox>
+          <Checkbox checked={disabled()} onChange={(event) => setDisabled(event.currentTarget.checked)}>
+            Disabled
+          </Checkbox>
+        </Space>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -78,7 +152,32 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Check All
+
+:::preview
+
+<CheckboxDemo004 />
+
+export const CheckboxDemo004 = (() => {
+  const plainOptions = ['Apple', 'Pear', 'Orange'];
+  const Demo4 = function () {
+      const [checkedList, setCheckedList] = createSignal(['Apple', 'Orange']);
+      const checkAll = createMemo(() => plainOptions.length === checkedList().length);
+      const indeterminate = createMemo(() => checkedList().length > 0 && checkedList().length < plainOptions.length);
+      return (<Space direction="vertical">
+        <Checkbox indeterminate={indeterminate()} checked={checkAll()} onChange={(event) => setCheckedList(event.currentTarget.checked ? plainOptions : [])}>
+          Check all
+        </Checkbox>
+        <Checkbox.Group options={plainOptions} value={checkedList()} onChange={(next) => setCheckedList(next)}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createMemo, createSignal } from 'solid-js'
@@ -114,7 +213,39 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Group
+
+:::preview
+
+<CheckboxDemo005 />
+
+export const CheckboxDemo005 = (() => {
+  const plainOptions = ['Apple', 'Pear', 'Orange'];
+  const options = [
+      { label: 'Apple', value: 'Apple' },
+      { label: 'Pear', value: 'Pear' },
+      { label: 'Orange', value: 'Orange' },
+  ];
+  const optionsWithDisabled = [
+      { label: 'Apple', value: 'Apple' },
+      { label: 'Pear', value: 'Pear' },
+      { label: 'Orange', value: 'Orange', disabled: false },
+  ];
+  const Demo5 = function () {
+      const [value, setValue] = createSignal(['Apple']);
+      return (<Space direction="vertical">
+        <Checkbox.Group options={plainOptions} defaultValue={['Apple']}/>
+        <Checkbox.Group options={options} value={value()} onChange={(next) => setValue(next)}/>
+        <Checkbox.Group options={optionsWithDisabled} disabled defaultValue={['Apple']}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -151,7 +282,33 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Children In Group
+
+:::preview
+
+<CheckboxDemo006 />
+
+export const CheckboxDemo006 = (() => {
+  const Demo6 = function () {
+      const [value, setValue] = createSignal(['a']);
+      return (<Space direction="vertical">
+        <Checkbox.Group name="letters" value={value()} onChange={(next) => setValue(next)}>
+          <Checkbox value="a">A</Checkbox>
+          <Checkbox value="b">B</Checkbox>
+          <Checkbox value="c" skipGroup defaultChecked>
+            Standalone
+          </Checkbox>
+        </Checkbox.Group>
+        <span>Selected: {value().join(', ') || 'none'}</span>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -181,7 +338,37 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### In Form
+
+:::preview
+
+<CheckboxDemo007 />
+
+export const CheckboxDemo007 = (() => {
+  const options = [
+      { label: 'Apple', value: 'Apple' },
+      { label: 'Pear', value: 'Pear' },
+      { label: 'Orange', value: 'Orange' },
+  ];
+  const Demo7 = function () {
+      return (<Form initialValues={{ remember: true, fruits: ['Pear'] }}>
+        <Space direction="vertical">
+          <Form.Item name="remember" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+          <Form.Item name="fruits">
+            <Checkbox.Group options={options}/>
+          </Form.Item>
+        </Space>
+      </Form>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Checkbox, Form, Space } from '@ant-design-solid/core'
@@ -209,6 +396,8 @@ const Demo7 = function () {
 
 export default Demo7
 ```
+
+:::
 
 ## API
 

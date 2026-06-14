@@ -1,8 +1,27 @@
+import { Button, ConfigProvider, notification, Space } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
 # Notification
 
 Notification displays global feedback messages in a corner of the viewport.
 
 ### Basic
+
+:::preview
+
+<NotificationDemo001 />
+
+export const NotificationDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Button onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}>
+        Success
+      </Button>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -19,7 +38,39 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Types
+
+:::preview
+
+<NotificationDemo002 />
+
+export const NotificationDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space wrap>
+        <Button onClick={() => notification.info({ message: 'Info', description: 'Information' })}>
+          Info
+        </Button>
+        <Button onClick={() => notification.warning({
+              message: 'Warning',
+              description: 'Check this',
+          })}>
+          Warning
+        </Button>
+        <Button onClick={() => notification.error({
+              message: 'Error',
+              description: 'Something failed',
+          })}>
+          Error
+        </Button>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -58,7 +109,36 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<NotificationDemo003 />
+
+export const NotificationDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space wrap>
+        <Button onClick={() => notification.open({ title: 'Top center', placement: 'top' })}>
+          Top
+        </Button>
+        <Button onClick={() => notification.open({ title: 'Top left', placement: 'topLeft' })}>
+          Top left
+        </Button>
+        <Button onClick={() => notification.open({ title: 'Bottom center', placement: 'bottom' })}>
+          Bottom
+        </Button>
+        <Button onClick={() => notification.open({ title: 'Bottom left', placement: 'bottomLeft' })}>
+          Bottom left
+        </Button>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -86,7 +166,39 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Keyed update
+
+:::preview
+
+<NotificationDemo004 />
+
+export const NotificationDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Button onClick={() => {
+              notification.open({
+                  key: 'sync',
+                  message: 'Syncing',
+                  description: 'Please wait',
+                  duration: 0,
+              });
+              window.setTimeout(() => {
+                  notification.success({
+                      key: 'sync',
+                      message: 'Synced',
+                      description: 'All changes saved',
+                  });
+              }, 900);
+          }}>
+        Update notification
+      </Button>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -119,7 +231,35 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Custom icon and actions
+
+:::preview
+
+<NotificationDemo005 />
+
+export const NotificationDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Custom notification',
+              description: 'Use icon and actions to compose richer feedback.',
+              icon: <SmileOutlined />,
+              actions: (<Space>
+                <Button size="small">Later</Button>
+                <Button size="small" type="primary">
+                  Confirm
+                </Button>
+              </Space>),
+          })}>
+        Custom content
+      </Button>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -152,7 +292,30 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Progress and hover pause
+
+:::preview
+
+<NotificationDemo006 />
+
+export const NotificationDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Uploading',
+              description: 'Hover to pause auto close.',
+              duration: 5,
+              showProgress: true,
+          })}>
+        Show progress
+      </Button>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -178,7 +341,39 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Custom close behavior
+
+:::preview
+
+<NotificationDemo007 />
+
+export const NotificationDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space wrap>
+        <Button onClick={() => notification.open({
+              title: 'No close button',
+              description: 'This notification stays until destroyed.',
+              duration: false,
+              closable: false,
+          })}>
+          Hide close
+        </Button>
+        <Button onClick={() => notification.open({
+              title: 'Custom close icon',
+              description: 'The close icon can be replaced.',
+              closeIcon: <CheckCircleFilled />,
+          })}>
+          Custom close icon
+        </Button>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -217,7 +412,32 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Style and semantic DOM
+
+:::preview
+
+<NotificationDemo008 />
+
+export const NotificationDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Styled notification',
+              description: 'class, style, classNames and styles are supported.',
+              class: 'custom-docs-notification',
+              style: { border: '1px solid #1677ff' },
+              classNames: { title: 'custom-docs-notification-title' },
+              styles: { description: { color: '#1677ff' } },
+          })}>
+        Styled
+      </Button>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -245,7 +465,35 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Function semantic styles
+
+:::preview
+
+<NotificationDemo009 />
+
+export const NotificationDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Import finished',
+              description: 'Semantic classes can be derived from notice props.',
+              props: { 'data-state': 'done' },
+              classNames: ({ props }) => ({
+                  title: `notification-title-${props?.['data-state']}`,
+              }),
+              styles: ({ props }) => ({
+                  title: { color: props?.['data-state'] === 'done' ? '#52c41a' : '#1677ff' },
+              }),
+          })}>
+        Function styles
+      </Button>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Button, notification } from '@ant-design-solid/core'
@@ -275,7 +523,34 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Stack
+
+:::preview
+
+<NotificationDemo010 />
+
+export const NotificationDemo010 = (() => {
+  const Demo10 = function () {
+      const openStack = () => {
+          notification.config({ stack: { threshold: 2 } });
+          Array.from({ length: 4 }).forEach((_, index) => {
+              notification.open({
+                  key: `stack-${index}`,
+                  title: `Notification ${index + 1}`,
+                  description: 'Older items stay visible and are visually stacked.',
+                  duration: 0,
+              });
+          });
+      };
+      return <Button onClick={openStack}>Open stack</Button>;
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -299,7 +574,35 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Hook holder
+
+:::preview
+
+<NotificationDemo011 />
+
+export const NotificationDemo011 = (() => {
+  const Demo11 = function () {
+      const [api, contextHolder] = notification.useNotification({
+          placement: 'bottomLeft',
+          props: { role: 'status' },
+      });
+      return (<>
+        {contextHolder}
+        <Button onClick={() => api.success({
+              title: 'Hook notification',
+              description: 'This instance is bound to the rendered holder.',
+          })}>
+          Open from hook
+        </Button>
+      </>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Button, Space, notification } from '@ant-design-solid/core'
@@ -330,7 +633,35 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### ConfigProvider defaults
+
+:::preview
+
+<NotificationDemo012 />
+
+export const NotificationDemo012 = (() => {
+  const Demo12 = function () {
+      const [api, contextHolder] = notification.useNotification();
+      return (<ConfigProvider prefixCls="custom" notification={{
+              classNames: { title: 'custom-notification-title' },
+              styles: { title: { color: '#722ed1' } },
+          }}>
+        {contextHolder}
+        <Button onClick={() => api.open({
+              title: 'Configured by provider',
+              description: 'Hook holders can read ConfigProvider notification defaults.',
+          })}>
+          Provider config
+        </Button>
+      </ConfigProvider>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Button, ConfigProvider, notification } from '@ant-design-solid/core'
@@ -364,7 +695,40 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Global config
+
+:::preview
+
+<NotificationDemo013 />
+
+export const NotificationDemo013 = (() => {
+  const Demo13 = function () {
+      return (<Button onClick={() => {
+              notification.config({
+                  placement: 'bottomRight',
+                  duration: 3,
+                  bottom: 48,
+                  maxCount: 3,
+                  stack: { threshold: 2 },
+                  showProgress: true,
+                  props: { role: 'status' },
+                  closable: { closeIcon: 'Close' },
+              });
+              notification.success({
+                  title: 'Config applied',
+                  description: 'Defaults affect later notifications.',
+              });
+          }}>
+        Apply config
+      </Button>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Button, notification } from '@ant-design-solid/core'
@@ -396,6 +760,8 @@ const Demo13 = function () {
 
 export default Demo13
 ```
+
+:::
 
 ## API
 

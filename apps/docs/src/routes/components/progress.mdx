@@ -1,8 +1,28 @@
+import { Progress, Space } from '@ant-design-solid/core'
+
 # Progress
 
 Progress displays the current completion percentage of an operation.
 
 ### Basic line
+
+:::preview
+
+<ProgressDemo001 />
+
+export const ProgressDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={30}/>
+        <Progress percent={50} showInfo={false}/>
+        <Progress percent={100}/>
+      </Space>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -20,7 +40,27 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Circle and dashboard
+
+:::preview
+
+<ProgressDemo002 />
+
+export const ProgressDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space align="center" wrap>
+        <Progress type="circle" percent={75}/>
+        <Progress type="dashboard" percent={75}/>
+        <Progress type="dashboard" percent={60} gapDegree={120} gapPlacement="top"/>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -38,7 +78,28 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Status
+
+:::preview
+
+<ProgressDemo003 />
+
+export const ProgressDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={100}/>
+        <Progress percent={70} status="exception"/>
+        <Progress percent={50} status="active"/>
+        <Progress type="circle" percent={70} status="exception"/>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -57,7 +118,26 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Custom text format
+
+:::preview
+
+<ProgressDemo004 />
+
+export const ProgressDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={80} format={(percent) => `${percent} done`}/>
+        <Progress percent={80} success={{ percent: 30 }} format={(percent, successPercent) => `${percent}% / ${successPercent}%`}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -78,7 +158,27 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Success segment
+
+:::preview
+
+<ProgressDemo005 />
+
+export const ProgressDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={80} success={{ percent: 30 }}/>
+        <Progress type="circle" percent={80} success={{ percent: 30, strokeColor: '#52c41a' }}/>
+        <Progress type="dashboard" percent={80} success={{ percent: 30, strokeColor: '#52c41a' }}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -96,7 +196,27 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Steps
+
+:::preview
+
+<ProgressDemo006 />
+
+export const ProgressDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={60} steps={5}/>
+        <Progress percent={60} steps={5} strokeColor={['#1677ff', '#52c41a', '#faad14']}/>
+        <Progress type="circle" percent={60} steps={{ count: 8, gap: 4 }}/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -114,7 +234,27 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Progress value position
+
+:::preview
+
+<ProgressDemo007 />
+
+export const ProgressDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={40} percentPosition={{ align: 'start', type: 'outer' }}/>
+        <Progress percent={50} percentPosition={{ align: 'center', type: 'inner' }}/>
+        <Progress percent={60} percentPosition={{ align: 'end', type: 'inner' }}/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -132,7 +272,27 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Stroke color and rail color
+
+:::preview
+
+<ProgressDemo008 />
+
+export const ProgressDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={60} strokeColor="#722ed1" railColor="#f9f0ff"/>
+        <Progress percent={70} strokeColor={{ from: '#108ee9', to: '#87d068', direction: 'to right' }}/>
+        <Progress type="circle" percent={75} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} railColor="#f0f0f0"/>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -158,7 +318,27 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Stroke linecap
+
+:::preview
+
+<ProgressDemo009 />
+
+export const ProgressDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={70} strokeLinecap="round"/>
+        <Progress percent={70} strokeLinecap="butt"/>
+        <Progress percent={70} strokeLinecap="square"/>
+      </Space>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -176,7 +356,28 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<ProgressDemo010 />
+
+export const ProgressDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Progress percent={30} size="small"/>
+        <Progress percent={50} size={[240, 12]}/>
+        <Progress type="circle" percent={70} size={80}/>
+        <Progress type="dashboard" percent={70} size={{ width: 96 }}/>
+      </Space>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -195,7 +396,23 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Hidden info
+
+:::preview
+
+<ProgressDemo011 />
+
+export const ProgressDemo011 = (() => {
+  const Demo11 = function () {
+      return <Progress percent={45} showInfo={false}/>;
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Progress, Space } from '@ant-design-solid/core'
@@ -206,6 +423,8 @@ const Demo11 = function () {
 
 export default Demo11
 ```
+
+:::
 
 ## API
 

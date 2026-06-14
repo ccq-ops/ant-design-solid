@@ -1,8 +1,31 @@
+import { Button, Form, Select, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { SearchOutlined } from '@ant-design-solid/icons'
+
 # Select
 
 Select lets users choose one value from a dropdown list.
 
 ### Basic
+
+:::preview
+
+<SelectDemo001 />
+
+export const SelectDemo001 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo1 = function () {
+      return <Select class="w-60" placeholder="Select fruit" options={options}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -21,7 +44,32 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<SelectDemo002 />
+
+export const SelectDemo002 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo2 = function () {
+      const [value, setValue] = createSignal('orange');
+      return (<Space direction="vertical">
+        <Select class="w-60" value={value()} onChange={(next) => setValue(next)} options={options}/>
+        <span>Selected: {String(value() ?? 'none')}</span>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -47,7 +95,28 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Clearable
+
+:::preview
+
+<SelectDemo003 />
+
+export const SelectDemo003 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo3 = function () {
+      return <Select class="w-60" allowClear defaultValue="apple" options={options}/>;
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -66,7 +135,36 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Disabled options
+
+:::preview
+
+<SelectDemo004 />
+
+export const SelectDemo004 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const disabledOptions = [
+      { label: 'Available', value: 'available' },
+      { label: 'Disabled', value: 'disabled', disabled: true },
+      { label: 'Pending', value: 'pending' },
+  ];
+  const Demo4 = function () {
+      return (<Space direction="vertical" class="w-60">
+        <Select placeholder="Pick status" options={disabledOptions}/>
+        <Select disabled placeholder="Disabled select" options={disabledOptions}/>
+      </Space>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -96,7 +194,32 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Open state
+
+:::preview
+
+<SelectDemo005 />
+
+export const SelectDemo005 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo5 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space direction="vertical">
+        <Select class="w-60" open={open()} onOpenChange={setOpen} options={options}/>
+        <span>Dropdown is {open() ? 'open' : 'closed'}</span>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -122,7 +245,32 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### In Form
+
+:::preview
+
+<SelectDemo006 />
+
+export const SelectDemo006 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo6 = function () {
+      return (<Form initialValues={{ fruit: 'apple' }}>
+        <Form.Item label="Fruit" name="fruit">
+          <Select class="w-60" options={options}/>
+        </Form.Item>
+      </Form>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -147,7 +295,28 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Search
+
+:::preview
+
+<SelectDemo007 />
+
+export const SelectDemo007 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo7 = function () {
+      return <Select class="w-60" showSearch placeholder="Search fruit" options={options}/>;
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -165,7 +334,28 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Multiple
+
+:::preview
+
+<SelectDemo008 />
+
+export const SelectDemo008 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo8 = function () {
+      return (<Select class="w-80" mode="multiple" allowClear placeholder="Select fruits" options={options}/>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -185,7 +375,23 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Tags
+
+:::preview
+
+<SelectDemo009 />
+
+export const SelectDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Select class="w-80" mode="tags" tokenSeparators={[',']} placeholder="Type tags separated by comma" options={[{ label: 'Apple', value: 'apple' }]}/>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -205,7 +411,32 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Sizes
+
+:::preview
+
+<SelectDemo010 />
+
+export const SelectDemo010 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo10 = function () {
+      return (<Space direction="vertical">
+        <Select class="w-60" size="large" placeholder="Large" options={options}/>
+        <Select class="w-60" placeholder="Middle" options={options}/>
+        <Select class="w-60" size="small" placeholder="Small" options={options}/>
+      </Space>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Select, Space } from '@ant-design-solid/core'
@@ -229,7 +460,34 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Status and variants
+
+:::preview
+
+<SelectDemo011 />
+
+export const SelectDemo011 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo11 = function () {
+      return (<Space direction="vertical">
+        <Select class="w-60" status="error" placeholder="Error" options={options}/>
+        <Select class="w-60" status="warning" placeholder="Warning" options={options}/>
+        <Select class="w-60" variant="filled" placeholder="Filled" options={options}/>
+        <Select class="w-60" variant="borderless" placeholder="Borderless" options={options}/>
+        <Select class="w-60" variant="underlined" placeholder="Underlined" options={options}/>
+      </Space>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Select, Space } from '@ant-design-solid/core'
@@ -255,7 +513,39 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Grouped options
+
+:::preview
+
+<SelectDemo012 />
+
+export const SelectDemo012 = (() => {
+  const options = [
+      {
+          label: 'Fruits',
+          options: [
+              { label: 'Apple', value: 'apple' },
+              { label: 'Orange', value: 'orange' },
+          ],
+      },
+      {
+          label: 'Vegetables',
+          options: [
+              { label: 'Carrot', value: 'carrot' },
+              { label: 'Potato', value: 'potato' },
+          ],
+      },
+  ];
+  const Demo12 = function () {
+      return <Select class="w-60" placeholder="Select food" options={options}/>;
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -284,7 +574,32 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Custom field names
+
+:::preview
+
+<SelectDemo013 />
+
+export const SelectDemo013 = (() => {
+  const options = [
+      {
+          group: 'Cities',
+          items: [
+              { name: 'Hangzhou', id: 'hangzhou' },
+              { name: 'Shanghai', id: 'shanghai' },
+          ],
+      },
+  ];
+  const Demo13 = function () {
+      return (<Select class="w-60" placeholder="Select city" fieldNames={{ label: 'name', value: 'id', options: 'items', groupLabel: 'group' }} options={options}/>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -313,7 +628,31 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Custom render
+
+:::preview
+
+<SelectDemo014 />
+
+export const SelectDemo014 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple', description: 'Crisp and sweet' },
+      { label: 'Orange', value: 'orange', description: 'Bright citrus' },
+      { label: 'Pear', value: 'pear', description: 'Soft and floral' },
+  ];
+  const Demo14 = function () {
+      return (<Select class="w-72" placeholder="Custom option" options={options} optionRender={(option) => (<span class="flex flex-col">
+            <strong>{option.label}</strong>
+            <small>{String(option.data.description)}</small>
+          </span>)} labelRender={(item) => <span>Selected: {item.label}</span>}/>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -344,7 +683,30 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Custom tags
+
+:::preview
+
+<SelectDemo015 />
+
+export const SelectDemo015 = (() => {
+  const options = [
+      { label: 'Design', value: 'design' },
+      { label: 'Engineering', value: 'engineering' },
+      { label: 'Research', value: 'research' },
+  ];
+  const Demo15 = function () {
+      return (<Select class="w-80" mode="multiple" defaultValue={['design', 'engineering', 'research']} maxTagCount={2} maxTagPlaceholder={(omitted) => `+ ${omitted.length} more`} tagRender={(props) => (<button type="button" class="rounded bg-blue-50 px-2 text-blue-700" onClick={props.onClose}>
+            {props.label}
+          </button>)} options={options}/>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -376,7 +738,32 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Label in value
+
+:::preview
+
+<SelectDemo016 />
+
+export const SelectDemo016 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo16 = function () {
+      const [value, setValue] = createSignal();
+      return (<Space direction="vertical">
+        <Select class="w-60" labelInValue options={options} onChange={setValue}/>
+        <span>{JSON.stringify(value())}</span>
+      </Space>);
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -402,7 +789,31 @@ const Demo16 = function () {
 export default Demo16
 ```
 
+:::
+
 ### Popup customization
+
+:::preview
+
+<SelectDemo017 />
+
+export const SelectDemo017 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo17 = function () {
+      return (<Select class="w-60" options={options} placement="bottomRight" popupMatchSelectWidth={280} popupRender={(originNode) => (<div>
+            {originNode}
+            <div class="border-t px-3 py-2 text-xs text-gray-500">Only fresh inventory is shown.</div>
+          </div>)}/>);
+  };
+
+  return Demo17
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -433,7 +844,28 @@ const Demo17 = function () {
 export default Demo17
 ```
 
+:::
+
 ### Prefix and icons
+
+:::preview
+
+<SelectDemo018 />
+
+export const SelectDemo018 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo18 = function () {
+      return (<Select class="w-64" showSearch prefix={<SearchOutlined />} suffixIcon={null} allowClear={{ clearIcon: <span>clear</span> }} placeholder="Search without arrow" options={options}/>);
+  };
+
+  return Demo18
+})()
+
+---
 
 ```tsx
 import { SearchOutlined } from '@ant-design-solid/icons'
@@ -462,7 +894,31 @@ const Demo18 = function () {
 export default Demo18
 ```
 
+:::
+
 ### JSX options
+
+:::preview
+
+<SelectDemo019 />
+
+export const SelectDemo019 = (() => {
+  const Demo19 = function () {
+      return (<Select class="w-60" placeholder="Select one">
+        <Select.OptGroup label="Fruits">
+          <Select.Option value="apple">Apple</Select.Option>
+          <Select.Option value="orange">Orange</Select.Option>
+        </Select.OptGroup>
+        <Select.OptGroup label="Vegetables">
+          <Select.Option value="carrot">Carrot</Select.Option>
+        </Select.OptGroup>
+      </Select>);
+  };
+
+  return Demo19
+})()
+
+---
 
 ```tsx
 import { Select } from '@ant-design-solid/core'
@@ -484,7 +940,33 @@ const Demo19 = function () {
 export default Demo19
 ```
 
+:::
+
 ### Ref methods
+
+:::preview
+
+<SelectDemo020 />
+
+export const SelectDemo020 = (() => {
+  const options = [
+      { label: 'Apple', value: 'apple' },
+      { label: 'Orange', value: 'orange' },
+      { label: 'Pear', value: 'pear' },
+  ];
+  const Demo20 = function () {
+      const ref = {};
+      return (<Space>
+        <Select ref={ref} class="w-60" options={options}/>
+        <Button onClick={() => ref.current?.focus()}>Focus</Button>
+        <Button onClick={() => ref.current?.blur()}>Blur</Button>
+      </Space>);
+  };
+
+  return Demo20
+})()
+
+---
 
 ```tsx
 import { Button, Select, Space } from '@ant-design-solid/core'
@@ -510,6 +992,8 @@ const Demo20 = function () {
 
 export default Demo20
 ```
+
+:::
 
 ## API
 

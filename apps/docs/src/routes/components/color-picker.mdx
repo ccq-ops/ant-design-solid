@@ -1,8 +1,25 @@
+import { ColorPicker, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
 # ColorPicker
 
 Provide color selection with presets, alpha, formats, controlled state, and gradient colors.
 
 ### Basic
+
+:::preview
+
+<ColorPickerDemo001 />
+
+export const ColorPickerDemo001 = (() => {
+  const Demo1 = function () {
+      return <ColorPicker defaultValue="#1677ff"/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -14,7 +31,27 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Size
+
+:::preview
+
+<ColorPickerDemo002 />
+
+export const ColorPickerDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space align="center">
+        <ColorPicker size="small" defaultValue="#1677ff"/>
+        <ColorPicker defaultValue="#1677ff"/>
+        <ColorPicker size="large" defaultValue="#1677ff"/>
+      </Space>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { ColorPicker, Space } from '@ant-design-solid/core'
@@ -32,7 +69,27 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Controlled
+
+:::preview
+
+<ColorPickerDemo003 />
+
+export const ColorPickerDemo003 = (() => {
+  const Demo3 = function () {
+      const [value, setValue] = createSignal('#1677ff');
+      return (<Space direction="vertical">
+        <ColorPicker value={value()} showText onChange={(color, css) => setValue(css)}/>
+        <span>Current value: {value()}</span>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -52,7 +109,26 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Gradient
+
+:::preview
+
+<ColorPickerDemo004 />
+
+export const ColorPickerDemo004 = (() => {
+  const Demo4 = function () {
+      return (<ColorPicker mode={['single', 'gradient']} defaultValue={[
+              { color: '#1677ff', percent: 0 },
+              { color: '#52c41a', percent: 100 },
+          ]} showText={(color) => color?.toCssString()}/>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -73,7 +149,25 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Custom Trigger
+
+:::preview
+
+<ColorPickerDemo005 />
+
+export const ColorPickerDemo005 = (() => {
+  const Demo5 = function () {
+      return (<ColorPicker defaultValue="#1677ff">
+        <button type="button">Pick brand color</button>
+      </ColorPicker>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -89,7 +183,26 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Disabled
+
+:::preview
+
+<ColorPickerDemo006 />
+
+export const ColorPickerDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space>
+        <ColorPicker defaultValue="#1677ff" disabled/>
+        <ColorPicker defaultValue="#1677ff" disabled showText/>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { ColorPicker, Space } from '@ant-design-solid/core'
@@ -106,7 +219,26 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Trigger
+
+:::preview
+
+<ColorPickerDemo007 />
+
+export const ColorPickerDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space>
+        <ColorPicker defaultValue="#1677ff" trigger="click"/>
+        <ColorPicker defaultValue="#52c41a" trigger="hover"/>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { ColorPicker, Space } from '@ant-design-solid/core'
@@ -123,7 +255,23 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Disabled Alpha
+
+:::preview
+
+<ColorPickerDemo008 />
+
+export const ColorPickerDemo008 = (() => {
+  const Demo8 = function () {
+      return <ColorPicker disabledAlpha defaultValue="rgba(22, 119, 255, 0.6)"/>;
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -135,7 +283,23 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### Clear
+
+:::preview
+
+<ColorPickerDemo009 />
+
+export const ColorPickerDemo009 = (() => {
+  const Demo9 = function () {
+      return <ColorPicker allowClear defaultValue="#1677ff" showText/>;
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -147,7 +311,27 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### Format
+
+:::preview
+
+<ColorPickerDemo010 />
+
+export const ColorPickerDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Space>
+        <ColorPicker defaultValue="#1677ff" defaultFormat="hex"/>
+        <ColorPicker defaultValue="#1677ff" defaultFormat="rgb"/>
+        <ColorPicker defaultValue="#1677ff" defaultFormat="hsb"/>
+      </Space>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { ColorPicker, Space } from '@ant-design-solid/core'
@@ -165,7 +349,23 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Disabled Format
+
+:::preview
+
+<ColorPickerDemo011 />
+
+export const ColorPickerDemo011 = (() => {
+  const Demo11 = function () {
+      return <ColorPicker defaultValue="#1677ff" defaultFormat="rgb" disabledFormat/>;
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -177,7 +377,37 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Presets
+
+:::preview
+
+<ColorPickerDemo012 />
+
+export const ColorPickerDemo012 = (() => {
+  const Demo12 = function () {
+      return (<ColorPicker presets={[
+              {
+                  label: 'Recommended',
+                  colors: ['#1677ff', '#52c41a', '#faad14', '#ff4d4f'],
+              },
+              {
+                  label: 'Gradients',
+                  colors: [
+                      [
+                          { color: '#1677ff', percent: 0 },
+                          { color: '#52c41a', percent: 100 },
+                      ],
+                  ],
+              },
+          ]}/>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -207,7 +437,26 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Show Text
+
+:::preview
+
+<ColorPickerDemo013 />
+
+export const ColorPickerDemo013 = (() => {
+  const Demo13 = function () {
+      return (<Space direction="vertical">
+        <ColorPicker defaultValue="#1677ff" showText/>
+        <ColorPicker defaultValue="#722ed1" showText={(color) => color?.toRgbString()}/>
+      </Space>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { ColorPicker, Space } from '@ant-design-solid/core'
@@ -224,7 +473,25 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Custom Panel
+
+:::preview
+
+<ColorPickerDemo014 />
+
+export const ColorPickerDemo014 = (() => {
+  const Demo14 = function () {
+      return (<ColorPicker defaultValue="#1677ff" panelRender={(panel) => (<div style={{ padding: '8px', border: '1px solid #1677ff', 'border-radius': '8px' }}>
+            {panel}
+          </div>)}/>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { ColorPicker } from '@ant-design-solid/core'
@@ -245,7 +512,28 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Placement
+
+:::preview
+
+<ColorPickerDemo015 />
+
+export const ColorPickerDemo015 = (() => {
+  const Demo15 = function () {
+      return (<Space wrap>
+        <ColorPicker defaultValue="#1677ff" placement="bottomLeft"/>
+        <ColorPicker defaultValue="#1677ff" placement="bottomRight"/>
+        <ColorPicker defaultValue="#1677ff" placement="topLeft"/>
+        <ColorPicker defaultValue="#1677ff" placement="rightTop"/>
+      </Space>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { ColorPicker, Space } from '@ant-design-solid/core'
@@ -263,6 +551,8 @@ const Demo15 = function () {
 
 export default Demo15
 ```
+
+:::
 
 ## API
 

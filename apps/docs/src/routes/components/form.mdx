@@ -1,8 +1,44 @@
+import { Button, Cascader, Checkbox, ConfigProvider, DatePicker, Form, Input, InputNumber, message, Modal, Radio, Rate, Select, Slider, Space, Switch, TimePicker, TreeSelect, Typography, useForm } from '@ant-design-solid/core'
+import { createSignal, For, Show } from 'solid-js'
+import dayjs from 'dayjs'
+
 # Form
 
 Form stores field values, validates rules, and coordinates common input controls. The examples below follow the Ant Design v6 Form demo order and translate each demo to Solid syntax.
 
 ### Basic Usage
+
+:::preview
+
+<FormDemo001 />
+
+export const FormDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Form name="basic" initialValues={{ remember: true }} onFinish={(values) => message.success(JSON.stringify(values))} onFinishFailed={() => message.error('Submit failed')}>
+        <Space direction="vertical" class="w-80">
+          <Form.Item name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
+            <Input placeholder="Username"/>
+          </Form.Item>
+          <Form.Item name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
+            <Input.Password placeholder="Password"/>
+          </Form.Item>
+          <Form.Item name="remember" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+          <Space>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+            <a href="#">Register now!</a>
+          </Space>
+        </Space>
+      </Form>);
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -45,7 +81,48 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Form methods
+
+:::preview
+
+<FormDemo002 />
+
+export const FormDemo002 = (() => {
+  const Demo2 = function () {
+      const [form] = useForm();
+      return (<Form form={form} initialValues={{ note: 'Hello world!', gender: 'male' }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item name="note" label="Note" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
+            <Select options={[
+              { label: 'male', value: 'male' },
+              { label: 'female', value: 'female' },
+              { label: 'other', value: 'other' },
+          ]}/>
+          </Form.Item>
+          <Space>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+            <Button htmlType="button" onClick={() => form.resetFields()}>
+              Reset
+            </Button>
+            <Button htmlType="button" onClick={() => form.setFieldsValue({ note: 'Hi there!', gender: 'female' })}>
+              Fill form
+            </Button>
+          </Space>
+        </Space>
+      </Form>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Select, Space, message, useForm } from '@ant-design-solid/core'
@@ -94,7 +171,43 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Form Layout
+
+:::preview
+
+<FormDemo003 />
+
+export const FormDemo003 = (() => {
+  const Demo3 = function () {
+      const [layout, setLayout] = createSignal('horizontal');
+      return (<Space direction="vertical" class="w-100">
+        <Radio.Group value={layout()} options={[
+              { label: 'Horizontal', value: 'horizontal' },
+              { label: 'Vertical', value: 'vertical' },
+              { label: 'Inline', value: 'inline' },
+          ]} onChange={(value) => setLayout(value)}/>
+        <Form layout={layout()} onFinish={() => message.success('Submitted')}>
+          <Form.Item label="Field A" name="fieldA">
+            <Input placeholder="input placeholder"/>
+          </Form.Item>
+          <Form.Item label="Field B" name="fieldB">
+            <Input placeholder="input placeholder"/>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -135,7 +248,38 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Form mix layout
+
+:::preview
+
+<FormDemo004 />
+
+export const FormDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Form layout="vertical" onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-100">
+          <Form.Item label="Address" name="address">
+            <Input placeholder="Street address"/>
+          </Form.Item>
+          <Form.Item layout="horizontal" label="City" name="city">
+            <Input placeholder="City"/>
+          </Form.Item>
+          <Form.Item layout="inline" label="Zip" name="zip">
+            <Input placeholder="Zip code"/>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -164,7 +308,39 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Form disabled
+
+:::preview
+
+<FormDemo005 />
+
+export const FormDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Form disabled initialValues={{ amount: 12, enabled: true, plan: 'starter' }}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Name" name="name">
+            <Input placeholder="Disabled input"/>
+          </Form.Item>
+          <Form.Item label="Amount" name="amount">
+            <InputNumber class="w-full"/>
+          </Form.Item>
+          <Form.Item label="Plan" name="plan">
+            <Select options={[{ label: 'Starter', value: 'starter' }]}/>
+          </Form.Item>
+          <Form.Item label="Enabled" name="enabled" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <Button type="primary">Submit</Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, InputNumber, Select, Space, Switch } from '@ant-design-solid/core'
@@ -194,7 +370,40 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Form variants
+
+:::preview
+
+<FormDemo006 />
+
+export const FormDemo006 = (() => {
+  const variants = ['outlined', 'filled', 'borderless', 'underlined'];
+  const Demo6 = function () {
+      return (<Space direction="vertical" class="w-100">
+        <For each={variants}>
+          {(variant) => (<Form variant={variant} initialValues={{ count: 3, plan: 'pro' }}>
+              <Space direction="vertical" class="w-90">
+                <Form.Item label={variant} name="name">
+                  <Input placeholder={variant + ' input'}/>
+                </Form.Item>
+                <Form.Item label="Count" name="count">
+                  <InputNumber class="w-full"/>
+                </Form.Item>
+                <Form.Item label="Plan" name="plan">
+                  <Select options={[{ label: 'Pro', value: 'pro' }]}/>
+                </Form.Item>
+              </Space>
+            </Form>)}
+        </For>
+      </Space>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { For } from 'solid-js'
@@ -230,7 +439,37 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Required style
+
+:::preview
+
+<FormDemo007 />
+
+export const FormDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space direction="vertical" class="w-100">
+        <Form requiredMark="optional">
+          <Form.Item label="Required" name="required" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Optional" name="optional">
+            <Input />
+          </Form.Item>
+        </Form>
+        <Form requiredMark={false}>
+          <Form.Item label="Hidden mark" name="hidden" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Space>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Form, Input, Space } from '@ant-design-solid/core'
@@ -258,7 +497,37 @@ const Demo7 = function () {
 export default Demo7
 ```
 
+:::
+
 ### Form size
+
+:::preview
+
+<FormDemo008 />
+
+export const FormDemo008 = (() => {
+  const sizes = ['small', 'middle', 'large'];
+  const Demo8 = function () {
+      return (<Space direction="vertical" class="w-100">
+        <For each={sizes}>
+          {(size) => (<Form size={size} initialValues={{ plan: size }}>
+              <Space direction="vertical" class="w-80">
+                <Form.Item label={size} name="name">
+                  <Input placeholder={size + ' input'}/>
+                </Form.Item>
+                <Form.Item label="Plan" name="plan">
+                  <Select options={[{ label: size, value: size }]}/>
+                </Form.Item>
+              </Space>
+            </Form>)}
+        </For>
+      </Space>);
+  };
+
+  return Demo8
+})()
+
+---
 
 ```tsx
 import { For } from 'solid-js'
@@ -291,7 +560,27 @@ const Demo8 = function () {
 export default Demo8
 ```
 
+:::
+
 ### label can wrap
+
+:::preview
+
+<FormDemo009 />
+
+export const FormDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Form labelWrap labelAlign="left" class="w-100">
+        <Form.Item label="This is a very long label that can wrap to multiple lines" name="field">
+          <Input placeholder="Input"/>
+        </Form.Item>
+      </Form>);
+  };
+
+  return Demo9
+})()
+
+---
 
 ```tsx
 import { Form, Input } from '@ant-design-solid/core'
@@ -309,7 +598,32 @@ const Demo9 = function () {
 export default Demo9
 ```
 
+:::
+
 ### No block rule
+
+:::preview
+
+<FormDemo010 />
+
+export const FormDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Form onFinish={() => message.success('Submitted despite warnings')}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="URL" name="url" rules={[{ type: 'url', warningOnly: true, message: 'This is not a valid URL' }]}>
+            <Input placeholder="https://example.com"/>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo10
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -336,7 +650,35 @@ const Demo10 = function () {
 export default Demo10
 ```
 
+:::
+
 ### Watch Hooks
+
+:::preview
+
+<FormDemo011 />
+
+export const FormDemo011 = (() => {
+  function WatchPreview() {
+      const name = Form.useWatch('name');
+      return <Typography.Text>Watch value: {String(name() ?? '')}</Typography.Text>;
+  }
+  const Demo11 = function () {
+      const [form] = useForm();
+      return (<Form form={form} initialValues={{ name: 'Bamboo' }}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Name" name="name">
+            <Input />
+          </Form.Item>
+          <WatchPreview />
+        </Space>
+      </Form>);
+  };
+
+  return Demo11
+})()
+
+---
 
 ```tsx
 import { Form, Input, Space, Typography, useForm } from '@ant-design-solid/core'
@@ -363,7 +705,29 @@ const Demo11 = function () {
 export default Demo11
 ```
 
+:::
+
 ### Validate Trigger
+
+:::preview
+
+<FormDemo012 />
+
+export const FormDemo012 = (() => {
+  const Demo12 = function () {
+      return (<Form>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Email" name="email" validateTrigger="onBlur" rules={[{ type: 'email', message: 'Please input a valid email after blur' }]}>
+            <Input placeholder="Validate on blur"/>
+          </Form.Item>
+        </Space>
+      </Form>);
+  };
+
+  return Demo12
+})()
+
+---
 
 ```tsx
 import { Form, Input, Space } from '@ant-design-solid/core'
@@ -388,7 +752,36 @@ const Demo12 = function () {
 export default Demo12
 ```
 
+:::
+
 ### Validate Only
+
+:::preview
+
+<FormDemo013 />
+
+export const FormDemo013 = (() => {
+  const Demo13 = function () {
+      const [form] = useForm();
+      return (<Space direction="vertical" class="w-90">
+        <Form form={form}>
+          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Name is required' }]}>
+            <Input placeholder="Validate without UI error"/>
+          </Form.Item>
+        </Form>
+        <Button onClick={() => void form
+              .validateFields(undefined, { validateOnly: true })
+              .then(() => message.success('Passed'))
+              .catch(() => message.error('Failed'))}>
+          Validate only
+        </Button>
+      </Space>);
+  };
+
+  return Demo13
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message, useForm } from '@ant-design-solid/core'
@@ -423,7 +816,35 @@ const Demo13 = function () {
 export default Demo13
 ```
 
+:::
+
 ### Path Prefix
+
+:::preview
+
+<FormDemo014 />
+
+export const FormDemo014 = (() => {
+  const Demo14 = function () {
+      return (<Form initialValues={{ user: { name: 'Ada', email: 'ada@example.com' } }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Name" name={['user', 'name']}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Email" name={['user', 'email']} rules={[{ type: 'email' }]}>
+            <Input />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo14
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -452,7 +873,39 @@ const Demo14 = function () {
 export default Demo14
 ```
 
+:::
+
 ### Dynamic Form Item
+
+:::preview
+
+<FormDemo015 />
+
+export const FormDemo015 = (() => {
+  const Demo15 = function () {
+      const [showExtra, setShowExtra] = createSignal(false);
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-90">
+          <Switch checked={showExtra()} onChange={() => setShowExtra((value) => !value)}/>
+          <Form.Item label="Username" name="username">
+            <Input />
+          </Form.Item>
+          <Show when={showExtra()}>
+            <Form.Item label="Extra" name="extra">
+              <Input />
+            </Form.Item>
+          </Show>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo15
+})()
+
+---
 
 ```tsx
 import { createSignal, Show } from 'solid-js'
@@ -483,7 +936,37 @@ const Demo15 = function () {
 export default Demo15
 ```
 
+:::
+
 ### Dynamic Form nest Items
+
+:::preview
+
+<FormDemo016 />
+
+export const FormDemo016 = (() => {
+  const Demo16 = function () {
+      return (<Form initialValues={{ users: [{ name: 'Ada' }] }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Form.List name="users">
+          {(fields, operation) => (<Space direction="vertical" class="w-90">
+              <For each={fields()}>
+                {(field) => (<Form.Item label={'User ' + (field.name + 1)} name={[field.name, 'name']} rules={[{ required: true }]}>
+                    <Input placeholder="User name"/>
+                  </Form.Item>)}
+              </For>
+              <Space>
+                <Button onClick={() => operation.add({ name: '' })}>Add field</Button>
+                <Button htmlType="submit">Submit</Button>
+              </Space>
+            </Space>)}
+        </Form.List>
+      </Form>);
+  };
+
+  return Demo16
+})()
+
+---
 
 ```tsx
 import { For } from 'solid-js'
@@ -523,7 +1006,42 @@ const Demo16 = function () {
 export default Demo16
 ```
 
+:::
+
 ### Dynamic Form nest pure Items
+
+:::preview
+
+<FormDemo017 />
+
+export const FormDemo017 = (() => {
+  const Demo17 = function () {
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Form.List name="names" initialValue={[{ first: 'Ada', last: 'Lovelace' }]}>
+          {(fields, operation) => (<Space direction="vertical" class="w-100">
+              <For each={fields()}>
+                {(field) => (<Space>
+                    <Form.Item name={[field.name, 'first']} noStyle>
+                      <Input placeholder="First"/>
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'last']} noStyle>
+                      <Input placeholder="Last"/>
+                    </Form.Item>
+                  </Space>)}
+              </For>
+              <Space>
+                <Button onClick={() => operation.add({ first: '', last: '' })}>Add</Button>
+                <Button htmlType="submit">Submit</Button>
+              </Space>
+            </Space>)}
+        </Form.List>
+      </Form>);
+  };
+
+  return Demo17
+})()
+
+---
 
 ```tsx
 import { For } from 'solid-js'
@@ -561,7 +1079,50 @@ const Demo17 = function () {
 export default Demo17
 ```
 
+:::
+
 ### Complex Dynamic Form Item
+
+:::preview
+
+<FormDemo018 />
+
+export const FormDemo018 = (() => {
+  const Demo18 = function () {
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Form.List name="items" initialValue={[{ type: 'email', value: '' }]}>
+          {(fields, operation) => (<Space direction="vertical" class="w-100">
+              <For each={fields()}>
+                {(field) => (<Space>
+                    <Form.Item name={[field.name, 'type']} noStyle>
+                      <Select options={[
+                      { label: 'Email', value: 'email' },
+                      { label: 'Phone', value: 'phone' },
+                  ]}/>
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'value']} noStyle>
+                      <Input placeholder="Value"/>
+                    </Form.Item>
+                    <Button danger onClick={() => operation.remove(field.name)}>
+                      Remove
+                    </Button>
+                  </Space>)}
+              </For>
+              <Space>
+                <Button onClick={() => operation.add({ type: 'email', value: '' })}>Add item</Button>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Space>
+            </Space>)}
+        </Form.List>
+      </Form>);
+  };
+
+  return Demo18
+})()
+
+---
 
 ```tsx
 import { For } from 'solid-js'
@@ -609,7 +1170,35 @@ const Demo18 = function () {
 export default Demo18
 ```
 
+:::
+
 ### Nest
+
+:::preview
+
+<FormDemo019 />
+
+export const FormDemo019 = (() => {
+  const Demo19 = function () {
+      return (<Form validateMessages={{ required: '${label} is required' }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="User name" name={['user', 'name']} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Street" name={['user', 'address', 'street']}>
+            <Input />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo19
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -638,7 +1227,39 @@ const Demo19 = function () {
 export default Demo19
 ```
 
+:::
+
 ### complex form control
+
+:::preview
+
+<FormDemo020 />
+
+export const FormDemo020 = (() => {
+  const Demo20 = function () {
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-100">
+          <Form.Item label="Address">
+            <Space>
+              <Form.Item name={['address', 'province']} noStyle>
+                <Select options={[{ label: 'Zhejiang', value: 'zhejiang' }]}/>
+              </Form.Item>
+              <Form.Item name={['address', 'street']} noStyle>
+                <Input placeholder="Street"/>
+              </Form.Item>
+            </Space>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo20
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Select, Space, message } from '@ant-design-solid/core'
@@ -668,7 +1289,35 @@ const Demo20 = function () {
 export default Demo20
 ```
 
+:::
+
 ### Customized Form Controls
+
+:::preview
+
+<FormDemo021 />
+
+export const FormDemo021 = (() => {
+  function PriceInput(props) {
+      return (<Input value={String(props.value ?? '')} placeholder="Price" onInput={(event) => props.onChange?.(Number(event.currentTarget.value || 0))}/>);
+  }
+  const Demo21 = function () {
+      return (<Form initialValues={{ price: 10 }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-80">
+          <Form.Item label="Price" name="price">
+            <PriceInput />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo21
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -704,7 +1353,32 @@ const Demo21 = function () {
 export default Demo21
 ```
 
+:::
+
 ### Store Form Data into Upper Component
+
+:::preview
+
+<FormDemo022 />
+
+export const FormDemo022 = (() => {
+  const Demo22 = function () {
+      const [fields, setFields] = createSignal([{ name: 'username', value: 'Ada' }]);
+      return (<Space direction="vertical" class="w-90">
+        <Form fields={fields()} onFieldsChange={(changed) => setFields(changed)}>
+          <Form.Item label="Username" name="username">
+            <Input />
+          </Form.Item>
+        </Form>
+        <Button onClick={() => setFields([{ name: 'username', value: 'Grace' }])}>Set fields</Button>
+        <pre>{JSON.stringify(fields(), null, 2)}</pre>
+      </Space>);
+  };
+
+  return Demo22
+})()
+
+---
 
 ```tsx
 import { createSignal } from 'solid-js'
@@ -729,7 +1403,38 @@ const Demo22 = function () {
 export default Demo22
 ```
 
+:::
+
 ### Control between forms
+
+:::preview
+
+<FormDemo023 />
+
+export const FormDemo023 = (() => {
+  const Demo23 = function () {
+      return (<Form.Provider onFormChange={(name) => message.info(name + ' changed')} onFormFinish={(name, info) => message.success(name + ': ' + JSON.stringify(info.values))}>
+        <Space direction="vertical" class="w-90">
+          <Form name="form1">
+            <Form.Item label="Name" name="name">
+              <Input />
+            </Form.Item>
+            <Button htmlType="submit">Submit form1</Button>
+          </Form>
+          <Form name="form2">
+            <Form.Item label="Email" name="email">
+              <Input />
+            </Form.Item>
+            <Button htmlType="submit">Submit form2</Button>
+          </Form>
+        </Space>
+      </Form.Provider>);
+  };
+
+  return Demo23
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -761,7 +1466,38 @@ const Demo23 = function () {
 export default Demo23
 ```
 
+:::
+
 ### Inline Login Form
+
+:::preview
+
+<FormDemo024 />
+
+export const FormDemo024 = (() => {
+  const Demo24 = function () {
+      return (<Form layout="inline" initialValues={{ remember: true }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Form.Item name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
+          <Input placeholder="Username"/>
+        </Form.Item>
+        <Form.Item name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
+          <Input.Password placeholder="Password"/>
+        </Form.Item>
+        <Form.Item name="remember" valuePropName="checked">
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Log in
+          </Button>
+        </Form.Item>
+      </Form>);
+  };
+
+  return Demo24
+})()
+
+---
 
 ```tsx
 import { Button, Checkbox, Form, Input, message } from '@ant-design-solid/core'
@@ -800,7 +1536,38 @@ const Demo24 = function () {
 export default Demo24
 ```
 
+:::
+
 ### Login Form
+
+:::preview
+
+<FormDemo025 />
+
+export const FormDemo025 = (() => {
+  const Demo25 = function () {
+      return (<Form name="login" initialValues={{ remember: true }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-80">
+          <Form.Item name="username" rules={[{ required: true, message: 'Please input your username!' }]}>
+            <Input placeholder="Username"/>
+          </Form.Item>
+          <Form.Item name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
+            <Input.Password placeholder="Password"/>
+          </Form.Item>
+          <Form.Item name="remember" valuePropName="checked">
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Log in
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo25
+})()
+
+---
 
 ```tsx
 import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -839,7 +1606,43 @@ const Demo25 = function () {
 export default Demo25
 ```
 
+:::
+
 ### Registration
+
+:::preview
+
+<FormDemo026 />
+
+export const FormDemo026 = (() => {
+  const Demo26 = function () {
+      return (<Form onFinish={() => message.success('Registered')}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Email" name="email" rules={[{ required: true }, { type: 'email' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item label="Confirm" name="confirm" dependencies={['password']} rules={[
+              { required: true },
+              {
+                  validator: (_, value, values) => value && value !== values?.password ? 'Passwords do not match' : undefined,
+              },
+          ]}>
+            <Input.Password />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Register
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo26
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -879,7 +1682,42 @@ const Demo26 = function () {
 export default Demo26
 ```
 
+:::
+
 ### Advanced search
+
+:::preview
+
+<FormDemo027 />
+
+export const FormDemo027 = (() => {
+  const Demo27 = function () {
+      const [expand, setExpand] = createSignal(false);
+      const fields = () => expand() ? ['Field 1', 'Field 2', 'Field 3', 'Field 4'] : ['Field 1', 'Field 2'];
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-100">
+          <For each={fields()}>
+            {(label, index) => (<Form.Item label={label} name={'field-' + index()}>
+                <Input placeholder="Search value"/>
+              </Form.Item>)}
+          </For>
+          <Space>
+            <Button type="primary" htmlType="submit">
+              Search
+            </Button>
+            <Button htmlType="reset">Clear</Button>
+            <Button onClick={() => setExpand((value) => !value)}>
+              {expand() ? 'Collapse' : 'Expand'}
+            </Button>
+          </Space>
+        </Space>
+      </Form>);
+  };
+
+  return Demo27
+})()
+
+---
 
 ```tsx
 import { createSignal, For } from 'solid-js'
@@ -916,7 +1754,46 @@ const Demo27 = function () {
 export default Demo27
 ```
 
+:::
+
 ### Form in Modal to Create
+
+:::preview
+
+<FormDemo028 />
+
+export const FormDemo028 = (() => {
+  const Demo28 = function () {
+      const [open, setOpen] = createSignal(false);
+      const [form] = Form.useForm();
+      return (<>
+        <Button type="primary" onClick={() => setOpen(true)}>
+          New collection
+        </Button>
+        <Show when={open()}>
+          <Modal title="Create a new collection" open={open()} onCancel={() => setOpen(false)} onOk={() => form.submit()}>
+            <Form form={form} onFinish={(values) => {
+              message.success(JSON.stringify(values));
+              setOpen(false);
+          }}>
+              <Space direction="vertical" class="w-90">
+                <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+                  <Input />
+                </Form.Item>
+                <Form.Item label="Description" name="description">
+                  <Input.TextArea />
+                </Form.Item>
+              </Space>
+            </Form>
+          </Modal>
+        </Show>
+      </>);
+  };
+
+  return Demo28
+})()
+
+---
 
 ```tsx
 import { createSignal, Show } from 'solid-js'
@@ -962,7 +1839,38 @@ const Demo28 = function () {
 export default Demo28
 ```
 
+:::
+
 ### Time-related Controls
+
+:::preview
+
+<FormDemo029 />
+
+export const FormDemo029 = (() => {
+  const Demo29 = function () {
+      return (<Form initialValues={{ date: dayjs(), time: dayjs() }}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="DatePicker" name="date">
+            <DatePicker />
+          </Form.Item>
+          <Form.Item label="RangePicker" name="range">
+            <DatePicker.RangePicker />
+          </Form.Item>
+          <Form.Item label="TimePicker" name="time">
+            <TimePicker />
+          </Form.Item>
+          <Form.Item label="TimeRange" name="timeRange">
+            <TimePicker.RangePicker />
+          </Form.Item>
+        </Space>
+      </Form>);
+  };
+
+  return Demo29
+})()
+
+---
 
 ```tsx
 import dayjs from 'dayjs'
@@ -992,7 +1900,33 @@ const Demo29 = function () {
 export default Demo29
 ```
 
+:::
+
 ### Handle Form Data Manually
+
+:::preview
+
+<FormDemo030 />
+
+export const FormDemo030 = (() => {
+  const Demo30 = function () {
+      const [form] = Form.useForm();
+      return (<Space direction="vertical" class="w-90">
+        <Form form={form} component={false}>
+          <Form.Item label="Username" name="username">
+            <Input />
+          </Form.Item>
+        </Form>
+        <Button onClick={() => message.info(JSON.stringify(form.getFieldsValue(true)))}>
+          Read manually
+        </Button>
+      </Space>);
+  };
+
+  return Demo30
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -1016,7 +1950,34 @@ const Demo30 = function () {
 export default Demo30
 ```
 
+:::
+
 ### Customized Validation
+
+:::preview
+
+<FormDemo031 />
+
+export const FormDemo031 = (() => {
+  const Demo31 = function () {
+      return (<Form onFinish={() => message.success('Passed')}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Username" name="username" rules={[
+              { validator: (_, value) => (value === 'ant' ? undefined : 'Username must be ant') },
+          ]}>
+            <Input placeholder="Type ant"/>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo31
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -1045,7 +2006,41 @@ const Demo31 = function () {
 export default Demo31
 ```
 
+:::
+
 ### Dynamic Rules
+
+:::preview
+
+<FormDemo032 />
+
+export const FormDemo032 = (() => {
+  function DynamicRuleFields() {
+      const checked = Form.useWatch('required');
+      return (<>
+        <Form.Item name="required" valuePropName="checked">
+          <Checkbox>Name is required</Checkbox>
+        </Form.Item>
+        <Form.Item label="Name" name="name" rules={[{ required: Boolean(checked()), message: 'Name is required' }]}>
+          <Input />
+        </Form.Item>
+      </>);
+  }
+  const Demo32 = function () {
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-90">
+          <DynamicRuleFields />
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo32
+})()
+
+---
 
 ```tsx
 import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -1084,7 +2079,40 @@ const Demo32 = function () {
 export default Demo32
 ```
 
+:::
+
 ### Dependencies
+
+:::preview
+
+<FormDemo033 />
+
+export const FormDemo033 = (() => {
+  const Demo33 = function () {
+      return (<Form onFinish={() => message.success('Password confirmed')}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Password" name="password" rules={[{ required: true }]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item label="Confirm Password" name="confirm" dependencies={['password']} rules={[
+              { required: true },
+              {
+                  validator: (_, value, values) => value && value !== values?.password ? 'Passwords do not match' : undefined,
+              },
+          ]}>
+            <Input.Password />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo33
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -1121,7 +2149,32 @@ const Demo33 = function () {
 export default Demo33
 ```
 
+:::
+
 ### getValueProps + normalize
+
+:::preview
+
+<FormDemo034 />
+
+export const FormDemo034 = (() => {
+  const Demo34 = function () {
+      return (<Form initialValues={{ code: 'ANTD' }} onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Code" name="code" normalize={(value) => String(value).trim().toUpperCase()} getValueProps={(value) => ({ value: String(value ?? '').toLowerCase() })}>
+            {(control) => (<Input value={String(control.valueProps().value ?? '')} onInput={(event) => control.onChange(event.currentTarget.value)}/>)}
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo34
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
@@ -1157,7 +2210,37 @@ const Demo34 = function () {
 export default Demo34
 ```
 
+:::
+
 ### Slide to error field
+
+:::preview
+
+<FormDemo035 />
+
+export const FormDemo035 = (() => {
+  const Demo35 = function () {
+      const [form] = useForm();
+      return (<Form form={form} scrollToFirstError={{ focus: true }} onFinishFailed={() => message.error('Scroll to first error')}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Name is required' }]}>
+            <Input />
+          </Form.Item>
+          <div style={{ height: '120px' }}/>
+          <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Email is required' }]}>
+            <Input />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo35
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space, message, useForm } from '@ant-design-solid/core'
@@ -1197,7 +2280,62 @@ const Demo35 = function () {
 export default Demo35
 ```
 
+:::
+
 ### Other Form Controls
+
+:::preview
+
+<FormDemo036 />
+
+export const FormDemo036 = (() => {
+  const Demo36 = function () {
+      return (<Form onFinish={(values) => message.success(JSON.stringify(values))}>
+        <Space direction="vertical" class="w-100">
+          <Form.Item label="Checkbox" name="checkbox" valuePropName="checked">
+            <Checkbox>Checkbox</Checkbox>
+          </Form.Item>
+          <Form.Item label="Radio" name="radio">
+            <Radio.Group options={[
+              { label: 'A', value: 'a' },
+              { label: 'B', value: 'b' },
+          ]}/>
+          </Form.Item>
+          <Form.Item label="Switch" name="switch" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <Form.Item label="Slider" name="slider">
+            <Slider class="w-80"/>
+          </Form.Item>
+          <Form.Item label="Rate" name="rate">
+            <Rate />
+          </Form.Item>
+          <Form.Item label="DatePicker" name="date">
+            <DatePicker />
+          </Form.Item>
+          <Form.Item label="Cascader" name="cascader">
+            <Cascader options={[
+              {
+                  label: 'Zhejiang',
+                  value: 'zhejiang',
+                  children: [{ label: 'Hangzhou', value: 'hangzhou' }],
+              },
+          ]}/>
+          </Form.Item>
+          <Form.Item label="TreeSelect" name="tree">
+            <TreeSelect treeData={[{ title: 'Node', value: 'node' }]}/>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo36
+})()
+
+---
 
 ```tsx
 import {
@@ -1267,7 +2405,31 @@ const Demo36 = function () {
 export default Demo36
 ```
 
+:::
+
 ### Custom semantic dom styling
+
+:::preview
+
+<FormDemo037 />
+
+export const FormDemo037 = (() => {
+  const Demo37 = function () {
+      return (<Form classNames={{ root: 'custom-form-root' }} styles={{ root: { maxWidth: '360px' } }}>
+        <Form.Item label="Username" name="username" classNames={{
+              root: 'custom-form-item',
+              label: 'custom-form-label',
+              content: 'custom-form-content',
+          }} styles={{ content: { maxWidth: '260px' } }}>
+          <Input placeholder="Semantic styled input"/>
+        </Form.Item>
+      </Form>);
+  };
+
+  return Demo37
+})()
+
+---
 
 ```tsx
 import { Form, Input } from '@ant-design-solid/core'
@@ -1294,7 +2456,32 @@ const Demo37 = function () {
 export default Demo37
 ```
 
+:::
+
 ### Custom feedback icons
+
+:::preview
+
+<FormDemo038 />
+
+export const FormDemo038 = (() => {
+  const Demo38 = function () {
+      return (<Form feedbackIcons={{ success: <span>ok</span>, error: <span>!</span> }}>
+        <Space direction="vertical" class="w-90">
+          <Form.Item label="Username" name="username" hasFeedback rules={[{ required: true, message: 'Username is required' }]}>
+            <Input />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Space>
+      </Form>);
+  };
+
+  return Demo38
+})()
+
+---
 
 ```tsx
 import { Button, Form, Input, Space } from '@ant-design-solid/core'
@@ -1322,7 +2509,29 @@ const Demo38 = function () {
 export default Demo38
 ```
 
+:::
+
 ### Component Token
+
+:::preview
+
+<FormDemo039 />
+
+export const FormDemo039 = (() => {
+  const Demo39 = function () {
+      return (<ConfigProvider prefixCls="ads-token" theme={{ components: { Form: { itemMarginBottom: 8, labelColor: '#1677ff' } } }}>
+        <Form>
+          <Form.Item label="Token label" name="token">
+            <Input placeholder="Component token"/>
+          </Form.Item>
+        </Form>
+      </ConfigProvider>);
+  };
+
+  return Demo39
+})()
+
+---
 
 ```tsx
 import { ConfigProvider, Form, Input } from '@ant-design-solid/core'
@@ -1344,6 +2553,8 @@ const Demo39 = function () {
 
 export default Demo39
 ```
+
+:::
 
 ## API
 

@@ -1,6 +1,22 @@
+import { Segmented, Space } from '@ant-design-solid/core'
+
 # Segmented
 
 ### Basic
+
+:::preview
+
+<SegmentedDemo001 />
+
+export const SegmentedDemo001 = (() => {
+  const Demo1 = function () {
+      return <Segmented options={['Daily', 'Weekly', 'Monthly']}/>;
+  };
+
+  return Demo1
+})()
+
+---
 
 ```tsx
 import { Segmented, Space } from '@ant-design-solid/core'
@@ -12,7 +28,27 @@ const Demo1 = function () {
 export default Demo1
 ```
 
+:::
+
 ### Object options
+
+:::preview
+
+<SegmentedDemo002 />
+
+export const SegmentedDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Segmented options={[
+              { label: 'List', value: 'list', icon: '☰' },
+              { label: 'Grid', value: 'grid', icon: '▦' },
+              { label: 'Disabled', value: 'disabled', disabled: true },
+          ]} defaultValue="grid"/>);
+  };
+
+  return Demo2
+})()
+
+---
 
 ```tsx
 import { Segmented, Space } from '@ant-design-solid/core'
@@ -33,7 +69,27 @@ const Demo2 = function () {
 export default Demo2
 ```
 
+:::
+
 ### Sizes
+
+:::preview
+
+<SegmentedDemo003 />
+
+export const SegmentedDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space direction="vertical">
+        <Segmented size="small" options={['Small', 'Middle']}/>
+        <Segmented options={['Middle', 'Large']}/>
+        <Segmented size="large" options={['Large', 'Huge']}/>
+      </Space>);
+  };
+
+  return Demo3
+})()
+
+---
 
 ```tsx
 import { Segmented, Space } from '@ant-design-solid/core'
@@ -51,7 +107,23 @@ const Demo3 = function () {
 export default Demo3
 ```
 
+:::
+
 ### Block and disabled
+
+:::preview
+
+<SegmentedDemo004 />
+
+export const SegmentedDemo004 = (() => {
+  const Demo4 = function () {
+      return <Segmented block disabled options={['A', 'B', 'C']}/>;
+  };
+
+  return Demo4
+})()
+
+---
 
 ```tsx
 import { Segmented, Space } from '@ant-design-solid/core'
@@ -63,7 +135,26 @@ const Demo4 = function () {
 export default Demo4
 ```
 
+:::
+
 ### Vertical and round
+
+:::preview
+
+<SegmentedDemo005 />
+
+export const SegmentedDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space>
+        <Segmented shape="round" options={['Day', 'Week', 'Month']}/>
+        <Segmented vertical options={['List', 'Calendar', 'Timeline']}/>
+      </Space>);
+  };
+
+  return Demo5
+})()
+
+---
 
 ```tsx
 import { Segmented, Space } from '@ant-design-solid/core'
@@ -80,7 +171,27 @@ const Demo5 = function () {
 export default Demo5
 ```
 
+:::
+
 ### Tooltips
+
+:::preview
+
+<SegmentedDemo006 />
+
+export const SegmentedDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Segmented options={[
+              { label: 'List', value: 'list', icon: '☰', tooltip: 'Compact list view' },
+              { label: 'Grid', value: 'grid', icon: '▦', tooltip: { title: 'Visual grid view' } },
+              { label: 'Map', value: 'map', tooltip: 'Map view' },
+          ]}/>);
+  };
+
+  return Demo6
+})()
+
+---
 
 ```tsx
 import { Segmented } from '@ant-design-solid/core'
@@ -100,7 +211,23 @@ const Demo6 = function () {
 export default Demo6
 ```
 
+:::
+
 ### Semantic styles
+
+:::preview
+
+<SegmentedDemo007 />
+
+export const SegmentedDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Segmented options={['Open', 'Closed', 'Archived']} rootClass="demo-segmented-root" classNames={{ item: 'demo-segmented-item', label: 'demo-segmented-label' }} styles={{ root: { maxWidth: '360px' }, item: { minWidth: '96px' } }}/>);
+  };
+
+  return Demo7
+})()
+
+---
 
 ```tsx
 import { Segmented } from '@ant-design-solid/core'
@@ -118,6 +245,8 @@ const Demo7 = function () {
 
 export default Demo7
 ```
+
+:::
 
 ## API
 
