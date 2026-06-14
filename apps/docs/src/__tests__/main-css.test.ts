@@ -8,6 +8,7 @@ const entryClient = readFileSync(join(process.cwd(), 'src/entry-client.tsx'), 'u
 describe('docs global content styles', () => {
   it('loads Tailwind and global docs styles in the browser entry', () => {
     expect(entryClient).toContain("import './main.css'")
+    expect(mainCss).toContain("@import 'tailwindcss'")
   })
 
   it('uses client rendering for the Vite docs shell', () => {
@@ -16,19 +17,22 @@ describe('docs global content styles', () => {
     expect(entryClient).not.toContain('hydrate')
   })
 
-  it('defines a visible heading hierarchy for MDX content', () => {
-    expect(mainCss).toContain('main h1')
-    expect(mainCss).toContain('main h2')
-    expect(mainCss).toContain('font-size: 2.5rem')
-    expect(mainCss).toContain('border-bottom: 1px solid var(--docs-border)')
+  it('keeps only root theme variables in global CSS', () => {
+    expect(mainCss).toContain(':root {')
+    expect(mainCss).toContain(":root[data-theme='dark']")
+    expect(mainCss).toContain(":root[data-theme='sdark']")
+    expect(mainCss).toContain('--docs-bg: #ffffff')
+    expect(mainCss).toContain('--docs-bg: #0f1115')
   })
 
-  it('does not keep stale custom MDX table styles after switching to the default theme', () => {
+  it('does not keep stale custom global selectors after switching to the default theme', () => {
+    expect(mainCss).not.toContain('body {')
+    expect(mainCss).not.toContain('a {')
+    expect(mainCss).not.toContain('main h1')
+    expect(mainCss).not.toContain('[data-preview-stage]')
     expect(mainCss).not.toContain('docs-table-scroll')
     expect(mainCss).not.toContain('docs-markdown-table')
-  })
-
-  it('does not keep stale custom demo preview styles after switching to the default theme', () => {
     expect(mainCss).not.toContain('docs-demo-preview')
+    expect(mainCss).not.toContain('.docs-surface')
   })
 })
