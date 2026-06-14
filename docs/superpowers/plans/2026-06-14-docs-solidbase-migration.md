@@ -604,12 +604,12 @@ Create `apps/docs/scripts/convert-demo-fences.mjs` that:
 - Scans `apps/docs/src/routes/**/*.mdx`.
 - Finds ```` ```tsx ... ``` ```` blocks.
 - Leaves blocks with meta `pure` unchanged except removing `pure` only if SolidBase does not support it.
-- Converts blocks containing `export default DemoName` to MDX ESM plus `:::preview`.
-- Removes the `export default DemoName` line from displayed source.
-- Inserts executable imports/functions before the heading's preview block, using the source without the default export.
+- Converts only blocks containing exactly one `export default DemoName` to preview form.
+- Preserves imports, helper declarations, types, constants, and the default export in the executable demo module.
+- Generates unique local demo identifiers from file path plus fence index when a page reuses names such as `Demo`.
 - Leaves non-demo code fences unchanged.
 
-Use Node file APIs and conservative regex parsing; fail loudly if a demo block has no identifier default export.
+Use Node file APIs and conservative parsing; fail loudly if a candidate demo block has no identifier default export. Before changing all pages, test the conversion on one copied page and verify SolidBase MDX accepts the chosen syntax.
 
 - [ ] **Step 2: Run conversion script**
 

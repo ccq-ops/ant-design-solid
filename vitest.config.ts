@@ -14,6 +14,12 @@ export default defineConfig({
       '@ant-design-solid/core': fileURLToPath(
         new URL('./packages/components/src', import.meta.url),
       ),
+      'solid-motionone': fileURLToPath(
+        new URL(
+          './packages/components/node_modules/solid-motionone/dist/index.js',
+          import.meta.url,
+        ),
+      ),
     },
   },
   test: {
