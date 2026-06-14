@@ -20,13 +20,13 @@ import {
 FloatButton renders floating quick actions and a back-to-top affordance.
 
 export const floatButtonBoxStyle = (token, options = {}) => ({
-position: 'relative',
-height: options.height ?? '160px',
-overflow: options.overflow ?? 'hidden',
-border: `1px dashed ${token.colorBorder}`,
-'border-radius': '8px',
-background: token.colorFillAlter,
-...(options.padding ? { padding: options.padding } : {}),
+  position: 'relative',
+  height: options.height ?? '160px',
+  overflow: options.overflow ?? 'hidden',
+  border: `1px dashed ${token.colorBorder}`,
+  'border-radius': '8px',
+  background: token.colorFillAlter,
+  ...(options.padding ? { padding: options.padding } : {}),
 })
 
 ### Basic

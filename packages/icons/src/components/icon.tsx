@@ -1,10 +1,13 @@
 import type { AbstractNode, IconDefinition } from '@ant-design/icons-svg/lib/types'
-import type { JSX } from 'solid-js'
-import { Match, Switch, createMemo, splitProps } from 'solid-js'
+import type { Component, JSX } from 'solid-js'
+import { Match, Switch, createMemo, onMount, splitProps } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 
 export type TwoToneColor = string | [primaryColor: string, secondaryColor: string]
 
 export interface IconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {
+  component?: Component<JSX.SvgSVGAttributes<SVGSVGElement>>
+  children?: JSX.Element
   spin?: boolean
   rotate?: number
   twoToneColor?: TwoToneColor
@@ -12,6 +15,16 @@ export interface IconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {
 
 export interface InternalIconProps extends IconProps {
   icon: IconDefinition
+}
+
+type MergedIconProps = IconProps & Partial<Pick<InternalIconProps, 'icon'>>
+
+export interface IconFontProps extends IconProps {
+  type: string
+}
+
+export interface IconFontOptions {
+  scriptUrl: string | string[]
 }
 
 const defaultPrimaryColor = '#1677ff'
@@ -23,6 +36,7 @@ const spinKeyframes = `@keyframes ant-design-solid-icon-spin {
     transform: rotate(360deg);
   }
 }`
+const loadedIconfontScriptUrls = new Set<string>()
 
 function ensureSpinKeyframesStyle() {
   if (typeof document === 'undefined') {
@@ -126,33 +140,56 @@ function mergeStyle(
   return { ...style, ...iconStyle }
 }
 
-export function Icon(props: InternalIconProps) {
+function ariaHiddenValue(svgProps: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    svgProps['aria-hidden'] ??
+    (svgProps['aria-label'] === undefined && svgProps['aria-labelledby'] === undefined
+      ? true
+      : undefined)
+  )
+}
+
+function loadIconfontScript(scriptUrl: string) {
+  if (typeof document === 'undefined' || loadedIconfontScriptUrls.has(scriptUrl)) {
+    return
+  }
+
+  const script = document.createElement('script')
+
+  script.src = scriptUrl
+  script.setAttribute('data-ant-design-solid-iconfont', '')
+  document.body.append(script)
+  loadedIconfontScriptUrls.add(scriptUrl)
+}
+
+export function Icon(props: MergedIconProps) {
   const [local, svgProps] = splitProps(props, [
+    'component',
     'icon',
     'spin',
     'rotate',
     'twoToneColor',
+    'children',
     'class',
     'style',
   ])
   const twoToneColors = createMemo(() => normalizeTwoToneColor(local.twoToneColor))
   const iconNode = createMemo(() => {
     const [primaryColor, secondaryColor] = twoToneColors()
+    const iconDefinition = local.icon
 
-    return typeof local.icon.icon === 'function'
-      ? local.icon.icon(primaryColor, secondaryColor)
-      : local.icon.icon
+    if (!iconDefinition) {
+      return undefined
+    }
+
+    return typeof iconDefinition.icon === 'function'
+      ? iconDefinition.icon(primaryColor, secondaryColor)
+      : iconDefinition.icon
   })
-  const ariaHidden = createMemo(
-    () =>
-      svgProps['aria-hidden'] ??
-      (svgProps['aria-label'] === undefined && svgProps['aria-labelledby'] === undefined
-        ? true
-        : undefined),
-  )
+  const ariaHidden = createMemo(() => ariaHiddenValue(svgProps))
 
   const rootProps = () => ({
-    ...iconNode().attrs,
+    ...iconNode()?.attrs,
     width: '1em',
     height: '1em',
     fill: 'currentColor',
@@ -163,5 +200,32 @@ export function Icon(props: InternalIconProps) {
     style: mergeStyle(local.style, local.spin, local.rotate),
   })
 
-  return <svg {...rootProps()}>{iconNode().children?.map(renderAbstractNode)}</svg>
+  return local.component ? (
+    <Dynamic component={local.component} {...rootProps()}>
+      {local.children}
+    </Dynamic>
+  ) : (
+    <svg {...rootProps()}>
+      {iconNode()?.children?.map(renderAbstractNode)}
+      {local.children}
+    </svg>
+  )
+}
+
+export function createFromIconfontCN(options: IconFontOptions) {
+  const scriptUrls = Array.isArray(options.scriptUrl) ? options.scriptUrl : [options.scriptUrl]
+
+  return function IconFont(props: IconFontProps) {
+    onMount(() => {
+      scriptUrls.forEach(loadIconfontScript)
+    })
+
+    const [local, iconProps] = splitProps(props, ['type'])
+
+    return (
+      <Icon {...iconProps}>
+        <use href={`#${local.type}`} />
+      </Icon>
+    )
+  }
 }
