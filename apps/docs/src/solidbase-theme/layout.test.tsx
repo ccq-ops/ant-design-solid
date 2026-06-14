@@ -135,10 +135,33 @@ describe('SolidBase Layout', () => {
     const result = renderLayout()
     const sidebar = result.container.querySelector('aside')
 
-    expect(sidebar).toHaveClass('sticky')
-    expect(sidebar).toHaveClass('top-16')
-    expect(sidebar).toHaveClass('h-[calc(100vh-4rem)]')
-    expect(sidebar).toHaveClass('overflow-y-auto')
+    expect(sidebar).toHaveClass('lg:sticky')
+    expect(sidebar).toHaveClass('lg:top-16')
+    expect(sidebar).toHaveClass('lg:h-[calc(100vh-4rem)]')
+    expect(sidebar).toHaveClass('overflow-x-auto')
+    expect(sidebar).toHaveClass('lg:overflow-y-auto')
+  })
+
+  it('uses a single-column component layout until large screens', () => {
+    setPath('/components/alert')
+    const result = renderLayout()
+    const pageLayout = result.getByRole('main').parentElement
+
+    expect(pageLayout).toHaveClass('min-h-[calc(100vh-4rem)]')
+    expect(pageLayout).toHaveClass('lg:grid')
+    expect(pageLayout).toHaveClass('lg:grid-cols-[260px_minmax(0,1fr)]')
+    expect(pageLayout).not.toHaveClass('grid-cols-[260px_minmax(0,1fr)]')
+  })
+
+  it('uses narrow page gutters on mobile and wider gutters on desktop', () => {
+    setPath('/components/alert')
+    const result = renderLayout()
+    const main = result.getByRole('main')
+
+    expect(main).toHaveClass('px-4')
+    expect(main).toHaveClass('sm:px-8')
+    expect(main).toHaveClass('lg:px-14')
+    expect(main).not.toHaveClass('px-14')
   })
 
   it('centers sidebar document labels horizontally', () => {

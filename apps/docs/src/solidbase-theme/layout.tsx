@@ -6,7 +6,7 @@ import { DocsThemeProvider, useDocsTheme } from '../components/theme-context'
 import { sideNavGroups, topNavItems } from './route-data'
 
 const sidebarLinkClass =
-  'flex justify-center rounded-lg px-3 py-2 text-center transition-colors hover:bg-blue-50 hover:text-blue-600'
+  'flex shrink-0 justify-center rounded-lg px-3 py-2 text-center transition-colors hover:bg-blue-50 hover:text-blue-600 lg:shrink'
 const sidebarActiveLinkClass = 'bg-blue-50 text-blue-600 font-medium'
 
 function groupFromPath(pathname: string) {
@@ -62,12 +62,12 @@ function DocsLayoutContent(props: { children?: JSX.Element }) {
       <div
         class={
           showSidebar()
-            ? 'grid min-h-[calc(100vh-4rem)] grid-cols-[260px_minmax(0,1fr)]'
+            ? 'min-h-[calc(100vh-4rem)] lg:grid lg:grid-cols-[260px_minmax(0,1fr)]'
             : 'min-h-[calc(100vh-4rem)]'
         }
       >
         <Show when={showSidebar()}>
-          <aside class="docs-border sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r p-6">
+          <aside class="docs-border flex gap-2 overflow-x-auto border-b p-4 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:flex-col lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-6">
             <For each={sidebarItems()}>
               {(item) => (
                 <A
@@ -82,7 +82,9 @@ function DocsLayoutContent(props: { children?: JSX.Element }) {
             </For>
           </aside>
         </Show>
-        <main class="mx-auto w-full max-w-[1100px] px-14 py-10">{props.children}</main>
+        <main class="mx-auto w-full max-w-[1100px] px-4 py-8 sm:px-8 lg:px-14 lg:py-10">
+          {props.children}
+        </main>
       </div>
     </div>
   )

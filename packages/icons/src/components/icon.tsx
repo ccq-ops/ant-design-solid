@@ -1,7 +1,6 @@
 import type { AbstractNode, IconDefinition } from '@ant-design/icons-svg/lib/types'
 import type { JSX } from 'solid-js'
-import { createMemo, splitProps } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
+import { Match, Switch, createMemo, splitProps } from 'solid-js'
 
 export type TwoToneColor = string | [primaryColor: string, secondaryColor: string]
 
@@ -51,9 +50,44 @@ function normalizeTwoToneColor(twoToneColor?: TwoToneColor) {
 
 function renderAbstractNode(node: AbstractNode): JSX.Element {
   return (
-    <Dynamic component={node.tag} {...node.attrs}>
-      {node.children?.map(renderAbstractNode)}
-    </Dynamic>
+    <Switch>
+      <Match when={node.tag === 'path'}>
+        <path {...node.attrs}>{node.children?.map(renderAbstractNode)}</path>
+      </Match>
+      <Match when={node.tag === 'g'}>
+        <g {...node.attrs}>{node.children?.map(renderAbstractNode)}</g>
+      </Match>
+      <Match when={node.tag === 'defs'}>
+        <defs {...node.attrs}>{node.children?.map(renderAbstractNode)}</defs>
+      </Match>
+      <Match when={node.tag === 'linearGradient'}>
+        <linearGradient {...node.attrs}>{node.children?.map(renderAbstractNode)}</linearGradient>
+      </Match>
+      <Match when={node.tag === 'stop'}>
+        <stop {...node.attrs}>{node.children?.map(renderAbstractNode)}</stop>
+      </Match>
+      <Match when={node.tag === 'filter'}>
+        <filter {...node.attrs}>{node.children?.map(renderAbstractNode)}</filter>
+      </Match>
+      <Match when={node.tag === 'feOffset'}>
+        <feOffset {...node.attrs}>{node.children?.map(renderAbstractNode)}</feOffset>
+      </Match>
+      <Match when={node.tag === 'feGaussianBlur'}>
+        <feGaussianBlur {...node.attrs}>{node.children?.map(renderAbstractNode)}</feGaussianBlur>
+      </Match>
+      <Match when={node.tag === 'feColorMatrix'}>
+        <feColorMatrix {...node.attrs}>{node.children?.map(renderAbstractNode)}</feColorMatrix>
+      </Match>
+      <Match when={node.tag === 'feMerge'}>
+        <feMerge {...node.attrs}>{node.children?.map(renderAbstractNode)}</feMerge>
+      </Match>
+      <Match when={node.tag === 'feMergeNode'}>
+        <feMergeNode {...node.attrs}>{node.children?.map(renderAbstractNode)}</feMergeNode>
+      </Match>
+      <Match when={node.tag === 'style'}>
+        <style {...node.attrs}>{node.children?.map(renderAbstractNode)}</style>
+      </Match>
+    </Switch>
   )
 }
 
@@ -117,20 +151,17 @@ export function Icon(props: InternalIconProps) {
         : undefined),
   )
 
-  return (
-    <Dynamic
-      component={iconNode().tag}
-      {...iconNode().attrs}
-      width="1em"
-      height="1em"
-      fill="currentColor"
-      focusable="false"
-      {...svgProps}
-      aria-hidden={ariaHidden()}
-      class={mergeClass(local.class, local.spin)}
-      style={mergeStyle(local.style, local.spin, local.rotate)}
-    >
-      {iconNode().children?.map(renderAbstractNode)}
-    </Dynamic>
-  )
+  const rootProps = () => ({
+    ...iconNode().attrs,
+    width: '1em',
+    height: '1em',
+    fill: 'currentColor',
+    focusable: 'false',
+    ...svgProps,
+    'aria-hidden': ariaHidden(),
+    class: mergeClass(local.class, local.spin),
+    style: mergeStyle(local.style, local.spin, local.rotate),
+  })
+
+  return <svg {...rootProps()}>{iconNode().children?.map(renderAbstractNode)}</svg>
 }

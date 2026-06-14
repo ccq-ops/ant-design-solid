@@ -142,30 +142,36 @@ export function Flex(props: FlexProps) {
     }
     return { ...computedStyle(), ...local.style }
   }
+  const sharedProps = () => ({
+    ...rest,
+    class: classNames(
+      prefixCls(),
+      orientation() === 'vertical' && `${prefixCls()}-vertical`,
+      wrap() && `${prefixCls()}-${wrap()}`,
+      wrap() && `${prefixCls()}-wrap-${wrap()}`,
+      valueClass(prefixCls(), justifyContentValues, 'justify', local.justify),
+      valueClass(
+        prefixCls(),
+        alignItemsValues,
+        'align',
+        local.align ?? (orientation() === 'vertical' ? 'stretch' : undefined),
+      ),
+      presetGapClass(prefixCls(), local.gap),
+      hashId(),
+      local.rootClassName,
+      local.class,
+    ),
+    style: mergedStyle(),
+  })
+
+  if (!local.component) {
+    const divProps = sharedProps() as JSX.HTMLAttributes<HTMLDivElement>
+
+    return <div {...divProps}>{local.children}</div>
+  }
 
   return (
-    <Dynamic
-      component={local.component ?? 'div'}
-      {...rest}
-      class={classNames(
-        prefixCls(),
-        orientation() === 'vertical' && `${prefixCls()}-vertical`,
-        wrap() && `${prefixCls()}-${wrap()}`,
-        wrap() && `${prefixCls()}-wrap-${wrap()}`,
-        valueClass(prefixCls(), justifyContentValues, 'justify', local.justify),
-        valueClass(
-          prefixCls(),
-          alignItemsValues,
-          'align',
-          local.align ?? (orientation() === 'vertical' ? 'stretch' : undefined),
-        ),
-        presetGapClass(prefixCls(), local.gap),
-        hashId(),
-        local.rootClassName,
-        local.class,
-      )}
-      style={mergedStyle()}
-    >
+    <Dynamic component={local.component} {...sharedProps()}>
       {local.children}
     </Dynamic>
   )

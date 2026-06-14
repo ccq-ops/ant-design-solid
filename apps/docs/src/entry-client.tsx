@@ -1,9 +1,10 @@
 // @refresh reload
 import { StartClient } from '@solidjs/start/client'
-import { hydrate, render } from 'solid-js/web'
+import { render } from 'solid-js/web'
+import './main.css'
 
 const root = document.getElementById('app')!
-const mount = root.hasChildNodes() ? hydrate : render
 
-mount(() => <StartClient />, root)
+root.replaceChildren()
+render(() => <StartClient />, root)
 document.documentElement.dataset.docsHydrated = 'true'
