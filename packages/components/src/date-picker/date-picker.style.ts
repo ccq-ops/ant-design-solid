@@ -504,6 +504,8 @@ export function useDatePickerStyle(prefixCls: string) {
         [`.${prefixCls}-time-column`]: {
           flex: '1 1 0',
           width: `${dp.timeColumnWidth}px`,
+        },
+        [`.${prefixCls}-time-column-list`]: {
           height: `${dp.timeColumnHeight}px`,
           overflow: 'auto',
         },
@@ -514,7 +516,6 @@ export function useDatePickerStyle(prefixCls: string) {
           'text-align': 'center',
         },
         [`.${prefixCls}-time-cell`]: {
-          display: 'block',
           width: '100%',
           height: '28px',
           border: '0',

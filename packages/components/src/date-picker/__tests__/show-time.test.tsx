@@ -25,8 +25,8 @@ describe('DatePicker showTime', () => {
     ))
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Hour 09' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Minute 30' }))
+    fireEvent.click(screen.getByRole('option', { name: '09 Hour' }))
+    fireEvent.click(screen.getByRole('option', { name: '30 Minute' }))
 
     expect(onChange).not.toHaveBeenCalled()
 
@@ -159,7 +159,7 @@ describe('DatePicker showTime', () => {
       />
     ))
 
-    const disabledHour = screen.getByRole('button', { name: 'Hour 09' })
+    const disabledHour = screen.getByRole('option', { name: '09 Hour' })
     expect(disabledHour).toHaveAttribute('aria-disabled', 'true')
 
     fireEvent.click(disabledHour)
@@ -168,6 +168,67 @@ describe('DatePicker showTime', () => {
 
     const [nextValue] = onChange.mock.lastCall as [Dayjs, string]
     expect(nextValue.format('YYYY-MM-DD HH:mm:ss')).toBe('2026-06-15 00:00:00')
+  })
+
+  it('uses shared time column rendering for showTime options', () => {
+    render(() => (
+      <DatePicker
+        showTime={{
+          hourStep: 3,
+          minuteStep: 15,
+        }}
+        defaultOpen
+        defaultValue={dayjs('2026-06-15 09:30:00')}
+        cellRender={(current, info) => {
+          if (!info.subType || info.subType === 'meridiem') return info.originNode
+          return (
+            <span data-testid={`${info.subType}-${current.get(info.subType)}`}>
+              {info.originNode}
+            </span>
+          )
+        }}
+      />
+    ))
+
+    expect(screen.getByRole('option', { name: '09 Hour' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: '01 Hour' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: '05 Minute' })).not.toBeInTheDocument()
+    expect(screen.getByTestId('hour-9')).toHaveTextContent('09')
+    expect(screen.getByTestId('minute-30')).toHaveTextContent('30')
+  })
+
+  it('scrolls selected showTime values in the list containers', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <DatePicker showTime defaultOpen defaultValue={dayjs('2026-06-15 09:30:00')} />
+      </StyleProvider>
+    ))
+
+    const selectedHour = screen.getByRole('option', { name: '09 Hour' })
+    const hoursList = screen.getByRole('listbox', { name: 'Hour' })
+    const scrollHours = vi.fn()
+    hoursList.scrollTo = scrollHours
+    vi.spyOn(hoursList, 'offsetTop', 'get').mockReturnValue(27)
+    vi.spyOn(selectedHour, 'offsetTop', 'get').mockReturnValue(315)
+    fireEvent.click(screen.getByRole('option', { name: '10 Hour' }))
+    fireEvent.click(screen.getByRole('option', { name: '09 Hour' }))
+
+    const css = extractStyle(cache)
+    expect(scrollHours).toHaveBeenLastCalledWith({ top: 288, behavior: 'smooth' })
+    expect(css).toContain('.ads-date-picker-time-column{flex:1 1 0;width:')
+    expect(css).toContain('.ads-date-picker-time-column-list{height:')
+    expect(css).toContain('overflow:auto;')
+  })
+
+  it('centers showTime option content from the shared columns', () => {
+    render(() => <DatePicker showTime defaultOpen defaultValue={dayjs('2026-06-15 09:30:00')} />)
+
+    expect(screen.getByRole('option', { name: '09 Hour' })).toHaveStyle({
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+    })
   })
 
   it('supports showNow quick selection before OK', () => {
@@ -198,7 +259,7 @@ describe('DatePicker showTime', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '2026-06-10' }))
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Hour 08' }))
+    fireEvent.click(screen.getByRole('option', { name: '08 Hour' }))
     fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
     const [dates, dateStrings] = onChange.mock.lastCall as [
@@ -245,7 +306,7 @@ describe('DatePicker showTime', () => {
     fireEvent.click(screen.getByRole('button', { name: '2026-06-15' }))
     const [startInput] = screen.getAllByRole('textbox')
     fireEvent.focus(startInput)
-    fireEvent.click(screen.getByRole('button', { name: 'Hour 08' }))
+    fireEvent.click(screen.getByRole('option', { name: '08 Hour' }))
     fireEvent.click(screen.getByRole('button', { name: 'OK' }))
 
     expect(onChange.mock.calls.at(-1)![1]).toEqual(['2026-06-10 08:00:00', '2026-06-15 00:00:00'])

@@ -483,6 +483,16 @@ describe('TimePicker', () => {
     expect(scrollHours).toHaveBeenLastCalledWith({ top: 463, behavior: 'smooth' })
   })
 
+  it('centers time option content from the shared columns', () => {
+    render(() => <TimePicker defaultOpen defaultValue={dayjs('2026-06-11 09:05:07')} />)
+
+    expect(screen.getByRole('option', { name: '09 hours' })).toHaveStyle({
+      display: 'flex',
+      'align-items': 'center',
+      'justify-content': 'center',
+    })
+  })
+
   it('selects an uncontrolled time and calls onChange', () => {
     const onChange = vi.fn()
     render(() => <TimePicker defaultOpen onChange={onChange} />)

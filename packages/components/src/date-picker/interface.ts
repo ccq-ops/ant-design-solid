@@ -74,6 +74,9 @@ export interface DisabledTimeConfig {
 export interface ShowTimeOptions extends DisabledTimeConfig {
   defaultOpenValue?: Dayjs
   format?: string
+  hourStep?: number
+  minuteStep?: number
+  secondStep?: number
   showHour?: boolean
   showMinute?: boolean
   showSecond?: boolean

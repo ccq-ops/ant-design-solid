@@ -713,6 +713,7 @@ export function RangePicker(props: RangePickerProps) {
                     { from: fromForSide(activeRange()) },
                   )}
                   locale={locale()}
+                  cellRender={local.cellRender}
                   onSelectTime={selectTime}
                 />
               </Show>

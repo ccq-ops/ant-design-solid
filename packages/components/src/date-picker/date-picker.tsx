@@ -622,6 +622,7 @@ function DatePickerBase(props: DatePickerProps) {
                   showTime={local.showTime}
                   disabledTime={local.disabledTime?.(pendingValue() ?? selectedDate())}
                   locale={locale()}
+                  cellRender={local.cellRender}
                   onSelectTime={selectTime}
                 />
               </Show>

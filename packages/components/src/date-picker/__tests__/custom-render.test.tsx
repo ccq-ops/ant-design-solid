@@ -586,9 +586,9 @@ describe('DatePicker custom rendering and visual APIs', () => {
       />
     ))
 
-    expect(screen.getByRole('button', { name: '小时 09' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '分钟 30' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '秒 00' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '09 小时' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '30 分钟' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '00 秒' })).toBeInTheDocument()
   })
 
   it('supports super navigation icons, onSelect, showWeek, components, and owns non-dom props', () => {

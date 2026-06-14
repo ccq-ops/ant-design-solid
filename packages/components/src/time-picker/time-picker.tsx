@@ -1,7 +1,6 @@
 import { ClockCircleOutlined, CloseCircleFilled } from '@ant-design-solid/icons'
 import dayjs from 'dayjs'
 import {
-  For,
   Show,
   createEffect,
   createMemo,
@@ -18,9 +17,7 @@ import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/ov
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
 import type {
-  DisabledTimeConfig,
   TimePickerAllowClear,
-  TimePickerCellRenderInfo,
   TimePickerFormat,
   TimePickerProps,
   TimePickerRangeValue,
@@ -30,6 +27,7 @@ import type {
   TimeRangePickerProps,
 } from './interface'
 import { useTimePickerStyle } from './time-picker.style'
+import { TimeColumns, normalizeTimeStep } from './time-columns'
 
 type TimeParts = {
   hour: number
@@ -43,11 +41,6 @@ type NullableTimeParts = Partial<TimeParts>
 
 const DEFAULT_FORMAT = 'HH:mm:ss'
 const TIME_ANCHOR = '2026-01-01'
-const TIME_CELL_HEIGHT = 32
-
-function pad(value: number): string {
-  return String(value).padStart(2, '0')
-}
 
 function clamp(value: number, min: number, max: number): number {
   if (Number.isNaN(value)) return min
@@ -57,12 +50,6 @@ function clamp(value: number, min: number, max: number): number {
 function readSegment(segment: string | undefined, min: number, max: number): number {
   const parsed = Number.parseInt(segment ?? '', 10)
   return clamp(parsed, min, max)
-}
-
-function normalizeStep(step: number | undefined): number {
-  const parsed = Math.floor(Number(step))
-  if (!Number.isFinite(parsed) || parsed < 1) return 1
-  return Math.min(60, parsed)
 }
 
 function parseStringTime(value: string | undefined): TimeParts | undefined {
@@ -100,16 +87,6 @@ function formatParts(parts: TimeParts | undefined, format: TimePickerFormat): st
   return partsToDayjs(parts).format(format)
 }
 
-function range(max: number, step = 1): number[] {
-  const values: number[] = []
-  for (let value = 0; value <= max; value += step) values.push(value)
-  return values
-}
-
-function includes(values: number[], value: number): boolean {
-  return values.includes(value)
-}
-
 function assignPickerRef(
   ref: TimePickerProps['ref'] | TimeRangePickerProps['ref'],
   pickerRef: TimePickerRef,
@@ -143,156 +120,6 @@ function semanticStyle(
   styles: Partial<Record<TimePickerSemanticSlot, JSX.CSSProperties>> | undefined,
 ): JSX.CSSProperties | undefined {
   return styles?.[slot]
-}
-
-interface TimeColumnsProps {
-  prefixCls: string
-  format: TimePickerFormat
-  parts: NullableTimeParts
-  hourStep: number
-  minuteStep: number
-  secondStep: number
-  hideDisabledOptions?: boolean
-  changeOnScroll?: boolean
-  classNames?: Partial<Record<TimePickerSemanticSlot, string>>
-  styles?: Partial<Record<TimePickerSemanticSlot, JSX.CSSProperties>>
-  cellRender?: (current: number, info: TimePickerCellRenderInfo) => JSX.Element
-  range?: RangeSide
-  disabledConfig?: DisabledTimeConfig
-  onSelect: (type: ColumnType, optionValue: number) => void
-}
-
-function TimeColumns(props: TimeColumnsProps) {
-  const listRefs: Partial<Record<ColumnType, HTMLDivElement>> = {}
-  const programmaticScrollTypes = new Set<ColumnType>()
-
-  function disabledValues(type: ColumnType, parts: NullableTimeParts): number[] {
-    if (type === 'hour') return props.disabledConfig?.disabledHours?.() ?? []
-    if (type === 'minute' && parts.hour !== undefined) {
-      return props.disabledConfig?.disabledMinutes?.(parts.hour) ?? []
-    }
-    if (type === 'second' && parts.hour !== undefined && parts.minute !== undefined) {
-      return props.disabledConfig?.disabledSeconds?.(parts.hour, parts.minute) ?? []
-    }
-    return []
-  }
-
-  function isDisabled(type: ColumnType, optionValue: number): boolean {
-    return includes(disabledValues(type, props.parts), optionValue)
-  }
-
-  function options(type: ColumnType, max: number, step: number): number[] {
-    const values = range(max, step)
-    if (!props.hideDisabledOptions) return values
-    return values.filter((value) => !isDisabled(type, value))
-  }
-
-  function handleScroll(type: ColumnType, event: Event): void {
-    if (programmaticScrollTypes.has(type)) {
-      programmaticScrollTypes.delete(type)
-      return
-    }
-    if (!props.changeOnScroll) return
-    const target = event.currentTarget as HTMLElement
-    const optionValues =
-      type === 'hour'
-        ? options(type, 23, props.hourStep)
-        : type === 'minute'
-          ? options(type, 59, props.minuteStep)
-          : options(type, 59, props.secondStep)
-    const nextValue = optionValues[Math.max(0, Math.round(target.scrollTop / TIME_CELL_HEIGHT))]
-    if (nextValue !== undefined) props.onSelect(type, nextValue)
-  }
-
-  function scrollSelectedToTop(type: ColumnType, max: number, step: number): void {
-    const list = listRefs[type]
-    const selected = props.parts[type]
-    if (!list || selected === undefined) return
-    const selectedIndex = options(type, max, step).indexOf(selected)
-    if (selectedIndex === -1) return
-    const selectedElement = list.children.item(selectedIndex) as HTMLElement | null
-    const top =
-      selectedElement !== null
-        ? selectedElement.offsetTop - list.offsetTop
-        : selectedIndex * TIME_CELL_HEIGHT
-    programmaticScrollTypes.add(type)
-    if (typeof list.scrollTo === 'function') {
-      list.scrollTo({ top, behavior: 'smooth' })
-    } else {
-      list.scrollTop = top
-      queueMicrotask(() => programmaticScrollTypes.delete(type))
-    }
-  }
-
-  createEffect(() => scrollSelectedToTop('hour', 23, props.hourStep))
-  createEffect(() => scrollSelectedToTop('minute', 59, props.minuteStep))
-  createEffect(() => scrollSelectedToTop('second', 59, props.secondStep))
-
-  function renderCell(type: ColumnType, optionValue: number, originNode: JSX.Element) {
-    if (!props.cellRender) return originNode
-    return props.cellRender(optionValue, {
-      originNode,
-      today: dayjs(),
-      range: props.range,
-      subType: type,
-    })
-  }
-
-  function renderColumn(type: ColumnType, max: number, step = 1) {
-    const label = type === 'hour' ? 'hours' : type === 'minute' ? 'minutes' : 'seconds'
-    const selected = () => props.parts[type]
-
-    return (
-      <div class={semanticClass('column', props.classNames, `${props.prefixCls}-column`)}>
-        <div class={`${props.prefixCls}-column-title`}>{label}</div>
-        <div
-          role="listbox"
-          aria-label={label}
-          ref={(element) => {
-            listRefs[type] = element
-          }}
-          class={`${props.prefixCls}-column-list`}
-          onScroll={(event) => handleScroll(type, event)}
-        >
-          <For each={options(type, max, step)}>
-            {(optionValue) => {
-              const optionDisabled = () => isDisabled(type, optionValue)
-              const originNode = <span>{pad(optionValue)}</span>
-              return (
-                <div
-                  role="option"
-                  aria-label={`${pad(optionValue)} ${label}`}
-                  aria-selected={selected() === optionValue}
-                  aria-disabled={optionDisabled()}
-                  class={semanticClass(
-                    'cell',
-                    props.classNames,
-                    `${props.prefixCls}-cell`,
-                    selected() === optionValue && `${props.prefixCls}-cell-selected`,
-                    optionDisabled() && `${props.prefixCls}-cell-disabled`,
-                  )}
-                  style={semanticStyle('cell', props.styles)}
-                  onClick={() => {
-                    if (!optionDisabled()) props.onSelect(type, optionValue)
-                  }}
-                >
-                  {renderCell(type, optionValue, originNode)}
-                </div>
-              )
-            }}
-          </For>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <>
-      {renderColumn('hour', 23, props.hourStep)}
-      {renderColumn('minute', 59, props.minuteStep)}
-      <Show when={props.format.includes('s')}>{renderColumn('second', 59, props.secondStep)}</Show>
-    </>
-  )
 }
 
 export function TimePickerBase(props: TimePickerProps) {
@@ -367,9 +194,9 @@ export function TimePickerBase(props: TimePickerProps) {
   const isValueControlled = () => 'value' in props
   const format = () => local.format ?? (local.use12Hours ? 'h:mm:ss a' : DEFAULT_FORMAT)
   const disabled = () => Boolean(local.disabled)
-  const hourStep = () => normalizeStep(local.hourStep)
-  const minuteStep = () => normalizeStep(local.minuteStep)
-  const secondStep = () => normalizeStep(local.secondStep)
+  const hourStep = () => normalizeTimeStep(local.hourStep)
+  const minuteStep = () => normalizeTimeStep(local.minuteStep)
+  const secondStep = () => normalizeTimeStep(local.secondStep)
   const allowClearEnabled = () => local.allowClear !== false
   const selectedParts = createMemo(() =>
     isValueControlled() ? valueToParts(local.value) : innerValue(),
@@ -617,11 +444,11 @@ export function TimePickerBase(props: TimePickerProps) {
             >
               <TimeColumns
                 prefixCls={prefixCls()}
-                format={format()}
                 parts={draftParts()}
                 hourStep={hourStep()}
                 minuteStep={minuteStep()}
                 secondStep={secondStep()}
+                showSecond={format().includes('s')}
                 hideDisabledOptions={local.hideDisabledOptions}
                 changeOnScroll={local.changeOnScroll}
                 classNames={local.classNames}
@@ -1016,11 +843,11 @@ function TimeRangePicker(props: TimeRangePickerProps) {
             >
               <TimeColumns
                 prefixCls={prefixCls()}
-                format={format()}
                 parts={draftRange()[activeSide() === 'start' ? 0 : 1]}
-                hourStep={normalizeStep(local.hourStep)}
-                minuteStep={normalizeStep(local.minuteStep)}
-                secondStep={normalizeStep(local.secondStep)}
+                hourStep={normalizeTimeStep(local.hourStep)}
+                minuteStep={normalizeTimeStep(local.minuteStep)}
+                secondStep={normalizeTimeStep(local.secondStep)}
+                showSecond={format().includes('s')}
                 hideDisabledOptions={local.hideDisabledOptions}
                 changeOnScroll={local.changeOnScroll}
                 classNames={local.classNames}

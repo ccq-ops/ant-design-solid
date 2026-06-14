@@ -1,9 +1,13 @@
-import { For, Show, createMemo } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { createMemo } from 'solid-js'
+import { TimeColumns, normalizeTimeStep } from '../time-picker/time-columns'
+import type { TimeColumnParts } from '../time-picker/time-columns'
 import type {
   DatePickerLocale,
   DisabledTimeConfig,
   RangeShowTimeOptions,
   ShowTimeOptions,
+  CellRenderInfo,
 } from './interface'
 import type { dayjs } from './date-utils'
 
@@ -13,15 +17,8 @@ export interface TimePanelProps {
   showTime?: boolean | ShowTimeOptions | RangeShowTimeOptions
   disabledTime?: DisabledTimeConfig
   locale?: DatePickerLocale
+  cellRender?: (current: dayjs.Dayjs, info: CellRenderInfo) => JSX.Element
   onSelectTime?: (unit: 'hour' | 'minute' | 'second', value: number) => void
-}
-
-function range(length: number): number[] {
-  return Array.from({ length }, (_, index) => index)
-}
-
-function pad(value: number): string {
-  return String(value).padStart(2, '0')
 }
 
 function showTimeOptions(
@@ -30,96 +27,62 @@ function showTimeOptions(
   return typeof showTime === 'object' ? showTime : {}
 }
 
-function includesValue(values: number[] | undefined, value: number): boolean {
-  return Boolean(values?.includes(value))
-}
-
 export function TimePanel(props: TimePanelProps) {
   const options = createMemo(() => showTimeOptions(props.showTime))
-  const hour = () => props.value?.hour() ?? 0
-  const minute = () => props.value?.minute() ?? 0
-  const second = () => props.value?.second() ?? 0
-  const showHour = () => options().showHour !== false
-  const showMinute = () => options().showMinute !== false
-  const showSecond = () => options().showSecond !== false
-  const hiddenDisabled = () => Boolean(options().hideDisabledOptions)
-  const disabledHours = () =>
-    props.disabledTime?.disabledHours?.() ?? options().disabledHours?.() ?? []
-  const disabledMinutes = () =>
-    props.disabledTime?.disabledMinutes?.(hour()) ?? options().disabledMinutes?.(hour()) ?? []
-  const disabledSeconds = () =>
-    props.disabledTime?.disabledSeconds?.(hour(), minute()) ??
-    options().disabledSeconds?.(hour(), minute()) ??
-    []
+  const parts = (): TimeColumnParts => ({
+    hour: props.value?.hour() ?? 0,
+    minute: props.value?.minute() ?? 0,
+    second: props.value?.second() ?? 0,
+  })
+  const disabledConfig = (): DisabledTimeConfig => ({
+    ...options(),
+    ...props.disabledTime,
+    disabledHours: props.disabledTime?.disabledHours ?? options().disabledHours,
+    disabledMinutes: props.disabledTime?.disabledMinutes ?? options().disabledMinutes,
+    disabledSeconds: props.disabledTime?.disabledSeconds ?? options().disabledSeconds,
+  })
 
-  function renderColumn(
-    title: string,
-    unit: 'hour' | 'minute' | 'second',
-    values: number[],
-    selectedValue: number,
-    disabledValues: number[],
-  ) {
-    const visibleValues = () =>
-      hiddenDisabled() ? values.filter((value) => !includesValue(disabledValues, value)) : values
-    return (
-      <div class={`${props.prefixCls}-time-column`}>
-        <div class={`${props.prefixCls}-time-column-title`}>{title}</div>
-        <For each={visibleValues()}>
-          {(value) => {
-            const disabled = () => includesValue(disabledValues, value)
-            const selected = () => selectedValue === value
-            const label = () => `${title} ${pad(value)}`
-            return (
-              <button
-                type="button"
-                aria-label={label()}
-                aria-disabled={disabled()}
-                aria-pressed={selected()}
-                class={`${props.prefixCls}-time-cell${selected() ? ` ${props.prefixCls}-time-cell-selected` : ''}${
-                  disabled() ? ` ${props.prefixCls}-time-cell-disabled` : ''
-                }`}
-                onClick={() => {
-                  if (!disabled()) props.onSelectTime?.(unit, value)
-                }}
-              >
-                {pad(value)}
-              </button>
-            )
-          }}
-        </For>
-      </div>
-    )
+  function timeCellRender(
+    current: number,
+    info: {
+      originNode: JSX.Element
+      today: dayjs.Dayjs
+      range?: 'start' | 'end'
+      subType: 'hour' | 'minute' | 'second' | 'meridiem'
+    },
+  ): JSX.Element {
+    if (!props.cellRender) return info.originNode
+    if (info.subType === 'meridiem') return info.originNode
+    const base = props.value ?? options().defaultOpenValue ?? undefined
+    if (!base || Array.isArray(base)) return info.originNode
+    return props.cellRender(base.set(info.subType, current), {
+      originNode: info.originNode,
+      today: base,
+      type: 'date',
+      locale: props.locale,
+      subType: info.subType,
+    })
   }
 
   return (
     <div class={`${props.prefixCls}-time-panel`}>
-      <Show when={showHour()}>
-        {renderColumn(
-          props.locale?.lang?.hour ?? 'Hour',
-          'hour',
-          range(24),
-          hour(),
-          disabledHours(),
-        )}
-      </Show>
-      <Show when={showMinute()}>
-        {renderColumn(
-          props.locale?.lang?.minute ?? 'Minute',
-          'minute',
-          range(60),
-          minute(),
-          disabledMinutes(),
-        )}
-      </Show>
-      <Show when={showSecond()}>
-        {renderColumn(
-          props.locale?.lang?.second ?? 'Second',
-          'second',
-          range(60),
-          second(),
-          disabledSeconds(),
-        )}
-      </Show>
+      <TimeColumns
+        prefixCls={`${props.prefixCls}-time`}
+        parts={parts()}
+        hourStep={normalizeTimeStep(options().hourStep)}
+        minuteStep={normalizeTimeStep(options().minuteStep)}
+        secondStep={normalizeTimeStep(options().secondStep)}
+        showHour={options().showHour}
+        showMinute={options().showMinute}
+        showSecond={options().showSecond}
+        hideDisabledOptions={options().hideDisabledOptions}
+        hourLabel={props.locale?.lang?.hour ?? 'hours'}
+        minuteLabel={props.locale?.lang?.minute ?? 'minutes'}
+        secondLabel={props.locale?.lang?.second ?? 'seconds'}
+        disabledConfig={disabledConfig()}
+        cellRender={timeCellRender}
+        onSelect={(unit, value) => props.onSelectTime?.(unit, value)}
+      />
     </div>
   )
 }
