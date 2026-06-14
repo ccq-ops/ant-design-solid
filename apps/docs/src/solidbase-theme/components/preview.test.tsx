@@ -1,5 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
+import { sideNavGroups, topNavItems } from '../route-data'
 import { Preview, PreviewPanel, PreviewStage } from './preview'
 
 describe('SolidBase preview components', () => {
@@ -20,5 +21,27 @@ describe('SolidBase preview components', () => {
       result.getByRole('button', { name: 'Live demo' }),
     )
     expect(result.container.querySelector('[data-preview-panel]')).toHaveTextContent('source')
+  })
+})
+
+describe('SolidBase route data', () => {
+  it('includes docs routes and the full component sidebar', () => {
+    expect(topNavItems).toEqual([
+      { path: '/components/button', label: 'Components' },
+      { path: '/docs/getting-started', label: 'Docs' },
+    ])
+    expect(sideNavGroups.docs).toEqual([
+      { path: '/docs/getting-started', label: 'Getting Started' },
+      { path: '/docs/theming', label: 'Theming' },
+    ])
+    expect(sideNavGroups.components).toContainEqual({
+      path: '/components/config-provider',
+      label: 'Config Provider',
+    })
+    expect(sideNavGroups.components).toContainEqual({
+      path: '/components/watermark',
+      label: 'Watermark',
+    })
+    expect(sideNavGroups.components).toHaveLength(70)
   })
 })

@@ -3,27 +3,7 @@ import { MoonOutlined, SunOutlined } from '@ant-design-solid/icons'
 import { A, useLocation } from '@solidjs/router'
 import { For, Show, createMemo, type JSX } from 'solid-js'
 import { DocsThemeProvider, useDocsTheme } from '../components/theme-context'
-
-type NavItem = {
-  path: string
-  label: string
-}
-
-const topNavItems: NavItem[] = [
-  { path: '/components/button', label: 'Components' },
-  { path: '/docs/getting-started', label: 'Docs' },
-]
-
-const sideNavGroups: Record<string, NavItem[]> = {
-  components: [
-    { path: '/components/button', label: 'Button' },
-    { path: '/components/config-provider', label: 'Config Provider' },
-  ],
-  docs: [
-    { path: '/docs/getting-started', label: 'Getting Started' },
-    { path: '/docs/theming', label: 'Theming' },
-  ],
-}
+import { sideNavGroups, topNavItems } from './route-data'
 
 const sidebarLinkClass =
   'flex justify-center rounded-lg px-3 py-2 text-center transition-colors hover:bg-blue-50 hover:text-blue-600'
