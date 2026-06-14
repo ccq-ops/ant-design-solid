@@ -23,17 +23,12 @@ describe('docs global content styles', () => {
     expect(mainCss).toContain('border-bottom: 1px solid var(--docs-border)')
   })
 
-  it('keeps markdown tables aligned with native table layout', () => {
-    expect(mainCss).toContain('table-layout: fixed')
-    expect(mainCss).toContain('vertical-align: top')
-    expect(mainCss).toContain('text-align: left')
-    expect(mainCss).not.toContain('min-width: max-content')
-    expect(mainCss).not.toMatch(/main table (thead|tbody|tr)[\s\S]*display: table/)
+  it('does not keep stale custom MDX table styles after switching to the default theme', () => {
+    expect(mainCss).not.toContain('docs-table-scroll')
+    expect(mainCss).not.toContain('docs-markdown-table')
   })
 
-  it('allows long API signatures to wrap instead of forcing horizontal scroll', () => {
-    expect(mainCss).toContain('overflow-wrap: anywhere')
-    expect(mainCss).toContain('white-space: normal')
-    expect(mainCss).not.toMatch(/main table code[\s\S]*white-space: nowrap/)
+  it('does not keep stale custom demo preview styles after switching to the default theme', () => {
+    expect(mainCss).not.toContain('docs-demo-preview')
   })
 })
