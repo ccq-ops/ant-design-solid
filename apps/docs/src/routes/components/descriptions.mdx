@@ -1,0 +1,360 @@
+import { Descriptions } from '@ant-design-solid/core'
+
+# Descriptions
+
+Descriptions displays multiple read-only fields in groups.
+
+### Basic
+
+:::preview
+
+<DescriptionsDemo001 />
+
+export const DescriptionsDemo001 = (() => {
+  const items = [
+      { key: '1', label: 'UserName', children: 'Zhou Maomao' },
+      { key: '2', label: 'Telephone', children: '1810000000' },
+      { key: '3', label: 'Live', children: 'Hangzhou, Zhejiang' },
+      { key: '4', label: 'Remark', children: 'Empty' },
+      { key: '5', label: 'Address', children: 'No. 18, Wantang Road, Xihu District, Hangzhou' },
+  ];
+  const Demo1 = function () {
+      return <Descriptions title="User Info" items={items}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'UserName', children: 'Zhou Maomao' },
+  { key: '2', label: 'Telephone', children: '1810000000' },
+  { key: '3', label: 'Live', children: 'Hangzhou, Zhejiang' },
+  { key: '4', label: 'Remark', children: 'Empty' },
+  { key: '5', label: 'Address', children: 'No. 18, Wantang Road, Xihu District, Hangzhou' },
+]
+
+const Demo1 = function () {
+  return <Descriptions title="User Info" items={items} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Bordered
+
+:::preview
+
+<DescriptionsDemo002 />
+
+export const DescriptionsDemo002 = (() => {
+  const items = [
+      { key: '1', label: 'Product', children: 'Cloud Database' },
+      { key: '2', label: 'Billing Mode', children: 'Prepaid' },
+      { key: '3', label: 'Automatic Renewal', children: 'Yes' },
+      { key: '4', label: 'Order time', children: '2018-04-24 18:00:00' },
+      { key: '5', label: 'Usage Time', children: '2019-04-24 18:00:00', span: 2 },
+      { key: '6', label: 'Status', children: 'Running' },
+      { key: '7', label: 'Negotiated Amount', children: '$80.00' },
+      { key: '8', label: 'Discount', children: '$20.00' },
+  ];
+  const Demo2 = function () {
+      return <Descriptions title="Product" bordered items={items}/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Product', children: 'Cloud Database' },
+  { key: '2', label: 'Billing Mode', children: 'Prepaid' },
+  { key: '3', label: 'Automatic Renewal', children: 'Yes' },
+  { key: '4', label: 'Order time', children: '2018-04-24 18:00:00' },
+  { key: '5', label: 'Usage Time', children: '2019-04-24 18:00:00', span: 2 },
+  { key: '6', label: 'Status', children: 'Running' },
+  { key: '7', label: 'Negotiated Amount', children: '$80.00' },
+  { key: '8', label: 'Discount', children: '$20.00' },
+]
+
+const Demo2 = function () {
+  return <Descriptions title="Product" bordered items={items} />
+}
+
+export default Demo2
+```
+
+:::
+
+### Size
+
+:::preview
+
+<DescriptionsDemo003 />
+
+export const DescriptionsDemo003 = (() => {
+  const items = [
+      { key: '1', label: 'Product', children: 'Cloud Database' },
+      { key: '2', label: 'Billing Mode', children: 'Prepaid' },
+      { key: '3', label: 'Automatic Renewal', children: 'Yes' },
+  ];
+  const Demo3 = function () {
+      return (<>
+        <Descriptions title="Large" bordered items={items}/>
+        <Descriptions title="Medium" bordered size="medium" items={items}/>
+        <Descriptions title="Small" bordered size="small" items={items}/>
+      </>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Product', children: 'Cloud Database' },
+  { key: '2', label: 'Billing Mode', children: 'Prepaid' },
+  { key: '3', label: 'Automatic Renewal', children: 'Yes' },
+]
+
+const Demo3 = function () {
+  return (
+    <>
+      <Descriptions title="Large" bordered items={items} />
+      <Descriptions title="Medium" bordered size="medium" items={items} />
+      <Descriptions title="Small" bordered size="small" items={items} />
+    </>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Responsive
+
+:::preview
+
+<DescriptionsDemo004 />
+
+export const DescriptionsDemo004 = (() => {
+  const items = [
+      { key: '1', label: 'UserName', children: 'Zhou Maomao', span: { xs: 1, md: 2 } },
+      { key: '2', label: 'Telephone', children: '1810000000' },
+      { key: '3', label: 'Live', children: 'Hangzhou, Zhejiang', span: 'filled' },
+      { key: '4', label: 'Address', children: 'No. 18, Wantang Road, Xihu District, Hangzhou' },
+  ];
+  const Demo4 = function () {
+      return <Descriptions title="Responsive" bordered column={{ xs: 1, sm: 2, md: 3 }} items={items}/>;
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'UserName', children: 'Zhou Maomao', span: { xs: 1, md: 2 } },
+  { key: '2', label: 'Telephone', children: '1810000000' },
+  { key: '3', label: 'Live', children: 'Hangzhou, Zhejiang', span: 'filled' },
+  { key: '4', label: 'Address', children: 'No. 18, Wantang Road, Xihu District, Hangzhou' },
+]
+
+const Demo4 = function () {
+  return <Descriptions title="Responsive" bordered column={{ xs: 1, sm: 2, md: 3 }} items={items} />
+}
+
+export default Demo4
+```
+
+:::
+
+### Vertical
+
+:::preview
+
+<DescriptionsDemo005 />
+
+export const DescriptionsDemo005 = (() => {
+  const items = [
+      { key: '1', label: 'UserName', children: 'Zhou Maomao' },
+      { key: '2', label: 'Telephone', children: '1810000000' },
+      { key: '3', label: 'Live', children: 'Hangzhou, Zhejiang' },
+  ];
+  const Demo5 = function () {
+      return <Descriptions title="User Info" layout="vertical" bordered items={items}/>;
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'UserName', children: 'Zhou Maomao' },
+  { key: '2', label: 'Telephone', children: '1810000000' },
+  { key: '3', label: 'Live', children: 'Hangzhou, Zhejiang' },
+]
+
+const Demo5 = function () {
+  return <Descriptions title="User Info" layout="vertical" bordered items={items} />
+}
+
+export default Demo5
+```
+
+:::
+
+### Children
+
+:::preview
+
+<DescriptionsDemo006 />
+
+export const DescriptionsDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Descriptions title="User Info" extra={<a href="#more">More</a>}>
+        <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
+        <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
+        <Descriptions.Item label="Address" span={2}>
+          Hangzhou, Zhejiang
+        </Descriptions.Item>
+      </Descriptions>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Descriptions title="User Info" extra={<a href="#more">More</a>}>
+      <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
+      <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
+      <Descriptions.Item label="Address" span={2}>
+        Hangzhou, Zhejiang
+      </Descriptions.Item>
+    </Descriptions>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Semantic Styles
+
+:::preview
+
+<DescriptionsDemo007 />
+
+export const DescriptionsDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Descriptions title="Customized" classNames={{ title: 'custom-title', label: 'custom-label' }} styles={{
+              root: { maxWidth: '720px' },
+              title: { color: '#1677ff' },
+              label: { fontWeight: 600 },
+              content: { color: '#0958d9' },
+          }} items={[
+              {
+                  key: '1',
+                  label: 'UserName',
+                  children: 'Zhou Maomao',
+                  classNames: { content: 'custom-content' },
+              },
+              { key: '2', label: 'Telephone', children: '1810000000' },
+          ]}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Descriptions } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Descriptions
+      title="Customized"
+      classNames={{ title: 'custom-title', label: 'custom-label' }}
+      styles={{
+        root: { maxWidth: '720px' },
+        title: { color: '#1677ff' },
+        label: { fontWeight: 600 },
+        content: { color: '#0958d9' },
+      }}
+      items={[
+        {
+          key: '1',
+          label: 'UserName',
+          children: 'Zhou Maomao',
+          classNames: { content: 'custom-content' },
+        },
+        { key: '2', label: 'Telephone', children: '1810000000' },
+      ]}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+## API
+
+### Descriptions
+
+| Property     | Description                                                  | Type                                                                                                                                             | Default        |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
+| `title`      | Header title content.                                        | `JSX.Element`                                                                                                                                    | `-`            |
+| `extra`      | Header extra content.                                        | `JSX.Element`                                                                                                                                    | `-`            |
+| `bordered`   | Whether to render bordered table cells.                      | `boolean`                                                                                                                                        | `false`        |
+| `colon`      | Whether to show the colon after labels in horizontal layout. | `boolean`                                                                                                                                        | `true`         |
+| `column`     | Number of description columns.                               | `number \| Partial<Record<Breakpoint, number>>`                                                                                                  | `3`            |
+| `size`       | Descriptions size.                                           | `'large' \| 'medium' \| 'small'`                                                                                                                 | `'large'`      |
+| `layout`     | Label/content layout.                                        | `'horizontal' \| 'vertical'`                                                                                                                     | `'horizontal'` |
+| `items`      | Description item data.                                       | `DescriptionsItemType[]`                                                                                                                         | `-`            |
+| `children`   | Descriptions.Item children used when items are not provided. | `JSX.Element`                                                                                                                                    | `-`            |
+| `classNames` | Semantic class names.                                        | `{ root?: string; header?: string; title?: string; extra?: string; label?: string; content?: string }`                                           | `-`            |
+| `styles`     | Semantic inline styles.                                      | `{ root?: CSSProperties; header?: CSSProperties; title?: CSSProperties; extra?: CSSProperties; label?: CSSProperties; content?: CSSProperties }` | `-`            |
+
+### Descriptions.Item
+
+| Property     | Description                                                            | Type                                                        | Default |
+| ------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------- | ------- |
+| `key`        | Stable item key used by item data.                                     | `string \| number`                                          | `-`     |
+| `label`      | Item label content.                                                    | `JSX.Element`                                               | `-`     |
+| `children`   | Item value content.                                                    | `JSX.Element`                                               | `-`     |
+| `span`       | Number of columns occupied by the item, or `filled` for remaining row. | `number \| 'filled' \| Partial<Record<Breakpoint, number>>` | `1`     |
+| `class`      | Additional item class.                                                 | `string`                                                    | `-`     |
+| `style`      | Item cell inline style.                                                | `JSX.CSSProperties \| string`                               | `-`     |
+| `classNames` | Semantic label/content class names.                                    | `{ label?: string; content?: string }`                      | `-`     |
+| `styles`     | Semantic label/content inline styles.                                  | `{ label?: CSSProperties; content?: CSSProperties }`        | `-`     |

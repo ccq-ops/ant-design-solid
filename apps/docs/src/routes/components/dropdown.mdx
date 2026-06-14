@@ -1,0 +1,559 @@
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+# Dropdown
+
+### Basic
+
+:::preview
+
+<DropdownDemo001 />
+
+export const DropdownDemo001 = (() => {
+  const items = [
+      { key: '1', label: '1st menu item' },
+      { key: '2', label: '2nd menu item' },
+      { key: '3', label: '3rd menu item' },
+  ];
+  const Demo1 = function () {
+      return (<Dropdown menu={{ items }}>
+        <Button>Hover me</Button>
+      </Dropdown>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Button, Dropdown } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: '1st menu item' },
+  { key: '2', label: '2nd menu item' },
+  { key: '3', label: '3rd menu item' },
+]
+
+const Demo1 = function () {
+  return (
+    <Dropdown menu={{ items }}>
+      <Button>Hover me</Button>
+    </Dropdown>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### Trigger
+
+:::preview
+
+<DropdownDemo002 />
+
+export const DropdownDemo002 = (() => {
+  const items = [
+      { key: '1', label: 'Click item' },
+      { key: '2', label: 'Hover item' },
+      { key: '3', label: 'Context menu item' },
+  ];
+  const Demo2 = function () {
+      return (<Space>
+        <Dropdown trigger={['click']} menu={{ items }}>
+          <Button>Click</Button>
+        </Dropdown>
+        <Dropdown trigger={['hover']} menu={{ items }}>
+          <Button>Hover</Button>
+        </Dropdown>
+        <Dropdown trigger={['contextMenu']} menu={{ items }}>
+          <Button>Right click</Button>
+        </Dropdown>
+      </Space>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Click item' },
+  { key: '2', label: 'Hover item' },
+  { key: '3', label: 'Context menu item' },
+]
+
+const Demo2 = function () {
+  return (
+    <Space>
+      <Dropdown trigger={['click']} menu={{ items }}>
+        <Button>Click</Button>
+      </Dropdown>
+      <Dropdown trigger={['hover']} menu={{ items }}>
+        <Button>Hover</Button>
+      </Dropdown>
+      <Dropdown trigger={['contextMenu']} menu={{ items }}>
+        <Button>Right click</Button>
+      </Dropdown>
+    </Space>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Placement
+
+:::preview
+
+<DropdownDemo003 />
+
+export const DropdownDemo003 = (() => {
+  const items = [
+      { key: '1', label: 'Menu item' },
+      { key: '2', label: 'Menu item' },
+  ];
+  const Demo3 = function () {
+      return (<Space wrap>
+        <Dropdown placement="bottomLeft" menu={{ items }}>
+          <Button>bottomLeft</Button>
+        </Dropdown>
+        <Dropdown placement="bottom" menu={{ items }}>
+          <Button>bottom</Button>
+        </Dropdown>
+        <Dropdown placement="bottomRight" menu={{ items }}>
+          <Button>bottomRight</Button>
+        </Dropdown>
+        <Dropdown placement="topLeft" menu={{ items }}>
+          <Button>topLeft</Button>
+        </Dropdown>
+        <Dropdown placement="top" menu={{ items }}>
+          <Button>top</Button>
+        </Dropdown>
+        <Dropdown placement="topRight" menu={{ items }}>
+          <Button>topRight</Button>
+        </Dropdown>
+      </Space>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Menu item' },
+  { key: '2', label: 'Menu item' },
+]
+
+const Demo3 = function () {
+  return (
+    <Space wrap>
+      <Dropdown placement="bottomLeft" menu={{ items }}>
+        <Button>bottomLeft</Button>
+      </Dropdown>
+      <Dropdown placement="bottom" menu={{ items }}>
+        <Button>bottom</Button>
+      </Dropdown>
+      <Dropdown placement="bottomRight" menu={{ items }}>
+        <Button>bottomRight</Button>
+      </Dropdown>
+      <Dropdown placement="topLeft" menu={{ items }}>
+        <Button>topLeft</Button>
+      </Dropdown>
+      <Dropdown placement="top" menu={{ items }}>
+        <Button>top</Button>
+      </Dropdown>
+      <Dropdown placement="topRight" menu={{ items }}>
+        <Button>topRight</Button>
+      </Dropdown>
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Arrow
+
+:::preview
+
+<DropdownDemo004 />
+
+export const DropdownDemo004 = (() => {
+  const items = [
+      { key: '1', label: 'Menu item' },
+      { key: '2', label: 'Menu item' },
+  ];
+  const Demo4 = function () {
+      return (<Space>
+        <Dropdown arrow menu={{ items }}>
+          <Button>Arrow</Button>
+        </Dropdown>
+        <Dropdown arrow={{ pointAtCenter: true }} menu={{ items }}>
+          <Button>Point at center</Button>
+        </Dropdown>
+      </Space>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Menu item' },
+  { key: '2', label: 'Menu item' },
+]
+
+const Demo4 = function () {
+  return (
+    <Space>
+      <Dropdown arrow menu={{ items }}>
+        <Button>Arrow</Button>
+      </Dropdown>
+      <Dropdown arrow={{ pointAtCenter: true }} menu={{ items }}>
+        <Button>Point at center</Button>
+      </Dropdown>
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Selectable
+
+:::preview
+
+<DropdownDemo005 />
+
+export const DropdownDemo005 = (() => {
+  const items = [
+      { key: '1', label: 'Profile' },
+      { key: '2', label: 'Settings' },
+      { type: 'divider' },
+      { key: '3', label: 'Sign out', danger: true },
+  ];
+  const Demo5 = function () {
+      return (<Dropdown menu={{ selectable: true, defaultSelectedKeys: ['1'], items }}>
+        <a>Account</a>
+      </Dropdown>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Dropdown } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Profile' },
+  { key: '2', label: 'Settings' },
+  { type: 'divider' },
+  { key: '3', label: 'Sign out', danger: true },
+]
+
+const Demo5 = function () {
+  return (
+    <Dropdown menu={{ selectable: true, defaultSelectedKeys: ['1'], items }}>
+      <a>Account</a>
+    </Dropdown>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Cascading Menu
+
+:::preview
+
+<DropdownDemo006 />
+
+export const DropdownDemo006 = (() => {
+  const items = [
+      {
+          key: 'workspace',
+          label: 'Workspace',
+          children: [
+              { key: 'members', label: 'Members' },
+              { key: 'projects', label: 'Projects' },
+          ],
+      },
+      { key: 'billing', label: 'Billing', extra: '⌘B' },
+  ];
+  const Demo6 = function () {
+      return (<Dropdown menu={{ items }}>
+        <Button>More</Button>
+      </Dropdown>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Button, Dropdown } from '@ant-design-solid/core'
+
+const items = [
+  {
+    key: 'workspace',
+    label: 'Workspace',
+    children: [
+      { key: 'members', label: 'Members' },
+      { key: 'projects', label: 'Projects' },
+    ],
+  },
+  { key: 'billing', label: 'Billing', extra: '⌘B' },
+]
+
+const Demo6 = function () {
+  return (
+    <Dropdown menu={{ items }}>
+      <Button>More</Button>
+    </Dropdown>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Popup Render
+
+:::preview
+
+<DropdownDemo007 />
+
+export const DropdownDemo007 = (() => {
+  const items = [
+      { key: '1', label: 'Menu item' },
+      { key: '2', label: 'Menu item' },
+  ];
+  const Demo7 = function () {
+      return (<Dropdown menu={{ items }} popupRender={(menus) => (<div>
+            {menus}
+            <div style={{ padding: '8px 12px', color: 'rgba(0, 0, 0, 0.45)' }}>Extra content</div>
+          </div>)}>
+        <Button>Custom popup</Button>
+      </Dropdown>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Button, Dropdown } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Menu item' },
+  { key: '2', label: 'Menu item' },
+]
+
+const Demo7 = function () {
+  return (
+    <Dropdown
+      menu={{ items }}
+      popupRender={(menus) => (
+        <div>
+          {menus}
+          <div style={{ padding: '8px 12px', color: 'rgba(0, 0, 0, 0.45)' }}>Extra content</div>
+        </div>
+      )}
+    >
+      <Button>Custom popup</Button>
+    </Dropdown>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Dropdown Button
+
+:::preview
+
+<DropdownDemo008 />
+
+export const DropdownDemo008 = (() => {
+  const items = [
+      { key: '1', label: 'Submit and stay' },
+      { key: '2', label: 'Submit and close' },
+  ];
+  const Demo8 = function () {
+      return (<Dropdown.Button type="primary" menu={{ items }} onClick={() => console.log('submit')}>
+        Submit
+      </Dropdown.Button>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Dropdown } from '@ant-design-solid/core'
+
+const items = [
+  { key: '1', label: 'Submit and stay' },
+  { key: '2', label: 'Submit and close' },
+]
+
+const Demo8 = function () {
+  return (
+    <Dropdown.Button type="primary" menu={{ items }} onClick={() => console.log('submit')}>
+      Submit
+    </Dropdown.Button>
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Controlled
+
+:::preview
+
+<DropdownDemo009 />
+
+export const DropdownDemo009 = (() => {
+  const items = [
+      { key: 'edit', label: 'Edit' },
+      { key: 'copy', label: 'Copy' },
+      { key: 'delete', label: 'Delete', danger: true },
+  ];
+  const Demo9 = function () {
+      const [open, setOpen] = createSignal(false);
+      return (<Space>
+        <Dropdown trigger={['click']} open={open()} onOpenChange={(nextOpen) => setOpen(nextOpen)} menu={{ items }}>
+          <Button>Controlled</Button>
+        </Dropdown>
+        <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+      </Space>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Dropdown, Space } from '@ant-design-solid/core'
+
+const items = [
+  { key: 'edit', label: 'Edit' },
+  { key: 'copy', label: 'Copy' },
+  { key: 'delete', label: 'Delete', danger: true },
+]
+
+const Demo9 = function () {
+  const [open, setOpen] = createSignal(false)
+
+  return (
+    <Space>
+      <Dropdown
+        trigger={['click']}
+        open={open()}
+        onOpenChange={(nextOpen) => setOpen(nextOpen)}
+        menu={{ items }}
+      >
+        <Button>Controlled</Button>
+      </Dropdown>
+      <Button onClick={() => setOpen((next) => !next)}>{open() ? 'Close' : 'Open'}</Button>
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+## API
+
+### Dropdown
+
+| Property             | Description                                                                           | Type                                                                            | Default         |
+| -------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------- |
+| `align`              | Popup alignment offset and overflow options.                                          | `TooltipAlignConfig`                                                            | `-`             |
+| `arrow`              | Whether the dropdown arrow should be visible.                                         | `boolean \| { pointAtCenter?: boolean }`                                        | `false`         |
+| `autoAdjustOverflow` | Whether to adjust dropdown placement automatically when the popup is off screen.      | `boolean \| TooltipOverflowConfig`                                              | `true`          |
+| `autoFocus`          | Focuses the popup when it opens.                                                      | `boolean`                                                                       | `false`         |
+| `class`              | Additional class for the trigger wrapper.                                             | `string`                                                                        | `-`             |
+| `classNames`         | Semantic class names for Dropdown internals.                                          | `DropdownSemanticClassNames \| ((info) => DropdownSemanticClassNames)`          | `-`             |
+| `defaultOpen`        | Initial popup open state for uncontrolled usage.                                      | `boolean`                                                                       | `false`         |
+| `destroyOnHidden`    | Whether to destroy popup content when hidden.                                         | `boolean`                                                                       | `true`          |
+| `disabled`           | Whether the dropdown trigger is disabled.                                             | `boolean`                                                                       | `false`         |
+| `forceRender`        | Whether to render popup content before it first opens.                                | `boolean`                                                                       | `false`         |
+| `getPopupContainer`  | Returns the element used to mount the popup portal.                                   | `(triggerNode?: HTMLElement) => HTMLElement`                                    | `document.body` |
+| `menu`               | Menu configuration rendered in the popup.                                             | `DropdownMenuProps`                                                             | `-`             |
+| `mouseEnterDelay`    | Delay in seconds before hover opens the popup.                                        | `number`                                                                        | `0.15`          |
+| `mouseLeaveDelay`    | Delay in seconds before hover closes the popup.                                       | `number`                                                                        | `0.1`           |
+| `onOpenChange`       | Called when open state changes.                                                       | `(open: boolean, info: { source: 'trigger' \| 'menu' }) => void`                | `-`             |
+| `open`               | Controlled popup open state.                                                          | `boolean`                                                                       | `-`             |
+| `openClass`          | Class applied to the trigger wrapper while open.                                      | `string`                                                                        | `-`             |
+| `overlayClass`       | Additional class for the popup root. Prefer `classNames.root` for new code.           | `string`                                                                        | `-`             |
+| `overlayStyle`       | Inline style for the popup root. Prefer `styles.root` for new code.                   | `JSX.CSSProperties`                                                             | `-`             |
+| `placement`          | Placement of popup menu.                                                              | `'bottom' \| 'bottomLeft' \| 'bottomRight' \| 'top' \| 'topLeft' \| 'topRight'` | `'bottomLeft'`  |
+| `popupRender`        | Customizes popup content.                                                             | `(menus: JSX.Element) => JSX.Element`                                           | `-`             |
+| `rootClass`          | Additional class for the popup root.                                                  | `string`                                                                        | `-`             |
+| `styles`             | Semantic inline styles for Dropdown internals.                                        | `DropdownSemanticStyles \| ((info) => DropdownSemanticStyles)`                  | `-`             |
+| `trigger`            | Trigger mode that opens the dropdown. String input is accepted for Solid convenience. | `DropdownTrigger \| DropdownTrigger[]`                                          | `['hover']`     |
+| `zIndex`             | Overrides popup z-index.                                                              | `number`                                                                        | `-`             |
+
+### Dropdown menu
+
+`DropdownMenuProps` extends `MenuProps`, so menu items support the same item model as `Menu`: `icon`, `extra`, `danger`, `disabled`, `children`, groups, dividers, selection, and related callbacks.
+
+| Property  | Description                                  | Type                            | Default |
+| --------- | -------------------------------------------- | ------------------------------- | ------- |
+| `items`   | Menu items rendered in the dropdown.         | `MenuItem[]`                    | `-`     |
+| `onClick` | Called when an enabled menu item is clicked. | `(info: MenuClickInfo) => void` | `-`     |
+
+### Dropdown.Button
+
+| Property        | Description                                          | Type                                                     | Default                |
+| --------------- | ---------------------------------------------------- | -------------------------------------------------------- | ---------------------- |
+| `buttonsRender` | Customizes the left and right buttons before render. | `(buttons: JSX.Element[]) => JSX.Element[]`              | `buttons => buttons`   |
+| `danger`        | Sets danger style on both buttons.                   | `boolean`                                                | `false`                |
+| `disabled`      | Disables both buttons and dropdown trigger.          | `boolean`                                                | `false`                |
+| `href`          | Renders the left button as a link.                   | `string`                                                 | `-`                    |
+| `htmlType`      | Native button type for the left button.              | `'button' \| 'submit' \| 'reset'`                        | `'button'`             |
+| `icon`          | Icon for the dropdown trigger button.                | `JSX.Element`                                            | `<EllipsisOutlined />` |
+| `loading`       | Loading state for the left button.                   | `boolean \| { delay?: number; icon?: JSX.Element }`      | `false`                |
+| `menu`          | Menu configuration for the dropdown button.          | `DropdownMenuProps`                                      | `-`                    |
+| `onClick`       | Click handler for the left button.                   | `(event: MouseEvent) => void`                            | `-`                    |
+| `type`          | Button type.                                         | `'default' \| 'primary' \| 'dashed' \| 'text' \| 'link'` | `'default'`            |
+
+`Dropdown.Button` also accepts the dropdown popup props listed above, including `trigger`, `placement`, `arrow`, `popupRender`, `open`, and `onOpenChange`.

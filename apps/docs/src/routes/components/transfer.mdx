@@ -1,0 +1,451 @@
+import { Transfer } from '@ant-design-solid/core'
+import { createSignal, For } from 'solid-js'
+
+# Transfer
+
+Move items between source and target lists.
+
+### Basic
+
+:::preview
+
+<TransferDemo001 />
+
+export const TransferDemo001 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+  ];
+  const Demo1 = function () {
+      return <Transfer dataSource={dataSource}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Transfer } from '@ant-design-solid/core'
+
+const dataSource = [
+  { key: '1', title: 'Alpha', description: 'First item' },
+  { key: '2', title: 'Beta', description: 'Second item' },
+  { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+]
+
+const Demo1 = function () {
+  return <Transfer dataSource={dataSource} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Search
+
+:::preview
+
+<TransferDemo002 />
+
+export const TransferDemo002 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+  ];
+  const Demo2 = function () {
+      return (<Transfer showSearch={{ placeholder: 'Find item', defaultValue: 'a' }} dataSource={dataSource} filterOption={(input, item, direction) => direction === 'left' && String(item.title).toLowerCase().includes(input.toLowerCase())} onSearch={(direction, value) => console.log(direction, value)}/>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Transfer } from '@ant-design-solid/core'
+
+const dataSource = [
+  { key: '1', title: 'Alpha', description: 'First item' },
+  { key: '2', title: 'Beta', description: 'Second item' },
+  { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+]
+
+const Demo2 = function () {
+  return (
+    <Transfer
+      showSearch={{ placeholder: 'Find item', defaultValue: 'a' }}
+      dataSource={dataSource}
+      filterOption={(input, item, direction) =>
+        direction === 'left' && String(item.title).toLowerCase().includes(input.toLowerCase())
+      }
+      onSearch={(direction, value) => console.log(direction, value)}
+    />
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Custom render
+
+:::preview
+
+<TransferDemo003 />
+
+export const TransferDemo003 = (() => {
+  const dataSource = [
+      { id: 101, name: 'Alpha', tag: 'Ready' },
+      { id: 102, name: 'Beta', tag: 'Draft' },
+      { id: 103, name: 'Gamma', tag: 'Blocked', disabled: true },
+  ];
+  const Demo3 = function () {
+      return (<Transfer dataSource={dataSource} rowKey={(item) => item.id} render={(item) => ({
+              label: (<span>
+              {item.name} <small>{item.tag}</small>
+            </span>),
+              value: item.name,
+          })} actions={['Add', 'Remove']} titles={['Available', 'Chosen']}/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Transfer } from '@ant-design-solid/core'
+
+const dataSource = [
+  { id: 101, name: 'Alpha', tag: 'Ready' },
+  { id: 102, name: 'Beta', tag: 'Draft' },
+  { id: 103, name: 'Gamma', tag: 'Blocked', disabled: true },
+]
+
+const Demo3 = function () {
+  return (
+    <Transfer
+      dataSource={dataSource}
+      rowKey={(item) => item.id}
+      render={(item) => ({
+        label: (
+          <span>
+            {item.name} <small>{item.tag}</small>
+          </span>
+        ),
+        value: item.name,
+      })}
+      actions={['Add', 'Remove']}
+      titles={['Available', 'Chosen']}
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Controlled
+
+:::preview
+
+<TransferDemo004 />
+
+export const TransferDemo004 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+  ];
+  const Demo4 = function () {
+      const [targetKeys, setTargetKeys] = createSignal(['2']);
+      return (<Transfer dataSource={dataSource} targetKeys={targetKeys()} onChange={(next) => setTargetKeys(next)}/>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Transfer } from '@ant-design-solid/core'
+import type { TransferKey } from '@ant-design-solid/core'
+
+const dataSource = [
+  { key: '1', title: 'Alpha', description: 'First item' },
+  { key: '2', title: 'Beta', description: 'Second item' },
+  { key: '3', title: 'Gamma', description: 'Disabled item', disabled: true },
+]
+
+const Demo4 = function () {
+  const [targetKeys, setTargetKeys] = createSignal<TransferKey[]>(['2'])
+
+  return (
+    <Transfer
+      dataSource={dataSource}
+      targetKeys={targetKeys()}
+      onChange={(next) => setTargetKeys(next)}
+    />
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Select all and one way
+
+:::preview
+
+<TransferDemo005 />
+
+export const TransferDemo005 = (() => {
+  const dataSource = Array.from({ length: 8 }, (_, index) => ({
+      key: String(index + 1),
+      title: `Item ${index + 1}`,
+  }));
+  const Demo5 = function () {
+      return (<Transfer oneWay pagination={{ pageSize: 4 }} dataSource={dataSource} actions={['Add']} selectAllLabels={[
+              ({ selectedCount, totalCount }) => `${selectedCount}/${totalCount} selected`,
+              'selected',
+          ]}/>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Transfer } from '@ant-design-solid/core'
+
+const dataSource = Array.from({ length: 8 }, (_, index) => ({
+  key: String(index + 1),
+  title: `Item ${index + 1}`,
+}))
+
+const Demo5 = function () {
+  return (
+    <Transfer
+      oneWay
+      pagination={{ pageSize: 4 }}
+      dataSource={dataSource}
+      actions={['Add']}
+      selectAllLabels={[
+        ({ selectedCount, totalCount }) => `${selectedCount}/${totalCount} selected`,
+        'selected',
+      ]}
+    />
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Custom list body
+
+:::preview
+
+<TransferDemo006 />
+
+export const TransferDemo006 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha', description: 'First item' },
+      { key: '2', title: 'Beta', description: 'Second item' },
+      { key: '3', title: 'Gamma', description: 'Third item' },
+  ];
+  const Demo6 = function () {
+      return (<Transfer dataSource={dataSource} footer={(_, info) => <small>{info?.direction} list footer</small>}>
+        {(list) => (<div class="flex flex-col gap-1 p-2">
+            <For each={list.filteredItems}>
+              {(item) => {
+                  const selected = () => list.selectedKeys.includes(item.key);
+                  return (<button type="button" aria-pressed={selected()} class="flex items-center justify-between rounded border px-2 py-1 text-left transition-colors" classList={{
+                          'border-blue-500 bg-blue-50 text-blue-700': selected(),
+                          'border-slate-200 bg-white text-slate-700 hover:border-blue-300': !selected(),
+                      }} onClick={() => list.onItemSelect(item.key, !selected())}>
+                    <span>{item.title}</span>
+                    <span class="text-xs">{selected() ? 'Selected' : 'Select'}</span>
+                  </button>);
+              }}
+            </For>
+          </div>)}
+      </Transfer>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { For } from 'solid-js'
+import { Transfer } from '@ant-design-solid/core'
+
+const dataSource = [
+  { key: '1', title: 'Alpha', description: 'First item' },
+  { key: '2', title: 'Beta', description: 'Second item' },
+  { key: '3', title: 'Gamma', description: 'Third item' },
+]
+
+const Demo6 = function () {
+  return (
+    <Transfer
+      dataSource={dataSource}
+      footer={(_, info) => <small>{info?.direction} list footer</small>}
+    >
+      {(list) => (
+        <div class="flex flex-col gap-1 p-2">
+          <For each={list.filteredItems}>
+            {(item) => {
+              const selected = () => list.selectedKeys.includes(item.key)
+
+              return (
+                <button
+                  type="button"
+                  aria-pressed={selected()}
+                  class="flex items-center justify-between rounded border px-2 py-1 text-left transition-colors"
+                  classList={{
+                    'border-blue-500 bg-blue-50 text-blue-700': selected(),
+                    'border-slate-200 bg-white text-slate-700 hover:border-blue-300': !selected(),
+                  }}
+                  onClick={() => list.onItemSelect(item.key, !selected())}
+                >
+                  <span>{item.title}</span>
+                  <span class="text-xs">{selected() ? 'Selected' : 'Select'}</span>
+                </button>
+              )
+            }}
+          </For>
+        </div>
+      )}
+    </Transfer>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Semantic styling
+
+:::preview
+
+<TransferDemo007 />
+
+export const TransferDemo007 = (() => {
+  const dataSource = [
+      { key: '1', title: 'Alpha' },
+      { key: '2', title: 'Beta' },
+      { key: '3', title: 'Gamma' },
+  ];
+  const Demo7 = function () {
+      return (<Transfer class="w-full" status="warning" dataSource={dataSource} locale={{ titles: ['Source', 'Target'], notFoundContent: 'No data' }} classNames={{ root: 'transfer-demo', actions: 'transfer-demo-actions' }} styles={{ section: { width: '240px' }, actions: { margin: '0 8px' } }} listStyle={({ direction }) => ({
+              'min-height': direction === 'left' ? '260px' : '220px',
+          })}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Transfer } from '@ant-design-solid/core'
+
+const dataSource = [
+  { key: '1', title: 'Alpha' },
+  { key: '2', title: 'Beta' },
+  { key: '3', title: 'Gamma' },
+]
+
+const Demo7 = function () {
+  return (
+    <Transfer
+      class="w-full"
+      status="warning"
+      dataSource={dataSource}
+      locale={{ titles: ['Source', 'Target'], notFoundContent: 'No data' }}
+      classNames={{ root: 'transfer-demo', actions: 'transfer-demo-actions' }}
+      styles={{ section: { width: '240px' }, actions: { margin: '0 8px' } }}
+      listStyle={({ direction }) => ({
+        'min-height': direction === 'left' ? '260px' : '220px',
+      })}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+## API
+
+### Transfer
+
+Solid uses `class` instead of React's `className`. Ant Design's `rootClassName` is intentionally not exposed.
+
+| Property              | Description                                             | Type                                                                                                     | Default                |
+| --------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `actions`             | Labels or nodes for move-to-target and move-to-source.  | `JSX.Element[]`                                                                                          | `-`                    |
+| `children`            | Custom list body render function.                       | `(props: TransferCustomListBodyProps<T>) => JSX.Element`                                                 | `-`                    |
+| `class`               | Root class name.                                        | `string`                                                                                                 | `-`                    |
+| `classNames`          | Semantic DOM class names.                               | `TransferSemanticClassNames`                                                                             | `-`                    |
+| `dataSource`          | Items that can be moved between lists.                  | `T[]`                                                                                                    | `[]`                   |
+| `defaultSelectedKeys` | Initial selected item keys for uncontrolled usage.      | `TransferKey[]`                                                                                          | `[]`                   |
+| `defaultTargetKeys`   | Initial keys in the target list for uncontrolled usage. | `TransferKey[]`                                                                                          | `[]`                   |
+| `disabled`            | Disables selection and transfer operations.             | `boolean`                                                                                                | `false`                |
+| `filterOption`        | Custom item filter used by search.                      | `(inputValue: string, item: T, direction: TransferDirection) => boolean`                                 | `-`                    |
+| `footer`              | Custom footer for each list.                            | `(props: TransferListProps<T>, info?: { direction }) => JSX.Element`                                     | `-`                    |
+| `listStyle`           | Style applied to each list section.                     | `JSX.CSSProperties \| ({ direction }) => JSX.CSSProperties`                                              | `-`                    |
+| `locale`              | Localized labels and empty/search text.                 | `Partial<TransferLocale>`                                                                                | `-`                    |
+| `oneWay`              | Hides the move-left operation.                          | `boolean`                                                                                                | `false`                |
+| `operationStyle`      | Style applied to operation buttons and area.            | `JSX.CSSProperties`                                                                                      | `-`                    |
+| `operations`          | Deprecated alias for `actions`.                         | `JSX.Element[]`                                                                                          | `-`                    |
+| `pagination`          | Limits visible items per list.                          | `boolean \| { pageSize?: number; simple?: boolean; showSizeChanger?: boolean; showLessItems?: boolean }` | `false`                |
+| `prefixCls`           | Custom CSS class prefix.                                | `string`                                                                                                 | `-`                    |
+| `render`              | Custom item renderer.                                   | `(item: T) => JSX.Element \| { label: JSX.Element; value: string } \| string \| number \| null`          | `-`                    |
+| `rowKey`              | Derives a key when records do not provide `key`.        | `(record: T) => TransferKey`                                                                             | `-`                    |
+| `selectAllLabels`     | Custom select-all labels for source and target.         | `TransferSelectAllLabel[]`                                                                               | `-`                    |
+| `selectedKeys`        | Controlled selected item keys across both lists.        | `TransferKey[]`                                                                                          | `-`                    |
+| `selectionsIcon`      | Custom icon shown near the select-all control.          | `JSX.Element`                                                                                            | `-`                    |
+| `showSearch`          | Shows search inputs for filtering both lists.           | `boolean \| { placeholder?: string; defaultValue?: string }`                                             | `false`                |
+| `showSelectAll`       | Shows select-all controls.                              | `boolean`                                                                                                | `true`                 |
+| `status`              | Visual validation status.                               | `'' \| 'error' \| 'warning'`                                                                             | `''`                   |
+| `style`               | Root style.                                             | `JSX.CSSProperties`                                                                                      | `-`                    |
+| `styles`              | Semantic DOM styles.                                    | `TransferSemanticStyles`                                                                                 | `-`                    |
+| `targetKeys`          | Controlled keys currently in the target list.           | `TransferKey[]`                                                                                          | `-`                    |
+| `titles`              | Source and target list titles.                          | `JSX.Element[]`                                                                                          | `['Source', 'Target']` |
+| `onChange`            | Called after items move between lists.                  | `(targetKeys, direction, moveKeys) => void`                                                              | `-`                    |
+| `onScroll`            | Called when a list scrolls.                             | `(direction, event) => void`                                                                             | `-`                    |
+| `onSearch`            | Called when a search input changes.                     | `(direction, value) => void`                                                                             | `-`                    |
+| `onSelectChange`      | Called when source or target selected keys change.      | `(sourceSelectedKeys, targetSelectedKeys) => void`                                                       | `-`                    |
+
+### TransferItem
+
+| Property      | Description                              | Type          | Default |
+| ------------- | ---------------------------------------- | ------------- | ------- |
+| `key`         | Stable item key.                         | `TransferKey` | `-`     |
+| `title`       | Item title content.                      | `JSX.Element` | `-`     |
+| `description` | Optional item description.               | `JSX.Element` | `-`     |
+| `disabled`    | Disables selecting and moving this item. | `boolean`     | `-`     |
+
+### Static helpers
+
+| Name                 | Description                        |
+| -------------------- | ---------------------------------- |
+| `Transfer.List`      | Low-level list renderer.           |
+| `Transfer.Search`    | Search input used by Transfer.     |
+| `Transfer.Operation` | Operation button used by Transfer. |

@@ -1,14 +1,12 @@
 import { fileURLToPath, URL } from 'node:url'
 import { createSolidBase } from '@kobalte/solidbase/config'
-import { solidStart } from '@solidjs/start/config'
-import tailwindcss from '@tailwindcss/vite'
-import { nitro } from 'nitro/vite'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
+import solid from 'vite-plugin-solid'
 import { antDesignSolidTheme } from './src/solidbase-theme'
 
 const solidBase = createSolidBase(antDesignSolidTheme)
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   oxc: { jsx: 'preserve' },
   plugins: [
     solidBase.plugin({
@@ -28,9 +26,7 @@ export default defineConfig(({ command }) => ({
         ],
       },
     }),
-    solidStart(solidBase.startConfig({ ssr: true })),
-    command === 'build' && nitro({ prerender: { crawlLinks: true } }),
-    tailwindcss(),
+    solid({ extensions: ['.md', '.mdx'] }),
   ],
   resolve: {
     alias: {
@@ -54,5 +50,18 @@ export default defineConfig(({ command }) => ({
       ),
     },
   },
-  server: { port: 5173 },
-}))
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    css: false,
+    setupFiles: [],
+    server: {
+      deps: {
+        inline: ['@ant-design/colors'],
+      },
+    },
+    coverage: {
+      reporter: ['text', 'html'],
+    },
+  },
+})

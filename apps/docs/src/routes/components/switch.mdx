@@ -1,0 +1,457 @@
+import { Button, Form, Space, Switch } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+# Switch
+
+Switch toggles a boolean state on or off.
+
+### Basic
+
+:::preview
+
+<SwitchDemo001 />
+
+export const SwitchDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Space>
+        <Switch checkedChildren="On" unCheckedChildren="Off"/>
+        <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off"/>
+      </Space>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return (
+    <Space>
+      <Switch checkedChildren="On" unCheckedChildren="Off" />
+      <Switch defaultChecked checkedChildren="On" unCheckedChildren="Off" />
+    </Space>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### Controlled
+
+:::preview
+
+<SwitchDemo002 />
+
+export const SwitchDemo002 = (() => {
+  const Demo2 = function () {
+      const [checked, setChecked] = createSignal(true);
+      return (<Space>
+        <Switch checked={checked()} onChange={setChecked}/>
+        <span>{checked() ? 'Enabled' : 'Disabled'}</span>
+      </Space>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  const [checked, setChecked] = createSignal(true)
+
+  return (
+    <Space>
+      <Switch checked={checked()} onChange={setChecked} />
+      <span>{checked() ? 'Enabled' : 'Disabled'}</span>
+    </Space>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Disabled
+
+:::preview
+
+<SwitchDemo003 />
+
+export const SwitchDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space>
+        <Switch disabled/>
+        <Switch disabled defaultChecked/>
+      </Space>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Space>
+      <Switch disabled />
+      <Switch disabled defaultChecked />
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Loading
+
+:::preview
+
+<SwitchDemo004 />
+
+export const SwitchDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space>
+        <Switch loading/>
+        <Switch loading defaultChecked/>
+      </Space>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Space>
+      <Switch loading />
+      <Switch loading defaultChecked />
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Sizes
+
+:::preview
+
+<SwitchDemo005 />
+
+export const SwitchDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space align="center">
+        <Switch size="small" defaultChecked/>
+        <Switch size="medium" defaultChecked/>
+        <Switch defaultChecked/>
+      </Space>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space align="center">
+      <Switch size="small" defaultChecked />
+      <Switch size="medium" defaultChecked />
+      <Switch defaultChecked />
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Value aliases
+
+:::preview
+
+<SwitchDemo006 />
+
+export const SwitchDemo006 = (() => {
+  const Demo6 = function () {
+      const [enabled, setEnabled] = createSignal(true);
+      return (<Space>
+        <Switch value={enabled()} onChange={setEnabled} checkedChildren="On" unCheckedChildren="Off"/>
+        <Switch defaultValue checkedChildren="On" unCheckedChildren="Off"/>
+      </Space>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  const [enabled, setEnabled] = createSignal(true)
+
+  return (
+    <Space>
+      <Switch
+        value={enabled()}
+        onChange={setEnabled}
+        checkedChildren="On"
+        unCheckedChildren="Off"
+      />
+      <Switch defaultValue checkedChildren="On" unCheckedChildren="Off" />
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Click callback
+
+:::preview
+
+<SwitchDemo007 />
+
+export const SwitchDemo007 = (() => {
+  const Demo7 = function () {
+      const [message, setMessage] = createSignal('Ready');
+      return (<Space>
+        <Switch onClick={(checked) => setMessage(`Clicked ${checked ? 'on' : 'off'}`)} onChange={(checked) => setMessage(`Changed ${checked ? 'on' : 'off'}`)}/>
+        <span>{message()}</span>
+      </Space>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  const [message, setMessage] = createSignal('Ready')
+
+  return (
+    <Space>
+      <Switch
+        onClick={(checked) => setMessage(`Clicked ${checked ? 'on' : 'off'}`)}
+        onChange={(checked) => setMessage(`Changed ${checked ? 'on' : 'off'}`)}
+      />
+      <span>{message()}</span>
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Semantic styles
+
+:::preview
+
+<SwitchDemo008 />
+
+export const SwitchDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Switch defaultChecked checkedChildren="Open" unCheckedChildren="Closed" classNames={{
+              root: 'custom-switch',
+              content: 'custom-switch-content',
+              indicator: 'custom-switch-indicator',
+          }} styles={{
+              root: { minWidth: '72px' },
+              content: { fontWeight: 600 },
+              indicator: { boxShadow: '0 0 0 2px rgba(22, 119, 255, 0.2)' },
+          }}/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Switch
+      defaultChecked
+      checkedChildren="Open"
+      unCheckedChildren="Closed"
+      classNames={{
+        root: 'custom-switch',
+        content: 'custom-switch-content',
+        indicator: 'custom-switch-indicator',
+      }}
+      styles={{
+        root: { minWidth: '72px' },
+        content: { fontWeight: 600 },
+        indicator: { boxShadow: '0 0 0 2px rgba(22, 119, 255, 0.2)' },
+      }}
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Focus and blur
+
+:::preview
+
+<SwitchDemo009 />
+
+export const SwitchDemo009 = (() => {
+  const Demo9 = function () {
+      let switchRef;
+      return (<Space>
+        <Switch ref={(ref) => (switchRef = ref)} defaultChecked/>
+        <Button onClick={() => switchRef?.focus()}>Focus</Button>
+        <Button onClick={() => switchRef?.blur()}>Blur</Button>
+      </Space>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Button, Form, Space, Switch, type SwitchRef } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  let switchRef: SwitchRef | undefined
+
+  return (
+    <Space>
+      <Switch ref={(ref) => (switchRef = ref)} defaultChecked />
+      <Button onClick={() => switchRef?.focus()}>Focus</Button>
+      <Button onClick={() => switchRef?.blur()}>Blur</Button>
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### In Form
+
+:::preview
+
+<SwitchDemo010 />
+
+export const SwitchDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Form initialValues={{ enabled: true }}>
+        <Form.Item label="Enabled" name="enabled" valuePropName="checked">
+          <Switch />
+        </Form.Item>
+      </Form>);
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Form, Space, Switch } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Form initialValues={{ enabled: true }}>
+      <Form.Item label="Enabled" name="enabled" valuePropName="checked">
+        <Switch />
+      </Form.Item>
+    </Form>
+  )
+}
+
+export default Demo10
+```
+
+:::
+
+## API
+
+| Property            | Description                                                                                                     | Type                                                    | Default                                                |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| `checked`           | Controlled checked state.                                                                                       | `boolean`                                               | `-`                                                    |
+| `value`             | Alias for `checked`, matching antd v6 value semantics.                                                          | `boolean`                                               | `-`                                                    |
+| `defaultChecked`    | Initial checked state for uncontrolled usage.                                                                   | `boolean`                                               | `false`                                                |
+| `defaultValue`      | Alias for `defaultChecked`, matching antd v6 value semantics.                                                   | `boolean`                                               | `false`                                                |
+| `disabled`          | Disables user interaction.                                                                                      | `boolean`                                               | `false`                                                |
+| `loading`           | Displays loading state and disables interaction.                                                                | `boolean`                                               | `false`                                                |
+| `size`              | Switch size. `medium` is supported for antd v6 compatibility; `middle` follows the shared Solid component size. | `'small' \| 'medium' \| 'middle'`                       | ConfigProvider `componentSize` (`'middle'` by default) |
+| `checkedChildren`   | Content displayed when checked.                                                                                 | `JSX.Element`                                           | `-`                                                    |
+| `unCheckedChildren` | Content displayed when unchecked.                                                                               | `JSX.Element`                                           | `-`                                                    |
+| `class`             | Additional root class. Solid-style replacement for React `className`.                                           | `string`                                                | `-`                                                    |
+| `style`             | Additional root inline style.                                                                                   | `JSX.CSSProperties`                                     | `-`                                                    |
+| `classNames`        | Semantic class names for `root`, `content`, and `indicator`.                                                    | `Partial<Record<SwitchSemanticDOM, string>>`            | `-`                                                    |
+| `styles`            | Semantic inline styles for `root`, `content`, and `indicator`.                                                  | `Partial<Record<SwitchSemanticDOM, JSX.CSSProperties>>` | `-`                                                    |
+| `prefixCls`         | Custom CSS class prefix.                                                                                        | `string`                                                | `-`                                                    |
+| `ref`               | Exposes focus, blur, and native button access.                                                                  | `SwitchRef \| (ref: SwitchRef) => void`                 | `-`                                                    |
+| `onChange`          | Called with the next checked state after user interaction.                                                      | `(checked: boolean, event: MouseEvent) => void`         | `-`                                                    |
+| `onClick`           | Called when the switch is clicked with the next checked state.                                                  | `(checked: boolean, event: MouseEvent) => void`         | `-`                                                    |
+
+## Methods
+
+| Name      | Description                           |
+| --------- | ------------------------------------- |
+| `focus()` | Focuses the underlying switch button. |
+| `blur()`  | Blurs the underlying switch button.   |
+
+## Semantic DOM
+
+Use these keys with `classNames` and `styles` to customize stable Switch parts.
+
+| Key         | Description                         |
+| ----------- | ----------------------------------- |
+| `root`      | Root switch button.                 |
+| `content`   | Text/content area inside the track. |
+| `indicator` | Movable switch handle.              |

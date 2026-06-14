@@ -1,0 +1,531 @@
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+
+# List
+
+List displays a group of related items with optional headers, actions, and metadata.
+
+### Data source
+
+:::preview
+
+<ListDemo001 />
+
+export const ListDemo001 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo1 = function () {
+      return (<List dataSource={tasks} renderItem={(item, index) => <List.Item>{`${index + 1}. ${item}`}</List.Item>}/>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+
+const tasks = ['Create component API', 'Write tests', 'Document examples']
+
+const Demo1 = function () {
+  return (
+    <List
+      dataSource={tasks}
+      renderItem={(item, index) => <List.Item>{`${index + 1}. ${item}`}</List.Item>}
+    />
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### Bordered with header and footer
+
+:::preview
+
+<ListDemo002 />
+
+export const ListDemo002 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo2 = function () {
+      return (<List bordered header={<strong>Project checklist</strong>} footer="3 items" dataSource={tasks} renderItem={(item) => <List.Item>{item}</List.Item>}/>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+
+const tasks = ['Create component API', 'Write tests', 'Document examples']
+
+const Demo2 = function () {
+  return (
+    <List
+      bordered
+      header={<strong>Project checklist</strong>}
+      footer="3 items"
+      dataSource={tasks}
+      renderItem={(item) => <List.Item>{item}</List.Item>}
+    />
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Meta and actions
+
+:::preview
+
+<ListDemo003 />
+
+export const ListDemo003 = (() => {
+  const users = [
+      {
+          name: 'Ada Lovelace',
+          description: 'Mathematician and first computer programmer.',
+          avatar: 'A',
+      },
+      {
+          name: 'Grace Hopper',
+          description: 'Computer scientist and compiler pioneer.',
+          avatar: 'G',
+      },
+  ];
+  const Demo3 = function () {
+      return (<List dataSource={users} renderItem={(user) => (<List.Item actions={[
+                  <a href={`#edit-${user.avatar}`}>Edit</a>,
+                  <a href={`#view-${user.avatar}`}>View</a>,
+              ]} extra={<Button size="small">Follow</Button>}>
+            <List.Item.Meta avatar={<Avatar>{user.avatar}</Avatar>} title={<a href={`#${user.avatar}`}>{user.name}</a>} description={user.description}/>
+          </List.Item>)}/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+
+const users = [
+  {
+    name: 'Ada Lovelace',
+    description: 'Mathematician and first computer programmer.',
+    avatar: 'A',
+  },
+  {
+    name: 'Grace Hopper',
+    description: 'Computer scientist and compiler pioneer.',
+    avatar: 'G',
+  },
+]
+
+const Demo3 = function () {
+  return (
+    <List
+      dataSource={users}
+      renderItem={(user) => (
+        <List.Item
+          actions={[
+            <a href={`#edit-${user.avatar}`}>Edit</a>,
+            <a href={`#view-${user.avatar}`}>View</a>,
+          ]}
+          extra={<Button size="small">Follow</Button>}
+        >
+          <List.Item.Meta
+            avatar={<Avatar>{user.avatar}</Avatar>}
+            title={<a href={`#${user.avatar}`}>{user.name}</a>}
+            description={user.description}
+          />
+        </List.Item>
+      )}
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Loading and empty
+
+:::preview
+
+<ListDemo004 />
+
+export const ListDemo004 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo4 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <List loading dataSource={tasks} renderItem={(item) => <List.Item>{item}</List.Item>} bordered/>
+        <List dataSource={[]} emptyText="Nothing found" bordered/>
+      </Space>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+
+const tasks = ['Create component API', 'Write tests', 'Document examples']
+
+const Demo4 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <List
+        loading
+        dataSource={tasks}
+        renderItem={(item) => <List.Item>{item}</List.Item>}
+        bordered
+      />
+      <List dataSource={[]} emptyText="Nothing found" bordered />
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Pagination
+
+:::preview
+
+<ListDemo005 />
+
+export const ListDemo005 = (() => {
+  const tasks = Array.from({ length: 16 }, (_, index) => `Task ${index + 1}`);
+  const Demo5 = function () {
+      return (<List bordered dataSource={tasks} pagination={{ pageSize: 5, position: 'bottom' }} renderItem={(item) => <List.Item>{item}</List.Item>}/>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { List } from '@ant-design-solid/core'
+
+const tasks = Array.from({ length: 16 }, (_, index) => `Task ${index + 1}`)
+
+const Demo5 = function () {
+  return (
+    <List
+      bordered
+      dataSource={tasks}
+      pagination={{ pageSize: 5, position: 'bottom' }}
+      renderItem={(item) => <List.Item>{item}</List.Item>}
+    />
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Grid
+
+:::preview
+
+<ListDemo006 />
+
+export const ListDemo006 = (() => {
+  const users = ['Ada Lovelace', 'Grace Hopper', 'Katherine Johnson', 'Margaret Hamilton'];
+  const Demo6 = function () {
+      return (<List grid={{ gutter: [16, 16], xs: 1, sm: 2, md: 2, lg: 4, column: 4 }} dataSource={users} renderItem={(name) => (<List.Item>
+            <List.Item.Meta avatar={<Avatar>{name[0]}</Avatar>} title={name} description="Team member"/>
+          </List.Item>)}/>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Avatar, List } from '@ant-design-solid/core'
+
+const users = ['Ada Lovelace', 'Grace Hopper', 'Katherine Johnson', 'Margaret Hamilton']
+
+const Demo6 = function () {
+  return (
+    <List
+      grid={{ gutter: [16, 16], xs: 1, sm: 2, md: 2, lg: 4, column: 4 }}
+      dataSource={users}
+      renderItem={(name) => (
+        <List.Item>
+          <List.Item.Meta
+            avatar={<Avatar>{name[0]}</Avatar>}
+            title={name}
+            description="Team member"
+          />
+        </List.Item>
+      )}
+    />
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Vertical
+
+:::preview
+
+<ListDemo007 />
+
+export const ListDemo007 = (() => {
+  const articles = [
+      {
+          title: 'Solid component parity',
+          description: 'Track API compatibility while keeping Solid conventions.',
+      },
+      {
+          title: 'Design token coverage',
+          description: 'Keep component styles aligned with the shared theme.',
+      },
+  ];
+  const Demo7 = function () {
+      return (<List itemLayout="vertical" dataSource={articles} renderItem={(article) => (<List.Item actions={[<a href="#share">Share</a>]} extra={<Button>Open</Button>}>
+            <List.Item.Meta avatar={<Avatar>{article.title[0]}</Avatar>} title={<a href="#article">{article.title}</a>} description={article.description}/>
+          </List.Item>)}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Avatar, Button, List } from '@ant-design-solid/core'
+
+const articles = [
+  {
+    title: 'Solid component parity',
+    description: 'Track API compatibility while keeping Solid conventions.',
+  },
+  {
+    title: 'Design token coverage',
+    description: 'Keep component styles aligned with the shared theme.',
+  },
+]
+
+const Demo7 = function () {
+  return (
+    <List
+      itemLayout="vertical"
+      dataSource={articles}
+      renderItem={(article) => (
+        <List.Item actions={[<a href="#share">Share</a>]} extra={<Button>Open</Button>}>
+          <List.Item.Meta
+            avatar={<Avatar>{article.title[0]}</Avatar>}
+            title={<a href="#article">{article.title}</a>}
+            description={article.description}
+          />
+        </List.Item>
+      )}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Load more
+
+:::preview
+
+<ListDemo008 />
+
+export const ListDemo008 = (() => {
+  const tasks = ['Create component API', 'Write tests', 'Document examples'];
+  const Demo8 = function () {
+      return (<List dataSource={tasks} renderItem={(item) => <List.Item>{item}</List.Item>} loadMore={<Button>Load more</Button>}/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Button, List } from '@ant-design-solid/core'
+
+const tasks = ['Create component API', 'Write tests', 'Document examples']
+
+const Demo8 = function () {
+  return (
+    <List
+      dataSource={tasks}
+      renderItem={(item) => <List.Item>{item}</List.Item>}
+      loadMore={<Button>Load more</Button>}
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Custom loading and locale
+
+:::preview
+
+<ListDemo009 />
+
+export const ListDemo009 = (() => {
+  const Demo9 = function () {
+      return (<List loading={{ spinning: true, tip: 'Fetching rows' }} locale={{ emptyText: 'No matching records' }} dataSource={[]}/>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { List } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <List
+      loading={{ spinning: true, tip: 'Fetching rows' }}
+      locale={{ emptyText: 'No matching records' }}
+      dataSource={[]}
+    />
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### Semantic item styles
+
+:::preview
+
+<ListDemo010 />
+
+export const ListDemo010 = (() => {
+  const Demo10 = function () {
+      return (<List>
+        <List.Item actions={[<a href="#edit">Edit</a>, <a href="#delete">Delete</a>]} extra={<span>Owner</span>} classNames={{ actions: 'text-blue-600', extra: 'font-medium' }} styles={{ extra: { color: '#1677ff' } }}>
+          Custom semantic slots
+        </List.Item>
+      </List>);
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { List } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <List>
+      <List.Item
+        actions={[<a href="#edit">Edit</a>, <a href="#delete">Delete</a>]}
+        extra={<span>Owner</span>}
+        classNames={{ actions: 'text-blue-600', extra: 'font-medium' }}
+        styles={{ extra: { color: '#1677ff' } }}
+      >
+        Custom semantic slots
+      </List.Item>
+    </List>
+  )
+}
+
+export default Demo10
+```
+
+:::
+
+## API
+
+### List
+
+| Property     | Description                                                   | Type                                       | Default      |
+| ------------ | ------------------------------------------------------------- | ------------------------------------------ | ------------ |
+| `prefixCls`  | Custom component class prefix.                                | `string`                                   | `ads-list`   |
+| `rootClass`  | Extra class on the root element.                              | `string`                                   | `-`          |
+| `dataSource` | Array of data items rendered by renderItem.                   | `T[]`                                      | `-`          |
+| `renderItem` | Render function for each data item.                           | `(item: T, index: number) => JSX.Element`  | `-`          |
+| `rowKey`     | Unique item key, read from item or returned by a function.    | `keyof T \| (item: T) => string \| number` | `key`        |
+| `header`     | Header content rendered above the list items.                 | `JSX.Element`                              | `-`          |
+| `footer`     | Footer content rendered below the list items.                 | `JSX.Element`                              | `-`          |
+| `grid`       | Grid layout config.                                           | [`ListGridType`](#list-gridtype)           | `-`          |
+| `itemLayout` | List item layout.                                             | `'horizontal' \| 'vertical'`               | `horizontal` |
+| `bordered`   | Whether to render the list border.                            | `boolean`                                  | `false`      |
+| `split`      | Whether to render separators between items.                   | `boolean`                                  | `true`       |
+| `size`       | List size.                                                    | `'default' \| 'large' \| 'small'`          | `'default'`  |
+| `loading`    | Shows a loading indicator while data is being fetched.        | `boolean \| SpinProps`                     | `false`      |
+| `loadMore`   | Content rendered after the list and before bottom pagination. | `JSX.Element`                              | `-`          |
+| `locale`     | Locale text for empty state.                                  | `{ emptyText?: JSX.Element }`              | `-`          |
+| `pagination` | Pagination config. Set to `false` to disable.                 | `boolean \| ListPaginationConfig`          | `false`      |
+| `emptyText`  | Empty content alias. `locale.emptyText` has higher priority.  | `JSX.Element`                              | `'No Data'`  |
+| `children`   | Manual list items used when dataSource is not provided.       | `JSX.Element`                              | `-`          |
+
+### ListPaginationConfig
+
+Extends `PaginationProps`.
+
+| Property   | Description                 | Type                          | Default  |
+| ---------- | --------------------------- | ----------------------------- | -------- |
+| `position` | Pagination render position. | `'top' \| 'bottom' \| 'both'` | `bottom` |
+
+### ListGridType
+
+| Property | Description                   | Type                         | Default |
+| -------- | ----------------------------- | ---------------------------- | ------- |
+| `gutter` | Spacing between grid columns. | `number \| [number, number]` | `0`     |
+| `column` | Default column count.         | `number`                     | `-`     |
+| `xs`     | Column count below 576px.     | `number`                     | `-`     |
+| `sm`     | Column count at least 576px.  | `number`                     | `-`     |
+| `md`     | Column count at least 768px.  | `number`                     | `-`     |
+| `lg`     | Column count at least 992px.  | `number`                     | `-`     |
+| `xl`     | Column count at least 1200px. | `number`                     | `-`     |
+| `xxl`    | Column count at least 1600px. | `number`                     | `-`     |
+| `xxxl`   | Column count at least 1920px. | `number`                     | `-`     |
+
+### List.Item
+
+| Property     | Description                                     | Type                                                         | Default |
+| ------------ | ----------------------------------------------- | ------------------------------------------------------------ | ------- |
+| `actions`    | Action items rendered after the main content.   | `JSX.Element[]`                                              | `-`     |
+| `extra`      | Extra content rendered at the end of the item.  | `JSX.Element`                                                | `-`     |
+| `classNames` | Semantic class names for `actions` and `extra`. | `{ actions?: string; extra?: string }`                       | `-`     |
+| `styles`     | Semantic styles for `actions` and `extra`.      | `{ actions?: JSX.CSSProperties; extra?: JSX.CSSProperties }` | `-`     |
+| `children`   | Main list item content.                         | `JSX.Element`                                                | `-`     |
+
+### List.Item.Meta
+
+| Property      | Description                              | Type          | Default |
+| ------------- | ---------------------------------------- | ------------- | ------- |
+| `avatar`      | Avatar content rendered before metadata. | `JSX.Element` | `-`     |
+| `title`       | Metadata title.                          | `JSX.Element` | `-`     |
+| `description` | Metadata description.                    | `JSX.Element` | `-`     |
+| `children`    | Additional metadata content.             | `JSX.Element` | `-`     |

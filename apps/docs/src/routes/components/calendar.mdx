@@ -1,0 +1,428 @@
+import { Calendar, Space } from '@ant-design-solid/core'
+
+# Calendar
+
+Display dates in a month or year panel with selectable and customizable cells.
+
+### Basic
+
+:::preview
+
+<CalendarDemo001 />
+
+export const CalendarDemo001 = (() => {
+  const Demo1 = function () {
+      return <Calendar defaultValue="2026-06-15"/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return <Calendar defaultValue="2026-06-15" />
+}
+
+export default Demo1
+```
+
+:::
+
+### Card
+
+:::preview
+
+<CalendarDemo002 />
+
+export const CalendarDemo002 = (() => {
+  const Demo2 = function () {
+      return <Calendar fullscreen={false} defaultValue="2026-06-15"/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return <Calendar fullscreen={false} defaultValue="2026-06-15" />
+}
+
+export default Demo2
+```
+
+:::
+
+### Select
+
+:::preview
+
+<CalendarDemo003 />
+
+export const CalendarDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Calendar defaultValue="2026-06-15" onSelect={(date, { source }) => {
+              console.log(date, source);
+          }} onPanelChange={(date, mode) => {
+              console.log(date, mode);
+          }}/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Calendar
+      defaultValue="2026-06-15"
+      onSelect={(date, { source }) => {
+        console.log(date, source)
+      }}
+      onPanelChange={(date, mode) => {
+        console.log(date, mode)
+      }}
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Cell Render
+
+:::preview
+
+<CalendarDemo004 />
+
+export const CalendarDemo004 = (() => {
+  function getListData(date) {
+      if (date.getDate() === 8) {
+          return ['This is warning event.', 'This is usual event.'];
+      }
+      if (date.getDate() === 10) {
+          return ['This is warning event.', 'This is usual event.', 'This is error event.'];
+      }
+      if (date.getDate() === 15) {
+          return ['This is warning event.', 'This is very long usual event.'];
+      }
+      return [];
+  }
+  const Demo4 = function () {
+      return (<Calendar defaultValue="2026-06-15" cellRender={(date, info) => {
+              if (info.type === 'date') {
+                  const listData = getListData(date);
+                  return (<ul style={{ margin: 0, padding: 0, 'list-style': 'none' }}>
+                {listData.map((item) => (<li style={{ overflow: 'hidden', 'text-overflow': 'ellipsis' }}>{item}</li>))}
+              </ul>);
+              }
+              return null;
+          }}/>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+function getListData(date) {
+  if (date.getDate() === 8) {
+    return ['This is warning event.', 'This is usual event.']
+  }
+  if (date.getDate() === 10) {
+    return ['This is warning event.', 'This is usual event.', 'This is error event.']
+  }
+  if (date.getDate() === 15) {
+    return ['This is warning event.', 'This is very long usual event.']
+  }
+  return []
+}
+
+const Demo4 = function () {
+  return (
+    <Calendar
+      defaultValue="2026-06-15"
+      cellRender={(date, info) => {
+        if (info.type === 'date') {
+          const listData = getListData(date)
+          return (
+            <ul style={{ margin: 0, padding: 0, 'list-style': 'none' }}>
+              {listData.map((item) => (
+                <li style={{ overflow: 'hidden', 'text-overflow': 'ellipsis' }}>{item}</li>
+              ))}
+            </ul>
+          )
+        }
+        return null
+      }}
+    />
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Full Cell Render
+
+:::preview
+
+<CalendarDemo005 />
+
+export const CalendarDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Calendar fullscreen={false} defaultValue="2026-06-15" fullCellRender={(date, info) => (<div style={{ padding: '4px', 'text-align': 'center' }}>
+            <strong>{info.originNode}</strong>
+            {info.type === 'date' && date.getDate() === 15 ? <div>Release</div> : null}
+          </div>)}/>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Calendar
+      fullscreen={false}
+      defaultValue="2026-06-15"
+      fullCellRender={(date, info) => (
+        <div style={{ padding: '4px', 'text-align': 'center' }}>
+          <strong>{info.originNode}</strong>
+          {info.type === 'date' && date.getDate() === 15 ? <div>Release</div> : null}
+        </div>
+      )}
+    />
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Custom Header
+
+:::preview
+
+<CalendarDemo006 />
+
+export const CalendarDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Calendar fullscreen={false} defaultValue="2026-06-15" headerRender={({ value, type, onChange, onTypeChange }) => (<Space>
+            <button type="button" onClick={() => onChange(new Date(value.getFullYear(), value.getMonth() - 1, 1))}>
+              Previous
+            </button>
+            <button type="button" onClick={() => onTypeChange(type === 'month' ? 'year' : 'month')}>
+              {type === 'month' ? 'Year view' : 'Month view'}
+            </button>
+          </Space>)}/>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Calendar, Space } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Calendar
+      fullscreen={false}
+      defaultValue="2026-06-15"
+      headerRender={({ value, type, onChange, onTypeChange }) => (
+        <Space>
+          <button
+            type="button"
+            onClick={() => onChange(new Date(value.getFullYear(), value.getMonth() - 1, 1))}
+          >
+            Previous
+          </button>
+          <button type="button" onClick={() => onTypeChange(type === 'month' ? 'year' : 'month')}>
+            {type === 'month' ? 'Year view' : 'Month view'}
+          </button>
+        </Space>
+      )}
+    />
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Valid Range
+
+:::preview
+
+<CalendarDemo007 />
+
+export const CalendarDemo007 = (() => {
+  const Demo7 = function () {
+      return <Calendar defaultValue="2026-06-15" validRange={['2026-06-10', '2026-06-25']}/>;
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return <Calendar defaultValue="2026-06-15" validRange={['2026-06-10', '2026-06-25']} />
+}
+
+export default Demo7
+```
+
+:::
+
+### Week Number
+
+:::preview
+
+<CalendarDemo008 />
+
+export const CalendarDemo008 = (() => {
+  const Demo8 = function () {
+      return <Calendar defaultValue="2026-06-15" showWeek/>;
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return <Calendar defaultValue="2026-06-15" showWeek />
+}
+
+export default Demo8
+```
+
+:::
+
+### Semantic Styles
+
+:::preview
+
+<CalendarDemo009 />
+
+export const CalendarDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Calendar defaultValue="2026-06-15" classNames={{
+              root: 'custom-calendar-root',
+              header: 'custom-calendar-header',
+              item: 'custom-calendar-cell',
+          }} styles={{
+              item: { 'border-radius': '2px' },
+          }}/>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { Calendar } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <Calendar
+      defaultValue="2026-06-15"
+      classNames={{
+        root: 'custom-calendar-root',
+        header: 'custom-calendar-header',
+        item: 'custom-calendar-cell',
+      }}
+      styles={{
+        item: { 'border-radius': '2px' },
+      }}
+    />
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+## API
+
+| Property              | Description                                               | Type                                                                                                        | Default   |
+| --------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------- |
+| `value`               | Controlled selected date.                                 | `Date \| string`                                                                                            | `-`       |
+| `defaultValue`        | Initial selected date for uncontrolled usage.             | `Date \| string`                                                                                            | `-`       |
+| `mode`                | Controlled panel mode.                                    | `'month' \| 'year'`                                                                                         | `'month'` |
+| `defaultMode`         | Initial panel mode for uncontrolled usage.                | `'month' \| 'year'`                                                                                         | `'month'` |
+| `fullscreen`          | Whether to render full-size calendar layout.              | `boolean`                                                                                                   | `true`    |
+| `showWeek`            | Whether to display week numbers in month mode.            | `boolean`                                                                                                   | `false`   |
+| `locale`              | Calendar locale labels.                                   | `CalendarLocale`                                                                                            | `-`       |
+| `validRange`          | Valid selectable range.                                   | `[Date \| string, Date \| string]`                                                                          | `-`       |
+| `disabledDate`        | Disables date or month cells.                             | `(date: Date) => boolean`                                                                                   | `-`       |
+| `cellRender`          | Customize date or month cell content.                     | `(date: Date, info: CalendarCellRenderInfo) => JSX.Element`                                                 | `-`       |
+| `fullCellRender`      | Fully customize date or month cell content.               | `(date: Date, info: CalendarCellRenderInfo) => JSX.Element`                                                 | `-`       |
+| `dateCellRender`      | Additional content renderer for date cells. Deprecated.   | `(date: Date) => JSX.Element`                                                                               | `-`       |
+| `dateFullCellRender`  | Full custom renderer for date cells. Deprecated.          | `(date: Date) => JSX.Element`                                                                               | `-`       |
+| `monthCellRender`     | Additional content renderer for month cells. Deprecated.  | `(date: Date) => JSX.Element`                                                                               | `-`       |
+| `monthFullCellRender` | Full custom renderer for month cells. Deprecated.         | `(date: Date) => JSX.Element`                                                                               | `-`       |
+| `headerRender`        | Custom header renderer with panel controls.               | `(config: CalendarHeaderRenderConfig) => JSX.Element`                                                       | `-`       |
+| `onSelect`            | Called whenever a selectable date or month is selected.   | `(date: Date, info: { source: 'year' \| 'month' \| 'date' \| 'customize' }) => void`                        | `-`       |
+| `onChange`            | Called when selected value changes.                       | `(date: Date) => void`                                                                                      | `-`       |
+| `onPanelChange`       | Called when panel date or mode changes.                   | `(date: Date, mode: CalendarMode) => void`                                                                  | `-`       |
+| `class`               | Root class name in Solid style.                           | `string`                                                                                                    | `-`       |
+| `rootClassName`       | Root class name for compatibility with antd semantic API. | `string`                                                                                                    | `-`       |
+| `classNames`          | Semantic DOM class names.                                 | `Partial<Record<'root' \| 'header' \| 'body' \| 'content' \| 'item' \| 'itemContent', string>> \| function` | `-`       |
+| `styles`              | Semantic DOM inline styles.                               | `Partial<Record<'root' \| 'header' \| 'body' \| 'content' \| 'item' \| 'itemContent', CSSProperties>>`      | `-`       |
+| `prefixCls`           | Custom CSS class prefix.                                  | `string`                                                                                                    | `-`       |
+
+### CalendarCellRenderInfo
+
+| Property     | Description                 | Type                          |
+| ------------ | --------------------------- | ----------------------------- |
+| `prefixCls`  | Calendar CSS class prefix.  | `string`                      |
+| `originNode` | Default cell content.       | `JSX.Element`                 |
+| `today`      | Current date.               | `Date`                        |
+| `type`       | Cell panel type.            | `'date' \| 'month'`           |
+| `locale`     | Calendar locale from props. | `CalendarLocale \| undefined` |
+
+### Semantic DOM
+
+| Name          | Description                   |
+| ------------- | ----------------------------- |
+| `root`        | Root element.                 |
+| `header`      | Calendar header.              |
+| `body`        | Calendar body.                |
+| `content`     | Month or year grid content.   |
+| `item`        | Date or month cell.           |
+| `itemContent` | Additional cell content area. |

@@ -1,0 +1,784 @@
+import { DirectoryTree, Tree, TreeNode } from '@ant-design-solid/core'
+import { createMemo, createSignal } from 'solid-js'
+import { HolderOutlined } from '@ant-design-solid/icons'
+
+# Tree
+
+### Basic
+
+:::preview
+
+<TreeDemo001 />
+
+export const TreeDemo001 = (() => {
+  const treeData = [
+      {
+          title: 'Parent 1',
+          key: 'parent-1',
+          children: [
+              { title: 'Child 1', key: 'child-1' },
+              { title: 'Child 2', key: 'child-2', disabled: true },
+          ],
+      },
+      {
+          title: 'Parent 2',
+          key: 'parent-2',
+          children: [{ title: 'Child 3', key: 'child-3' }],
+      },
+  ];
+  const Demo1 = function () {
+      return <Tree defaultExpandedKeys={['parent-1']} treeData={treeData}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Parent 1',
+    key: 'parent-1',
+    children: [
+      { title: 'Child 1', key: 'child-1' },
+      { title: 'Child 2', key: 'child-2', disabled: true },
+    ],
+  },
+  {
+    title: 'Parent 2',
+    key: 'parent-2',
+    children: [{ title: 'Child 3', key: 'child-3' }],
+  },
+]
+
+const Demo1 = function () {
+  return <Tree defaultExpandedKeys={['parent-1']} treeData={treeData} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Checkable
+
+:::preview
+
+<TreeDemo002 />
+
+export const TreeDemo002 = (() => {
+  const treeData = [
+      {
+          title: 'Parent 1',
+          key: 'parent-1',
+          children: [
+              { title: 'Child 1', key: 'child-1' },
+              { title: 'Child 2', key: 'child-2', disabled: true },
+          ],
+      },
+      {
+          title: 'Parent 2',
+          key: 'parent-2',
+          children: [{ title: 'Child 3', key: 'child-3' }],
+      },
+  ];
+  const Demo2 = function () {
+      return <Tree checkable defaultExpandedKeys={['parent-1']} treeData={treeData}/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Parent 1',
+    key: 'parent-1',
+    children: [
+      { title: 'Child 1', key: 'child-1' },
+      { title: 'Child 2', key: 'child-2', disabled: true },
+    ],
+  },
+  {
+    title: 'Parent 2',
+    key: 'parent-2',
+    children: [{ title: 'Child 3', key: 'child-3' }],
+  },
+]
+
+const Demo2 = function () {
+  return <Tree checkable defaultExpandedKeys={['parent-1']} treeData={treeData} />
+}
+
+export default Demo2
+```
+
+:::
+
+### Line and block node
+
+:::preview
+
+<TreeDemo003 />
+
+export const TreeDemo003 = (() => {
+  const treeData = [
+      {
+          title: 'Parent 1',
+          key: 'parent-1',
+          children: [
+              { title: 'Child 1', key: 'child-1' },
+              { title: 'Child 2', key: 'child-2', disabled: true },
+          ],
+      },
+      {
+          title: 'Parent 2',
+          key: 'parent-2',
+          children: [{ title: 'Child 3', key: 'child-3' }],
+      },
+  ];
+  const Demo3 = function () {
+      return <Tree showLine blockNode defaultExpandedKeys={['parent-2']} treeData={treeData}/>;
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Parent 1',
+    key: 'parent-1',
+    children: [
+      { title: 'Child 1', key: 'child-1' },
+      { title: 'Child 2', key: 'child-2', disabled: true },
+    ],
+  },
+  {
+    title: 'Parent 2',
+    key: 'parent-2',
+    children: [{ title: 'Child 3', key: 'child-3' }],
+  },
+]
+
+const Demo3 = function () {
+  return <Tree showLine blockNode defaultExpandedKeys={['parent-2']} treeData={treeData} />
+}
+
+export default Demo3
+```
+
+:::
+
+### Custom field names and title
+
+:::preview
+
+<TreeDemo004 />
+
+export const TreeDemo004 = (() => {
+  const treeData = [
+      {
+          label: 'Asia',
+          id: 'asia',
+          nodes: [
+              { label: 'China', id: 'china' },
+              { label: 'Japan', id: 'japan' },
+          ],
+      },
+      { label: 'Europe', id: 'europe' },
+  ];
+  const Demo4 = function () {
+      return (<Tree defaultExpandAll fieldNames={{ title: 'label', key: 'id', children: 'nodes' }} treeData={treeData} titleRender={(node) => <span>{String(node.label).toUpperCase()}</span>}/>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    label: 'Asia',
+    id: 'asia',
+    nodes: [
+      { label: 'China', id: 'china' },
+      { label: 'Japan', id: 'japan' },
+    ],
+  },
+  { label: 'Europe', id: 'europe' },
+]
+
+const Demo4 = function () {
+  return (
+    <Tree
+      defaultExpandAll
+      fieldNames={{ title: 'label', key: 'id', children: 'nodes' }}
+      treeData={treeData}
+      titleRender={(node) => <span>{String(node.label).toUpperCase()}</span>}
+    />
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Multiple and strict check
+
+:::preview
+
+<TreeDemo005 />
+
+export const TreeDemo005 = (() => {
+  const treeData = [
+      {
+          title: 'Asia',
+          key: 'asia',
+          children: [
+              { title: 'China', key: 'china' },
+              { title: 'Japan', key: 'japan' },
+          ],
+      },
+      { title: 'Europe', key: 'europe' },
+  ];
+  const Demo5 = function () {
+      const [selectedKeys, setSelectedKeys] = createSignal(['china']);
+      return (<Tree checkable checkStrictly multiple defaultExpandAll selectedKeys={selectedKeys()} onSelect={(keys) => setSelectedKeys(keys)} treeData={treeData}/>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Asia',
+    key: 'asia',
+    children: [
+      { title: 'China', key: 'china' },
+      { title: 'Japan', key: 'japan' },
+    ],
+  },
+  { title: 'Europe', key: 'europe' },
+]
+
+const Demo5 = function () {
+  const [selectedKeys, setSelectedKeys] = createSignal(['china'])
+
+  return (
+    <Tree
+      checkable
+      checkStrictly
+      multiple
+      defaultExpandAll
+      selectedKeys={selectedKeys()}
+      onSelect={(keys) => setSelectedKeys(keys)}
+      treeData={treeData}
+    />
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Async loading
+
+:::preview
+
+<TreeDemo006 />
+
+export const TreeDemo006 = (() => {
+  const initialData = [
+      { title: 'Load more', key: 'load-more', isLeaf: false },
+      { title: 'Static node', key: 'static-node' },
+  ];
+  const Demo6 = function () {
+      const [treeData, setTreeData] = createSignal(initialData);
+      const loadData = async (node) => {
+          if (node.key !== 'load-more')
+              return;
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          setTreeData((nodes) => nodes.map((item) => item.key === node.key
+              ? {
+                  ...item,
+                  children: [
+                      { title: 'Loaded child 1', key: 'loaded-child-1' },
+                      { title: 'Loaded child 2', key: 'loaded-child-2' },
+                  ],
+              }
+              : item));
+      };
+      return <Tree loadData={loadData} treeData={treeData()}/>;
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Tree } from '@ant-design-solid/core'
+
+const initialData = [
+  { title: 'Load more', key: 'load-more', isLeaf: false },
+  { title: 'Static node', key: 'static-node' },
+]
+
+const Demo6 = function () {
+  const [treeData, setTreeData] = createSignal(initialData)
+
+  const loadData = async (node) => {
+    if (node.key !== 'load-more') return
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    setTreeData((nodes) =>
+      nodes.map((item) =>
+        item.key === node.key
+          ? {
+              ...item,
+              children: [
+                { title: 'Loaded child 1', key: 'loaded-child-1' },
+                { title: 'Loaded child 2', key: 'loaded-child-2' },
+              ],
+            }
+          : item,
+      ),
+    )
+  }
+
+  return <Tree loadData={loadData} treeData={treeData()} />
+}
+
+export default Demo6
+```
+
+:::
+
+### Motion
+
+:::preview
+
+<TreeDemo007 />
+
+export const TreeDemo007 = (() => {
+  const treeData = [
+      {
+          title: 'Documents',
+          key: 'documents',
+          children: [
+              { title: 'Design draft', key: 'design-draft' },
+              { title: 'Release notes', key: 'release-notes' },
+          ],
+      },
+      {
+          title: 'Archive',
+          key: 'archive',
+          children: [{ title: '2025', key: 'archive-2025' }],
+      },
+  ];
+  const Demo7 = function () {
+      return (<Tree defaultExpandedKeys={['documents']} motion={{
+              initial: { transform: 'translateX(-8px)' },
+              animate: { transform: 'translateX(0)' },
+              exit: { transform: 'translateX(-8px)' },
+              transition: { duration: 0.2 },
+          }} treeData={treeData}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Documents',
+    key: 'documents',
+    children: [
+      { title: 'Design draft', key: 'design-draft' },
+      { title: 'Release notes', key: 'release-notes' },
+    ],
+  },
+  {
+    title: 'Archive',
+    key: 'archive',
+    children: [{ title: '2025', key: 'archive-2025' }],
+  },
+]
+
+const Demo7 = function () {
+  return (
+    <Tree
+      defaultExpandedKeys={['documents']}
+      motion={{
+        initial: { transform: 'translateX(-8px)' },
+        animate: { transform: 'translateX(0)' },
+        exit: { transform: 'translateX(-8px)' },
+        transition: { duration: 0.2 },
+      }}
+      treeData={treeData}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Draggable
+
+:::preview
+
+<TreeDemo008 />
+
+export const TreeDemo008 = (() => {
+  const treeData = [
+      {
+          title: 'Backlog',
+          key: 'backlog',
+          children: [
+              { title: 'Fix search', key: 'fix-search' },
+              { title: 'Improve docs', key: 'improve-docs' },
+          ],
+      },
+      { title: 'Done', key: 'done' },
+  ];
+  const Demo8 = function () {
+      return (<Tree defaultExpandAll draggable={{
+              icon: <HolderOutlined />,
+              nodeDraggable: (node) => node.key !== 'done',
+          }} treeData={treeData}/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { HolderOutlined } from '@ant-design-solid/icons'
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'Backlog',
+    key: 'backlog',
+    children: [
+      { title: 'Fix search', key: 'fix-search' },
+      { title: 'Improve docs', key: 'improve-docs' },
+    ],
+  },
+  { title: 'Done', key: 'done' },
+]
+
+const Demo8 = function () {
+  return (
+    <Tree
+      defaultExpandAll
+      draggable={{
+        icon: <HolderOutlined />,
+        nodeDraggable: (node) => node.key !== 'done',
+      }}
+      treeData={treeData}
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Directory tree
+
+:::preview
+
+<TreeDemo009 />
+
+export const TreeDemo009 = (() => {
+  const treeData = [
+      {
+          title: 'src',
+          key: 'src',
+          children: [
+              { title: 'components', key: 'components' },
+              { title: 'main.tsx', key: 'main' },
+          ],
+      },
+      { title: 'package.json', key: 'package' },
+  ];
+  const Demo9 = function () {
+      return <DirectoryTree defaultExpandAll multiple treeData={treeData}/>;
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { DirectoryTree } from '@ant-design-solid/core'
+
+const treeData = [
+  {
+    title: 'src',
+    key: 'src',
+    children: [
+      { title: 'components', key: 'components' },
+      { title: 'main.tsx', key: 'main' },
+    ],
+  },
+  { title: 'package.json', key: 'package' },
+]
+
+const Demo9 = function () {
+  return <DirectoryTree defaultExpandAll multiple treeData={treeData} />
+}
+
+export default Demo9
+```
+
+:::
+
+### Virtual list
+
+:::preview
+
+<TreeDemo010 />
+
+export const TreeDemo010 = (() => {
+  const createTreeData = () => Array.from({ length: 80 }, (_, groupIndex) => ({
+      title: `Group ${groupIndex}`,
+      key: `group-${groupIndex}`,
+      children: Array.from({ length: 20 }, (_, childIndex) => ({
+          title: `Group ${groupIndex} - Item ${childIndex}`,
+          key: `group-${groupIndex}-item-${childIndex}`,
+      })),
+  }));
+  const Demo10 = function () {
+      const treeData = createMemo(createTreeData);
+      return <Tree blockNode defaultExpandAll height={240} treeData={treeData()}/>;
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { createMemo } from 'solid-js'
+import { Tree } from '@ant-design-solid/core'
+
+const createTreeData = () =>
+  Array.from({ length: 80 }, (_, groupIndex) => ({
+    title: `Group ${groupIndex}`,
+    key: `group-${groupIndex}`,
+    children: Array.from({ length: 20 }, (_, childIndex) => ({
+      title: `Group ${groupIndex} - Item ${childIndex}`,
+      key: `group-${groupIndex}-item-${childIndex}`,
+    })),
+  }))
+
+const Demo10 = function () {
+  const treeData = createMemo(createTreeData)
+
+  return <Tree blockNode defaultExpandAll height={240} treeData={treeData()} />
+}
+
+export default Demo10
+```
+
+:::
+
+### Disable virtual list
+
+:::preview
+
+<TreeDemo011 />
+
+export const TreeDemo011 = (() => {
+  const treeData = Array.from({ length: 40 }, (_, index) => ({
+      title: `Node ${index}`,
+      key: `node-${index}`,
+  }));
+  const Demo11 = function () {
+      return <Tree height={180} virtual={false} treeData={treeData}/>;
+  };
+
+return Demo11
+})()
+
+---
+
+```tsx
+import { Tree } from '@ant-design-solid/core'
+
+const treeData = Array.from({ length: 40 }, (_, index) => ({
+  title: `Node ${index}`,
+  key: `node-${index}`,
+}))
+
+const Demo11 = function () {
+  return <Tree height={180} virtual={false} treeData={treeData} />
+}
+
+export default Demo11
+```
+
+:::
+
+### TreeNode JSX
+
+:::preview
+
+<TreeDemo012 />
+
+export const TreeDemo012 = (() => {
+  const Demo12 = function () {
+      return (<Tree defaultExpandAll>
+        <TreeNode title="Root" key="root">
+          <TreeNode title="Child" key="child"/>
+        </TreeNode>
+      </Tree>);
+  };
+
+return Demo12
+})()
+
+---
+
+```tsx
+import { Tree, TreeNode } from '@ant-design-solid/core'
+
+const Demo12 = function () {
+  return (
+    <Tree defaultExpandAll>
+      <TreeNode title="Root" key="root">
+        <TreeNode title="Child" key="child" />
+      </TreeNode>
+    </Tree>
+  )
+}
+
+export default Demo12
+```
+
+:::
+
+## API
+
+### Tree
+
+| Property              | Description                                           | Type                                                                       | Default |
+| --------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------- | ------- |
+| `allowDrop`           | Controls whether a dragged node may drop on a target. | `(info: { dropNode: TreeDataNode; dropPosition: number }) => boolean`      | `-`     |
+| `autoExpandParent`    | Expands ancestors for controlled `expandedKeys`.      | `boolean`                                                                  | `false` |
+| `blockNode`           | Makes node content fill the row.                      | `boolean`                                                                  | `false` |
+| `checkable`           | Shows checkboxes for checkable nodes.                 | `boolean`                                                                  | `false` |
+| `checkedKeys`         | Controlled checked node keys.                         | `TreeKey[] \| { checked: TreeKey[]; halfChecked: TreeKey[] }`              | `-`     |
+| `checkStrictly`       | Disables parent-child checkbox conduction.            | `boolean`                                                                  | `false` |
+| `classNames`          | Semantic class names for tree slots.                  | `TreeSemanticClassNames`                                                   | `-`     |
+| `defaultCheckedKeys`  | Initial checked node keys.                            | `TreeKey[]`                                                                | `-`     |
+| `defaultExpandAll`    | Expands all nodes initially.                          | `boolean`                                                                  | `false` |
+| `defaultExpandedKeys` | Initial expanded node keys.                           | `TreeKey[]`                                                                | `-`     |
+| `defaultExpandParent` | Expands ancestors of `defaultExpandedKeys`.           | `boolean`                                                                  | `true`  |
+| `defaultSelectedKeys` | Initial selected node keys.                           | `TreeKey[]`                                                                | `-`     |
+| `disabled`            | Disables the entire tree.                             | `boolean`                                                                  | `false` |
+| `draggable`           | Enables node dragging or custom drag behavior.        | `boolean \| ((node: TreeDataNode) => boolean) \| TreeDraggableConfig`      | `false` |
+| `expandedKeys`        | Controlled expanded node keys.                        | `TreeKey[]`                                                                | `-`     |
+| `fieldNames`          | Maps custom field names for title, key, and children. | `{ title?: string; key?: string; children?: string }`                      | `-`     |
+| `filterTreeNode`      | Marks matching nodes as filtered.                     | `(node: TreeDataNode) => boolean`                                          | `-`     |
+| `height`              | Fixed tree height with scroll container.              | `number`                                                                   | `-`     |
+| `icon`                | Custom node icon when `showIcon` is enabled.          | `TreeIcon`                                                                 | `-`     |
+| `loadData`            | Loads children data when an async node expands.       | `(node: TreeDataNode) => Promise<unknown> \| unknown`                      | `-`     |
+| `loadedKeys`          | Controlled loaded node keys.                          | `TreeKey[]`                                                                | `-`     |
+| `motion`              | Motion One animation props for tree nodes.            | `MotionComponentProps \| false`                                            | default |
+| `multiple`            | Allows selecting multiple nodes.                      | `boolean`                                                                  | `false` |
+| `rootStyle`           | Additional style for the root tree element.           | `JSX.CSSProperties`                                                        | `-`     |
+| `selectable`          | Whether nodes can be selected.                        | `boolean`                                                                  | `true`  |
+| `selectedKeys`        | Controlled selected node keys.                        | `TreeKey[]`                                                                | `-`     |
+| `showIcon`            | Shows node icons.                                     | `boolean`                                                                  | `false` |
+| `showLine`            | Shows line styling and optional leaf icon.            | `boolean \| { showLeafIcon?: boolean \| TreeIcon }`                        | `false` |
+| `styles`              | Semantic inline styles for tree slots.                | `TreeSemanticStyles`                                                       | `-`     |
+| `switcherIcon`        | Custom expand/collapse switcher icon.                 | `TreeIcon`                                                                 | `-`     |
+| `switcherLoadingIcon` | Custom loading icon while `loadData` is pending.      | `JSX.Element`                                                              | `-`     |
+| `titleRender`         | Custom node title renderer.                           | `(node: TreeDataNode) => JSX.Element`                                      | `-`     |
+| `virtual`             | Enables virtual rendering when `height` is set.       | `boolean`                                                                  | `true`  |
+| `onCheck`             | Called when node checked state changes.               | `(checkedKeys: TreeKey[] \| TreeCheckedKeys, info: TreeCheckInfo) => void` | `-`     |
+| `onDoubleClick`       | Called when a node is double-clicked.                 | `(event: MouseEvent, node: TreeDataNode) => void`                          | `-`     |
+| `onDragEnd`           | Called when node dragging ends.                       | `(info: TreeDragInfo) => void`                                             | `-`     |
+| `onDragEnter`         | Called when dragged node enters a target.             | `(info: TreeDragEnterInfo) => void`                                        | `-`     |
+| `onDragLeave`         | Called when dragged node leaves a target.             | `(info: TreeDragInfo) => void`                                             | `-`     |
+| `onDragOver`          | Called when dragged node moves over a target.         | `(info: TreeDragInfo) => void`                                             | `-`     |
+| `onDragStart`         | Called when node dragging starts.                     | `(info: TreeDragInfo) => void`                                             | `-`     |
+| `onDrop`              | Called when a node is dropped.                        | `(info: TreeDropInfo) => void`                                             | `-`     |
+| `onExpand`            | Called when node expansion changes.                   | `(expandedKeys: TreeKey[], info: TreeExpandInfo) => void`                  | `-`     |
+| `onLoad`              | Called after `loadData` completes.                    | `(loadedKeys: TreeKey[], info: TreeLoadInfo) => void`                      | `-`     |
+| `onRightClick`        | Called when a node receives a context menu event.     | `(info: { event: MouseEvent; node: TreeDataNode }) => void`                | `-`     |
+| `onSelect`            | Called when node selection changes.                   | `(selectedKeys: TreeKey[], info: TreeSelectInfo) => void`                  | `-`     |
+
+### DirectoryTree
+
+DirectoryTree supports all Tree props and adds directory-style defaults.
+
+| Property       | Description                                | Type                                | Default   |
+| -------------- | ------------------------------------------ | ----------------------------------- | --------- |
+| `expandAction` | Controls whether clicking expands folders. | `false \| 'click' \| 'doubleClick'` | `'click'` |
+| `multiple`     | Enables ctrl/meta and shift multi-select.  | `boolean`                           | `false`   |
+
+### TreeNode
+
+TreeNode is available for JSX children usage.
+
+| Property   | Description              | Type          | Default |
+| ---------- | ------------------------ | ------------- | ------- |
+| `title`    | Node title content.      | `JSX.Element` | `-`     |
+| `key`      | Unique node key.         | `TreeKey`     | `-`     |
+| `children` | Child TreeNode elements. | `JSX.Element` | `-`     |
+
+### TreeDataNode
+
+| Property          | Description                                   | Type             | Default |
+| ----------------- | --------------------------------------------- | ---------------- | ------- |
+| `title`           | Node title content.                           | `JSX.Element`    | `-`     |
+| `key`             | Unique node key.                              | `TreeKey`        | `-`     |
+| `children`        | Child tree nodes.                             | `TreeDataNode[]` | `-`     |
+| `checkable`       | Overrides whether this node shows a checkbox. | `boolean`        | `-`     |
+| `disabled`        | Disables the node.                            | `boolean`        | `false` |
+| `disableCheckbox` | Disables this node checkbox.                  | `boolean`        | `false` |
+| `icon`            | Node-level icon.                              | `TreeIcon`       | `-`     |
+| `isLeaf`          | Marks the node as a leaf or async parent.     | `boolean`        | `-`     |
+| `selectable`      | Overrides whether this node can be selected.  | `boolean`        | `-`     |
+
+### Ref
+
+| Method     | Description             | Type                                     |
+| ---------- | ----------------------- | ---------------------------------------- |
+| `scrollTo` | Scrolls to a tree node. | `(options: TreeScrollToOptions) => void` |

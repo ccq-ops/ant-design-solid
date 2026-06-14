@@ -1,0 +1,684 @@
+import { Button, Flex } from '@ant-design-solid/core'
+import { DownloadOutlined, PoweroffOutlined, SearchOutlined } from '@ant-design-solid/icons'
+
+# Button
+
+Buttons trigger actions, submit forms, or navigate to another page.
+
+### Type
+
+:::preview
+
+<ButtonDemo001 />
+
+export const ButtonDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Flex gap="small" wrap>
+        <Button type="primary">Primary Button</Button>
+        <Button>Default Button</Button>
+        <Button type="dashed">Dashed Button</Button>
+        <Button type="text">Text Button</Button>
+        <Button type="link">Link Button</Button>
+      </Flex>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button type="primary">Primary Button</Button>
+      <Button>Default Button</Button>
+      <Button type="dashed">Dashed Button</Button>
+      <Button type="text">Text Button</Button>
+      <Button type="link">Link Button</Button>
+    </Flex>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### Color and variant
+
+:::preview
+
+<ButtonDemo002 />
+
+export const ButtonDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Flex gap="small" wrap>
+        <Button color="default" variant="solid">
+          Solid
+        </Button>
+        <Button color="default" variant="outlined">
+          Outlined
+        </Button>
+        <Button color="default" variant="dashed">
+          Dashed
+        </Button>
+        <Button color="default" variant="filled">
+          Filled
+        </Button>
+        <Button color="default" variant="text">
+          Text
+        </Button>
+        <Button color="default" variant="link">
+          Link
+        </Button>
+        <Button color="primary" variant="solid">
+          Primary
+        </Button>
+        <Button color="danger" variant="solid">
+          Danger
+        </Button>
+        <Button color="blue" variant="solid">
+          Blue
+        </Button>
+        <Button color="purple" variant="filled">
+          Purple
+        </Button>
+        <Button color="green" variant="outlined">
+          Green
+        </Button>
+      </Flex>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button color="default" variant="solid">
+        Solid
+      </Button>
+      <Button color="default" variant="outlined">
+        Outlined
+      </Button>
+      <Button color="default" variant="dashed">
+        Dashed
+      </Button>
+      <Button color="default" variant="filled">
+        Filled
+      </Button>
+      <Button color="default" variant="text">
+        Text
+      </Button>
+      <Button color="default" variant="link">
+        Link
+      </Button>
+      <Button color="primary" variant="solid">
+        Primary
+      </Button>
+      <Button color="danger" variant="solid">
+        Danger
+      </Button>
+      <Button color="blue" variant="solid">
+        Blue
+      </Button>
+      <Button color="purple" variant="filled">
+        Purple
+      </Button>
+      <Button color="green" variant="outlined">
+        Green
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Size
+
+:::preview
+
+<ButtonDemo003 />
+
+export const ButtonDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Flex align="center" gap="small" wrap>
+        <Button size="large">Large</Button>
+        <Button size="medium">Medium</Button>
+        <Button size="small">Small</Button>
+      </Flex>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Flex align="center" gap="small" wrap>
+      <Button size="large">Large</Button>
+      <Button size="medium">Medium</Button>
+      <Button size="small">Small</Button>
+    </Flex>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Disabled
+
+:::preview
+
+<ButtonDemo004 />
+
+export const ButtonDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Flex gap="small" wrap>
+        <Button disabled>Default disabled</Button>
+        <Button type="primary" disabled>
+          Primary disabled
+        </Button>
+        <Button type="link" disabled>
+          Link disabled
+        </Button>
+        <Button danger disabled>
+          Danger disabled
+        </Button>
+      </Flex>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button disabled>Default disabled</Button>
+      <Button type="primary" disabled>
+        Primary disabled
+      </Button>
+      <Button type="link" disabled>
+        Link disabled
+      </Button>
+      <Button danger disabled>
+        Danger disabled
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Loading
+
+:::preview
+
+<ButtonDemo005 />
+
+export const ButtonDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Flex gap="small" wrap>
+        <Button type="primary" loading>
+          Loading
+        </Button>
+        <Button type="primary" loading={{ delay: 500 }}>
+          Delayed
+        </Button>
+        <Button type="primary" loading={{ icon: <PoweroffOutlined /> }}>
+          Custom icon
+        </Button>
+      </Flex>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+import { PoweroffOutlined } from '@ant-design-solid/icons'
+
+const Demo5 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button type="primary" loading>
+        Loading
+      </Button>
+      <Button type="primary" loading={{ delay: 500 }}>
+        Delayed
+      </Button>
+      <Button type="primary" loading={{ icon: <PoweroffOutlined /> }}>
+        Custom icon
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Icon
+
+:::preview
+
+<ButtonDemo006 />
+
+export const ButtonDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Flex gap="small" wrap>
+        <Button type="primary" shape="circle" icon={<SearchOutlined />} aria-label="Search"/>
+        <Button type="primary" shape="round" icon={<SearchOutlined />}>
+          Search
+        </Button>
+        <Button icon={<SearchOutlined />}>Search</Button>
+        <Button icon={<DownloadOutlined />} iconPlacement="end">
+          Download
+        </Button>
+      </Flex>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+import { DownloadOutlined, SearchOutlined } from '@ant-design-solid/icons'
+
+const Demo6 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button type="primary" shape="circle" icon={<SearchOutlined />} aria-label="Search" />
+      <Button type="primary" shape="round" icon={<SearchOutlined />}>
+        Search
+      </Button>
+      <Button icon={<SearchOutlined />}>Search</Button>
+      <Button icon={<DownloadOutlined />} iconPlacement="end">
+        Download
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Block
+
+:::preview
+
+<ButtonDemo007 />
+
+export const ButtonDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Flex vertical gap="small">
+        <Button type="primary" block>
+          Primary
+        </Button>
+        <Button block>Default</Button>
+        <Button type="dashed" block>
+          Dashed
+        </Button>
+      </Flex>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Flex vertical gap="small">
+      <Button type="primary" block>
+        Primary
+      </Button>
+      <Button block>Default</Button>
+      <Button type="dashed" block>
+        Dashed
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Ghost
+
+:::preview
+
+<ButtonDemo008 />
+
+export const ButtonDemo008 = (() => {
+  const Demo8 = function () {
+      return (<div style={{ padding: '16px', background: 'rgb(190, 200, 200)' }}>
+        <Flex gap="small" wrap>
+          <Button ghost>Ghost</Button>
+          <Button type="primary" ghost>
+            Primary
+          </Button>
+          <Button type="dashed" ghost>
+            Dashed
+          </Button>
+          <Button danger ghost>
+            Danger
+          </Button>
+        </Flex>
+      </div>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <div style={{ padding: '16px', background: 'rgb(190, 200, 200)' }}>
+      <Flex gap="small" wrap>
+        <Button ghost>Ghost</Button>
+        <Button type="primary" ghost>
+          Primary
+        </Button>
+        <Button type="dashed" ghost>
+          Dashed
+        </Button>
+        <Button danger ghost>
+          Danger
+        </Button>
+      </Flex>
+    </div>
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Danger
+
+:::preview
+
+<ButtonDemo009 />
+
+export const ButtonDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Flex gap="small" wrap>
+        <Button danger>Default</Button>
+        <Button danger type="primary">
+          Primary
+        </Button>
+        <Button danger type="dashed">
+          Dashed
+        </Button>
+        <Button danger type="text">
+          Text
+        </Button>
+        <Button danger type="link">
+          Link
+        </Button>
+      </Flex>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button danger>Default</Button>
+      <Button danger type="primary">
+        Primary
+      </Button>
+      <Button danger type="dashed">
+        Dashed
+      </Button>
+      <Button danger type="text">
+        Text
+      </Button>
+      <Button danger type="link">
+        Link
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### Link
+
+:::preview
+
+<ButtonDemo010 />
+
+export const ButtonDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Flex gap="small" wrap>
+        <Button href="https://ant.design" target="_blank" rel="noopener">
+          Ant Design
+        </Button>
+        <Button href="#button-api" type="link">
+          API
+        </Button>
+        <Button href="https://ant.design" target="_blank" disabled>
+          Disabled link
+        </Button>
+      </Flex>);
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button href="https://ant.design" target="_blank" rel="noopener">
+        Ant Design
+      </Button>
+      <Button href="#button-api" type="link">
+        API
+      </Button>
+      <Button href="https://ant.design" target="_blank" disabled>
+        Disabled link
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo10
+```
+
+:::
+
+### Chinese spacing
+
+:::preview
+
+<ButtonDemo011 />
+
+export const ButtonDemo011 = (() => {
+  const Demo11 = function () {
+      return (<Flex gap="small" wrap>
+        <Button>按钮</Button>
+        <Button autoInsertSpace={false}>按钮</Button>
+      </Flex>);
+  };
+
+return Demo11
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+
+const Demo11 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button>按钮</Button>
+      <Button autoInsertSpace={false}>按钮</Button>
+    </Flex>
+  )
+}
+
+export default Demo11
+```
+
+:::
+
+### Semantic DOM
+
+:::preview
+
+<ButtonDemo012 />
+
+export const ButtonDemo012 = (() => {
+  const Demo12 = function () {
+      return (<Flex gap="small" wrap>
+        <Button icon={<SearchOutlined />} classNames={{
+              root: 'custom-button-root',
+              icon: 'custom-button-icon',
+              content: 'custom-button-content',
+          }} styles={{
+              root: { width: '160px' },
+              icon: { color: '#1677ff' },
+              content: { fontWeight: 600 },
+          }}>
+          Search
+        </Button>
+      </Flex>);
+  };
+
+return Demo12
+})()
+
+---
+
+```tsx
+import { Button, Flex } from '@ant-design-solid/core'
+import { SearchOutlined } from '@ant-design-solid/icons'
+
+const Demo12 = function () {
+  return (
+    <Flex gap="small" wrap>
+      <Button
+        icon={<SearchOutlined />}
+        classNames={{
+          root: 'custom-button-root',
+          icon: 'custom-button-icon',
+          content: 'custom-button-content',
+        }}
+        styles={{
+          root: { width: '160px' },
+          icon: { color: '#1677ff' },
+          content: { fontWeight: 600 },
+        }}
+      >
+        Search
+      </Button>
+    </Flex>
+  )
+}
+
+export default Demo12
+```
+
+:::
+
+## API
+
+Button accepts native button attributes. When `href` is provided, it renders as an anchor-like button and anchor attributes such as `target`, `rel`, `download`, and `referrerPolicy` are passed to the link.
+
+Solid code uses `class` instead of React `className`. The antd `rootClassName` API is exposed as `rootClass`.
+
+| Property          | Description                                                                 | Type                                                                                                      | Default             |
+| ----------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------- |
+| `autoInsertSpace` | Automatically inserts a space between two Chinese characters.               | `boolean`                                                                                                 | `true`              |
+| `block`           | Makes the button fit the width of its parent.                               | `boolean`                                                                                                 | `false`             |
+| `classNames`      | Semantic class names for internal slots. Supports object or function.       | `Record<'root' \| 'icon' \| 'content', string> \| (info) => Record<string, string>`                       | `-`                 |
+| `color`           | Sets the button color. Preset colors follow the antd color names.           | `'default' \| 'primary' \| 'danger' \| PresetColor`                                                       | `derived from type` |
+| `danger`          | Applies danger styling. Explicit color takes priority when both are set.    | `boolean`                                                                                                 | `false`             |
+| `disabled`        | Disables user interaction.                                                  | `boolean`                                                                                                 | `false`             |
+| `ghost`           | Makes the button background transparent.                                    | `boolean`                                                                                                 | `false`             |
+| `href`            | Renders the button as an anchor link when provided.                         | `string`                                                                                                  | `-`                 |
+| `htmlType`        | Sets the native button type when href is not provided.                      | `'button' \| 'submit' \| 'reset'`                                                                         | `'button'`          |
+| `icon`            | Renders an icon next to the button content.                                 | `JSX.Element`                                                                                             | `-`                 |
+| `iconPlacement`   | Controls whether the icon appears before or after the content.              | `'start' \| 'end'`                                                                                        | `'start'`           |
+| `iconPosition`    | Legacy name for iconPlacement. Prefer iconPlacement for new code.           | `'start' \| 'end'`                                                                                        | `'start'`           |
+| `loading`         | Shows a loading icon and prevents clicks. Supports delay and custom icon.   | `boolean \| { delay?: number; icon?: JSX.Element }`                                                       | `false`             |
+| `onClick`         | Called when the button is clicked and not disabled or loading.              | `(event: MouseEvent) => void`                                                                             | `-`                 |
+| `prefixCls`       | Overrides the component class prefix.                                       | `string`                                                                                                  | `ads-btn`           |
+| `rootClass`       | Extra class name on the root element. Solid equivalent of `rootClassName`.  | `string`                                                                                                  | `-`                 |
+| `shape`           | Sets the button shape.                                                      | `'default' \| 'circle' \| 'round'`                                                                        | `'default'`         |
+| `size`            | Sets the button size. `middle` is accepted for compatibility.               | `'small' \| 'medium' \| 'middle' \| 'large'`                                                              | `'medium'`          |
+| `styles`          | Semantic inline styles for internal slots. Supports object or function.     | `Record<'root' \| 'icon' \| 'content', JSX.CSSProperties> \| (info) => Record<string, JSX.CSSProperties>` | `-`                 |
+| `target`          | Same as target attribute of `a`, works when `href` is specified.            | `string`                                                                                                  | `-`                 |
+| `type`            | Syntactic sugar for common button styles.                                   | `'default' \| 'primary' \| 'dashed' \| 'text' \| 'link'`                                                  | `'default'`         |
+| `variant`         | Sets the visual variant. Explicit variant takes priority over type mapping. | `'outlined' \| 'dashed' \| 'solid' \| 'filled' \| 'text' \| 'link'`                                       | `derived from type` |
+
+### Semantic DOM
+
+| Slot      | Description                    |
+| --------- | ------------------------------ |
+| `root`    | Root button or anchor element. |
+| `icon`    | Icon wrapper.                  |
+| `content` | Text/content wrapper.          |
+
+### PresetColor
+
+`PresetColor` is one of `blue | purple | cyan | green | magenta | pink | red | orange | yellow | volcano | geekblue | lime | gold`.

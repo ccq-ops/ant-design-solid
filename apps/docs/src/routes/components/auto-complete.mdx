@@ -1,0 +1,453 @@
+import { AutoComplete, Input } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+# AutoComplete
+
+Text input with selectable suggestions.
+
+### Basic
+
+:::preview
+
+<AutoCompleteDemo001 />
+
+export const AutoCompleteDemo001 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo1 = function () {
+      return <AutoComplete style={{ width: '200px' }} options={options} placeholder="input here"/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+
+const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }]
+
+const Demo1 = function () {
+  return <AutoComplete style={{ width: '200px' }} options={options} placeholder="input here" />
+}
+
+export default Demo1
+```
+
+:::
+
+### Non-case-sensitive
+
+:::preview
+
+<AutoCompleteDemo002 />
+
+export const AutoCompleteDemo002 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo2 = function () {
+      return (<AutoComplete style={{ width: '200px' }} options={options} placeholder="try to type `b`" filterOption={(inputValue, option) => option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}/>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+
+const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }]
+
+const Demo2 = function () {
+  return (
+    <AutoComplete
+      style={{ width: '200px' }}
+      options={options}
+      placeholder="try to type `b`"
+      filterOption={(inputValue, option) =>
+        option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+      }
+    />
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Customize Input
+
+:::preview
+
+<AutoCompleteDemo003 />
+
+export const AutoCompleteDemo003 = (() => {
+  const options = [{ value: 'text area option' }, { value: 'another option' }];
+  const Demo3 = function () {
+      return (<AutoComplete options={options}>
+        <Input.TextArea class="custom-textarea" placeholder="textarea here"/>
+      </AutoComplete>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { AutoComplete, Input } from '@ant-design-solid/core'
+
+const options = [{ value: 'text area option' }, { value: 'another option' }]
+
+const Demo3 = function () {
+  return (
+    <AutoComplete options={options}>
+      <Input.TextArea class="custom-textarea" placeholder="textarea here" />
+    </AutoComplete>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Lookup Patterns
+
+:::preview
+
+<AutoCompleteDemo004 />
+
+export const AutoCompleteDemo004 = (() => {
+  const mockVal = (str, repeat = 1) => ({
+      value: str.repeat(repeat),
+  });
+  const Demo4 = function () {
+      const [options, setOptions] = createSignal([]);
+      const getPanelValue = (searchText) => !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)];
+      return (<AutoComplete options={options()} style={{ width: '200px' }} showSearch={{
+              onSearch: (text) => setOptions(getPanelValue(text)),
+          }} placeholder="input here"/>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+const mockVal = (str: string, repeat = 1) => ({
+  value: str.repeat(repeat),
+})
+
+const Demo4 = function () {
+  const [options, setOptions] = createSignal<{ value: string }[]>([])
+
+  const getPanelValue = (searchText: string) =>
+    !searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]
+
+  return (
+    <AutoComplete
+      options={options()}
+      style={{ width: '200px' }}
+      showSearch={{
+        onSearch: (text) => setOptions(getPanelValue(text)),
+      }}
+      placeholder="input here"
+    />
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Status
+
+:::preview
+
+<AutoCompleteDemo005 />
+
+export const AutoCompleteDemo005 = (() => {
+  const options = [{ value: 'error' }, { value: 'warning' }];
+  const Demo5 = function () {
+      return (<div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+        <AutoComplete status="error" style={{ width: '200px' }} options={options} placeholder="Error"/>
+        <AutoComplete status="warning" style={{ width: '200px' }} options={options} placeholder="Warning"/>
+      </div>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+
+const options = [{ value: 'error' }, { value: 'warning' }]
+
+const Demo5 = function () {
+  return (
+    <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+      <AutoComplete
+        status="error"
+        style={{ width: '200px' }}
+        options={options}
+        placeholder="Error"
+      />
+      <AutoComplete
+        status="warning"
+        style={{ width: '200px' }}
+        options={options}
+        placeholder="Warning"
+      />
+    </div>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Variants
+
+:::preview
+
+<AutoCompleteDemo006 />
+
+export const AutoCompleteDemo006 = (() => {
+  const options = [{ value: 'outlined' }, { value: 'filled' }, { value: 'borderless' }];
+  const Demo6 = function () {
+      return (<div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+        <AutoComplete variant="outlined" style={{ width: '180px' }} options={options} placeholder="Outlined"/>
+        <AutoComplete variant="filled" style={{ width: '180px' }} options={options} placeholder="Filled"/>
+        <AutoComplete variant="borderless" style={{ width: '180px' }} options={options} placeholder="Borderless"/>
+        <AutoComplete variant="underlined" style={{ width: '180px' }} options={options} placeholder="Underlined"/>
+      </div>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+
+const options = [{ value: 'outlined' }, { value: 'filled' }, { value: 'borderless' }]
+
+const Demo6 = function () {
+  return (
+    <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+      <AutoComplete
+        variant="outlined"
+        style={{ width: '180px' }}
+        options={options}
+        placeholder="Outlined"
+      />
+      <AutoComplete
+        variant="filled"
+        style={{ width: '180px' }}
+        options={options}
+        placeholder="Filled"
+      />
+      <AutoComplete
+        variant="borderless"
+        style={{ width: '180px' }}
+        options={options}
+        placeholder="Borderless"
+      />
+      <AutoComplete
+        variant="underlined"
+        style={{ width: '180px' }}
+        options={options}
+        placeholder="Underlined"
+      />
+    </div>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Custom Popup
+
+:::preview
+
+<AutoCompleteDemo007 />
+
+export const AutoCompleteDemo007 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo7 = function () {
+      return (<AutoComplete style={{ width: '220px' }} options={options} placeholder="custom popup" popupRender={(originNode) => (<div>
+            {originNode}
+            <div style={{ padding: '8px', color: '#1677ff' }}>More results</div>
+          </div>)}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+
+const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }]
+
+const Demo7 = function () {
+  return (
+    <AutoComplete
+      style={{ width: '220px' }}
+      options={options}
+      placeholder="custom popup"
+      popupRender={(originNode) => (
+        <div>
+          {originNode}
+          <div style={{ padding: '8px', color: '#1677ff' }}>More results</div>
+        </div>
+      )}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Popup Width
+
+:::preview
+
+<AutoCompleteDemo008 />
+
+export const AutoCompleteDemo008 = (() => {
+  const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }];
+  const Demo8 = function () {
+      return (<AutoComplete style={{ width: '200px' }} popupMatchSelectWidth={280} options={options} placeholder="wide popup"/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { AutoComplete } from '@ant-design-solid/core'
+
+const options = [{ value: 'Burns Bay Road' }, { value: 'Downing Street' }, { value: 'Wall Street' }]
+
+const Demo8 = function () {
+  return (
+    <AutoComplete
+      style={{ width: '200px' }}
+      popupMatchSelectWidth={280}
+      options={options}
+      placeholder="wide popup"
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+## API
+
+### AutoComplete
+
+Solid APIs use `class` naming. Deprecated React-compatible `popupClassName` and `dropdownClassName` are accepted for migration only.
+
+| Property                   | Description                                                                                 | Type                                                                                      | Default         |
+| -------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------- |
+| `allowClear`               | Show clear button. Object form customizes the clear icon.                                   | `boolean \| { clearIcon?: JSX.Element }`                                                  | `false`         |
+| `backfill`                 | Backfill the input with the active option when using keyboard navigation.                   | `boolean`                                                                                 | `false`         |
+| `children`                 | Customize the input element. Supports native input elements and `Input.TextArea`.           | `JSX.Element`                                                                             | `<input />`     |
+| `classNames`               | Customize class for each semantic structure. Supports object or function.                   | `AutoCompleteSemanticClassNames \| ((info: { props }) => AutoCompleteSemanticClassNames)` | `-`             |
+| `dataSource`               | Deprecated data source of options. Use `options` instead.                                   | `(string \| { value: string; text?: JSX.Element; label?: JSX.Element })[]`                | `-`             |
+| `defaultActiveFirstOption` | Whether active first option by default.                                                     | `boolean`                                                                                 | `true`          |
+| `defaultOpen`              | Initial open state of popup.                                                                | `boolean`                                                                                 | `false`         |
+| `defaultValue`             | Initial input value.                                                                        | `string`                                                                                  | `-`             |
+| `disabled`                 | Whether disabled.                                                                           | `boolean`                                                                                 | `false`         |
+| `dropdownClass`            | Deprecated popup class alias. Use `classNames.popup`.                                       | `string`                                                                                  | `-`             |
+| `dropdownClassName`        | Deprecated React-compatible popup class alias. Use `classNames.popup` or `dropdownClass`.   | `string`                                                                                  | `-`             |
+| `dropdownMatchSelectWidth` | Deprecated width alias. Use `popupMatchSelectWidth`.                                        | `boolean \| number`                                                                       | `true`          |
+| `dropdownRender`           | Deprecated render alias. Use `popupRender`.                                                 | `(originNode: JSX.Element) => JSX.Element`                                                | `-`             |
+| `dropdownStyle`            | Deprecated popup style alias. Use `styles.popup`.                                           | `JSX.CSSProperties`                                                                       | `-`             |
+| `filterOption`             | If true, filter options by input. Function receives `inputValue` and `option`.              | `boolean \| ((inputValue: string, option: AutoCompleteOption) => boolean)`                | `true`          |
+| `getPopupContainer`        | Parent node used to mount the popup portal.                                                 | `(triggerNode?: HTMLElement) => HTMLElement \| ShadowRoot`                                | `document.body` |
+| `notFoundContent`          | Content shown when no options match.                                                        | `JSX.Element`                                                                             | `-`             |
+| `open`                     | Controlled popup open state.                                                                | `boolean`                                                                                 | `-`             |
+| `options`                  | Select options.                                                                             | `AutoCompleteOption[]`                                                                    | `-`             |
+| `placeholder`              | Input placeholder text.                                                                     | `string`                                                                                  | `-`             |
+| `popupClass`               | Popup class alias for Solid projects. Prefer `classNames.popup` for semantic styling.       | `string`                                                                                  | `-`             |
+| `popupClassName`           | Deprecated React-compatible popup class alias. Use `classNames.popup` or `popupClass`.      | `string`                                                                                  | `-`             |
+| `popupMatchSelectWidth`    | Determine whether popup and input are the same width. Number sets a minimum width.          | `boolean \| number`                                                                       | `true`          |
+| `popupRender`              | Customize popup content.                                                                    | `(originNode: JSX.Element) => JSX.Element`                                                | `-`             |
+| `popupStyle`               | Popup inline style. Prefer `styles.popup` for semantic styling.                             | `JSX.CSSProperties`                                                                       | `-`             |
+| `showSearch`               | Search configuration.                                                                       | `true \| AutoCompleteShowSearch`                                                          | `true`          |
+| `size`                     | Input size.                                                                                 | `'small' \| 'middle' \| 'large'`                                                          | `-`             |
+| `status`                   | Validation status.                                                                          | `'error' \| 'warning'`                                                                    | `-`             |
+| `styles`                   | Customize inline style for each semantic structure. Supports object or function.            | `AutoCompleteSemanticStyles \| ((info: { props }) => AutoCompleteSemanticStyles)`         | `-`             |
+| `value`                    | Controlled input value.                                                                     | `string`                                                                                  | `-`             |
+| `variant`                  | Variants of input.                                                                          | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                                  | `'outlined'`    |
+| `virtual`                  | Virtual scroll compatibility flag. Current implementation renders the option list directly. | `boolean`                                                                                 | `true`          |
+| `onBlur`                   | Called when leaving the input.                                                              | `(event: FocusEvent) => void`                                                             | `-`             |
+| `onChange`                 | Called when selecting an option or changing input value.                                    | `(value: string) => void`                                                                 | `-`             |
+| `onClear`                  | Called when clear.                                                                          | `() => void`                                                                              | `-`             |
+| `onDropdownVisibleChange`  | Deprecated open callback alias. Use `onOpenChange`.                                         | `(open: boolean) => void`                                                                 | `-`             |
+| `onFocus`                  | Called when entering the input.                                                             | `(event: FocusEvent) => void`                                                             | `-`             |
+| `onInputKeyDown`           | Called when key pressed.                                                                    | `(event: KeyboardEvent) => void`                                                          | `-`             |
+| `onOpenChange`             | Called when popup open state changes.                                                       | `(open: boolean) => void`                                                                 | `-`             |
+| `onPopupScroll`            | Called when popup scrolls.                                                                  | `(event: UIEvent) => void`                                                                | `-`             |
+| `onSelect`                 | Called when an option is selected.                                                          | `(value: string, option: AutoCompleteOption) => void`                                     | `-`             |
+
+### showSearch
+
+| Property       | Description                     | Type                                                                       | Default |
+| -------------- | ------------------------------- | -------------------------------------------------------------------------- | ------- |
+| `filterOption` | Filter options by input.        | `boolean \| ((inputValue: string, option: AutoCompleteOption) => boolean)` | `true`  |
+| `onSearch`     | Called when searching items.    | `(value: string) => void`                                                  | `-`     |
+| `searchIcon`   | Search icon compatibility slot. | `JSX.Element`                                                              | `-`     |
+
+### Methods
+
+| Name      | Description   |
+| --------- | ------------- |
+| `blur()`  | Remove focus. |
+| `focus()` | Get focus.    |
+
+### Semantic DOM
+
+| Key        | Description               |
+| ---------- | ------------------------- |
+| `root`     | Root wrapper.             |
+| `selector` | Input selector wrapper.   |
+| `input`    | Native input or textarea. |
+| `clear`    | Clear button.             |
+| `popup`    | Popup root.               |
+| `list`     | Popup list container.     |
+| `option`   | Option item.              |
+| `empty`    | Empty content.            |
+
+### AutoCompleteOption
+
+| Property   | Description                                             | Type                | Default |
+| ---------- | ------------------------------------------------------- | ------------------- | ------- |
+| `label`    | Option display label. Falls back to value when omitted. | `JSX.Element`       | `-`     |
+| `value`    | Option value inserted into the input.                   | `string`            | `-`     |
+| `disabled` | Disables selecting this option.                         | `boolean`           | `false` |
+| `class`    | Option class.                                           | `string`            | `-`     |
+| `style`    | Option style.                                           | `JSX.CSSProperties` | `-`     |
+| `title`    | Option title attribute.                                 | `string`            | `-`     |

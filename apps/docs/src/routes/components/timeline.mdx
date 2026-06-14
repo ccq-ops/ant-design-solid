@@ -1,0 +1,443 @@
+import { Timeline } from '@ant-design-solid/core'
+
+# Timeline
+
+Display chronological events with titles, content, placement, loading nodes, and semantic styling.
+
+### Basic
+
+:::preview
+
+<TimelineDemo001 />
+
+export const TimelineDemo001 = (() => {
+  const items = [
+      { title: '2026-06-01', content: 'Create project', color: 'green' },
+      { title: '2026-06-02', content: 'Add core components' },
+      { title: '2026-06-03', content: 'Polish documentation', color: 'red' },
+  ];
+  const Demo1 = function () {
+      return <Timeline items={items}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const items = [
+  { title: '2026-06-01', content: 'Create project', color: 'green' },
+  { title: '2026-06-02', content: 'Add core components' },
+  { title: '2026-06-03', content: 'Polish documentation', color: 'red' },
+]
+
+const Demo1 = function () {
+  return <Timeline items={items} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Alternate
+
+:::preview
+
+<TimelineDemo002 />
+
+export const TimelineDemo002 = (() => {
+  const items = [
+      { title: '2026-06-01', content: 'Create project', color: 'green' },
+      { title: '2026-06-02', content: 'Add core components' },
+      { title: '2026-06-03', content: 'Polish documentation', placement: 'end' },
+  ];
+  const Demo2 = function () {
+      return <Timeline mode="alternate" items={items}/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const items = [
+  { title: '2026-06-01', content: 'Create project', color: 'green' },
+  { title: '2026-06-02', content: 'Add core components' },
+  { title: '2026-06-03', content: 'Polish documentation', placement: 'end' },
+]
+
+const Demo2 = function () {
+  return <Timeline mode="alternate" items={items} />
+}
+
+export default Demo2
+```
+
+:::
+
+### End placement
+
+:::preview
+
+<TimelineDemo003 />
+
+export const TimelineDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Timeline mode="end" items={[
+              { title: 'Design', content: 'Confirm product details' },
+              { title: 'Build', content: 'Implement the Timeline API' },
+              { title: 'Verify', content: 'Run tests and build' },
+          ]}/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Timeline
+      mode="end"
+      items={[
+        { title: 'Design', content: 'Confirm product details' },
+        { title: 'Build', content: 'Implement the Timeline API' },
+        { title: 'Verify', content: 'Run tests and build' },
+      ]}
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Horizontal
+
+:::preview
+
+<TimelineDemo004 />
+
+export const TimelineDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Timeline orientation="horizontal" items={[
+              { title: 'Plan', content: 'Define scope' },
+              { title: 'Build', content: 'Implement component' },
+              { title: 'Ship', content: 'Publish docs' },
+          ]}/>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Timeline
+      orientation="horizontal"
+      items={[
+        { title: 'Plan', content: 'Define scope' },
+        { title: 'Build', content: 'Implement component' },
+        { title: 'Ship', content: 'Publish docs' },
+      ]}
+    />
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Loading
+
+:::preview
+
+<TimelineDemo005 />
+
+export const TimelineDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Timeline items={[
+              { title: 'Queued', content: 'Waiting for worker', color: 'gray' },
+              { title: 'Running', content: 'Deploying preview', loading: true },
+          ]}/>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Timeline
+      items={[
+        { title: 'Queued', content: 'Waiting for worker', color: 'gray' },
+        { title: 'Running', content: 'Deploying preview', loading: true },
+      ]}
+    />
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Variant and title span
+
+:::preview
+
+<TimelineDemo006 />
+
+export const TimelineDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Timeline variant="filled" titleSpan={160} items={[
+              { title: 'Design review', content: 'Approved by maintainers' },
+              { title: 'Release', content: 'Tagged package version' },
+          ]}/>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Timeline
+      variant="filled"
+      titleSpan={160}
+      items={[
+        { title: 'Design review', content: 'Approved by maintainers' },
+        { title: 'Release', content: 'Tagged package version' },
+      ]}
+    />
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Custom icon and color
+
+:::preview
+
+<TimelineDemo007 />
+
+export const TimelineDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Timeline items={[
+              { title: 'Custom', content: 'Use a custom icon', icon: '★' },
+              { title: 'Preset', content: 'Use a preset status color', color: 'green' },
+              { title: 'Custom color', content: 'Use any CSS color', color: '#722ed1' },
+          ]}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Timeline
+      items={[
+        { title: 'Custom', content: 'Use a custom icon', icon: '★' },
+        { title: 'Preset', content: 'Use a preset status color', color: 'green' },
+        { title: 'Custom color', content: 'Use any CSS color', color: '#722ed1' },
+      ]}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Semantic styles
+
+:::preview
+
+<TimelineDemo008 />
+
+export const TimelineDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Timeline rootClassName="timeline-demo" classNames={{
+              root: 'timeline-root',
+              item: 'timeline-item',
+              itemTitle: 'timeline-title',
+              itemContent: 'timeline-content',
+          }} styles={{
+              root: { maxWidth: '520px' },
+              itemIcon: { color: '#1677ff' },
+          }} items={[
+              {
+                  title: 'Styled',
+                  content: 'Semantic slots can be styled without relying on DOM order.',
+                  className: 'timeline-item-extra',
+                  style: { marginBottom: '4px' },
+                  classNames: { itemContent: 'text-blue-600' },
+                  styles: { itemContent: { fontWeight: 600 } },
+              },
+          ]}/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Timeline
+      rootClassName="timeline-demo"
+      classNames={{
+        root: 'timeline-root',
+        item: 'timeline-item',
+        itemTitle: 'timeline-title',
+        itemContent: 'timeline-content',
+      }}
+      styles={{
+        root: { maxWidth: '520px' },
+        itemIcon: { color: '#1677ff' },
+      }}
+      items={[
+        {
+          title: 'Styled',
+          content: 'Semantic slots can be styled without relying on DOM order.',
+          className: 'timeline-item-extra',
+          style: { marginBottom: '4px' },
+          classNames: { itemContent: 'text-blue-600' },
+          styles: { itemContent: { fontWeight: 600 } },
+        },
+      ]}
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Reverse
+
+:::preview
+
+<TimelineDemo009 />
+
+export const TimelineDemo009 = (() => {
+  const items = [
+      { title: '2026-06-01', content: 'Create project', color: 'green' },
+      { title: '2026-06-02', content: 'Add core components' },
+      { title: '2026-06-03', content: 'Polish documentation', color: 'red' },
+  ];
+  const Demo9 = function () {
+      return <Timeline reverse items={items}/>;
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { Timeline } from '@ant-design-solid/core'
+
+const items = [
+  { title: '2026-06-01', content: 'Create project', color: 'green' },
+  { title: '2026-06-02', content: 'Add core components' },
+  { title: '2026-06-03', content: 'Polish documentation', color: 'red' },
+]
+
+const Demo9 = function () {
+  return <Timeline reverse items={items} />
+}
+
+export default Demo9
+```
+
+:::
+
+## API
+
+### Timeline
+
+| Property        | Description                                        | Type                                                      | Default      |
+| --------------- | -------------------------------------------------- | --------------------------------------------------------- | ------------ |
+| `items`         | Timeline item data.                                | `TimelineItem[]`                                          | `-`          |
+| `mode`          | Timeline item placement mode.                      | `'start' \| 'alternate' \| 'end'`                         | `'start'`    |
+| `orientation`   | Timeline direction.                                | `'vertical' \| 'horizontal'`                              | `'vertical'` |
+| `variant`       | Dot visual variant.                                | `'outlined' \| 'filled'`                                  | `'outlined'` |
+| `titleSpan`     | Title area width or spacing before the dot center. | `number \| string`                                        | `12`         |
+| `reverse`       | Reverses the item order.                           | `boolean`                                                 | `false`      |
+| `class`         | Additional root class name.                        | `string`                                                  | `-`          |
+| `className`     | Additional root class name alias.                  | `string`                                                  | `-`          |
+| `rootClassName` | Additional root class name.                        | `string`                                                  | `-`          |
+| `style`         | Root inline style.                                 | `JSX.CSSProperties`                                       | `-`          |
+| `classNames`    | Semantic DOM class names.                          | `Partial<Record<TimelineSemanticKey, string>>`            | `-`          |
+| `styles`        | Semantic DOM inline styles.                        | `Partial<Record<TimelineSemanticKey, JSX.CSSProperties>>` | `-`          |
+| `prefixCls`     | Custom CSS class prefix.                           | `string`                                                  | `-`          |
+
+### TimelineItem
+
+| Property     | Description                                            | Type                                                 | Default  |
+| ------------ | ------------------------------------------------------ | ---------------------------------------------------- | -------- |
+| `key`        | Stable item key.                                       | `string \| number`                                   | `-`      |
+| `title`      | Title content rendered beside the timeline item.       | `JSX.Element`                                        | `-`      |
+| `content`    | Main timeline item content.                            | `JSX.Element`                                        | `-`      |
+| `color`      | Preset semantic color or custom CSS color for the dot. | `'blue' \| 'red' \| 'green' \| 'gray' \| string`     | `'blue'` |
+| `icon`       | Custom node icon.                                      | `JSX.Element`                                        | `-`      |
+| `placement`  | Overrides item placement for this item.                | `'start' \| 'end'`                                   | `-`      |
+| `loading`    | Shows the item in loading state.                       | `boolean`                                            | `false`  |
+| `class`      | Additional item class name.                            | `string`                                             | `-`      |
+| `className`  | Additional item class name.                            | `string`                                             | `-`      |
+| `style`      | Additional item inline style.                          | `JSX.CSSProperties`                                  | `-`      |
+| `classNames` | Item semantic DOM class names.                         | `Omit<TimelineSemanticClassNames, 'root' \| 'list'>` | `-`      |
+| `styles`     | Item semantic DOM inline styles.                       | `Omit<TimelineSemanticStyles, 'root' \| 'list'>`     | `-`      |
+
+### Semantic DOM
+
+| Key           | Description                        | Component-level | Item-level |
+| ------------- | ---------------------------------- | --------------- | ---------- |
+| `root`        | Timeline root ordered list.        | Yes             | No         |
+| `list`        | Reserved list slot.                | Yes             | No         |
+| `item`        | Timeline item.                     | Yes             | Yes        |
+| `itemTitle`   | Item title area.                   | Yes             | Yes        |
+| `itemIcon`    | Item dot or custom icon.           | Yes             | Yes        |
+| `itemContent` | Main item content area.            | Yes             | Yes        |
+| `itemRail`    | Connecting rail between items.     | Yes             | Yes        |
+| `itemWrapper` | Internal item wrapper.             | Yes             | Yes        |
+| `itemSection` | Internal section around item body. | Yes             | Yes        |
+| `itemHeader`  | Internal header around title/icon. | Yes             | Yes        |

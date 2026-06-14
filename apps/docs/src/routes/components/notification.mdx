@@ -1,0 +1,860 @@
+import { Button, ConfigProvider, notification, Space } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+# Notification
+
+Notification displays global feedback messages in a corner of the viewport.
+
+### Basic
+
+:::preview
+
+<NotificationDemo001 />
+
+export const NotificationDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Button onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}>
+        Success
+      </Button>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo1 = function () {
+  return (
+    <Button onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}>
+      Success
+    </Button>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### Types
+
+:::preview
+
+<NotificationDemo002 />
+
+export const NotificationDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space wrap>
+        <Button onClick={() => notification.info({ message: 'Info', description: 'Information' })}>
+          Info
+        </Button>
+        <Button onClick={() => notification.warning({
+              message: 'Warning',
+              description: 'Check this',
+          })}>
+          Warning
+        </Button>
+        <Button onClick={() => notification.error({
+              message: 'Error',
+              description: 'Something failed',
+          })}>
+          Error
+        </Button>
+      </Space>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo2 = function () {
+  return (
+    <Space wrap>
+      <Button onClick={() => notification.info({ message: 'Info', description: 'Information' })}>
+        Info
+      </Button>
+      <Button
+        onClick={() =>
+          notification.warning({
+            message: 'Warning',
+            description: 'Check this',
+          })
+        }
+      >
+        Warning
+      </Button>
+      <Button
+        onClick={() =>
+          notification.error({
+            message: 'Error',
+            description: 'Something failed',
+          })
+        }
+      >
+        Error
+      </Button>
+    </Space>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Placement
+
+:::preview
+
+<NotificationDemo003 />
+
+export const NotificationDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space wrap>
+        <Button onClick={() => notification.open({ title: 'Top center', placement: 'top' })}>
+          Top
+        </Button>
+        <Button onClick={() => notification.open({ title: 'Top left', placement: 'topLeft' })}>
+          Top left
+        </Button>
+        <Button onClick={() => notification.open({ title: 'Bottom center', placement: 'bottom' })}>
+          Bottom
+        </Button>
+        <Button onClick={() => notification.open({ title: 'Bottom left', placement: 'bottomLeft' })}>
+          Bottom left
+        </Button>
+      </Space>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo3 = function () {
+  return (
+    <Space wrap>
+      <Button onClick={() => notification.open({ title: 'Top center', placement: 'top' })}>
+        Top
+      </Button>
+      <Button onClick={() => notification.open({ title: 'Top left', placement: 'topLeft' })}>
+        Top left
+      </Button>
+      <Button onClick={() => notification.open({ title: 'Bottom center', placement: 'bottom' })}>
+        Bottom
+      </Button>
+      <Button onClick={() => notification.open({ title: 'Bottom left', placement: 'bottomLeft' })}>
+        Bottom left
+      </Button>
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Keyed update
+
+:::preview
+
+<NotificationDemo004 />
+
+export const NotificationDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Button onClick={() => {
+              notification.open({
+                  key: 'sync',
+                  message: 'Syncing',
+                  description: 'Please wait',
+                  duration: 0,
+              });
+              window.setTimeout(() => {
+                  notification.success({
+                      key: 'sync',
+                      message: 'Synced',
+                      description: 'All changes saved',
+                  });
+              }, 900);
+          }}>
+        Update notification
+      </Button>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo4 = function () {
+  return (
+    <Button
+      onClick={() => {
+        notification.open({
+          key: 'sync',
+          message: 'Syncing',
+          description: 'Please wait',
+          duration: 0,
+        })
+        window.setTimeout(() => {
+          notification.success({
+            key: 'sync',
+            message: 'Synced',
+            description: 'All changes saved',
+          })
+        }, 900)
+      }}
+    >
+      Update notification
+    </Button>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Custom icon and actions
+
+:::preview
+
+<NotificationDemo005 />
+
+export const NotificationDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Custom notification',
+              description: 'Use icon and actions to compose richer feedback.',
+              icon: <SmileOutlined />,
+              actions: (<Space>
+                <Button size="small">Later</Button>
+                <Button size="small" type="primary">
+                  Confirm
+                </Button>
+              </Space>),
+          })}>
+        Custom content
+      </Button>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo5 = function () {
+  return (
+    <Button
+      onClick={() =>
+        notification.open({
+          title: 'Custom notification',
+          description: 'Use icon and actions to compose richer feedback.',
+          icon: <SmileOutlined />,
+          actions: (
+            <Space>
+              <Button size="small">Later</Button>
+              <Button size="small" type="primary">
+                Confirm
+              </Button>
+            </Space>
+          ),
+        })
+      }
+    >
+      Custom content
+    </Button>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Progress and hover pause
+
+:::preview
+
+<NotificationDemo006 />
+
+export const NotificationDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Uploading',
+              description: 'Hover to pause auto close.',
+              duration: 5,
+              showProgress: true,
+          })}>
+        Show progress
+      </Button>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo6 = function () {
+  return (
+    <Button
+      onClick={() =>
+        notification.open({
+          title: 'Uploading',
+          description: 'Hover to pause auto close.',
+          duration: 5,
+          showProgress: true,
+        })
+      }
+    >
+      Show progress
+    </Button>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Custom close behavior
+
+:::preview
+
+<NotificationDemo007 />
+
+export const NotificationDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space wrap>
+        <Button onClick={() => notification.open({
+              title: 'No close button',
+              description: 'This notification stays until destroyed.',
+              duration: false,
+              closable: false,
+          })}>
+          Hide close
+        </Button>
+        <Button onClick={() => notification.open({
+              title: 'Custom close icon',
+              description: 'The close icon can be replaced.',
+              closeIcon: <CheckCircleFilled />,
+          })}>
+          Custom close icon
+        </Button>
+      </Space>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo7 = function () {
+  return (
+    <Space wrap>
+      <Button
+        onClick={() =>
+          notification.open({
+            title: 'No close button',
+            description: 'This notification stays until destroyed.',
+            duration: false,
+            closable: false,
+          })
+        }
+      >
+        Hide close
+      </Button>
+      <Button
+        onClick={() =>
+          notification.open({
+            title: 'Custom close icon',
+            description: 'The close icon can be replaced.',
+            closeIcon: <CheckCircleFilled />,
+          })
+        }
+      >
+        Custom close icon
+      </Button>
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Style and semantic DOM
+
+:::preview
+
+<NotificationDemo008 />
+
+export const NotificationDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Styled notification',
+              description: 'class, style, classNames and styles are supported.',
+              class: 'custom-docs-notification',
+              style: { border: '1px solid #1677ff' },
+              classNames: { title: 'custom-docs-notification-title' },
+              styles: { description: { color: '#1677ff' } },
+          })}>
+        Styled
+      </Button>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
+
+const Demo8 = function () {
+  return (
+    <Button
+      onClick={() =>
+        notification.open({
+          title: 'Styled notification',
+          description: 'class, style, classNames and styles are supported.',
+          class: 'custom-docs-notification',
+          style: { border: '1px solid #1677ff' },
+          classNames: { title: 'custom-docs-notification-title' },
+          styles: { description: { color: '#1677ff' } },
+        })
+      }
+    >
+      Styled
+    </Button>
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Function semantic styles
+
+:::preview
+
+<NotificationDemo009 />
+
+export const NotificationDemo009 = (() => {
+  const Demo9 = function () {
+      return (<Button onClick={() => notification.open({
+              title: 'Import finished',
+              description: 'Semantic classes can be derived from notice props.',
+              props: { 'data-state': 'done' },
+              classNames: ({ props }) => ({
+                  title: `notification-title-${props?.['data-state']}`,
+              }),
+              styles: ({ props }) => ({
+                  title: { color: props?.['data-state'] === 'done' ? '#52c41a' : '#1677ff' },
+              }),
+          })}>
+        Function styles
+      </Button>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { Button, notification } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  return (
+    <Button
+      onClick={() =>
+        notification.open({
+          title: 'Import finished',
+          description: 'Semantic classes can be derived from notice props.',
+          props: { 'data-state': 'done' },
+          classNames: ({ props }) => ({
+            title: `notification-title-${props?.['data-state']}`,
+          }),
+          styles: ({ props }) => ({
+            title: { color: props?.['data-state'] === 'done' ? '#52c41a' : '#1677ff' },
+          }),
+        })
+      }
+    >
+      Function styles
+    </Button>
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### Stack
+
+:::preview
+
+<NotificationDemo010 />
+
+export const NotificationDemo010 = (() => {
+  const Demo10 = function () {
+      const openStack = () => {
+          notification.config({ stack: { threshold: 2 } });
+          Array.from({ length: 4 }).forEach((_, index) => {
+              notification.open({
+                  key: `stack-${index}`,
+                  title: `Notification ${index + 1}`,
+                  description: 'Older items stay visible and are visually stacked.',
+                  duration: 0,
+              });
+          });
+      };
+      return <Button onClick={openStack}>Open stack</Button>;
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  const openStack = () => {
+    notification.config({ stack: { threshold: 2 } })
+    Array.from({ length: 4 }).forEach((_, index) => {
+      notification.open({
+        key: `stack-${index}`,
+        title: `Notification ${index + 1}`,
+        description: 'Older items stay visible and are visually stacked.',
+        duration: 0,
+      })
+    })
+  }
+
+  return <Button onClick={openStack}>Open stack</Button>
+}
+
+export default Demo10
+```
+
+:::
+
+### Hook holder
+
+:::preview
+
+<NotificationDemo011 />
+
+export const NotificationDemo011 = (() => {
+  const Demo11 = function () {
+      const [api, contextHolder] = notification.useNotification({
+          placement: 'bottomLeft',
+          props: { role: 'status' },
+      });
+      return (<>
+        {contextHolder}
+        <Button onClick={() => api.success({
+              title: 'Hook notification',
+              description: 'This instance is bound to the rendered holder.',
+          })}>
+          Open from hook
+        </Button>
+      </>);
+  };
+
+return Demo11
+})()
+
+---
+
+```tsx
+import { Button, Space, notification } from '@ant-design-solid/core'
+
+const Demo11 = function () {
+  const [api, contextHolder] = notification.useNotification({
+    placement: 'bottomLeft',
+    props: { role: 'status' },
+  })
+
+  return (
+    <>
+      {contextHolder}
+      <Button
+        onClick={() =>
+          api.success({
+            title: 'Hook notification',
+            description: 'This instance is bound to the rendered holder.',
+          })
+        }
+      >
+        Open from hook
+      </Button>
+    </>
+  )
+}
+
+export default Demo11
+```
+
+:::
+
+### ConfigProvider defaults
+
+:::preview
+
+<NotificationDemo012 />
+
+export const NotificationDemo012 = (() => {
+  const Demo12 = function () {
+      const [api, contextHolder] = notification.useNotification();
+      return (<ConfigProvider prefixCls="custom" notification={{
+              classNames: { title: 'custom-notification-title' },
+              styles: { title: { color: '#722ed1' } },
+          }}>
+        {contextHolder}
+        <Button onClick={() => api.open({
+              title: 'Configured by provider',
+              description: 'Hook holders can read ConfigProvider notification defaults.',
+          })}>
+          Provider config
+        </Button>
+      </ConfigProvider>);
+  };
+
+return Demo12
+})()
+
+---
+
+```tsx
+import { Button, ConfigProvider, notification } from '@ant-design-solid/core'
+
+const Demo12 = function () {
+  const [api, contextHolder] = notification.useNotification()
+
+  return (
+    <ConfigProvider
+      prefixCls="custom"
+      notification={{
+        classNames: { title: 'custom-notification-title' },
+        styles: { title: { color: '#722ed1' } },
+      }}
+    >
+      {contextHolder}
+      <Button
+        onClick={() =>
+          api.open({
+            title: 'Configured by provider',
+            description: 'Hook holders can read ConfigProvider notification defaults.',
+          })
+        }
+      >
+        Provider config
+      </Button>
+    </ConfigProvider>
+  )
+}
+
+export default Demo12
+```
+
+:::
+
+### Global config
+
+:::preview
+
+<NotificationDemo013 />
+
+export const NotificationDemo013 = (() => {
+  const Demo13 = function () {
+      return (<Button onClick={() => {
+              notification.config({
+                  placement: 'bottomRight',
+                  duration: 3,
+                  bottom: 48,
+                  maxCount: 3,
+                  stack: { threshold: 2 },
+                  showProgress: true,
+                  props: { role: 'status' },
+                  closable: { closeIcon: 'Close' },
+              });
+              notification.success({
+                  title: 'Config applied',
+                  description: 'Defaults affect later notifications.',
+              });
+          }}>
+        Apply config
+      </Button>);
+  };
+
+return Demo13
+})()
+
+---
+
+```tsx
+import { Button, notification } from '@ant-design-solid/core'
+
+const Demo13 = function () {
+  return (
+    <Button
+      onClick={() => {
+        notification.config({
+          placement: 'bottomRight',
+          duration: 3,
+          bottom: 48,
+          maxCount: 3,
+          stack: { threshold: 2 },
+          showProgress: true,
+          props: { role: 'status' },
+          closable: { closeIcon: 'Close' },
+        })
+        notification.success({
+          title: 'Config applied',
+          description: 'Defaults affect later notifications.',
+        })
+      }}
+    >
+      Apply config
+    </Button>
+  )
+}
+
+export default Demo13
+```
+
+:::
+
+## API
+
+### NotificationArgs
+
+| Property       | Description                                                | Type                                                                                 | Default      |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------ |
+| `key`          | Stable key used to update or destroy a notification.       | `string \| number`                                                                   | `-`          |
+| `type`         | Notification semantic type.                                | `'success' \| 'info' \| 'warning' \| 'error'`                                        | `-`          |
+| `title`        | Notification title content. Preferred over message.        | `JSX.Element`                                                                        | `-`          |
+| `message`      | Deprecated-compatible notification title content.          | `JSX.Element`                                                                        | `-`          |
+| `description`  | Notification body content.                                 | `JSX.Element`                                                                        | `-`          |
+| `duration`     | Auto-close delay in seconds. Set 0 or false to keep open.  | `number \| false`                                                                    | `4.5`        |
+| `placement`    | Screen placement.                                          | `'top' \| 'topLeft' \| 'topRight' \| 'bottom' \| 'bottomLeft' \| 'bottomRight'`      | `'topRight'` |
+| `icon`         | Custom notification icon.                                  | `JSX.Element`                                                                        | `-`          |
+| `actions`      | Custom action area.                                        | `JSX.Element`                                                                        | `-`          |
+| `btn`          | Deprecated-compatible custom action area.                  | `JSX.Element`                                                                        | `-`          |
+| `closable`     | Whether to show close button, or close button config.      | `boolean \| null \| { closeIcon?: JSX.Element; onClose?: () => void }`               | `true`       |
+| `closeIcon`    | Custom close icon. Set false or null to hide close button. | `JSX.Element \| boolean \| null`                                                     | `-`          |
+| `class`        | Custom class for the notice element.                       | `string`                                                                             | `-`          |
+| `className`    | Deprecated-compatible custom class for the notice element. | `string`                                                                             | `-`          |
+| `classNames`   | Custom classes for semantic DOM parts.                     | `SemanticRecord<string> \| ((info) => SemanticRecord<string>)`                       | `-`          |
+| `style`        | Inline style for the notice element.                       | `JSX.CSSProperties`                                                                  | `-`          |
+| `styles`       | Inline styles for semantic DOM parts.                      | `SemanticRecord<JSX.CSSProperties> \| ((info) => SemanticRecord<JSX.CSSProperties>)` | `-`          |
+| `props`        | Additional attributes for the notice element.              | `JSX.HTMLAttributes<HTMLDivElement> & data-* / aria-* attributes`                    | `-`          |
+| `role`         | Screen reader role for notification content.               | `'alert' \| 'status'`                                                                | `'alert'`    |
+| `showProgress` | Show auto-close progress bar.                              | `boolean`                                                                            | `-`          |
+| `pauseOnHover` | Pause auto-close timer while hovered.                      | `boolean`                                                                            | `true`       |
+| `onClick`      | Called when the notification is clicked.                   | `JSX.EventHandler<HTMLDivElement, MouseEvent>`                                       | `-`          |
+| `onClose`      | Called when the notification closes.                       | `() => void`                                                                         | `-`          |
+
+### NotificationConfig
+
+| Property       | Description                                                      | Type                                                                                 | Default         |
+| -------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------- |
+| `placement`    | Default placement for new notifications.                         | `NotificationPlacement`                                                              | `'topRight'`    |
+| `duration`     | Default auto-close delay in seconds.                             | `number \| false`                                                                    | `4.5`           |
+| `top`          | Distance from top edge in pixels for top placements.             | `number`                                                                             | `24`            |
+| `bottom`       | Distance from bottom edge in pixels for bottom placements.       | `number`                                                                             | `24`            |
+| `getContainer` | Returns the container used to mount notifications.               | `() => HTMLElement \| ShadowRoot`                                                    | `document.body` |
+| `maxCount`     | Maximum visible notifications; oldest are dropped when exceeded. | `number`                                                                             | `-`             |
+| `stack`        | Visually stack notifications when amount exceeds threshold.      | `boolean \| { threshold?: number }`                                                  | `-`             |
+| `prefixCls`    | Custom static notification prefix.                               | `string`                                                                             | `ads`           |
+| `closeIcon`    | Default close icon config.                                       | `JSX.Element \| boolean \| null`                                                     | `-`             |
+| `closable`     | Default close button visibility or config.                       | `boolean \| null \| { closeIcon?: JSX.Element; onClose?: () => void }`               | `true`          |
+| `showProgress` | Default progress bar visibility.                                 | `boolean`                                                                            | `-`             |
+| `pauseOnHover` | Default hover pause behavior.                                    | `boolean`                                                                            | `true`          |
+| `rtl`          | Enable RTL notification container class.                         | `boolean`                                                                            | `false`         |
+| `classNames`   | Default semantic classes.                                        | `SemanticRecord<string> \| ((info) => SemanticRecord<string>)`                       | `-`             |
+| `styles`       | Default semantic styles.                                         | `SemanticRecord<JSX.CSSProperties> \| ((info) => SemanticRecord<JSX.CSSProperties>)` | `-`             |
+| `props`        | Default attributes for notice elements.                          | `NotificationDivProps`                                                               | `-`             |
+
+### NotificationSemanticKey
+
+| Property      | Description                              | Type     | Default |
+| ------------- | ---------------------------------------- | -------- | ------- |
+| `list`        | Placement list element.                  | `string` | `-`     |
+| `listContent` | Placement list content element.          | `string` | `-`     |
+| `wrapper`     | Notice outer wrapper element.            | `string` | `-`     |
+| `root`        | Notice root element.                     | `string` | `-`     |
+| `title`       | Title/message content wrapper.           | `string` | `-`     |
+| `description` | Description content wrapper.             | `string` | `-`     |
+| `actions`     | Actions or legacy btn wrapper.           | `string` | `-`     |
+| `icon`        | Icon wrapper.                            | `string` | `-`     |
+| `section`     | Content section wrapper.                 | `string` | `-`     |
+| `close`       | Close button element.                    | `string` | `-`     |
+| `progress`    | Auto-close progress bar element.         | `string` | `-`     |
+| `notice`      | Deprecated-compatible alias for `root`.  | `string` | `-`     |
+| `message`     | Deprecated-compatible alias for `title`. | `string` | `-`     |
+
+### NotificationHandle
+
+| Property | Description                                             | Type         | Default |
+| -------- | ------------------------------------------------------- | ------------ | ------- |
+| `close`  | Closes the notification created by the returned handle. | `() => void` | `-`     |
+
+### NotificationInstance
+
+| Property                       | Description                                            | Type                                                              | Default |
+| ------------------------------ | ------------------------------------------------------ | ----------------------------------------------------------------- | ------- |
+| `notification.open`            | Opens a notification with a full configuration object. | `(args: NotificationArgs) => NotificationHandle`                  | `-`     |
+| `notification.success`         | Opens a success notification.                          | `(args: NotificationArgs) => NotificationHandle`                  | `-`     |
+| `notification.info`            | Opens an info notification.                            | `(args: NotificationArgs) => NotificationHandle`                  | `-`     |
+| `notification.warning`         | Opens a warning notification.                          | `(args: NotificationArgs) => NotificationHandle`                  | `-`     |
+| `notification.error`           | Opens an error notification.                           | `(args: NotificationArgs) => NotificationHandle`                  | `-`     |
+| `notification.destroy`         | Destroys one keyed notification or all notifications.  | `(key?: string) => void`                                          | `-`     |
+| `notification.config`          | Configures defaults for subsequent notifications.      | `(options: NotificationConfig) => void`                           | `-`     |
+| `notification.useNotification` | Creates a local notification instance and holder.      | `(config?: NotificationConfig) => [NotificationApi, JSX.Element]` | `-`     |
+
+### ConfigProvider
+
+`ConfigProvider` accepts notification component defaults for hook holders.
+
+| Property       | Description                      | Type                                                                                                               | Default |
+| -------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------- |
+| `notification` | Notification component defaults. | `{ closeIcon?: JSX.Element \| boolean \| null; classNames?: NotificationClassNames; styles?: NotificationStyles }` | `-`     |

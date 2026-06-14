@@ -1,0 +1,394 @@
+import { Button, Rate, Space } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+# Rate
+
+### Basic
+
+:::preview
+
+<RateDemo001 />
+
+export const RateDemo001 = (() => {
+  const Demo1 = function () {
+      return <Rate defaultValue={3}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return <Rate defaultValue={3} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Half star
+
+:::preview
+
+<RateDemo002 />
+
+export const RateDemo002 = (() => {
+  const Demo2 = function () {
+      return <Rate allowHalf defaultValue={2.5}/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return <Rate allowHalf defaultValue={2.5} />
+}
+
+export default Demo2
+```
+
+:::
+
+### Disable clear
+
+:::preview
+
+<RateDemo003 />
+
+export const RateDemo003 = (() => {
+  const Demo3 = function () {
+      return <Rate defaultValue={3} allowClear={false}/>;
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return <Rate defaultValue={3} allowClear={false} />
+}
+
+export default Demo3
+```
+
+:::
+
+### Controlled
+
+:::preview
+
+<RateDemo004 />
+
+export const RateDemo004 = (() => {
+  const Demo4 = function () {
+      const [value, setValue] = createSignal(3);
+      return (<Space direction="vertical">
+        <Rate value={value()} onChange={setValue}/>
+        <span>Current value: {value()}</span>
+      </Space>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  const [value, setValue] = createSignal(3)
+
+  return (
+    <Space direction="vertical">
+      <Rate value={value()} onChange={setValue} />
+      <span>Current value: {value()}</span>
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Custom character
+
+:::preview
+
+<RateDemo005 />
+
+export const RateDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical">
+        <Rate character="♡" defaultValue={4}/>
+        <Rate character={({ index }) => index + 1} defaultValue={3}/>
+      </Space>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space direction="vertical">
+      <Rate character="♡" defaultValue={4} />
+      <Rate character={({ index }) => index + 1} defaultValue={3} />
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Tooltips
+
+:::preview
+
+<RateDemo006 />
+
+export const RateDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Rate tooltips={[
+              'terrible',
+              'bad',
+              'normal',
+              { title: 'good', placement: 'bottom' },
+              { title: 'wonderful', color: '#1677ff' },
+          ]}/>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Rate } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Rate
+      tooltips={[
+        'terrible',
+        'bad',
+        'normal',
+        { title: 'good', placement: 'bottom' },
+        { title: 'wonderful', color: '#1677ff' },
+      ]}
+    />
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Sizes
+
+:::preview
+
+<RateDemo007 />
+
+export const RateDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space direction="vertical">
+        <Rate size="small" defaultValue={3}/>
+        <Rate defaultValue={3}/>
+        <Rate size="large" defaultValue={3}/>
+      </Space>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Space direction="vertical">
+      <Rate size="small" defaultValue={3} />
+      <Rate defaultValue={3} />
+      <Rate size="large" defaultValue={3} />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Keyboard
+
+:::preview
+
+<RateDemo008 />
+
+export const RateDemo008 = (() => {
+  const Demo8 = function () {
+      const [value, setValue] = createSignal(3);
+      return (<Space direction="vertical">
+        <Rate value={value()} onChange={setValue}/>
+        <span>Current value: {value()}</span>
+        <Rate defaultValue={3} keyboard={false}/>
+      </Space>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Rate, Space } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  const [value, setValue] = createSignal(3)
+
+  return (
+    <Space direction="vertical">
+      <Rate value={value()} onChange={setValue} />
+      <span>Current value: {value()}</span>
+      <Rate defaultValue={3} keyboard={false} />
+    </Space>
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Focus
+
+:::preview
+
+<RateDemo009 />
+
+export const RateDemo009 = (() => {
+  const Demo9 = function () {
+      const rateRef = {};
+      return (<Space>
+        <Button onClick={() => rateRef.current?.focus()}>Focus</Button>
+        <Button onClick={() => rateRef.current?.blur()}>Blur</Button>
+        <Rate ref={rateRef} defaultValue={3}/>
+      </Space>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { Rate, Space, Button } from '@ant-design-solid/core'
+import type { RateRef } from '@ant-design-solid/core'
+
+const Demo9 = function () {
+  const rateRef: { current?: RateRef } = {}
+
+  return (
+    <Space>
+      <Button onClick={() => rateRef.current?.focus()}>Focus</Button>
+      <Button onClick={() => rateRef.current?.blur()}>Blur</Button>
+      <Rate ref={rateRef} defaultValue={3} />
+    </Space>
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### Disabled
+
+:::preview
+
+<RateDemo010 />
+
+export const RateDemo010 = (() => {
+  const Demo10 = function () {
+      return <Rate disabled defaultValue={3}/>;
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { Rate } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return <Rate disabled defaultValue={3} />
+}
+
+export default Demo10
+```
+
+:::
+
+## API
+
+### Rate
+
+| Property        | Description                                                | Type                                                                | Default  |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------------------------- | -------- |
+| `value`         | Controlled rating value.                                   | `number`                                                            | `-`      |
+| `defaultValue`  | Initial rating value for uncontrolled usage.               | `number`                                                            | `0`      |
+| `count`         | Number of rating items.                                    | `number`                                                            | `5`      |
+| `allowHalf`     | Allows selecting half values.                              | `boolean`                                                           | `false`  |
+| `allowClear`    | Allows clearing the rating by clicking the selected value. | `boolean`                                                           | `true`   |
+| `disabled`      | Disables user interaction.                                 | `boolean`                                                           | `false`  |
+| `keyboard`      | Enables keyboard interaction.                              | `boolean`                                                           | `true`   |
+| `size`          | Rating item size.                                          | `'small' \| 'medium' \| 'large'`                                    | `medium` |
+| `character`     | Custom rating character or render function.                | `JSX.Element \| ((props: RateCharacterRenderProps) => JSX.Element)` | `-`      |
+| `tooltips`      | Tooltip config for each rating item.                       | `(string \| Omit<TooltipProps, 'children'>)[]`                      | `-`      |
+| `ref`           | Imperative methods and native root element.                | `RateRef \| { current?: RateRef } \| ((ref: RateRef) => void)`      | `-`      |
+| `class`         | Custom root class.                                         | `string`                                                            | `-`      |
+| `style`         | Custom root style.                                         | `JSX.CSSProperties`                                                 | `-`      |
+| `onChange`      | Called when the rating value changes.                      | `(next: number) => void`                                            | `-`      |
+| `onHoverChange` | Called when hover value changes.                           | `(next: number) => void`                                            | `-`      |
+| `onFocus`       | Called when the root receives focus.                       | `JSX.FocusEventHandlerUnion<HTMLDivElement, FocusEvent>`            | `-`      |
+| `onBlur`        | Called when the root loses focus.                          | `JSX.FocusEventHandlerUnion<HTMLDivElement, FocusEvent>`            | `-`      |
+| `onKeyDown`     | Called before internal keyboard handling.                  | `JSX.EventHandlerUnion<HTMLDivElement, KeyboardEvent>`              | `-`      |
+
+### RateRef
+
+| Method          | Description                   |
+| --------------- | ----------------------------- |
+| `focus()`       | Focuses the Rate root node.   |
+| `blur()`        | Blurs the Rate root node.     |
+| `nativeElement` | Native Rate root DOM element. |

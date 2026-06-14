@@ -1,0 +1,361 @@
+import { Card, Space, Statistic } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+# Statistic
+
+Statistic displays a formatted numerical value with optional title and adornments.
+
+### Basic
+
+:::preview
+
+<StatisticDemo001 />
+
+export const StatisticDemo001 = (() => {
+  const Demo1 = function () {
+      return <Statistic title="Active Users" value={112893}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Card, Space, Statistic } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return <Statistic title="Active Users" value={112893} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Unit, separator and precision
+
+:::preview
+
+<StatisticDemo002 />
+
+export const StatisticDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Statistic title="Account Balance" value={112893.456} precision={2} prefix="$" suffix="USD" groupSeparator=" " decimalSeparator=","/>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Card, Space, Statistic } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return (
+    <Statistic
+      title="Account Balance"
+      value={112893.456}
+      precision={2}
+      prefix="$"
+      suffix="USD"
+      groupSeparator=" "
+      decimalSeparator=","
+    />
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Formatter
+
+:::preview
+
+<StatisticDemo003 />
+
+export const StatisticDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Statistic title="Conversion" value={0.875} formatter={(value) => `${(Number(value) * 100).toFixed(1)}%`}/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Statistic } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Statistic
+      title="Conversion"
+      value={0.875}
+      formatter={(value) => `${(Number(value) * 100).toFixed(1)}%`}
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Loading
+
+:::preview
+
+<StatisticDemo004 />
+
+export const StatisticDemo004 = (() => {
+  const Demo4 = function () {
+      return <Statistic title="Revenue" value={5680} loading/>;
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Card, Space, Statistic } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return <Statistic title="Revenue" value={5680} loading />
+}
+
+export default Demo4
+```
+
+:::
+
+### In card
+
+:::preview
+
+<StatisticDemo005 />
+
+export const StatisticDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space wrap align="start">
+        <Card class="w-60">
+          <Statistic title="Feedback" value={93} suffix="%" valueStyle={{ color: '#3f8600' }}/>
+        </Card>
+        <Card class="w-60">
+          <Statistic title="Views" value={8846} prefix="👁"/>
+        </Card>
+      </Space>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Card, Space, Statistic } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space wrap align="start">
+      <Card class="w-60">
+        <Statistic title="Feedback" value={93} suffix="%" valueStyle={{ color: '#3f8600' }} />
+      </Card>
+      <Card class="w-60">
+        <Statistic title="Views" value={8846} prefix="👁" />
+      </Card>
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Semantic styles
+
+:::preview
+
+<StatisticDemo006 />
+
+export const StatisticDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Statistic title="Monthly Active Users" value={93241} prefix="↑" suffix="users" classNames={{ root: 'rounded border border-dashed border-slate-300 p-4' }} styles={({ props }) => ({
+              title: { color: '#1677ff', 'font-weight': 600 },
+              content: { color: Number(props.value) < 0 ? '#ff4d4f' : '#0958d9' },
+              value: {
+                  background: '#e6f4ff',
+                  'border-radius': '4px',
+                  padding: '0 6px',
+              },
+          })}/>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Statistic } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Statistic
+      title="Monthly Active Users"
+      value={93241}
+      prefix="↑"
+      suffix="users"
+      classNames={{ root: 'rounded border border-dashed border-slate-300 p-4' }}
+      styles={({ props }) => ({
+        title: { color: '#1677ff', 'font-weight': 600 },
+        content: { color: Number(props.value) < 0 ? '#ff4d4f' : '#0958d9' },
+        value: {
+          background: '#e6f4ff',
+          'border-radius': '4px',
+          padding: '0 6px',
+        },
+      })}
+    />
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Timer
+
+:::preview
+
+<StatisticDemo007 />
+
+export const StatisticDemo007 = (() => {
+  const Demo7 = function () {
+      const [deadline, setDeadline] = createSignal(Date.now() + 1000 * 60 * 60 * 24);
+      return (<Space wrap>
+        <Statistic.Timer title="Countdown" type="countdown" value={deadline()} format="D [days] HH:mm:ss" onFinish={() => setDeadline(Date.now() + 1000 * 60 * 60 * 24)}/>
+        <Statistic.Timer title="Running" type="countup" value={Date.now() - 1000 * 95}/>
+      </Space>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Space, Statistic } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  const [deadline, setDeadline] = createSignal(Date.now() + 1000 * 60 * 60 * 24)
+
+  return (
+    <Space wrap>
+      <Statistic.Timer
+        title="Countdown"
+        type="countdown"
+        value={deadline()}
+        format="D [days] HH:mm:ss"
+        onFinish={() => setDeadline(Date.now() + 1000 * 60 * 60 * 24)}
+      />
+      <Statistic.Timer title="Running" type="countup" value={Date.now() - 1000 * 95} />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Deprecated countdown alias
+
+:::preview
+
+<StatisticDemo008 />
+
+export const StatisticDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Statistic.Countdown title="Legacy countdown" value={Date.now() + 1000 * 60 * 5} format="mm:ss"/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Statistic } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Statistic.Countdown
+      title="Legacy countdown"
+      value={Date.now() + 1000 * 60 * 5}
+      format="mm:ss"
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+## API
+
+### Statistic
+
+| Property           | Description                                                                            | Type                                                                                                | Default    |
+| ------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| `title`            | Statistic title.                                                                       | `JSX.Element`                                                                                       | `-`        |
+| `value`            | Value content. Numeric values are formatted with separators by default.                | `string \| number \| null`                                                                          | `-`        |
+| `precision`        | Decimal precision for numeric values.                                                  | `number`                                                                                            | `-`        |
+| `prefix`           | Content rendered before the value.                                                     | `JSX.Element`                                                                                       | `-`        |
+| `suffix`           | Content rendered after the value.                                                      | `JSX.Element`                                                                                       | `-`        |
+| `formatter`        | Custom value display logic. Pass `false` to render the raw value string.               | `false \| 'number' \| 'countdown' \| ((value, config) => JSX.Element)`                              | `'number'` |
+| `decimalSeparator` | Decimal separator for formatted numeric values.                                        | `string`                                                                                            | `'.'`      |
+| `groupSeparator`   | Group separator for formatted numeric values.                                          | `string`                                                                                            | `','`      |
+| `loading`          | Shows a loading placeholder instead of the value.                                      | `boolean`                                                                                           | `false`    |
+| `classNames`       | Semantic DOM class names, or a function receiving merged props.                        | `StatisticSemanticClassNames \| ((info: { props: StatisticProps }) => StatisticSemanticClassNames)` | `-`        |
+| `styles`           | Semantic DOM inline styles, or a function receiving merged props.                      | `StatisticSemanticStyles \| ((info: { props: StatisticProps }) => StatisticSemanticStyles)`         | `-`        |
+| `valueStyle`       | Deprecated. Inline style applied to the content section. Use `styles.content` instead. | `JSX.CSSProperties \| string`                                                                       | `-`        |
+
+### Statistic.Timer
+
+| Property   | Description                                                                    | Type                       | Default    |
+| ---------- | ------------------------------------------------------------------------------ | -------------------------- | ---------- |
+| `type`     | Timer direction.                                                               | `'countdown' \| 'countup'` | `-`        |
+| `format`   | Timer format. Supports `Y`, `M`, `D`, `H`, `m`, `s`, `S` and escaped `[text]`. | `string`                   | `HH:mm:ss` |
+| `value`    | Target time for countdown, or start time for countup. Timestamp in ms.         | `string \| number \| null` | `-`        |
+| `prefix`   | Content rendered before the timer value.                                       | `JSX.Element`              | `-`        |
+| `suffix`   | Content rendered after the timer value.                                        | `JSX.Element`              | `-`        |
+| `title`    | Timer title.                                                                   | `JSX.Element`              | `-`        |
+| `onFinish` | Triggered when countdown reaches zero. Only called for `type="countdown"`.     | `() => void`               | `-`        |
+| `onChange` | Triggered when the timer value changes. Receives remaining or elapsed ms.      | `(value: number) => void`  | `-`        |
+
+### Statistic.Countdown
+
+`Statistic.Countdown` is deprecated. Use `Statistic.Timer type="countdown"` for new code.
+
+| Property   | Description                                                                        | Type                       | Default    |
+| ---------- | ---------------------------------------------------------------------------------- | -------------------------- | ---------- |
+| `format`   | Countdown format. Supports `Y`, `M`, `D`, `H`, `m`, `s`, `S` and escaped `[text]`. | `string`                   | `HH:mm:ss` |
+| `value`    | Target countdown time. Timestamp in ms.                                            | `string \| number \| null` | `-`        |
+| `prefix`   | Content rendered before the countdown value.                                       | `JSX.Element`              | `-`        |
+| `suffix`   | Content rendered after the countdown value.                                        | `JSX.Element`              | `-`        |
+| `title`    | Countdown title.                                                                   | `JSX.Element`              | `-`        |
+| `onFinish` | Triggered when countdown reaches zero.                                             | `() => void`               | `-`        |
+| `onChange` | Triggered when the countdown value changes. Receives remaining ms.                 | `(value: number) => void`  | `-`        |
+
+### Semantic DOM
+
+`Statistic` supports `root`, `header`, `title`, `content`, `value`, `prefix`, and `suffix` semantic slots.

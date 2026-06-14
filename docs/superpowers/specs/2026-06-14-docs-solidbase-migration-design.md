@@ -75,12 +75,13 @@ Demo examples should use SolidBase-style preview directives. The executable demo
 import { Button } from '@ant-design-solid/core'
 
 function Demo1() {
-  return <Button type="primary">Primary</Button>
+return <Button type="primary">Primary</Button>
 }
 
 ### Basic
 
 :::preview
+
 <Demo1 />
 
 ---
@@ -92,6 +93,7 @@ function Demo1() {
   return <Button type="primary">Primary</Button>
 }
 ```
+
 :::
 ````
 

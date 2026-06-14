@@ -1,0 +1,522 @@
+import { Col, Grid, Row } from '@ant-design-solid/core'
+
+# Grid
+
+Grid uses rows and columns to build layouts on a 24-column system.
+
+### Basic grid
+
+:::preview
+
+<GridDemo001 />
+
+export const GridDemo001 = (() => {
+  const box = 'docs-primary-soft docs-text-strong p-4';
+  const strongBox = 'docs-surface-subtle docs-text-secondary p-4';
+  const Demo1 = function () {
+      return (<>
+        <Row>
+          <Col span={24}>
+            <div class={box}>col-24</div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <div class={box}>col-12</div>
+          </Col>
+          <Col span={12}>
+            <div class={strongBox}>col-12</div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div class={box}>col-8</div>
+          </Col>
+          <Col span={8}>
+            <div class={strongBox}>col-8</div>
+          </Col>
+          <Col span={8}>
+            <div class={box}>col-8</div>
+          </Col>
+        </Row>
+      </>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Col, Row } from '@ant-design-solid/core'
+
+const box = 'docs-primary-soft docs-text-strong p-4'
+const strongBox = 'docs-surface-subtle docs-text-secondary p-4'
+
+const Demo1 = function () {
+  return (
+    <>
+      <Row>
+        <Col span={24}>
+          <div class={box}>col-24</div>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={12}>
+          <div class={box}>col-12</div>
+        </Col>
+        <Col span={12}>
+          <div class={strongBox}>col-12</div>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={8}>
+          <div class={box}>col-8</div>
+        </Col>
+        <Col span={8}>
+          <div class={strongBox}>col-8</div>
+        </Col>
+        <Col span={8}>
+          <div class={box}>col-8</div>
+        </Col>
+      </Row>
+    </>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### Gutter
+
+:::preview
+
+<GridDemo002 />
+
+export const GridDemo002 = (() => {
+  const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center';
+  const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center';
+  const Demo2 = function () {
+      return (<Row gutter={[16, 24]}>
+        <Col span={6}>
+          <div class={box}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={strongBox}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={box}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={strongBox}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={box}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={strongBox}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={box}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={strongBox}>col-6</div>
+        </Col>
+      </Row>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Col, Row } from '@ant-design-solid/core'
+
+const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center'
+const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center'
+
+const Demo2 = function () {
+  return (
+    <Row gutter={[16, 24]}>
+      <Col span={6}>
+        <div class={box}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={strongBox}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={box}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={strongBox}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={box}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={strongBox}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={box}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={strongBox}>col-6</div>
+      </Col>
+    </Row>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Offset and order
+
+:::preview
+
+<GridDemo003 />
+
+export const GridDemo003 = (() => {
+  const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center';
+  const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center';
+  const Demo3 = function () {
+      return (<>
+        <Row>
+          <Col span={8}>
+            <div class={box}>col-8</div>
+          </Col>
+          <Col span={8} offset={8}>
+            <div class={strongBox}>col-8 offset-8</div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={6} order={4}>
+            <div class={box}>1 col-order-4</div>
+          </Col>
+          <Col span={6} order={3}>
+            <div class={strongBox}>2 col-order-3</div>
+          </Col>
+          <Col span={6} order={2}>
+            <div class={box}>3 col-order-2</div>
+          </Col>
+          <Col span={6} order={1}>
+            <div class={strongBox}>4 col-order-1</div>
+          </Col>
+        </Row>
+      </>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Col, Row } from '@ant-design-solid/core'
+
+const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center'
+const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center'
+
+const Demo3 = function () {
+  return (
+    <>
+      <Row>
+        <Col span={8}>
+          <div class={box}>col-8</div>
+        </Col>
+        <Col span={8} offset={8}>
+          <div class={strongBox}>col-8 offset-8</div>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={6} order={4}>
+          <div class={box}>1 col-order-4</div>
+        </Col>
+        <Col span={6} order={3}>
+          <div class={strongBox}>2 col-order-3</div>
+        </Col>
+        <Col span={6} order={2}>
+          <div class={box}>3 col-order-2</div>
+        </Col>
+        <Col span={6} order={1}>
+          <div class={strongBox}>4 col-order-1</div>
+        </Col>
+      </Row>
+    </>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Alignment
+
+:::preview
+
+<GridDemo004 />
+
+export const GridDemo004 = (() => {
+  const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center';
+  const Demo4 = function () {
+      return (<Row justify="space-between" align="middle">
+        <Col span={6}>
+          <div class={box}>col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class="docs-surface-subtle docs-text-secondary rounded p-8 text-center">col-6</div>
+        </Col>
+        <Col span={6}>
+          <div class={box}>col-6</div>
+        </Col>
+      </Row>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Col, Row } from '@ant-design-solid/core'
+
+const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center'
+
+const Demo4 = function () {
+  return (
+    <Row justify="space-between" align="middle">
+      <Col span={6}>
+        <div class={box}>col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class="docs-surface-subtle docs-text-secondary rounded p-8 text-center">col-6</div>
+      </Col>
+      <Col span={6}>
+        <div class={box}>col-6</div>
+      </Col>
+    </Row>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Responsive
+
+:::preview
+
+<GridDemo005 />
+
+export const GridDemo005 = (() => {
+  const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center';
+  const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center';
+  const Demo5 = function () {
+      return (<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} justify={{ xs: 'center', md: 'start' }}>
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <div class={box}>Col</div>
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <div class={strongBox}>Col</div>
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <div class={box}>Col</div>
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <div class={strongBox}>Col</div>
+        </Col>
+      </Row>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Col, Row } from '@ant-design-solid/core'
+
+const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center'
+const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center'
+
+const Demo5 = function () {
+  return (
+    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} justify={{ xs: 'center', md: 'start' }}>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <div class={box}>Col</div>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <div class={strongBox}>Col</div>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <div class={box}>Col</div>
+      </Col>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <div class={strongBox}>Col</div>
+      </Col>
+    </Row>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Flex
+
+:::preview
+
+<GridDemo006 />
+
+export const GridDemo006 = (() => {
+  const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center';
+  const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center';
+  const Demo6 = function () {
+      return (<>
+        <Row>
+          <Col flex={2}>
+            <div class={box}>2 / 5</div>
+          </Col>
+          <Col flex={3}>
+            <div class={strongBox}>3 / 5</div>
+          </Col>
+        </Row>
+        <Row wrap={false}>
+          <Col flex="100px">
+            <div class={box}>100px</div>
+          </Col>
+          <Col flex="auto">
+            <div class={strongBox}>auto</div>
+          </Col>
+        </Row>
+      </>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Col, Row } from '@ant-design-solid/core'
+
+const box = 'docs-primary-soft docs-text-strong rounded p-4 text-center'
+const strongBox = 'docs-surface-subtle docs-text-secondary rounded p-4 text-center'
+
+const Demo6 = function () {
+  return (
+    <>
+      <Row>
+        <Col flex={2}>
+          <div class={box}>2 / 5</div>
+        </Col>
+        <Col flex={3}>
+          <div class={strongBox}>3 / 5</div>
+        </Col>
+      </Row>
+      <Row wrap={false}>
+        <Col flex="100px">
+          <div class={box}>100px</div>
+        </Col>
+        <Col flex="auto">
+          <div class={strongBox}>auto</div>
+        </Col>
+      </Row>
+    </>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### useBreakpoint
+
+:::preview
+
+<GridDemo007 />
+
+export const GridDemo007 = (() => {
+  const Demo7 = function () {
+      const screens = Grid.useBreakpoint();
+      return (<pre class="docs-surface-subtle docs-text-secondary rounded p-4">
+        {JSON.stringify(screens(), null, 2)}
+      </pre>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Grid } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  const screens = Grid.useBreakpoint()
+
+  return (
+    <pre class="docs-surface-subtle docs-text-secondary rounded p-4">
+      {JSON.stringify(screens(), null, 2)}
+    </pre>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+## API
+
+### Row
+
+| Property    | Description                                                                                                       | Type                                                                                                                    | Default |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------- |
+| `align`     | Vertical alignment of columns inside the row. Supports responsive values.                                         | `'top' \| 'middle' \| 'bottom' \| 'stretch' \| Record<Breakpoint, RowAlign>`                                            | `-`     |
+| `gutter`    | Horizontal gutter, or horizontal and vertical gutter pair. Supports numbers, CSS strings, and responsive objects. | `number \| string \| Record<Breakpoint, number \| string> \| [Gutter, Gutter]`                                          | `0`     |
+| `justify`   | Horizontal distribution of columns inside the row. Supports responsive values.                                    | `'start' \| 'end' \| 'center' \| 'space-around' \| 'space-between' \| 'space-evenly' \| Record<Breakpoint, RowJustify>` | `-`     |
+| `prefixCls` | Custom class prefix for the row.                                                                                  | `string`                                                                                                                | `-`     |
+| `wrap`      | Allows columns to wrap when there is not enough horizontal space.                                                 | `boolean`                                                                                                               | `true`  |
+
+### Col
+
+| Property                                          | Description                                                                               | Type                                   | Default |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------- | ------- |
+| `flex`                                            | Flex layout value. Numbers map to proportional flex, CSS lengths map to fixed flex basis. | `number \| 'none' \| 'auto' \| string` | `-`     |
+| `offset`                                          | Number of grid units to move the column to the right with margin.                         | `number \| string`                     | `-`     |
+| `order`                                           | CSS flex order for the column.                                                            | `number \| string`                     | `-`     |
+| `prefixCls`                                       | Custom class prefix for the column.                                                       | `string`                               | `-`     |
+| `pull`                                            | Moves the column left by the specified grid units.                                        | `number \| string`                     | `-`     |
+| `push`                                            | Moves the column right by the specified grid units.                                       | `number \| string`                     | `-`     |
+| `span`                                            | Column width as a number of units in the 24-column grid. `0` hides the column.            | `number \| string`                     | `-`     |
+| `xs` / `sm` / `md` / `lg` / `xl` / `xxl` / `xxxl` | Responsive column configuration.                                                          | `number \| string \| ColSize`          | `-`     |
+
+### ColSize
+
+| Property | Description            | Type                                   |
+| -------- | ---------------------- | -------------------------------------- |
+| `flex`   | Responsive flex value. | `number \| 'none' \| 'auto' \| string` |
+| `offset` | Responsive offset.     | `number \| string`                     |
+| `order`  | Responsive order.      | `number \| string`                     |
+| `pull`   | Responsive pull.       | `number \| string`                     |
+| `push`   | Responsive push.       | `number \| string`                     |
+| `span`   | Responsive span.       | `number \| string`                     |
+
+### Grid
+
+| Property          | Description                                             | Type                                                   |
+| ----------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| `useBreakpoint()` | Returns a Solid accessor for the active breakpoint map. | `() => Accessor<Partial<Record<Breakpoint, boolean>>>` |
+
+### Breakpoint
+
+`Breakpoint` is one of `xs`, `sm`, `md`, `lg`, `xl`, `xxl`, or `xxxl`.

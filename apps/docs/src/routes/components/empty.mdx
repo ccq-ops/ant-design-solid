@@ -1,0 +1,293 @@
+import { Button, ConfigProvider, Empty, Space } from '@ant-design-solid/core'
+
+# Empty
+
+### Basic
+
+:::preview
+
+<EmptyDemo001 />
+
+export const EmptyDemo001 = (() => {
+  const Demo1 = function () {
+      return <Empty />;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Empty } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return <Empty />
+}
+
+export default Demo1
+```
+
+:::
+
+### Custom image
+
+:::preview
+
+<EmptyDemo002 />
+
+export const EmptyDemo002 = (() => {
+  function CustomEmptyImage() {
+      return (<svg width="96" height="72" viewBox="0 0 96 72" role="img" aria-label="Custom empty image">
+        <rect x="16" y="18" width="64" height="40" rx="8" fill="#e6f4ff"/>
+        <path d="M28 30h40M28 42h24" stroke="#1677ff" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="72" cy="18" r="10" fill="#52c41a"/>
+      </svg>);
+  }
+  const Demo2 = function () {
+      return <Empty image={<CustomEmptyImage />} description="No projects yet"/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Empty } from '@ant-design-solid/core'
+
+function CustomEmptyImage() {
+  return (
+    <svg width="96" height="72" viewBox="0 0 96 72" role="img" aria-label="Custom empty image">
+      <rect x="16" y="18" width="64" height="40" rx="8" fill="#e6f4ff" />
+      <path d="M28 30h40M28 42h24" stroke="#1677ff" stroke-width="4" stroke-linecap="round" />
+      <circle cx="72" cy="18" r="10" fill="#52c41a" />
+    </svg>
+  )
+}
+
+const Demo2 = function () {
+  return <Empty image={<CustomEmptyImage />} description="No projects yet" />
+}
+
+export default Demo2
+```
+
+:::
+
+### Image URL
+
+:::preview
+
+<EmptyDemo003 />
+
+export const EmptyDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Empty image="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='72' viewBox='0 0 96 72'%3E%3Crect x='20' y='16' width='56' height='40' rx='8' fill='%23f0f5ff'/%3E%3Cpath d='M32 30h32M32 42h20' stroke='%232f54eb' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" styles={{ image: { height: '72px' } }} description="No files"/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Empty } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Empty
+      image="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='72' viewBox='0 0 96 72'%3E%3Crect x='20' y='16' width='56' height='40' rx='8' fill='%23f0f5ff'/%3E%3Cpath d='M32 30h32M32 42h20' stroke='%232f54eb' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"
+      styles={{ image: { height: '72px' } }}
+      description="No files"
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Simple image
+
+:::preview
+
+<EmptyDemo004 />
+
+export const EmptyDemo004 = (() => {
+  const Demo4 = function () {
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>;
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Empty } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+}
+
+export default Demo4
+```
+
+:::
+
+### With action
+
+:::preview
+
+<EmptyDemo005 />
+
+export const EmptyDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Empty description="No results found">
+        <Space>
+          <Button type="primary">Create now</Button>
+          <Button>Refresh</Button>
+        </Space>
+      </Empty>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Button, Empty, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Empty description="No results found">
+      <Space>
+        <Button type="primary">Create now</Button>
+        <Button>Refresh</Button>
+      </Space>
+    </Empty>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Customize style
+
+:::preview
+
+<EmptyDemo006 />
+
+export const EmptyDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Empty description="No messages" classNames={{ image: 'custom-empty-image' }} styles={{
+              root: { margin: '24px 0' },
+              image: { height: '80px' },
+              description: { color: '#1677ff' },
+          }}/>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Empty } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Empty
+      description="No messages"
+      classNames={{ image: 'custom-empty-image' }}
+      styles={{
+        root: { margin: '24px 0' },
+        image: { height: '80px' },
+        description: { color: '#1677ff' },
+      }}
+    />
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### ConfigProvider
+
+:::preview
+
+<EmptyDemo007 />
+
+export const EmptyDemo007 = (() => {
+  const Demo7 = function () {
+      return (<ConfigProvider empty={{ image: Empty.PRESENTED_IMAGE_SIMPLE }}>
+        <Empty />
+      </ConfigProvider>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { ConfigProvider, Empty } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <ConfigProvider empty={{ image: Empty.PRESENTED_IMAGE_SIMPLE }}>
+      <Empty />
+    </ConfigProvider>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+## API
+
+| Property        | Description                                            | Type                                                                                                             | Default                         |
+| --------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `class`         | Extra class name for the root element.                 | `string`                                                                                                         | `-`                             |
+| `rootClassName` | Extra root class name.                                 | `string`                                                                                                         | `-`                             |
+| `prefixCls`     | Custom component class prefix.                         | `string`                                                                                                         | `ads-empty`                     |
+| `image`         | Custom empty image content or image URL.               | `JSX.Element`                                                                                                    | `Empty.PRESENTED_IMAGE_DEFAULT` |
+| `description`   | Description text or content displayed below the image. | `JSX.Element`                                                                                                    | `'No Data'`                     |
+| `children`      | Footer content, usually actions.                       | `JSX.Element`                                                                                                    | `-`                             |
+| `classNames`    | Semantic class names.                                  | `Partial<Record<SemanticDOM, string>> \| ((info) => Partial<Record<SemanticDOM, string>>)`                       | `-`                             |
+| `styles`        | Semantic styles.                                       | `Partial<Record<SemanticDOM, JSX.CSSProperties>> \| ((info) => Partial<Record<SemanticDOM, JSX.CSSProperties>>)` | `-`                             |
+
+### Static image
+
+| Property                        | Description          |
+| ------------------------------- | -------------------- |
+| `Empty.PRESENTED_IMAGE_DEFAULT` | Default empty image. |
+| `Empty.PRESENTED_IMAGE_SIMPLE`  | Simple empty image.  |
+
+### Semantic DOM
+
+| Key           | Description          |
+| ------------- | -------------------- |
+| `root`        | Root container.      |
+| `image`       | Image wrapper.       |
+| `description` | Description content. |
+| `footer`      | Footer content.      |
+
+### ConfigProvider
+
+| Property           | Description                           | Type                |
+| ------------------ | ------------------------------------- | ------------------- |
+| `empty.class`      | Extra class name for all Empty roots. | `string`            |
+| `empty.style`      | Root style for all Empty components.  | `JSX.CSSProperties` |
+| `empty.image`      | Default image for Empty.              | `JSX.Element`       |
+| `empty.classNames` | Semantic class names for Empty.       | Same as `Empty`     |
+| `empty.styles`     | Semantic styles for Empty.            | Same as `Empty`     |

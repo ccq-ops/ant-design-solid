@@ -140,4 +140,23 @@ describe('Space', () => {
     expect(items).toHaveLength(2)
     expect(items.map((item) => item.textContent)).toEqual(['Click', 'Focus'])
   })
+
+  it('renders when the runtime has no browser Text global', () => {
+    const originalText = globalThis.Text
+
+    try {
+      delete (globalThis as { Text?: typeof Text }).Text
+
+      const result = render(() => (
+        <Space>
+          <span>A</span>
+          <span>B</span>
+        </Space>
+      ))
+
+      expect(result.container.querySelectorAll('.ads-space-item')).toHaveLength(2)
+    } finally {
+      globalThis.Text = originalText
+    }
+  })
 })

@@ -1,0 +1,1756 @@
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+
+# Table
+
+### Basic
+
+:::preview
+
+<TableDemo001 />
+
+export const TableDemo001 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo1 = function () {
+      return <Table columns={columns} dataSource={data}/>;
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+  { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (value) =>
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
+  },
+]
+
+const Demo1 = function () {
+  return <Table columns={columns} dataSource={data} />
+}
+
+export default Demo1
+```
+
+:::
+
+### Bordered small
+
+:::preview
+
+<TableDemo002 />
+
+export const TableDemo002 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo2 = function () {
+      return <Table bordered size="small" columns={columns} dataSource={data}/>;
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+  { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (value) =>
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
+  },
+]
+
+const Demo2 = function () {
+  return <Table bordered size="small" columns={columns} dataSource={data} />
+}
+
+export default Demo2
+```
+
+:::
+
+### Empty and loading
+
+:::preview
+
+<TableDemo003 />
+
+export const TableDemo003 = (() => {
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo3 = function () {
+      return (<Table loading={{ spinning: true, tip: 'Loading users...' }} columns={columns} dataSource={[]} locale={{ emptyText: 'No users' }}/>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    render: (value) =>
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
+  },
+]
+
+const Demo3 = function () {
+  return (
+    <Table
+      loading={{ spinning: true, tip: 'Loading users...' }}
+      columns={columns}
+      dataSource={[]}
+      locale={{ emptyText: 'No users' }}
+    />
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Pagination
+
+:::preview
+
+<TableDemo004 />
+
+export const TableDemo004 = (() => {
+  const data = Array.from({ length: 12 }, (_, index) => ({
+      key: String(index + 1),
+      name: `User ${index + 1}`,
+      age: 24 + index,
+      role: index % 2 === 0 ? 'Engineer' : 'Designer',
+  }));
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+      { title: 'Role', dataIndex: 'role' },
+  ];
+  const Demo4 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={{
+              defaultPageSize: 5,
+              showSizeChanger: true,
+              pageSizeOptions: [5, 10, 20],
+          }} onChange={(pagination, filters, sorter, extra) => {
+              console.log(pagination, filters, sorter, extra.action);
+          }}/>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = Array.from({ length: 12 }, (_, index) => ({
+  key: String(index + 1),
+  name: `User ${index + 1}`,
+  age: 24 + index,
+  role: index % 2 === 0 ? 'Engineer' : 'Designer',
+}))
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+  { title: 'Role', dataIndex: 'role' },
+]
+
+const Demo4 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={{
+        defaultPageSize: 5,
+        showSizeChanger: true,
+        pageSizeOptions: [5, 10, 20],
+      }}
+      onChange={(pagination, filters, sorter, extra) => {
+        console.log(pagination, filters, sorter, extra.action)
+      }}
+    />
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Sort and filter
+
+:::preview
+
+<TableDemo005 />
+
+export const TableDemo005 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+      { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+  ];
+  const columns = [
+      {
+          title: 'Name',
+          dataIndex: 'name',
+          sorter: (a, b) => a.name.localeCompare(b.name),
+      },
+      {
+          title: 'Age',
+          dataIndex: 'age',
+          align: 'right',
+          sorter: (a, b) => a.age - b.age,
+          defaultSortOrder: 'ascend',
+      },
+      {
+          title: 'Status',
+          dataIndex: 'status',
+          filters: [
+              { text: 'Active', value: 'active' },
+              { text: 'Idle', value: 'idle' },
+          ],
+          onFilter: (value, record) => record.status === value,
+          render: (value) => value === 'active' ? (<Tag color="success">Active</Tag>) : (<Badge status="default" text="Idle"/>),
+      },
+  ];
+  const Demo5 = function () {
+      return <Table columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Badge, Table, Tag } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+  { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    sorter: (a, b) => a.name.localeCompare(b.name),
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    align: 'right',
+    sorter: (a, b) => a.age - b.age,
+    defaultSortOrder: 'ascend',
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    filters: [
+      { text: 'Active', value: 'active' },
+      { text: 'Idle', value: 'idle' },
+    ],
+    onFilter: (value, record) => record.status === value,
+    render: (value) =>
+      value === 'active' ? (
+        <Tag color="success">Active</Tag>
+      ) : (
+        <Badge status="default" text="Idle" />
+      ),
+  },
+]
+
+const Demo5 = function () {
+  return <Table columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo5
+```
+
+:::
+
+### Nested data
+
+:::preview
+
+<TableDemo006 />
+
+export const TableDemo006 = (() => {
+  const data = [
+      {
+          key: '1',
+          name: 'Ada Lovelace',
+          profile: { email: 'ada@example.com', location: 'London' },
+      },
+      {
+          key: '2',
+          name: 'Grace Hopper',
+          profile: { email: 'grace@example.com', location: 'Arlington' },
+      },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Email', dataIndex: ['profile', 'email'] },
+      { title: 'Location', dataIndex: ['profile', 'location'] },
+  ];
+  const Demo6 = function () {
+      return <Table columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  {
+    key: '1',
+    name: 'Ada Lovelace',
+    profile: { email: 'ada@example.com', location: 'London' },
+  },
+  {
+    key: '2',
+    name: 'Grace Hopper',
+    profile: { email: 'grace@example.com', location: 'Arlington' },
+  },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Email', dataIndex: ['profile', 'email'] },
+  { title: 'Location', dataIndex: ['profile', 'location'] },
+]
+
+const Demo6 = function () {
+  return <Table columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo6
+```
+
+:::
+
+### Row and cell props
+
+:::preview
+
+<TableDemo007 />
+
+export const TableDemo007 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, priority: 'high' },
+      { key: '2', name: 'Grace Hopper', age: 36, priority: 'normal' },
+  ];
+  const columns = [
+      {
+          title: 'Name',
+          dataIndex: 'name',
+          className: 'name-column',
+          onHeaderCell: () => ({ title: 'User name' }),
+          onCell: (record) => ({ title: `${record.name} profile` }),
+      },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo7 = function () {
+      return (<Table columns={columns} dataSource={data} rowClassName={(record) => (record.priority === 'high' ? 'priority-row' : '')} onRow={(record) => ({
+              onClick: () => console.log('row clicked', record.key),
+          })} pagination={false}/>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, priority: 'high' },
+  { key: '2', name: 'Grace Hopper', age: 36, priority: 'normal' },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    className: 'name-column',
+    onHeaderCell: () => ({ title: 'User name' }),
+    onCell: (record) => ({ title: `${record.name} profile` }),
+  },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo7 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      rowClassName={(record) => (record.priority === 'high' ? 'priority-row' : '')}
+      onRow={(record) => ({
+        onClick: () => console.log('row clicked', record.key),
+      })}
+      pagination={false}
+    />
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Row selection
+
+:::preview
+
+<TableDemo008 />
+
+export const TableDemo008 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo8 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              getCheckboxProps: (record) => ({ disabled: record.key === '2' }),
+              onChange: (keys, rows) => console.log(keys, rows),
+          }}/>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+  { key: '3', name: 'Linus Torvalds', age: 28 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo8 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        getCheckboxProps: (record) => ({ disabled: record.key === '2' }),
+        onChange: (keys, rows) => console.log(keys, rows),
+      }}
+    />
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### Controlled row selection
+
+:::preview
+
+<TableDemo009 />
+
+export const TableDemo009 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo9 = function () {
+      const [selectedRowKeys, setSelectedRowKeys] = createSignal(['1']);
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              selectedRowKeys: selectedRowKeys(),
+              onChange: (keys) => setSelectedRowKeys(keys),
+          }}/>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+  { key: '3', name: 'Linus Torvalds', age: 28 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo9 = function () {
+  const [selectedRowKeys, setSelectedRowKeys] = createSignal<(string | number)[]>(['1'])
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        selectedRowKeys: selectedRowKeys(),
+        onChange: (keys) => setSelectedRowKeys(keys),
+      }}
+    />
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### Selection actions and custom cells
+
+:::preview
+
+<TableDemo010 />
+
+export const TableDemo010 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo10 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              preserveSelectedRowKeys: true,
+              selections: [
+                  'all',
+                  'invert',
+                  'none',
+                  {
+                      key: 'log',
+                      text: 'Log changeable keys',
+                      onSelect: (changeableRowKeys) => console.log(changeableRowKeys),
+                  },
+              ],
+              renderCell: (checked, record, _index, originNode) => (<span data-selected={checked ? 'yes' : 'no'}>
+              {originNode} {record.name}
+            </span>),
+              onSelectAll: (selected, selectedRows) => console.log(selected, selectedRows),
+              onSelectInvert: (keys) => console.log(keys),
+              onSelectNone: () => console.log('none'),
+          }}/>);
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+  { key: '3', name: 'Linus Torvalds', age: 28 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo10 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        preserveSelectedRowKeys: true,
+        selections: [
+          'all',
+          'invert',
+          'none',
+          {
+            key: 'log',
+            text: 'Log changeable keys',
+            onSelect: (changeableRowKeys) => console.log(changeableRowKeys),
+          },
+        ],
+        renderCell: (checked, record, _index, originNode) => (
+          <span data-selected={checked ? 'yes' : 'no'}>
+            {originNode} {record.name}
+          </span>
+        ),
+        onSelectAll: (selected, selectedRows) => console.log(selected, selectedRows),
+        onSelectInvert: (keys) => console.log(keys),
+        onSelectNone: () => console.log('none'),
+      }}
+    />
+  )
+}
+
+export default Demo10
+```
+
+:::
+
+### Selection column customization
+
+:::preview
+
+<TableDemo011 />
+
+export const TableDemo011 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, locked: false },
+      { key: '2', name: 'Grace Hopper', age: 36, locked: true },
+      { key: '3', name: 'Linus Torvalds', age: 28, locked: false },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo11 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} rowSelection={{
+              columnTitle: 'Pick',
+              columnWidth: 72,
+              hideSelectAll: true,
+              getTitleCheckboxProps: () => ({ 'aria-label': 'Select available rows' }),
+              getCheckboxProps: (record) => ({
+                  disabled: record.locked,
+                  title: record.locked ? 'Locked row' : 'Selectable row',
+              }),
+          }}/>);
+  };
+
+return Demo11
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, locked: false },
+  { key: '2', name: 'Grace Hopper', age: 36, locked: true },
+  { key: '3', name: 'Linus Torvalds', age: 28, locked: false },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo11 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      rowSelection={{
+        columnTitle: 'Pick',
+        columnWidth: 72,
+        hideSelectAll: true,
+        getTitleCheckboxProps: () => ({ 'aria-label': 'Select available rows' }),
+        getCheckboxProps: (record) => ({
+          disabled: record.locked,
+          title: record.locked ? 'Locked row' : 'Selectable row',
+        }),
+      }}
+    />
+  )
+}
+
+export default Demo11
+```
+
+:::
+
+### Expandable rows
+
+:::preview
+
+<TableDemo012 />
+
+export const TableDemo012 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, bio: 'Wrote the first algorithm.' },
+      { key: '2', name: 'Grace Hopper', age: 36, bio: 'Popularized machine-independent languages.' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo12 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} expandable={{
+              defaultExpandedRowKeys: ['1'],
+              expandedRowRender: (record) => <span>{record.bio}</span>,
+          }}/>);
+  };
+
+return Demo12
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, bio: 'Wrote the first algorithm.' },
+  { key: '2', name: 'Grace Hopper', age: 36, bio: 'Popularized machine-independent languages.' },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo12 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      expandable={{
+        defaultExpandedRowKeys: ['1'],
+        expandedRowRender: (record) => <span>{record.bio}</span>,
+      }}
+    />
+  )
+}
+
+export default Demo12
+```
+
+:::
+
+### Controlled expandable rows
+
+:::preview
+
+<TableDemo013 />
+
+export const TableDemo013 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', bio: 'Wrote the first algorithm.' },
+      { key: '2', name: 'Grace Hopper', bio: 'Popularized machine-independent languages.' },
+  ];
+  const columns = [{ title: 'Name', dataIndex: 'name' }];
+  const Demo13 = function () {
+      const [expandedRowKeys, setExpandedRowKeys] = createSignal(['1']);
+      return (<Table columns={columns} dataSource={data} pagination={false} expandable={{
+              expandedRowKeys: expandedRowKeys(),
+              expandedRowRender: (record) => <span>{record.bio}</span>,
+              onExpandedRowsChange: setExpandedRowKeys,
+          }}/>);
+  };
+
+return Demo13
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', bio: 'Wrote the first algorithm.' },
+  { key: '2', name: 'Grace Hopper', bio: 'Popularized machine-independent languages.' },
+]
+
+const columns = [{ title: 'Name', dataIndex: 'name' }]
+
+const Demo13 = function () {
+  const [expandedRowKeys, setExpandedRowKeys] = createSignal<(string | number)[]>(['1'])
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      expandable={{
+        expandedRowKeys: expandedRowKeys(),
+        expandedRowRender: (record) => <span>{record.bio}</span>,
+        onExpandedRowsChange: setExpandedRowKeys,
+      }}
+    />
+  )
+}
+
+export default Demo13
+```
+
+:::
+
+### Expand row controls
+
+:::preview
+
+<TableDemo014 />
+
+export const TableDemo014 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, detail: 'Wrote the first algorithm.' },
+      { key: '2', name: 'Grace Hopper', age: 36, detail: 'Popularized compiler tooling.' },
+      { key: '3', name: 'Linus Torvalds', age: 28, detail: '' },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo14 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} expandable={{
+              columnTitle: 'More',
+              columnWidth: 64,
+              defaultExpandAllRows: true,
+              expandRowByClick: true,
+              rowExpandable: (record) => Boolean(record.detail),
+              expandedRowClassName: (record) => `expanded-${record.key}`,
+              expandedRowRender: (record, _index, _indent, expanded) => (<span>
+              {expanded ? 'Open' : 'Closed'}: {record.detail}
+            </span>),
+          }}/>);
+  };
+
+return Demo14
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, detail: 'Wrote the first algorithm.' },
+  { key: '2', name: 'Grace Hopper', age: 36, detail: 'Popularized compiler tooling.' },
+  { key: '3', name: 'Linus Torvalds', age: 28, detail: '' },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo14 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      expandable={{
+        columnTitle: 'More',
+        columnWidth: 64,
+        defaultExpandAllRows: true,
+        expandRowByClick: true,
+        rowExpandable: (record) => Boolean(record.detail),
+        expandedRowClassName: (record) => `expanded-${record.key}`,
+        expandedRowRender: (record, _index, _indent, expanded) => (
+          <span>
+            {expanded ? 'Open' : 'Closed'}: {record.detail}
+          </span>
+        ),
+      }}
+    />
+  )
+}
+
+export default Demo14
+```
+
+:::
+
+### Summary
+
+:::preview
+
+<TableDemo015 />
+
+export const TableDemo015 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo15 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} summary={(currentData) => (<tr>
+            <td>Total age</td>
+            <td>{currentData.reduce((sum, record) => sum + record.age, 0)}</td>
+          </tr>)}/>);
+  };
+
+return Demo15
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo15 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      summary={(currentData) => (
+        <tr>
+          <td>Total age</td>
+          <td>{currentData.reduce((sum, record) => sum + record.age, 0)}</td>
+        </tr>
+      )}
+    />
+  )
+}
+
+export default Demo15
+```
+
+:::
+
+### Scroll
+
+:::preview
+
+<TableDemo016 />
+
+export const TableDemo016 = (() => {
+  const data = Array.from({ length: 12 }, (_, index) => ({
+      key: String(index + 1),
+      name: `User ${index + 1}`,
+      age: 20 + index,
+      address: `Long address line ${index + 1}`,
+  }));
+  const columns = [
+      { title: 'Name', dataIndex: 'name', width: 180 },
+      { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+      { title: 'Address', dataIndex: 'address', width: 520 },
+  ];
+  const Demo16 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 260 }}/>);
+  };
+
+return Demo16
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = Array.from({ length: 12 }, (_, index) => ({
+  key: String(index + 1),
+  name: `User ${index + 1}`,
+  age: 20 + index,
+  address: `Long address line ${index + 1}`,
+}))
+
+const columns = [
+  { title: 'Name', dataIndex: 'name', width: 180 },
+  { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+  { title: 'Address', dataIndex: 'address', width: 520 },
+]
+
+const Demo16 = function () {
+  return (
+    <Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 260 }} />
+  )
+}
+
+export default Demo16
+```
+
+:::
+
+### Title and footer
+
+:::preview
+
+<TableDemo017 />
+
+export const TableDemo017 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32 },
+      { key: '2', name: 'Grace Hopper', age: 36 },
+      { key: '3', name: 'Linus Torvalds', age: 28 },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name' },
+      { title: 'Age', dataIndex: 'age', align: 'right' },
+  ];
+  const Demo17 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={{ defaultPageSize: 2 }} title={(currentData) => `${currentData.length} users on this page`} footer={(currentData) => `Average age ${Math.round(currentData.reduce((sum, record) => sum + record.age, 0) / currentData.length)}`}/>);
+  };
+
+return Demo17
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32 },
+  { key: '2', name: 'Grace Hopper', age: 36 },
+  { key: '3', name: 'Linus Torvalds', age: 28 },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name' },
+  { title: 'Age', dataIndex: 'age', align: 'right' },
+]
+
+const Demo17 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={{ defaultPageSize: 2 }}
+      title={(currentData) => `${currentData.length} users on this page`}
+      footer={(currentData) =>
+        `Average age ${Math.round(currentData.reduce((sum, record) => sum + record.age, 0) / currentData.length)}`
+      }
+    />
+  )
+}
+
+export default Demo17
+```
+
+:::
+
+### Column display controls
+
+:::preview
+
+<TableDemo018 />
+
+export const TableDemo018 = (() => {
+  const data = [
+      {
+          key: '1',
+          name: 'Ada Lovelace',
+          title: 'Mathematician and writer on early computing machines',
+          status: 'active',
+      },
+      {
+          key: '2',
+          name: 'Grace Hopper',
+          title: 'Computer scientist and United States Navy rear admiral',
+          status: 'idle',
+      },
+  ];
+  const columns = [
+      { title: 'Name', dataIndex: 'name', rowScope: 'row' },
+      { title: 'Title', dataIndex: 'title', ellipsis: true },
+      { title: 'Internal status', dataIndex: 'status', hidden: true },
+      { title: 'XS only', dataIndex: 'status', responsive: ['xs'] },
+  ];
+  const Demo18 = function () {
+      return <Table columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+return Demo18
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  {
+    key: '1',
+    name: 'Ada Lovelace',
+    title: 'Mathematician and writer on early computing machines',
+    status: 'active',
+  },
+  {
+    key: '2',
+    name: 'Grace Hopper',
+    title: 'Computer scientist and United States Navy rear admiral',
+    status: 'idle',
+  },
+]
+
+const columns = [
+  { title: 'Name', dataIndex: 'name', rowScope: 'row' },
+  { title: 'Title', dataIndex: 'title', ellipsis: true },
+  { title: 'Internal status', dataIndex: 'status', hidden: true },
+  { title: 'XS only', dataIndex: 'status', responsive: ['xs'] },
+]
+
+const Demo18 = function () {
+  return <Table columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo18
+```
+
+:::
+
+### Merged cells
+
+:::preview
+
+<TableDemo019 />
+
+export const TableDemo019 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', team: 'Research', role: 'Lead' },
+      { key: '2', name: 'Grace Hopper', team: 'Research', role: 'Engineer' },
+      { key: '3', name: 'Linus Torvalds', team: 'Platform', role: 'Maintainer' },
+  ];
+  const columns = [
+      {
+          title: 'Team',
+          dataIndex: 'team',
+          render: (value, _record, index) => index === 0
+              ? { children: String(value), props: { rowSpan: 2 } }
+              : index === 1
+                  ? { children: String(value), props: { rowSpan: 0 } }
+                  : String(value),
+      },
+      {
+          title: 'Name',
+          dataIndex: 'name',
+          render: (value, _record, index) => index === 2 ? { children: String(value), props: { colSpan: 2 } } : String(value),
+      },
+      {
+          title: 'Role',
+          dataIndex: 'role',
+          render: (value, _record, index) => index === 2 ? { children: String(value), props: { colSpan: 0 } } : String(value),
+      },
+  ];
+  const Demo19 = function () {
+      return <Table bordered columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+return Demo19
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', team: 'Research', role: 'Lead' },
+  { key: '2', name: 'Grace Hopper', team: 'Research', role: 'Engineer' },
+  { key: '3', name: 'Linus Torvalds', team: 'Platform', role: 'Maintainer' },
+]
+
+const columns = [
+  {
+    title: 'Team',
+    dataIndex: 'team',
+    render: (value, _record, index) =>
+      index === 0
+        ? { children: String(value), props: { rowSpan: 2 } }
+        : index === 1
+          ? { children: String(value), props: { rowSpan: 0 } }
+          : String(value),
+  },
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    render: (value, _record, index) =>
+      index === 2 ? { children: String(value), props: { colSpan: 2 } } : String(value),
+  },
+  {
+    title: 'Role',
+    dataIndex: 'role',
+    render: (value, _record, index) =>
+      index === 2 ? { children: String(value), props: { colSpan: 0 } } : String(value),
+  },
+]
+
+const Demo19 = function () {
+  return <Table bordered columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo19
+```
+
+:::
+
+### Grouped columns
+
+:::preview
+
+<TableDemo020 />
+
+export const TableDemo020 = (() => {
+  const data = [
+      { key: '1', firstName: 'Ada', lastName: 'Lovelace', age: 32, status: 'active' },
+      { key: '2', firstName: 'Grace', lastName: 'Hopper', age: 36, status: 'idle' },
+      { key: '3', firstName: 'Linus', lastName: 'Torvalds', age: 28, status: 'active' },
+  ];
+  const columns = [
+      {
+          title: 'Name',
+          children: [
+              { title: 'First name', dataIndex: 'firstName' },
+              { title: 'Last name', dataIndex: 'lastName' },
+          ],
+      },
+      {
+          title: 'Details',
+          children: [
+              { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+              { title: 'Status', dataIndex: 'status' },
+          ],
+      },
+  ];
+  const Demo20 = function () {
+      return <Table bordered columns={columns} dataSource={data} pagination={false}/>;
+  };
+
+return Demo20
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', firstName: 'Ada', lastName: 'Lovelace', age: 32, status: 'active' },
+  { key: '2', firstName: 'Grace', lastName: 'Hopper', age: 36, status: 'idle' },
+  { key: '3', firstName: 'Linus', lastName: 'Torvalds', age: 28, status: 'active' },
+]
+
+const columns = [
+  {
+    title: 'Name',
+    children: [
+      { title: 'First name', dataIndex: 'firstName' },
+      { title: 'Last name', dataIndex: 'lastName' },
+    ],
+  },
+  {
+    title: 'Details',
+    children: [
+      { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+      { title: 'Status', dataIndex: 'status' },
+    ],
+  },
+]
+
+const Demo20 = function () {
+  return <Table bordered columns={columns} dataSource={data} pagination={false} />
+}
+
+export default Demo20
+```
+
+:::
+
+### Controlled sort and filter
+
+:::preview
+
+<TableDemo021 />
+
+export const TableDemo021 = (() => {
+  const data = [
+      { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+      { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+      { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+  ];
+  const Demo21 = function () {
+      const [sortOrder, setSortOrder] = createSignal('ascend');
+      const [filteredStatus, setFilteredStatus] = createSignal([
+          'active',
+      ]);
+      const columns = [
+          { title: 'Name', dataIndex: 'name' },
+          {
+              title: 'Age',
+              dataIndex: 'age',
+              sorter: (a, b) => a.age - b.age,
+              sortOrder: sortOrder(),
+          },
+          {
+              title: 'Status',
+              dataIndex: 'status',
+              filters: [
+                  { text: 'Active', value: 'active' },
+                  { text: 'Idle', value: 'idle' },
+              ],
+              filteredValue: filteredStatus(),
+              onFilter: (value, record) => record.status === value,
+          },
+      ];
+      return (<Table columns={columns} dataSource={data} pagination={false} onChange={(_pagination, filters, sorter) => {
+              setSortOrder(sorter.order);
+              setFilteredStatus(filters.status ?? []);
+          }}/>);
+  };
+
+return Demo21
+})()
+
+---
+
+```tsx
+import { createSignal } from 'solid-js'
+import { Table } from '@ant-design-solid/core'
+
+const data = [
+  { key: '1', name: 'Ada Lovelace', age: 32, status: 'active' },
+  { key: '2', name: 'Grace Hopper', age: 36, status: 'idle' },
+  { key: '3', name: 'Linus Torvalds', age: 28, status: 'active' },
+]
+
+const Demo21 = function () {
+  const [sortOrder, setSortOrder] = createSignal<'ascend' | 'descend' | null>('ascend')
+  const [filteredStatus, setFilteredStatus] = createSignal<(string | number | boolean)[]>([
+    'active',
+  ])
+
+  const columns = [
+    { title: 'Name', dataIndex: 'name' },
+    {
+      title: 'Age',
+      dataIndex: 'age',
+      sorter: (a, b) => a.age - b.age,
+      sortOrder: sortOrder(),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      filters: [
+        { text: 'Active', value: 'active' },
+        { text: 'Idle', value: 'idle' },
+      ],
+      filteredValue: filteredStatus(),
+      onFilter: (value, record) => record.status === value,
+    },
+  ]
+
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      onChange={(_pagination, filters, sorter) => {
+        setSortOrder(sorter.order)
+        setFilteredStatus(filters.status ?? [])
+      }}
+    />
+  )
+}
+
+export default Demo21
+```
+
+:::
+
+### Virtual list
+
+:::preview
+
+<TableDemo022 />
+
+export const TableDemo022 = (() => {
+  const data = Array.from({ length: 1000 }, (_, index) => ({
+      key: String(index + 1),
+      name: `User ${index + 1}`,
+      age: 20 + (index % 40),
+      address: `Building ${index + 1}, Product Avenue`,
+  }));
+  const columns = [
+      { title: 'Name', dataIndex: 'name', width: 180 },
+      { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+      { title: 'Address', dataIndex: 'address', width: 520 },
+  ];
+  const Demo22 = function () {
+      return (<Table columns={columns} dataSource={data} pagination={false} scroll={{ x: 820, y: 320 }} virtual/>);
+  };
+
+return Demo22
+})()
+
+---
+
+```tsx
+import { Table } from '@ant-design-solid/core'
+
+const data = Array.from({ length: 1000 }, (_, index) => ({
+  key: String(index + 1),
+  name: `User ${index + 1}`,
+  age: 20 + (index % 40),
+  address: `Building ${index + 1}, Product Avenue`,
+}))
+
+const columns = [
+  { title: 'Name', dataIndex: 'name', width: 180 },
+  { title: 'Age', dataIndex: 'age', width: 120, align: 'right' },
+  { title: 'Address', dataIndex: 'address', width: 520 },
+]
+
+const Demo22 = function () {
+  return (
+    <Table
+      columns={columns}
+      dataSource={data}
+      pagination={false}
+      scroll={{ x: 820, y: 320 }}
+      virtual
+    />
+  )
+}
+
+export default Demo22
+```
+
+:::
+
+## API
+
+### Table
+
+| Property       | Description                                                                                     | Type                                                                                                                   | Default                 |
+| -------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `columns`      | Table column definitions.                                                                       | `TableColumn<T>[]`                                                                                                     | `-`                     |
+| `dataSource`   | Data records rendered as rows.                                                                  | `T[]`                                                                                                                  | `-`                     |
+| `rowKey`       | Record field or function used as row key.                                                       | `keyof T \| string \| ((record: T, index: number) => string \| number)`                                                | `record.key \|\| index` |
+| `loading`      | Shows the loading indicator.                                                                    | `boolean \| TableLoadingConfig`                                                                                        | `false`                 |
+| `emptyText`    | Empty state content.                                                                            | `JSX.Element`                                                                                                          | `'No data'`             |
+| `locale`       | Locale text. Currently supports empty text.                                                     | `TableLocale`                                                                                                          | `-`                     |
+| `pagination`   | Pagination config, or `false` to disable paging.                                                | `false \| TablePaginationConfig`                                                                                       | `{}`                    |
+| `rowSelection` | Row selection config.                                                                           | `TableRowSelection<T>`                                                                                                 | `-`                     |
+| `expandable`   | Expandable row config.                                                                          | `TableExpandableConfig<T>`                                                                                             | `-`                     |
+| `summary`      | Summary row renderer for current page data.                                                     | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
+| `scroll`       | Basic horizontal and vertical scroll config.                                                    | `TableScrollConfig`                                                                                                    | `-`                     |
+| `virtual`      | Enables virtual row rendering with fixed header when numeric `scroll.x` and `scroll.y` are set. | `boolean`                                                                                                              | `false`                 |
+| `title`        | Table title renderer for current page data.                                                     | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
+| `footer`       | Table footer renderer for current page data.                                                    | `(currentData: T[]) => JSX.Element`                                                                                    | `-`                     |
+| `tableLayout`  | Native table layout mode.                                                                       | `'auto' \| 'fixed'`                                                                                                    | `fixed` with ellipsis   |
+| `size`         | Table size.                                                                                     | `'small' \| 'middle' \| 'large'`                                                                                       | `'middle'`              |
+| `bordered`     | Whether to render bordered table styling.                                                       | `boolean`                                                                                                              | `false`                 |
+| `showHeader`   | Whether to render the header row.                                                               | `boolean`                                                                                                              | `true`                  |
+| `className`    | Additional class name for the root wrapper.                                                     | `string`                                                                                                               | `-`                     |
+| `rowClassName` | Row class name.                                                                                 | `string \| ((record: T, index: number) => string)`                                                                     | `-`                     |
+| `onRow`        | Returns extra props for each table row.                                                         | `(record: T, index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                                | `-`                     |
+| `onHeaderRow`  | Returns extra props for the header row.                                                         | `(columns: TableColumn<T>[], index: number) => JSX.HTMLAttributes<HTMLTableRowElement>`                                | `-`                     |
+| `onChange`     | Called after pagination, sorting, or filtering.                                                 | `(pagination: TableChangePagination, filters, sorter: TableSorterResult<T>, extra: TableCurrentDataSource<T>) => void` | `-`                     |
+
+### Basic table types
+
+| Type                          | Description                          | Definition                                              |
+| ----------------------------- | ------------------------------------ | ------------------------------------------------------- |
+| `TableKey`                    | Row, column, and selection key type. | `string \| number`                                      |
+| `TableDataIndex<T>`           | Column data path type.               | `keyof T \| string \| readonly (string \| number)[]`    |
+| `TableSortOrder`              | Sort order type.                     | `'ascend' \| 'descend' \| null`                         |
+| `TableFilterValue`            | Selected filter values.              | `(string \| number \| boolean)[]`                       |
+| `TableChangeAction`           | Table change trigger type.           | `'paginate' \| 'sort' \| 'filter'`                      |
+| `TableBreakpoint`             | Responsive breakpoint names.         | `'xxl' \| 'xl' \| 'lg' \| 'md' \| 'sm' \| 'xs'`         |
+| `TableLayout`                 | Native table layout mode.            | `'auto' \| 'fixed'`                                     |
+| `TableRowSelectionType`       | Row selection control type.          | `'checkbox' \| 'radio'`                                 |
+| `TableRowSelectionChangeType` | Row selection change trigger type.   | `'all' \| 'none' \| 'invert' \| 'single' \| 'multiple'` |
+| `TableRowSelectionPreset`     | Built-in selection action names.     | `'all' \| 'invert' \| 'none'`                           |
+
+### TableLoadingConfig
+
+| Property   | Description                   | Type          | Default |
+| ---------- | ----------------------------- | ------------- | ------- |
+| `spinning` | Whether the table is loading. | `boolean`     | `false` |
+| `tip`      | Loading indicator content.    | `JSX.Element` | `-`     |
+
+### TableLocale
+
+| Property    | Description          | Type                                 | Default |
+| ----------- | -------------------- | ------------------------------------ | ------- |
+| `emptyText` | Empty state content. | `JSX.Element \| (() => JSX.Element)` | `-`     |
+
+### TableScrollConfig
+
+| Property                   | Description                                               | Type                       | Default |
+| -------------------------- | --------------------------------------------------------- | -------------------------- | ------- |
+| `x`                        | Enables horizontal scroll and sets table min-width.       | `string \| number \| true` | `-`     |
+| `y`                        | Enables vertical scroll and sets container max height.    | `string \| number`         | `-`     |
+| `scrollToFirstRowOnChange` | Compatibility field. Currently accepted but not acted on. | `boolean`                  | `-`     |
+
+### TableChangePagination
+
+| Property   | Description                     | Type     |
+| ---------- | ------------------------------- | -------- |
+| `current`  | Current page.                   | `number` |
+| `pageSize` | Current page size.              | `number` |
+| `total`    | Total rows after table process. | `number` |
+
+### TableCurrentDataSource
+
+| Property            | Description                               | Type                               |
+| ------------------- | ----------------------------------------- | ---------------------------------- |
+| `currentDataSource` | Current processed data after filter/sort. | `T[]`                              |
+| `action`            | Change trigger.                           | `'paginate' \| 'sort' \| 'filter'` |
+
+### TableSorterResult
+
+| Property    | Description               | Type                                                 |
+| ----------- | ------------------------- | ---------------------------------------------------- |
+| `column`    | Sorted column definition. | `TableColumn<T>`                                     |
+| `order`     | Current sort order.       | `'ascend' \| 'descend' \| null`                      |
+| `field`     | Sorted column data field. | `keyof T \| string \| readonly (string \| number)[]` |
+| `columnKey` | Sorted column key.        | `string \| number`                                   |
+
+### TableRowSelection
+
+| Property                  | Description                                      | Type                                                                                                             | Default      |
+| ------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------ |
+| `type`                    | Selection type.                                  | `'checkbox' \| 'radio'`                                                                                          | `'checkbox'` |
+| `selectedRowKeys`         | Controlled selected row keys.                    | `(string \| number)[]`                                                                                           | `-`          |
+| `defaultSelectedRowKeys`  | Initial selected row keys.                       | `(string \| number)[]`                                                                                           | `[]`         |
+| `columnTitle`             | Selection column title.                          | `JSX.Element`                                                                                                    | `-`          |
+| `columnWidth`             | Selection column width.                          | `string \| number`                                                                                               | `48`         |
+| `hideSelectAll`           | Hides the select-all checkbox.                   | `boolean`                                                                                                        | `false`      |
+| `preserveSelectedRowKeys` | Keeps selected keys when records leave the data. | `boolean`                                                                                                        | `false`      |
+| `selections`              | Shows preset or custom selection menu actions.   | `boolean \| Array<'all' \| 'invert' \| 'none' \| TableRowSelectionSelection<T>>`                                 | `-`          |
+| `getTitleCheckboxProps`   | Props for the select-all checkbox.               | `() => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type'>>`                                         | `-`          |
+| `getCheckboxProps`        | Props for each checkbox or radio input.          | `(record: T) => Partial<Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type' \| 'checked'>>`                   | `-`          |
+| `renderCell`              | Custom selection cell renderer.                  | `(checked: boolean, record: T, index: number, originNode: JSX.Element) => JSX.Element`                           | `-`          |
+| `onChange`                | Called when selected rows change.                | `(selectedRowKeys, selectedRows, info: { type: 'all' \| 'none' \| 'invert' \| 'single' \| 'multiple' }) => void` | `-`          |
+| `onSelect`                | Called when a row is selected or deselected.     | `(record: T, selected: boolean, selectedRows: T[], nativeEvent: Event) => void`                                  | `-`          |
+| `onSelectAll`             | Called when select-all changes page selection.   | `(selected: boolean, selectedRows: T[], changeRows: T[]) => void`                                                | `-`          |
+| `onSelectInvert`          | Called when the invert preset action runs.       | `(selectedRowKeys: (string \| number)[]) => void`                                                                | `-`          |
+| `onSelectNone`            | Called when selection is cleared.                | `() => void`                                                                                                     | `-`          |
+
+### TableRowSelectionSelection
+
+| Property   | Description                              | Type                                                | Default |
+| ---------- | ---------------------------------------- | --------------------------------------------------- | ------- |
+| `key`      | Custom selection action key.             | `string \| number`                                  | `-`     |
+| `text`     | Custom selection action label.           | `JSX.Element`                                       | `-`     |
+| `onSelect` | Called with current changeable row keys. | `(changeableRowKeys: (string \| number)[]) => void` | `-`     |
+
+### TableExpandableConfig
+
+| Property                 | Description                             | Type                                                                           | Default |
+| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------ | ------- |
+| `columnTitle`            | Expand column title.                    | `JSX.Element`                                                                  | `-`     |
+| `columnWidth`            | Expand column width.                    | `string \| number`                                                             | `48`    |
+| `defaultExpandAllRows`   | Expands all rows initially.             | `boolean`                                                                      | `false` |
+| `defaultExpandedRowKeys` | Initial expanded row keys.              | `(string \| number)[]`                                                         | `[]`    |
+| `expandedRowKeys`        | Controlled expanded row keys.           | `(string \| number)[]`                                                         | `-`     |
+| `expandedRowRender`      | Expanded content renderer.              | `(record: T, index: number, indent: number, expanded: boolean) => JSX.Element` | `-`     |
+| `expandedRowClassName`   | Expanded row class name.                | `string \| ((record: T, index: number, indent: number) => string)`             | `-`     |
+| `expandRowByClick`       | Expands rows by clicking the data row.  | `boolean`                                                                      | `false` |
+| `rowExpandable`          | Whether a record can be expanded.       | `(record: T) => boolean`                                                       | `-`     |
+| `onExpand`               | Called when a row expands or collapses. | `(expanded: boolean, record: T) => void`                                       | `-`     |
+| `onExpandedRowsChange`   | Called when expanded row keys change.   | `(expandedRows: (string \| number)[]) => void`                                 | `-`     |
+
+### TablePaginationConfig
+
+Table pagination reuses the Pagination component API and adds antd-compatible placement fields.
+
+| Property           | Description                                   | Type                                                                                                         | Default             |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------- |
+| `current`          | Controlled current page.                      | `number`                                                                                                     | `-`                 |
+| `defaultCurrent`   | Initial current page.                         | `number`                                                                                                     | `1`                 |
+| `pageSize`         | Controlled page size.                         | `number`                                                                                                     | `-`                 |
+| `defaultPageSize`  | Initial page size.                            | `number`                                                                                                     | `10`                |
+| `total`            | Total item count. Defaults to processed rows. | `number`                                                                                                     | `data.length`       |
+| `showSizeChanger`  | Shows page size selector.                     | `boolean \| SelectProps`                                                                                     | `false`             |
+| `pageSizeOptions`  | Page size options.                            | `(string \| number)[]`                                                                                       | `[10, 20, 50, 100]` |
+| `showQuickJumper`  | Shows quick jumper.                           | `boolean \| { goButton?: JSX.Element }`                                                                      | `false`             |
+| `hideOnSinglePage` | Hides pagination when only one page.          | `boolean`                                                                                                    | `false`             |
+| `showTotal`        | Renders total text.                           | `(total: number, range: [number, number]) => JSX.Element`                                                    | `-`                 |
+| `placement`        | antd-compatible pagination placement values.  | `Array<'topStart' \| 'topCenter' \| 'topEnd' \| 'bottomStart' \| 'bottomCenter' \| 'bottomEnd' \| 'none'>`   | `-`                 |
+| `position`         | Deprecated antd-compatible placement values.  | `Array<'topLeft' \| 'topCenter' \| 'topRight' \| 'bottomLeft' \| 'bottomCenter' \| 'bottomRight' \| 'none'>` | `-`                 |
+| `onChange`         | Called when table pagination changes.         | `(page: number, pageSize: number) => void`                                                                   | `-`                 |
+
+### TableColumnSorter
+
+| Property   | Description                                                                       | Type                                                 | Default |
+| ---------- | --------------------------------------------------------------------------------- | ---------------------------------------------------- | ------- |
+| `compare`  | Compare function for local sorting.                                               | `(a: T, b: T, sortOrder?: TableSortOrder) => number` | `-`     |
+| `multiple` | Compatibility field for multi-sort priority. Currently accepted but not acted on. | `number`                                             | `-`     |
+
+### TableColumnFilterItem
+
+| Property   | Description                                                            | Type                          | Default |
+| ---------- | ---------------------------------------------------------------------- | ----------------------------- | ------- |
+| `text`     | Filter option label.                                                   | `JSX.Element`                 | `-`     |
+| `value`    | Filter option value.                                                   | `string \| number \| boolean` | `-`     |
+| `children` | Nested filter options. Currently accepted for type compatibility only. | `TableColumnFilterItem[]`     | `-`     |
+
+### TableRenderCellResult
+
+`render` can return an object to customize body cell content and props.
+
+| Property   | Description            | Type                                                                                | Default |
+| ---------- | ---------------------- | ----------------------------------------------------------------------------------- | ------- |
+| `children` | Rendered cell content. | `JSX.Element`                                                                       | `-`     |
+| `props`    | Extra body cell props. | `JSX.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number; rowSpan?: number }` | `-`     |
+
+### TableRenderCellProps
+
+| Property  | Description                                   | Type     | Default |
+| --------- | --------------------------------------------- | -------- | ------- |
+| `colSpan` | Body cell colspan. Set to `0` to skip a cell. | `number` | `-`     |
+| `rowSpan` | Body cell rowspan. Set to `0` to skip a cell. | `number` | `-`     |
+
+`TableRenderCellProps` also accepts native `td` HTML attributes.
+
+### TableColumnEllipsis
+
+| Property    | Description                                   | Type      | Default |
+| ----------- | --------------------------------------------- | --------- | ------- |
+| `showTitle` | Sets the cell `title` from text cell content. | `boolean` | `true`  |
+
+### TableColumn
+
+| Property               | Description                                                                          | Type                                                                                                                                                             | Default                       |
+| ---------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `title`                | Column header content.                                                               | `JSX.Element \| ((props: { sortOrder?: TableSortOrder }) => JSX.Element)`                                                                                        | `-`                           |
+| `children`             | Child columns for grouped headers.                                                   | `TableColumn<T>[]`                                                                                                                                               | `-`                           |
+| `dataIndex`            | Record field read for this column.                                                   | `keyof T \| string \| readonly (string \| number)[]`                                                                                                             | `-`                           |
+| `key`                  | Column key.                                                                          | `string`                                                                                                                                                         | `-`                           |
+| `render`               | Custom cell renderer. Supports returning cell props.                                 | `(value, record, index) => JSX.Element \| { children?: JSX.Element; props?: JSX.HTMLAttributes<HTMLTableCellElement> & { colSpan?: number; rowSpan?: number } }` | `-`                           |
+| `width`                | Column width.                                                                        | `number \| string`                                                                                                                                               | `-`                           |
+| `align`                | Cell text alignment.                                                                 | `'left' \| 'center' \| 'right'`                                                                                                                                  | `-`                           |
+| `class`                | Additional cell class.                                                               | `string`                                                                                                                                                         | `-`                           |
+| `className`            | Additional cell class name.                                                          | `string`                                                                                                                                                         | `-`                           |
+| `classList`            | Conditional cell classes.                                                            | `Record<string, boolean \| undefined>`                                                                                                                           | `-`                           |
+| `hidden`               | Hides the column.                                                                    | `boolean`                                                                                                                                                        | `false`                       |
+| `responsive`           | Shows the column only for matching breakpoints. Currently uses static `xs` matching. | `Array<'xxl' \| 'xl' \| 'lg' \| 'md' \| 'sm' \| 'xs'>`                                                                                                           | `-`                           |
+| `ellipsis`             | Enables single-line ellipsis styling.                                                | `boolean \| { showTitle?: boolean }`                                                                                                                             | `false`                       |
+| `rowScope`             | Sets `scope` on body cells for row headers.                                          | `'row' \| 'rowgroup'`                                                                                                                                            | `-`                           |
+| `sorter`               | Enables local sorting or provides a compare function.                                | `boolean \| ((a: T, b: T, sortOrder?: TableSortOrder) => number) \| TableColumnSorter`                                                                           | `-`                           |
+| `sortOrder`            | Controlled sort order.                                                               | `'ascend' \| 'descend' \| null`                                                                                                                                  | `-`                           |
+| `defaultSortOrder`     | Initial sort order.                                                                  | `'ascend' \| 'descend' \| null`                                                                                                                                  | `-`                           |
+| `sortDirections`       | Sort order cycle.                                                                    | `TableSortOrder[]`                                                                                                                                               | `['ascend', 'descend', null]` |
+| `filters`              | Filter menu items.                                                                   | `{ text: JSX.Element; value: string \| number \| boolean; children?: FilterItem[] }[]`                                                                           | `-`                           |
+| `filteredValue`        | Controlled filtered values.                                                          | `(string \| number \| boolean)[] \| null`                                                                                                                        | `-`                           |
+| `defaultFilteredValue` | Initial filtered values.                                                             | `(string \| number \| boolean)[] \| null`                                                                                                                        | `-`                           |
+| `filterMultiple`       | Allows multiple filter values.                                                       | `boolean`                                                                                                                                                        | `true`                        |
+| `filterIcon`           | Custom filter icon.                                                                  | `JSX.Element \| ((filtered: boolean) => JSX.Element)`                                                                                                            | `'Filter'`                    |
+| `onFilter`             | Determines whether a record matches a filter value.                                  | `(value: string \| number \| boolean, record: T) => boolean`                                                                                                     | `-`                           |
+| `onCell`               | Returns extra props for each body cell.                                              | `(record: T, rowIndex: number) => JSX.HTMLAttributes<HTMLTableCellElement>`                                                                                      | `-`                           |
+| `onHeaderCell`         | Returns extra props for each header cell.                                            | `(column: TableColumn<T>) => JSX.HTMLAttributes<HTMLTableCellElement>`                                                                                           | `-`                           |

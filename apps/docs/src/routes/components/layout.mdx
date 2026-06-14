@@ -1,0 +1,789 @@
+import { Layout, Menu } from '@ant-design-solid/core'
+import {
+  DashboardOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from '@ant-design-solid/icons'
+import { createSignal } from 'solid-js'
+
+# Layout
+
+Layout provides the outer structure for pages with header, content, footer, and sider.
+
+### Basic
+
+:::preview
+
+<LayoutDemo001 />
+
+export const LayoutDemo001 = (() => {
+  const headerStyle = {
+      'text-align': 'center',
+      color: 'var(--docs-text-strong)',
+      height: '64px',
+      padding: '0 48px',
+      'line-height': '64px',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const contentStyle = {
+      'text-align': 'center',
+      'min-height': '120px',
+      'line-height': '120px',
+      color: 'var(--docs-text-strong)',
+      background: 'color-mix(in srgb, var(--docs-primary-soft-strong) 72%, var(--docs-surface-solid))',
+  };
+  const siderStyle = {
+      'text-align': 'center',
+      'line-height': '120px',
+      color: 'var(--docs-text-strong)',
+      background: 'var(--docs-primary-soft)',
+  };
+  const footerStyle = {
+      'text-align': 'center',
+      color: 'var(--docs-text-strong)',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const layoutStyle = {
+      'border-radius': '8px',
+      overflow: 'hidden',
+      'min-width': '260px',
+      flex: '1 1 calc(50% - 8px)',
+  };
+  const Demo1 = function () {
+      return (<div style={{ display: 'flex', gap: '16px', 'flex-wrap': 'wrap' }}>
+        <Layout style={layoutStyle}>
+          <Layout.Header style={headerStyle}>Header</Layout.Header>
+          <Layout.Content style={contentStyle}>Content</Layout.Content>
+          <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+        </Layout>
+
+        <Layout style={layoutStyle}>
+          <Layout.Header style={headerStyle}>Header</Layout.Header>
+          <Layout>
+            <Layout.Sider width="25%" style={siderStyle}>
+              Sider
+            </Layout.Sider>
+            <Layout.Content style={contentStyle}>Content</Layout.Content>
+          </Layout>
+          <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+        </Layout>
+
+        <Layout style={layoutStyle}>
+          <Layout.Sider width="25%" style={siderStyle}>
+            Sider
+          </Layout.Sider>
+          <Layout>
+            <Layout.Header style={headerStyle}>Header</Layout.Header>
+            <Layout.Content style={contentStyle}>Content</Layout.Content>
+            <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+          </Layout>
+        </Layout>
+      </div>);
+
+};
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Layout } from '@ant-design-solid/core'
+
+const headerStyle = {
+  'text-align': 'center',
+  color: 'var(--docs-text-strong)',
+  height: '64px',
+  padding: '0 48px',
+  'line-height': '64px',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const contentStyle = {
+  'text-align': 'center',
+  'min-height': '120px',
+  'line-height': '120px',
+  color: 'var(--docs-text-strong)',
+  background: 'color-mix(in srgb, var(--docs-primary-soft-strong) 72%, var(--docs-surface-solid))',
+}
+
+const siderStyle = {
+  'text-align': 'center',
+  'line-height': '120px',
+  color: 'var(--docs-text-strong)',
+  background: 'var(--docs-primary-soft)',
+}
+
+const footerStyle = {
+  'text-align': 'center',
+  color: 'var(--docs-text-strong)',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const layoutStyle = {
+  'border-radius': '8px',
+  overflow: 'hidden',
+  'min-width': '260px',
+  flex: '1 1 calc(50% - 8px)',
+}
+
+const Demo1 = function () {
+  return (
+    <div style={{ display: 'flex', gap: '16px', 'flex-wrap': 'wrap' }}>
+      <Layout style={layoutStyle}>
+        <Layout.Header style={headerStyle}>Header</Layout.Header>
+        <Layout.Content style={contentStyle}>Content</Layout.Content>
+        <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+      </Layout>
+
+      <Layout style={layoutStyle}>
+        <Layout.Header style={headerStyle}>Header</Layout.Header>
+        <Layout>
+          <Layout.Sider width="25%" style={siderStyle}>
+            Sider
+          </Layout.Sider>
+          <Layout.Content style={contentStyle}>Content</Layout.Content>
+        </Layout>
+        <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+      </Layout>
+
+      <Layout style={layoutStyle}>
+        <Layout.Sider width="25%" style={siderStyle}>
+          Sider
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={headerStyle}>Header</Layout.Header>
+          <Layout.Content style={contentStyle}>Content</Layout.Content>
+          <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+        </Layout>
+      </Layout>
+    </div>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### With Sider
+
+:::preview
+
+<LayoutDemo002 />
+
+export const LayoutDemo002 = (() => {
+  const navItems = [
+      { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+      { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+      { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
+  ];
+  const logoStyle = {
+      height: '32px',
+      margin: '16px',
+      'border-radius': '6px',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const headerStyle = {
+      padding: 0,
+      background: 'var(--docs-surface-solid)',
+  };
+  const contentShellStyle = {
+      margin: '16px',
+  };
+  const panelStyle = {
+      padding: '24px',
+      'min-height': '220px',
+      background: 'var(--docs-surface-solid)',
+      'border-radius': '8px',
+  };
+  const footerStyle = {
+      'text-align': 'center',
+      color: 'var(--docs-text-tertiary)',
+  };
+  const Demo2 = function () {
+      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+        <Layout.Sider>
+          <div style={logoStyle}/>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems}/>
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={headerStyle}/>
+          <Layout.Content style={contentShellStyle}>
+            <div style={panelStyle}>Content</div>
+          </Layout.Content>
+          <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+        </Layout>
+      </Layout>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Layout, Menu } from '@ant-design-solid/core'
+import { DashboardOutlined, SettingOutlined, UserOutlined } from '@ant-design-solid/icons'
+
+const navItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+  { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
+]
+
+const logoStyle = {
+  height: '32px',
+  margin: '16px',
+  'border-radius': '6px',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const headerStyle = {
+  padding: 0,
+  background: 'var(--docs-surface-solid)',
+}
+
+const contentShellStyle = {
+  margin: '16px',
+}
+
+const panelStyle = {
+  padding: '24px',
+  'min-height': '220px',
+  background: 'var(--docs-surface-solid)',
+  'border-radius': '8px',
+}
+
+const footerStyle = {
+  'text-align': 'center',
+  color: 'var(--docs-text-tertiary)',
+}
+
+const Demo2 = function () {
+  return (
+    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      <Layout.Sider>
+        <div style={logoStyle} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
+      </Layout.Sider>
+      <Layout>
+        <Layout.Header style={headerStyle} />
+        <Layout.Content style={contentShellStyle}>
+          <div style={panelStyle}>Content</div>
+        </Layout.Content>
+        <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+      </Layout>
+    </Layout>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Collapsible
+
+:::preview
+
+<LayoutDemo003 />
+
+export const LayoutDemo003 = (() => {
+  const navItems = [
+      { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+      { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+      { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
+  ];
+  const logoStyle = {
+      height: '32px',
+      margin: '16px',
+      'border-radius': '6px',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const headerStyle = {
+      padding: 0,
+      background: 'var(--docs-surface-solid)',
+  };
+  const contentShellStyle = {
+      margin: '16px',
+  };
+  const panelStyle = {
+      padding: '24px',
+      'min-height': '220px',
+      background: 'var(--docs-surface-solid)',
+      'border-radius': '8px',
+  };
+  const footerStyle = {
+      'text-align': 'center',
+      color: 'var(--docs-text-tertiary)',
+  };
+  const Demo3 = function () {
+      const [collapsed, setCollapsed] = createSignal(false);
+      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+        <Layout.Sider collapsible collapsed={collapsed()} onCollapse={(nextCollapsed) => setCollapsed(nextCollapsed)}>
+          <div style={logoStyle}/>
+          <Menu theme="dark" mode="inline" inlineCollapsed={collapsed()} defaultSelectedKeys={['dashboard']} items={navItems}/>
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={headerStyle}/>
+          <Layout.Content style={contentShellStyle}>
+            <div style={panelStyle}>Content</div>
+          </Layout.Content>
+          <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+        </Layout>
+      </Layout>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Layout, Menu } from '@ant-design-solid/core'
+import { DashboardOutlined, SettingOutlined, UserOutlined } from '@ant-design-solid/icons'
+import { createSignal } from 'solid-js'
+
+const navItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+  { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
+]
+
+const logoStyle = {
+  height: '32px',
+  margin: '16px',
+  'border-radius': '6px',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const headerStyle = {
+  padding: 0,
+  background: 'var(--docs-surface-solid)',
+}
+
+const contentShellStyle = {
+  margin: '16px',
+}
+
+const panelStyle = {
+  padding: '24px',
+  'min-height': '220px',
+  background: 'var(--docs-surface-solid)',
+  'border-radius': '8px',
+}
+
+const footerStyle = {
+  'text-align': 'center',
+  color: 'var(--docs-text-tertiary)',
+}
+
+const Demo3 = function () {
+  const [collapsed, setCollapsed] = createSignal(false)
+
+  return (
+    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      <Layout.Sider
+        collapsible
+        collapsed={collapsed()}
+        onCollapse={(nextCollapsed) => setCollapsed(nextCollapsed)}
+      >
+        <div style={logoStyle} />
+        <Menu
+          theme="dark"
+          mode="inline"
+          inlineCollapsed={collapsed()}
+          defaultSelectedKeys={['dashboard']}
+          items={navItems}
+        />
+      </Layout.Sider>
+      <Layout>
+        <Layout.Header style={headerStyle} />
+        <Layout.Content style={contentShellStyle}>
+          <div style={panelStyle}>Content</div>
+        </Layout.Content>
+        <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+      </Layout>
+    </Layout>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Custom Trigger
+
+:::preview
+
+<LayoutDemo004 />
+
+export const LayoutDemo004 = (() => {
+  const navItems = [
+      { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+      { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+  ];
+  const logoStyle = {
+      height: '32px',
+      margin: '16px',
+      'border-radius': '6px',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const panelStyle = {
+      padding: '24px',
+      margin: '24px 16px',
+      'min-height': '220px',
+      background: 'var(--docs-surface-solid)',
+      'border-radius': '8px',
+  };
+  const triggerButtonStyle = {
+      width: '64px',
+      height: '64px',
+      border: 0,
+      background: 'transparent',
+      'font-size': '16px',
+      cursor: 'pointer',
+  };
+  const Demo4 = function () {
+      const [collapsed, setCollapsed] = createSignal(false);
+      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+        <Layout.Sider collapsible collapsed={collapsed()} trigger={null}>
+          <div style={logoStyle}/>
+          <Menu theme="dark" mode="inline" inlineCollapsed={collapsed()} defaultSelectedKeys={['dashboard']} items={navItems}/>
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}>
+            <button type="button" style={triggerButtonStyle} onClick={() => setCollapsed((value) => !value)}>
+              {collapsed() ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            </button>
+          </Layout.Header>
+          <Layout.Content style={panelStyle}>Content</Layout.Content>
+        </Layout>
+      </Layout>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Layout, Menu } from '@ant-design-solid/core'
+import {
+  DashboardOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  SettingOutlined,
+} from '@ant-design-solid/icons'
+import { createSignal } from 'solid-js'
+
+const navItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+]
+
+const logoStyle = {
+  height: '32px',
+  margin: '16px',
+  'border-radius': '6px',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const panelStyle = {
+  padding: '24px',
+  margin: '24px 16px',
+  'min-height': '220px',
+  background: 'var(--docs-surface-solid)',
+  'border-radius': '8px',
+}
+
+const triggerButtonStyle = {
+  width: '64px',
+  height: '64px',
+  border: 0,
+  background: 'transparent',
+  'font-size': '16px',
+  cursor: 'pointer',
+}
+
+const Demo4 = function () {
+  const [collapsed, setCollapsed] = createSignal(false)
+
+  return (
+    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      <Layout.Sider collapsible collapsed={collapsed()} trigger={null}>
+        <div style={logoStyle} />
+        <Menu
+          theme="dark"
+          mode="inline"
+          inlineCollapsed={collapsed()}
+          defaultSelectedKeys={['dashboard']}
+          items={navItems}
+        />
+      </Layout.Sider>
+      <Layout>
+        <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}>
+          <button
+            type="button"
+            style={triggerButtonStyle}
+            onClick={() => setCollapsed((value) => !value)}
+          >
+            {collapsed() ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </button>
+        </Layout.Header>
+        <Layout.Content style={panelStyle}>Content</Layout.Content>
+      </Layout>
+    </Layout>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Responsive
+
+:::preview
+
+<LayoutDemo005 />
+
+export const LayoutDemo005 = (() => {
+  const navItems = [
+      { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+      { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+  ];
+  const logoStyle = {
+      height: '32px',
+      margin: '16px',
+      'border-radius': '6px',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const panelStyle = {
+      padding: '24px',
+      margin: '24px 16px 0',
+      'min-height': '220px',
+      background: 'var(--docs-surface-solid)',
+      'border-radius': '8px',
+  };
+  const footerStyle = {
+      'text-align': 'center',
+      color: 'var(--docs-text-tertiary)',
+  };
+  const Demo5 = function () {
+      const [broken, setBroken] = createSignal(false);
+      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+        <Layout.Sider breakpoint="lg" collapsedWidth={broken() ? 0 : 80} onBreakpoint={(nextBroken) => setBroken(nextBroken)}>
+          <div style={logoStyle}/>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems}/>
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}/>
+          <Layout.Content>
+            <div style={panelStyle}>Content</div>
+          </Layout.Content>
+          <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+        </Layout>
+      </Layout>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Layout, Menu } from '@ant-design-solid/core'
+import { DashboardOutlined, SettingOutlined } from '@ant-design-solid/icons'
+import { createSignal } from 'solid-js'
+
+const navItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+]
+
+const logoStyle = {
+  height: '32px',
+  margin: '16px',
+  'border-radius': '6px',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const panelStyle = {
+  padding: '24px',
+  margin: '24px 16px 0',
+  'min-height': '220px',
+  background: 'var(--docs-surface-solid)',
+  'border-radius': '8px',
+}
+
+const footerStyle = {
+  'text-align': 'center',
+  color: 'var(--docs-text-tertiary)',
+}
+
+const Demo5 = function () {
+  const [broken, setBroken] = createSignal(false)
+
+  return (
+    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      <Layout.Sider
+        breakpoint="lg"
+        collapsedWidth={broken() ? 0 : 80}
+        onBreakpoint={(nextBroken) => setBroken(nextBroken)}
+      >
+        <div style={logoStyle} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
+      </Layout.Sider>
+      <Layout>
+        <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }} />
+        <Layout.Content>
+          <div style={panelStyle}>Content</div>
+        </Layout.Content>
+        <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+      </Layout>
+    </Layout>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Zero Width
+
+:::preview
+
+<LayoutDemo006 />
+
+export const LayoutDemo006 = (() => {
+  const navItems = [
+      { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+      { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+  ];
+  const logoStyle = {
+      height: '32px',
+      margin: '16px',
+      'border-radius': '6px',
+      background: 'var(--docs-primary-soft-strong)',
+  };
+  const panelStyle = {
+      padding: '24px',
+      margin: '24px 16px',
+      'min-height': '220px',
+      background: 'var(--docs-surface-solid)',
+      'border-radius': '8px',
+  };
+  const Demo6 = function () {
+      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+        <Layout.Sider collapsible defaultCollapsed collapsedWidth={0}>
+          <div style={logoStyle}/>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems}/>
+        </Layout.Sider>
+        <Layout>
+          <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}/>
+          <Layout.Content style={panelStyle}>Content</Layout.Content>
+        </Layout>
+      </Layout>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { Layout, Menu } from '@ant-design-solid/core'
+import { DashboardOutlined, SettingOutlined } from '@ant-design-solid/icons'
+
+const navItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
+  { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
+]
+
+const logoStyle = {
+  height: '32px',
+  margin: '16px',
+  'border-radius': '6px',
+  background: 'var(--docs-primary-soft-strong)',
+}
+
+const panelStyle = {
+  padding: '24px',
+  margin: '24px 16px',
+  'min-height': '220px',
+  background: 'var(--docs-surface-solid)',
+  'border-radius': '8px',
+}
+
+const Demo6 = function () {
+  return (
+    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      <Layout.Sider collapsible defaultCollapsed collapsedWidth={0}>
+        <div style={logoStyle} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
+      </Layout.Sider>
+      <Layout>
+        <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }} />
+        <Layout.Content style={panelStyle}>Content</Layout.Content>
+      </Layout>
+    </Layout>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+## API
+
+### Layout
+
+| Property   | Description                                                                             | Type          | Default |
+| ---------- | --------------------------------------------------------------------------------------- | ------------- | ------- |
+| `hasSider` | Forces sider-aware layout styling. Usually not needed because `Layout` detects `Sider`. | `boolean`     | `false` |
+| `children` | Layout regions and content.                                                             | `JSX.Element` | `-`     |
+
+### Layout.Header / Layout.Content / Layout.Footer
+
+| Property   | Description     | Type          | Default |
+| ---------- | --------------- | ------------- | ------- |
+| `children` | Region content. | `JSX.Element` | `-`     |
+
+### Layout.Sider
+
+| Property                | Description                                                                | Type                                                                 | Default  |
+| ----------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------- |
+| `breakpoint`            | Breakpoint where the sider switches into responsive collapsed state.       | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xxl' \| 'xxxl'`            | `-`      |
+| `collapsed`             | Controlled collapsed status.                                               | `boolean`                                                            | `-`      |
+| `collapsedWidth`        | Width of the collapsed sidebar. Setting it to `0` shows a special trigger. | `number \| string`                                                   | `80`     |
+| `collapsible`           | Whether the sider can be collapsed by the built-in trigger.                | `boolean`                                                            | `false`  |
+| `defaultCollapsed`      | Initial collapsed status when uncontrolled.                                | `boolean`                                                            | `false`  |
+| `reverseArrow`          | Reverses trigger direction and zero-width trigger placement.               | `boolean`                                                            | `false`  |
+| `theme`                 | Sider color theme.                                                         | `'light' \| 'dark'`                                                  | `'dark'` |
+| `trigger`               | Custom trigger content. Set to `null` to hide the built-in trigger.        | `JSX.Element \| null`                                                | `-`      |
+| `width`                 | Expanded sider width.                                                      | `number \| string`                                                   | `200`    |
+| `zeroWidthTriggerStyle` | Custom style for the special trigger shown when `collapsedWidth` is `0`.   | `JSX.CSSProperties`                                                  | `-`      |
+| `onBreakpoint`          | Callback when the responsive breakpoint state changes.                     | `(broken: boolean) => void`                                          | `-`      |
+| `onCollapse`            | Callback when trigger click or responsive layout changes collapsed state.  | `(collapsed: boolean, type: 'clickTrigger' \| 'responsive') => void` | `-`      |
+| `children`              | Sider content, often navigation.                                           | `JSX.Element`                                                        | `-`      |
+
+#### Breakpoint Width
+
+```js
+{
+  xs: '480px',
+  sm: '576px',
+  md: '768px',
+  lg: '992px',
+  xl: '1200px',
+  xxl: '1600px',
+  xxxl: '1920px',
+}
+```

@@ -1,0 +1,544 @@
+import { Alert, Button, Space } from '@ant-design-solid/core'
+import { SmileOutlined } from '@ant-design-solid/icons'
+
+# Alert
+
+Display warning messages that require attention.
+
+### Basic
+
+:::preview
+
+<AlertDemo001 />
+
+export const AlertDemo001 = (() => {
+  const Demo1 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Success Tips" type="success" showIcon/>
+        <Alert title="Informational Notes" type="info" showIcon/>
+        <Alert title="Warning" type="warning" showIcon/>
+        <Alert title="Error" type="error" showIcon/>
+      </Space>);
+  };
+
+return Demo1
+})()
+
+---
+
+```tsx
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo1 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert title="Success Tips" type="success" showIcon />
+      <Alert title="Informational Notes" type="info" showIcon />
+      <Alert title="Warning" type="warning" showIcon />
+      <Alert title="Error" type="error" showIcon />
+    </Space>
+  )
+}
+
+export default Demo1
+```
+
+:::
+
+### More types
+
+:::preview
+
+<AlertDemo002 />
+
+export const AlertDemo002 = (() => {
+  const Demo2 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Success Text" type="success"/>
+        <Alert title="Info Text" type="info"/>
+        <Alert title="Warning Text" type="warning"/>
+        <Alert title="Error Text" type="error"/>
+      </Space>);
+  };
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo2 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert title="Success Text" type="success" />
+      <Alert title="Info Text" type="info" />
+      <Alert title="Warning Text" type="warning" />
+      <Alert title="Error Text" type="error" />
+    </Space>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+### Filled
+
+:::preview
+
+<AlertDemo003 />
+
+export const AlertDemo003 = (() => {
+  const Demo3 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Success Text" type="success" variant="filled"/>
+        <Alert title="Info Text" type="info" variant="filled"/>
+        <Alert title="Warning Text" type="warning" variant="filled"/>
+        <Alert title="Error Text" type="error" variant="filled"/>
+      </Space>);
+  };
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo3 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert title="Success Text" type="success" variant="filled" />
+      <Alert title="Info Text" type="info" variant="filled" />
+      <Alert title="Warning Text" type="warning" variant="filled" />
+      <Alert title="Error Text" type="error" variant="filled" />
+    </Space>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+### Closable
+
+:::preview
+
+<AlertDemo004 />
+
+export const AlertDemo004 = (() => {
+  const Demo4 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Warning Text Warning Text Warning Text" type="warning" closable/>
+        <Alert title="Error Text" description="Error Description Error Description Error Description Error Description" type="error" closable={{ 'aria-label': 'close error alert' }}/>
+      </Space>);
+  };
+
+return Demo4
+})()
+
+---
+
+```tsx
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo4 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert title="Warning Text Warning Text Warning Text" type="warning" closable />
+      <Alert
+        title="Error Text"
+        description="Error Description Error Description Error Description Error Description"
+        type="error"
+        closable={{ 'aria-label': 'close error alert' }}
+      />
+    </Space>
+  )
+}
+
+export default Demo4
+```
+
+:::
+
+### Description
+
+:::preview
+
+<AlertDemo005 />
+
+export const AlertDemo005 = (() => {
+  const Demo5 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Success Text" description="Success Description Success Description Success Description" type="success" showIcon/>
+        <Alert title="Info Text" description="Info Description Info Description Info Description" type="info" showIcon/>
+        <Alert title="Warning Text" description="Warning Description Warning Description Warning Description" type="warning" showIcon/>
+        <Alert title="Error Text" description="Error Description Error Description Error Description" type="error" showIcon/>
+      </Space>);
+  };
+
+return Demo5
+})()
+
+---
+
+```tsx
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo5 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert
+        title="Success Text"
+        description="Success Description Success Description Success Description"
+        type="success"
+        showIcon
+      />
+      <Alert
+        title="Info Text"
+        description="Info Description Info Description Info Description"
+        type="info"
+        showIcon
+      />
+      <Alert
+        title="Warning Text"
+        description="Warning Description Warning Description Warning Description"
+        type="warning"
+        showIcon
+      />
+      <Alert
+        title="Error Text"
+        description="Error Description Error Description Error Description"
+        type="error"
+        showIcon
+      />
+    </Space>
+  )
+}
+
+export default Demo5
+```
+
+:::
+
+### Icon
+
+:::preview
+
+<AlertDemo006 />
+
+export const AlertDemo006 = (() => {
+  const Demo6 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="showIcon is true" type="success" showIcon/>
+        <Alert title="Custom icon" type="success" showIcon icon={<SmileOutlined />}/>
+        <Alert title="Info Text" type="info" showIcon/>
+        <Alert title="Warning Text" type="warning" showIcon/>
+        <Alert title="Error Text" type="error" showIcon/>
+      </Space>);
+  };
+
+return Demo6
+})()
+
+---
+
+```tsx
+import { SmileOutlined } from '@ant-design-solid/icons'
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo6 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert title="showIcon is true" type="success" showIcon />
+      <Alert title="Custom icon" type="success" showIcon icon={<SmileOutlined />} />
+      <Alert title="Info Text" type="info" showIcon />
+      <Alert title="Warning Text" type="warning" showIcon />
+      <Alert title="Error Text" type="error" showIcon />
+    </Space>
+  )
+}
+
+export default Demo6
+```
+
+:::
+
+### Banner
+
+:::preview
+
+<AlertDemo007 />
+
+export const AlertDemo007 = (() => {
+  const Demo7 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Warning text" banner/>
+        <Alert title="Very long warning text warning text text text text text text text" banner closable/>
+        <Alert showIcon={false} title="Warning text without icon" banner/>
+        <Alert type="error" title="Error text" banner/>
+      </Space>);
+  };
+
+return Demo7
+})()
+
+---
+
+```tsx
+import { Alert, Space } from '@ant-design-solid/core'
+
+const Demo7 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert title="Warning text" banner />
+      <Alert
+        title="Very long warning text warning text text text text text text text"
+        banner
+        closable
+      />
+      <Alert showIcon={false} title="Warning text without icon" banner />
+      <Alert type="error" title="Error text" banner />
+    </Space>
+  )
+}
+
+export default Demo7
+```
+
+:::
+
+### Custom action
+
+:::preview
+
+<AlertDemo008 />
+
+export const AlertDemo008 = (() => {
+  const Demo8 = function () {
+      return (<Space direction="vertical" class="w-full">
+        <Alert title="Success Tips" type="success" showIcon action={<Button size="small" type="text">
+              Undo
+            </Button>}/>
+        <Alert title="Error Text" showIcon description="Error Description Error Description Error Description" type="error" action={<Button size="small" danger>
+              Detail
+            </Button>}/>
+      </Space>);
+  };
+
+return Demo8
+})()
+
+---
+
+```tsx
+import { Button, Alert, Space } from '@ant-design-solid/core'
+
+const Demo8 = function () {
+  return (
+    <Space direction="vertical" class="w-full">
+      <Alert
+        title="Success Tips"
+        type="success"
+        showIcon
+        action={
+          <Button size="small" type="text">
+            Undo
+          </Button>
+        }
+      />
+      <Alert
+        title="Error Text"
+        showIcon
+        description="Error Description Error Description Error Description"
+        type="error"
+        action={
+          <Button size="small" danger>
+            Detail
+          </Button>
+        }
+      />
+    </Space>
+  )
+}
+
+export default Demo8
+```
+
+:::
+
+### ErrorBoundary
+
+:::preview
+
+<AlertDemo009 />
+
+export const AlertDemo009 = (() => {
+  const ThrowError = function () {
+      throw new Error('An application error occurred');
+  };
+  const Demo9 = function () {
+      return (<Alert.ErrorBoundary title="Something went wrong" description="The fallback Alert is rendered by ErrorBoundary.">
+        <ThrowError />
+      </Alert.ErrorBoundary>);
+  };
+
+return Demo9
+})()
+
+---
+
+```tsx
+import { Alert } from '@ant-design-solid/core'
+
+const ThrowError = function () {
+  throw new Error('An application error occurred')
+}
+
+const Demo9 = function () {
+  return (
+    <Alert.ErrorBoundary
+      title="Something went wrong"
+      description="The fallback Alert is rendered by ErrorBoundary."
+    >
+      <ThrowError />
+    </Alert.ErrorBoundary>
+  )
+}
+
+export default Demo9
+```
+
+:::
+
+### Custom semantic dom styling
+
+:::preview
+
+<AlertDemo010 />
+
+export const AlertDemo010 = (() => {
+  const Demo10 = function () {
+      return (<Alert showIcon closable type="info" title="Info Text" description="Info Description Info Description Info Description" classNames={{
+              root: 'custom-alert-root',
+              icon: 'custom-alert-icon',
+              section: 'custom-alert-section',
+              title: 'custom-alert-title',
+              description: 'custom-alert-description',
+              actions: 'custom-alert-actions',
+              close: 'custom-alert-close',
+          }} styles={{
+              root: { 'border-color': '#1677ff' },
+              title: { 'font-weight': 600 },
+          }}/>);
+  };
+
+return Demo10
+})()
+
+---
+
+```tsx
+import { Alert } from '@ant-design-solid/core'
+
+const Demo10 = function () {
+  return (
+    <Alert
+      showIcon
+      closable
+      type="info"
+      title="Info Text"
+      description="Info Description Info Description Info Description"
+      classNames={{
+        root: 'custom-alert-root',
+        icon: 'custom-alert-icon',
+        section: 'custom-alert-section',
+        title: 'custom-alert-title',
+        description: 'custom-alert-description',
+        actions: 'custom-alert-actions',
+        close: 'custom-alert-close',
+      }}
+      styles={{
+        root: { 'border-color': '#1677ff' },
+        title: { 'font-weight': 600 },
+      }}
+    />
+  )
+}
+
+export default Demo10
+```
+
+:::
+
+## API
+
+### Alert
+
+| Property      | Description                                                                | Type                                          | Default                              | Global Config      |
+| ------------- | -------------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------ | ------------------ |
+| `action`      | The action of Alert.                                                       | `JSX.Element`                                 | `-`                                  | No                 |
+| `afterClose`  | Deprecated. Called when Alert closes; use `closable.afterClose` instead.   | `() => void`                                  | `-`                                  | No                 |
+| `banner`      | Whether to show as banner.                                                 | `boolean`                                     | `false`                              | No                 |
+| `variant`     | Variant of Alert style.                                                    | `'outlined' \| 'filled'`                      | `'outlined'`                         | Yes                |
+| `classNames`  | Customize class for each semantic structure. Supports object or function.  | `AlertSemanticClassNames`                     | `-`                                  | Yes                |
+| `styles`      | Customize style for each semantic structure. Supports object or function.  | `AlertSemanticStyles`                         | `-`                                  | Yes                |
+| `closable`    | Shows close button or configures close behavior.                           | `boolean \| AlertClosableConfig`              | `false`                              | Yes                |
+| `description` | Additional content of Alert.                                               | `JSX.Element`                                 | `-`                                  | No                 |
+| `icon`        | Custom icon, effective when `showIcon` is true.                            | `JSX.Element`                                 | `-`                                  | No                 |
+| `message`     | Deprecated. Content of Alert; use `title` instead.                         | `JSX.Element`                                 | `-`                                  | No                 |
+| `onClose`     | Deprecated. Callback when Alert is closed; use `closable.onClose` instead. | `(event: MouseEvent) => void`                 | `-`                                  | No                 |
+| `closeIcon`   | Deprecated. Custom close icon; use `closable.closeIcon` instead.           | `JSX.Element \| boolean \| null`              | `-`                                  | Global config only |
+| `closeText`   | Deprecated. Close text to show; use `closable.closeIcon` instead.          | `JSX.Element`                                 | `-`                                  | No                 |
+| `showIcon`    | Whether to show icon.                                                      | `boolean`                                     | `false`, `true` in banner mode       | No                 |
+| `title`       | Content of Alert.                                                          | `JSX.Element`                                 | `-`                                  | No                 |
+| `type`        | Type of Alert styles.                                                      | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'`, `'warning'` in banner mode | No                 |
+| `prefixCls`   | Custom component class prefix.                                             | `string`                                      | `-`                                  | No                 |
+| `rootClass`   | Custom root class. Solid replacement for React `rootClassName`.            | `string`                                      | `-`                                  | No                 |
+
+### Alert closable config
+
+| Property     | Description                               | Type                          | Default |
+| ------------ | ----------------------------------------- | ----------------------------- | ------- |
+| `closeIcon`  | Custom close icon.                        | `JSX.Element`                 | `-`     |
+| `afterClose` | Called after this Alert closes.           | `() => void`                  | `-`     |
+| `onClose`    | Called when this close button is clicked. | `(event: MouseEvent) => void` | `-`     |
+
+### Alert.ErrorBoundary
+
+| Property      | Description                                          | Type          | Default       |
+| ------------- | ---------------------------------------------------- | ------------- | ------------- |
+| `description` | Custom error description to show.                    | `JSX.Element` | Error stack   |
+| `message`     | Deprecated. Custom error title; use `title` instead. | `JSX.Element` | Error message |
+| `title`       | Custom error title to show.                          | `JSX.Element` | Error message |
+
+### Semantic DOM
+
+| Name          | Description                                                                           |
+| ------------- | ------------------------------------------------------------------------------------- |
+| `root`        | Root element with border, background, padding, border-radius, and positioning styles. |
+| `icon`        | Icon element for status icon.                                                         |
+| `section`     | Content element controlling title and description layout.                             |
+| `title`       | Title element.                                                                        |
+| `description` | Description element.                                                                  |
+| `actions`     | Action container.                                                                     |
+| `close`       | Close button element.                                                                 |
+
+### ConfigProvider alert
+
+| Property      | Description                 | Type                             |
+| ------------- | --------------------------- | -------------------------------- |
+| `variant`     | Default Alert variant.      | `'outlined' \| 'filled'`         |
+| `closable`    | Default closable config.    | `boolean \| AlertClosableConfig` |
+| `closeIcon`   | Global close icon fallback. | `JSX.Element`                    |
+| `successIcon` | Global success icon.        | `JSX.Element`                    |
+| `infoIcon`    | Global info icon.           | `JSX.Element`                    |
+| `warningIcon` | Global warning icon.        | `JSX.Element`                    |
+| `errorIcon`   | Global error icon.          | `JSX.Element`                    |
+| `classNames`  | Default semantic classes.   | `AlertSemanticClassNames`        |
+| `styles`      | Default semantic styles.    | `AlertSemanticStyles`            |

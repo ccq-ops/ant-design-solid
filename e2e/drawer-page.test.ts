@@ -4,13 +4,14 @@ test('drawer getContainer false renders inside current container on docs page', 
   page,
 }) => {
   await page.goto('/components/drawer')
+  await page.locator('html[data-docs-hydrated="true"]').waitFor()
 
   const heading = page.getByRole('heading', { name: 'Render In Current Container' })
   await heading.scrollIntoViewIfNeeded()
 
   const preview = heading
     .locator('xpath=following-sibling::section[1]')
-    .locator('[data-demo-block-preview]')
+    .locator('[data-preview-stage]')
   await preview.getByRole('button', { name: 'Open' }).click()
 
   const drawerRoot = preview.locator('.ads-drawer-root')
