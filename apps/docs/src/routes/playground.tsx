@@ -3,7 +3,11 @@ import { useLocation } from '@solidjs/router'
 import { Input } from '@ant-design-solid/core'
 import { sourceCodeFromLocationSearch } from '../docs-theme/preview-utils'
 import { compilePlaygroundSource } from './playground-runtime'
-import './playground.css'
+
+const playgroundPanelClass =
+  'min-w-0 rounded-lg border border-[color-mix(in_hsl,var(--sb-decoration-color)_18%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_94%,transparent)] p-4'
+const playgroundErrorClass =
+  'mt-2 mb-0 max-h-[32rem] overflow-auto whitespace-pre-wrap rounded-md bg-[var(--sb-code-background-color)] p-4 text-[var(--sb-code-text-color)]'
 
 export default function PlaygroundPage() {
   const location = useLocation()
@@ -20,7 +24,7 @@ export default function PlaygroundPage() {
 
     if (!compiled.ok) {
       return (
-        <pre class="docs-playground-error" role="alert">
+        <pre class={playgroundErrorClass} role="alert">
           <code>{compiled.error}</code>
         </pre>
       )
@@ -29,30 +33,41 @@ export default function PlaygroundPage() {
     const Component = compiled.component
 
     return (
-      <div class="docs-playground-stage">
+      <div class="mt-2 flex min-h-96 items-center justify-center overflow-auto rounded-md border border-[color-mix(in_hsl,var(--sb-decoration-color)_14%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_96%,transparent)] p-6">
         <Component />
       </div>
     )
   }
 
   return (
-    <main class="docs-playground">
-      <header class="docs-playground-header">
-        <h1>Playground</h1>
+    <main class="grid gap-5 p-[clamp(1rem,4vw,2rem)]">
+      <header>
+        <h1 class="m-0 font-[var(--sb-font-headings)] text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] font-medium text-[var(--sb-heading-color)]">
+          Playground
+        </h1>
       </header>
-      <section class="docs-playground-workspace" aria-label="Playground workspace">
-        <div class="docs-playground-editor">
-          <label for="docs-playground-source">Source</label>
+      <section
+        class="grid grid-cols-[minmax(0,1fr)_minmax(18rem,0.8fr)] gap-4 max-[56rem]:grid-cols-[minmax(0,1fr)]"
+        aria-label="Playground workspace"
+      >
+        <div class={`${playgroundPanelClass} grid gap-2`}>
+          <label
+            class="text-sm font-medium text-[var(--sb-heading-color)]"
+            for="docs-playground-source"
+          >
+            Source
+          </label>
           <Input.TextArea
             id="docs-playground-source"
             aria-label="Playground source"
+            class="min-h-[28rem] font-[var(--sb-font-mono)]"
             value={sourceCode()}
             rows={18}
             onInput={(event) => setSourceCode(event.currentTarget.value)}
           />
         </div>
-        <div class="docs-playground-preview" aria-label="Playground preview">
-          <div class="docs-playground-preview-title">Preview</div>
+        <div class={playgroundPanelClass} aria-label="Playground preview">
+          <div class="text-sm font-medium text-[var(--sb-heading-color)]">Preview</div>
           {renderPreview()}
         </div>
       </section>
