@@ -10,6 +10,10 @@ describe('Home route', () => {
         text: 'Ant Design for the Solid era',
         tagline:
           'Build polished product interfaces with Ant Design-inspired semantics, Solid-native performance, and token-driven theming.',
+        image: {
+          src: '/hero-banner.png',
+          alt: 'Ant Design Solid home page hero artwork',
+        },
         actions: [
           { theme: 'brand', text: 'Get Started', link: '/docs/getting-started' },
           { theme: 'alt', text: 'View Components', link: '/components/affix' },
