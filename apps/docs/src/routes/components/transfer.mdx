@@ -21,7 +21,7 @@ export const TransferDemo001 = (() => {
       return <Transfer dataSource={dataSource}/>;
   };
 
-  return Demo1
+return Demo1
 })()
 
 ---
@@ -60,7 +60,7 @@ export const TransferDemo002 = (() => {
       return (<Transfer showSearch={{ placeholder: 'Find item', defaultValue: 'a' }} dataSource={dataSource} filterOption={(input, item, direction) => direction === 'left' && String(item.title).toLowerCase().includes(input.toLowerCase())} onSearch={(direction, value) => console.log(direction, value)}/>);
   };
 
-  return Demo2
+return Demo2
 })()
 
 ---
@@ -113,7 +113,7 @@ export const TransferDemo003 = (() => {
           })} actions={['Add', 'Remove']} titles={['Available', 'Chosen']}/>);
   };
 
-  return Demo3
+return Demo3
 })()
 
 ---
@@ -168,7 +168,7 @@ export const TransferDemo004 = (() => {
       return (<Transfer dataSource={dataSource} targetKeys={targetKeys()} onChange={(next) => setTargetKeys(next)}/>);
   };
 
-  return Demo4
+return Demo4
 })()
 
 ---
@@ -219,7 +219,7 @@ export const TransferDemo005 = (() => {
           ]}/>);
   };
 
-  return Demo5
+return Demo5
 })()
 
 ---
@@ -283,7 +283,7 @@ export const TransferDemo006 = (() => {
       </Transfer>);
   };
 
-  return Demo6
+return Demo6
 })()
 
 ---
@@ -356,7 +356,7 @@ export const TransferDemo007 = (() => {
           })}/>);
   };
 
-  return Demo7
+return Demo7
 })()
 
 ---

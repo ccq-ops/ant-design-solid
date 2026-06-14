@@ -27,10 +27,6 @@ function normalizeCode(code) {
   return code.replace(/\r\n/g, '\n')
 }
 
-function importText(sourceFile, node) {
-  return sourceFile.text.slice(node.getStart(sourceFile), node.end).trim()
-}
-
 function collectImportBindings(sourceFile, node) {
   const moduleSpecifier = node.moduleSpecifier.text
 
@@ -217,8 +213,9 @@ function transpileExecutable(code, filePath) {
   })
 
   const diagnostics =
-    result.diagnostics?.filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error) ??
-    []
+    result.diagnostics?.filter(
+      (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
+    ) ?? []
 
   if (diagnostics.length > 0) {
     const message = diagnostics
@@ -228,7 +225,10 @@ function transpileExecutable(code, filePath) {
     throw new Error(`Failed to transpile executable demo in ${filePath}:\n${message}`)
   }
 
-  return result.outputText.trim().replace(/^"use strict";\n?/, '').trim()
+  return result.outputText
+    .trim()
+    .replace(/^"use strict";\n?/, '')
+    .trim()
 }
 
 function hasPureMeta(meta) {
@@ -345,7 +345,11 @@ function splitModulePreamble(source) {
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index]
 
-    if (/^\s*$/.test(line) || /^\s*import\s/.test(line) || /^\s*export\s+(?!default\b)/.test(line)) {
+    if (
+      /^\s*$/.test(line) ||
+      /^\s*import\s/.test(line) ||
+      /^\s*export\s+(?!default\b)/.test(line)
+    ) {
       preambleEndLine = index + 1
       preambleEndOffset += line.length + 1
       continue

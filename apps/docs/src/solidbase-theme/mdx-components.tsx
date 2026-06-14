@@ -9,10 +9,7 @@ export function table(props: TableProps) {
 
   return (
     <div class="docs-table-scroll" data-mdx-table-scroll>
-      <table
-        {...others}
-        class={['docs-markdown-table', local.class].filter(Boolean).join(' ')}
-      />
+      <table {...others} class={['docs-markdown-table', local.class].filter(Boolean).join(' ')} />
     </div>
   )
 }

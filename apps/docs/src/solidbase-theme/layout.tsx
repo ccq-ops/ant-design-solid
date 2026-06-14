@@ -70,7 +70,12 @@ function DocsLayoutContent(props: { children?: JSX.Element }) {
           <aside class="docs-border sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r p-6">
             <For each={sidebarItems()}>
               {(item) => (
-                <A href={item.path} class={sidebarLinkClass} activeClass={sidebarActiveLinkClass} end>
+                <A
+                  href={item.path}
+                  class={sidebarLinkClass}
+                  activeClass={sidebarActiveLinkClass}
+                  end
+                >
                   {item.label}
                 </A>
               )}

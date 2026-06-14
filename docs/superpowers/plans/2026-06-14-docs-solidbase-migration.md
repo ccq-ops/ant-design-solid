@@ -35,6 +35,7 @@
 ## Task 1: Verify Dependency Baseline And SolidStart Skeleton
 
 **Files:**
+
 - Modify: `apps/docs/package.json`
 - Modify: `apps/docs/vite.config.ts`
 - Create: `apps/docs/src/app.tsx`
@@ -226,6 +227,7 @@ git commit -m "build(docs): add solidbase solidstart skeleton"
 ## Task 2: Implement Custom SolidBase Theme Shell
 
 **Files:**
+
 - Create: `apps/docs/src/solidbase-theme/index.ts`
 - Create: `apps/docs/src/solidbase-theme/Layout.tsx`
 - Create: `apps/docs/src/solidbase-theme/mdx-components.tsx`
@@ -342,10 +344,7 @@ export function table(props: TableProps) {
 
   return (
     <div class="docs-table-scroll" data-mdx-table-scroll>
-      <table
-        {...others}
-        class={['docs-markdown-table', local.class].filter(Boolean).join(' ')}
-      />
+      <table {...others} class={['docs-markdown-table', local.class].filter(Boolean).join(' ')} />
     </div>
   )
 }
@@ -462,7 +461,12 @@ function DocsLayoutContent(props: { children?: JSX.Element }) {
           <aside class="docs-border sticky top-16 flex h-[calc(100vh-4rem)] flex-col gap-2 overflow-y-auto border-r p-6">
             <For each={sidebarItems()}>
               {(item) => (
-                <A href={item.path} class={sidebarLinkClass} activeClass={sidebarActiveLinkClass} end>
+                <A
+                  href={item.path}
+                  class={sidebarLinkClass}
+                  activeClass={sidebarActiveLinkClass}
+                  end
+                >
                   {item.label}
                 </A>
               )}
@@ -509,6 +513,7 @@ git commit -m "feat(docs): add ant design solid solidbase theme"
 ## Task 3: Move Routes And Preserve URLs
 
 **Files:**
+
 - Move: `apps/docs/src/pages/**/*.mdx` to `apps/docs/src/routes/**/*.mdx`
 - Delete: `apps/docs/src/main.tsx`
 - Modify: `apps/docs/src/solidbase-theme/Layout.tsx`
@@ -590,6 +595,7 @@ git commit -m "refactor(docs): move pages to solidstart routes"
 ## Task 4: Convert Demo Fences To SolidBase Preview Directives
 
 **Files:**
+
 - Create: `apps/docs/scripts/convert-demo-fences.mjs`
 - Modify: `apps/docs/src/routes/**/*.mdx`
 - Delete: `apps/docs/plugins/mdx-demo-block-vite-plugin.ts`
@@ -602,7 +608,7 @@ git commit -m "refactor(docs): move pages to solidstart routes"
 Create `apps/docs/scripts/convert-demo-fences.mjs` that:
 
 - Scans `apps/docs/src/routes/**/*.mdx`.
-- Finds ```` ```tsx ... ``` ```` blocks.
+- Finds ` ```tsx ... ``` ` blocks.
 - Leaves blocks with meta `pure` unchanged except removing `pure` only if SolidBase does not support it.
 - Converts only blocks containing exactly one `export default DemoName` to preview form.
 - Preserves imports, helper declarations, types, constants, and the default export in the executable demo module.
@@ -669,6 +675,7 @@ git commit -m "refactor(docs): convert demos to solidbase previews"
 ## Task 5: Update Tests For SolidBase/SolidStart
 
 **Files:**
+
 - Modify: `apps/docs/src/solidbase-theme/Layout.test.tsx`
 - Modify: `apps/docs/src/components/theme-context.test.tsx`
 - Modify: `apps/docs/src/routes/**/*.test.tsx`
@@ -729,6 +736,7 @@ git commit -m "test(docs): update tests for solidbase migration"
 ## Task 6: Full Verification And Build
 
 **Files:**
+
 - Potential small fixes from verification.
 
 - [ ] **Step 1: Run docs dev build checks**
