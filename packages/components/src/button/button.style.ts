@@ -44,6 +44,17 @@ function colorVariantStyles(prefixCls: string, colorName: string, color: string)
       color,
       background: 'transparent',
       borderColor: 'transparent',
+      'box-shadow': 'none',
+      '&:hover': {
+        color,
+        background: `${color}1a`,
+        borderColor: 'transparent',
+      },
+      '&:active': {
+        color,
+        background: `${color}26`,
+        borderColor: 'transparent',
+      },
     },
     [`.${prefixCls}-color-${colorName}.${prefixCls}-variant-link`]: {
       color,
@@ -148,6 +159,7 @@ export function useButtonStyle(prefixCls: string) {
       [`.${prefixCls}-variant-text`]: {
         borderColor: 'transparent',
         background: 'transparent',
+        'box-shadow': 'none',
       },
       [`.${prefixCls}-variant-link`]: {
         borderColor: 'transparent',
@@ -156,6 +168,28 @@ export function useButtonStyle(prefixCls: string) {
         'box-shadow': 'none',
       },
       [`.${prefixCls}-color-default`]: {},
+      [`.${prefixCls}-color-default.${prefixCls}-variant-text`]: {
+        color: bt.textTextColor,
+        background: 'transparent',
+        borderColor: 'transparent',
+        'box-shadow': 'none',
+        '&:hover': {
+          color: bt.textTextHoverColor,
+          background: bt.textHoverBg,
+          borderColor: 'transparent',
+        },
+        '&:active': {
+          color: bt.textTextActiveColor,
+          background: t.colorBgTextActive,
+          borderColor: 'transparent',
+        },
+        [`&[disabled], &.${prefixCls}-disabled`]: {
+          color: t.colorTextDisabled,
+          background: 'transparent',
+          borderColor: 'transparent',
+          'box-shadow': 'none',
+        },
+      },
       ...colorVariantStyles(prefixCls, 'primary', t.colorPrimary),
       ...colorVariantStyles(prefixCls, 'danger', t.colorError),
       ...presetStyles,

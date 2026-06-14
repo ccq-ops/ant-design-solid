@@ -360,4 +360,28 @@ describe('Button', () => {
     expect(preset.className).toContain('ads-btn-color-blue')
     expect(preset.className).toContain('ads-btn-variant-filled')
   })
+
+  it('uses antd v6 text button state styles', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Button type="text">Text</Button>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain(
+      '.ads-btn-color-default.ads-btn-variant-text{background:transparent;border-color:transparent;box-shadow:none;color:rgba(0,0,0,0.88);',
+    )
+    expect(css).toContain(
+      '.ads-btn-color-default.ads-btn-variant-text:active{background:rgba(0,0,0,0.15);border-color:transparent;color:rgba(0,0,0,0.88);',
+    )
+    expect(css).toContain(
+      '.ads-btn-color-default.ads-btn-variant-text:hover{background:rgba(0,0,0,0.04);border-color:transparent;color:rgba(0,0,0,0.88);',
+    )
+    expect(css).toContain(
+      '.ads-btn-color-default.ads-btn-variant-text[disabled], .ads-btn-color-default.ads-btn-variant-text.ads-btn-disabled{background:transparent;border-color:transparent;box-shadow:none;color:rgba(0,0,0,0.25);',
+    )
+  })
 })
