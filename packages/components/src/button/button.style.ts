@@ -60,8 +60,6 @@ function colorVariantStyles(prefixCls: string, colorName: string, color: string)
       color,
       background: 'transparent',
       borderColor: 'transparent',
-      padding: 0,
-      height: 'auto',
     },
   }
 }

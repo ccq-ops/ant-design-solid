@@ -361,6 +361,30 @@ describe('Button', () => {
     expect(preset.className).toContain('ads-btn-variant-filled')
   })
 
+  it('keeps link type buttons aligned with other button types', () => {
+    const cache = createCache()
+    const result = render(() => (
+      <StyleProvider cache={cache}>
+        <Button type="primary">Primary Button</Button>
+        <Button>Default Button</Button>
+        <Button type="link">Link Button</Button>
+      </StyleProvider>
+    ))
+
+    const [primary, defaultButton, link] = result.getAllByRole('button')
+    const css = extractStyle(cache)
+
+    expect(getComputedStyle(link).height).toBe(getComputedStyle(primary).height)
+    expect(getComputedStyle(link).height).toBe(getComputedStyle(defaultButton).height)
+    expect(css).not.toContain('height:auto;')
+    expect(css).toContain(
+      '.ads-btn-color-primary.ads-btn-variant-link{background:transparent;border-color:transparent;color:#1677ff;',
+    )
+    expect(css).not.toContain(
+      '.ads-btn-color-primary.ads-btn-variant-link{background:transparent;border-color:transparent;color:#1677ff;height:auto;padding:0;',
+    )
+  })
+
   it('uses antd v6 text button state styles', () => {
     const cache = createCache()
     render(() => (
