@@ -662,17 +662,17 @@ export default Demo15
 export const StepsDemo016 = (() => {
   const Demo16 = function () {
       return (<Steps current={1} classNames={{
-              root: 'rounded border border-dashed border-blue-200 p-4',
+              root: 'rounded border border-dashed border-[var(--docs-border)] p-4',
               itemTitle: 'font-medium',
               itemSubtitle: 'text-xs',
           }} styles={{
-              itemContent: { color: '#64748b' },
+              itemContent: { color: 'var(--docs-text-secondary)' },
           }} items={[
               {
                   title: 'Create',
                   subTitle: 'Owner',
                   content: 'Draft the request.',
-                  classNames: { itemIcon: 'bg-blue-50' },
+                  classNames: { itemIcon: 'bg-[var(--docs-primary-soft)]' },
               },
               { title: 'Review', subTitle: 'Team', content: 'Approve the request.' },
               { title: 'Publish', subTitle: 'System', content: 'Send the result.' },
@@ -692,19 +692,19 @@ const Demo16 = function () {
     <Steps
       current={1}
       classNames={{
-        root: 'rounded border border-dashed border-blue-200 p-4',
+        root: 'rounded border border-dashed border-[var(--docs-border)] p-4',
         itemTitle: 'font-medium',
         itemSubtitle: 'text-xs',
       }}
       styles={{
-        itemContent: { color: '#64748b' },
+        itemContent: { color: 'var(--docs-text-secondary)' },
       }}
       items={[
         {
           title: 'Create',
           subTitle: 'Owner',
           content: 'Draft the request.',
-          classNames: { itemIcon: 'bg-blue-50' },
+          classNames: { itemIcon: 'bg-[var(--docs-primary-soft)]' },
         },
         { title: 'Review', subTitle: 'Team', content: 'Approve the request.' },
         { title: 'Publish', subTitle: 'System', content: 'Send the result.' },

@@ -811,7 +811,7 @@ export const SelectDemo017 = (() => {
   const Demo17 = function () {
       return (<Select class="w-60" options={options} placement="bottomRight" popupMatchSelectWidth={280} popupRender={(originNode) => (<div>
             {originNode}
-            <div class="border-t px-3 py-2 text-xs text-gray-500">Only fresh inventory is shown.</div>
+            <div class="border-t border-[var(--docs-border)] px-3 py-2 text-xs text-[var(--docs-text-secondary)]">Only fresh inventory is shown.</div>
           </div>)}/>);
   };
 
@@ -839,7 +839,9 @@ const Demo17 = function () {
       popupRender={(originNode) => (
         <div>
           {originNode}
-          <div class="border-t px-3 py-2 text-xs text-gray-500">Only fresh inventory is shown.</div>
+          <div class="border-t border-[var(--docs-border)] px-3 py-2 text-xs text-[var(--docs-text-secondary)]">
+            Only fresh inventory is shown.
+          </div>
         </div>
       )}
     />

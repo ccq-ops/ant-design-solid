@@ -3,7 +3,7 @@ import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const docsSrc = join(process.cwd(), 'src')
-const scannedExtensions = new Set(['.ts', '.tsx', '.css'])
+const scannedExtensions = new Set(['.ts', '.tsx', '.css', '.mdx'])
 const allowedFiles = new Set([
   'pages/components/color-picker.tsx',
   'pages/components/config-provider.tsx',
@@ -37,10 +37,15 @@ function collectFiles(dir: string): string[] {
 const forbiddenPatterns = [
   /background:\s*['"]#fff(?:fff)?['"]/g,
   /background:\s*['"]#fafafa['"]/g,
+  /background:\s*['"]#f5f5f5['"]/g,
+  /background:\s*['"]rgba\(0,\s*0,\s*0,\s*0\.02\)['"]/g,
   /border:\s*['"]1px solid #f0f0f0['"]/g,
   /border:\s*['"]1px solid #d9d9d9['"]/g,
+  /border:\s*['"]1px dashed #d9d9d9['"]/g,
+  /railColor=["']#f0f0f0["']/g,
   /color:\s*['"]#666['"]/g,
-  /\btext-slate-9(?:00|50)\b/g,
+  /color:\s*['"]rgba\(0,\s*0,\s*0,\s*0\.(?:25|45|65|88)\)['"]/g,
+  /\bbg-white\b/g,
   /bg-\[radial-gradient\([^"'`]*255,255,255/g,
 ]
 

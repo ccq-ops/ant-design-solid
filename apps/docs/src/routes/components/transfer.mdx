@@ -277,7 +277,7 @@ export const TransferDemo006 = (() => {
                   const selected = () => list.selectedKeys.includes(item.key);
                   return (<button type="button" aria-pressed={selected()} class="flex items-center justify-between rounded border px-2 py-1 text-left transition-colors" classList={{
                           'border-blue-500 bg-blue-50 text-blue-700': selected(),
-                          'border-slate-200 bg-white text-slate-700 hover:border-blue-300': !selected(),
+                          'border-[var(--docs-border)] bg-[var(--docs-surface-solid)] text-[var(--docs-text)] hover:border-blue-300': !selected(),
                       }} onClick={() => list.onItemSelect(item.key, !selected())}>
                     <span>{item.title}</span>
                     <span class="text-xs">{selected() ? 'Selected' : 'Select'}</span>
@@ -322,7 +322,8 @@ const Demo6 = function () {
                   class="flex items-center justify-between rounded border px-2 py-1 text-left transition-colors"
                   classList={{
                     'border-blue-500 bg-blue-50 text-blue-700': selected(),
-                    'border-slate-200 bg-white text-slate-700 hover:border-blue-300': !selected(),
+                    'border-[var(--docs-border)] bg-[var(--docs-surface-solid)] text-[var(--docs-text)] hover:border-blue-300':
+                      !selected(),
                   }}
                   onClick={() => list.onItemSelect(item.key, !selected())}
                 >

@@ -731,7 +731,7 @@ export default Demo13
 
 export const DatePickerDemo014 = (() => {
   const Demo14 = function () {
-      return (<DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} cellRender={(current, info) => (<div class={current.date() === 15 ? 'rounded bg-blue-50 text-blue-600' : undefined}>
+      return (<DatePicker defaultOpen defaultPickerValue={dayjs('2026-06-01')} cellRender={(current, info) => (<div class={current.date() === 15 ? 'rounded bg-[var(--docs-primary-soft)] text-[var(--docs-text-strong)]' : undefined}>
             {info.originNode}
           </div>)} renderExtraFooter={() => <span>Custom footer</span>} panelRender={(panel) => <section aria-label="custom date panel">{panel}</section>}/>);
   };
@@ -760,7 +760,13 @@ const Demo14 = function () {
       defaultOpen
       defaultPickerValue={dayjs('2026-06-01')}
       cellRender={(current, info) => (
-        <div class={current.date() === 15 ? 'rounded bg-blue-50 text-blue-600' : undefined}>
+        <div
+          class={
+            current.date() === 15
+              ? 'rounded bg-[var(--docs-primary-soft)] text-[var(--docs-text-strong)]'
+              : undefined
+          }
+        >
           {info.originNode}
         </div>
       )}

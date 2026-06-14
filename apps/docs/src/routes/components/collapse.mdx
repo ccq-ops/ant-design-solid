@@ -600,7 +600,7 @@ export const CollapseDemo013 = (() => {
       },
   ];
   const Demo13 = function () {
-      return (<Collapse defaultActiveKey="1" classNames={{ header: 'custom-header', title: 'custom-title', body: 'custom-body' }} styles={{ header: { background: '#f5f5f5' } }} items={items}/>);
+      return (<Collapse defaultActiveKey="1" classNames={{ header: 'custom-header', title: 'custom-title', body: 'custom-body' }} styles={{ header: { background: 'var(--docs-surface-subtle)' } }} items={items}/>);
   };
 
 return Demo13
@@ -628,7 +628,7 @@ const Demo13 = function () {
     <Collapse
       defaultActiveKey="1"
       classNames={{ header: 'custom-header', title: 'custom-title', body: 'custom-body' }}
-      styles={{ header: { background: '#f5f5f5' } }}
+      styles={{ header: { background: 'var(--docs-surface-subtle)' } }}
       items={items}
     />
   )

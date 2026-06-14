@@ -362,7 +362,7 @@ export const DropdownDemo007 = (() => {
   const Demo7 = function () {
       return (<Dropdown menu={{ items }} popupRender={(menus) => (<div>
             {menus}
-            <div style={{ padding: '8px 12px', color: 'rgba(0, 0, 0, 0.45)' }}>Extra content</div>
+            <div style={{ padding: '8px 12px', color: 'var(--docs-text-tertiary)' }}>Extra content</div>
           </div>)}>
         <Button>Custom popup</Button>
       </Dropdown>);
@@ -388,7 +388,9 @@ const Demo7 = function () {
       popupRender={(menus) => (
         <div>
           {menus}
-          <div style={{ padding: '8px 12px', color: 'rgba(0, 0, 0, 0.45)' }}>Extra content</div>
+          <div style={{ padding: '8px 12px', color: 'var(--docs-text-tertiary)' }}>
+            Extra content
+          </div>
         </div>
       )}
     >

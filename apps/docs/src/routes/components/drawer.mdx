@@ -352,8 +352,8 @@ export const DrawerDemo006 = (() => {
               height: '200px',
               padding: '48px',
               overflow: 'hidden',
-              background: 'rgba(0, 0, 0, 0.02)',
-              border: '1px solid #f0f0f0',
+              background: 'var(--docs-surface-subtle)',
+              border: '1px solid var(--docs-border)',
               'border-radius': '8px',
           }}>
         Render in this
@@ -387,8 +387,8 @@ const Demo6 = function () {
         height: '200px',
         padding: '48px',
         overflow: 'hidden',
-        background: 'rgba(0, 0, 0, 0.02)',
-        border: '1px solid #f0f0f0',
+        background: 'var(--docs-surface-subtle)',
+        border: '1px solid var(--docs-border)',
         'border-radius': '8px',
       }}
     >
@@ -507,7 +507,7 @@ export const DrawerDemo008 = (() => {
               close: 'demo-drawer-close',
           }} styles={{
               header: { 'border-bottom': '2px solid #1677ff' },
-              body: { background: 'rgba(0, 0, 0, 0.02)' },
+              body: { background: 'var(--docs-surface-subtle)' },
           }} onClose={() => setOpen(false)}>
           Style semantic parts with classNames and styles instead of relying on internal DOM depth.
         </Drawer>
@@ -541,7 +541,7 @@ const Demo8 = function () {
         }}
         styles={{
           header: { 'border-bottom': '2px solid #1677ff' },
-          body: { background: 'rgba(0, 0, 0, 0.02)' },
+          body: { background: 'var(--docs-surface-subtle)' },
         }}
         onClose={() => setOpen(false)}
       >

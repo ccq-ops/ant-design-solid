@@ -190,11 +190,11 @@ export default Demo5
 
 export const StatisticDemo006 = (() => {
   const Demo6 = function () {
-      return (<Statistic title="Monthly Active Users" value={93241} prefix="↑" suffix="users" classNames={{ root: 'rounded border border-dashed border-slate-300 p-4' }} styles={({ props }) => ({
+      return (<Statistic title="Monthly Active Users" value={93241} prefix="↑" suffix="users" classNames={{ root: 'rounded border border-dashed border-[var(--docs-border)] p-4' }} styles={({ props }) => ({
               title: { color: '#1677ff', 'font-weight': 600 },
               content: { color: Number(props.value) < 0 ? '#ff4d4f' : '#0958d9' },
               value: {
-                  background: '#e6f4ff',
+                  background: 'var(--docs-primary-soft)',
                   'border-radius': '4px',
                   padding: '0 6px',
               },
@@ -216,12 +216,12 @@ const Demo6 = function () {
       value={93241}
       prefix="↑"
       suffix="users"
-      classNames={{ root: 'rounded border border-dashed border-slate-300 p-4' }}
+      classNames={{ root: 'rounded border border-dashed border-[var(--docs-border)] p-4' }}
       styles={({ props }) => ({
         title: { color: '#1677ff', 'font-weight': 600 },
         content: { color: Number(props.value) < 0 ? '#ff4d4f' : '#0958d9' },
         value: {
-          background: '#e6f4ff',
+          background: 'var(--docs-primary-soft)',
           'border-radius': '4px',
           padding: '0 6px',
         },

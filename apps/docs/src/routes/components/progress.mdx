@@ -290,7 +290,7 @@ export const ProgressDemo008 = (() => {
       return (<Space direction="vertical" class="w-full">
         <Progress percent={60} strokeColor="#722ed1" railColor="#f9f0ff"/>
         <Progress percent={70} strokeColor={{ from: '#108ee9', to: '#87d068', direction: 'to right' }}/>
-        <Progress type="circle" percent={75} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} railColor="#f0f0f0"/>
+        <Progress type="circle" percent={75} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} railColor="var(--docs-border)"/>
       </Space>);
   };
 
@@ -314,7 +314,7 @@ const Demo8 = function () {
         type="circle"
         percent={75}
         strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
-        railColor="#f0f0f0"
+        railColor="var(--docs-border)"
       />
     </Space>
   )

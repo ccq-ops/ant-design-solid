@@ -52,7 +52,7 @@ export const InputDemo002 = (() => {
       const [value, setValue] = createSignal('Solid');
       return (<Space direction="vertical" class="w-80">
         <Input value={value()} onInput={(event) => setValue(event.currentTarget.value)}/>
-        <span class="text-sm text-gray-500">Current value: {value()}</span>
+        <span class="text-sm text-[var(--docs-text-secondary)]">Current value: {value()}</span>
       </Space>);
   }
   const Demo2 = function () {
@@ -75,7 +75,7 @@ function ControlledInputDemo() {
   return (
     <Space direction="vertical" class="w-80">
       <Input value={value()} onInput={(event) => setValue(event.currentTarget.value)} />
-      <span class="text-sm text-gray-500">Current value: {value()}</span>
+      <span class="text-sm text-[var(--docs-text-secondary)]">Current value: {value()}</span>
     </Space>
   )
 }
@@ -472,7 +472,7 @@ export const InputDemo012 = (() => {
         <Input.Search allowClear placeholder="Search docs" onSearch={(value, _event, info) => setMessage(`Searched "${value}" from ${info.source}`)}/>
         <Input.Search defaultValue="Solid" enterButton="Search" loading onSearch={(value) => setMessage(`Button search: ${value}`)}/>
         <Input.Search enterButton="Go" classNames={{ button: 'bg-blue-600 text-white' }} styles={{ button: { width: '72px' } }} placeholder="Styled search button"/>
-        <span class="text-sm text-gray-500">{message()}</span>
+        <span class="text-sm text-[var(--docs-text-secondary)]">{message()}</span>
       </Space>);
   }
   const Demo12 = function () {
@@ -511,7 +511,7 @@ function SearchDemo() {
         styles={{ button: { width: '72px' } }}
         placeholder="Styled search button"
       />
-      <span class="text-sm text-gray-500">{message()}</span>
+      <span class="text-sm text-[var(--docs-text-secondary)]">{message()}</span>
     </Space>
   )
 }
@@ -536,9 +536,9 @@ export const InputDemo013 = (() => {
       const [visible, setVisible] = createSignal(false);
       return (<Space direction="vertical" class="w-80">
         <Input.Password placeholder="Password"/>
-        <Input.Password action="hover" suffix={<span class="text-xs text-gray-500">hold</span>} placeholder="Hover to reveal"/>
+        <Input.Password action="hover" suffix={<span class="text-xs text-[var(--docs-text-tertiary)]">hold</span>} placeholder="Hover to reveal"/>
         <Input.Password visibilityToggle={{ visible: visible(), onVisibleChange: setVisible }} iconRender={(nextVisible) => <span>{nextVisible ? 'Hide' : 'Show'}</span>} defaultValue="controlled"/>
-        <span class="text-sm text-gray-500">
+        <span class="text-sm text-[var(--docs-text-secondary)]">
           Controlled visibility: {visible() ? 'visible' : 'hidden'}
         </span>
       </Space>);
@@ -565,7 +565,7 @@ function PasswordDemo() {
       <Input.Password placeholder="Password" />
       <Input.Password
         action="hover"
-        suffix={<span class="text-xs text-gray-500">hold</span>}
+        suffix={<span class="text-xs text-[var(--docs-text-tertiary)]">hold</span>}
         placeholder="Hover to reveal"
       />
       <Input.Password
@@ -573,7 +573,7 @@ function PasswordDemo() {
         iconRender={(nextVisible) => <span>{nextVisible ? 'Hide' : 'Show'}</span>}
         defaultValue="controlled"
       />
-      <span class="text-sm text-gray-500">
+      <span class="text-sm text-[var(--docs-text-secondary)]">
         Controlled visibility: {visible() ? 'visible' : 'hidden'}
       </span>
     </Space>
@@ -601,7 +601,7 @@ export const InputDemo014 = (() => {
       return (<Space direction="vertical">
         <Input.OTP length={6} onChange={setOtp}/>
         <Input.OTP length={6} defaultValue="123456" type="tel" mask="•" separator={(index) => (index === 2 ? <span>-</span> : null)}/>
-        <span class="text-sm text-gray-500">Completed OTP: {otp() || '-'}</span>
+        <span class="text-sm text-[var(--docs-text-secondary)]">Completed OTP: {otp() || '-'}</span>
       </Space>);
   }
   const Demo14 = function () {
@@ -631,7 +631,7 @@ function OTPDemo() {
         mask="•"
         separator={(index) => (index === 2 ? <span>-</span> : null)}
       />
-      <span class="text-sm text-gray-500">Completed OTP: {otp() || '-'}</span>
+      <span class="text-sm text-[var(--docs-text-secondary)]">Completed OTP: {otp() || '-'}</span>
     </Space>
   )
 }
