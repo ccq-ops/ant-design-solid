@@ -316,9 +316,11 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       handleSize: 18,
     },
     Alert: {
+      defaultPadding: `${token.paddingContentVerticalSM}px 12px`,
       padding: token.paddingSM,
       borderRadius: token.borderRadius,
-      withDescriptionPadding: token.padding,
+      withDescriptionPadding: `${token.paddingMD}px ${token.paddingContentHorizontalLG}px`,
+      withDescriptionIconSize: token.fontSizeHeading3,
       iconSize: 16,
       successBg: isDarkToken(token) ? 'rgba(82, 196, 26, 0.12)' : '#f6ffed',
       successBorderColor: isDarkToken(token) ? 'rgba(82, 196, 26, 0.35)' : '#b7eb8f',

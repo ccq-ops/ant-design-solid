@@ -568,9 +568,11 @@ export interface SwitchComponentToken extends ComponentTokenBase {
 }
 
 export interface AlertComponentToken extends ComponentTokenBase {
+  defaultPadding: string | number
   padding: number
   borderRadius: number
-  withDescriptionPadding: number
+  withDescriptionPadding: string | number
+  withDescriptionIconSize: number | string
   iconSize: number
   successBg: string
   successBorderColor: string

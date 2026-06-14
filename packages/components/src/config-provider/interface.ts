@@ -100,7 +100,7 @@ export interface WaveConfig {
 export type RenderEmptyHandler = (componentName?: string) => JSX.Element
 
 export type AlertConfig = ComponentStyleConfig &
-  PickProps<AlertProps, 'closable'> & {
+  PickProps<AlertProps, 'closable' | 'variant' | 'classNames' | 'styles'> & {
     closeIcon?: JSX.Element
     successIcon?: JSX.Element
     infoIcon?: JSX.Element

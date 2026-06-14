@@ -10,21 +10,24 @@ export function useAlertStyle(prefixCls: string) {
     return {
       [`.${prefixCls}`]: {
         'box-sizing': 'border-box',
+        position: 'relative',
         display: 'flex',
         'align-items': 'center',
-        gap: t.marginSM,
         width: '100%',
-        padding: at.padding,
+        padding: at.defaultPadding ?? at.padding,
         color: t.colorText,
         'font-size': t.fontSize,
         'line-height': t.lineHeight,
         'border-radius': at.borderRadius,
         border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
+        'word-wrap': 'break-word',
       },
       [`.${prefixCls}-with-description`]: { padding: at.withDescriptionPadding },
       [`.${prefixCls}-banner`]: {
         'border-radius': 0,
+        border: '0 !important',
       },
+      [`.${prefixCls}-filled`]: { 'border-color': 'transparent' },
       [`.${prefixCls}-success`]: {
         background: at.successBg,
         borderColor: at.successBorderColor,
@@ -48,19 +51,51 @@ export function useAlertStyle(prefixCls: string) {
       [`.${prefixCls}-icon`]: {
         display: 'inline-flex',
         'align-items': 'center',
+        'margin-inline-end': t.marginXS,
         'font-size': at.iconSize,
+        'line-height': 0,
+      },
+      [`.${prefixCls}-with-description .${prefixCls}-icon`]: {
+        'align-items': 'flex-start',
+        'margin-inline-end': t.marginSM,
+        'font-size': at.withDescriptionIconSize,
+      },
+      [`.${prefixCls}-section`]: { flex: 1, 'min-width': 0 },
+      [`.${prefixCls}-title`]: { color: t.colorTextHeading },
+      [`.${prefixCls}-with-description .${prefixCls}-title`]: {
+        display: 'block',
+        'margin-bottom': t.marginXS,
+        color: t.colorTextHeading,
+        'font-size': t.fontSizeLG,
+      },
+      [`.${prefixCls}-description`]: {
+        display: 'block',
+        color: t.colorText,
+        'font-size': t.fontSize,
         'line-height': t.lineHeight,
       },
-      [`.${prefixCls}-content`]: { flex: 1, 'min-width': 0 },
-      [`.${prefixCls}-message`]: { color: t.colorText },
-      [`.${prefixCls}-description`]: { color: t.colorTextSecondary, 'margin-top': t.marginXS },
-      [`.${prefixCls}-action`]: { 'margin-inline-start': t.marginSM },
-      [`.${prefixCls}-close`]: {
+      [`.${prefixCls}-actions`]: { 'margin-inline-start': t.marginXS },
+      [`.${prefixCls}-close-icon`]: {
+        'margin-inline-start': t.marginXS,
         border: 0,
         padding: 0,
+        overflow: 'hidden',
+        'font-size': t.fontSizeIcon,
+        'line-height': t.fontSizeIcon,
         background: 'transparent',
         color: t.colorTextSecondary,
         cursor: 'pointer',
+      },
+      [`.${prefixCls}-motion-leave`]: {
+        overflow: 'hidden',
+        opacity: 1,
+        transition: 'max-height 0.3s, opacity 0.3s, padding-top 0.3s, padding-bottom 0.3s',
+      },
+      [`.${prefixCls}-motion-leave-active`]: {
+        'max-height': 0,
+        'padding-top': 0,
+        'padding-bottom': 0,
+        opacity: 0,
       },
     }
   })
