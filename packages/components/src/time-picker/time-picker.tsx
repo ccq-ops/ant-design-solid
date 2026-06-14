@@ -43,6 +43,7 @@ type NullableTimeParts = Partial<TimeParts>
 
 const DEFAULT_FORMAT = 'HH:mm:ss'
 const TIME_ANCHOR = '2026-01-01'
+const TIME_CELL_HEIGHT = 32
 
 function pad(value: number): string {
   return String(value).padStart(2, '0')
@@ -162,6 +163,9 @@ interface TimeColumnsProps {
 }
 
 function TimeColumns(props: TimeColumnsProps) {
+  const listRefs: Partial<Record<ColumnType, HTMLDivElement>> = {}
+  const programmaticScrollTypes = new Set<ColumnType>()
+
   function disabledValues(type: ColumnType, parts: NullableTimeParts): number[] {
     if (type === 'hour') return props.disabledConfig?.disabledHours?.() ?? []
     if (type === 'minute' && parts.hour !== undefined) {
@@ -184,6 +188,10 @@ function TimeColumns(props: TimeColumnsProps) {
   }
 
   function handleScroll(type: ColumnType, event: Event): void {
+    if (programmaticScrollTypes.has(type)) {
+      programmaticScrollTypes.delete(type)
+      return
+    }
     if (!props.changeOnScroll) return
     const target = event.currentTarget as HTMLElement
     const optionValues =
@@ -192,9 +200,33 @@ function TimeColumns(props: TimeColumnsProps) {
         : type === 'minute'
           ? options(type, 59, props.minuteStep)
           : options(type, 59, props.secondStep)
-    const nextValue = optionValues[Math.max(0, Math.round(target.scrollTop / 32))]
+    const nextValue = optionValues[Math.max(0, Math.round(target.scrollTop / TIME_CELL_HEIGHT))]
     if (nextValue !== undefined) props.onSelect(type, nextValue)
   }
+
+  function scrollSelectedToTop(type: ColumnType, max: number, step: number): void {
+    const list = listRefs[type]
+    const selected = props.parts[type]
+    if (!list || selected === undefined) return
+    const selectedIndex = options(type, max, step).indexOf(selected)
+    if (selectedIndex === -1) return
+    const selectedElement = list.children.item(selectedIndex) as HTMLElement | null
+    const top =
+      selectedElement !== null
+        ? selectedElement.offsetTop - list.offsetTop
+        : selectedIndex * TIME_CELL_HEIGHT
+    programmaticScrollTypes.add(type)
+    if (typeof list.scrollTo === 'function') {
+      list.scrollTo({ top, behavior: 'smooth' })
+    } else {
+      list.scrollTop = top
+      queueMicrotask(() => programmaticScrollTypes.delete(type))
+    }
+  }
+
+  createEffect(() => scrollSelectedToTop('hour', 23, props.hourStep))
+  createEffect(() => scrollSelectedToTop('minute', 59, props.minuteStep))
+  createEffect(() => scrollSelectedToTop('second', 59, props.secondStep))
 
   function renderCell(type: ColumnType, optionValue: number, originNode: JSX.Element) {
     if (!props.cellRender) return originNode
@@ -216,6 +248,9 @@ function TimeColumns(props: TimeColumnsProps) {
         <div
           role="listbox"
           aria-label={label}
+          ref={(element) => {
+            listRefs[type] = element
+          }}
           class={`${props.prefixCls}-column-list`}
           onScroll={(event) => handleScroll(type, event)}
         >

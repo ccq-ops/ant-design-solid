@@ -448,6 +448,41 @@ describe('TimePicker', () => {
     expect(timeString).toBe('09:05:07')
   })
 
+  it('scrolls selected values to the top of each time column', () => {
+    render(() => <TimePicker defaultOpen defaultValue={dayjs('2026-06-11 09:05:07')} />)
+
+    const selectedHour = screen.getByRole('option', { name: '09 hours' })
+    const selectedMinute = screen.getByRole('option', { name: '05 minutes' })
+    const selectedSecond = screen.getByRole('option', { name: '07 seconds' })
+    const hoursList = screen.getByRole('listbox', { name: 'hours' })
+    const minutesList = screen.getByRole('listbox', { name: 'minutes' })
+    const secondsList = screen.getByRole('listbox', { name: 'seconds' })
+    const scrollHours = vi.fn()
+    const scrollMinutes = vi.fn()
+    const scrollSeconds = vi.fn()
+    hoursList.scrollTo = scrollHours
+    minutesList.scrollTo = scrollMinutes
+    secondsList.scrollTo = scrollSeconds
+    vi.spyOn(hoursList, 'offsetTop', 'get').mockReturnValue(27)
+    vi.spyOn(minutesList, 'offsetTop', 'get').mockReturnValue(27)
+    vi.spyOn(secondsList, 'offsetTop', 'get').mockReturnValue(27)
+    vi.spyOn(selectedHour, 'offsetTop', 'get').mockReturnValue(315)
+    vi.spyOn(selectedMinute, 'offsetTop', 'get').mockReturnValue(175)
+    vi.spyOn(selectedSecond, 'offsetTop', 'get').mockReturnValue(245)
+    fireEvent.click(screen.getByRole('option', { name: '10 hours' }))
+    fireEvent.click(screen.getByRole('option', { name: '09 hours' }))
+
+    expect(scrollHours).toHaveBeenLastCalledWith({ top: 288, behavior: 'smooth' })
+    expect(scrollMinutes).toHaveBeenLastCalledWith({ top: 148, behavior: 'smooth' })
+    expect(scrollSeconds).toHaveBeenLastCalledWith({ top: 218, behavior: 'smooth' })
+
+    const nextHour = screen.getByRole('option', { name: '14 hours' })
+    vi.spyOn(nextHour, 'offsetTop', 'get').mockReturnValue(490)
+    fireEvent.click(screen.getByRole('option', { name: '14 hours' }))
+
+    expect(scrollHours).toHaveBeenLastCalledWith({ top: 463, behavior: 'smooth' })
+  })
+
   it('selects an uncontrolled time and calls onChange', () => {
     const onChange = vi.fn()
     render(() => <TimePicker defaultOpen onChange={onChange} />)
