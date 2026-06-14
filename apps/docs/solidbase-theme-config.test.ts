@@ -1,3 +1,5 @@
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { componentDocs, docsThemeConfig } from './solidbase-theme-config'
 import { frontmatter as buttonFrontmatter } from './src/routes/components/button.mdx'
@@ -66,5 +68,39 @@ describe('docs theme config', () => {
         }),
       ]),
     )
+  })
+
+  it('discovers component docs from MDX frontmatter and file paths', async () => {
+    const temporaryPage = join(process.cwd(), 'src/routes/components/auto-discovered-test.mdx')
+
+    try {
+      mkdirSync(dirname(temporaryPage), { recursive: true })
+      writeFileSync(
+        temporaryPage,
+        [
+          '---',
+          'title: Auto Discovered Test',
+          'group: Other',
+          '---',
+          '',
+          '# Auto Discovered Test',
+          '',
+        ].join('\n'),
+      )
+
+      const freshConfig = await import('./solidbase-theme-config.ts?auto-discovery-test')
+
+      expect(freshConfig.componentDocs).toEqual(
+        expect.arrayContaining([
+          {
+            title: 'Auto Discovered Test',
+            link: '/auto-discovered-test',
+            group: 'Other',
+          },
+        ]),
+      )
+    } finally {
+      rmSync(temporaryPage, { force: true })
+    }
   })
 })

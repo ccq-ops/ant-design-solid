@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs'
+import { dirname, join, parse } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { DefaultThemeConfig } from '@kobalte/solidbase/default-theme'
 
 export const componentGroups = [
@@ -18,84 +21,81 @@ export interface ComponentDocMeta {
   group: ComponentGroup
 }
 
-export const componentDocs = [
-  { title: 'Button', link: '/button', group: 'General' },
-  { title: 'Float Button', link: '/float-button', group: 'General' },
-  { title: 'Icon', link: '/icon', group: 'General' },
-  { title: 'Typography', link: '/typography', group: 'General' },
+function isComponentGroup(value: unknown): value is ComponentGroup {
+  return typeof value === 'string' && componentGroups.includes(value as ComponentGroup)
+}
 
-  { title: 'Divider', link: '/divider', group: 'Layout' },
-  { title: 'Flex', link: '/flex', group: 'Layout' },
-  { title: 'Grid', link: '/grid', group: 'Layout' },
-  { title: 'Layout', link: '/layout', group: 'Layout' },
-  { title: 'Masonry', link: '/masonry', group: 'Layout' },
-  { title: 'Space', link: '/space', group: 'Layout' },
-  { title: 'Splitter', link: '/splitter', group: 'Layout' },
+function titleFromSlug(slug: string) {
+  if (slug === 'qrcode') {
+    return 'QRCode'
+  }
 
-  { title: 'Anchor', link: '/anchor', group: 'Navigation' },
-  { title: 'Breadcrumb', link: '/breadcrumb', group: 'Navigation' },
-  { title: 'Dropdown', link: '/dropdown', group: 'Navigation' },
-  { title: 'Menu', link: '/menu', group: 'Navigation' },
-  { title: 'Pagination', link: '/pagination', group: 'Navigation' },
-  { title: 'Steps', link: '/steps', group: 'Navigation' },
-  { title: 'Tabs', link: '/tabs', group: 'Navigation' },
+  return slug
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
 
-  { title: 'Auto Complete', link: '/auto-complete', group: 'Data Entry' },
-  { title: 'Cascader', link: '/cascader', group: 'Data Entry' },
-  { title: 'Checkbox', link: '/checkbox', group: 'Data Entry' },
-  { title: 'Color Picker', link: '/color-picker', group: 'Data Entry' },
-  { title: 'Date Picker', link: '/date-picker', group: 'Data Entry' },
-  { title: 'Form', link: '/form', group: 'Data Entry' },
-  { title: 'Input', link: '/input', group: 'Data Entry' },
-  { title: 'Input Number', link: '/input-number', group: 'Data Entry' },
-  { title: 'Mentions', link: '/mentions', group: 'Data Entry' },
-  { title: 'Radio', link: '/radio', group: 'Data Entry' },
-  { title: 'Rate', link: '/rate', group: 'Data Entry' },
-  { title: 'Select', link: '/select', group: 'Data Entry' },
-  { title: 'Slider', link: '/slider', group: 'Data Entry' },
-  { title: 'Switch', link: '/switch', group: 'Data Entry' },
-  { title: 'Time Picker', link: '/time-picker', group: 'Data Entry' },
-  { title: 'Transfer', link: '/transfer', group: 'Data Entry' },
-  { title: 'Tree Select', link: '/tree-select', group: 'Data Entry' },
-  { title: 'Upload', link: '/upload', group: 'Data Entry' },
+function linkFromSlug(slug: string): `/${string}` {
+  return `/${slug}`
+}
 
-  { title: 'Avatar', link: '/avatar', group: 'Data Display' },
-  { title: 'Badge', link: '/badge', group: 'Data Display' },
-  { title: 'Calendar', link: '/calendar', group: 'Data Display' },
-  { title: 'Card', link: '/card', group: 'Data Display' },
-  { title: 'Carousel', link: '/carousel', group: 'Data Display' },
-  { title: 'Collapse', link: '/collapse', group: 'Data Display' },
-  { title: 'Descriptions', link: '/descriptions', group: 'Data Display' },
-  { title: 'Empty', link: '/empty', group: 'Data Display' },
-  { title: 'Image', link: '/image', group: 'Data Display' },
-  { title: 'List', link: '/list', group: 'Data Display' },
-  { title: 'Popover', link: '/popover', group: 'Data Display' },
-  { title: 'QRCode', link: '/qrcode', group: 'Data Display' },
-  { title: 'Segmented', link: '/segmented', group: 'Data Display' },
-  { title: 'Statistic', link: '/statistic', group: 'Data Display' },
-  { title: 'Table', link: '/table', group: 'Data Display' },
-  { title: 'Tag', link: '/tag', group: 'Data Display' },
-  { title: 'Timeline', link: '/timeline', group: 'Data Display' },
-  { title: 'Tooltip', link: '/tooltip', group: 'Data Display' },
-  { title: 'Tour', link: '/tour', group: 'Data Display' },
-  { title: 'Tree', link: '/tree', group: 'Data Display' },
+function readFrontmatter(filePath: string) {
+  const source = readFileSync(filePath, 'utf8')
+  const match = source.match(/^---\n(?<frontmatter>[\s\S]*?)\n---\n/)
+  const frontmatter = match?.groups?.frontmatter ?? ''
+  const data: Record<string, string> = {}
 
-  { title: 'Alert', link: '/alert', group: 'Feedback' },
-  { title: 'Drawer', link: '/drawer', group: 'Feedback' },
-  { title: 'Message', link: '/message', group: 'Feedback' },
-  { title: 'Modal', link: '/modal', group: 'Feedback' },
-  { title: 'Notification', link: '/notification', group: 'Feedback' },
-  { title: 'Popconfirm', link: '/popconfirm', group: 'Feedback' },
-  { title: 'Progress', link: '/progress', group: 'Feedback' },
-  { title: 'Result', link: '/result', group: 'Feedback' },
-  { title: 'Skeleton', link: '/skeleton', group: 'Feedback' },
-  { title: 'Spin', link: '/spin', group: 'Feedback' },
-  { title: 'Watermark', link: '/watermark', group: 'Feedback' },
+  for (const line of frontmatter.split('\n')) {
+    const separatorIndex = line.indexOf(':')
 
-  { title: 'Affix', link: '/affix', group: 'Other' },
-  { title: 'Border Beam', link: '/border-beam', group: 'Other' },
-  { title: 'Config Provider', link: '/config-provider', group: 'Other' },
-] satisfies ComponentDocMeta[]
+    if (separatorIndex === -1) {
+      continue
+    }
+
+    const key = line.slice(0, separatorIndex).trim()
+    const value = line.slice(separatorIndex + 1).trim()
+
+    if (key) {
+      data[key] = value
+    }
+  }
+
+  return data
+}
+
+function readComponentDocs(): ComponentDocMeta[] {
+  const componentsDir = join(dirname(fileURLToPath(import.meta.url)), 'src/routes/components')
+
+  return readdirSync(componentsDir)
+    .filter((fileName) => fileName.endsWith('.mdx'))
+    .map((fileName) => {
+      const slug = parse(fileName).name
+      const filePath = join(componentsDir, fileName)
+      const frontmatter = readFrontmatter(filePath)
+
+      if (!isComponentGroup(frontmatter.group)) {
+        throw new Error(`${filePath} has invalid or missing component group`)
+      }
+
+      return {
+        title: frontmatter.title || titleFromSlug(slug),
+        link: linkFromSlug(slug),
+        group: frontmatter.group,
+      }
+    })
+    .sort((a, b) => {
+      const groupOrder = componentGroups.indexOf(a.group) - componentGroups.indexOf(b.group)
+
+      if (groupOrder !== 0) {
+        return groupOrder
+      }
+
+      return a.title.localeCompare(b.title)
+    })
+}
+
+export const componentDocs = readComponentDocs()
 
 const componentSidebar = componentGroups.map((group) => ({
   title: group,
