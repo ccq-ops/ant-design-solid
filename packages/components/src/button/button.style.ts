@@ -142,7 +142,7 @@ export function useButtonStyle(prefixCls: string) {
         'box-shadow': 'none',
       },
       [`.${prefixCls}-variant-solid`]: {
-        color: bt.solidTextColor,
+        color: localTextColorForSolid(t.colorBgBase, bt.solidTextColor),
         background: localColorForSolid(t.colorBgSolid, t.colorPrimary),
         borderColor: 'transparent',
       },
@@ -164,6 +164,13 @@ export function useButtonStyle(prefixCls: string) {
         background: bt.linkHoverBg,
         color: t.colorPrimary,
         'box-shadow': 'none',
+      },
+      [`.${prefixCls}-background-ghost.${prefixCls}-variant-outlined, ` +
+      `.${prefixCls}-background-ghost.${prefixCls}-variant-dashed, ` +
+      `.${prefixCls}-background-ghost.${prefixCls}-variant-filled, ` +
+      `.${prefixCls}-background-ghost.${prefixCls}-variant-text, ` +
+      `.${prefixCls}-background-ghost.${prefixCls}-variant-link`]: {
+        background: bt.ghostBg,
       },
       [`.${prefixCls}-color-default`]: {},
       [`.${prefixCls}-color-default.${prefixCls}-variant-text`]: {
@@ -187,6 +194,10 @@ export function useButtonStyle(prefixCls: string) {
           borderColor: 'transparent',
           'box-shadow': 'none',
         },
+      },
+      [`.${prefixCls}-color-default.${prefixCls}-background-ghost`]: {
+        color: bt.defaultGhostColor,
+        borderColor: bt.defaultGhostBorderColor,
       },
       ...colorVariantStyles(prefixCls, 'primary', t.colorPrimary),
       ...colorVariantStyles(prefixCls, 'danger', t.colorError),
@@ -222,8 +233,6 @@ export function useButtonStyle(prefixCls: string) {
       ...loadingIconRotateStyle(`.${prefixCls}-loading-icon svg`),
       [`.${prefixCls}-background-ghost`]: {
         background: bt.ghostBg,
-        color: bt.defaultGhostColor,
-        borderColor: bt.defaultGhostBorderColor,
         'box-shadow': 'none',
       },
       [`.${prefixCls}-icon`]: { display: 'inline-flex', 'align-items': 'center' },
@@ -234,4 +243,8 @@ export function useButtonStyle(prefixCls: string) {
 
 function localColorForSolid(defaultColor: string, fallback: string) {
   return defaultColor || fallback
+}
+
+function localTextColorForSolid(bgBaseColor: string, fallback: string) {
+  return bgBaseColor || fallback
 }

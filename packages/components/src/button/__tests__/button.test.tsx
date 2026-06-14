@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { SearchOutlined } from '@ant-design-solid/icons'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Button } from '../index'
@@ -406,6 +407,54 @@ describe('Button', () => {
     )
     expect(css).toContain(
       '.ads-btn-color-default.ads-btn-variant-text[disabled], .ads-btn-color-default.ads-btn-variant-text.ads-btn-disabled{background:transparent;border-color:transparent;box-shadow:none;color:rgba(0,0,0,0.25);',
+    )
+  })
+
+  it('keeps default solid buttons readable in dark theme', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+          <Button color="default" variant="solid">
+            Default Solid
+          </Button>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain(
+      '.ads-btn-variant-solid{background:rgba(255,255,255,0.95);border-color:transparent;color:#000;',
+    )
+  })
+
+  it('keeps ghost button colors readable in dark theme without losing color semantics', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+          <Button ghost>Default Ghost</Button>
+          <Button type="primary" ghost>
+            Primary Ghost
+          </Button>
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain(
+      '.ads-btn-color-default.ads-btn-background-ghost{border-color:#fff;color:#fff;',
+    )
+    expect(css).toContain(
+      '.ads-btn-color-primary.ads-btn-variant-outlined{border-color:#1668dc;color:#1668dc;',
+    )
+    expect(css).toContain('.ads-btn-background-ghost.ads-btn-variant-outlined,')
+    expect(css).toContain('.ads-btn-background-ghost.ads-btn-variant-link{background:transparent;')
+    expect(css).toContain('.ads-btn-background-ghost{background:transparent;box-shadow:none;')
+    expect(css).not.toContain(
+      '.ads-btn-background-ghost{background:transparent;border-color:#141414;box-shadow:none;color:#141414;',
     )
   })
 })

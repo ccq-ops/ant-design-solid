@@ -208,6 +208,8 @@ describe('@ant-design-solid/theme', () => {
     expect(merged.colorPrimary).toBe('#722ed1')
     expect(merged.borderRadius).toBe(8)
     expect(button.borderRadius).toBe(10)
+    expect(button.defaultGhostColor).toBe(merged.colorTextLightSolid)
+    expect(button.defaultGhostBorderColor).toBe(merged.colorTextLightSolid)
     expect(getComponentToken('BorderBeam', merged).lineWidth).toBe(3)
   })
 
