@@ -1,17 +1,9 @@
-import { render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { describe, expect, it } from 'vitest'
+import { renderDocsPage } from '../../test-utils/render-docs-page'
 import TimePickerPage from './time-picker.mdx'
 
 function renderTimePickerPage() {
-  return render(() => (
-    <StyleProvider>
-      <ConfigProvider>
-        <TimePickerPage />
-      </ConfigProvider>
-    </StyleProvider>
-  ))
+  return renderDocsPage(() => <TimePickerPage />)
 }
 
 describe('TimePicker docs page', () => {

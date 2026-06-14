@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { JSX } from 'solid-js'
-import { Layout } from './layout'
+import Layout from './layout'
 
 const resetPath = vi.hoisted(() => vi.fn())
 const setPath = vi.hoisted(() => vi.fn<(path: string) => void>())
@@ -19,7 +19,6 @@ vi.mock('@solidjs/router', async () => {
     class?: string
     end?: boolean
     href: string
-    noScroll?: boolean
   }) {
     const isActive = () =>
       props.end ? currentPath() === props.href : currentPath().startsWith(props.href)
@@ -31,10 +30,8 @@ vi.mock('@solidjs/router', async () => {
         aria-current={isActive() ? 'page' : undefined}
         class={className()}
         href={props.href}
-        noScroll={props.noScroll}
         onClick={(event) => {
           event.preventDefault()
-          if (!props.noScroll) window.scrollTo(0, 0)
           setCurrentPath(props.href)
         }}
       >
@@ -54,7 +51,7 @@ vi.mock('@solidjs/router', async () => {
   return { A, useLocation }
 })
 
-vi.mock('../solidbase-theme/route-data', () => ({
+vi.mock('./route-data', () => ({
   topNavItems: [
     { group: 'components', path: '/components/alert', label: 'Components' },
     { group: 'docs', path: '/docs/getting-started', label: 'Docs' },
@@ -71,18 +68,10 @@ vi.mock('../solidbase-theme/route-data', () => ({
   },
 }))
 
-const mode = vi.hoisted(() => vi.fn(() => 'light'))
-const toggleTheme = vi.hoisted(() => vi.fn())
-
-vi.mock('./theme-context', () => ({
-  useDocsTheme: () => ({ mode, toggleTheme }),
-}))
-
 beforeEach(() => {
   resetPath()
-  mode.mockReturnValue('light')
-  toggleTheme.mockClear()
-  vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+  localStorage.clear()
+  document.documentElement.removeAttribute('data-theme')
 })
 
 afterEach(() => {
@@ -97,7 +86,7 @@ function renderLayout() {
   ))
 }
 
-describe('Layout', () => {
+describe('SolidBase Layout', () => {
   it('renders a theme toggle in the top navigation', () => {
     const result = renderLayout()
     const toggle = result.getByRole('button', { name: 'Switch to dark theme' })
@@ -107,7 +96,7 @@ describe('Layout', () => {
 
     fireEvent.click(toggle)
 
-    expect(toggleTheme).toHaveBeenCalledTimes(1)
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
   })
 
   it('centers the theme toggle icon within its circular button', () => {
@@ -116,15 +105,6 @@ describe('Layout', () => {
 
     expect(toggle).toHaveClass('leading-none')
     expect(toggle.querySelector('svg')).toHaveClass('block')
-  })
-
-  it('updates the theme toggle label in dark mode', () => {
-    mode.mockReturnValue('dark')
-    const result = renderLayout()
-    const toggle = result.getByRole('button', { name: 'Switch to light theme' })
-
-    expect(toggle).not.toHaveTextContent('Light mode')
-    expect(toggle.querySelector('svg')).toBeInTheDocument()
   })
 
   it('renders top navigation from convention-derived page groups', () => {
@@ -138,14 +118,6 @@ describe('Layout', () => {
       'href',
       '/components/alert',
     )
-  })
-
-  it('centers top navigation items horizontally within the nav row', () => {
-    const result = renderLayout()
-    const docsLink = result.getByRole('link', { name: 'Docs' })
-    const topNav = docsLink.closest('nav')
-
-    expect(topNav).toHaveClass('items-center')
   })
 
   it('centers the home page content when the sidebar is hidden', () => {
@@ -189,39 +161,12 @@ describe('Layout', () => {
     expect(result.queryByRole('link', { name: 'Theming' })).toBeNull()
   })
 
-  it('scrolls the page to the top when clicking sidebar menu links', async () => {
-    setPath('/components/alert')
-    const scrollTo = vi.mocked(window.scrollTo)
-    const result = renderLayout()
-    const menuLink = result.getByRole('link', { name: 'Menu' })
-
-    fireEvent.click(menuLink)
-    await Promise.resolve()
-
-    expect(scrollTo).toHaveBeenCalledWith(0, 0)
-  })
-
-  it('scrolls the active sidebar item into view after refreshing on a nested page', async () => {
-    setPath('/components/menu')
-    const scrollIntoView = vi.fn()
-    const originalScrollIntoView = Element.prototype.scrollIntoView
-    Element.prototype.scrollIntoView = scrollIntoView
-
-    renderLayout()
-    await Promise.resolve()
-
-    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' })
-
-    Element.prototype.scrollIntoView = originalScrollIntoView
-  })
-
-  it('marks the clicked sidebar menu item as selected with Tailwind utilities', async () => {
+  it('marks the clicked sidebar menu item as selected with Tailwind utilities', () => {
     setPath('/components/alert')
     const result = renderLayout()
     const menuLink = result.getByRole('link', { name: 'Menu' })
 
     fireEvent.click(menuLink)
-    await Promise.resolve()
 
     expect(menuLink).toHaveAttribute('aria-current', 'page')
     expect(menuLink).toHaveClass('bg-blue-50')

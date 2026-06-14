@@ -1,17 +1,9 @@
-import { render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { describe, expect, it } from 'vitest'
+import { renderDocsPage } from '../../test-utils/render-docs-page'
 import ProgressPage from './progress.mdx'
 
 function renderProgressPage() {
-  return render(() => (
-    <StyleProvider>
-      <ConfigProvider>
-        <ProgressPage />
-      </ConfigProvider>
-    </StyleProvider>
-  ))
+  return renderDocsPage(() => <ProgressPage />)
 }
 
 describe('Progress docs page', () => {

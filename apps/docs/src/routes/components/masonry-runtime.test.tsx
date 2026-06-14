@@ -1,17 +1,9 @@
-import { render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { describe, expect, it } from 'vitest'
+import { renderDocsPage } from '../../test-utils/render-docs-page'
 import MasonryPage from './masonry.mdx'
 
 function renderMasonryPage() {
-  return render(() => (
-    <StyleProvider>
-      <ConfigProvider>
-        <MasonryPage />
-      </ConfigProvider>
-    </StyleProvider>
-  ))
+  return renderDocsPage(() => <MasonryPage />)
 }
 
 describe('Masonry docs page', () => {

@@ -1,18 +1,11 @@
-import { render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { describe, expect, it } from 'vitest'
+import { renderDocsPage } from '../../test-utils/render-docs-page'
 import FormPage from './form.mdx'
 
 function renderFormPage() {
   const cache = createCache()
-  const result = render(() => (
-    <StyleProvider cache={cache}>
-      <ConfigProvider>
-        <FormPage />
-      </ConfigProvider>
-    </StyleProvider>
-  ))
+  const result = renderDocsPage(() => <FormPage />, { cache })
   return { cache, result }
 }
 

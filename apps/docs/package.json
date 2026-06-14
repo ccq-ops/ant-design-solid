@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "test": "vitest run --config ../../vitest.config.ts --passWithNoTests",
+    "test": "vitest run --config vitest.config.ts --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint src"
   },
@@ -27,6 +27,7 @@
     "remark-gfm": "^4.0.1",
     "resolve": "^1.22.12",
     "tailwindcss": "^4.3.0",
-    "typescript": "latest"
+    "typescript": "latest",
+    "vite-plugin-solid": "latest"
   }
 }

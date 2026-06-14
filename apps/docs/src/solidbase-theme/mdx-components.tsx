@@ -1,5 +1,5 @@
-import type { ComponentProps, JSX } from 'solid-js'
-import { splitProps } from 'solid-js'
+import type { ComponentProps, JSX, ParentProps } from 'solid-js'
+import { Show, splitProps } from 'solid-js'
 import { Preview, PreviewPanel, PreviewStage } from './components/preview'
 
 type TableProps = JSX.HTMLAttributes<HTMLTableElement>
@@ -26,6 +26,33 @@ export function a(props: ComponentProps<'a'> & { 'data-auto-heading'?: '' }) {
       rel={outbound() ? 'noopener noreferrer' : undefined}
       {...props}
     />
+  )
+}
+
+export function DirectiveContainer(props: ParentProps<{ title?: string; type?: string }>) {
+  if (props.type === 'tab') return <>{props.children}</>
+
+  if (props.type === 'details') {
+    return (
+      <details class="docs-border docs-surface-subtle my-4 rounded-lg border p-4">
+        <summary>{props.title ?? props.type}</summary>
+        {props.children}
+      </details>
+    )
+  }
+
+  return (
+    <div
+      class="docs-border docs-surface-subtle my-4 rounded-lg border p-4"
+      data-custom-container={props.type}
+    >
+      <Show when={props.title !== ' '}>
+        <span class="docs-text-strong mb-2 block text-sm font-semibold">
+          {props.title ?? props.type}
+        </span>
+      </Show>
+      {props.children}
+    </div>
   )
 }
 

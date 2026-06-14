@@ -1,17 +1,9 @@
-import { render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { describe, expect, it } from 'vitest'
+import { renderDocsPage } from '../../test-utils/render-docs-page'
 import DividerPage from './divider.mdx'
 
 function renderDividerPage() {
-  return render(() => (
-    <StyleProvider>
-      <ConfigProvider>
-        <DividerPage />
-      </ConfigProvider>
-    </StyleProvider>
-  ))
+  return renderDocsPage(() => <DividerPage />)
 }
 
 describe('Divider docs page', () => {

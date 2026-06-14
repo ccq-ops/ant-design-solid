@@ -1,7 +1,6 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { renderDocsPage } from '../test-utils/render-docs-page'
 import Home from './index.mdx'
 
 const navigate = vi.hoisted(() => vi.fn())
@@ -19,13 +18,7 @@ beforeEach(() => {
 })
 
 function renderHome() {
-  return render(() => (
-    <StyleProvider>
-      <ConfigProvider>
-        <Home />
-      </ConfigProvider>
-    </StyleProvider>
-  ))
+  return renderDocsPage(() => <Home />)
 }
 
 describe('Home', () => {
