@@ -17,10 +17,6 @@ Flex arranges content with CSS flexbox and Ant Design style spacing, direction, 
 <FlexDemo001 />
 
 export const FlexDemo001 = (() => {
-  const baseStyle = {
-      width: '25%',
-      height: '54px',
-  };
   const Demo1 = function () {
       const [orientation, setOrientation] = createSignal('horizontal');
       return (<Flex gap="medium" vertical>
@@ -29,10 +25,7 @@ export const FlexDemo001 = (() => {
               { label: 'vertical', value: 'vertical' },
           ]}/>
         <Flex orientation={orientation()}>
-          {Array.from({ length: 4 }).map((_, index) => (<div style={{
-                  ...baseStyle,
-                  'background-color': index % 2 ? '#1677ff' : '#1677ffbf',
-              }}/>))}
+          {Array.from({ length: 4 }).map((_, index) => (<div class={index % 2 ? 'h-[54px] w-1/4 bg-blue-600' : 'h-[54px] w-1/4 bg-blue-500/75'}/>))}
         </Flex>
       </Flex>);
   };
@@ -45,11 +38,6 @@ return Demo1
 ```tsx
 import { createSignal } from 'solid-js'
 import { Flex, Radio } from '@ant-design-solid/core'
-
-const baseStyle = {
-  width: '25%',
-  height: '54px',
-}
 
 const Demo1 = function () {
   const [orientation, setOrientation] = createSignal<'horizontal' | 'vertical'>('horizontal')
@@ -66,12 +54,7 @@ const Demo1 = function () {
       />
       <Flex orientation={orientation()}>
         {Array.from({ length: 4 }).map((_, index) => (
-          <div
-            style={{
-              ...baseStyle,
-              'background-color': index % 2 ? '#1677ff' : '#1677ffbf',
-            }}
-          />
+          <div class={index % 2 ? 'h-[54px] w-1/4 bg-blue-600' : 'h-[54px] w-1/4 bg-blue-500/75'} />
         ))}
       </Flex>
     </Flex>
@@ -157,12 +140,6 @@ export default Demo2
 <FlexDemo003 />
 
 export const FlexDemo003 = (() => {
-  const boxStyle = {
-      width: '100%',
-      height: '120px',
-      'border-radius': '6px',
-      border: '1px solid #40a9ff',
-  };
   const justifyOptions = [
       'flex-start',
       'center',
@@ -180,7 +157,7 @@ export const FlexDemo003 = (() => {
         <Segmented options={justifyOptions} value={justify()} onChange={(value) => setJustify(value)}/>
         <span>Select align:</span>
         <Segmented options={alignOptions} value={align()} onChange={(value) => setAlign(value)}/>
-        <Flex style={boxStyle} justify={justify()} align={align()}>
+        <Flex class="h-[120px] w-full rounded-md border border-blue-400" justify={justify()} align={align()}>
           <Button type="primary">Primary</Button>
           <Button type="primary">Primary</Button>
           <Button type="primary">Primary</Button>
@@ -198,13 +175,6 @@ return Demo3
 import { createSignal } from 'solid-js'
 import { Button, Flex, Segmented } from '@ant-design-solid/core'
 import type { FlexProps } from '@ant-design-solid/core'
-
-const boxStyle = {
-  width: '100%',
-  height: '120px',
-  'border-radius': '6px',
-  border: '1px solid #40a9ff',
-}
 
 const justifyOptions = [
   'flex-start',
@@ -235,7 +205,11 @@ const Demo3 = function () {
         value={align()}
         onChange={(value) => setAlign(value as FlexProps['align'])}
       />
-      <Flex style={boxStyle} justify={justify()} align={align()}>
+      <Flex
+        class="h-[120px] w-full rounded-md border border-blue-400"
+        justify={justify()}
+        align={align()}
+      >
         <Button type="primary">Primary</Button>
         <Button type="primary">Primary</Button>
         <Button type="primary">Primary</Button>
@@ -293,18 +267,11 @@ export default Demo4
 <FlexDemo005 />
 
 export const FlexDemo005 = (() => {
-  const cardStyle = {
-      width: '620px',
-  };
-  const imgStyle = {
-      display: 'block',
-      width: '273px',
-  };
   const Demo5 = function () {
-      return (<Card hoverable style={cardStyle} styles={{ body: { padding: 0, overflow: 'hidden' } }}>
+      return (<Card hoverable class="w-[620px]" styles={{ body: { padding: 0, overflow: 'hidden' } }}>
         <Flex justify="space-between">
-          <img draggable={false} alt="avatar" src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png" style={imgStyle}/>
-          <Flex vertical align="flex-end" justify="space-between" style={{ padding: '32px' }}>
+          <img draggable={false} alt="avatar" src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png" class="block w-[273px]"/>
+          <Flex vertical align="flex-end" justify="space-between" class="p-8">
             <Typography.Title level={3}>
               "antd is an enterprise-class UI design language and React UI library."
             </Typography.Title>
@@ -324,26 +291,17 @@ return Demo5
 ```tsx
 import { Button, Card, Flex, Typography } from '@ant-design-solid/core'
 
-const cardStyle = {
-  width: '620px',
-}
-
-const imgStyle = {
-  display: 'block',
-  width: '273px',
-}
-
 const Demo5 = function () {
   return (
-    <Card hoverable style={cardStyle} styles={{ body: { padding: 0, overflow: 'hidden' } }}>
+    <Card hoverable class="w-[620px]" styles={{ body: { padding: 0, overflow: 'hidden' } }}>
       <Flex justify="space-between">
         <img
           draggable={false}
           alt="avatar"
           src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-          style={imgStyle}
+          class="block w-[273px]"
         />
-        <Flex vertical align="flex-end" justify="space-between" style={{ padding: '32px' }}>
+        <Flex vertical align="flex-end" justify="space-between" class="p-8">
           <Typography.Title level={3}>
             "antd is an enterprise-class UI design language and React UI library."
           </Typography.Title>

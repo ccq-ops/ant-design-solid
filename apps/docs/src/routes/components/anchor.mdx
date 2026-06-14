@@ -22,17 +22,17 @@ export const AnchorDemo001 = (() => {
       { key: 'part-3', href: '#anchor-basic-part-3', title: 'Part 3' },
   ];
   const Demo1 = function () {
-      return (<Space align="start" style={{ width: '100%' }}>
+      return (<Space align="start" class="w-full">
         <Anchor affix={false} showInkInFixed items={items}/>
-        <div style={{ flex: 1 }}>
+        <div class="flex-1">
           <Card id="anchor-basic-part-1" title="Part 1">
             Basic section content.
           </Card>
-          <div style={{ height: '24px' }}/>
+          <div class="h-6"/>
           <Card id="anchor-basic-part-2" title="Part 2">
             More content for the second anchor.
           </Card>
-          <div style={{ height: '24px' }}/>
+          <div class="h-6"/>
           <Card id="anchor-basic-part-3" title="Part 3">
             Final section content.
           </Card>
@@ -56,17 +56,17 @@ const items = [
 
 const Demo1 = function () {
   return (
-    <Space align="start" style={{ width: '100%' }}>
+    <Space align="start" class="w-full">
       <Anchor affix={false} showInkInFixed items={items} />
-      <div style={{ flex: 1 }}>
+      <div class="flex-1">
         <Card id="anchor-basic-part-1" title="Part 1">
           Basic section content.
         </Card>
-        <div style={{ height: '24px' }} />
+        <div class="h-6" />
         <Card id="anchor-basic-part-2" title="Part 2">
           More content for the second anchor.
         </Card>
-        <div style={{ height: '24px' }} />
+        <div class="h-6" />
         <Card id="anchor-basic-part-3" title="Part 3">
           Final section content.
         </Card>
@@ -133,17 +133,17 @@ export const AnchorDemo003 = (() => {
       { key: 'c', href: '#anchor-container-c', title: 'Section C' },
   ];
   const Demo3 = function () {
-      return (<div ref={containerRef} style={{ display: 'flex', gap: '24px', height: '240px', overflow: 'auto' }}>
+      return (<div ref={containerRef} class="flex h-60 gap-6 overflow-auto">
         <Anchor affix={false} showInkInFixed getContainer={() => containerRef} targetOffset={16} items={items}/>
-        <div style={{ flex: 1 }}>
+        <div class="flex-1">
           <Card id="anchor-container-a" title="Section A">
             Container section A.
           </Card>
-          <div style={{ height: '80px' }}/>
+          <div class="h-20"/>
           <Card id="anchor-container-b" title="Section B">
             Container section B.
           </Card>
-          <div style={{ height: '80px' }}/>
+          <div class="h-20"/>
           <Card id="anchor-container-c" title="Section C">
             Container section C.
           </Card>
@@ -169,10 +169,7 @@ const items = [
 
 const Demo3 = function () {
   return (
-    <div
-      ref={containerRef}
-      style={{ display: 'flex', gap: '24px', height: '240px', overflow: 'auto' }}
-    >
+    <div ref={containerRef} class="flex h-60 gap-6 overflow-auto">
       <Anchor
         affix={false}
         showInkInFixed
@@ -180,15 +177,15 @@ const Demo3 = function () {
         targetOffset={16}
         items={items}
       />
-      <div style={{ flex: 1 }}>
+      <div class="flex-1">
         <Card id="anchor-container-a" title="Section A">
           Container section A.
         </Card>
-        <div style={{ height: '80px' }} />
+        <div class="h-20" />
         <Card id="anchor-container-b" title="Section B">
           Container section B.
         </Card>
-        <div style={{ height: '80px' }} />
+        <div class="h-20" />
         <Card id="anchor-container-c" title="Section C">
           Container section C.
         </Card>

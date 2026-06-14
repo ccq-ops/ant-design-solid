@@ -117,12 +117,7 @@ export default Demo3
 export const SpinDemo004 = (() => {
   const Demo4 = function () {
       return (<Spin spinning description="Loading content">
-        <div style={{
-              padding: '24px',
-              border: '1px solid var(--docs-border)',
-              'border-radius': '8px',
-              background: 'var(--docs-surface-solid)',
-          }}>
+        <div class="rounded-lg border border-[var(--docs-border)] bg-[var(--docs-surface-solid)] p-6">
           Content remains mounted while the spinner overlays it.
         </div>
       </Spin>);
@@ -140,14 +135,7 @@ import { createEffect, createSignal, onCleanup } from 'solid-js'
 const Demo4 = function () {
   return (
     <Spin spinning description="Loading content">
-      <div
-        style={{
-          padding: '24px',
-          border: '1px solid var(--docs-border)',
-          'border-radius': '8px',
-          background: 'var(--docs-surface-solid)',
-        }}
-      >
+      <div class="rounded-lg border border-[var(--docs-border)] bg-[var(--docs-surface-solid)] p-6">
         Content remains mounted while the spinner overlays it.
       </div>
     </Spin>
@@ -168,12 +156,7 @@ export default Demo4
 export const SpinDemo005 = (() => {
   const Demo5 = function () {
       return (<Spin delay={500} description="Loading after delay">
-        <div style={{
-              padding: '24px',
-              border: '1px solid var(--docs-border)',
-              'border-radius': '8px',
-              background: 'var(--docs-surface-solid)',
-          }}>
+        <div class="rounded-lg border border-[var(--docs-border)] bg-[var(--docs-surface-solid)] p-6">
           The indicator appears only if loading lasts at least 500ms.
         </div>
       </Spin>);
@@ -191,14 +174,7 @@ import { createEffect, createSignal, onCleanup } from 'solid-js'
 const Demo5 = function () {
   return (
     <Spin delay={500} description="Loading after delay">
-      <div
-        style={{
-          padding: '24px',
-          border: '1px solid var(--docs-border)',
-          'border-radius': '8px',
-          background: 'var(--docs-surface-solid)',
-        }}
-      >
+      <div class="rounded-lg border border-[var(--docs-border)] bg-[var(--docs-surface-solid)] p-6">
         The indicator appears only if loading lasts at least 500ms.
       </div>
     </Spin>

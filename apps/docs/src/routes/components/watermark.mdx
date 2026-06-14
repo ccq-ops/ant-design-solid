@@ -17,7 +17,7 @@ import { createSignal } from 'solid-js'
 export const WatermarkDemo001 = (() => {
   const Demo1 = function () {
       return (<Watermark content="Ant Design Solid">
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           A lightweight watermark overlay for protected content.
         </div>
       </Watermark>);
@@ -34,7 +34,7 @@ import { Watermark } from '@ant-design-solid/core'
 const Demo1 = function () {
   return (
     <Watermark content="Ant Design Solid">
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         A lightweight watermark overlay for protected content.
       </div>
     </Watermark>
@@ -55,7 +55,7 @@ export default Demo1
 export const WatermarkDemo002 = (() => {
   const Demo2 = function () {
       return (<Watermark content={['Ant Design Solid', 'Confidential']}>
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           Multiple text lines are rendered into the repeated watermark tile.
         </div>
       </Watermark>);
@@ -72,7 +72,7 @@ import { Watermark } from '@ant-design-solid/core'
 const Demo2 = function () {
   return (
     <Watermark content={['Ant Design Solid', 'Confidential']}>
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         Multiple text lines are rendered into the repeated watermark tile.
       </div>
     </Watermark>
@@ -93,7 +93,7 @@ export default Demo2
 export const WatermarkDemo003 = (() => {
   const Demo3 = function () {
       return (<Watermark content="Draft" rotate={-12} gap={[64, 64]} font={{ color: 'rgba(22, 119, 255, 0.18)', fontSize: 20 }}>
-        <div class="h-[180px] docs-surface-solid p-6">Customize rotation, gap and text style.</div>
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">Customize rotation, gap and text style.</div>
       </Watermark>);
   };
 
@@ -113,7 +113,9 @@ const Demo3 = function () {
       gap={[64, 64]}
       font={{ color: 'rgba(22, 119, 255, 0.18)', fontSize: 20 }}
     >
-      <div class="h-[180px] docs-surface-solid p-6">Customize rotation, gap and text style.</div>
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
+        Customize rotation, gap and text style.
+      </div>
     </Watermark>
   )
 }
@@ -132,7 +134,7 @@ export default Demo3
 export const WatermarkDemo004 = (() => {
   const Demo4 = function () {
       return (<Watermark width={160} height={48} image="https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*lkAoRbywo0oAAAAAAAAAAAAADrJ8AQ/original" content="Ant Design Solid">
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           Image watermarks fall back to text content when the image fails to load.
         </div>
       </Watermark>);
@@ -154,7 +156,7 @@ const Demo4 = function () {
       image="https://mdn.alipayobjects.com/huamei_7uahnr/afts/img/A*lkAoRbywo0oAAAAAAAAAAAAADrJ8AQ/original"
       content="Ant Design Solid"
     >
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         Image watermarks fall back to text content when the image fails to load.
       </div>
     </Watermark>
@@ -175,7 +177,7 @@ export default Demo4
 export const WatermarkDemo005 = (() => {
   const Demo5 = function () {
       return (<Watermark content="Offset" gap={[80, 80]} offset={[0, 0]}>
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           Move the repeated watermark grid from the container origin.
         </div>
       </Watermark>);
@@ -192,7 +194,7 @@ import { Watermark } from '@ant-design-solid/core'
 const Demo5 = function () {
   return (
     <Watermark content="Offset" gap={[80, 80]} offset={[0, 0]}>
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         Move the repeated watermark grid from the container origin.
       </div>
     </Watermark>
@@ -214,7 +216,7 @@ export const WatermarkDemo006 = (() => {
   const Demo6 = function () {
       const [open, setOpen] = createSignal(false);
       return (<Watermark content="Confidential">
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           <Button type="primary" onClick={() => setOpen(true)}>
             Open modal
           </Button>
@@ -239,7 +241,7 @@ const Demo6 = function () {
 
   return (
     <Watermark content="Confidential">
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         <Button type="primary" onClick={() => setOpen(true)}>
           Open modal
         </Button>
@@ -271,7 +273,7 @@ export const WatermarkDemo007 = (() => {
   const Demo7 = function () {
       const [open, setOpen] = createSignal(false);
       return (<Watermark content="Page only" inherit={false}>
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           <Button onClick={() => setOpen(true)}>Open modal</Button>
           <Modal open={open()} title="No inherited watermark" onOk={() => setOpen(false)} onCancel={() => setOpen(false)}>
             This modal is not covered by the parent watermark.
@@ -294,7 +296,7 @@ const Demo7 = function () {
 
   return (
     <Watermark content="Page only" inherit={false}>
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         <Button onClick={() => setOpen(true)}>Open modal</Button>
         <Modal
           open={open()}
@@ -323,7 +325,7 @@ export default Demo7
 export const WatermarkDemo008 = (() => {
   const Demo8 = function () {
       return (<Watermark content="Protected" onRemove={() => console.log('watermark removed')}>
-        <div class="h-[180px] docs-surface-solid p-6">
+        <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
           The watermark is restored when its overlay node is removed.
         </div>
       </Watermark>);
@@ -340,7 +342,7 @@ import { Watermark } from '@ant-design-solid/core'
 const Demo8 = function () {
   return (
     <Watermark content="Protected" onRemove={() => console.log('watermark removed')}>
-      <div class="h-[180px] docs-surface-solid p-6">
+      <div class="h-[180px] bg-[var(--docs-surface-solid)] p-6 text-[var(--docs-text)]">
         The watermark is restored when its overlay node is removed.
       </div>
     </Watermark>

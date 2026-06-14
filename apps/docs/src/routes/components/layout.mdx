@@ -24,65 +24,38 @@ Layout provides the outer structure for pages with header, content, footer, and 
 <LayoutDemo001 />
 
 export const LayoutDemo001 = (() => {
-  const headerStyle = {
-      'text-align': 'center',
-      color: 'var(--docs-text-strong)',
-      height: '64px',
-      padding: '0 48px',
-      'line-height': '64px',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const contentStyle = {
-      'text-align': 'center',
-      'min-height': '120px',
-      'line-height': '120px',
-      color: 'var(--docs-text-strong)',
-      background: 'color-mix(in srgb, var(--docs-primary-soft-strong) 72%, var(--docs-surface-solid))',
-  };
-  const siderStyle = {
-      'text-align': 'center',
-      'line-height': '120px',
-      color: 'var(--docs-text-strong)',
-      background: 'var(--docs-primary-soft)',
-  };
-  const footerStyle = {
-      'text-align': 'center',
-      color: 'var(--docs-text-strong)',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const layoutStyle = {
-      'border-radius': '8px',
-      overflow: 'hidden',
-      'min-width': '260px',
-      flex: '1 1 calc(50% - 8px)',
-  };
+  const layoutHeaderClass = 'h-16 bg-[var(--docs-primary-soft-strong)] px-12 text-center leading-[64px] text-[var(--docs-text-strong)]';
+  const layoutContentClass = 'min-h-[120px] bg-[color-mix(in_srgb,var(--docs-primary-soft-strong)_72%,var(--docs-surface-solid))] text-center leading-[120px] text-[var(--docs-text-strong)]';
+  const layoutSiderClass = 'bg-[var(--docs-primary-soft)] text-center leading-[120px] text-[var(--docs-text-strong)]';
+  const layoutFooterClass = 'bg-[var(--docs-primary-soft-strong)] text-center text-[var(--docs-text-strong)]';
+  const layoutDemoClass = 'min-w-[260px] flex-[1_1_calc(50%_-_8px)] overflow-hidden rounded-lg';
   const Demo1 = function () {
-      return (<div style={{ display: 'flex', gap: '16px', 'flex-wrap': 'wrap' }}>
-        <Layout style={layoutStyle}>
-          <Layout.Header style={headerStyle}>Header</Layout.Header>
-          <Layout.Content style={contentStyle}>Content</Layout.Content>
-          <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+      return (<div class="flex flex-wrap gap-4">
+        <Layout class={layoutDemoClass}>
+          <Layout.Header class={layoutHeaderClass}>Header</Layout.Header>
+          <Layout.Content class={layoutContentClass}>Content</Layout.Content>
+          <Layout.Footer class={layoutFooterClass}>Footer</Layout.Footer>
         </Layout>
 
-        <Layout style={layoutStyle}>
-          <Layout.Header style={headerStyle}>Header</Layout.Header>
+        <Layout class={layoutDemoClass}>
+          <Layout.Header class={layoutHeaderClass}>Header</Layout.Header>
           <Layout>
-            <Layout.Sider width="25%" style={siderStyle}>
+            <Layout.Sider width="25%" class={layoutSiderClass}>
               Sider
             </Layout.Sider>
-            <Layout.Content style={contentStyle}>Content</Layout.Content>
+            <Layout.Content class={layoutContentClass}>Content</Layout.Content>
           </Layout>
-          <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+          <Layout.Footer class={layoutFooterClass}>Footer</Layout.Footer>
         </Layout>
 
-        <Layout style={layoutStyle}>
-          <Layout.Sider width="25%" style={siderStyle}>
+        <Layout class={layoutDemoClass}>
+          <Layout.Sider width="25%" class={layoutSiderClass}>
             Sider
           </Layout.Sider>
           <Layout>
-            <Layout.Header style={headerStyle}>Header</Layout.Header>
-            <Layout.Content style={contentStyle}>Content</Layout.Content>
-            <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+            <Layout.Header class={layoutHeaderClass}>Header</Layout.Header>
+            <Layout.Content class={layoutContentClass}>Content</Layout.Content>
+            <Layout.Footer class={layoutFooterClass}>Footer</Layout.Footer>
           </Layout>
         </Layout>
       </div>);
@@ -97,71 +70,48 @@ return Demo1
 ```tsx
 import { Layout } from '@ant-design-solid/core'
 
-const headerStyle = {
-  'text-align': 'center',
-  color: 'var(--docs-text-strong)',
-  height: '64px',
-  padding: '0 48px',
-  'line-height': '64px',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const layoutHeaderClass =
+  'h-16 bg-[var(--docs-primary-soft-strong)] px-12 text-center leading-[64px] text-[var(--docs-text-strong)]'
 
-const contentStyle = {
-  'text-align': 'center',
-  'min-height': '120px',
-  'line-height': '120px',
-  color: 'var(--docs-text-strong)',
-  background: 'color-mix(in srgb, var(--docs-primary-soft-strong) 72%, var(--docs-surface-solid))',
-}
+const layoutContentClass =
+  'min-h-[120px] bg-[color-mix(in_srgb,var(--docs-primary-soft-strong)_72%,var(--docs-surface-solid))] text-center leading-[120px] text-[var(--docs-text-strong)]'
 
-const siderStyle = {
-  'text-align': 'center',
-  'line-height': '120px',
-  color: 'var(--docs-text-strong)',
-  background: 'var(--docs-primary-soft)',
-}
+const layoutSiderClass =
+  'bg-[var(--docs-primary-soft)] text-center leading-[120px] text-[var(--docs-text-strong)]'
 
-const footerStyle = {
-  'text-align': 'center',
-  color: 'var(--docs-text-strong)',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const layoutFooterClass =
+  'bg-[var(--docs-primary-soft-strong)] text-center text-[var(--docs-text-strong)]'
 
-const layoutStyle = {
-  'border-radius': '8px',
-  overflow: 'hidden',
-  'min-width': '260px',
-  flex: '1 1 calc(50% - 8px)',
-}
+const layoutDemoClass = 'min-w-[260px] flex-[1_1_calc(50%_-_8px)] overflow-hidden rounded-lg'
 
 const Demo1 = function () {
   return (
-    <div style={{ display: 'flex', gap: '16px', 'flex-wrap': 'wrap' }}>
-      <Layout style={layoutStyle}>
-        <Layout.Header style={headerStyle}>Header</Layout.Header>
-        <Layout.Content style={contentStyle}>Content</Layout.Content>
-        <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+    <div class="flex flex-wrap gap-4">
+      <Layout class={layoutDemoClass}>
+        <Layout.Header class={layoutHeaderClass}>Header</Layout.Header>
+        <Layout.Content class={layoutContentClass}>Content</Layout.Content>
+        <Layout.Footer class={layoutFooterClass}>Footer</Layout.Footer>
       </Layout>
 
-      <Layout style={layoutStyle}>
-        <Layout.Header style={headerStyle}>Header</Layout.Header>
+      <Layout class={layoutDemoClass}>
+        <Layout.Header class={layoutHeaderClass}>Header</Layout.Header>
         <Layout>
-          <Layout.Sider width="25%" style={siderStyle}>
+          <Layout.Sider width="25%" class={layoutSiderClass}>
             Sider
           </Layout.Sider>
-          <Layout.Content style={contentStyle}>Content</Layout.Content>
+          <Layout.Content class={layoutContentClass}>Content</Layout.Content>
         </Layout>
-        <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+        <Layout.Footer class={layoutFooterClass}>Footer</Layout.Footer>
       </Layout>
 
-      <Layout style={layoutStyle}>
-        <Layout.Sider width="25%" style={siderStyle}>
+      <Layout class={layoutDemoClass}>
+        <Layout.Sider width="25%" class={layoutSiderClass}>
           Sider
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={headerStyle}>Header</Layout.Header>
-          <Layout.Content style={contentStyle}>Content</Layout.Content>
-          <Layout.Footer style={footerStyle}>Footer</Layout.Footer>
+          <Layout.Header class={layoutHeaderClass}>Header</Layout.Header>
+          <Layout.Content class={layoutContentClass}>Content</Layout.Content>
+          <Layout.Footer class={layoutFooterClass}>Footer</Layout.Footer>
         </Layout>
       </Layout>
     </div>
@@ -185,41 +135,23 @@ export const LayoutDemo002 = (() => {
       { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
       { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
   ];
-  const logoStyle = {
-      height: '32px',
-      margin: '16px',
-      'border-radius': '6px',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const headerStyle = {
-      padding: 0,
-      background: 'var(--docs-surface-solid)',
-  };
-  const contentShellStyle = {
-      margin: '16px',
-  };
-  const panelStyle = {
-      padding: '24px',
-      'min-height': '220px',
-      background: 'var(--docs-surface-solid)',
-      'border-radius': '8px',
-  };
-  const footerStyle = {
-      'text-align': 'center',
-      color: 'var(--docs-text-tertiary)',
-  };
+  const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]';
+  const headerClass = 'bg-[var(--docs-surface-solid)] p-0';
+  const contentShellClass = 'm-4';
+  const panelClass = 'min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6';
+  const footerClass = 'text-center text-[var(--docs-text-tertiary)]';
   const Demo2 = function () {
-      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      return (<Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
         <Layout.Sider>
-          <div style={logoStyle}/>
+          <div class={logoClass}/>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems}/>
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={headerStyle}/>
-          <Layout.Content style={contentShellStyle}>
-            <div style={panelStyle}>Content</div>
+          <Layout.Header class={layoutHeaderClass}/>
+          <Layout.Content class={contentShellClass}>
+            <div class={panelClass}>Content</div>
           </Layout.Content>
-          <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+          <Layout.Footer class={layoutFooterClass}>Ant Design Solid ©2026</Layout.Footer>
         </Layout>
       </Layout>);
   };
@@ -239,47 +171,29 @@ const navItems = [
   { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
 ]
 
-const logoStyle = {
-  height: '32px',
-  margin: '16px',
-  'border-radius': '6px',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]'
 
-const headerStyle = {
-  padding: 0,
-  background: 'var(--docs-surface-solid)',
-}
+const headerClass = 'bg-[var(--docs-surface-solid)] p-0'
 
-const contentShellStyle = {
-  margin: '16px',
-}
+const contentShellClass = 'm-4'
 
-const panelStyle = {
-  padding: '24px',
-  'min-height': '220px',
-  background: 'var(--docs-surface-solid)',
-  'border-radius': '8px',
-}
+const panelClass = 'min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6'
 
-const footerStyle = {
-  'text-align': 'center',
-  color: 'var(--docs-text-tertiary)',
-}
+const footerClass = 'text-center text-[var(--docs-text-tertiary)]'
 
 const Demo2 = function () {
   return (
-    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+    <Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
       <Layout.Sider>
-        <div style={logoStyle} />
+        <div class={logoClass} />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
       <Layout>
-        <Layout.Header style={headerStyle} />
-        <Layout.Content style={contentShellStyle}>
-          <div style={panelStyle}>Content</div>
+        <Layout.Header class={layoutHeaderClass} />
+        <Layout.Content class={contentShellClass}>
+          <div class={panelClass}>Content</div>
         </Layout.Content>
-        <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+        <Layout.Footer class={layoutFooterClass}>Ant Design Solid ©2026</Layout.Footer>
       </Layout>
     </Layout>
   )
@@ -302,42 +216,24 @@ export const LayoutDemo003 = (() => {
       { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
       { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
   ];
-  const logoStyle = {
-      height: '32px',
-      margin: '16px',
-      'border-radius': '6px',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const headerStyle = {
-      padding: 0,
-      background: 'var(--docs-surface-solid)',
-  };
-  const contentShellStyle = {
-      margin: '16px',
-  };
-  const panelStyle = {
-      padding: '24px',
-      'min-height': '220px',
-      background: 'var(--docs-surface-solid)',
-      'border-radius': '8px',
-  };
-  const footerStyle = {
-      'text-align': 'center',
-      color: 'var(--docs-text-tertiary)',
-  };
+  const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]';
+  const headerClass = 'bg-[var(--docs-surface-solid)] p-0';
+  const contentShellClass = 'm-4';
+  const panelClass = 'min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6';
+  const footerClass = 'text-center text-[var(--docs-text-tertiary)]';
   const Demo3 = function () {
       const [collapsed, setCollapsed] = createSignal(false);
-      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      return (<Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
         <Layout.Sider collapsible collapsed={collapsed()} onCollapse={(nextCollapsed) => setCollapsed(nextCollapsed)}>
-          <div style={logoStyle}/>
+          <div class={logoClass}/>
           <Menu theme="dark" mode="inline" inlineCollapsed={collapsed()} defaultSelectedKeys={['dashboard']} items={navItems}/>
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={headerStyle}/>
-          <Layout.Content style={contentShellStyle}>
-            <div style={panelStyle}>Content</div>
+          <Layout.Header class={layoutHeaderClass}/>
+          <Layout.Content class={contentShellClass}>
+            <div class={panelClass}>Content</div>
           </Layout.Content>
-          <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+          <Layout.Footer class={layoutFooterClass}>Ant Design Solid ©2026</Layout.Footer>
         </Layout>
       </Layout>);
   };
@@ -358,45 +254,27 @@ const navItems = [
   { key: 'profile', label: 'Profile', icon: <UserOutlined /> },
 ]
 
-const logoStyle = {
-  height: '32px',
-  margin: '16px',
-  'border-radius': '6px',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]'
 
-const headerStyle = {
-  padding: 0,
-  background: 'var(--docs-surface-solid)',
-}
+const headerClass = 'bg-[var(--docs-surface-solid)] p-0'
 
-const contentShellStyle = {
-  margin: '16px',
-}
+const contentShellClass = 'm-4'
 
-const panelStyle = {
-  padding: '24px',
-  'min-height': '220px',
-  background: 'var(--docs-surface-solid)',
-  'border-radius': '8px',
-}
+const panelClass = 'min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6'
 
-const footerStyle = {
-  'text-align': 'center',
-  color: 'var(--docs-text-tertiary)',
-}
+const footerClass = 'text-center text-[var(--docs-text-tertiary)]'
 
 const Demo3 = function () {
   const [collapsed, setCollapsed] = createSignal(false)
 
   return (
-    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+    <Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
       <Layout.Sider
         collapsible
         collapsed={collapsed()}
         onCollapse={(nextCollapsed) => setCollapsed(nextCollapsed)}
       >
-        <div style={logoStyle} />
+        <div class={logoClass} />
         <Menu
           theme="dark"
           mode="inline"
@@ -406,11 +284,11 @@ const Demo3 = function () {
         />
       </Layout.Sider>
       <Layout>
-        <Layout.Header style={headerStyle} />
-        <Layout.Content style={contentShellStyle}>
-          <div style={panelStyle}>Content</div>
+        <Layout.Header class={layoutHeaderClass} />
+        <Layout.Content class={contentShellClass}>
+          <div class={panelClass}>Content</div>
         </Layout.Content>
-        <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+        <Layout.Footer class={layoutFooterClass}>Ant Design Solid ©2026</Layout.Footer>
       </Layout>
     </Layout>
   )
@@ -432,41 +310,23 @@ export const LayoutDemo004 = (() => {
       { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
       { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
   ];
-  const logoStyle = {
-      height: '32px',
-      margin: '16px',
-      'border-radius': '6px',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const panelStyle = {
-      padding: '24px',
-      margin: '24px 16px',
-      'min-height': '220px',
-      background: 'var(--docs-surface-solid)',
-      'border-radius': '8px',
-  };
-  const triggerButtonStyle = {
-      width: '64px',
-      height: '64px',
-      border: 0,
-      background: 'transparent',
-      'font-size': '16px',
-      cursor: 'pointer',
-  };
+  const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]';
+  const panelClass = 'm-4 mt-6 min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6';
+  const triggerButtonClass = 'h-16 w-16 cursor-pointer border-0 bg-transparent text-base';
   const Demo4 = function () {
       const [collapsed, setCollapsed] = createSignal(false);
-      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      return (<Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
         <Layout.Sider collapsible collapsed={collapsed()} trigger={null}>
-          <div style={logoStyle}/>
+          <div class={logoClass}/>
           <Menu theme="dark" mode="inline" inlineCollapsed={collapsed()} defaultSelectedKeys={['dashboard']} items={navItems}/>
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}>
-            <button type="button" style={triggerButtonStyle} onClick={() => setCollapsed((value) => !value)}>
+          <Layout.Header class="bg-[var(--docs-surface-solid)] p-0">
+            <button type="button" class={triggerButtonClass} onClick={() => setCollapsed((value) => !value)}>
               {collapsed() ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </button>
           </Layout.Header>
-          <Layout.Content style={panelStyle}>Content</Layout.Content>
+          <Layout.Content class={panelClass}>Content</Layout.Content>
         </Layout>
       </Layout>);
   };
@@ -491,37 +351,19 @@ const navItems = [
   { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
 ]
 
-const logoStyle = {
-  height: '32px',
-  margin: '16px',
-  'border-radius': '6px',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]'
 
-const panelStyle = {
-  padding: '24px',
-  margin: '24px 16px',
-  'min-height': '220px',
-  background: 'var(--docs-surface-solid)',
-  'border-radius': '8px',
-}
+const panelClass = 'm-4 mt-6 min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6'
 
-const triggerButtonStyle = {
-  width: '64px',
-  height: '64px',
-  border: 0,
-  background: 'transparent',
-  'font-size': '16px',
-  cursor: 'pointer',
-}
+const triggerButtonClass = 'h-16 w-16 cursor-pointer border-0 bg-transparent text-base'
 
 const Demo4 = function () {
   const [collapsed, setCollapsed] = createSignal(false)
 
   return (
-    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+    <Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
       <Layout.Sider collapsible collapsed={collapsed()} trigger={null}>
-        <div style={logoStyle} />
+        <div class={logoClass} />
         <Menu
           theme="dark"
           mode="inline"
@@ -531,16 +373,16 @@ const Demo4 = function () {
         />
       </Layout.Sider>
       <Layout>
-        <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}>
+        <Layout.Header class="bg-[var(--docs-surface-solid)] p-0">
           <button
             type="button"
-            style={triggerButtonStyle}
+            class={triggerButtonClass}
             onClick={() => setCollapsed((value) => !value)}
           >
             {collapsed() ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </button>
         </Layout.Header>
-        <Layout.Content style={panelStyle}>Content</Layout.Content>
+        <Layout.Content class={panelClass}>Content</Layout.Content>
       </Layout>
     </Layout>
   )
@@ -562,36 +404,22 @@ export const LayoutDemo005 = (() => {
       { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
       { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
   ];
-  const logoStyle = {
-      height: '32px',
-      margin: '16px',
-      'border-radius': '6px',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const panelStyle = {
-      padding: '24px',
-      margin: '24px 16px 0',
-      'min-height': '220px',
-      background: 'var(--docs-surface-solid)',
-      'border-radius': '8px',
-  };
-  const footerStyle = {
-      'text-align': 'center',
-      color: 'var(--docs-text-tertiary)',
-  };
+  const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]';
+  const panelClass = 'mx-4 mt-6 min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6';
+  const footerClass = 'text-center text-[var(--docs-text-tertiary)]';
   const Demo5 = function () {
       const [broken, setBroken] = createSignal(false);
-      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      return (<Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
         <Layout.Sider breakpoint="lg" collapsedWidth={broken() ? 0 : 80} onBreakpoint={(nextBroken) => setBroken(nextBroken)}>
-          <div style={logoStyle}/>
+          <div class={logoClass}/>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems}/>
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}/>
+          <Layout.Header class="bg-[var(--docs-surface-solid)] p-0"/>
           <Layout.Content>
-            <div style={panelStyle}>Content</div>
+            <div class={panelClass}>Content</div>
           </Layout.Content>
-          <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+          <Layout.Footer class={layoutFooterClass}>Ant Design Solid ©2026</Layout.Footer>
         </Layout>
       </Layout>);
   };
@@ -611,45 +439,31 @@ const navItems = [
   { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
 ]
 
-const logoStyle = {
-  height: '32px',
-  margin: '16px',
-  'border-radius': '6px',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]'
 
-const panelStyle = {
-  padding: '24px',
-  margin: '24px 16px 0',
-  'min-height': '220px',
-  background: 'var(--docs-surface-solid)',
-  'border-radius': '8px',
-}
+const panelClass = 'mx-4 mt-6 min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6'
 
-const footerStyle = {
-  'text-align': 'center',
-  color: 'var(--docs-text-tertiary)',
-}
+const footerClass = 'text-center text-[var(--docs-text-tertiary)]'
 
 const Demo5 = function () {
   const [broken, setBroken] = createSignal(false)
 
   return (
-    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+    <Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
       <Layout.Sider
         breakpoint="lg"
         collapsedWidth={broken() ? 0 : 80}
         onBreakpoint={(nextBroken) => setBroken(nextBroken)}
       >
-        <div style={logoStyle} />
+        <div class={logoClass} />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
       <Layout>
-        <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }} />
+        <Layout.Header class="bg-[var(--docs-surface-solid)] p-0" />
         <Layout.Content>
-          <div style={panelStyle}>Content</div>
+          <div class={panelClass}>Content</div>
         </Layout.Content>
-        <Layout.Footer style={footerStyle}>Ant Design Solid ©2026</Layout.Footer>
+        <Layout.Footer class={layoutFooterClass}>Ant Design Solid ©2026</Layout.Footer>
       </Layout>
     </Layout>
   )
@@ -671,28 +485,17 @@ export const LayoutDemo006 = (() => {
       { key: 'dashboard', label: 'Dashboard', icon: <DashboardOutlined /> },
       { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
   ];
-  const logoStyle = {
-      height: '32px',
-      margin: '16px',
-      'border-radius': '6px',
-      background: 'var(--docs-primary-soft-strong)',
-  };
-  const panelStyle = {
-      padding: '24px',
-      margin: '24px 16px',
-      'min-height': '220px',
-      background: 'var(--docs-surface-solid)',
-      'border-radius': '8px',
-  };
+  const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]';
+  const panelClass = 'm-4 mt-6 min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6';
   const Demo6 = function () {
-      return (<Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+      return (<Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
         <Layout.Sider collapsible defaultCollapsed collapsedWidth={0}>
-          <div style={logoStyle}/>
+          <div class={logoClass}/>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems}/>
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }}/>
-          <Layout.Content style={panelStyle}>Content</Layout.Content>
+          <Layout.Header class="bg-[var(--docs-surface-solid)] p-0"/>
+          <Layout.Content class={panelClass}>Content</Layout.Content>
         </Layout>
       </Layout>);
   };
@@ -711,31 +514,20 @@ const navItems = [
   { key: 'settings', label: 'Settings', icon: <SettingOutlined /> },
 ]
 
-const logoStyle = {
-  height: '32px',
-  margin: '16px',
-  'border-radius': '6px',
-  background: 'var(--docs-primary-soft-strong)',
-}
+const logoClass = 'm-4 h-8 rounded-md bg-[var(--docs-primary-soft-strong)]'
 
-const panelStyle = {
-  padding: '24px',
-  margin: '24px 16px',
-  'min-height': '220px',
-  background: 'var(--docs-surface-solid)',
-  'border-radius': '8px',
-}
+const panelClass = 'm-4 mt-6 min-h-[220px] rounded-lg bg-[var(--docs-surface-solid)] p-6'
 
 const Demo6 = function () {
   return (
-    <Layout style={{ 'min-height': '360px', background: 'var(--docs-surface-subtle)' }}>
+    <Layout class="min-h-[360px] bg-[var(--docs-surface-subtle)]">
       <Layout.Sider collapsible defaultCollapsed collapsedWidth={0}>
-        <div style={logoStyle} />
+        <div class={logoClass} />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['dashboard']} items={navItems} />
       </Layout.Sider>
       <Layout>
-        <Layout.Header style={{ padding: 0, background: 'var(--docs-surface-solid)' }} />
-        <Layout.Content style={panelStyle}>Content</Layout.Content>
+        <Layout.Header class="bg-[var(--docs-surface-solid)] p-0" />
+        <Layout.Content class={panelClass}>Content</Layout.Content>
       </Layout>
     </Layout>
   )

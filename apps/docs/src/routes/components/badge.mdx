@@ -448,10 +448,10 @@ export default Demo
 export const BadgeDemo009 = (() => {
   const colors = [undefined, 'pink', 'red', 'cyan', 'green', 'purple', 'volcano', 'magenta'];
   const Demo = function () {
-      return (<div style={{ display: 'grid', gap: '16px', width: 'min(100%, 520px)' }}>
+      return (<div class="grid w-full max-w-[520px] gap-4">
         <For each={colors}>
           {(color) => (<Badge.Ribbon text="Hippies" color={color}>
-              <Card title="Pushes open the window" size="small" style={{ width: '100%' }}>
+              <Card title="Pushes open the window" size="small" class="w-full">
                 and raises the spyglass.
               </Card>
             </Badge.Ribbon>)}
@@ -472,11 +472,11 @@ const colors = [undefined, 'pink', 'red', 'cyan', 'green', 'purple', 'volcano', 
 
 const Demo = function () {
   return (
-    <div style={{ display: 'grid', gap: '16px', width: 'min(100%, 520px)' }}>
+    <div class="grid w-full max-w-[520px] gap-4">
       <For each={colors}>
         {(color) => (
           <Badge.Ribbon text="Hippies" color={color}>
-            <Card title="Pushes open the window" size="small" style={{ width: '100%' }}>
+            <Card title="Pushes open the window" size="small" class="w-full">
               and raises the spyglass.
             </Card>
           </Badge.Ribbon>

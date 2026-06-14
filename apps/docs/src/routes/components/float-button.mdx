@@ -19,15 +19,12 @@ import {
 
 FloatButton renders floating quick actions and a back-to-top affordance.
 
-export const floatButtonBoxStyle = (token, options = {}) => ({
-  position: 'relative',
-  height: options.height ?? '160px',
-  overflow: options.overflow ?? 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-  ...(options.padding ? { padding: options.padding } : {}),
-})
+export const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+export const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+export const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+export const floatButtonClass = 'absolute right-6 bottom-6'
+export const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
 
 ### Basic
 
@@ -36,11 +33,9 @@ export const floatButtonBoxStyle = (token, options = {}) => ({
 <FloatButtonDemo001 />
 
 export const FloatButtonDemo001 = (() => {
-  const floatStyle = { position: 'absolute', right: '24px', bottom: '24px' };
-  const Demo1 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton icon={<QuestionCircleOutlined />} style={floatStyle}/>
+    const Demo1 = function () {
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton icon={<QuestionCircleOutlined />} class={floatButtonClass}/>
       </div>);
   };
 
@@ -50,26 +45,20 @@ return Demo1
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { QuestionCircleOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
-const floatStyle = { position: 'absolute', right: '24px', bottom: '24px' }
-
 const Demo1 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
-      <FloatButton icon={<QuestionCircleOutlined />} style={floatStyle} />
+    <div class={floatButtonBoxClass}>
+      <FloatButton icon={<QuestionCircleOutlined />} class={floatButtonClass} />
     </div>
   )
 }
@@ -87,10 +76,9 @@ export default Demo1
 
 export const FloatButtonDemo002 = (() => {
   const Demo2 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton icon={<QuestionCircleOutlined />} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
-        <FloatButton type="primary" icon={<PlusOutlined />} style={{ position: 'absolute', right: '88px', bottom: '24px' }}/>
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton icon={<QuestionCircleOutlined />} class={floatButtonClass}/>
+        <FloatButton type="primary" icon={<PlusOutlined />} class={floatButtonSecondClass}/>
       </div>);
   };
 
@@ -100,32 +88,21 @@ return Demo2
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo2 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
-      <FloatButton
-        icon={<QuestionCircleOutlined />}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
-      />
-      <FloatButton
-        type="primary"
-        icon={<PlusOutlined />}
-        style={{ position: 'absolute', right: '88px', bottom: '24px' }}
-      />
+    <div class={floatButtonBoxClass}>
+      <FloatButton icon={<QuestionCircleOutlined />} class={floatButtonClass} />
+      <FloatButton type="primary" icon={<PlusOutlined />} class={floatButtonSecondClass} />
     </div>
   )
 }
@@ -143,10 +120,9 @@ export default Demo2
 
 export const FloatButtonDemo003 = (() => {
   const Demo3 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton shape="square" icon={<CustomerServiceOutlined />} content="Help" style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
-        <FloatButton shape="square" content="Docs" style={{ position: 'absolute', right: '88px', bottom: '24px' }}/>
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton shape="square" icon={<CustomerServiceOutlined />} content="Help" class={floatButtonClass}/>
+        <FloatButton shape="square" content="Docs" class={floatButtonSecondClass}/>
       </div>);
   };
 
@@ -156,34 +132,26 @@ return Demo3
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { CustomerServiceOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo3 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
+    <div class={floatButtonBoxClass}>
       <FloatButton
         shape="square"
         icon={<CustomerServiceOutlined />}
         content="Help"
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+        class={floatButtonClass}
       />
-      <FloatButton
-        shape="square"
-        content="Docs"
-        style={{ position: 'absolute', right: '88px', bottom: '24px' }}
-      />
+      <FloatButton shape="square" content="Docs" class={floatButtonSecondClass} />
     </div>
   )
 }
@@ -201,9 +169,8 @@ export default Demo3
 
 export const FloatButtonDemo004 = (() => {
   const Demo4 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton icon={<QuestionCircleOutlined />} tooltip={{ title: 'Questions?', placement: 'left' }} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton icon={<QuestionCircleOutlined />} tooltip={{ title: 'Questions?', placement: 'left' }} class={floatButtonClass}/>
       </div>);
   };
 
@@ -213,27 +180,23 @@ return Demo4
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { QuestionCircleOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo4 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
+    <div class={floatButtonBoxClass}>
       <FloatButton
         icon={<QuestionCircleOutlined />}
         tooltip={{ title: 'Questions?', placement: 'left' }}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+        class={floatButtonClass}
       />
     </div>
   )
@@ -252,9 +215,8 @@ export default Demo4
 
 export const FloatButtonDemo005 = (() => {
   const Demo5 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton icon={<BellOutlined />} badge={{ count: 5 }} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton icon={<BellOutlined />} badge={{ count: 5 }} class={floatButtonClass}/>
       </div>);
   };
 
@@ -264,28 +226,20 @@ return Demo5
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { BellOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo5 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
-      <FloatButton
-        icon={<BellOutlined />}
-        badge={{ count: 5 }}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
-      />
+    <div class={floatButtonBoxClass}>
+      <FloatButton icon={<BellOutlined />} badge={{ count: 5 }} class={floatButtonClass} />
     </div>
   )
 }
@@ -303,9 +257,8 @@ export default Demo5
 
 export const FloatButtonDemo006 = (() => {
   const Demo6 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton href="https://example.com" target="_blank" icon={<LinkOutlined />} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton href="https://example.com" target="_blank" icon={<LinkOutlined />} class={floatButtonClass}/>
       </div>);
   };
 
@@ -315,28 +268,24 @@ return Demo6
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { LinkOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo6 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
+    <div class={floatButtonBoxClass}>
       <FloatButton
         href="https://example.com"
         target="_blank"
         icon={<LinkOutlined />}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+        class={floatButtonClass}
       />
     </div>
   )
@@ -355,9 +304,8 @@ export default Demo6
 
 export const FloatButtonDemo007 = (() => {
   const Demo7 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token(), { height: '220px' })}>
-        <FloatButton.Group shape="square" style={{ position: 'absolute', right: '24px', bottom: '24px' }}>
+      return (<div class={floatButtonTallBoxClass}>
+        <FloatButton.Group shape="square" class={floatButtonClass}>
           <FloatButton type="primary" icon={<PlusOutlined />}/>
           <FloatButton icon={<CustomerServiceOutlined />}/>
           <FloatButton icon={<CommentOutlined />}/>
@@ -371,27 +319,20 @@ return Demo7
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import { CommentOutlined, CustomerServiceOutlined, PlusOutlined } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '220px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo7 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
-      <FloatButton.Group
-        shape="square"
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
-      >
+    <div class={floatButtonBoxClass}>
+      <FloatButton.Group shape="square" class={floatButtonClass}>
         <FloatButton type="primary" icon={<PlusOutlined />} />
         <FloatButton icon={<CustomerServiceOutlined />} />
         <FloatButton icon={<CommentOutlined />} />
@@ -413,9 +354,8 @@ export default Demo7
 
 export const FloatButtonDemo008 = (() => {
   const Demo8 = function () {
-      const token = useToken();
-      return (<div style={floatButtonBoxStyle(token(), { height: '220px' })}>
-        <FloatButton.Group trigger="click" type="primary" icon={<MenuOutlined />} style={{ position: 'absolute', right: '24px', bottom: '24px' }}>
+      return (<div class={floatButtonTallBoxClass}>
+        <FloatButton.Group trigger="click" type="primary" icon={<MenuOutlined />} class={floatButtonClass}>
           <FloatButton icon={<CustomerServiceOutlined />} tooltip="Service"/>
           <FloatButton icon={<CommentOutlined />} tooltip="Feedback"/>
           <FloatButton icon={<FileTextOutlined />} tooltip="Docs"/>
@@ -429,7 +369,14 @@ return Demo8
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
+
 import {
   CommentOutlined,
   CustomerServiceOutlined,
@@ -437,25 +384,14 @@ import {
   MenuOutlined,
 } from '@ant-design-solid/icons'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '220px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
-
 const Demo8 = function () {
-  const token = useToken()
-
   return (
-    <div style={floatButtonBoxStyle(token())}>
+    <div class={floatButtonBoxClass}>
       <FloatButton.Group
         trigger="click"
         type="primary"
         icon={<MenuOutlined />}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+        class={floatButtonClass}
       >
         <FloatButton icon={<CustomerServiceOutlined />} tooltip="Service" />
         <FloatButton icon={<CommentOutlined />} tooltip="Feedback" />
@@ -478,12 +414,11 @@ export default Demo8
 
 export const FloatButtonDemo009 = (() => {
   const Demo9 = function () {
-      const token = useToken();
       let container;
-      return (<div ref={container} style={floatButtonBoxStyle(token(), { height: '220px', overflow: 'auto', padding: '16px' })}>
+      return (<div ref={container} class={floatButtonScrollBoxClass}>
         <p>Scroll down and the back-to-top button appears after the configured threshold.</p>
-        <div style={{ height: '360px' }}/>
-        <FloatButton.BackTop visibilityHeight={120} target={() => container} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+        <div class="h-[360px]"/>
+        <FloatButton.BackTop visibilityHeight={120} target={() => container} class={floatButtonClass}/>
       </div>);
   };
 
@@ -493,30 +428,25 @@ return Demo9
 ---
 
 ```tsx
-import { FloatButton, useToken } from '@ant-design-solid/core'
-
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '220px',
-  overflow: 'auto',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-  padding: '16px',
-})
+import { FloatButton } from '@ant-design-solid/core'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
 
 const Demo9 = function () {
-  const token = useToken()
   let container
 
   return (
-    <div ref={container} style={floatButtonBoxStyle(token())}>
+    <div ref={container} class={floatButtonScrollBoxClass}>
       <p>Scroll down and the back-to-top button appears after the configured threshold.</p>
-      <div style={{ height: '360px' }} />
+      <div class="h-[360px]" />
       <FloatButton.BackTop
         visibilityHeight={120}
         target={() => container}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+        class={floatButtonClass}
       />
     </div>
   )
@@ -536,8 +466,8 @@ export default Demo9
 export const FloatButtonDemo010 = (() => {
   const Demo10 = function () {
       const token = useToken();
-      return (<div style={floatButtonBoxStyle(token())}>
-        <FloatButton icon={<QuestionCircleOutlined />} content="Help" classNames={{ root: 'custom-float-button', content: 'custom-float-button-content' }} styles={{ content: { color: token().colorPrimary } }} style={{ position: 'absolute', right: '24px', bottom: '24px' }}/>
+      return (<div class={floatButtonBoxClass}>
+        <FloatButton icon={<QuestionCircleOutlined />} content="Help" classNames={{ root: 'custom-float-button', content: 'custom-float-button-content' }} styles={{ content: { color: token().colorPrimary } }} class={floatButtonClass}/>
       </div>);
   };
 
@@ -548,28 +478,26 @@ return Demo10
 
 ```tsx
 import { FloatButton, useToken } from '@ant-design-solid/core'
-import { QuestionCircleOutlined } from '@ant-design-solid/icons'
+const floatButtonBoxClass =
+  'relative h-40 overflow-hidden rounded-lg border border-dashed border-[var(--docs-border)] bg-[var(--docs-surface-subtle)]'
+const floatButtonTallBoxClass = `${floatButtonBoxClass} h-[220px]`
+const floatButtonScrollBoxClass = `${floatButtonBoxClass} h-[220px] overflow-auto p-4`
+const floatButtonClass = 'absolute right-6 bottom-6'
+const floatButtonSecondClass = 'absolute right-[88px] bottom-6'
 
-const floatButtonBoxStyle = (token) => ({
-  position: 'relative',
-  height: '160px',
-  overflow: 'hidden',
-  border: `1px dashed ${token.colorBorder}`,
-  'border-radius': '8px',
-  background: token.colorFillAlter,
-})
+import { QuestionCircleOutlined } from '@ant-design-solid/icons'
 
 const Demo10 = function () {
   const token = useToken()
 
   return (
-    <div style={floatButtonBoxStyle(token())}>
+    <div class={floatButtonBoxClass}>
       <FloatButton
         icon={<QuestionCircleOutlined />}
         content="Help"
         classNames={{ root: 'custom-float-button', content: 'custom-float-button-content' }}
         styles={{ content: { color: token().colorPrimary } }}
-        style={{ position: 'absolute', right: '24px', bottom: '24px' }}
+        class={floatButtonClass}
       />
     </div>
   )

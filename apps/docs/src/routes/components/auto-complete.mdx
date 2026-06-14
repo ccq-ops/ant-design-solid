@@ -181,7 +181,7 @@ export default Demo4
 export const AutoCompleteDemo005 = (() => {
   const options = [{ value: 'error' }, { value: 'warning' }];
   const Demo5 = function () {
-      return (<div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+      return (<div class="flex flex-wrap gap-2">
         <AutoComplete status="error" style={{ width: '200px' }} options={options} placeholder="Error"/>
         <AutoComplete status="warning" style={{ width: '200px' }} options={options} placeholder="Warning"/>
       </div>);
@@ -199,7 +199,7 @@ const options = [{ value: 'error' }, { value: 'warning' }]
 
 const Demo5 = function () {
   return (
-    <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+    <div class="flex flex-wrap gap-2">
       <AutoComplete
         status="error"
         style={{ width: '200px' }}
@@ -230,7 +230,7 @@ export default Demo5
 export const AutoCompleteDemo006 = (() => {
   const options = [{ value: 'outlined' }, { value: 'filled' }, { value: 'borderless' }];
   const Demo6 = function () {
-      return (<div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+      return (<div class="flex flex-wrap gap-2">
         <AutoComplete variant="outlined" style={{ width: '180px' }} options={options} placeholder="Outlined"/>
         <AutoComplete variant="filled" style={{ width: '180px' }} options={options} placeholder="Filled"/>
         <AutoComplete variant="borderless" style={{ width: '180px' }} options={options} placeholder="Borderless"/>
@@ -250,7 +250,7 @@ const options = [{ value: 'outlined' }, { value: 'filled' }, { value: 'borderles
 
 const Demo6 = function () {
   return (
-    <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+    <div class="flex flex-wrap gap-2">
       <AutoComplete
         variant="outlined"
         style={{ width: '180px' }}
@@ -295,7 +295,7 @@ export const AutoCompleteDemo007 = (() => {
   const Demo7 = function () {
       return (<AutoComplete style={{ width: '220px' }} options={options} placeholder="custom popup" popupRender={(originNode) => (<div>
             {originNode}
-            <div style={{ padding: '8px', color: '#1677ff' }}>More results</div>
+            <div class="px-2 py-2 text-[var(--docs-text-secondary)]">More results</div>
           </div>)}/>);
   };
 
@@ -318,7 +318,7 @@ const Demo7 = function () {
       popupRender={(originNode) => (
         <div>
           {originNode}
-          <div style={{ padding: '8px', color: 'var(--docs-text-secondary)' }}>More results</div>
+          <div class="px-2 py-2 text-[var(--docs-text-secondary)]">More results</div>
         </div>
       )}
     />
