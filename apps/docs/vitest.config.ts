@@ -15,7 +15,7 @@ export default defineConfig({
       title: 'Ant Design Solid',
       description: 'SolidJS implementation of Ant Design components.',
       lang: 'en',
-      lastUpdated: false,
+      lastUpdated: { dateStyle: 'short', timeStyle: 'short' },
       markdown: {
         expressiveCode: {
           languageSwitcher: false,
