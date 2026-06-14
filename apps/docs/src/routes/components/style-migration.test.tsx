@@ -30,8 +30,14 @@ describe('component docs Tailwind migration', () => {
 
   it('uses Tailwind classes for static grid demo cells', () => {
     expectSourceWithoutInlineStyle(gridSource, 'grid docs')
-    expect(gridSource).toContain("'docs-primary-soft docs-text-strong p-4'")
-    expect(gridSource).toContain("'docs-surface-subtle docs-text-secondary p-4'")
+    expect(gridSource).toContain(
+      "'bg-blue-50 text-slate-950 dark:bg-blue-950/40 dark:text-slate-50 p-4'",
+    )
+    expect(gridSource).toContain(
+      "'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 p-4'",
+    )
+    expect(gridSource).not.toContain('docs-primary-soft')
+    expect(gridSource).not.toContain('docs-surface-subtle')
   })
 
   it('uses Tailwind classes for static card and menu demo widths', () => {
