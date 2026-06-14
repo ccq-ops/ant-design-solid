@@ -10,7 +10,14 @@ describe('docs theme config', () => {
   it('groups component sidebar entries with the Ant Design v6 component groups', () => {
     const componentSidebar = docsThemeConfig.sidebar?.['/components']
 
-    expect(componentSidebar?.map((group) => group.title)).toEqual([
+    expect(docsThemeConfig.nav).toEqual(
+      expect.arrayContaining([{ text: 'Components', link: '/components' }]),
+    )
+    expect(componentSidebar?.[0]).toEqual({
+      title: 'Overview',
+      items: [{ title: 'Overview', link: '/' }],
+    })
+    expect(componentSidebar?.slice(1).map((group) => group.title)).toEqual([
       'General',
       'Layout',
       'Navigation',

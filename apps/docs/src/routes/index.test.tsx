@@ -16,7 +16,7 @@ describe('Home route', () => {
         },
         actions: [
           { theme: 'brand', text: 'Get Started', link: '/docs/getting-started' },
-          { theme: 'alt', text: 'View Components', link: '/components/affix' },
+          { theme: 'alt', text: 'View Components', link: '/components' },
         ],
       },
       features: [

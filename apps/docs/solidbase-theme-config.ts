@@ -68,7 +68,7 @@ function readComponentDocs(): ComponentDocMeta[] {
   const componentsDir = join(dirname(fileURLToPath(import.meta.url)), 'src/routes/components')
 
   return readdirSync(componentsDir)
-    .filter((fileName) => fileName.endsWith('.mdx'))
+    .filter((fileName) => fileName.endsWith('.mdx') && fileName !== 'index.mdx')
     .map((fileName) => {
       const slug = parse(fileName).name
       const filePath = join(componentsDir, fileName)
@@ -97,16 +97,19 @@ function readComponentDocs(): ComponentDocMeta[] {
 
 export const componentDocs = readComponentDocs()
 
-const componentSidebar = componentGroups.map((group) => ({
-  title: group,
-  items: componentDocs
-    .filter((component) => component.group === group)
-    .map(({ title, link }) => ({ title, link })),
-}))
+const componentSidebar = [
+  { title: 'Overview', items: [{ title: 'Overview', link: '/' }] },
+  ...componentGroups.map((group) => ({
+    title: group,
+    items: componentDocs
+      .filter((component) => component.group === group)
+      .map(({ title, link }) => ({ title, link })),
+  })),
+]
 
 export const docsThemeConfig = {
   nav: [
-    { text: 'Components', link: '/components/button' },
+    { text: 'Components', link: '/components' },
     { text: 'Docs', link: '/docs/getting-started' },
   ],
   sidebar: {
