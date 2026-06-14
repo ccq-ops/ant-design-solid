@@ -165,9 +165,7 @@ export function Flex(props: FlexProps) {
   })
 
   if (!local.component) {
-    const divProps = sharedProps() as JSX.HTMLAttributes<HTMLDivElement>
-
-    return <div {...divProps}>{local.children}</div>
+    return <div {...(sharedProps() as JSX.HTMLAttributes<HTMLDivElement>)}>{local.children}</div>
   }
 
   return (

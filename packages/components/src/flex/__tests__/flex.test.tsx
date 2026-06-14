@@ -1,4 +1,5 @@
 import { render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { describe, expect, it } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
@@ -89,6 +90,24 @@ describe('Flex', () => {
     expect(result.getByTestId('vertical').style.alignItems).toBe('stretch')
     expect(result.getByTestId('horizontal')).not.toHaveClass('ads-flex-vertical')
     expect(result.getByTestId('horizontal').style.flexDirection).toBe('row')
+  })
+
+  it('reacts to controlled orientation changes', () => {
+    const [orientation, setOrientation] = createSignal<'horizontal' | 'vertical'>('horizontal')
+    const result = render(() => (
+      <Flex orientation={orientation()} data-testid="flex">
+        Item
+      </Flex>
+    ))
+    const flex = result.getByTestId('flex')
+
+    expect(flex).not.toHaveClass('ads-flex-vertical')
+    expect(flex.style.flexDirection).toBe('row')
+
+    setOrientation('vertical')
+
+    expect(flex).toHaveClass('ads-flex-vertical')
+    expect(flex.style.flexDirection).toBe('column')
   })
 
   it('supports flex, rootClassName, v6 gap aliases and css string gaps', () => {
