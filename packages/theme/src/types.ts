@@ -270,6 +270,10 @@ export type ThemeAlgorithm = (seed: SeedToken, mapToken?: AliasToken) => AliasTo
 
 export interface ComponentTokenBase extends TokenRecord {}
 
+export interface AffixComponentToken extends ComponentTokenBase {
+  zIndexPopup: number
+}
+
 export interface ButtonComponentToken extends ComponentTokenBase {
   borderRadius: number
   fontWeight: number
@@ -832,7 +836,7 @@ export interface MenuComponentToken extends ComponentTokenBase {
 }
 
 export interface ComponentTokenMap {
-  Affix?: ComponentTokenBase
+  Affix: AffixComponentToken
   Addon?: ComponentTokenBase
   Alert: AlertComponentToken
   Anchor: AnchorComponentToken

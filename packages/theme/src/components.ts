@@ -23,6 +23,9 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
   token: AliasToken,
 ): NonNullable<ComponentTokenMap[K]> {
   const defaults: ComponentTokenMap = {
+    Affix: {
+      zIndexPopup: token.zIndexBase + 10,
+    },
     Button: {
       borderRadius: token.borderRadius,
       fontWeight: 400,

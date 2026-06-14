@@ -1,7 +1,9 @@
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { cleanup, render } from '@solidjs/testing-library'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Affix } from '../index'
+import type { AffixRef } from '../interface'
 
 function mockRect(element: Element, rect: Partial<DOMRect>) {
   Object.defineProperty(element, 'getBoundingClientRect', {
@@ -112,5 +114,116 @@ describe('Affix', () => {
 
     expect(result.container.firstElementChild).toHaveClass('custom-affix-wrapper')
     expect(result.container.querySelector('.ads-affix-wrapper')).toBeNull()
+  })
+
+  it('supports Solid rootClass and custom prefixCls on the fixed element', () => {
+    const result = render(() => (
+      <Affix prefixCls="custom-affix" rootClass="root-extra">
+        <span>Custom prefix</span>
+      </Affix>
+    ))
+    const wrapper = result.container.querySelector('.custom-affix-wrapper')!
+
+    mockRect(wrapper, { top: -1, left: 0, width: 100, height: 20, bottom: 19 })
+    window.dispatchEvent(new Event('scroll'))
+
+    const fixed = result.container.querySelector('.custom-affix') as HTMLElement
+    expect(fixed).toBeInTheDocument()
+    expect(fixed).toHaveClass('root-extra')
+    expect(result.container.querySelector('.ads-affix')).toBeNull()
+  })
+
+  it('exposes updatePosition through ref', () => {
+    let affixRef: AffixRef | undefined
+    const result = render(() => (
+      <Affix offsetTop={0} ref={(ref) => (affixRef = ref)}>
+        <div>Manual update</div>
+      </Affix>
+    ))
+    const wrapper = result.container.querySelector('.ads-affix-wrapper')!
+
+    mockRect(wrapper, { top: -2, left: 12, width: 88, height: 24, bottom: 22 })
+    affixRef?.updatePosition()
+
+    const fixed = result.container.querySelector('.ads-affix') as HTMLElement
+    expect(fixed).toBeInTheDocument()
+    expect(fixed.style.top).toBe('0px')
+    expect(fixed.style.left).toBe('12px')
+  })
+
+  it('updates position from antd trigger events beyond scroll and resize', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Affix offsetTop={0} onChange={onChange}>
+        <div>Touch update</div>
+      </Affix>
+    ))
+    const wrapper = result.container.querySelector('.ads-affix-wrapper')!
+
+    mockRect(wrapper, { top: -1, left: 0, width: 100, height: 20, bottom: 19 })
+    window.dispatchEvent(new Event('touchmove'))
+
+    expect(result.container.querySelector('.ads-affix')).toBeInTheDocument()
+    expect(onChange).toHaveBeenCalledWith(true)
+  })
+
+  it('uses ResizeObserver to recalculate fixed dimensions', () => {
+    let observerCallback: ResizeObserverCallback | undefined
+    const observe = vi.fn()
+    const disconnect = vi.fn()
+    const originalResizeObserver = globalThis.ResizeObserver
+    class MockResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        observerCallback = callback
+      }
+
+      observe = observe
+      disconnect = disconnect
+      unobserve = vi.fn()
+    }
+    globalThis.ResizeObserver = MockResizeObserver as typeof ResizeObserver
+
+    try {
+      const result = render(() => (
+        <Affix offsetTop={0}>
+          <div>Resizable</div>
+        </Affix>
+      ))
+      const wrapper = result.container.querySelector('.ads-affix-wrapper')!
+
+      mockRect(wrapper, { top: -1, left: 0, width: 100, height: 20, bottom: 19 })
+      window.dispatchEvent(new Event('scroll'))
+      expect(result.container.querySelector('.ads-affix')).toHaveStyle({
+        width: '100px',
+        height: '20px',
+      })
+
+      mockRect(wrapper, { top: -1, left: 0, width: 140, height: 32, bottom: 31 })
+      observerCallback?.([], {} as ResizeObserver)
+
+      expect(observe).toHaveBeenCalledWith(wrapper)
+      expect(result.container.querySelector('.ads-affix')).toHaveStyle({
+        width: '140px',
+        height: '32px',
+      })
+    } finally {
+      globalThis.ResizeObserver = originalResizeObserver
+    }
+  })
+
+  it('uses the Affix zIndexPopup component token', () => {
+    const cache = createCache()
+    render(() => (
+      <ConfigProvider
+        theme={{ token: { zIndexBase: 20 }, components: { Affix: { zIndexPopup: 55 } } }}
+      >
+        <StyleProvider cache={cache}>
+          <Affix>Tokenized</Affix>
+        </StyleProvider>
+      </ConfigProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain('.ads-affix{position:fixed;z-index:55;')
   })
 })

@@ -1,14 +1,18 @@
-import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
-import type { AffixTarget, AffixProps } from './interface'
+import type { AffixTarget, AffixProps, AffixRef } from './interface'
 import { useAffixStyle } from './affix.style'
 
-interface ViewportInfo {
-  top: number
-  bottom: number
-  viewportBottomOffset: number
-}
+const TRIGGER_EVENTS = [
+  'resize',
+  'scroll',
+  'touchstart',
+  'touchmove',
+  'touchend',
+  'pageshow',
+  'load',
+] as const
 
 function isWindow(target: AffixTarget): target is Window {
   return target === window
@@ -19,11 +23,12 @@ function toPx(value: number) {
 }
 
 function mergeStyle(
-  base: Record<string, string>,
-  style: AffixProps['style'],
+  base: AffixProps['style'],
+  ...styles: Array<AffixProps['style']>
 ): Record<string, string> | AffixProps['style'] {
-  if (typeof style === 'object' && style !== null) return { ...base, ...style }
-  return Object.keys(base).length > 0 ? base : style
+  const stringStyle = [base, ...styles].find((style): style is string => typeof style === 'string')
+  if (stringStyle) return stringStyle
+  return Object.assign({}, base, ...styles.filter(Boolean)) as Record<string, string>
 }
 
 function getTarget(target?: () => AffixTarget | undefined | null): AffixTarget | undefined {
@@ -31,77 +36,107 @@ function getTarget(target?: () => AffixTarget | undefined | null): AffixTarget |
   return target?.() ?? window
 }
 
-function getViewportInfo(target: AffixTarget): ViewportInfo {
-  if (isWindow(target)) {
-    const height = window.innerHeight || document.documentElement.clientHeight
-    return { top: 0, bottom: height, viewportBottomOffset: 0 }
-  }
-
-  const rect = target.getBoundingClientRect()
-  const windowHeight = window.innerHeight || document.documentElement.clientHeight
+function getTargetRect(target: AffixTarget): DOMRect {
+  if (!isWindow(target)) return target.getBoundingClientRect()
   return {
-    top: rect.top,
-    bottom: rect.bottom,
-    viewportBottomOffset: windowHeight - rect.bottom,
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: window.innerWidth || document.documentElement.clientWidth,
+    bottom: window.innerHeight || document.documentElement.clientHeight,
+    width: window.innerWidth || document.documentElement.clientWidth,
+    height: window.innerHeight || document.documentElement.clientHeight,
+    toJSON: () => undefined,
+  } as DOMRect
+}
+
+function getFixedTop(placeholderRect: DOMRect, targetRect: DOMRect, offsetTop?: number) {
+  if (
+    offsetTop !== undefined &&
+    Math.round(targetRect.top) > Math.round(placeholderRect.top) - offsetTop
+  ) {
+    return offsetTop + targetRect.top
   }
+  return undefined
+}
+
+function getFixedBottom(placeholderRect: DOMRect, targetRect: DOMRect, offsetBottom?: number) {
+  if (
+    offsetBottom !== undefined &&
+    Math.round(targetRect.bottom) < Math.round(placeholderRect.bottom) + offsetBottom
+  ) {
+    const targetBottomOffset =
+      (window.innerHeight || document.documentElement.clientHeight) - targetRect.bottom
+    return offsetBottom + targetBottomOffset
+  }
+  return undefined
 }
 
 function addTargetListener(
   target: AffixTarget,
-  eventName: 'scroll' | 'resize',
+  eventName: (typeof TRIGGER_EVENTS)[number],
   listener: () => void,
 ) {
   target.addEventListener(eventName, listener)
   return () => target.removeEventListener(eventName, listener)
 }
 
+function setRef(ref: AffixProps['ref'], value: AffixRef) {
+  if (typeof ref === 'function') ref(value)
+  else if (ref) Object.assign(ref, value)
+}
+
 export function Affix(props: AffixProps) {
   const [local, rest] = splitProps(props, [
+    'prefixCls',
+    'rootClass',
     'offsetTop',
     'offsetBottom',
     'target',
     'onChange',
+    'ref',
     'children',
     'class',
     'classList',
     'style',
   ])
   const config = useConfig()
-  const prefixCls = () => `${config.prefixCls()}-affix`
+  const componentConfig = () => config.affix()
+  const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-affix`
   const [, hashId] = useAffixStyle(prefixCls())
   const [affixed, setAffixed] = createSignal(false)
   const [fixedStyle, setFixedStyle] = createSignal<Record<string, string>>({})
   const [placeholderStyle, setPlaceholderStyle] = createSignal<Record<string, string>>({})
   let placeholderRef: HTMLDivElement | undefined
+  let fixedRef: HTMLDivElement | undefined
+  let resizeObserver: ResizeObserver | undefined
 
   const updatePosition = () => {
     const target = getTarget(local.target)
     if (!target || !placeholderRef) return
 
     const rect = placeholderRef.getBoundingClientRect()
-    const viewport = getViewportInfo(target)
-    const width = rect.width
-    const height = rect.height
-    const left = rect.left
-    const shouldUseBottom = local.offsetBottom !== undefined
-    const offsetTop = local.offsetTop ?? 0
-    const offsetBottom = local.offsetBottom ?? 0
-    const nextAffixed = shouldUseBottom
-      ? rect.bottom >= viewport.bottom - offsetBottom
-      : rect.top <= viewport.top + offsetTop
+    const targetRect = getTargetRect(target)
+    if (rect.top === 0 && rect.left === 0 && rect.width === 0 && rect.height === 0) return
+
+    const offsetTop =
+      local.offsetBottom === undefined && local.offsetTop === undefined ? 0 : local.offsetTop
+    const fixedTop = getFixedTop(rect, targetRect, offsetTop)
+    const fixedBottom = getFixedBottom(rect, targetRect, local.offsetBottom)
+    const nextAffixed = fixedTop !== undefined || fixedBottom !== undefined
 
     const nextFixedStyle: Record<string, string> = nextAffixed
       ? {
           position: 'fixed',
-          left: toPx(left),
-          width: toPx(width),
-          ...(shouldUseBottom
-            ? { bottom: toPx(viewport.viewportBottomOffset + offsetBottom) }
-            : { top: toPx(viewport.top + offsetTop) }),
+          left: toPx(rect.left),
+          width: toPx(rect.width),
+          height: toPx(rect.height),
+          ...(fixedTop !== undefined ? { top: toPx(fixedTop) } : { bottom: toPx(fixedBottom!) }),
         }
       : {}
     const nextPlaceholderStyle: Record<string, string> = nextAffixed
-      ? { width: toPx(width), height: toPx(height) }
+      ? { width: toPx(rect.width), height: toPx(rect.height) }
       : {}
 
     setFixedStyle(nextFixedStyle)
@@ -112,16 +147,37 @@ export function Affix(props: AffixProps) {
     })
   }
 
+  setRef(local.ref, { updatePosition })
+
   onMount(() => {
     const target = getTarget(local.target)
     if (!target) return
-    const cleanupScroll = addTargetListener(target, 'scroll', updatePosition)
-    const cleanupResize = addTargetListener(window, 'resize', updatePosition)
+    const cleanups = TRIGGER_EVENTS.map((eventName) =>
+      addTargetListener(target, eventName, updatePosition),
+    )
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(updatePosition)
+      if (placeholderRef) resizeObserver.observe(placeholderRef)
+      if (fixedRef) resizeObserver.observe(fixedRef)
+    }
     onCleanup(() => {
-      cleanupScroll()
-      cleanupResize()
+      cleanups.forEach((cleanup) => cleanup())
+      resizeObserver?.disconnect()
     })
   })
+
+  createEffect(() => {
+    local.offsetTop
+    local.offsetBottom
+    local.target
+    updatePosition()
+  })
+
+  const wrapperStyle = () => mergeStyle(placeholderStyle(), componentConfig().style, local.style)
+  const wrapperClass = () =>
+    classNames(`${prefixCls()}-wrapper`, componentConfig().class, local.class)
+  const fixedClass = () =>
+    classNames(affixed() && prefixCls(), hashId(), affixed() && local.rootClass)
 
   return (
     <div
@@ -129,11 +185,17 @@ export function Affix(props: AffixProps) {
       ref={(element) => {
         placeholderRef = element
       }}
-      class={classNames(`${prefixCls()}-wrapper`, hashId(), local.class)}
+      class={wrapperClass()}
       classList={local.classList}
-      style={mergeStyle(placeholderStyle(), local.style)}
+      style={wrapperStyle()}
     >
-      <div class={classNames(affixed() && prefixCls(), hashId())} style={fixedStyle()}>
+      <div
+        ref={(element) => {
+          fixedRef = element
+        }}
+        class={fixedClass()}
+        style={fixedStyle()}
+      >
         {local.children}
       </div>
     </div>
