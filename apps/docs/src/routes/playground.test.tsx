@@ -16,6 +16,21 @@ describe('Playground page', () => {
     expect(routeSource).toContain("import './playground.css'")
   })
 
+  it('keeps the preview stage wrapper visually minimal', () => {
+    const routeSource = readFileSync(join(process.cwd(), 'src/routes/playground.tsx'), 'utf8')
+    const stageClass = routeSource.match(/const playgroundStageClass = '([^']+)'/)?.[1]
+
+    expect(stageClass).toBe('mt-2 min-h-96 py-2')
+    expect(stageClass).not.toContain('overflow')
+    expect(stageClass).not.toContain(' p-')
+    expect(stageClass).not.toContain('px-')
+    expect(stageClass).not.toContain('items-center')
+    expect(stageClass).not.toContain('justify-center')
+    expect(stageClass).not.toContain('rounded-md')
+    expect(stageClass).not.toContain('border')
+    expect(stageClass).not.toContain('bg-')
+  })
+
   it('loads a registered demo id into an editable playground', () => {
     const history = createMemoryHistory()
 

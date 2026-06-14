@@ -9,6 +9,7 @@ const playgroundPanelClass =
   'min-w-0 rounded-lg border border-[color-mix(in_hsl,var(--sb-decoration-color)_18%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_94%,transparent)] p-4'
 const playgroundErrorClass =
   'mt-2 mb-0 max-h-[32rem] overflow-auto whitespace-pre-wrap rounded-md bg-[var(--sb-code-background-color)] p-4 text-[var(--sb-code-text-color)]'
+const playgroundStageClass = 'mt-2 min-h-96 py-2'
 
 export default function PlaygroundPage() {
   const location = useLocation()
@@ -37,9 +38,7 @@ export default function PlaygroundPage() {
     }
 
     if (!canRenderPreview()) {
-      return (
-        <div class="mt-2 flex min-h-96 items-center justify-center overflow-auto rounded-md border border-[color-mix(in_hsl,var(--sb-decoration-color)_14%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_96%,transparent)] p-6" />
-      )
+      return <div class={playgroundStageClass} />
     }
 
     const compiled = result()
@@ -55,7 +54,7 @@ export default function PlaygroundPage() {
     const Component = compiled.component
 
     return (
-      <div class="mt-2 flex min-h-96 items-center justify-center overflow-auto rounded-md border border-[color-mix(in_hsl,var(--sb-decoration-color)_14%,transparent)] bg-[color-mix(in_hsl,var(--sb-background-color)_96%,transparent)] p-6">
+      <div class={playgroundStageClass}>
         <Component />
       </div>
     )
