@@ -1,10 +1,37 @@
 import { fileURLToPath, URL } from 'node:url'
+import { createSolidBase } from '@kobalte/solidbase/config'
+import { solidStart } from '@solidjs/start/config'
+import tailwindcss from '@tailwindcss/vite'
+import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
-import { createDocsVitePlugins } from './plugins'
+import { antDesignSolidTheme } from './src/solidbase-theme'
+
+const solidBase = createSolidBase(antDesignSolidTheme)
 
 export default defineConfig({
   oxc: { jsx: 'preserve' },
-  plugins: createDocsVitePlugins(),
+  plugins: [
+    solidBase.plugin({
+      title: 'Ant Design Solid',
+      description: 'SolidJS implementation of Ant Design components.',
+      lang: 'en',
+      lastUpdated: false,
+      markdown: {
+        expressiveCode: {
+          languageSwitcher: false,
+        },
+      },
+      themeConfig: {
+        nav: [
+          { text: 'Components', link: '/components/button' },
+          { text: 'Docs', link: '/docs/getting-started' },
+        ],
+      },
+    }),
+    solidStart(solidBase.startConfig({ ssr: true })),
+    nitro({ prerender: { crawlLinks: true } }),
+    tailwindcss(),
+  ],
   resolve: {
     alias: {
       '@ant-design-solid/core': fileURLToPath(
