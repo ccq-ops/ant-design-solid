@@ -1,15 +1,15 @@
 import { fileURLToPath, URL } from 'node:url'
 import { createSolidBase } from '@kobalte/solidbase/config'
-import defaultTheme from '@kobalte/solidbase/default-theme'
 import { solidStart } from '@solidjs/start/config'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
+import { docsTheme } from './src/docs-theme/theme'
 import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
 import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
 import { docsThemeConfig } from './solidbase-theme-config'
 
-const solidBase = createSolidBase(defaultTheme)
+const solidBase = createSolidBase(docsTheme)
 
 export default defineConfig(({ command }) => ({
   oxc: { jsx: 'preserve' },

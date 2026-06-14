@@ -1,13 +1,13 @@
 import { fileURLToPath, URL } from 'node:url'
 import { createSolidBase } from '@kobalte/solidbase/config'
-import defaultTheme from '@kobalte/solidbase/default-theme'
 import { defineConfig } from 'vitest/config'
 import solid from 'vite-plugin-solid'
+import { docsTheme } from './src/docs-theme/theme'
 import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
 import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
 import { docsThemeConfig } from './solidbase-theme-config'
 
-const solidBase = createSolidBase(defaultTheme)
+const solidBase = createSolidBase(docsTheme)
 
 export default defineConfig({
   oxc: { jsx: 'preserve' },
