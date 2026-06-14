@@ -182,6 +182,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
   const [viewportWidth, setViewportWidth] = createSignal(getWindowWidth())
   const [measuredHeights, setMeasuredHeights] = createSignal(new Map<MasonryItemKey, number>())
   const observers = new Map<MasonryItemKey, ResizeObserver>()
+  const resizeFrameIds = new Map<MasonryItemKey, number>()
   const itemElements = new Map<MasonryItemKey, HTMLElement>()
   const renderedNodes = new Map<
     MasonryItemKey,
@@ -196,7 +197,9 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
 
   onCleanup(() => {
     observers.forEach((observer) => observer.disconnect())
+    resizeFrameIds.forEach((frameId) => window.cancelAnimationFrame(frameId))
     observers.clear()
+    resizeFrameIds.clear()
     itemElements.clear()
     renderedNodes.clear()
   })
@@ -242,11 +245,36 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
     })
   }
 
+  const scheduleHeightUpdate = (
+    key: MasonryItemKey,
+    element: HTMLElement,
+    fallbackHeight?: number,
+  ) => {
+    if (typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
+      updateHeight(key, element, fallbackHeight)
+      return
+    }
+
+    const pendingFrameId = resizeFrameIds.get(key)
+    if (pendingFrameId !== undefined) window.cancelAnimationFrame(pendingFrameId)
+
+    const frameId = window.requestAnimationFrame(() => {
+      resizeFrameIds.delete(key)
+      updateHeight(key, element, fallbackHeight)
+    })
+    resizeFrameIds.set(key, frameId)
+  }
+
   const cleanupRemovedItems = (activeKeys: Set<MasonryItemKey>) => {
     observers.forEach((observer, key) => {
       if (!activeKeys.has(key)) {
         observer.disconnect()
         observers.delete(key)
+        const frameId = resizeFrameIds.get(key)
+        if (frameId !== undefined) {
+          window.cancelAnimationFrame(frameId)
+          resizeFrameIds.delete(key)
+        }
       }
     })
     itemElements.forEach((_, key) => {
@@ -287,7 +315,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
 
     if (typeof ResizeObserver === 'undefined') return
 
-    const observer = new ResizeObserver(() => updateHeight(key, element, item.item.height))
+    const observer = new ResizeObserver(() => scheduleHeightUpdate(key, element, item.item.height))
     observer.observe(element)
     observers.set(key, observer)
   }

@@ -1,5 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { afterEach, describe, expect, it } from 'vitest'
+import { vi } from 'vitest'
 import { Masonry } from '../index'
 
 function setViewportWidth(width: number) {
@@ -13,6 +14,8 @@ function setViewportWidth(width: number) {
 
 afterEach(() => {
   setViewportWidth(1024)
+  vi.restoreAllMocks()
+  Reflect.deleteProperty(window, 'ResizeObserver')
 })
 
 describe('Masonry', () => {
@@ -262,4 +265,59 @@ it('does not recurse when fresh masonry measures the same height during render',
       />
     ))
   }).not.toThrow()
+})
+
+it('defers fresh masonry resize measurements outside ResizeObserver delivery', () => {
+  const callbacks: ResizeObserverCallback[] = []
+  const animationFrames: FrameRequestCallback[] = []
+
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    animationFrames.push(callback)
+    return animationFrames.length
+  })
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined)
+
+  class TestResizeObserver {
+    constructor(callback: ResizeObserverCallback) {
+      callbacks.push(callback)
+    }
+    observe() {}
+    disconnect() {}
+  }
+
+  Object.defineProperty(window, 'ResizeObserver', {
+    configurable: true,
+    writable: true,
+    value: TestResizeObserver,
+  })
+  let measuredHeight = 48
+  Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+    configurable: true,
+    get: () => measuredHeight,
+  })
+
+  let layoutChanges = 0
+  render(() => (
+    <Masonry
+      fresh
+      columns={2}
+      items={[{ key: 'a', data: { title: 'A' } }]}
+      itemRender={(item) => <span>{item.data.title}</span>}
+      onLayoutInfoChange={() => {
+        layoutChanges += 1
+      }}
+    />
+  ))
+
+  const initialLayoutChanges = layoutChanges
+  measuredHeight = 72
+
+  callbacks[0]([], {} as ResizeObserver)
+
+  expect(animationFrames).toHaveLength(1)
+  expect(layoutChanges).toBe(initialLayoutChanges)
+
+  animationFrames[0](0)
+
+  expect(layoutChanges).toBeGreaterThan(initialLayoutChanges)
 })
