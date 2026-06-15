@@ -148,8 +148,8 @@ describe('Carousel', () => {
     const root = result.container.firstElementChild as HTMLElement
 
     expect(root.className).toContain('custom-carousel')
-    expect(root.className).toContain('custom-carousel-vertical')
     expect(root.className).toContain('custom-carousel-dot-start')
+    expect(root.className).not.toContain('custom-carousel-vertical')
     expect(result.container.querySelector('.custom-carousel-slider')).toHaveClass('extra-carousel')
     expect(root).toHaveStyle('width: 240px')
     expect(result.container.querySelector('.extra-dots')).toBeInTheDocument()
@@ -173,18 +173,53 @@ describe('Carousel', () => {
     expect(result.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('supports dotPlacement start/end and keeps deprecated dotPosition compatible', () => {
+  it('positions dots at start/end without changing the carousel axis', () => {
     const start = render(() => <Carousel dotPlacement="start">{slides()}</Carousel>)
     const startRoot = start.container.firstElementChild as HTMLElement
+    const startTrack = start.container.querySelector('.ads-carousel-track') as HTMLElement
 
-    expect(startRoot.className).toContain('ads-carousel-vertical')
     expect(startRoot.className).toContain('ads-carousel-dot-start')
+    expect(startRoot.className).not.toContain('ads-carousel-vertical')
+    fireEvent.click(start.getByRole('tab', { name: 'Go to slide 2' }))
+    expect(startTrack.style.transform).toBe('translate3d(-100%, 0, 0)')
 
-    const legacy = render(() => <Carousel dotPosition="right">{slides()}</Carousel>)
-    const legacyRoot = legacy.container.firstElementChild as HTMLElement
+    const end = render(() => <Carousel dotPlacement="end">{slides()}</Carousel>)
+    const endRoot = end.container.firstElementChild as HTMLElement
 
-    expect(legacyRoot.className).toContain('ads-carousel-vertical')
-    expect(legacyRoot.className).toContain('ads-carousel-dot-end')
+    expect(endRoot.className).toContain('ads-carousel-dot-end')
+    expect(endRoot.className).not.toContain('ads-carousel-vertical')
+  })
+
+  it('registers vertical dot sizing for start/end placements independently of vertical slides', () => {
+    render(() => (
+      <>
+        <Carousel dotPlacement="start">{slides()}</Carousel>
+        <Carousel dotPlacement="end">{slides()}</Carousel>
+      </>
+    ))
+
+    const styles = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(styles).toContain('.ads-carousel-dot-start .ads-carousel-dots li')
+    expect(styles).toContain('.ads-carousel-dot-end .ads-carousel-dots li')
+    expect(styles).toContain('.ads-carousel-dot-start .ads-carousel-dots li.slick-active')
+    expect(styles).toContain('.ads-carousel-dot-end .ads-carousel-dot')
+  })
+
+  it('keeps deprecated dotPosition left/right compatible with dotPlacement start/end', () => {
+    const legacyLeft = render(() => <Carousel dotPosition="left">{slides()}</Carousel>)
+    const leftRoot = legacyLeft.container.firstElementChild as HTMLElement
+
+    expect(leftRoot.className).toContain('ads-carousel-dot-start')
+    expect(leftRoot.className).not.toContain('ads-carousel-vertical')
+
+    const legacyRight = render(() => <Carousel dotPosition="right">{slides()}</Carousel>)
+    const rightRoot = legacyRight.container.firstElementChild as HTMLElement
+
+    expect(rightRoot.className).toContain('ads-carousel-dot-end')
+    expect(rightRoot.className).not.toContain('ads-carousel-vertical')
   })
 
   it('supports Solid class names for root, dots, and custom paging', () => {
@@ -285,7 +320,7 @@ describe('Carousel', () => {
 
   it('supports slidesToShow, slidesToScroll, vertical, rtl, and adaptiveHeight', () => {
     const result = render(() => (
-      <Carousel arrows adaptiveHeight dotPlacement="end" rtl slidesToShow={2} slidesToScroll={2}>
+      <Carousel arrows adaptiveHeight vertical rtl slidesToShow={2} slidesToScroll={2}>
         <div style={{ height: '50px' }}>Slide one</div>
         <div style={{ height: '60px' }}>Slide two</div>
         <div style={{ height: '70px' }}>Slide three</div>

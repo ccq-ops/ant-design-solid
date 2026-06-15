@@ -212,6 +212,32 @@ export function useCarouselStyle(prefixCls: string) {
           opacity: '1',
           background: t.colorBgContainer,
         },
+        [`.${prefixCls}-dot-start .${prefixCls}-dots li`]: {
+          width: dotHeight,
+          height: dotWidth,
+          margin: `${t.marginXXS}px 0`,
+        },
+        [`.${prefixCls}-dot-end .${prefixCls}-dots li`]: {
+          width: dotHeight,
+          height: dotWidth,
+          margin: `${t.marginXXS}px 0`,
+        },
+        [`.${prefixCls}-dot-start .${prefixCls}-dots li.slick-active`]: {
+          width: dotHeight,
+          height: dotActiveWidth,
+        },
+        [`.${prefixCls}-dot-end .${prefixCls}-dots li.slick-active`]: {
+          width: dotHeight,
+          height: dotActiveWidth,
+        },
+        [`.${prefixCls}-dot-start .${prefixCls}-dot`]: {
+          width: dotHeight,
+          height: '100%',
+        },
+        [`.${prefixCls}-dot-end .${prefixCls}-dot`]: {
+          width: dotHeight,
+          height: '100%',
+        },
         [`.${prefixCls}-vertical .${prefixCls}-dots li`]: {
           width: dotHeight,
           height: dotWidth,

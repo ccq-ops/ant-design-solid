@@ -125,8 +125,7 @@ export function Carousel(props: CarouselProps) {
   const infinite = () => settings().infinite ?? true
   const dots = () => settings().dots ?? true
   const dotPlacement = () => normalizeDotPlacement(settings().dotPlacement, local.dotPosition)
-  const isVertical = () =>
-    settings().vertical || dotPlacement() === 'start' || dotPlacement() === 'end'
+  const isVertical = () => !!settings().vertical
   const effect = () => (settings().fade ? 'fade' : (settings().effect ?? 'scrollx'))
   const speed = () => settings().speed ?? 500
   const easing = () => settings().easing ?? 'linear'
