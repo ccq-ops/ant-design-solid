@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, createMemo } from 'solid-js'
+import { For, Match, Show, Switch, createMemo, createSignal, onCleanup } from 'solid-js'
 import { render } from 'solid-js/web'
 import {
   CheckCircleFilled,
@@ -8,6 +8,7 @@ import {
   LoadingOutlined,
 } from '@ant-design-solid/icons'
 import { ConfigProvider, useConfig } from '../config-provider'
+import { getGlobalConfig, subscribeGlobalConfig } from '../config-provider/context'
 import { classNames } from '../shared/class-names'
 import { canUseDom } from '../shared/portal'
 import { useMessageStyle } from './message.style'
@@ -213,11 +214,21 @@ export function mountMessageHolder(props: MessageHolderProps) {
   const parent = props.config?.().getContainer?.() ?? document.body
   parent.appendChild(container)
   const dispose = render(
-    () => (
-      <ConfigProvider>
-        <MessageHolder {...props} />
-      </ConfigProvider>
-    ),
+    () => {
+      const [globalVersion, setGlobalVersion] = createSignal(0)
+      const unsubscribe = subscribeGlobalConfig(() => setGlobalVersion((value) => value + 1))
+      onCleanup(unsubscribe)
+      const globalConfig = () => {
+        globalVersion()
+        return getGlobalConfig()
+      }
+      const holder = (
+        <ConfigProvider theme={globalConfig().theme}>
+          <MessageHolder {...props} />
+        </ConfigProvider>
+      )
+      return globalConfig().holderRender?.(holder) ?? holder
+    },
     container,
   )
   return () => {

@@ -10,6 +10,7 @@ import type {
 const emptyTheme: ThemeConfig = {}
 const emptyObject = {}
 const globalConfig: GlobalConfigProps = {}
+const globalConfigListeners = new Set<() => void>()
 
 function emptyAccessor<T extends object>(): () => T {
   return () => emptyObject as T
@@ -145,6 +146,15 @@ export function useToken() {
   return useConfig().token
 }
 
+export function getGlobalConfig(): GlobalConfigProps {
+  return globalConfig
+}
+
+export function subscribeGlobalConfig(listener: () => void): () => void {
+  globalConfigListeners.add(listener)
+  return () => globalConfigListeners.delete(listener)
+}
+
 export function createConfigValue(
   parent: ConfigContextValue,
   props: ConfigProviderProps,
@@ -177,4 +187,5 @@ export function createConfigValue(
 
 export function setGlobalConfig(config: GlobalConfigProps): void {
   Object.assign(globalConfig, config)
+  globalConfigListeners.forEach((listener) => listener())
 }

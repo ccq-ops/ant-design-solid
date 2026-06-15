@@ -1,6 +1,14 @@
 import { ConfigProvider } from '@ant-design-solid/core'
 import { setTheme } from '@kobalte/solidbase/client'
-import { createContext, createMemo, createSignal, onCleanup, onMount, useContext } from 'solid-js'
+import {
+  createContext,
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  onMount,
+  useContext,
+} from 'solid-js'
 import type { Accessor, JSX } from 'solid-js'
 import { darkAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
 
@@ -51,6 +59,10 @@ export function DocsThemeProvider(props: { children?: JSX.Element }) {
       setTheme(nextMode)
     },
   }
+
+  createEffect(() => {
+    ConfigProvider.config({ theme: theme() })
+  })
 
   onMount(() => {
     setMode(getCurrentMode())

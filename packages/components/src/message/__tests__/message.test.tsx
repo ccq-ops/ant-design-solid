@@ -2,6 +2,7 @@ import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssi
 import { createSignal } from 'solid-js'
 import { render } from '@solidjs/testing-library'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { App } from '../../app'
 import { ConfigProvider } from '../../config-provider'
 import { message } from '../index'
@@ -54,6 +55,41 @@ describe('message', () => {
 
     handle.close()
     expect(document.body).not.toHaveTextContent('Loading')
+  })
+
+  it('uses global ConfigProvider theme for static messages', async () => {
+    ConfigProvider.config({
+      theme: { algorithm: darkAlgorithm },
+    })
+
+    message.info('Dark static message', 0)
+
+    await Promise.resolve()
+
+    const css = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+    expect(document.body).toHaveTextContent('Dark static message')
+    expect(css).toContain('background:#1f1f1f')
+
+    ConfigProvider.config({ theme: undefined })
+  })
+
+  it('updates mounted static message holder when global theme changes', async () => {
+    message.info('Light static message', 0)
+    ConfigProvider.config({ theme: { algorithm: darkAlgorithm } })
+    message.success('Dark updated message', 0)
+
+    await Promise.resolve()
+
+    const css = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(document.body).toHaveTextContent('Dark updated message')
+    expect(css).toContain('background:#1f1f1f')
+
+    ConfigProvider.config({ theme: undefined })
   })
 
   it('registers loading icon rotation styles on the loading icon wrapper', () => {

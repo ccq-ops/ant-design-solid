@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { useConfig, useToken } from '@ant-design-solid/core'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { ConfigProvider, message, useConfig, useToken } from '@ant-design-solid/core'
 import { DocsThemeProvider, useDocsTheme } from './theme-context'
 
 function ThemeProbe() {
@@ -26,6 +26,13 @@ beforeEach(() => {
   localStorage.clear()
   document.documentElement.removeAttribute('data-theme')
   document.cookie = 'theme=; max-age=0; path=/'
+  message.destroy()
+  ConfigProvider.config({ theme: undefined })
+})
+
+afterEach(() => {
+  message.destroy()
+  ConfigProvider.config({ theme: undefined })
 })
 
 describe('DocsThemeProvider', () => {
@@ -108,5 +115,25 @@ describe('DocsThemeProvider', () => {
 
     expect(bg).toBe('#141414')
     expect(elevated).toBe('#1f1f1f')
+  })
+
+  it('syncs static message theme with dark docs mode', async () => {
+    document.documentElement.dataset.theme = 'dark'
+
+    render(() => (
+      <DocsThemeProvider>
+        <ThemeProbe />
+      </DocsThemeProvider>
+    ))
+
+    message.info('Dark docs message', 0)
+    await Promise.resolve()
+
+    const css = Array.from(document.head.querySelectorAll('style[data-ant-design-solid]'))
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(document.body).toHaveTextContent('Dark docs message')
+    expect(css).toContain('background:#1f1f1f')
   })
 })
