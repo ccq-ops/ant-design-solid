@@ -4,6 +4,7 @@ group: Data Display
 ---
 
 import { Timeline } from '@ant-design-solid/core'
+import { ClockCircleOutlined } from '@ant-design-solid/icons'
 
 # Timeline
 
@@ -17,9 +18,10 @@ Display chronological events with titles, content, placement, loading nodes, and
 
 export const TimelineDemo001 = (() => {
   const items = [
-      { title: '2026-06-01', content: 'Create project', color: 'green' },
-      { title: '2026-06-02', content: 'Add core components' },
-      { title: '2026-06-03', content: 'Polish documentation', color: 'red' },
+      { content: 'Create a services site 2015-09-01' },
+      { content: 'Solve initial network problems 2015-09-01' },
+      { content: 'Technical testing 2015-09-01' },
+      { content: 'Network problems being solved 2015-09-01' },
   ];
   const Demo1 = function () {
       return <Timeline items={items}/>;
@@ -34,9 +36,10 @@ return Demo1
 import { Timeline } from '@ant-design-solid/core'
 
 const items = [
-  { title: '2026-06-01', content: 'Create project', color: 'green' },
-  { title: '2026-06-02', content: 'Add core components' },
-  { title: '2026-06-03', content: 'Polish documentation', color: 'red' },
+  { content: 'Create a services site 2015-09-01' },
+  { content: 'Solve initial network problems 2015-09-01' },
+  { content: 'Technical testing 2015-09-01' },
+  { content: 'Network problems being solved 2015-09-01' },
 ]
 
 const Demo1 = function () {
@@ -56,9 +59,18 @@ export default Demo1
 
 export const TimelineDemo002 = (() => {
   const items = [
-      { title: '2026-06-01', content: 'Create project', color: 'green' },
-      { title: '2026-06-02', content: 'Add core components' },
-      { title: '2026-06-03', content: 'Polish documentation', placement: 'end' },
+      { content: 'Create a services site 2015-09-01' },
+      { content: 'Solve initial network problems 2015-09-01', color: 'green' },
+      {
+          icon: <ClockCircleOutlined style={{ fontSize: '16px' }}/>,
+          content: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+      },
+      { content: 'Network problems being solved 2015-09-01', color: 'red' },
+      { content: 'Create a services site 2015-09-01' },
+      {
+          icon: <ClockCircleOutlined style={{ fontSize: '16px' }}/>,
+          content: 'Technical testing 2015-09-01',
+      },
   ];
   const Demo2 = function () {
       return <Timeline mode="alternate" items={items}/>;
@@ -71,11 +83,22 @@ return Demo2
 
 ```tsx
 import { Timeline } from '@ant-design-solid/core'
+import { ClockCircleOutlined } from '@ant-design-solid/icons'
 
 const items = [
-  { title: '2026-06-01', content: 'Create project', color: 'green' },
-  { title: '2026-06-02', content: 'Add core components' },
-  { title: '2026-06-03', content: 'Polish documentation', placement: 'end' },
+  { content: 'Create a services site 2015-09-01' },
+  { content: 'Solve initial network problems 2015-09-01', color: 'green' },
+  {
+    icon: <ClockCircleOutlined style={{ fontSize: '16px' }} />,
+    content:
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.',
+  },
+  { content: 'Network problems being solved 2015-09-01', color: 'red' },
+  { content: 'Create a services site 2015-09-01' },
+  {
+    icon: <ClockCircleOutlined style={{ fontSize: '16px' }} />,
+    content: 'Technical testing 2015-09-01',
+  },
 ]
 
 const Demo2 = function () {
@@ -135,12 +158,21 @@ export default Demo3
 <TimelineDemo004 />
 
 export const TimelineDemo004 = (() => {
+  const sharedProps = {
+      orientation: 'horizontal',
+      items: [
+          { content: 'Init' },
+          { content: 'Start' },
+          { content: 'Pending' },
+          { content: 'Complete' },
+      ],
+  };
   const Demo4 = function () {
-      return (<Timeline orientation="horizontal" items={[
-              { title: 'Plan', content: 'Define scope' },
-              { title: 'Build', content: 'Implement component' },
-              { title: 'Ship', content: 'Publish docs' },
-          ]}/>);
+      return (<div style={{ display: 'grid', gap: '24px' }}>
+              <Timeline {...sharedProps} mode="start"/>
+              <Timeline {...sharedProps} mode="end"/>
+              <Timeline {...sharedProps} mode="alternate"/>
+          </div>);
   };
 
 return Demo4
@@ -151,16 +183,23 @@ return Demo4
 ```tsx
 import { Timeline } from '@ant-design-solid/core'
 
+const sharedProps = {
+  orientation: 'horizontal' as const,
+  items: [
+    { content: 'Init' },
+    { content: 'Start' },
+    { content: 'Pending' },
+    { content: 'Complete' },
+  ],
+}
+
 const Demo4 = function () {
   return (
-    <Timeline
-      orientation="horizontal"
-      items={[
-        { title: 'Plan', content: 'Define scope' },
-        { title: 'Build', content: 'Implement component' },
-        { title: 'Ship', content: 'Publish docs' },
-      ]}
-    />
+    <div style={{ display: 'grid', gap: '24px' }}>
+      <Timeline {...sharedProps} mode="start" />
+      <Timeline {...sharedProps} mode="end" />
+      <Timeline {...sharedProps} mode="alternate" />
+    </div>
   )
 }
 
@@ -207,18 +246,25 @@ export default Demo5
 
 :::
 
-### Variant and title span
+### Title
 
 :::preview
 
 <TimelineDemo006 />
 
 export const TimelineDemo006 = (() => {
+  const items = [
+      { title: '2015-09-01', content: 'Create a services' },
+      { title: '2015-09-01 09:12:11', content: 'Solve initial network problems' },
+      { content: 'Technical testing' },
+      { title: '2015-09-01 09:12:11', content: 'Network problems being solved' },
+  ];
   const Demo6 = function () {
-      return (<Timeline variant="filled" titleSpan={160} items={[
-              { title: 'Design review', content: 'Approved by maintainers' },
-              { title: 'Release', content: 'Tagged package version' },
-          ]}/>);
+      return (<div style={{ display: 'grid', gap: '24px' }}>
+              <Timeline mode="start" items={items}/>
+              <Timeline mode="end" items={items}/>
+              <Timeline mode="alternate" items={items}/>
+          </div>);
   };
 
 return Demo6
@@ -229,16 +275,20 @@ return Demo6
 ```tsx
 import { Timeline } from '@ant-design-solid/core'
 
+const items = [
+  { title: '2015-09-01', content: 'Create a services' },
+  { title: '2015-09-01 09:12:11', content: 'Solve initial network problems' },
+  { content: 'Technical testing' },
+  { title: '2015-09-01 09:12:11', content: 'Network problems being solved' },
+]
+
 const Demo6 = function () {
   return (
-    <Timeline
-      variant="filled"
-      titleSpan={160}
-      items={[
-        { title: 'Design review', content: 'Approved by maintainers' },
-        { title: 'Release', content: 'Tagged package version' },
-      ]}
-    />
+    <div style={{ display: 'grid', gap: '24px' }}>
+      <Timeline mode="start" items={items} />
+      <Timeline mode="end" items={items} />
+      <Timeline mode="alternate" items={items} />
+    </div>
   )
 }
 
@@ -405,7 +455,7 @@ export default Demo9
 | `mode`          | Timeline item placement mode.                      | `'start' \| 'alternate' \| 'end'`                         | `'start'`    |
 | `orientation`   | Timeline direction.                                | `'vertical' \| 'horizontal'`                              | `'vertical'` |
 | `variant`       | Dot visual variant.                                | `'outlined' \| 'filled'`                                  | `'outlined'` |
-| `titleSpan`     | Title area width or spacing before the dot center. | `number \| string`                                        | `12`         |
+| `titleSpan`     | Title area width or spacing before the dot center. | `number \| string`                                        | `120px`      |
 | `reverse`       | Reverses the item order.                           | `boolean`                                                 | `false`      |
 | `class`         | Additional root class name.                        | `string`                                                  | `-`          |
 | `className`     | Additional root class name alias.                  | `string`                                                  | `-`          |

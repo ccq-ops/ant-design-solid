@@ -176,6 +176,10 @@ describe('Timeline', () => {
             { title: 'Build', content: 'Ship' },
           ]}
         />
+        <Timeline
+          mode="alternate"
+          items={[{ content: 'Create' }, { content: 'Solve' }, { content: 'Test' }]}
+        />
       </>
     ))
 
@@ -187,7 +191,24 @@ describe('Timeline', () => {
     expect(styles).toContain('grid-template-columns:var(--ads-timeline-title-span, 120px)')
     expect(styles).toContain('.ads-timeline-vertical .ads-timeline-item-content')
     expect(styles).toContain('padding-inline-start:16px;')
+    expect(styles).toContain('align-self:start;')
+    expect(styles).toContain('margin-top:6px;')
+    expect(styles).toContain('margin-inline-end:0;')
+    expect(styles).toMatch(/\.ads-timeline\.ads-timeline-horizontal\{[^}]*gap:0;/)
     expect(styles).toContain('.ads-timeline-horizontal .ads-timeline-item-rail')
     expect(styles).toContain('top:5px;')
+    expect(styles).toContain('top:17px;')
+    expect(styles).toContain('bottom:-5px;')
+    expect(styles).toMatch(
+      /\.ads-timeline\.ads-timeline-horizontal \.ads-timeline-item-rail\{(?=[^}]*display:block;)(?=[^}]*position:absolute;)[^}]*\}/,
+    )
+    expect(styles).toContain('.ads-timeline-layout-alternate.ads-timeline-vertical')
+    expect(styles).toContain('left:50%;')
+    expect(styles).toContain(
+      '.ads-timeline-layout-alternate.ads-timeline-vertical .ads-timeline-item-placement-end .ads-timeline-item-section',
+    )
+    expect(styles).toContain(
+      '.ads-timeline-layout-alternate.ads-timeline-vertical .ads-timeline-item-placement-end .ads-timeline-item-rail',
+    )
   })
 })
