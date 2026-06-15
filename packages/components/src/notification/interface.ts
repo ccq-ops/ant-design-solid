@@ -21,8 +21,6 @@ export type NotificationSemanticKey =
   | 'section'
   | 'close'
   | 'progress'
-  | 'notice'
-  | 'message'
 
 export interface NotificationSemanticInfo {
   props?: NotificationDivProps
@@ -50,13 +48,11 @@ export interface NotificationArgs {
   key?: NotificationKey
   type?: NotificationType
   title?: JSX.Element
-  message?: JSX.Element
   description?: JSX.Element
   duration?: number | false
   placement?: NotificationPlacement
   onClose?: () => void
   class?: string
-  className?: string
   classNames?: NotificationClassNames
   style?: JSX.CSSProperties
   styles?: NotificationStyles
@@ -64,7 +60,6 @@ export interface NotificationArgs {
   onClick?: JSX.EventHandler<HTMLDivElement, MouseEvent>
   icon?: JSX.Element
   actions?: JSX.Element
-  btn?: JSX.Element
   closable?: boolean | null | NotificationClosableConfig
   closeIcon?: JSX.Element | boolean | null
   role?: 'alert' | 'status'

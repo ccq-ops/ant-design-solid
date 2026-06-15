@@ -9,33 +9,35 @@ export function useNotificationStyle(prefixCls: string) {
     () => {
       const t = token()
       const nt = getComponentToken('Notification', t)
-      const placementBase = { position: 'fixed', 'z-index': 1010 }
+      const edge = nt.notificationMarginEdge
+      const placementBase = { position: 'fixed', 'z-index': nt.zIndexPopup, 'margin-inline': edge }
       return {
         [`.${prefixCls}-top`]: {
           ...placementBase,
-          top: 24,
+          top: edge,
           left: '50%',
           transform: 'translateX(-50%)',
         },
-        [`.${prefixCls}-top-right`]: { ...placementBase, top: 24, right: 24 },
-        [`.${prefixCls}-top-left`]: { ...placementBase, top: 24, left: 24 },
+        [`.${prefixCls}-top-right`]: { ...placementBase, top: edge, right: 0 },
+        [`.${prefixCls}-top-left`]: { ...placementBase, top: edge, left: 0 },
         [`.${prefixCls}-bottom`]: {
           ...placementBase,
-          bottom: 24,
+          bottom: edge,
           left: '50%',
           transform: 'translateX(-50%)',
         },
-        [`.${prefixCls}-bottom-right`]: { ...placementBase, bottom: 24, right: 24 },
-        [`.${prefixCls}-bottom-left`]: { ...placementBase, bottom: 24, left: 24 },
+        [`.${prefixCls}-bottom-right`]: { ...placementBase, bottom: edge, right: 0 },
+        [`.${prefixCls}-bottom-left`]: { ...placementBase, bottom: edge, left: 0 },
         [`.${prefixCls}-notice`]: {
           position: 'relative',
           width: nt.width,
-          padding: nt.padding,
-          'margin-bottom': t.margin,
+          padding: nt.notificationPadding,
+          'margin-bottom': nt.notificationMarginBottom,
           color: t.colorText,
-          background: nt.bg,
-          'border-radius': nt.borderRadius,
-          'box-shadow': nt.boxShadow,
+          background: nt.notificationBg,
+          'border-radius': t.borderRadiusLG,
+          'box-shadow': t.boxShadow,
+          'overflow-wrap': 'break-word',
         },
         [`.${prefixCls}-notice-wrapper`]: {
           transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
@@ -43,35 +45,34 @@ export function useNotificationStyle(prefixCls: string) {
         [`.${prefixCls}-stack .${prefixCls}-notice-wrapper:not(:last-child)`]: {
           'margin-bottom': -48,
         },
-        [`.${prefixCls}-notice-stacked`]: {
-          transform: 'scale(0.96)',
-          opacity: 0.88,
-        },
+        [`.${prefixCls}-notice-stacked`]: { transform: 'scale(0.96)', opacity: 0.88 },
         [`.${prefixCls}-stack .${prefixCls}-notice-wrapper:last-child .${prefixCls}-notice`]: {
           transform: 'scale(1)',
           opacity: 1,
         },
-        [`.${prefixCls}-notice-message`]: {
+        [`.${prefixCls}-notice-title`]: {
           display: 'flex',
           'align-items': 'center',
           gap: t.marginXS,
           'font-weight': 600,
-          'padding-inline-end': 24,
+          'font-size': t.fontSizeLG,
+          'line-height': t.lineHeightLG,
+        },
+        [`.${prefixCls}-notice-closable .${prefixCls}-notice-title`]: {
+          'padding-inline-end': nt.notificationCloseButtonSize,
         },
         [`.${prefixCls}-notice-description`]: {
           color: t.colorTextSecondary,
           'margin-top': t.marginXS,
         },
-        [`.${prefixCls}-notice-actions`]: {
-          'margin-top': t.marginSM,
-        },
+        [`.${prefixCls}-notice-actions`]: { 'margin-top': t.marginSM },
         [`.${prefixCls}-notice-progress`]: {
           position: 'absolute',
           left: 0,
           bottom: 0,
-          height: 2,
+          height: nt.notificationProgressHeight,
           width: '100%',
-          background: t.colorPrimary,
+          background: nt.progressBg,
           'transform-origin': 'left center',
           animation: `${prefixCls}-progress linear forwards`,
         },
@@ -81,27 +82,34 @@ export function useNotificationStyle(prefixCls: string) {
         },
         [`.${prefixCls}-notice-close`]: {
           position: 'absolute',
-          top: t.paddingSM,
-          right: t.paddingSM,
+          top: nt.notificationPaddingVertical,
+          right: nt.notificationPaddingHorizontal,
+          width: nt.notificationCloseButtonSize,
+          height: nt.notificationCloseButtonSize,
           border: 0,
           background: 'transparent',
           cursor: 'pointer',
           color: t.colorTextSecondary,
-        },
-        [`.${prefixCls}-icon`]: {
           display: 'inline-flex',
           'align-items': 'center',
+          'justify-content': 'center',
+          padding: 0,
+        },
+        [`.${prefixCls}-notice-icon`]: {
+          display: 'inline-flex',
+          'align-items': 'center',
+          'font-size': nt.notificationIconSize,
           'line-height': 1,
           'flex-shrink': 0,
         },
-        [`.${prefixCls}-notice-success .${prefixCls}-notice-message`]: { color: t.colorSuccess },
-        [`.${prefixCls}-notice-info .${prefixCls}-notice-message`]: { color: t.colorInfo },
-        [`.${prefixCls}-notice-warning .${prefixCls}-notice-message`]: { color: t.colorWarning },
-        [`.${prefixCls}-notice-error .${prefixCls}-notice-message`]: { color: t.colorError },
-        [`.${prefixCls}-icon-success`]: { color: t.colorSuccess },
-        [`.${prefixCls}-icon-info`]: { color: t.colorInfo },
-        [`.${prefixCls}-icon-warning`]: { color: t.colorWarning },
-        [`.${prefixCls}-icon-error`]: { color: t.colorError },
+        [`.${prefixCls}-notice-success`]: { background: nt.colorSuccessBg },
+        [`.${prefixCls}-notice-info`]: { background: nt.colorInfoBg },
+        [`.${prefixCls}-notice-warning`]: { background: nt.colorWarningBg },
+        [`.${prefixCls}-notice-error`]: { background: nt.colorErrorBg },
+        [`.${prefixCls}-notice-icon-success`]: { color: t.colorSuccess },
+        [`.${prefixCls}-notice-icon-info`]: { color: t.colorInfo },
+        [`.${prefixCls}-notice-icon-warning`]: { color: t.colorWarning },
+        [`.${prefixCls}-notice-icon-error`]: { color: t.colorError },
       }
     },
   )

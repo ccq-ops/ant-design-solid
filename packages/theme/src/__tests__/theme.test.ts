@@ -334,7 +334,7 @@ describe('@ant-design-solid/theme', () => {
     const token = mergeTheme({
       components: {
         Alert: { iconSize: 18 },
-        Message: { noticeBorderRadius: 10 },
+        Message: { contentPadding: '10px 14px' },
         Notification: { width: 420 },
         Modal: { titleFontSize: 18 },
         Drawer: { draggerSize: 10, footerPaddingBlock: 12 },
@@ -345,8 +345,9 @@ describe('@ant-design-solid/theme', () => {
 
     expect(getComponentToken('Alert', token).iconSize).toBe(18)
     expect(getComponentToken('Alert', token).borderRadius).toBe(token.borderRadius)
-    expect(getComponentToken('Message', token).noticeBorderRadius).toBe(10)
+    expect(getComponentToken('Message', token).contentPadding).toBe('10px 14px')
     expect(getComponentToken('Message', token).contentBg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Message', token).zIndexPopup).toBe(2010)
     expect(getComponentToken('Notification', token).width).toBe(420)
     expect(getComponentToken('Notification', token).bg).toBe(token.colorBgElevated)
     expect(getComponentToken('Modal', token).titleFontSize).toBe(18)

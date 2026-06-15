@@ -187,12 +187,11 @@ export function NotificationHolder(props: NotificationHolderProps) {
                               `${prefixCls()}-notice`,
                               stacked() && `${prefixCls()}-notice-stacked`,
                               notice.type && `${prefixCls()}-notice-${notice.type}`,
+                              shouldShowClose(notice) && `${prefixCls()}-notice-closable`,
                               notice.class,
-                              notice.className,
                               classes().root,
-                              classes().notice,
                             )}
-                            style={{ ...notice.style, ...styles().root, ...styles().notice }}
+                            style={{ ...notice.style, ...styles().root }}
                             role={notice.props?.role ?? notice.role ?? 'alert'}
                             onClick={notice.onClick}
                             onMouseEnter={() => {
@@ -221,18 +220,14 @@ export function NotificationHolder(props: NotificationHolderProps) {
                               style={styles().section}
                             >
                               <div
-                                class={classNames(
-                                  `${prefixCls()}-notice-message`,
-                                  classes().title,
-                                  classes().message,
-                                )}
-                                style={{ ...styles().title, ...styles().message }}
+                                class={classNames(`${prefixCls()}-notice-title`, classes().title)}
+                                style={styles().title}
                               >
                                 <Show when={notice.icon ?? notice.type}>
                                   <span
                                     class={classNames(
-                                      `${prefixCls()}-icon`,
-                                      notice.type && `${prefixCls()}-icon-${notice.type}`,
+                                      `${prefixCls()}-notice-icon`,
+                                      notice.type && `${prefixCls()}-notice-icon-${notice.type}`,
                                       classes().icon,
                                     )}
                                     style={styles().icon}
@@ -241,7 +236,7 @@ export function NotificationHolder(props: NotificationHolderProps) {
                                     {notice.icon ?? <NotificationIcon type={notice.type!} />}
                                   </span>
                                 </Show>
-                                {notice.title ?? notice.message}
+                                {notice.title}
                               </div>
                               <Show when={notice.description}>
                                 <div
@@ -254,7 +249,7 @@ export function NotificationHolder(props: NotificationHolderProps) {
                                   {notice.description}
                                 </div>
                               </Show>
-                              <Show when={notice.actions ?? notice.btn}>
+                              <Show when={notice.actions}>
                                 <div
                                   class={classNames(
                                     `${prefixCls()}-notice-actions`,
@@ -262,7 +257,7 @@ export function NotificationHolder(props: NotificationHolderProps) {
                                   )}
                                   style={styles().actions}
                                 >
-                                  {notice.actions ?? notice.btn}
+                                  {notice.actions}
                                 </div>
                               </Show>
                             </div>

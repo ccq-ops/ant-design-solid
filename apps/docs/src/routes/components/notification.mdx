@@ -18,7 +18,7 @@ Notification displays global feedback messages in a corner of the viewport.
 
 export const NotificationDemo001 = (() => {
   const Demo1 = function () {
-      return (<Button onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}>
+      return (<Button onClick={() => notification.success({ title: 'Done', description: 'Task finished' })}>
         Success
       </Button>);
   };
@@ -34,7 +34,7 @@ import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
 
 const Demo1 = function () {
   return (
-    <Button onClick={() => notification.success({ message: 'Done', description: 'Task finished' })}>
+    <Button onClick={() => notification.success({ title: 'Done', description: 'Task finished' })}>
       Success
     </Button>
   )
@@ -54,17 +54,17 @@ export default Demo1
 export const NotificationDemo002 = (() => {
   const Demo2 = function () {
       return (<Space wrap>
-        <Button onClick={() => notification.info({ message: 'Info', description: 'Information' })}>
+        <Button onClick={() => notification.info({ title: 'Info', description: 'Information' })}>
           Info
         </Button>
         <Button onClick={() => notification.warning({
-              message: 'Warning',
+              title: 'Warning',
               description: 'Check this',
           })}>
           Warning
         </Button>
         <Button onClick={() => notification.error({
-              message: 'Error',
+              title: 'Error',
               description: 'Something failed',
           })}>
           Error
@@ -84,13 +84,13 @@ import { CheckCircleFilled, SmileOutlined } from '@ant-design-solid/icons'
 const Demo2 = function () {
   return (
     <Space wrap>
-      <Button onClick={() => notification.info({ message: 'Info', description: 'Information' })}>
+      <Button onClick={() => notification.info({ title: 'Info', description: 'Information' })}>
         Info
       </Button>
       <Button
         onClick={() =>
           notification.warning({
-            message: 'Warning',
+            title: 'Warning',
             description: 'Check this',
           })
         }
@@ -100,7 +100,7 @@ const Demo2 = function () {
       <Button
         onClick={() =>
           notification.error({
-            message: 'Error',
+            title: 'Error',
             description: 'Something failed',
           })
         }
@@ -184,14 +184,14 @@ export const NotificationDemo004 = (() => {
       return (<Button onClick={() => {
               notification.open({
                   key: 'sync',
-                  message: 'Syncing',
+                  title: 'Syncing',
                   description: 'Please wait',
                   duration: 0,
               });
               window.setTimeout(() => {
                   notification.success({
                       key: 'sync',
-                      message: 'Synced',
+                      title: 'Synced',
                       description: 'All changes saved',
                   });
               }, 900);
@@ -215,14 +215,14 @@ const Demo4 = function () {
       onClick={() => {
         notification.open({
           key: 'sync',
-          message: 'Syncing',
+          title: 'Syncing',
           description: 'Please wait',
           duration: 0,
         })
         window.setTimeout(() => {
           notification.success({
             key: 'sync',
-            message: 'Synced',
+            title: 'Synced',
             description: 'All changes saved',
           })
         }, 900)
@@ -776,18 +776,15 @@ export default Demo13
 | -------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------ |
 | `key`          | Stable key used to update or destroy a notification.       | `string \| number`                                                                   | `-`          |
 | `type`         | Notification semantic type.                                | `'success' \| 'info' \| 'warning' \| 'error'`                                        | `-`          |
-| `title`        | Notification title content. Preferred over message.        | `JSX.Element`                                                                        | `-`          |
-| `message`      | Deprecated-compatible notification title content.          | `JSX.Element`                                                                        | `-`          |
+| `title`        | Notification title content.                                | `JSX.Element`                                                                        | `-`          |
 | `description`  | Notification body content.                                 | `JSX.Element`                                                                        | `-`          |
 | `duration`     | Auto-close delay in seconds. Set 0 or false to keep open.  | `number \| false`                                                                    | `4.5`        |
 | `placement`    | Screen placement.                                          | `'top' \| 'topLeft' \| 'topRight' \| 'bottom' \| 'bottomLeft' \| 'bottomRight'`      | `'topRight'` |
 | `icon`         | Custom notification icon.                                  | `JSX.Element`                                                                        | `-`          |
 | `actions`      | Custom action area.                                        | `JSX.Element`                                                                        | `-`          |
-| `btn`          | Deprecated-compatible custom action area.                  | `JSX.Element`                                                                        | `-`          |
 | `closable`     | Whether to show close button, or close button config.      | `boolean \| null \| { closeIcon?: JSX.Element; onClose?: () => void }`               | `true`       |
 | `closeIcon`    | Custom close icon. Set false or null to hide close button. | `JSX.Element \| boolean \| null`                                                     | `-`          |
 | `class`        | Custom class for the notice element.                       | `string`                                                                             | `-`          |
-| `className`    | Deprecated-compatible custom class for the notice element. | `string`                                                                             | `-`          |
 | `classNames`   | Custom classes for semantic DOM parts.                     | `SemanticRecord<string> \| ((info) => SemanticRecord<string>)`                       | `-`          |
 | `style`        | Inline style for the notice element.                       | `JSX.CSSProperties`                                                                  | `-`          |
 | `styles`       | Inline styles for semantic DOM parts.                      | `SemanticRecord<JSX.CSSProperties> \| ((info) => SemanticRecord<JSX.CSSProperties>)` | `-`          |
@@ -821,21 +818,19 @@ export default Demo13
 
 ### NotificationSemanticKey
 
-| Property      | Description                              | Type     | Default |
-| ------------- | ---------------------------------------- | -------- | ------- |
-| `list`        | Placement list element.                  | `string` | `-`     |
-| `listContent` | Placement list content element.          | `string` | `-`     |
-| `wrapper`     | Notice outer wrapper element.            | `string` | `-`     |
-| `root`        | Notice root element.                     | `string` | `-`     |
-| `title`       | Title/message content wrapper.           | `string` | `-`     |
-| `description` | Description content wrapper.             | `string` | `-`     |
-| `actions`     | Actions or legacy btn wrapper.           | `string` | `-`     |
-| `icon`        | Icon wrapper.                            | `string` | `-`     |
-| `section`     | Content section wrapper.                 | `string` | `-`     |
-| `close`       | Close button element.                    | `string` | `-`     |
-| `progress`    | Auto-close progress bar element.         | `string` | `-`     |
-| `notice`      | Deprecated-compatible alias for `root`.  | `string` | `-`     |
-| `message`     | Deprecated-compatible alias for `title`. | `string` | `-`     |
+| Property      | Description                      | Type     | Default |
+| ------------- | -------------------------------- | -------- | ------- |
+| `list`        | Placement list element.          | `string` | `-`     |
+| `listContent` | Placement list content element.  | `string` | `-`     |
+| `wrapper`     | Notice outer wrapper element.    | `string` | `-`     |
+| `root`        | Notice root element.             | `string` | `-`     |
+| `title`       | Title content wrapper.           | `string` | `-`     |
+| `description` | Description content wrapper.     | `string` | `-`     |
+| `actions`     | Actions wrapper.                 | `string` | `-`     |
+| `icon`        | Icon wrapper.                    | `string` | `-`     |
+| `section`     | Content section wrapper.         | `string` | `-`     |
+| `close`       | Close button element.            | `string` | `-`     |
+| `progress`    | Auto-close progress bar element. | `string` | `-`     |
 
 ### NotificationHandle
 
@@ -855,6 +850,28 @@ export default Demo13
 | `notification.destroy`         | Destroys one keyed notification or all notifications.  | `(key?: string) => void`                                          | `-`     |
 | `notification.config`          | Configures defaults for subsequent notifications.      | `(options: NotificationConfig) => void`                           | `-`     |
 | `notification.useNotification` | Creates a local notification instance and holder.      | `(config?: NotificationConfig) => [NotificationApi, JSX.Element]` | `-`     |
+
+### Design Token
+
+| Token                           | Description                                   | Type               | Default                                 |
+| ------------------------------- | --------------------------------------------- | ------------------ | --------------------------------------- |
+| `zIndexPopup`                   | z-index of notification popup.                | `number`           | `token.zIndexPopupBase + 1060`          |
+| `width`                         | Width of notification notice.                 | `number \| string` | `384`                                   |
+| `progressBg`                    | Background of auto-close progress bar.        | `string`           | `linear-gradient(...)`                  |
+| `notificationBg`                | Background of notification notice.            | `string`           | `token.colorBgElevated`                 |
+| `notificationPadding`           | Notice padding shorthand.                     | `string`           | `16px 24px`                             |
+| `notificationPaddingVertical`   | Vertical padding used for close alignment.    | `number \| string` | `token.paddingMD`                       |
+| `notificationPaddingHorizontal` | Horizontal padding used for close alignment.  | `number`           | `token.paddingLG`                       |
+| `notificationIconSize`          | Icon font size.                               | `number \| string` | `token.fontSizeLG * token.lineHeightLG` |
+| `notificationCloseButtonSize`   | Close button size.                            | `number \| string` | `token.controlHeightLG * 0.55`          |
+| `notificationMarginBottom`      | Margin between notices.                       | `number`           | `token.margin`                          |
+| `notificationMarginEdge`        | Distance from viewport edge.                  | `number`           | `token.marginLG`                        |
+| `notificationProgressHeight`    | Progress bar height.                          | `number`           | `2`                                     |
+| `notificationMotionOffset`      | Motion offset for notification animation.     | `number`           | `64`                                    |
+| `colorSuccessBg`                | Background override for success notification. | `string`           | `-`                                     |
+| `colorInfoBg`                   | Background override for info notification.    | `string`           | `-`                                     |
+| `colorWarningBg`                | Background override for warning notification. | `string`           | `-`                                     |
+| `colorErrorBg`                  | Background override for error notification.   | `string`           | `-`                                     |
 
 ### ConfigProvider
 

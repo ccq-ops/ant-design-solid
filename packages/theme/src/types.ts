@@ -621,13 +621,24 @@ export interface MessageComponentToken extends ComponentTokenBase {
 }
 
 export interface NotificationComponentToken extends ComponentTokenBase {
-  width: number
-  padding: number
-  borderRadius: number
-  bg: string
-  boxShadow: string
+  zIndexPopup: number
+  width: number | string
+  progressBg: string
+  colorSuccessBg?: string
+  colorErrorBg?: string
+  colorInfoBg?: string
+  colorWarningBg?: string
+  notificationBg: string
+  notificationPadding: string
+  notificationPaddingVertical: number | string
+  notificationPaddingHorizontal: number
+  notificationIconSize: number | string
+  notificationCloseButtonSize: number | string
+  notificationMarginBottom: number
+  notificationMarginEdge: number
+  notificationProgressHeight: number
+  notificationMotionOffset: number
 }
-
 export interface ModalComponentToken extends ComponentTokenBase {
   contentBg: string
   footerBg: string
