@@ -67,6 +67,28 @@ describe('component docs Tailwind migration', () => {
     expect(layoutSource).not.toContain("background: 'var(--docs-surface-solid)'")
   })
 
+  it('declares shared layout demo classes inside each preview that uses them', () => {
+    const previewSources = layoutSource
+      .split(/export const LayoutDemo\d+ = \(\(\) => \{/)
+      .slice(1)
+      .map((source) => source.slice(0, source.indexOf('return Demo')))
+
+    expect(previewSources.length).toBeGreaterThan(0)
+
+    for (const previewSource of previewSources) {
+      const usedClassNames = Array.from(
+        previewSource.matchAll(/class=\{(layout(?:Header|Footer)Class)\}/g),
+        ([, className]) => className,
+      )
+
+      for (const className of new Set(usedClassNames)) {
+        expect(previewSource, `${className} must be declared in its preview scope`).toContain(
+          `const ${className} =`,
+        )
+      }
+    }
+  })
+
   it('uses Tailwind for float button demo boxes and static positioning', () => {
     expect(floatButtonSource).toContain('const floatButtonBoxClass')
     expect(floatButtonSource).toContain('absolute! right-6! bottom-6!')

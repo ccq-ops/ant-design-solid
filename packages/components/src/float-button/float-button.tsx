@@ -231,7 +231,16 @@ const BaseFloatButton = (props: FloatButtonProps) => {
         semanticStyles(),
       )}
       <Show when={local.badge}>
-        {(badge) => <Badge {...badge()} class={`${prefixCls()}-badge`} />}
+        {(badge) => (
+          <Badge
+            {...badge()}
+            class={classNames(
+              `${prefixCls()}-badge`,
+              badge().dot && `${prefixCls()}-badge-dot`,
+              badge().class,
+            )}
+          />
+        )}
       </Show>
     </>
   )

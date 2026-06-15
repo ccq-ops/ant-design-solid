@@ -98,12 +98,12 @@ export function useFloatButtonStyle(prefixCls: string) {
           'font-size': `${t.fontSizeSM}px`,
           'text-align': 'center',
         },
-        [`.${prefixCls}-badge`]: {
+        [`.${prefixCls}.${prefixCls} .${prefixCls}-badge`]: {
           position: 'absolute',
           top: 0,
           right: 0,
         },
-        [`.${prefixCls}-badge:not(.${prefixCls}-badge-dot)`]: {
+        [`.${prefixCls}.${prefixCls} .${prefixCls}-badge:not(.${prefixCls}-badge-dot)`]: {
           transform: 'translate(50%, -50%)',
         },
         [`.${prefixCls}-circle .${prefixCls}-badge`]: {

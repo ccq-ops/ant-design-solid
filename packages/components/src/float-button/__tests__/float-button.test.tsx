@@ -70,9 +70,22 @@ describe('FloatButton', () => {
     expect(result.getByText('Alert')).toHaveClass('semantic-content')
     expect(result.getByText('Alert')).toHaveStyle({ color: 'rgb(255, 0, 0)' })
     expect(result.container.querySelector('.ads-float-button-badge')).toBeInTheDocument()
+    expect(result.getByText('7')).toHaveClass('ads-badge-count')
+    expect(result.getByText('7')).not.toHaveClass('ads-badge-count-sm')
+    expect(result.container.querySelector('.ads-float-button-badge')).toHaveStyle({
+      position: 'absolute',
+    })
 
     fireEvent.click(button)
     expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('marks dot badge roots for float button shape offsets', () => {
+    const result = render(() => <FloatButton badge={{ dot: true }} icon="!" />)
+
+    const badge = result.container.querySelector('.ads-float-button-badge')
+    expect(badge).toHaveClass('ads-float-button-badge-dot')
+    expect(badge?.querySelector('.ads-badge-dot')).toBeInTheDocument()
   })
 
   it('wraps tooltip object props around the float button', () => {
