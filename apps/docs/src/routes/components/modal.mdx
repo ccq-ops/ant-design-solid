@@ -18,17 +18,24 @@ Modal displays important content in a focused dialog above the page.
 
 export const ModalDemo001 = (() => {
   const Demo1 = function () {
-      const [basicOpen, setBasicOpen] = createSignal(false);
+      const [isModalOpen, setIsModalOpen] = createSignal(false);
+      const showModal = () => {
+          setIsModalOpen(true);
+      };
+      const handleOk = () => {
+          setIsModalOpen(false);
+      };
+      const handleCancel = () => {
+          setIsModalOpen(false);
+      };
       return (<>
-      <Button type="primary" onClick={() => setBasicOpen(true)}>
-            Open modal
+      <Button type="primary" onClick={showModal}>
+            Open Modal
           </Button>
-          <Modal open={basicOpen()} title="Basic modal" onOk={() => {
-              setBasicOpen(false);
-          }} onCancel={() => {
-              setBasicOpen(false);
-          }}>
-            Modal content stays mounted in a portal while open.
+          <Modal title="Basic Modal" closable={{ 'aria-label': 'Custom Close Button' }} open={isModalOpen()} onOk={handleOk} onCancel={handleCancel}>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
           </Modal>
     </>);
   };
@@ -40,27 +47,40 @@ return Demo1
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Modal, Space, message } from '@ant-design-solid/core'
+import { Button, Modal } from '@ant-design-solid/core'
 
 const Demo1 = function () {
-  const [basicOpen, setBasicOpen] = createSignal(false)
+  const [isModalOpen, setIsModalOpen] = createSignal(false)
+
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleOk = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
 
   return (
-<Button type="primary" onClick={() => setBasicOpen(true)}>
-          Open modal
-        </Button>
-        <Modal
-          open={basicOpen()}
-          title="Basic modal"
-          onOk={() => {
-            setBasicOpen(false)
-          }}
-          onCancel={() => {
-            setBasicOpen(false)
-          }}
-        >
-          Modal content stays mounted in a portal while open.
-        </Modal>
+    <>
+      <Button type="primary" onClick={showModal}>
+        Open Modal
+      </Button>
+      <Modal
+        title="Basic Modal"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isModalOpen()}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+    </>
   )
 }
 
@@ -77,18 +97,39 @@ export default Demo1
 
 export const ModalDemo002 = (() => {
   const Demo2 = function () {
-      const [footerOpen, setFooterOpen] = createSignal(false);
+      const [loading, setLoading] = createSignal(false);
+      const [open, setOpen] = createSignal(false);
+      const showModal = () => {
+          setOpen(true);
+      };
+      const handleOk = () => {
+          setLoading(true);
+          window.setTimeout(() => {
+              setLoading(false);
+              setOpen(false);
+          }, 3000);
+      };
+      const handleCancel = () => {
+          setOpen(false);
+      };
       return (<>
-      <Button onClick={() => setFooterOpen(true)}>Open custom footer</Button>
-          <Modal open={footerOpen()} title="Custom footer" footer={<Space>
-                <Button onClick={() => setFooterOpen(false)}>Close</Button>
-                <Button type="primary" onClick={() => setFooterOpen(false)}>
-                  Apply
+      <Button type="primary" onClick={showModal}>
+            Open Modal with customized footer
+          </Button>
+          <Modal open={open()} title="Title" onOk={handleOk} onCancel={handleCancel} footer={[
+              <Button onClick={handleCancel}>Return</Button>,
+              <Button type="primary" loading={loading()} onClick={handleOk}>
+                  Submit
+                </Button>,
+              <Button href="https://google.com" target="_blank" type="primary" loading={loading()} onClick={handleOk}>
+                  Search on Google
                 </Button>
-              </Space>} onCancel={() => {
-              setFooterOpen(false);
-          }}>
-            Replace the default footer with any Solid content.
+          ]}>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
           </Modal>
     </>);
   };
@@ -100,30 +141,61 @@ return Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Modal, Space, message } from '@ant-design-solid/core'
+import { Button, Modal } from '@ant-design-solid/core'
 
 const Demo2 = function () {
-  const [footerOpen, setFooterOpen] = createSignal(false)
+  const [loading, setLoading] = createSignal(false)
+  const [open, setOpen] = createSignal(false)
+
+  const showModal = () => {
+    setOpen(true)
+  }
+
+  const handleOk = () => {
+    setLoading(true)
+    window.setTimeout(() => {
+      setLoading(false)
+      setOpen(false)
+    }, 3000)
+  }
+
+  const handleCancel = () => {
+    setOpen(false)
+  }
 
   return (
-<Button onClick={() => setFooterOpen(true)}>Open custom footer</Button>
-        <Modal
-          open={footerOpen()}
-          title="Custom footer"
-          footer={
-            <Space>
-              <Button onClick={() => setFooterOpen(false)}>Close</Button>
-              <Button type="primary" onClick={() => setFooterOpen(false)}>
-                Apply
-              </Button>
-            </Space>
-          }
-          onCancel={() => {
-            setFooterOpen(false)
-          }}
-        >
-          Replace the default footer with any Solid content.
-        </Modal>
+    <>
+      <Button type="primary" onClick={showModal}>
+        Open Modal with customized footer
+      </Button>
+      <Modal
+        open={open()}
+        title="Title"
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button onClick={handleCancel}>Return</Button>,
+          <Button type="primary" loading={loading()} onClick={handleOk}>
+            Submit
+          </Button>,
+          <Button
+            href="https://google.com"
+            target="_blank"
+            type="primary"
+            loading={loading()}
+            onClick={handleOk}
+          >
+            Search on Google
+          </Button>,
+        ]}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+    </>
   )
 }
 
@@ -140,22 +212,45 @@ export default Demo2
 
 export const ModalDemo003 = (() => {
   const Demo3 = function () {
-      const [buttonsOpen, setButtonsOpen] = createSignal(false);
+      const [open, setOpen] = createSignal(false);
+      const showModal = () => {
+          setOpen(true);
+      };
+      const handleOk = () => {
+          setOpen(false);
+      };
+      const handleCancel = () => {
+          setOpen(false);
+      };
       return (<>
-      <Button onClick={() => setButtonsOpen(true)}>Open custom buttons</Button>
-          <Modal open={buttonsOpen()} title="Custom buttons" okText="Publish" cancelText="Back" okType="default" okButtonProps={{ danger: true }} cancelButtonProps={{ type: 'text' }} footer={(_originNode, { OkBtn, CancelBtn }) => (<Space>
-                <Button type="link" onClick={() => message.info('Open help')}>
-                  Help
-                </Button>
+      <Space>
+            <Button type="primary" onClick={showModal}>
+              Open Modal
+            </Button>
+            <Button type="primary" onClick={() => {
+              Modal.confirm({
+                  title: 'Confirm',
+                  content: 'Bla bla ...',
+                  footer: (_, { OkBtn, CancelBtn }) => (<>
+                    <Button>Custom Button</Button>
+                    <CancelBtn />
+                    <OkBtn />
+                  </>),
+              });
+          }}>
+              Open Modal Confirm
+            </Button>
+          </Space>
+          <Modal open={open()} title="Title" onOk={handleOk} onCancel={handleCancel} footer={(_, { OkBtn, CancelBtn }) => (<>
+                <Button>Custom Button</Button>
                 <CancelBtn />
                 <OkBtn />
-              </Space>)} onOk={() => {
-              message.success('Published');
-              setButtonsOpen(false);
-          }} onCancel={() => {
-              setButtonsOpen(false);
-          }}>
-            Use button props and footer render functions to customize the default actions.
+              </>)}>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
           </Modal>
     </>);
   };
@@ -167,40 +262,68 @@ return Demo3
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Modal, Space, message } from '@ant-design-solid/core'
+import { Button, Modal, Space } from '@ant-design-solid/core'
 
 const Demo3 = function () {
-  const [buttonsOpen, setButtonsOpen] = createSignal(false)
+  const [open, setOpen] = createSignal(false)
+
+  const showModal = () => {
+    setOpen(true)
+  }
+
+  const handleOk = () => {
+    setOpen(false)
+  }
+
+  const handleCancel = () => {
+    setOpen(false)
+  }
 
   return (
-<Button onClick={() => setButtonsOpen(true)}>Open custom buttons</Button>
-        <Modal
-          open={buttonsOpen()}
-          title="Custom buttons"
-          okText="Publish"
-          cancelText="Back"
-          okType="default"
-          okButtonProps={{ danger: true }}
-          cancelButtonProps={{ type: 'text' }}
-          footer={(_originNode, { OkBtn, CancelBtn }) => (
-            <Space>
-              <Button type="link" onClick={() => message.info('Open help')}>
-                Help
-              </Button>
-              <CancelBtn />
-              <OkBtn />
-            </Space>
-          )}
-          onOk={() => {
-            message.success('Published')
-            setButtonsOpen(false)
-          }}
-          onCancel={() => {
-            setButtonsOpen(false)
+    <>
+      <Space>
+        <Button type="primary" onClick={showModal}>
+          Open Modal
+        </Button>
+        <Button
+          type="primary"
+          onClick={() => {
+            Modal.confirm({
+              title: 'Confirm',
+              content: 'Bla bla ...',
+              footer: (_, { OkBtn, CancelBtn }) => (
+                <>
+                  <Button>Custom Button</Button>
+                  <CancelBtn />
+                  <OkBtn />
+                </>
+              ),
+            })
           }}
         >
-          Use button props and footer render functions to customize the default actions.
-        </Modal>
+          Open Modal Confirm
+        </Button>
+      </Space>
+      <Modal
+        open={open()}
+        title="Title"
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={(_, { OkBtn, CancelBtn }) => (
+          <>
+            <Button>Custom Button</Button>
+            <CancelBtn />
+            <OkBtn />
+          </>
+        )}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+    </>
   )
 }
 
@@ -217,22 +340,30 @@ export default Demo3
 
 export const ModalDemo004 = (() => {
   const Demo4 = function () {
-      const [loadingOpen, setLoadingOpen] = createSignal(false);
-      const [loading, setLoading] = createSignal(false);
-      function handleLoadingOk() {
-          setLoading(true);
+      const [open, setOpen] = createSignal(false);
+      const [confirmLoading, setConfirmLoading] = createSignal(false);
+      const [modalText, setModalText] = createSignal('Content of the modal');
+      const showModal = () => {
+          setOpen(true);
+      };
+      const handleOk = () => {
+          setModalText('The modal will be closed after two seconds');
+          setConfirmLoading(true);
           window.setTimeout(() => {
-              setLoading(false);
-              setLoadingOpen(false);
-              message.success('Saved');
-          }, 800);
-      }
+              setOpen(false);
+              setConfirmLoading(false);
+          }, 2000);
+      };
+      const handleCancel = () => {
+          console.log('Clicked cancel button');
+          setOpen(false);
+      };
       return (<>
-      <Button onClick={() => setLoadingOpen(true)}>Open async modal</Button>
-          <Modal open={loadingOpen()} title="Confirm loading" confirmLoading={loading()} onOk={handleLoadingOk} onCancel={() => {
-              setLoadingOpen(false);
-          }}>
-            Click OK to simulate an async operation.
+      <Button type="primary" onClick={showModal}>
+            Open Modal with async logic
+          </Button>
+          <Modal title="Title" open={open()} onOk={handleOk} confirmLoading={confirmLoading()} onCancel={handleCancel}>
+            <p>{modalText()}</p>
           </Modal>
     </>);
   };
@@ -244,35 +375,46 @@ return Demo4
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Modal, Space, message } from '@ant-design-solid/core'
+import { Button, Modal } from '@ant-design-solid/core'
 
 const Demo4 = function () {
-  const [loadingOpen, setLoadingOpen] = createSignal(false)
+  const [open, setOpen] = createSignal(false)
+  const [confirmLoading, setConfirmLoading] = createSignal(false)
+  const [modalText, setModalText] = createSignal('Content of the modal')
 
-  const [loading, setLoading] = createSignal(false)
+  const showModal = () => {
+    setOpen(true)
+  }
 
-  function handleLoadingOk() {
-  setLoading(true)
-  window.setTimeout(() => {
-  setLoading(false)
-  setLoadingOpen(false)
-  message.success('Saved')
-  }, 800)
+  const handleOk = () => {
+    setModalText('The modal will be closed after two seconds')
+    setConfirmLoading(true)
+    window.setTimeout(() => {
+      setOpen(false)
+      setConfirmLoading(false)
+    }, 2000)
+  }
+
+  const handleCancel = () => {
+    console.log('Clicked cancel button')
+    setOpen(false)
   }
 
   return (
-<Button onClick={() => setLoadingOpen(true)}>Open async modal</Button>
-        <Modal
-          open={loadingOpen()}
-          title="Confirm loading"
-          confirmLoading={loading()}
-          onOk={handleLoadingOk}
-          onCancel={() => {
-            setLoadingOpen(false)
-          }}
-        >
-          Click OK to simulate an async operation.
-        </Modal>
+    <>
+      <Button type="primary" onClick={showModal}>
+        Open Modal with async logic
+      </Button>
+      <Modal
+        title="Title"
+        open={open()}
+        onOk={handleOk}
+        confirmLoading={confirmLoading()}
+        onCancel={handleCancel}
+      >
+        <p>{modalText()}</p>
+      </Modal>
+    </>
   )
 }
 
@@ -922,42 +1064,42 @@ export default Demo11
 
 ### Modal
 
-| Property                 | Description                                                                                                  | Type                                                                     | Default                                        |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ---------------------------------------------- |
-| `open`                   | Controls whether the modal is visible.                                                                       | `boolean`                                                                | `false`                                        |
-| `title`                  | Modal title content.                                                                                         | `JSX.Element`                                                            | `-`                                            |
-| `footer`                 | Custom footer content. Set to null to hide the footer, or use a render function to wrap the default buttons. | `JSX.Element \| ((originNode, extra) => JSX.Element) \| null`            | `OK and Cancel buttons`                        |
-| `okText`                 | Text for the default OK button.                                                                              | `JSX.Element`                                                            | `'OK'`                                         |
-| `cancelText`             | Text for the default Cancel button.                                                                          | `JSX.Element`                                                            | `'Cancel'`                                     |
-| `confirmLoading`         | Shows loading state on the default OK button.                                                                | `boolean`                                                                | `false`                                        |
-| `closable`               | Shows or configures the close button in the top corner.                                                      | `boolean \| ModalClosableConfig`                                         | `true`                                         |
-| `closeIcon`              | Custom close icon.                                                                                           | `JSX.Element`                                                            | `<CloseOutlined />`                            |
-| `mask`                   | Shows or configures the background mask.                                                                     | `boolean \| ModalMaskConfig`                                             | `true`                                         |
-| `maskClosable`           | Closes the modal when clicking the wrapper outside the dialog. Ignored when mask.closable is provided.       | `boolean`                                                                | `true`                                         |
-| `keyboard`               | Closes the top modal when pressing Escape.                                                                   | `boolean`                                                                | `true`                                         |
-| `centered`               | Vertically centers the modal dialog.                                                                         | `boolean`                                                                | `false`                                        |
-| `width`                  | Modal width. Supports responsive breakpoint objects.                                                         | `number \| string \| Partial<Record<ModalBreakpoint, number \| string>>` | `520`                                          |
-| `zIndex`                 | Overrides modal z-index.                                                                                     | `number`                                                                 | `-`                                            |
-| `okType`                 | Button type for the default OK button.                                                                       | `ButtonType`                                                             | `'primary'`                                    |
-| `okButtonProps`          | Props for the default OK button.                                                                             | `ButtonProps`                                                            | `-`                                            |
-| `cancelButtonProps`      | Props for the default Cancel button.                                                                         | `ButtonProps`                                                            | `-`                                            |
-| `class`                  | Solid class for the modal dialog.                                                                            | `string`                                                                 | `-`                                            |
-| `rootClass`              | Solid class for the root modal layer.                                                                        | `string`                                                                 | `-`                                            |
-| `wrapClass`              | Solid class for the modal wrapper.                                                                           | `string`                                                                 | `-`                                            |
-| `classNames`             | Semantic DOM class names. Supports object or function form.                                                  | `ModalClassNames \| ((info: { props }) => ModalClassNames)`              | `-`                                            |
-| `styles`                 | Semantic DOM inline styles. Supports object or function form.                                                | `ModalStyles \| ((info: { props }) => ModalStyles)`                      | `-`                                            |
-| `focusable`              | Focus management config.                                                                                     | `{ trap?: boolean; focusTriggerAfterClose?: boolean }`                   | `{ trap: true, focusTriggerAfterClose: true }` |
-| `destroyOnHidden`        | Unmount children when the modal is hidden.                                                                   | `boolean`                                                                | `false`                                        |
-| `forceRender`            | Render modal content before it is opened.                                                                    | `boolean`                                                                | `false`                                        |
-| `getContainer`           | Custom mount node, selector, or false for inline rendering.                                                  | `HTMLElement \| () => HTMLElement \| string \| false`                    | `document.body`                                |
-| `modalRender`            | Custom render wrapper for the modal dialog node.                                                             | `(node: JSX.Element) => JSX.Element`                                     | `-`                                            |
-| `transitionName`         | Motion class prefix for the modal dialog.                                                                    | `string`                                                                 | `'ads-zoom'`                                   |
-| `maskTransitionName`     | Motion class prefix for the modal mask.                                                                      | `string`                                                                 | `'ads-fade'`                                   |
-| `loading`                | Shows a loading body placeholder.                                                                            | `boolean`                                                                | `false`                                        |
-| `onOk`                   | Called when the default OK button is clicked.                                                                | `(event: MouseEvent) => void \| Promise<void>`                           | `-`                                            |
-| `onCancel`               | Called when the modal requests to close.                                                                     | `(event: MouseEvent \| KeyboardEvent) => void`                           | `-`                                            |
-| `afterClose`             | Called after the modal changes from open to closed.                                                          | `() => void`                                                             | `-`                                            |
-| `afterOpenChange`        | Called when the open state changes.                                                                          | `(open: boolean) => void`                                                | `-`                                            |
+| Property             | Description                                                                                                  | Type                                                                     | Default                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ | ---------------------------------------------- |
+| `open`               | Controls whether the modal is visible.                                                                       | `boolean`                                                                | `false`                                        |
+| `title`              | Modal title content.                                                                                         | `JSX.Element`                                                            | `-`                                            |
+| `footer`             | Custom footer content. Set to null to hide the footer, or use a render function to wrap the default buttons. | `JSX.Element \| ((originNode, extra) => JSX.Element) \| null`            | `OK and Cancel buttons`                        |
+| `okText`             | Text for the default OK button.                                                                              | `JSX.Element`                                                            | `'OK'`                                         |
+| `cancelText`         | Text for the default Cancel button.                                                                          | `JSX.Element`                                                            | `'Cancel'`                                     |
+| `confirmLoading`     | Shows loading state on the default OK button.                                                                | `boolean`                                                                | `false`                                        |
+| `closable`           | Shows or configures the close button in the top corner.                                                      | `boolean \| ModalClosableConfig`                                         | `true`                                         |
+| `closeIcon`          | Custom close icon.                                                                                           | `JSX.Element`                                                            | `<CloseOutlined />`                            |
+| `mask`               | Shows or configures the background mask.                                                                     | `boolean \| ModalMaskConfig`                                             | `true`                                         |
+| `maskClosable`       | Closes the modal when clicking the wrapper outside the dialog. Ignored when mask.closable is provided.       | `boolean`                                                                | `true`                                         |
+| `keyboard`           | Closes the top modal when pressing Escape.                                                                   | `boolean`                                                                | `true`                                         |
+| `centered`           | Vertically centers the modal dialog.                                                                         | `boolean`                                                                | `false`                                        |
+| `width`              | Modal width. Supports responsive breakpoint objects.                                                         | `number \| string \| Partial<Record<ModalBreakpoint, number \| string>>` | `520`                                          |
+| `zIndex`             | Overrides modal z-index.                                                                                     | `number`                                                                 | `-`                                            |
+| `okType`             | Button type for the default OK button.                                                                       | `ButtonType`                                                             | `'primary'`                                    |
+| `okButtonProps`      | Props for the default OK button.                                                                             | `ButtonProps`                                                            | `-`                                            |
+| `cancelButtonProps`  | Props for the default Cancel button.                                                                         | `ButtonProps`                                                            | `-`                                            |
+| `class`              | Solid class for the modal dialog.                                                                            | `string`                                                                 | `-`                                            |
+| `rootClass`          | Solid class for the root modal layer.                                                                        | `string`                                                                 | `-`                                            |
+| `wrapClass`          | Solid class for the modal wrapper.                                                                           | `string`                                                                 | `-`                                            |
+| `classNames`         | Semantic DOM class names. Supports object or function form.                                                  | `ModalClassNames \| ((info: { props }) => ModalClassNames)`              | `-`                                            |
+| `styles`             | Semantic DOM inline styles. Supports object or function form.                                                | `ModalStyles \| ((info: { props }) => ModalStyles)`                      | `-`                                            |
+| `focusable`          | Focus management config.                                                                                     | `{ trap?: boolean; focusTriggerAfterClose?: boolean }`                   | `{ trap: true, focusTriggerAfterClose: true }` |
+| `destroyOnHidden`    | Unmount children when the modal is hidden.                                                                   | `boolean`                                                                | `false`                                        |
+| `forceRender`        | Render modal content before it is opened.                                                                    | `boolean`                                                                | `false`                                        |
+| `getContainer`       | Custom mount node, selector, or false for inline rendering.                                                  | `HTMLElement \| () => HTMLElement \| string \| false`                    | `document.body`                                |
+| `modalRender`        | Custom render wrapper for the modal dialog node.                                                             | `(node: JSX.Element) => JSX.Element`                                     | `-`                                            |
+| `transitionName`     | Motion class prefix for the modal dialog.                                                                    | `string`                                                                 | `'ads-zoom'`                                   |
+| `maskTransitionName` | Motion class prefix for the modal mask.                                                                      | `string`                                                                 | `'ads-fade'`                                   |
+| `loading`            | Shows a loading body placeholder.                                                                            | `boolean`                                                                | `false`                                        |
+| `onOk`               | Called when the default OK button is clicked.                                                                | `(event: MouseEvent) => void \| Promise<void>`                           | `-`                                            |
+| `onCancel`           | Called when the modal requests to close.                                                                     | `(event: MouseEvent \| KeyboardEvent) => void`                           | `-`                                            |
+| `afterClose`         | Called after the modal changes from open to closed.                                                          | `() => void`                                                             | `-`                                            |
+| `afterOpenChange`    | Called when the open state changes.                                                                          | `(open: boolean) => void`                                                | `-`                                            |
 
 ### Modal function config
 
@@ -1049,15 +1191,15 @@ export default Demo11
 
 ### Static methods
 
-| Property           | Description                                                                                  | Type                                            | Default |
-| ------------------ | -------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------- |
-| `Modal.confirm`    | Opens a confirmation dialog.                                                                 | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
-| `Modal.info`       | Opens an informational dialog.                                                               | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
-| `Modal.success`    | Opens a success dialog.                                                                      | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
-| `Modal.error`      | Opens an error dialog.                                                                       | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
-| `Modal.warning`    | Opens a warning dialog.                                                                      | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
-| `Modal.warn`       | Alias of `Modal.warning`.                                                                    | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
-| `Modal.destroyAll` | Destroys all static modal instances.                                                         | `() => void`                                    | `-`     |
-| `Modal.useModal`   | Creates context-aware modal methods and a Solid context holder. Hook returns support `then`. | `() => readonly [ModalHookApi, JSX.Element]`    | `-`     |
-| `App.useApp().modal` | Gets context-aware modal methods from the nearest App provider.                             | `ModalHookApi`                                  | `-`     |
-| `Modal.config`     | Sets legacy static modal root prefix. Prefer `ConfigProvider`.                               | `(options: { rootPrefixCls?: string }) => void` | `-`     |
+| Property             | Description                                                                                  | Type                                            | Default |
+| -------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------- |
+| `Modal.confirm`      | Opens a confirmation dialog.                                                                 | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
+| `Modal.info`         | Opens an informational dialog.                                                               | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
+| `Modal.success`      | Opens a success dialog.                                                                      | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
+| `Modal.error`        | Opens an error dialog.                                                                       | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
+| `Modal.warning`      | Opens a warning dialog.                                                                      | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
+| `Modal.warn`         | Alias of `Modal.warning`.                                                                    | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
+| `Modal.destroyAll`   | Destroys all static modal instances.                                                         | `() => void`                                    | `-`     |
+| `Modal.useModal`     | Creates context-aware modal methods and a Solid context holder. Hook returns support `then`. | `() => readonly [ModalHookApi, JSX.Element]`    | `-`     |
+| `App.useApp().modal` | Gets context-aware modal methods from the nearest App provider.                              | `ModalHookApi`                                  | `-`     |
+| `Modal.config`       | Sets legacy static modal root prefix. Prefer `ConfigProvider`.                               | `(options: { rootPrefixCls?: string }) => void` | `-`     |

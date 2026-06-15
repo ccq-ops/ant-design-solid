@@ -40,7 +40,7 @@ export function useModalStyle(prefixCls: string) {
         position: 'relative',
         top: 100,
         margin: '0 auto',
-        padding: `0 0 ${t.paddingLG}px`,
+        padding: 0,
         width: `var(--${prefixCls}-xs-width, 520px)`,
         'transform-origin': '50% 50%',
       },
@@ -62,31 +62,43 @@ export function useModalStyle(prefixCls: string) {
         'pointer-events': 'none',
       },
       '@media (min-width: 576px)': {
-        [`.${prefixCls}`]: {
+        [`.${prefixCls}, .${prefixCls}-render`]: {
           width: `var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px))`,
         },
       },
       '@media (min-width: 768px)': {
-        [`.${prefixCls}`]: {
+        [`.${prefixCls}, .${prefixCls}-render`]: {
           width: `var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px)))`,
         },
       },
       '@media (min-width: 992px)': {
-        [`.${prefixCls}`]: {
+        [`.${prefixCls}, .${prefixCls}-render`]: {
           width: `var(--${prefixCls}-lg-width, var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px))))`,
         },
       },
       '@media (min-width: 1200px)': {
-        [`.${prefixCls}`]: {
+        [`.${prefixCls}, .${prefixCls}-render`]: {
           width: `var(--${prefixCls}-xl-width, var(--${prefixCls}-lg-width, var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px)))))`,
         },
       },
       '@media (min-width: 1600px)': {
-        [`.${prefixCls}`]: {
+        [`.${prefixCls}, .${prefixCls}-render`]: {
           width: `var(--${prefixCls}-xxl-width, var(--${prefixCls}-xl-width, var(--${prefixCls}-lg-width, var(--${prefixCls}-md-width, var(--${prefixCls}-sm-width, var(--${prefixCls}-xs-width, 520px))))))`,
         },
       },
       [`.${prefixCls}-centered .${prefixCls}`]: { top: 0 },
+      [`.${prefixCls}-render`]: {
+        position: 'relative',
+        top: 100,
+        width: `var(--${prefixCls}-xs-width, 520px)`,
+        margin: '0 auto',
+      },
+      [`.${prefixCls}-render .${prefixCls}`]: {
+        top: 0,
+        width: '100%',
+        margin: 0,
+      },
+      [`.${prefixCls}-centered .${prefixCls}-render`]: { top: 0 },
       [`.${prefixCls}-content`]: {
         position: 'relative',
         background: mt.contentBg,
@@ -116,7 +128,9 @@ export function useModalStyle(prefixCls: string) {
       [`.${prefixCls}-footer`]: {
         display: 'flex',
         'justify-content': 'flex-end',
-        gap: mt.confirmIconMarginInlineEnd,
+        'align-items': 'center',
+        'text-align': 'end',
+        gap: mt.footerButtonGap,
         padding: mt.footerPadding,
         background: mt.footerBg,
         'border-top': mt.footerBorderTop,
@@ -138,12 +152,12 @@ export function useModalStyle(prefixCls: string) {
       [`.${prefixCls}-confirm-body`]: {
         display: 'flex',
         'align-items': 'flex-start',
-        gap: t.marginSM,
       },
       [`.${prefixCls}-confirm-icon`]: {
         flex: 'none',
         'font-size': confirmIconSize,
         'line-height': 1,
+        'margin-inline-end': mt.confirmIconMarginInlineEnd,
         'margin-top': `${((titleFontSize * t.lineHeight - confirmIconSize) / 2).toFixed(2)}px`,
       },
       [`.${prefixCls}-confirm-icon > svg`]: { display: 'block' },

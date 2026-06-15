@@ -496,7 +496,16 @@ export function ModalBase(props: ModalProps) {
         </div>
       </div>
     )
-    return local.modalRender ? local.modalRender(node) : node
+    return local.modalRender ? (
+      <div
+        class={`${prefixCls()}-render`}
+        style={typeof modalStyle === 'object' ? modalStyle : { width: modalStyle }}
+      >
+        {local.modalRender(node)}
+      </div>
+    ) : (
+      node
+    )
   }
 
   const content = () => (
@@ -507,12 +516,7 @@ export function ModalBase(props: ModalProps) {
           const styles = semanticStyles()
           return (
             <div
-              class={classNames(
-                `${prefixCls()}-root`,
-                hashId(),
-                local.rootClass,
-                classes?.root,
-              )}
+              class={classNames(`${prefixCls()}-root`, hashId(), local.rootClass, classes?.root)}
               style={rootStyle()}
             >
               <Show when={maskEnabled()}>

@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, waitFor } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../../app'
@@ -44,6 +45,30 @@ describe('Modal', () => {
       )!,
     )
     expect(onCancel).toHaveBeenCalledTimes(1)
+  })
+
+  it('uses antd v6 compact modal spacing without duplicated section padding', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <Modal open title="Spacing">
+          Body
+        </Modal>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('.ads-modal{margin:0 auto;padding:0;')
+    expect(css).toContain('.ads-modal-content{background:#ffffff;border-radius:6px;box-shadow:')
+    expect(css).toContain('padding:20px 24px;')
+    expect(css).toContain(
+      '.ads-modal-header{background:transparent;border-bottom:none;border-radius:6px 6px 0 0;margin-bottom:8px;padding:0;',
+    )
+    expect(css).toContain('.ads-modal-body{color:rgba(0,0,0,0.88);padding:0;')
+    expect(css).toContain(
+      '.ads-modal-footer{align-items:center;background:transparent;border-radius:0;border-top:none;display:flex;gap:8px;justify-content:flex-end;margin-top:12px;padding:0;text-align:end;',
+    )
   })
 
   it('uses ConfigProvider prefix for modal and default footer buttons', () => {
@@ -665,6 +690,12 @@ describe('Modal', () => {
 
     expect(document.body).toHaveTextContent('Advanced')
     expect(document.body.querySelector('[data-testid="wrapped-modal"]')).toBeTruthy()
+    expect(document.body.querySelector('.ads-modal-render')).toBeTruthy()
+    expect(document.body.querySelector('.ads-modal-render')?.firstElementChild).toBe(
+      document.body.querySelector('[data-testid="wrapped-modal"]'),
+    )
+    expect(document.body.querySelector<HTMLElement>('.ads-modal-render')!.style.width).toBe('')
+    expect(document.body.querySelector<HTMLElement>('.ads-modal')!.style.width).toBe('')
     expect(document.body.querySelector('.semantic-body')).toBeTruthy()
     expect(document.body.querySelector<HTMLElement>('.semantic-body')!.style.color).toBe('blue')
     expect(document.body.querySelector('.ads-modal-loading')).toBeTruthy()
@@ -706,9 +737,9 @@ describe('Modal', () => {
     expect(document.body.querySelector('.configured-cancel')).toBeTruthy()
     expect(document.body.querySelector('.ads-modal-mask-blur')).toBeTruthy()
     expect(
-      document.body.querySelector<HTMLButtonElement>('.ads-modal-close')!.getAttribute(
-        'aria-disabled',
-      ),
+      document.body
+        .querySelector<HTMLButtonElement>('.ads-modal-close')!
+        .getAttribute('aria-disabled'),
     ).toBeNull()
   })
 

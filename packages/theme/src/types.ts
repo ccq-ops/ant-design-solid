@@ -659,6 +659,7 @@ export interface ModalComponentToken extends ComponentTokenBase {
   footerBorderTop: string
   footerBorderRadius: number | string
   footerMarginTop: number | string
+  footerButtonGap: number | string
   confirmBodyPadding: number | string
   confirmIconMarginInlineEnd: number | string
   confirmBtnsMarginTop: number | string
