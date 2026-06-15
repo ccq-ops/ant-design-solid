@@ -1,7 +1,34 @@
 import { render } from '@solidjs/testing-library'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { describe, expect, test } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Result } from '../index'
+
+function expectExceptionSvgUsesThemeVariables(svg: SVGElement) {
+  expect(svg.querySelector('.ads-result-image-bg')?.getAttribute('fill')).toBe(
+    'var(--ads-result-image-bg-color)',
+  )
+  expect(svg.querySelector('.ads-result-image-surface')?.getAttribute('fill')).toBe(
+    'var(--ads-result-image-surface-color)',
+  )
+  expect(svg.querySelector('.ads-result-image-muted')?.getAttribute('fill')).toBe(
+    'var(--ads-result-image-muted-color)',
+  )
+  expect(svg.querySelector('.ads-result-image-muted')?.getAttribute('stroke')).toBeNull()
+  expect(svg.querySelector('path.ads-result-image-muted')?.getAttribute('stroke')).toBe(
+    'var(--ads-result-image-muted-color)',
+  )
+  expect(svg.querySelector('.ads-result-image-accent')?.getAttribute('fill')).toBe(
+    'var(--ads-result-image-accent-color)',
+  )
+  expect(svg.querySelector('text.ads-result-image-accent')?.getAttribute('fill')).toBe(
+    'var(--ads-result-image-accent-color)',
+  )
+}
+
+function expectNoAbsoluteSvgColors(svg: SVGElement) {
+  expect(svg.innerHTML).not.toMatch(/(?:fill|stroke)="(?:#[\da-fA-F]{3,8}|rgba?\()/)
+}
 
 describe('Result', () => {
   test('renders default info result content', () => {
@@ -105,6 +132,53 @@ describe('Result', () => {
     const crashed = render(() => <Result status={500} title="Crashed" />)
     expect(crashed.container.querySelector('.ads-result-500')).toBeTruthy()
     expect(crashed.container.querySelector('.ads-result-image svg')).toBeTruthy()
+  })
+
+  test('uses semantic classes for exception image neutral colors', () => {
+    const result = render(() => <Result status="404" title="Missing" />)
+    const svg = result.container.querySelector('.ads-result-image svg') as SVGElement
+
+    expect(svg.querySelectorAll('.ads-result-image-muted')).toHaveLength(3)
+    expectExceptionSvgUsesThemeVariables(svg)
+    expectNoAbsoluteSvgColors(svg)
+  })
+
+  test('uses dark theme tokens for every built-in exception image', () => {
+    const result = render(() => (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <Result status={403} title="Forbidden" />
+        <Result status={404} title="Missing" />
+        <Result status={500} title="Crashed" />
+        <Result.PRESENTED_IMAGE_403 />
+        <Result.PRESENTED_IMAGE_404 />
+        <Result.PRESENTED_IMAGE_500 />
+      </ConfigProvider>
+    ))
+
+    for (const svg of Array.from(result.container.querySelectorAll('svg'))) {
+      expectExceptionSvgUsesThemeVariables(svg)
+      expectNoAbsoluteSvgColors(svg)
+      expect(svg.style.getPropertyValue('--ads-result-image-bg-color')).toBe(
+        'rgba(255,255,255,0.08)',
+      )
+      expect(svg.style.getPropertyValue('--ads-result-image-surface-color')).toBe('#141414')
+      expect(svg.style.getPropertyValue('--ads-result-image-muted-color')).toBe('#303030')
+    }
+  })
+
+  test('keeps visual spacing between exception image and status code', () => {
+    const result = render(() => <Result status={404} title="Missing" />)
+    const svg = result.container.querySelector('.ads-result-image svg') as SVGElement
+    const imageBg = svg.querySelector('.ads-result-image-bg') as SVGRectElement
+    const code = svg.querySelector('text.ads-result-image-accent') as SVGTextElement
+    const imageBottom = Number(imageBg.getAttribute('y')) + Number(imageBg.getAttribute('height'))
+    const codeTop = Number(code.getAttribute('y')) - Number(code.getAttribute('font-size') ?? '0')
+
+    expect(svg.getAttribute('viewBox')).toBe('0 0 252 252')
+    expect(svg.getAttribute('height')).toBe('252')
+    expect(imageBg.getAttribute('y')).toBe('38')
+    expect(code.getAttribute('y')).toBe('230')
+    expect(codeTop - imageBottom).toBeGreaterThanOrEqual(24)
   })
 
   test('exposes presented exception image components', () => {
