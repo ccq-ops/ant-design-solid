@@ -19,7 +19,7 @@ export const BreadcrumbDemo001 = (() => {
       return (<Breadcrumb items={[
               { title: 'Home', href: '/' },
               { title: 'Application Center', href: '/components' },
-              { title: 'Application List', href: '/components/list' },
+              { title: 'Application Grid', href: '/components/masonry' },
               { title: 'An Application' },
           ]}/>);
   };
@@ -38,7 +38,7 @@ const Demo1 = function () {
       items={[
         { title: 'Home', href: '/' },
         { title: 'Application Center', href: '/components' },
-        { title: 'Application List', href: '/components/list' },
+        { title: 'Application Grid', href: '/components/masonry' },
         { title: 'An Application' },
       ]}
     />
@@ -64,7 +64,7 @@ export const BreadcrumbDemo002 = (() => {
                   href: '/users',
                   title: (<>
                 <UserOutlined />
-                <span>Application List</span>
+                <span>Application Grid</span>
               </>),
               },
               { title: 'Application' },
@@ -90,7 +90,7 @@ const Demo2 = function () {
           title: (
             <>
               <UserOutlined />
-              <span>Application List</span>
+              <span>Application Grid</span>
             </>
           ),
         },
@@ -116,7 +116,7 @@ export const BreadcrumbDemo003 = (() => {
       return (<Breadcrumb separator=">" items={[
               { title: 'Home', href: '/' },
               { title: 'Application Center', href: '/components' },
-              { title: 'Application List' },
+              { title: 'Application Grid' },
           ]}/>);
   };
 
@@ -135,7 +135,7 @@ const Demo3 = function () {
       items={[
         { title: 'Home', href: '/' },
         { title: 'Application Center', href: '/components' },
-        { title: 'Application List' },
+        { title: 'Application Grid' },
       ]}
     />
   )
@@ -219,7 +219,7 @@ export const BreadcrumbDemo005 = (() => {
               { type: 'separator', separator: ':' },
               { title: 'Application Center', href: '/components' },
               { type: 'separator' },
-              { title: 'Application List' },
+              { title: 'Application Grid' },
           ]}/>);
   };
 
@@ -239,7 +239,7 @@ const Demo5 = function () {
         { type: 'separator', separator: ':' },
         { title: 'Application Center', href: '/components' },
         { type: 'separator' },
-        { title: 'Application List' },
+        { title: 'Application Grid' },
       ]}
     />
   )
@@ -263,7 +263,7 @@ export const BreadcrumbDemo006 = (() => {
         <Breadcrumb.Separator>:</Breadcrumb.Separator>
         <Breadcrumb.Item href="/components">Application Center</Breadcrumb.Item>
         <Breadcrumb.Separator />
-        <Breadcrumb.Item>Application List</Breadcrumb.Item>
+        <Breadcrumb.Item>Application Grid</Breadcrumb.Item>
       </Breadcrumb>);
   };
 
@@ -282,7 +282,7 @@ const Demo6 = function () {
       <Breadcrumb.Separator>:</Breadcrumb.Separator>
       <Breadcrumb.Item href="/components">Application Center</Breadcrumb.Item>
       <Breadcrumb.Separator />
-      <Breadcrumb.Item>Application List</Breadcrumb.Item>
+      <Breadcrumb.Item>Application Grid</Breadcrumb.Item>
     </Breadcrumb>
   )
 }
@@ -305,7 +305,7 @@ export const BreadcrumbDemo007 = (() => {
               { type: 'separator', separator: ':' },
               { title: 'Application Center', href: '/components' },
               { type: 'separator', separator: '' },
-              { title: 'Application List' },
+              { title: 'Application Grid' },
           ]}/>);
   };
 
@@ -326,7 +326,7 @@ const Demo7 = function () {
         { type: 'separator', separator: ':' },
         { title: 'Application Center', href: '/components' },
         { type: 'separator', separator: '' },
-        { title: 'Application List' },
+        { title: 'Application Grid' },
       ]}
     />
   )

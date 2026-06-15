@@ -26,7 +26,6 @@ import type { FormProps } from '../form/interface'
 import type { ImageProps } from '../image/interface'
 import type { InputNumberProps } from '../input-number/interface'
 import type { InputProps, OTPProps, PasswordProps, SearchProps, TextAreaProps } from '../input'
-import type { ListItemProps } from '../list/interface'
 import type { MasonryProps } from '../masonry/interface'
 import type { MentionsProps } from '../mentions/interface'
 import type { MenuProps } from '../menu/interface'
@@ -196,16 +195,13 @@ export type InputSearchConfig = ComponentStyleConfig &
 export type OTPConfig = ComponentStyleConfig & PickProps<OTPProps, 'classNames' | 'styles'>
 export type InputNumberConfig = ComponentStyleConfig &
   PickProps<InputNumberProps, 'variant' | 'classNames' | 'styles'>
-export interface ListConfig extends ComponentStyleConfig {
-  item?: PickProps<ListItemProps, 'classNames' | 'styles'>
-}
 export type MasonryConfig = ComponentStyleConfig & PickProps<MasonryProps, 'classNames' | 'styles'>
 export type MentionsProviderConfig = ComponentStyleConfig &
   PickProps<MentionsProps, 'variant' | 'classNames' | 'styles' | 'allowClear'>
 export type MenuConfig = ComponentStyleConfig &
   PickProps<MenuProps, 'expandIcon' | 'classNames' | 'styles'>
 export type MessageConfig = ComponentStyleConfig &
-  PickProps<MessageConfigOptions, 'className' | 'classNames' | 'styles'>
+  PickProps<MessageConfigOptions, 'classNames' | 'styles'>
 export type ModalConfig = ComponentStyleConfig &
   PickProps<
     ModalProps,
@@ -347,7 +343,6 @@ export interface ConfigComponentProps {
   inputNumber?: InputNumberConfig
   textArea?: TextAreaConfig
   layout?: ComponentStyleConfig
-  list?: ListConfig
   masonry?: MasonryConfig
   mentions?: MentionsProviderConfig
   menu?: MenuConfig

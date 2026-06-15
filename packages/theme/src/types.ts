@@ -615,10 +615,9 @@ export interface AvatarComponentToken extends ComponentTokenBase {
 }
 
 export interface MessageComponentToken extends ComponentTokenBase {
-  noticePadding: number
-  noticeBorderRadius: number
   contentBg: string
-  contentShadow: string
+  contentPadding: string
+  zIndexPopup: number
 }
 
 export interface NotificationComponentToken extends ComponentTokenBase {
@@ -885,7 +884,6 @@ export interface ComponentTokenMap {
   Input: InputComponentToken
   InputNumber: InputNumberComponentToken
   Layout: LayoutComponentToken
-  List?: ComponentTokenBase
   Masonry?: ComponentTokenBase
   Mentions?: ComponentTokenBase
   Menu: MenuComponentToken
