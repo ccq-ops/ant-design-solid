@@ -426,6 +426,33 @@ describe('Radio.Group', () => {
     )
   })
 
+  it('removes button wrapper spacing and collapses adjacent borders', () => {
+    render(() => (
+      <Radio.Group
+        optionType="button"
+        options={[
+          { label: 'A', value: 'a' },
+          { label: 'B', value: 'b' },
+        ]}
+      />
+    ))
+
+    const styles = [...document.head.querySelectorAll('style')]
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(styles).toContain(
+      '.ads-radio-group-button .ads-radio-button-wrapper{gap:0;margin-inline-end:0;}',
+    )
+    expect(styles).toContain('.ads-radio-group-button{gap:0;}')
+    expect(styles).toContain(
+      '.ads-radio-group-button-compact .ads-radio-button-wrapper + .ads-radio-button-wrapper{margin-inline-start:-1px;}',
+    )
+    expect(styles).toContain(
+      '.ads-radio-button-wrapper input[type="radio"]{height:0;opacity:0;pointer-events:none;width:0;}',
+    )
+  })
+
   it('keeps child Radio.Button groups compact without external spacing', () => {
     const result = render(() => (
       <Radio.Group defaultValue="b">
@@ -453,6 +480,41 @@ describe('Radio.Group', () => {
     expect(result.container.querySelector('.ads-radio-group-button')).toBeTruthy()
     expect(result.container.querySelectorAll('.ads-radio-button-wrapper')).toHaveLength(2)
     expect(result.container.querySelector('.ads-radio-button-wrapper-checked')).toBeTruthy()
+  })
+
+  it('emits pixel line heights for button wrappers', () => {
+    render(() => (
+      <>
+        <Radio.Group optionType="button" options={[{ label: 'Default', value: 'default' }]} />
+        <Radio.Group
+          optionType="button"
+          size="small"
+          options={[{ label: 'Small', value: 'small' }]}
+        />
+        <Radio.Group
+          optionType="button"
+          size="large"
+          options={[{ label: 'Large', value: 'large' }]}
+        />
+      </>
+    ))
+
+    const styles = [...document.head.querySelectorAll('style')]
+      .map((style) => style.textContent ?? '')
+      .join('\n')
+
+    expect(styles).toContain('.ads-radio-button-wrapper{')
+    expect(styles).toContain('height:32px;')
+    expect(styles).toContain('line-height:32px;')
+    expect(styles).toContain('.ads-radio-group-small .ads-radio-button-wrapper{')
+    expect(styles).toContain('height:24px;')
+    expect(styles).toContain('line-height:24px;')
+    expect(styles).toContain('.ads-radio-group-large .ads-radio-button-wrapper{')
+    expect(styles).toContain('height:40px;')
+    expect(styles).toContain('line-height:40px;')
+    expect(styles).not.toContain('line-height:32;')
+    expect(styles).not.toContain('line-height:24;')
+    expect(styles).not.toContain('line-height:40;')
   })
 
   it('supports group rootClass and semantic root aliases', () => {

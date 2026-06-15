@@ -31,6 +31,10 @@ export function useRadioStyle(prefixCls: string) {
       [`.${prefixCls}-group-horizontal`]: { 'flex-direction': 'row' },
       [`.${prefixCls}-group-block`]: { display: 'flex', width: '100%' },
       [`.${prefixCls}-group-button`]: { gap: 0 },
+      [`.${prefixCls}-group-button .${prefixCls}-button-wrapper`]: {
+        gap: 0,
+        'margin-inline-end': 0,
+      },
       [`.${prefixCls}-group-button-compact .${prefixCls}-button-wrapper + .${prefixCls}-button-wrapper`]:
         {
           'margin-inline-start': `-${t.lineWidth}px`,
@@ -40,23 +44,29 @@ export function useRadioStyle(prefixCls: string) {
         'justify-content': 'center',
       },
       [`.${prefixCls}-group-small .${prefixCls}-button-wrapper`]: {
-        height: t.controlHeightSM,
-        'line-height': t.controlHeightSM,
+        height: `${t.controlHeightSM}px`,
+        'line-height': `${t.controlHeightSM}px`,
         padding: `0 ${t.paddingXS}px`,
       },
       [`.${prefixCls}-group-large .${prefixCls}-button-wrapper`]: {
-        height: t.controlHeightLG,
-        'line-height': t.controlHeightLG,
+        height: `${t.controlHeightLG}px`,
+        'line-height': `${t.controlHeightLG}px`,
         padding: `0 ${t.paddingLG}px`,
       },
       [`.${prefixCls}-button-wrapper`]: {
         padding: `0 ${radio.buttonPaddingInline}px`,
-        height: t.controlHeight,
+        height: `${t.controlHeight}px`,
         border: `${t.lineWidth}px solid ${t.colorBorder}`,
         'border-inline-start-width': 0,
-        'line-height': t.controlHeight,
+        'line-height': `${t.controlHeight}px`,
         color: radio.buttonColor,
         background: radio.buttonBg,
+      },
+      [`.${prefixCls}-button-wrapper input[type="radio"]`]: {
+        width: 0,
+        height: 0,
+        opacity: 0,
+        'pointer-events': 'none',
       },
       [`.${prefixCls}-button-wrapper:first-child`]: {
         'border-inline-start-width': `${t.lineWidth}px`,
