@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, waitFor } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { App } from '../../app'
 import { ConfigProvider } from '../../config-provider'
 import { Select } from '../../select'
 import { Modal } from '../index'
@@ -469,7 +470,7 @@ describe('Modal', () => {
     expect(Number(dropdown.style.zIndex)).toBeGreaterThan(Number(root.style.zIndex))
   })
 
-  it('accepts P0 and P1 modal api props at runtime', () => {
+  it('accepts current Solid modal api props at runtime', () => {
     const container = document.createElement('div')
     document.body.appendChild(container)
     const afterOpenChange = vi.fn()
@@ -478,8 +479,8 @@ describe('Modal', () => {
       <Modal
         open
         title="Compat"
-        className="compat-modal"
-        wrapClassName="compat-wrap"
+        class="compat-modal"
+        wrapClass="compat-wrap"
         okType="default"
         okButtonProps={{ danger: true, class: 'ok-extra' }}
         cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
@@ -510,13 +511,13 @@ describe('Modal', () => {
     expect(container.querySelector('.ads-modal-loading')).toBeTruthy()
   })
 
-  it('applies button props okType className and wrapClassName', () => {
+  it('applies button props okType class and wrapClass', () => {
     render(() => (
       <Modal
         open
         title="Buttons"
-        className="dialog-class"
-        wrapClassName="wrap-class"
+        class="dialog-class"
+        wrapClass="wrap-class"
         okType="default"
         okButtonProps={{ danger: true, class: 'ok-extra' }}
         cancelButtonProps={{ disabled: true, class: 'cancel-extra' }}
@@ -556,6 +557,28 @@ describe('Modal', () => {
     expect(document.body.querySelector('[data-testid="close-icon"]')).toBeTruthy()
     expect(onClose).toHaveBeenCalledTimes(1)
     expect(onCancel).not.toHaveBeenCalled()
+  })
+
+  it('passes closable aria and data attrs to the close button', () => {
+    render(() => (
+      <Modal
+        open
+        title="Close attrs"
+        closable={{
+          closeIcon: <span data-testid="close-icon">close</span>,
+          'aria-label': 'Dismiss dialog',
+          'data-testid': 'close-button',
+        }}
+      >
+        Body
+      </Modal>
+    ))
+
+    const closeButton = document.body.querySelector<HTMLButtonElement>(
+      '[data-testid="close-button"]',
+    )!
+    expect(closeButton).toHaveAttribute('aria-label', 'Dismiss dialog')
+    expect(closeButton).toHaveTextContent('close')
   })
 
   it('supports object mask visibility blur and closable precedence', () => {
@@ -652,6 +675,43 @@ describe('Modal', () => {
     await waitFor(() => expect(afterOpenChange).toHaveBeenCalledWith(false))
   })
 
+  it('uses ConfigProvider modal defaults with explicit prop override', () => {
+    render(() => (
+      <ConfigProvider
+        modal={{
+          class: 'configured-dialog',
+          classNames: { body: 'configured-body' },
+          styles: { body: { color: 'red' } },
+          closeIcon: <span data-testid="configured-close">close</span>,
+          closable: { disabled: true },
+          centered: true,
+          okButtonProps: { class: 'configured-ok' },
+          cancelButtonProps: { class: 'configured-cancel' },
+          mask: { blur: true },
+          focusable: { trap: false },
+        }}
+      >
+        <Modal open title="Configured" closable={{ disabled: false }}>
+          Body
+        </Modal>
+      </ConfigProvider>
+    ))
+
+    expect(document.body.querySelector('.configured-dialog')).toBeTruthy()
+    expect(document.body.querySelector('.configured-body')).toBeTruthy()
+    expect(document.body.querySelector<HTMLElement>('.configured-body')!.style.color).toBe('red')
+    expect(document.body.querySelector('[data-testid="configured-close"]')).toBeTruthy()
+    expect(document.body.querySelector('.ads-modal-centered')).toBeTruthy()
+    expect(document.body.querySelector('.configured-ok')).toBeTruthy()
+    expect(document.body.querySelector('.configured-cancel')).toBeTruthy()
+    expect(document.body.querySelector('.ads-modal-mask-blur')).toBeTruthy()
+    expect(
+      document.body.querySelector<HTMLButtonElement>('.ads-modal-close')!.getAttribute(
+        'aria-disabled',
+      ),
+    ).toBeNull()
+  })
+
   it('passes static method visual and layout config to ModalBase', () => {
     const afterClose = vi.fn()
     const instance = Modal.confirm({
@@ -660,8 +720,8 @@ describe('Modal', () => {
       centered: true,
       zIndex: 1555,
       style: { top: '12px' },
-      className: 'static-dialog',
-      wrapClassName: 'static-wrap',
+      class: 'static-dialog',
+      wrapClass: 'static-wrap',
       okType: 'default',
       okButtonProps: { class: 'static-ok' },
       cancelButtonProps: { class: 'static-cancel' },
@@ -880,6 +940,37 @@ describe('Modal', () => {
 
     await expect(confirmed).resolves.toBe(false)
     await waitFor(() => expect(document.body).not.toHaveTextContent('Hook confirm'))
+  })
+
+  it('supports App.useApp modal context', () => {
+    function AppHost() {
+      const { modal } = App.useApp()
+      return (
+        <button
+          type="button"
+          onClick={() =>
+            modal.confirm({
+              title: 'App context modal',
+              content: 'Created from App.useApp().modal',
+              rootClass: 'appctx-modal-root',
+            })
+          }
+        >
+          Open app modal
+        </button>
+      )
+    }
+
+    render(() => (
+      <App>
+        <AppHost />
+      </App>
+    ))
+
+    fireEvent.click(document.body.querySelector<HTMLButtonElement>('button')!)
+
+    expect(document.body.querySelector('.appctx-modal-root')).toBeTruthy()
+    expect(document.body).toHaveTextContent('Created from App.useApp().modal')
   })
 
   it('passes static Solid class aliases and focusable auto focus config', async () => {

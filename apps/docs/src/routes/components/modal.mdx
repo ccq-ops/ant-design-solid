@@ -4,7 +4,7 @@ group: Feedback
 ---
 
 import { createSignal } from 'solid-js'
-import { Button, ConfigProvider, message, Modal, Space } from '@ant-design-solid/core'
+import { App, Button, ConfigProvider, message, Modal, Space } from '@ant-design-solid/core'
 
 # Modal
 
@@ -944,15 +944,10 @@ export default Demo11
 | `class`                  | Solid class for the modal dialog.                                                                            | `string`                                                                 | `-`                                            |
 | `rootClass`              | Solid class for the root modal layer.                                                                        | `string`                                                                 | `-`                                            |
 | `wrapClass`              | Solid class for the modal wrapper.                                                                           | `string`                                                                 | `-`                                            |
-| `className`              | Compatibility alias for `class`.                                                                             | `string`                                                                 | `-`                                            |
-| `rootClassName`          | Compatibility alias for `rootClass`.                                                                         | `string`                                                                 | `-`                                            |
-| `wrapClassName`          | Compatibility alias for `wrapClass`.                                                                         | `string`                                                                 | `-`                                            |
 | `classNames`             | Semantic DOM class names. Supports object or function form.                                                  | `ModalClassNames \| ((info: { props }) => ModalClassNames)`              | `-`                                            |
 | `styles`                 | Semantic DOM inline styles. Supports object or function form.                                                | `ModalStyles \| ((info: { props }) => ModalStyles)`                      | `-`                                            |
 | `focusable`              | Focus management config.                                                                                     | `{ trap?: boolean; focusTriggerAfterClose?: boolean }`                   | `{ trap: true, focusTriggerAfterClose: true }` |
-| `focusTriggerAfterClose` | Compatibility alias for `focusable.focusTriggerAfterClose`.                                                  | `boolean`                                                                | `true`                                         |
 | `destroyOnHidden`        | Unmount children when the modal is hidden.                                                                   | `boolean`                                                                | `false`                                        |
-| `destroyOnClose`         | Compatibility alias for `destroyOnHidden`.                                                                   | `boolean`                                                                | `false`                                        |
 | `forceRender`            | Render modal content before it is opened.                                                                    | `boolean`                                                                | `false`                                        |
 | `getContainer`           | Custom mount node, selector, or false for inline rendering.                                                  | `HTMLElement \| () => HTMLElement \| string \| false`                    | `document.body`                                |
 | `modalRender`            | Custom render wrapper for the modal dialog node.                                                             | `(node: JSX.Element) => JSX.Element`                                     | `-`                                            |
@@ -985,9 +980,6 @@ export default Demo11
 | `class`              | Solid class for the modal dialog.                                            | `string`                                                                                           | `-`                         |
 | `rootClass`          | Solid class for the root modal layer.                                        | `string`                                                                                           | `-`                         |
 | `wrapClass`          | Solid class for the modal wrapper.                                           | `string`                                                                                           | `-`                         |
-| `className`          | Compatibility alias for `class`.                                             | `string`                                                                                           | `-`                         |
-| `rootClassName`      | Compatibility alias for `rootClass`.                                         | `string`                                                                                           | `-`                         |
-| `wrapClassName`      | Compatibility alias for `wrapClass`.                                         | `string`                                                                                           | `-`                         |
 | `classNames`         | Semantic DOM class names. Supports object or function form.                  | `ModalClassNames \| ((info: { props }) => ModalClassNames)`                                        | `-`                         |
 | `styles`             | Semantic DOM inline styles. Supports object or function form.                | `ModalStyles \| ((info: { props }) => ModalStyles)`                                                | `-`                         |
 | `okType`             | Button type for the OK button.                                               | `ButtonType`                                                                                       | `'primary'`                 |
@@ -1001,10 +993,8 @@ export default Demo11
 | `transitionName`     | Motion class prefix for the modal dialog.                                    | `string`                                                                                           | `'ads-zoom'`                |
 | `maskTransitionName` | Motion class prefix for the modal mask.                                      | `string`                                                                                           | `'ads-fade'`                |
 | `destroyOnHidden`    | Unmount children when hidden.                                                | `boolean`                                                                                          | `false`                     |
-| `destroyOnClose`     | Compatibility alias for `destroyOnHidden`.                                   | `boolean`                                                                                          | `false`                     |
 | `forceRender`        | Render dialog content before it opens.                                       | `boolean`                                                                                          | `false`                     |
 | `focusable`          | Focus management config.                                                     | `{ trap?: boolean; focusTriggerAfterClose?: boolean; autoFocusButton?: null \| 'ok' \| 'cancel' }` | `{ autoFocusButton: 'ok' }` |
-| `autoFocusButton`    | Compatibility alias for `focusable.autoFocusButton`.                         | `null \| 'ok' \| 'cancel'`                                                                         | `'ok'`                      |
 | `onOk`               | Called when OK is clicked. Receives a close function for manual closing.     | `(close?: () => void) => void \| Promise<void>`                                                    | `-`                         |
 | `onCancel`           | Called when Cancel is clicked. Receives a close function for manual closing. | `(close?: () => void) => void \| Promise<void>`                                                    | `-`                         |
 
@@ -1069,4 +1059,5 @@ export default Demo11
 | `Modal.warn`       | Alias of `Modal.warning`.                                                                    | `(config: ModalFuncProps) => ModalFuncReturn`   | `-`     |
 | `Modal.destroyAll` | Destroys all static modal instances.                                                         | `() => void`                                    | `-`     |
 | `Modal.useModal`   | Creates context-aware modal methods and a Solid context holder. Hook returns support `then`. | `() => readonly [ModalHookApi, JSX.Element]`    | `-`     |
+| `App.useApp().modal` | Gets context-aware modal methods from the nearest App provider.                             | `ModalHookApi`                                  | `-`     |
 | `Modal.config`     | Sets legacy static modal root prefix. Prefer `ConfigProvider`.                               | `(options: { rootPrefixCls?: string }) => void` | `-`     |

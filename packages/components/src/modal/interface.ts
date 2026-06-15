@@ -37,6 +37,8 @@ export interface ModalClosableConfig {
   disabled?: boolean
   onClose?: () => void
   afterClose?: () => void
+  [key: `aria-${string}`]: string | undefined
+  [key: `data-${string}`]: string | undefined
 }
 
 export interface ModalFocusableConfig {
@@ -80,7 +82,6 @@ export interface ModalProps {
   okType?: ButtonType
   okButtonProps?: ButtonProps
   cancelButtonProps?: ButtonProps
-  destroyOnClose?: boolean
   destroyOnHidden?: boolean
   forceRender?: boolean
   getContainer?: ModalGetContainer
@@ -90,11 +91,8 @@ export interface ModalProps {
   focusable?: ModalFocusableConfig
   focusTriggerAfterClose?: boolean
   class?: string
-  className?: string
   rootClass?: string
-  rootClassName?: string
   wrapClass?: string
-  wrapClassName?: string
   classNames?: ModalClassNamesInput
   styles?: ModalStylesInput
   bodyStyle?: JSX.CSSProperties
@@ -136,11 +134,8 @@ export interface ModalFuncProps {
   style?: JSX.CSSProperties
   rootStyle?: JSX.CSSProperties
   class?: string
-  className?: string
   rootClass?: string
-  rootClassName?: string
   wrapClass?: string
-  wrapClassName?: string
   classNames?: ModalClassNamesInput
   styles?: ModalStylesInput
   bodyStyle?: JSX.CSSProperties
@@ -153,7 +148,6 @@ export interface ModalFuncProps {
   afterClose?: () => void
   getContainer?: ModalGetContainer
   modalRender?: (node: JSX.Element) => JSX.Element
-  destroyOnClose?: boolean
   destroyOnHidden?: boolean
   forceRender?: boolean
   okCancel?: boolean

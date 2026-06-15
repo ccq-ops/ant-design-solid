@@ -630,12 +630,27 @@ export interface NotificationComponentToken extends ComponentTokenBase {
 
 export interface ModalComponentToken extends ComponentTokenBase {
   contentBg: string
+  footerBg: string
   headerBg: string
   titleColor: string
-  titleFontSize: number
+  titleFontSize: number | string
+  titleLineHeight: number
+  zIndexPopup: number
   borderRadius: number
   boxShadow: string
   maskBg: string
+  contentPadding: number | string
+  headerPadding: number | string
+  headerBorderBottom: string
+  headerMarginBottom: number | string
+  bodyPadding: number | string
+  footerPadding: number | string
+  footerBorderTop: string
+  footerBorderRadius: number | string
+  footerMarginTop: number | string
+  confirmBodyPadding: number | string
+  confirmIconMarginInlineEnd: number | string
+  confirmBtnsMarginTop: number | string
 }
 
 export interface DrawerComponentToken extends ComponentTokenBase {

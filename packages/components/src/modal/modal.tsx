@@ -100,7 +100,6 @@ export function ModalBase(props: ModalProps) {
     'okType',
     'okButtonProps',
     'cancelButtonProps',
-    'destroyOnClose',
     'destroyOnHidden',
     'forceRender',
     'getContainer',
@@ -109,11 +108,8 @@ export function ModalBase(props: ModalProps) {
     'loading',
     'focusable',
     'focusTriggerAfterClose',
-    'className',
     'rootClass',
-    'rootClassName',
     'wrapClass',
-    'wrapClassName',
     'classNames',
     'styles',
     'bodyStyle',
@@ -139,6 +135,7 @@ export function ModalBase(props: ModalProps) {
   const watermarkPanelRef = useWatermarkPanelRef(`.${prefixCls()}-content`)
   const [, hashId] = useModalStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Modal', local.zIndex)
+  const componentConfig = () => config.modal()
   const titleId = createUniqueId()
   const stackItem = {}
   const [hasRendered, setHasRendered] = createSignal(Boolean(local.open || local.forceRender))
@@ -155,35 +152,80 @@ export function ModalBase(props: ModalProps) {
 
   const shouldRender = () =>
     Boolean(
-      local.open ||
-      visible() ||
-      local.forceRender ||
-      (hasRendered() && !(local.destroyOnHidden ?? local.destroyOnClose)),
+      local.open || visible() || local.forceRender || (hasRendered() && !local.destroyOnHidden),
     )
-  const maskEnabled = () =>
-    isMaskConfig(local.mask) ? local.mask.enabled !== false : local.mask !== false
-  const maskBlur = () => (isMaskConfig(local.mask) ? Boolean(local.mask.blur) : false)
-  const maskClosable = () =>
-    isMaskConfig(local.mask) && local.mask.closable !== undefined
-      ? local.mask.closable
+  const mergedMask = () => (local.mask !== undefined ? local.mask : componentConfig().mask)
+  const mergedClosable = () =>
+    local.closable !== undefined ? local.closable : componentConfig().closable
+  const mergedCloseIcon = () =>
+    local.closeIcon !== undefined ? local.closeIcon : componentConfig().closeIcon
+  const mergedCentered = () =>
+    local.centered !== undefined ? local.centered : componentConfig().centered
+  const mergedOkButtonProps = () => ({
+    ...componentConfig().okButtonProps,
+    ...local.okButtonProps,
+  })
+  const mergedCancelButtonProps = () => ({
+    ...componentConfig().cancelButtonProps,
+    ...local.cancelButtonProps,
+  })
+  const mergedFocusable = () => ({
+    ...componentConfig().focusable,
+    ...local.focusable,
+  })
+  const maskEnabled = () => {
+    const mask = mergedMask()
+    return isMaskConfig(mask) ? mask.enabled !== false : mask !== false
+  }
+  const maskBlur = () => {
+    const mask = mergedMask()
+    return isMaskConfig(mask) ? Boolean(mask.blur) : false
+  }
+  const maskClosable = () => {
+    const mask = mergedMask()
+    return isMaskConfig(mask) && mask.closable !== undefined
+      ? mask.closable
       : (local.maskClosable ?? true)
-  const closeVisible = () => local.closable !== false && !isCloseIconHidden(local.closeIcon)
-  const closeDisabled = () => isClosableConfig(local.closable) && Boolean(local.closable.disabled)
-  const closeIcon = () =>
-    isClosableConfig(local.closable)
-      ? (local.closable.closeIcon ?? local.closeIcon ?? <CloseOutlined />)
-      : (local.closeIcon ?? <CloseOutlined />)
+  }
+  const closeVisible = () => mergedClosable() !== false && !isCloseIconHidden(mergedCloseIcon())
+  const closeDisabled = () => {
+    const closable = mergedClosable()
+    return isClosableConfig(closable) && Boolean(closable.disabled)
+  }
+  const closeIcon = () => {
+    const closable = mergedClosable()
+    return isClosableConfig(closable)
+      ? (closable.closeIcon ?? mergedCloseIcon() ?? <CloseOutlined />)
+      : (mergedCloseIcon() ?? <CloseOutlined />)
+  }
+  const closeButtonAttrs = () => {
+    const closable = mergedClosable()
+    if (!isClosableConfig(closable)) return {}
+    const attrs: Record<string, string | undefined> = {}
+    Object.entries(closable).forEach(([key, value]) => {
+      if ((key.startsWith('aria-') || key.startsWith('data-')) && typeof value === 'string') {
+        attrs[key] = value
+      }
+    })
+    return attrs
+  }
   const focusableConfig = () => ({
-    trap: local.focusable?.trap ?? maskEnabled(),
+    trap: mergedFocusable().trap ?? maskEnabled(),
     focusTriggerAfterClose:
-      local.focusable?.focusTriggerAfterClose ?? local.focusTriggerAfterClose ?? true,
-    autoFocusButton: local.focusable?.autoFocusButton,
+      mergedFocusable().focusTriggerAfterClose ?? local.focusTriggerAfterClose ?? true,
+    autoFocusButton: mergedFocusable().autoFocusButton,
   })
   const semanticInfo = () => ({ props })
-  const semanticClasses = () =>
-    typeof local.classNames === 'function' ? local.classNames(semanticInfo()) : local.classNames
-  const semanticStyles = () =>
-    typeof local.styles === 'function' ? local.styles(semanticInfo()) : local.styles
+  const semanticClasses = () => {
+    const classNamesConfig = local.classNames ?? componentConfig().classNames
+    return typeof classNamesConfig === 'function'
+      ? classNamesConfig(semanticInfo())
+      : classNamesConfig
+  }
+  const semanticStyles = () => {
+    const stylesConfig = local.styles ?? componentConfig().styles
+    return typeof stylesConfig === 'function' ? stylesConfig(semanticInfo()) : stylesConfig
+  }
   const transitionName = () =>
     local.transitionName === undefined ? `${config.prefixCls()}-zoom` : local.transitionName
   const maskTransitionName = () =>
@@ -196,7 +238,8 @@ export function ModalBase(props: ModalProps) {
     if (closeNotified) return
     closeNotified = true
     local.afterClose?.()
-    if (isClosableConfig(local.closable)) local.closable.afterClose?.()
+    const closable = mergedClosable()
+    if (isClosableConfig(closable)) closable.afterClose?.()
     if (focusableConfig().focusTriggerAfterClose) {
       queueMicrotask(() => lastActiveElement?.focus?.())
     }
@@ -341,14 +384,15 @@ export function ModalBase(props: ModalProps) {
   }
   const handleCloseClick = (event: MouseEvent) => {
     if (local.confirmLoading) return
-    if (isClosableConfig(local.closable)) local.closable.onClose?.()
+    const closable = mergedClosable()
+    if (isClosableConfig(closable)) closable.onClose?.()
     if (closeDisabled()) return
     handleCancel(event)
   }
 
   const CancelBtn = () => (
     <Button
-      {...local.cancelButtonProps}
+      {...mergedCancelButtonProps()}
       onClick={(event) => handleCancel(event as unknown as MouseEvent)}
     >
       {local.cancelText ?? 'Cancel'}
@@ -356,9 +400,9 @@ export function ModalBase(props: ModalProps) {
   )
   const OkBtn = () => (
     <Button
-      {...local.okButtonProps}
+      {...mergedOkButtonProps()}
       type={local.okType ?? 'primary'}
-      loading={local.confirmLoading || local.okButtonProps?.loading}
+      loading={local.confirmLoading || mergedOkButtonProps().loading}
       onClick={(event) => handleOk(event as unknown as MouseEvent)}
     >
       {local.okText ?? 'OK'}
@@ -386,8 +430,8 @@ export function ModalBase(props: ModalProps) {
         ref={watermarkPanelRef}
         class={classNames(
           prefixCls(),
+          componentConfig().class,
           local.class,
-          local.className,
           modalMotionClass(),
           classes?.modal,
           classes?.container,
@@ -397,6 +441,7 @@ export function ModalBase(props: ModalProps) {
           ...(typeof modalStyle === 'object' ? modalStyle : { width: modalStyle }),
           ...styles?.modal,
           ...styles?.container,
+          ...componentConfig().style,
           ...local.style,
         }}
         onClick={(event) => event.stopPropagation()}
@@ -409,6 +454,7 @@ export function ModalBase(props: ModalProps) {
               style={styles?.close}
               aria-label="close modal"
               aria-disabled={closeDisabled() || undefined}
+              {...closeButtonAttrs()}
               onClick={(event) => handleCloseClick(event as unknown as MouseEvent)}
             >
               {closeIcon()}
@@ -465,7 +511,6 @@ export function ModalBase(props: ModalProps) {
                 `${prefixCls()}-root`,
                 hashId(),
                 local.rootClass,
-                local.rootClassName,
                 classes?.root,
               )}
               style={rootStyle()}
@@ -486,9 +531,8 @@ export function ModalBase(props: ModalProps) {
                 ref={setWrapRef}
                 class={classNames(
                   `${prefixCls()}-wrap`,
-                  local.centered && `${prefixCls()}-centered`,
+                  mergedCentered() && `${prefixCls()}-centered`,
                   local.wrapClass,
-                  local.wrapClassName,
                   classes?.wrap,
                   classes?.wrapper,
                   local.wrapProps?.class,

@@ -1,4 +1,5 @@
 export * from './config-provider'
+export * from './app'
 export * from './button'
 export * from './input'
 export * from './input-number'

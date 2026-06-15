@@ -110,10 +110,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         props.config.class,
       )}
       rootClass={props.config.rootClass}
-      rootClassName={props.config.rootClassName}
       wrapClass={props.config.wrapClass}
-      className={props.config.className}
-      wrapClassName={props.config.wrapClassName}
       classNames={props.config.classNames}
       styles={props.config.styles}
       bodyStyle={props.config.bodyStyle}
@@ -134,7 +131,6 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
       afterClose={props.config.afterClose}
       getContainer={props.config.getContainer}
       modalRender={props.config.modalRender}
-      destroyOnClose={props.config.destroyOnClose}
       destroyOnHidden={props.config.destroyOnHidden}
       forceRender={props.config.forceRender}
       prefixCls={props.config.prefixCls}

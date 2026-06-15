@@ -8,6 +8,8 @@ export function useModalStyle(prefixCls: string) {
     const t = token()
     const mt = getComponentToken('Modal', t)
     const zoomMotion = `${t.motionDurationMid} ${t.motionEaseInOut}`
+    const titleFontSize = typeof mt.titleFontSize === 'number' ? mt.titleFontSize : t.fontSize + 2
+    const confirmIconSize = titleFontSize + 2
     return {
       '@keyframes adsModalFadeIn': {
         '0%': { opacity: 0 },
@@ -90,18 +92,22 @@ export function useModalStyle(prefixCls: string) {
         background: mt.contentBg,
         'border-radius': mt.borderRadius,
         'box-shadow': mt.boxShadow,
+        padding: mt.contentPadding,
       },
       [`.${prefixCls}-header`]: {
-        padding: `${t.padding}px ${t.paddingLG}px`,
+        padding: mt.headerPadding,
         background: mt.headerBg,
+        'border-bottom': mt.headerBorderBottom,
+        'margin-bottom': mt.headerMarginBottom,
         'border-radius': `${mt.borderRadius}px ${mt.borderRadius}px 0 0`,
       },
       [`.${prefixCls}-title`]: {
         color: mt.titleColor,
         'font-size': mt.titleFontSize,
         'font-weight': 600,
+        'line-height': mt.titleLineHeight,
       },
-      [`.${prefixCls}-body`]: { padding: t.paddingLG, color: t.colorText },
+      [`.${prefixCls}-body`]: { padding: mt.bodyPadding, color: t.colorText },
       [`.${prefixCls}-loading`]: {
         color: t.colorTextSecondary,
         padding: t.paddingLG,
@@ -110,8 +116,12 @@ export function useModalStyle(prefixCls: string) {
       [`.${prefixCls}-footer`]: {
         display: 'flex',
         'justify-content': 'flex-end',
-        gap: t.marginSM,
-        padding: `${t.paddingSM}px ${t.paddingLG}px ${t.paddingLG}px`,
+        gap: mt.confirmIconMarginInlineEnd,
+        padding: mt.footerPadding,
+        background: mt.footerBg,
+        'border-top': mt.footerBorderTop,
+        'border-radius': mt.footerBorderRadius,
+        'margin-top': mt.footerMarginTop,
       },
       [`.${prefixCls}-close`]: {
         position: 'absolute',
@@ -123,7 +133,7 @@ export function useModalStyle(prefixCls: string) {
         color: t.colorTextSecondary,
       },
       [`.${prefixCls}-confirm .${prefixCls}-body`]: {
-        padding: `${t.paddingLG}px ${t.paddingLG}px 0`,
+        padding: mt.confirmBodyPadding,
       },
       [`.${prefixCls}-confirm-body`]: {
         display: 'flex',
@@ -132,9 +142,9 @@ export function useModalStyle(prefixCls: string) {
       },
       [`.${prefixCls}-confirm-icon`]: {
         flex: 'none',
-        'font-size': mt.titleFontSize + 2,
+        'font-size': confirmIconSize,
         'line-height': 1,
-        'margin-top': `${((mt.titleFontSize * t.lineHeight - (mt.titleFontSize + 2)) / 2).toFixed(2)}px`,
+        'margin-top': `${((titleFontSize * t.lineHeight - confirmIconSize) / 2).toFixed(2)}px`,
       },
       [`.${prefixCls}-confirm-icon > svg`]: { display: 'block' },
       [`.${prefixCls}-confirm-message`]: { flex: 1 },
@@ -146,6 +156,9 @@ export function useModalStyle(prefixCls: string) {
         'margin-bottom': t.marginXS,
       },
       [`.${prefixCls}-confirm-content`]: { color: t.colorText },
+      [`.${prefixCls}-confirm .${prefixCls}-footer`]: {
+        'margin-top': mt.confirmBtnsMarginTop,
+      },
       [`.${prefixCls}-confirm-success .${prefixCls}-title`]: { color: t.colorSuccess },
       [`.${prefixCls}-confirm-info .${prefixCls}-title`]: { color: t.colorInfo },
       [`.${prefixCls}-confirm-warning .${prefixCls}-title`]: { color: t.colorWarning },
