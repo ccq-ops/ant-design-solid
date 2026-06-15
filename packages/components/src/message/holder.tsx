@@ -155,12 +155,11 @@ export function MessageHolder(props: MessageHolderProps) {
                 cfg().transitionName && `${cfg().transitionName}-appear`,
                 cfg().transitionName && `${cfg().transitionName}-appear-active`,
                 cfg().class,
-                cfg().className,
                 notice.class,
-                notice.className,
                 semanticClassNames().wrapper,
               )}
               style={{
+                display: noticeStacked() ? 'none' : undefined,
                 ...normalizeStyle(cfg().style),
                 ...normalizeStyle(notice.style),
                 ...normalizeStyle(semanticStyles().wrapper),

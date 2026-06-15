@@ -3,11 +3,11 @@ title: Message
 group: Feedback
 ---
 
-import { Button, ConfigProvider, message, Space } from '@ant-design-solid/core'
+import { App, Button, ConfigProvider, message, Space } from '@ant-design-solid/core'
 
 # Message
 
-Message provides lightweight global feedback for user actions.
+Display global lightweight feedback in response to user operations.
 
 ### Basic
 
@@ -16,44 +16,47 @@ Message provides lightweight global feedback for user actions.
 <MessageDemo001 />
 
 export const MessageDemo001 = (() => {
-  const Demo1 = function () {
-      return <Button onClick={() => message.info('Hello message')}>Show message</Button>;
-  };
+  const Demo = function () {
+    return <Button onClick={() => message.info('This is a normal message')}>Display normal message</Button>
+  }
 
-return Demo1
+return Demo
 })()
 
 ---
 
 ```tsx
-import { Button, Space, message } from '@ant-design-solid/core'
+import { Button, message } from '@ant-design-solid/core'
 
-const Demo1 = function () {
-  return <Button onClick={() => message.info('Hello message')}>Show message</Button>
+const Demo = function () {
+  return (
+    <Button onClick={() => message.info('This is a normal message')}>Display normal message</Button>
+  )
 }
 
-export default Demo1
+export default Demo
 ```
 
 :::
 
-### Types
+### Other Types
 
 :::preview
 
 <MessageDemo002 />
 
 export const MessageDemo002 = (() => {
-  const Demo2 = function () {
-      return (<Space wrap>
-        <Button onClick={() => message.success('Saved')}>Success</Button>
-        <Button onClick={() => message.error('Failed')}>Error</Button>
-        <Button onClick={() => message.warning('Check input')}>Warning</Button>
-        <Button onClick={() => message.info('Info')}>Info</Button>
-      </Space>);
-  };
+  const Demo = function () {
+    return (
+      <Space wrap>
+        <Button onClick={() => message.success('This is a success message')}>Success</Button>
+        <Button onClick={() => message.error('This is an error message')}>Error</Button>
+        <Button onClick={() => message.warning('This is a warning message')}>Warning</Button>
+      </Space>
+    )
+  }
 
-return Demo2
+return Demo
 })()
 
 ---
@@ -61,18 +64,17 @@ return Demo2
 ```tsx
 import { Button, Space, message } from '@ant-design-solid/core'
 
-const Demo2 = function () {
+const Demo = function () {
   return (
     <Space wrap>
-      <Button onClick={() => message.success('Saved')}>Success</Button>
-      <Button onClick={() => message.error('Failed')}>Error</Button>
-      <Button onClick={() => message.warning('Check input')}>Warning</Button>
-      <Button onClick={() => message.info('Info')}>Info</Button>
+      <Button onClick={() => message.success('This is a success message')}>Success</Button>
+      <Button onClick={() => message.error('This is an error message')}>Error</Button>
+      <Button onClick={() => message.warning('This is a warning message')}>Warning</Button>
     </Space>
   )
 }
 
-export default Demo2
+export default Demo
 ```
 
 :::
@@ -84,51 +86,15 @@ export default Demo2
 <MessageDemo003 />
 
 export const MessageDemo003 = (() => {
-  const Demo3 = function () {
-      return (<Button onClick={() => message.open({ content: 'Closes after 1 second', duration: 1 })}>
-        Short message
-      </Button>);
-  };
+  const Demo = function () {
+    return (
+      <Button onClick={() => message.success('This is a prompt message for success, and it will disappear in 10 seconds', 10)}>
+        Customized display duration
+      </Button>
+    )
+  }
 
-return Demo3
-})()
-
----
-
-```tsx
-import { Button, Space, message } from '@ant-design-solid/core'
-
-const Demo3 = function () {
-  return (
-    <Button onClick={() => message.open({ content: 'Closes after 1 second', duration: 1 })}>
-      Short message
-    </Button>
-  )
-}
-
-export default Demo3
-```
-
-:::
-
-### Promise interface
-
-:::preview
-
-<MessageDemo004 />
-
-export const MessageDemo004 = (() => {
-  const Demo4 = function () {
-      return (<Button onClick={() => {
-              message.success('Saved', 1).then(() => {
-                  message.info('Closed');
-              });
-          }}>
-        Save
-      </Button>);
-  };
-
-return Demo4
+return Demo
 })()
 
 ---
@@ -136,21 +102,72 @@ return Demo4
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
 
-const Demo4 = function () {
+const Demo = function () {
   return (
     <Button
-      onClick={() => {
-        message.success('Saved', 1).then(() => {
-          message.info('Closed')
-        })
-      }}
+      onClick={() =>
+        message.success(
+          'This is a prompt message for success, and it will disappear in 10 seconds',
+          10,
+        )
+      }
     >
-      Save
+      Customized display duration
     </Button>
   )
 }
 
-export default Demo4
+export default Demo
+```
+
+:::
+
+### Promise Interface
+
+:::preview
+
+<MessageDemo004 />
+
+export const MessageDemo004 = (() => {
+  const Demo = function () {
+    return (
+      <Button
+        onClick={() => {
+          message.loading('Action in progress...', 1.5).then(() => {
+            message.success('Loading finished', 1.5).then(() => message.info('Loading finished is finished', 1.5))
+          })
+        }}
+      >
+        Display sequential messages
+      </Button>
+    )
+  }
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Button, message } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Button
+      onClick={() => {
+        message.loading('Action in progress...', 1.5).then(() => {
+          message
+            .success('Loading finished', 1.5)
+            .then(() => message.info('Loading finished is finished', 1.5))
+        })
+      }}
+    >
+      Display sequential messages
+    </Button>
+  )
+}
+
+export default Demo
 ```
 
 :::
@@ -162,165 +179,20 @@ export default Demo4
 <MessageDemo005 />
 
 export const MessageDemo005 = (() => {
-  const Demo5 = function () {
-      return (<Button onClick={() => {
-              const handle = message.loading('Loading');
-              window.setTimeout(() => handle.close(), 1200);
-          }}>
-        Show loading
-      </Button>);
-  };
+  const Demo = function () {
+    return (
+      <Button
+        onClick={() => {
+          const hide = message.loading('Action in progress...')
+          window.setTimeout(hide, 2500)
+        }}
+      >
+        Display loading indicator
+      </Button>
+    )
+  }
 
-return Demo5
-})()
-
----
-
-```tsx
-import { Button, Space, message } from '@ant-design-solid/core'
-
-const Demo5 = function () {
-  return (
-    <Button
-      onClick={() => {
-        const handle = message.loading('Loading')
-        window.setTimeout(() => handle.close(), 1200)
-      }}
-    >
-      Show loading
-    </Button>
-  )
-}
-
-export default Demo5
-```
-
-:::
-
-### Keyed update
-
-:::preview
-
-<MessageDemo006 />
-
-export const MessageDemo006 = (() => {
-  const Demo6 = function () {
-      return (<Button onClick={() => {
-              message.open({
-                  key: 'upload',
-                  type: 'loading',
-                  content: 'Uploading',
-                  duration: 0,
-              });
-              window.setTimeout(() => {
-                  message.open({ key: 'upload', type: 'success', content: 'Uploaded' });
-              }, 1000);
-          }}>
-        Update keyed message
-      </Button>);
-  };
-
-return Demo6
-})()
-
----
-
-```tsx
-import { Button, Space, message } from '@ant-design-solid/core'
-
-const Demo6 = function () {
-  return (
-    <Button
-      onClick={() => {
-        message.open({
-          key: 'upload',
-          type: 'loading',
-          content: 'Uploading',
-          duration: 0,
-        })
-        window.setTimeout(() => {
-          message.open({ key: 'upload', type: 'success', content: 'Uploaded' })
-        }, 1000)
-      }}
-    >
-      Update keyed message
-    </Button>
-  )
-}
-
-export default Demo6
-```
-
-:::
-
-### Hooks usage
-
-:::preview
-
-<MessageDemo007 />
-
-export const MessageDemo007 = (() => {
-  const InnerDemo = function () {
-      const [api, contextHolder] = message.useMessage();
-      return (<>
-        {contextHolder}
-        <Button onClick={() => api.success('Scoped message')}>Show scoped message</Button>
-      </>);
-  };
-  const Demo7 = function () {
-      return (<ConfigProvider message={{ class: 'scoped-message' }}>
-        <InnerDemo />
-      </ConfigProvider>);
-  };
-
-return Demo7
-})()
-
----
-
-```tsx
-import { Button, ConfigProvider, message } from '@ant-design-solid/core'
-
-const InnerDemo = function () {
-  const [api, contextHolder] = message.useMessage()
-
-  return (
-    <>
-      {contextHolder}
-      <Button onClick={() => api.success('Scoped message')}>Show scoped message</Button>
-    </>
-  )
-}
-
-const Demo7 = function () {
-  return (
-    <ConfigProvider message={{ class: 'scoped-message' }}>
-      <InnerDemo />
-    </ConfigProvider>
-  )
-}
-
-export default Demo7
-```
-
-:::
-
-### Local config
-
-:::preview
-
-<MessageDemo008 />
-
-export const MessageDemo008 = (() => {
-  const Demo8 = function () {
-      const [api, contextHolder] = message.useMessage({ prefixCls: 'local-message' });
-      return (<>
-        {contextHolder}
-        <Button onClick={() => api.success('Local message')}>Show local message</Button>
-      </>);
-  };
-
-return Demo8
+return Demo
 })()
 
 ---
@@ -328,72 +200,235 @@ return Demo8
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
 
-const Demo8 = function () {
-  const [api, contextHolder] = message.useMessage({ prefixCls: 'local-message' })
-
+const Demo = function () {
   return (
-    <>
-      {contextHolder}
-      <Button onClick={() => api.success('Local message')}>Show local message</Button>
-    </>
+    <Button
+      onClick={() => {
+        const hide = message.loading('Action in progress...')
+        window.setTimeout(hide, 2500)
+      }}
+    >
+      Display loading indicator
+    </Button>
   )
 }
 
-export default Demo8
+export default Demo
 ```
 
 :::
 
-### Custom semantic styles
+### Update Message Content
+
+:::preview
+
+<MessageDemo006 />
+
+export const MessageDemo006 = (() => {
+  const Demo = function () {
+    return (
+      <Button
+        onClick={() => {
+          const key = 'updatable'
+          message.loading({ content: 'Loading...', key })
+          window.setTimeout(() => {
+            message.success({ content: 'Loaded!', key, duration: 2 })
+          }, 1000)
+        }}
+      >
+        Open the message box
+      </Button>
+    )
+  }
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Button, message } from '@ant-design-solid/core'
+
+const Demo = function () {
+  return (
+    <Button
+      onClick={() => {
+        const key = 'updatable'
+        message.loading({ content: 'Loading...', key })
+        window.setTimeout(() => {
+          message.success({ content: 'Loaded!', key, duration: 2 })
+        }, 1000)
+      }}
+    >
+      Open the message box
+    </Button>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Hooks Usage
+
+:::preview
+
+<MessageDemo007 />
+
+export const MessageDemo007 = (() => {
+  const ContextDemo = function () {
+    const [api, contextHolder] = message.useMessage()
+
+    return (
+      <>
+        {contextHolder}
+        <Button onClick={() => api.success('Hello from context')}>Open scoped message</Button>
+      </>
+    )
+
+}
+
+const Demo = function () {
+return (
+
+<ConfigProvider message={{ class: 'scoped-message' }}>
+<ContextDemo />
+</ConfigProvider>
+)
+}
+
+return Demo
+})()
+
+---
+
+```tsx
+import { Button, ConfigProvider, message } from '@ant-design-solid/core'
+
+const ContextDemo = function () {
+  const [api, contextHolder] = message.useMessage()
+
+  return (
+    <>
+      {contextHolder}
+      <Button onClick={() => api.success('Hello from context')}>Open scoped message</Button>
+    </>
+  )
+}
+
+const Demo = function () {
+  return (
+    <ConfigProvider message={{ class: 'scoped-message' }}>
+      <ContextDemo />
+    </ConfigProvider>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### App.useApp
+
+:::preview
+
+<MessageDemo008 />
+
+export const MessageDemo008 = (() => {
+  const InnerDemo = function () {
+    const { message: messageApi } = App.useApp()
+    return <Button onClick={() => messageApi.success('Hello from App')}>Open message</Button>
+  }
+
+const Demo = function () {
+return (
+
+<App message={{ class: 'app-message' }}>
+<InnerDemo />
+</App>
+)
+}
+
+return Demo
+})()
+
+---
+
+```tsx
+import { App, Button } from '@ant-design-solid/core'
+
+const InnerDemo = function () {
+  const { message: messageApi } = App.useApp()
+  return <Button onClick={() => messageApi.success('Hello from App')}>Open message</Button>
+}
+
+const Demo = function () {
+  return (
+    <App message={{ class: 'app-message' }}>
+      <InnerDemo />
+    </App>
+  )
+}
+
+export default Demo
+```
+
+:::
+
+### Customized Style
 
 :::preview
 
 <MessageDemo009 />
 
 export const MessageDemo009 = (() => {
-  const Demo9 = function () {
-      return (<Button onClick={() => {
-              message.success({
-                  key: 'semantic',
-                  content: 'Styled by semantic slots',
-                  class: 'my-message',
-                  classNames: ({ props }) => ({
-                      wrapper: props.type === 'success' ? 'my-message-success' : undefined,
-                      title: 'my-message-title',
-                  }),
-                  styles: {
-                      listContent: {
-                          'background-color': '#f6ffed',
-                          border: '1px solid #b7eb8f',
-                      },
-                      title: { color: '#135200' },
-                  },
-              });
-          }}>
-        Custom style
-      </Button>);
-  };
+  const Demo = function () {
+    return (
+      <Button
+        onClick={() => {
+          message.success({
+            content: 'Customized by semantic slots',
+            class: 'custom-message',
+            classNames: {
+              wrapper: 'custom-message-wrapper',
+              title: 'custom-message-title',
+            },
+            styles: {
+              listContent: {
+                'background-color': '#f6ffed',
+                border: '1px solid #b7eb8f',
+              },
+              title: { color: '#135200' },
+            },
+          })
+        }}
+      >
+        Customized style
+      </Button>
+    )
+  }
 
-return Demo9
+return Demo
 })()
 
 ---
 
 ```tsx
-import { Button, Space, message } from '@ant-design-solid/core'
+import { Button, message } from '@ant-design-solid/core'
 
-const Demo9 = function () {
+const Demo = function () {
   return (
     <Button
       onClick={() => {
         message.success({
-          key: 'semantic',
-          content: 'Styled by semantic slots',
-          class: 'my-message',
-          classNames: ({ props }) => ({
-            wrapper: props.type === 'success' ? 'my-message-success' : undefined,
-            title: 'my-message-title',
-          }),
+          content: 'Customized by semantic slots',
+          class: 'custom-message',
+          classNames: {
+            wrapper: 'custom-message-wrapper',
+            title: 'custom-message-title',
+          },
           styles: {
             listContent: {
               'background-color': '#f6ffed',
@@ -404,12 +439,12 @@ const Demo9 = function () {
         })
       }}
     >
-      Custom style
+      Customized style
     </Button>
   )
 }
 
-export default Demo9
+export default Demo
 ```
 
 :::
@@ -421,18 +456,22 @@ export default Demo9
 <MessageDemo010 />
 
 export const MessageDemo010 = (() => {
-  const Demo10 = function () {
-      return (<Button onClick={() => {
-              message.config({ stack: { threshold: 2 } });
-              message.info('First');
-              message.success('Second');
-              message.warning('Third');
-          }}>
+  const Demo = function () {
+    return (
+      <Button
+        onClick={() => {
+          message.config({ stack: { threshold: 2 } })
+          message.info('Message 1')
+          message.success('Message 2')
+          message.warning('Message 3')
+        }}
+      >
         Show stacked messages
-      </Button>);
-  };
+      </Button>
+    )
+  }
 
-return Demo10
+return Demo
 })()
 
 ---
@@ -440,14 +479,14 @@ return Demo10
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
 
-const Demo10 = function () {
+const Demo = function () {
   return (
     <Button
       onClick={() => {
         message.config({ stack: { threshold: 2 } })
-        message.info('First')
-        message.success('Second')
-        message.warning('Third')
+        message.info('Message 1')
+        message.success('Message 2')
+        message.warning('Message 3')
       }}
     >
       Show stacked messages
@@ -455,34 +494,38 @@ const Demo10 = function () {
   )
 }
 
-export default Demo10
+export default Demo
 ```
 
 :::
 
-### Global config
+### Global Config
 
 :::preview
 
 <MessageDemo011 />
 
 export const MessageDemo011 = (() => {
-  const Demo11 = function () {
-      return (<Button onClick={() => {
-              message.config({
-                  top: 48,
-                  duration: 2,
-                  maxCount: 3,
-                  rtl: false,
-                  transitionName: 'fade-message',
-              });
-              message.info('Configured message');
-          }}>
-        Configure message
-      </Button>);
-  };
+  const Demo = function () {
+    return (
+      <Button
+        onClick={() => {
+          message.config({
+            top: 100,
+            duration: 2,
+            maxCount: 3,
+            rtl: false,
+            prefixCls: 'custom-message',
+          })
+          message.info('Configured message')
+        }}
+      >
+        Display configured message
+      </Button>
+    )
+  }
 
-return Demo11
+return Demo
 })()
 
 ---
@@ -490,89 +533,116 @@ return Demo11
 ```tsx
 import { Button, message } from '@ant-design-solid/core'
 
-const Demo11 = function () {
+const Demo = function () {
   return (
     <Button
       onClick={() => {
         message.config({
-          top: 48,
+          top: 100,
           duration: 2,
           maxCount: 3,
           rtl: false,
-          transitionName: 'fade-message',
+          prefixCls: 'custom-message',
         })
         message.info('Configured message')
       }}
     >
-      Configure message
+      Display configured message
     </Button>
   )
 }
 
-export default Demo11
+export default Demo
 ```
 
 :::
 
 ## API
 
+Common usage:
+
+- `message.success(content, [duration], onClose)`
+- `message.error(content, [duration], onClose)`
+- `message.info(content, [duration], onClose)`
+- `message.warning(content, [duration], onClose)`
+- `message.loading(content, [duration], onClose)`
+
+The returned handle is callable and thenable:
+
+```tsx
+const hide = message.loading('Loading')
+hide()
+
+message.success('Saved').then(() => {
+  message.info('Closed')
+})
+```
+
+Object parameters are also supported:
+
+- `message.open(config)`
+- `message.success(config)`
+- `message.error(config)`
+- `message.info(config)`
+- `message.warning(config)`
+- `message.loading(config)`
+
 ### MessageArgs
 
 | Property       | Description                                                                        | Type                                                                                      | Default  |
 | -------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------- |
-| `key`          | Stable key used to update or destroy a message.                                    | `string \| number`                                                                        | `-`      |
-| `type`         | Message visual type.                                                               | `'info' \| 'success' \| 'error' \| 'warning' \| 'loading'`                                | `'info'` |
 | `content`      | Message content.                                                                   | `JSX.Element`                                                                             | `-`      |
 | `duration`     | Auto-close delay in seconds. Set to 0 to keep open. Loading messages default to 0. | `number`                                                                                  | `3`      |
+| `type`         | Message visual type.                                                               | `'info' \| 'success' \| 'error' \| 'warning' \| 'loading'`                                | `'info'` |
 | `onClose`      | Called when the message closes.                                                    | `() => void`                                                                              | `-`      |
 | `icon`         | Custom icon node.                                                                  | `JSX.Element`                                                                             | `-`      |
+| `key`          | Stable key used to update or destroy a message.                                    | `string \| number`                                                                        | `-`      |
 | `class`        | Custom class for the notice wrapper.                                               | `string`                                                                                  | `-`      |
-| `className`    | React-compatible alias for `class`.                                                | `string`                                                                                  | `-`      |
 | `style`        | Custom style for the notice wrapper.                                               | `JSX.CSSProperties`                                                                       | `-`      |
 | `classNames`   | Semantic class map, or a function receiving `{ props }`.                           | `Record<SemanticDOM, string> \| ({ props }) => Record<SemanticDOM, string>`               | `-`      |
 | `styles`       | Semantic style map, or a function receiving `{ props }`.                           | `Record<SemanticDOM, CSSProperties> \| ({ props }) => Record<SemanticDOM, CSSProperties>` | `-`      |
 | `onClick`      | Called when the message content is clicked.                                        | `(event: MouseEvent) => void`                                                             | `-`      |
 | `pauseOnHover` | Pause auto-close timer while hovering.                                             | `boolean`                                                                                 | `true`   |
 
-### MessageHandle
-
-| Property | Description                                           | Type         | Default |
-| -------- | ----------------------------------------------------- | ------------ | ------- |
-| `call`   | The handle itself can be called to close the message. | `() => void` | `-`     |
-| `close`  | Closes the message created by the returned handle.    | `() => void` | `-`     |
-
 ### MessageConfigOptions
 
-| Property         | Description                                                     | Type                                                                                      | Default |
-| ---------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------- |
-| `top`            | Distance from top.                                              | `string \| number`                                                                        | `8`     |
-| `duration`       | Global default duration in seconds.                             | `number`                                                                                  | `3`     |
-| `getContainer`   | Returns the mount container.                                    | `() => HTMLElement`                                                                       | `-`     |
-| `maxCount`       | Maximum visible messages; older messages are closed.            | `number`                                                                                  | `-`     |
-| `prefixCls`      | Custom message root class prefix.                               | `string`                                                                                  | `-`     |
-| `rtl`            | Enable RTL class.                                               | `boolean`                                                                                 | `false` |
-| `pauseOnHover`   | Global pause-on-hover default.                                  | `boolean`                                                                                 | `true`  |
-| `stack`          | Stack messages when the amount is over the threshold.           | `boolean \| { threshold?: number }`                                                       | `-`     |
-| `transitionName` | Adds transition class names to each notice.                     | `string`                                                                                  | `-`     |
-| `class`          | Global class for each notice wrapper.                           | `string`                                                                                  | `-`     |
-| `className`      | React-compatible alias for `class`.                             | `string`                                                                                  | `-`     |
-| `style`          | Global style for each notice wrapper.                           | `JSX.CSSProperties`                                                                       | `-`     |
-| `classNames`     | Global semantic class map, or a function receiving `{ props }`. | `Record<SemanticDOM, string> \| ({ props }) => Record<SemanticDOM, string>`               | `-`     |
-| `styles`         | Global semantic style map, or a function receiving `{ props }`. | `Record<SemanticDOM, CSSProperties> \| ({ props }) => Record<SemanticDOM, CSSProperties>` | `-`     |
+| Property         | Description                                          | Type                                                                                      | Default         |
+| ---------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------- | --------------- |
+| `top`            | Distance from top.                                   | `string \| number`                                                                        | `8`             |
+| `duration`       | Global default duration in seconds.                  | `number`                                                                                  | `3`             |
+| `getContainer`   | Returns the mount container.                         | `() => HTMLElement`                                                                       | `document.body` |
+| `maxCount`       | Maximum visible messages; older messages are closed. | `number`                                                                                  | `-`             |
+| `prefixCls`      | Custom message root class prefix.                    | `string`                                                                                  | `ads-message`   |
+| `rtl`            | Enable RTL class.                                    | `boolean`                                                                                 | `false`         |
+| `stack`          | Stack messages when amount is over threshold.        | `boolean \| { threshold?: number }`                                                       | `false`         |
+| `pauseOnHover`   | Global pause-on-hover default.                       | `boolean`                                                                                 | `true`          |
+| `transitionName` | Adds transition class names to each notice.          | `string`                                                                                  | `-`             |
+| `class`          | Global class for each notice wrapper.                | `string`                                                                                  | `-`             |
+| `style`          | Global style for each notice wrapper.                | `JSX.CSSProperties`                                                                       | `-`             |
+| `classNames`     | Global semantic class map or function.               | `Record<SemanticDOM, string> \| ({ props }) => Record<SemanticDOM, string>`               | `-`             |
+| `styles`         | Global semantic style map or function.               | `Record<SemanticDOM, CSSProperties> \| ({ props }) => Record<SemanticDOM, CSSProperties>` | `-`             |
 
-### MessageInstance
+### Static Methods
 
-| Property             | Description                                                                | Type                                                                | Default |
-| -------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------- |
-| `message.open`       | Opens a message with a full configuration object.                          | `(args: MessageArgs) => MessageHandle`                              | `-`     |
-| `message.info`       | Opens an info message.                                                     | `(content, duration?, onClose?) => MessageHandle`                   | `-`     |
-| `message.success`    | Opens a success message.                                                   | `(content, duration?, onClose?) => MessageHandle`                   | `-`     |
-| `message.error`      | Opens an error message.                                                    | `(content, duration?, onClose?) => MessageHandle`                   | `-`     |
-| `message.warning`    | Opens a warning message.                                                   | `(content, duration?, onClose?) => MessageHandle`                   | `-`     |
-| `message.loading`    | Opens a loading message. It remains until closed when duration is omitted. | `(content, duration?, onClose?) => MessageHandle`                   | `-`     |
-| `message.destroy`    | Destroys one keyed message or all messages.                                | `(key?: string \| number) => void`                                  | `-`     |
-| `message.config`     | Configures global message defaults.                                        | `(options: MessageConfigOptions) => void`                           | `-`     |
-| `message.useMessage` | Creates a local message API and context holder.                            | `(config?: MessageConfigOptions) => [MessageInstance, JSX.Element]` | `-`     |
+| Property             | Description                                                                | Type                                                                |
+| -------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `message.open`       | Opens a message with a full configuration object.                          | `(args: MessageArgs) => MessageHandle`                              |
+| `message.info`       | Opens an info message.                                                     | `(content, duration?, onClose?) => MessageHandle`                   |
+| `message.success`    | Opens a success message.                                                   | `(content, duration?, onClose?) => MessageHandle`                   |
+| `message.error`      | Opens an error message.                                                    | `(content, duration?, onClose?) => MessageHandle`                   |
+| `message.warning`    | Opens a warning message.                                                   | `(content, duration?, onClose?) => MessageHandle`                   |
+| `message.loading`    | Opens a loading message. It remains until closed when duration is omitted. | `(content, duration?, onClose?) => MessageHandle`                   |
+| `message.destroy`    | Destroys one keyed message or all messages.                                | `(key?: string \| number) => void`                                  |
+| `message.config`     | Configures global message defaults.                                        | `(options: MessageConfigOptions) => void`                           |
+| `message.useMessage` | Creates a local message API and context holder.                            | `(config?: MessageConfigOptions) => [MessageInstance, JSX.Element]` |
+
+### App
+
+| Property     | Description                             | Type                   |
+| ------------ | --------------------------------------- | ---------------------- |
+| `App`        | Provides local message holder context.  | `(props: AppProps)`    |
+| `App.useApp` | Returns the local App feedback APIs.    | `() => { message }`    |
+| `message`    | App-level defaults for scoped messages. | `MessageConfigOptions` |
 
 ### ConfigProvider
 
@@ -598,6 +668,14 @@ In Solid, call `message.useMessage()` inside a child component rendered under th
 | `wrapper`     | Individual notice wrapper.                                |
 | `icon`        | Icon wrapper.                                             |
 | `title`       | Content text wrapper.                                     |
+
+### Design Token
+
+| Token Name       | Description                   | Type     | Default    |
+| ---------------- | ----------------------------- | -------- | ---------- |
+| `contentBg`      | Background color of Message.  | `string` | `#ffffff`  |
+| `contentPadding` | Padding of Message.           | `string` | `9px 12px` |
+| `zIndexPopup`    | z-index of Message container. | `number` | `2010`     |
 
 ### Internal debug helpers
 

@@ -2,6 +2,7 @@ import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssi
 import { createSignal } from 'solid-js'
 import { render } from '@solidjs/testing-library'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { App } from '../../app'
 import { ConfigProvider } from '../../config-provider'
 import { message } from '../index'
 import { MessageHolder } from '../holder'
@@ -164,13 +165,13 @@ describe('message', () => {
     expect(container).not.toHaveTextContent('Second')
   })
 
-  it('renders custom icon, className, style, onClick, semantic classNames and styles', () => {
+  it('renders custom icon, class, style, onClick, semantic classNames and styles', () => {
     const onClick = vi.fn()
     message.open({
       content: 'Custom',
       duration: 0,
       icon: <span data-testid="custom-icon">!</span>,
-      className: 'notice-extra',
+      class: 'notice-extra',
       style: { color: 'red' },
       onClick,
       classNames: {
@@ -208,8 +209,11 @@ describe('message', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
-  it('supports Solid class prop and semantic classNames and styles functions', () => {
+  it('uses Solid class prop and ignores removed className compatibility props', () => {
     message.config({
+      // @ts-expect-error className was removed in favor of Solid class.
+      className: 'legacy-global-class',
+      class: 'solid-global-class',
       classNames: ({ props }) => ({
         root: props.type === 'success' ? 'global-success-root' : undefined,
         wrapper: 'global-wrapper',
@@ -224,6 +228,7 @@ describe('message', () => {
       content: 'Solid class',
       duration: 0,
       class: 'solid-notice',
+      // @ts-expect-error className was removed in favor of Solid class.
       className: 'react-notice',
       classNames: ({ props }) => ({
         title: props.key === 'solid-key' ? 'solid-title' : undefined,
@@ -240,8 +245,10 @@ describe('message', () => {
 
     expect(root.classList.contains('global-success-root')).toBe(true)
     expect(root.style.inset).toBe('0 auto auto 50%')
+    expect(wrapper.classList.contains('solid-global-class')).toBe(true)
+    expect(wrapper.classList.contains('legacy-global-class')).toBe(false)
     expect(wrapper.classList.contains('solid-notice')).toBe(true)
-    expect(wrapper.classList.contains('react-notice')).toBe(true)
+    expect(wrapper.classList.contains('react-notice')).toBe(false)
     expect(wrapper.classList.contains('global-wrapper')).toBe(true)
     expect(wrapper.style.border).toBe('1px solid rgb(1, 2, 3)')
     expect(title.classList.contains('solid-title')).toBe(true)
@@ -259,7 +266,7 @@ describe('message', () => {
     expect(wrapper.classList.contains('fade-message-appear-active')).toBe(true)
   })
 
-  it('keeps all notices rendered and marks stacked state after stack threshold', () => {
+  it('collapses older notices visually after stack threshold', () => {
     message.config({ stack: { threshold: 2 } })
 
     message.info('First', 0)
@@ -277,6 +284,9 @@ describe('message', () => {
     expect(wrappers[0].classList.contains('ads-message-notice-stacked')).toBe(true)
     expect(wrappers[1].classList.contains('ads-message-notice-stacked')).toBe(true)
     expect(wrappers[2].classList.contains('ads-message-notice-stacked')).toBe(false)
+    expect((wrappers[0] as HTMLElement).style.display).toBe('none')
+    expect((wrappers[1] as HTMLElement).style.display).toBe('none')
+    expect((wrappers[2] as HTMLElement).style.display).toBe('')
   })
 
   it('renders internal pure panel and list helpers', () => {
@@ -381,5 +391,31 @@ describe('message', () => {
     expect(wrapper.style.letterSpacing).toBe('1px')
     expect(title.classList.contains('context-title')).toBe(true)
     expect(title.style.color).toBe('rgb(7, 8, 9)')
+  })
+
+  it('exposes scoped message api from App.useApp', () => {
+    function InnerDemo() {
+      const { message: api } = App.useApp()
+      return (
+        <button type="button" onClick={() => api.success('App scoped message', 0)}>
+          Show
+        </button>
+      )
+    }
+
+    const result = render(() => (
+      <App message={{ class: 'app-message', classNames: { title: 'app-message-title' } }}>
+        <InnerDemo />
+      </App>
+    ))
+    result.getByText('Show').click()
+
+    const wrapper = result.container.querySelector('.ads-message-notice') as HTMLElement
+    const title = result.container.querySelector('.ads-message-title') as HTMLElement
+
+    expect(result.container).toHaveTextContent('App scoped message')
+    expect(result.container.querySelector('.ads-message')).toBeTruthy()
+    expect(wrapper.classList.contains('app-message')).toBe(true)
+    expect(title.classList.contains('app-message-title')).toBe(true)
   })
 })

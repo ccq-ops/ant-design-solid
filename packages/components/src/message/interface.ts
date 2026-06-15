@@ -24,7 +24,6 @@ export interface MessageArgs {
   onClose?: () => void
   icon?: JSX.Element
   class?: string
-  className?: string
   style?: JSX.CSSProperties
   classNames?: MessageSemanticClassNames
   styles?: MessageSemanticStyles
@@ -43,7 +42,6 @@ export interface MessageConfigOptions {
   stack?: boolean | { threshold?: number }
   pauseOnHover?: boolean
   class?: string
-  className?: string
   style?: JSX.CSSProperties
   classNames?: MessageSemanticClassNames
   styles?: MessageSemanticStyles
@@ -65,6 +63,12 @@ export type MessageTypeOpen = (
   duration?: number | (() => void),
   onClose?: () => void,
 ) => MessageHandle
+
+export type NoticeType = MessageVisualType
+export type ArgsProps = MessageArgs
+export type ConfigOptions = MessageConfigOptions
+export type TypeOpen = MessageTypeOpen
+export type MessageTypeHandle = MessageHandle
 
 export interface MessageInstance {
   open: (args: MessageArgs) => MessageHandle
