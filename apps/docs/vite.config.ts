@@ -11,8 +11,11 @@ import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
 import { docsThemeConfig } from './solidbase-theme-config'
 
 const solidBase = createSolidBase(docsTheme)
+const docsBase = process.env.GITHUB_PAGES === 'true' ? '/ant-design-solid/' : '/'
+const docsSsr = process.env.GITHUB_PAGES === 'true' ? false : true
 
 export default defineConfig(({ command }) => ({
+  base: docsBase,
   oxc: { jsx: 'preserve' },
   plugins: [
     solidBase.plugin({
@@ -30,7 +33,7 @@ export default defineConfig(({ command }) => ({
     solidbaseDefaultThemeJsx(),
     solidbaseDefaultThemePreview(),
     playgroundRegistryPlugin(),
-    solidStart(solidBase.startConfig({ ssr: true })),
+    solidStart(solidBase.startConfig({ ssr: docsSsr })),
     command === 'build' && nitro({ prerender: { crawlLinks: true } }),
     tailwindcss(),
   ],

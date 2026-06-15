@@ -4,11 +4,13 @@ import { Router } from '@solidjs/router'
 import { FileRoutes } from '@solidjs/start/router'
 import { DocsThemeProvider } from './components/theme-context'
 
+const docsBase = import.meta.env.BASE_URL === '/ant-design-solid/' ? '/ant-design-solid' : undefined
+
 export default function App() {
   return (
     <StyleProvider>
       <DocsThemeProvider>
-        <Router root={SolidBaseRoot}>
+        <Router base={docsBase} root={SolidBaseRoot}>
           <FileRoutes />
         </Router>
       </DocsThemeProvider>
