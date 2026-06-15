@@ -1,4 +1,6 @@
 import { render } from '@solidjs/testing-library'
+import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { QRCode } from '../index'
@@ -58,6 +60,39 @@ describe('QRCode', () => {
     expect(root.style.backgroundColor).toBe('rgb(238, 238, 238)')
     expect(svg.getAttribute('width')).toBe('120')
     expect(svg.querySelector('rect[data-module="true"]')?.getAttribute('fill')).toBe('#111111')
+  })
+
+  it('uses theme tokens for default foreground and background colors', () => {
+    const result = render(() => (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <QRCode value="solid" data-testid="qr" />
+      </ConfigProvider>
+    ))
+    const root = result.getByTestId('qr')
+    const svg = root.querySelector('svg') as SVGElement
+
+    expect(root.style.backgroundColor).toBe('rgb(20, 20, 20)')
+    expect(svg.querySelector('rect')?.getAttribute('fill')).toBe('#141414')
+    expect(svg.querySelector('rect[data-module="true"]')?.getAttribute('fill')).toBe(
+      'rgba(255,255,255,0.85)',
+    )
+  })
+
+  it('uses a theme-aware status overlay background', () => {
+    const cache = createCache()
+
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+          <QRCode value="solid" status="expired" />
+        </ConfigProvider>
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+
+    expect(css).toContain('background:rgba(20,20,20,0.88);')
+    expect(css).not.toContain('background:rgba(255, 255, 255, 0.88);')
   })
 
   it('supports bordered=false', () => {

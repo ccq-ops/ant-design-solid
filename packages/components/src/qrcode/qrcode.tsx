@@ -1,7 +1,7 @@
 import qrcode from 'qrcode-generator'
 import { For, Match, Show, Switch, createEffect, createMemo, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { useConfig } from '../config-provider'
+import { useConfig, useToken } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type {
   QRCodeErrorLevel,
@@ -174,12 +174,13 @@ export function QRCode(props: QRCodeProps) {
     'style',
   ])
   const config = useConfig()
+  const token = useToken()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-qrcode`
   const [, hashId] = useQRCodeStyle(prefixCls())
   const size = () => local.size ?? 160
   const type = () => local.type ?? 'svg'
-  const color = () => local.color ?? '#000'
-  const bgColor = () => local.bgColor ?? 'transparent'
+  const color = () => local.color ?? token().colorText
+  const bgColor = () => local.bgColor ?? token().colorBgContainer
   const status = () => local.status ?? 'active'
   const errorLevel = () => local.errorLevel ?? 'M'
   const boostLevel = () => local.boostLevel ?? true
