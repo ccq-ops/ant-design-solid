@@ -3,12 +3,13 @@ title: Masonry
 group: Layout
 ---
 
-import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+import { Button, Card, Divider, Flex, Masonry, Typography, useToken } from '@ant-design-solid/core'
+import { CloseOutlined } from '@ant-design-solid/icons'
 import { createSignal } from 'solid-js'
 
 # Masonry
 
-Display variable-height content in balanced columns.
+A masonry layout component for displaying content with different heights.
 
 ### Basic
 
@@ -17,44 +18,24 @@ Display variable-height content in balanced columns.
 <MasonryDemo001 />
 
 export const MasonryDemo001 = (() => {
-  const baseItems = [
-      { key: 1, data: { title: 'Mountain', height: 120, background: 'var(--docs-primary-soft)' } },
-      { key: 2, data: { title: 'Forest', height: 180, background: 'var(--docs-surface-subtle)' } },
-      {
-          key: 3,
-          data: {
-              title: 'River',
-              height: 96,
-              background: 'color-mix(in srgb, var(--docs-primary-soft) 45%, var(--docs-surface-solid))',
-          },
+  const heights = [150, 50, 90, 70, 110, 150, 130, 80, 50, 90, 100, 150, 60, 50, 80].map(
+      (height, index) => {
+          const item = {
+              key: `item-${index}`,
+              data: height,
+          };
+          if (index === 4) {
+              item.children = (<Card size="small" cover={<img alt="food" src="https://images.unsplash.com/photo-1491961865842-98f7befd1a60?w=523&auto=format"/>}>
+            <Card.Meta title="I'm Special" description="Let's have a meal"/>
+          </Card>);
+          }
+          return item;
       },
-      {
-          key: 4,
-          data: {
-              title: 'City',
-              height: 150,
-              background: 'color-mix(in srgb, var(--docs-border-subtle) 30%, var(--docs-surface-solid))',
-          },
-      },
-      {
-          key: 5,
-          data: {
-              title: 'Desert',
-              height: 110,
-              background: 'color-mix(in srgb, var(--docs-primary-soft-strong) 50%, var(--docs-surface-solid))',
-          },
-      },
-      { key: 6, data: { title: 'Ocean', height: 210, background: 'var(--docs-surface-muted)' } },
-  ];
-  function DemoCard(props) {
-      return (<Card title={props.title} style={{ background: props.background }}>
-        <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
-          Variable-height content creates a waterfall layout.
-        </div>
-      </Card>);
-  }
+  );
   const Demo1 = function () {
-      return (<Masonry items={baseItems} itemRender={(item) => (<DemoCard title={item.data.title} height={item.data.height} background={item.data.background}/>)}/>);
+      return (<Masonry columns={4} gutter={16} items={heights} itemRender={({ data, index }) => (<Card size="small" style={{ height: data }}>
+            {index + 1}
+          </Card>)}/>);
   };
 
 return Demo1
@@ -65,57 +46,43 @@ return Demo1
 ```tsx
 import { Card, Masonry } from '@ant-design-solid/core'
 
-const baseItems = [
-  { key: 1, data: { title: 'Mountain', height: 120, background: 'var(--docs-primary-soft)' } },
-  { key: 2, data: { title: 'Forest', height: 180, background: 'var(--docs-surface-subtle)' } },
-  {
-    key: 3,
-    data: {
-      title: 'River',
-      height: 96,
-      background: 'color-mix(in srgb, var(--docs-primary-soft) 45%, var(--docs-surface-solid))',
-    },
-  },
-  {
-    key: 4,
-    data: {
-      title: 'City',
-      height: 150,
-      background: 'color-mix(in srgb, var(--docs-border-subtle) 30%, var(--docs-surface-solid))',
-    },
-  },
-  {
-    key: 5,
-    data: {
-      title: 'Desert',
-      height: 110,
-      background:
-        'color-mix(in srgb, var(--docs-primary-soft-strong) 50%, var(--docs-surface-solid))',
-    },
-  },
-  { key: 6, data: { title: 'Ocean', height: 210, background: 'var(--docs-surface-muted)' } },
-]
+const heights = [150, 50, 90, 70, 110, 150, 130, 80, 50, 90, 100, 150, 60, 50, 80].map(
+  (height, index) => {
+    const item = {
+      key: `item-${index}`,
+      data: height,
+    }
 
-function DemoCard(props) {
-  return (
-    <Card title={props.title} style={{ background: props.background }}>
-      <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
-        Variable-height content creates a waterfall layout.
-      </div>
-    </Card>
-  )
-}
+    if (index === 4) {
+      item.children = (
+        <Card
+          size="small"
+          cover={
+            <img
+              alt="food"
+              src="https://images.unsplash.com/photo-1491961865842-98f7befd1a60?w=523&auto=format"
+            />
+          }
+        >
+          <Card.Meta title="I'm Special" description="Let's have a meal" />
+        </Card>
+      )
+    }
+
+    return item
+  },
+)
 
 const Demo1 = function () {
   return (
     <Masonry
-      items={baseItems}
-      itemRender={(item) => (
-        <DemoCard
-          title={item.data.title}
-          height={item.data.height}
-          background={item.data.background}
-        />
+      columns={4}
+      gutter={16}
+      items={heights}
+      itemRender={({ data, index }) => (
+        <Card size="small" style={{ height: data }}>
+          {index + 1}
+        </Card>
       )}
     />
   )
@@ -133,47 +100,16 @@ export default Demo1
 <MasonryDemo002 />
 
 export const MasonryDemo002 = (() => {
-  const baseItems = [
-      { key: 1, data: { title: 'Mountain', height: 120, background: 'var(--docs-primary-soft)' } },
-      { key: 2, data: { title: 'Forest', height: 180, background: 'var(--docs-surface-subtle)' } },
-      {
-          key: 3,
-          data: {
-              title: 'River',
-              height: 96,
-              background: 'color-mix(in srgb, var(--docs-primary-soft) 45%, var(--docs-surface-solid))',
-          },
-      },
-      {
-          key: 4,
-          data: {
-              title: 'City',
-              height: 150,
-              background: 'color-mix(in srgb, var(--docs-border-subtle) 30%, var(--docs-surface-solid))',
-          },
-      },
-      {
-          key: 5,
-          data: {
-              title: 'Desert',
-              height: 110,
-              background: 'color-mix(in srgb, var(--docs-primary-soft-strong) 50%, var(--docs-surface-solid))',
-          },
-      },
-      { key: 6, data: { title: 'Ocean', height: 210, background: 'var(--docs-surface-muted)' } },
-  ];
-  function DemoCard(props) {
-      return (<Card title={props.title} style={{ background: props.background }}>
-        <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
-          Column and gutter values can respond to breakpoints.
-        </div>
-      </Card>);
-  }
+  const heights = [120, 55, 85, 160, 95, 140, 75, 110, 65, 130, 90, 145, 55, 100, 80];
   const Demo2 = function () {
-      return (<Masonry columns={{ xs: 1, sm: 2, lg: 3, xl: 4 }} gutter={[
-              { xs: 8, md: 16, xl: 24 },
-              { xs: 8, md: 20 },
-          ]} items={baseItems} itemRender={(item) => (<DemoCard title={item.data.title} height={item.data.height} background={item.data.background}/>)}/>);
+      const items = heights.map((height, index) => ({
+          key: `item-${index}`,
+          data: height,
+          index,
+      }));
+      return (<Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4 }} gutter={{ xs: 8, sm: 12, md: 16 }} items={items} itemRender={(item) => (<Card size="small" style={{ height: item.data }}>
+            {item.index + 1}
+          </Card>)}/>);
   };
 
 return Demo2
@@ -184,62 +120,24 @@ return Demo2
 ```tsx
 import { Card, Masonry } from '@ant-design-solid/core'
 
-const baseItems = [
-  { key: 1, data: { title: 'Mountain', height: 120, background: 'var(--docs-primary-soft)' } },
-  { key: 2, data: { title: 'Forest', height: 180, background: 'var(--docs-surface-subtle)' } },
-  {
-    key: 3,
-    data: {
-      title: 'River',
-      height: 96,
-      background: 'color-mix(in srgb, var(--docs-primary-soft) 45%, var(--docs-surface-solid))',
-    },
-  },
-  {
-    key: 4,
-    data: {
-      title: 'City',
-      height: 150,
-      background: 'color-mix(in srgb, var(--docs-border-subtle) 30%, var(--docs-surface-solid))',
-    },
-  },
-  {
-    key: 5,
-    data: {
-      title: 'Desert',
-      height: 110,
-      background:
-        'color-mix(in srgb, var(--docs-primary-soft-strong) 50%, var(--docs-surface-solid))',
-    },
-  },
-  { key: 6, data: { title: 'Ocean', height: 210, background: 'var(--docs-surface-muted)' } },
-]
-
-function DemoCard(props) {
-  return (
-    <Card title={props.title} style={{ background: props.background }}>
-      <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
-        Column and gutter values can respond to breakpoints.
-      </div>
-    </Card>
-  )
-}
+const heights = [120, 55, 85, 160, 95, 140, 75, 110, 65, 130, 90, 145, 55, 100, 80]
 
 const Demo2 = function () {
+  const items = heights.map((height, index) => ({
+    key: `item-${index}`,
+    data: height,
+    index,
+  }))
+
   return (
     <Masonry
-      columns={{ xs: 1, sm: 2, lg: 3, xl: 4 }}
-      gutter={[
-        { xs: 8, md: 16, xl: 24 },
-        { xs: 8, md: 20 },
-      ]}
-      items={baseItems}
+      columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+      gutter={{ xs: 8, sm: 12, md: 16 }}
+      items={items}
       itemRender={(item) => (
-        <DemoCard
-          title={item.data.title}
-          height={item.data.height}
-          background={item.data.background}
-        />
+        <Card size="small" style={{ height: item.data }}>
+          {item.index + 1}
+        </Card>
       )}
     />
   )
@@ -250,28 +148,36 @@ export default Demo2
 
 :::
 
-### Item children
+### Image
 
 :::preview
 
 <MasonryDemo003 />
 
 export const MasonryDemo003 = (() => {
-  const items = [
-      {
-          key: 'pinned',
-          data: { title: 'Pinned' },
-          children: (<Card title="Pinned">
-          <div style={{ height: '160px' }}>Item children render before itemRender.</div>
-        </Card>),
-      },
-      { key: 'rendered-a', data: { title: 'Rendered A', height: 90 } },
-      { key: 'rendered-b', data: { title: 'Rendered B', height: 140 } },
+  const imageList = [
+      'https://images.unsplash.com/photo-1510001618818-4b4e3d86bf0f',
+      'https://images.unsplash.com/photo-1507513319174-e556268bb244',
+      'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2',
+      'https://images.unsplash.com/photo-1492778297155-7be4c83960c7',
+      'https://images.unsplash.com/photo-1508062878650-88b52897f298',
+      'https://images.unsplash.com/photo-1506158278516-d720e72406fc',
+      'https://images.unsplash.com/photo-1552203274-e3c7bd771d26',
+      'https://images.unsplash.com/photo-1528163186890-de9b86b54b51',
+      'https://images.unsplash.com/photo-1727423304224-6d2fd99b864c',
+      'https://images.unsplash.com/photo-1675090391405-432434e23595',
+      'https://images.unsplash.com/photo-1554196967-97a8602084d9',
+      'https://images.unsplash.com/photo-1491961865842-98f7befd1a60',
+      'https://images.unsplash.com/photo-1721728613411-d56d2ddda959',
+      'https://images.unsplash.com/photo-1731901245099-20ac7f85dbaa',
+      'https://images.unsplash.com/photo-1617694455303-59af55af7e58',
+      'https://images.unsplash.com/photo-1709198165282-1dab551df890',
   ];
   const Demo3 = function () {
-      return (<Masonry columns={3} gutter={16} items={items} itemRender={(item) => (<Card title={item.data.title}>
-            <div style={{ height: `${item.data.height}px` }}>Rendered from data.</div>
-          </Card>)}/>);
+      return (<Masonry columns={4} gutter={16} items={imageList.map((img, index) => ({
+              key: `item-${index}`,
+              data: img,
+          }))} itemRender={({ data }) => (<img src={`${data}?w=523&auto=format`} alt="sample" style={{ width: '100%' }}/>)}/>);
   };
 
 return Demo3
@@ -280,32 +186,38 @@ return Demo3
 ---
 
 ```tsx
-import { Card, Masonry } from '@ant-design-solid/core'
+import { Masonry } from '@ant-design-solid/core'
 
-const items = [
-  {
-    key: 'pinned',
-    data: { title: 'Pinned' },
-    children: (
-      <Card title="Pinned">
-        <div style={{ height: '160px' }}>Item children render before itemRender.</div>
-      </Card>
-    ),
-  },
-  { key: 'rendered-a', data: { title: 'Rendered A', height: 90 } },
-  { key: 'rendered-b', data: { title: 'Rendered B', height: 140 } },
+const imageList = [
+  'https://images.unsplash.com/photo-1510001618818-4b4e3d86bf0f',
+  'https://images.unsplash.com/photo-1507513319174-e556268bb244',
+  'https://images.unsplash.com/photo-1474181487882-5abf3f0ba6c2',
+  'https://images.unsplash.com/photo-1492778297155-7be4c83960c7',
+  'https://images.unsplash.com/photo-1508062878650-88b52897f298',
+  'https://images.unsplash.com/photo-1506158278516-d720e72406fc',
+  'https://images.unsplash.com/photo-1552203274-e3c7bd771d26',
+  'https://images.unsplash.com/photo-1528163186890-de9b86b54b51',
+  'https://images.unsplash.com/photo-1727423304224-6d2fd99b864c',
+  'https://images.unsplash.com/photo-1675090391405-432434e23595',
+  'https://images.unsplash.com/photo-1554196967-97a8602084d9',
+  'https://images.unsplash.com/photo-1491961865842-98f7befd1a60',
+  'https://images.unsplash.com/photo-1721728613411-d56d2ddda959',
+  'https://images.unsplash.com/photo-1731901245099-20ac7f85dbaa',
+  'https://images.unsplash.com/photo-1617694455303-59af55af7e58',
+  'https://images.unsplash.com/photo-1709198165282-1dab551df890',
 ]
 
 const Demo3 = function () {
   return (
     <Masonry
-      columns={3}
+      columns={4}
       gutter={16}
-      items={items}
-      itemRender={(item) => (
-        <Card title={item.data.title}>
-          <div style={{ height: `${item.data.height}px` }}>Rendered from data.</div>
-        </Card>
+      items={imageList.map((img, index) => ({
+        key: `item-${index}`,
+        data: img,
+      }))}
+      itemRender={({ data }) => (
+        <img src={`${data}?w=523&auto=format`} alt="sample" style={{ width: '100%' }} />
       )}
     />
   )
@@ -316,26 +228,61 @@ export default Demo3
 
 :::
 
-### Fixed columns
+### Dynamic
 
 :::preview
 
 <MasonryDemo004 />
 
 export const MasonryDemo004 = (() => {
-  const items = [
-      { key: 'north', column: 0, data: { title: 'North', height: 120 } },
-      { key: 'center', column: 1, data: { title: 'Center', height: 180 } },
-      { key: 'south', column: 2, data: { title: 'South', height: 110 } },
-      { key: 'auto-a', data: { title: 'Auto A', height: 150 } },
-      { key: 'auto-b', data: { title: 'Auto B', height: 96 } },
-  ];
+  const heights = [150, 50, 90, 70, 110, 150, 130, 80, 50, 90, 100, 150, 70, 50, 80];
   const Demo4 = function () {
-      return (<Masonry columns={3} gutter={[12, 20]} items={items} itemRender={(item) => (<Card title={`${item.data.title} · column ${item.column + 1}`}>
-            <div style={{ height: `${item.data.height}px` }}>
-              Items may request a column while the rest continue flowing automatically.
-            </div>
-          </Card>)}/>);
+      const token = useToken();
+      const [items, setItems] = createSignal(heights.map((height, index) => ({
+          key: index,
+          column: index % 4,
+          data: height,
+      })));
+      const removeItem = (removeKey) => {
+          setItems((prevItems) => prevItems.filter(({ key }) => key !== removeKey));
+      };
+      const addItem = () => {
+          setItems((prevItems) => [
+              ...prevItems,
+              {
+                  key: prevItems.length ? prevItems[prevItems.length - 1].key + 1 : 0,
+                  data: Math.floor(Math.random() * 100) + 50,
+              },
+          ]);
+      };
+      return (<Flex vertical gap={16}>
+        <Masonry columns={4} gutter={16} items={items()} itemRender={({ data, key }) => (<Card size="small" style={{ height: data, position: 'relative' }}>
+              {Number(key) + 1}
+              <Button aria-label={`Remove item ${Number(key) + 1}`} style={{
+                  position: 'absolute',
+                  top: `${token().paddingSM}px`,
+                  right: `${token().paddingSM}px`,
+              }} size="small" icon={<CloseOutlined/>} onClick={() => removeItem(key)}/>
+            </Card>)} onLayoutChange={(sortedItems) => {
+              setItems((prevItems) => {
+                  let changed = false;
+                  const nextItems = prevItems.map((item) => {
+                  const matchItem = sortedItems.find((sortedItem) => sortedItem.key === item.key);
+                      if (!matchItem || item.column === matchItem.column)
+                          return item;
+                      changed = true;
+                      return {
+                          ...item,
+                          column: matchItem.column,
+                      };
+                  });
+                  return changed ? nextItems : prevItems;
+              });
+          }}/>
+        <Button block onClick={addItem}>
+          Add Item
+        </Button>
+      </Flex>);
   };
 
 return Demo4
@@ -344,30 +291,78 @@ return Demo4
 ---
 
 ```tsx
-import { Card, Masonry } from '@ant-design-solid/core'
+import { createSignal } from 'solid-js'
+import { Button, Card, Flex, Masonry, useToken } from '@ant-design-solid/core'
+import { CloseOutlined } from '@ant-design-solid/icons'
 
-const items = [
-  { key: 'north', column: 0, data: { title: 'North', height: 120 } },
-  { key: 'center', column: 1, data: { title: 'Center', height: 180 } },
-  { key: 'south', column: 2, data: { title: 'South', height: 110 } },
-  { key: 'auto-a', data: { title: 'Auto A', height: 150 } },
-  { key: 'auto-b', data: { title: 'Auto B', height: 96 } },
-]
+const heights = [150, 50, 90, 70, 110, 150, 130, 80, 50, 90, 100, 150, 70, 50, 80]
 
 const Demo4 = function () {
+  const token = useToken()
+  const [items, setItems] = createSignal(
+    heights.map((height, index) => ({
+      key: index,
+      column: index % 4,
+      data: height,
+    })),
+  )
+
+  const removeItem = (removeKey) => {
+    setItems((prevItems) => prevItems.filter(({ key }) => key !== removeKey))
+  }
+
+  const addItem = () => {
+    setItems((prevItems) => [
+      ...prevItems,
+      {
+        key: prevItems.length ? prevItems[prevItems.length - 1].key + 1 : 0,
+        data: Math.floor(Math.random() * 100) + 50,
+      },
+    ])
+  }
+
   return (
-    <Masonry
-      columns={3}
-      gutter={[12, 20]}
-      items={items}
-      itemRender={(item) => (
-        <Card title={`${item.data.title} · column ${item.column + 1}`}>
-          <div style={{ height: `${item.data.height}px` }}>
-            Items may request a column while the rest continue flowing automatically.
-          </div>
-        </Card>
-      )}
-    />
+    <Flex vertical gap={16}>
+      <Masonry
+        columns={4}
+        gutter={16}
+        items={items()}
+        itemRender={({ data, key }) => (
+          <Card size="small" style={{ height: data, position: 'relative' }}>
+            {Number(key) + 1}
+            <Button
+              aria-label={`Remove item ${Number(key) + 1}`}
+              style={{
+                position: 'absolute',
+                top: `${token().paddingSM}px`,
+                right: `${token().paddingSM}px`,
+              }}
+              size="small"
+              icon={<CloseOutlined />}
+              onClick={() => removeItem(key)}
+            />
+          </Card>
+        )}
+        onLayoutChange={(sortedItems) => {
+          setItems((prevItems) => {
+            let changed = false
+            const nextItems = prevItems.map((item) => {
+              const matchItem = sortedItems.find((sortedItem) => sortedItem.key === item.key)
+              if (!matchItem || item.column === matchItem.column) return item
+              changed = true
+              return {
+                ...item,
+                column: matchItem.column,
+              }
+            })
+            return changed ? nextItems : prevItems
+          })
+        }}
+      />
+      <Button block onClick={addItem}>
+        Add Item
+      </Button>
+    </Flex>
   )
 }
 
@@ -376,58 +371,67 @@ export default Demo4
 
 :::
 
-### Dynamic items
+### Custom semantic dom styling
 
 :::preview
 
 <MasonryDemo005 />
 
 export const MasonryDemo005 = (() => {
-  const baseItems = [
-      { key: 1, data: { title: 'Mountain', height: 120, background: 'var(--docs-primary-soft)' } },
-      { key: 2, data: { title: 'Forest', height: 180, background: 'var(--docs-surface-subtle)' } },
-      {
-          key: 3,
-          data: {
-              title: 'River',
-              height: 96,
-              background: 'color-mix(in srgb, var(--docs-primary-soft) 45%, var(--docs-surface-solid))',
-          },
+  const items = [120, 80, 100, 60, 140, 90, 110, 70].map((height, index) => ({
+      key: `item-${index}`,
+      data: height,
+  }));
+  const sharedClassNames = {
+      root: 'docs-masonry-semantic-root',
+      item: 'docs-masonry-semantic-item',
+  };
+  const styles = {
+      root: {
+          borderRadius: '12px',
+          padding: '20px',
+          height: '260px',
+          background: 'var(--docs-surface-glass)',
       },
-      {
-          key: 4,
-          data: {
-              title: 'City',
-              height: 150,
-              background: 'color-mix(in srgb, var(--docs-border-subtle) 30%, var(--docs-surface-solid))',
-          },
+      item: {
+          transform: 'scale(0.98)',
+          transition: 'transform 0.2s ease',
+          border: '1px solid var(--docs-border)',
       },
-  ];
-  function DemoCard(props) {
-      return (<Card title={props.title} style={{ background: props.background }}>
-        <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
-          fresh keeps item measurements current when content changes.
-        </div>
-      </Card>);
-  }
+  };
+  const stylesFn = (info) => {
+      const { props } = info;
+      return {
+          root: {
+              border: `2px solid ${typeof props.columns === 'number' && props.columns > 2 ? 'var(--docs-primary-soft-strong)' : 'var(--docs-border-subtle)'}`,
+              padding: '20px',
+              height: '280px',
+              background: 'color-mix(in srgb, var(--docs-primary-soft) 70%, var(--docs-surface-solid))',
+          },
+          item: {
+              boxShadow: 'var(--docs-card-shadow)',
+              border: '1px solid var(--docs-primary-soft-strong)',
+          },
+      };
+  };
+  const sharedProps = {
+      classNames: sharedClassNames,
+      itemRender: ({ data, index }) => (<Card size="small" style={{ height: data }}>
+        {index + 1}
+      </Card>),
+  };
   const Demo5 = function () {
-      const [items, setItems] = createSignal(baseItems);
-      return (<Space direction="vertical" style={{ width: '100%' }}>
-        <Button onClick={() => setItems((previous) => [
-              ...previous,
-              {
-                  key: Date.now(),
-                  data: {
-                      title: `New ${previous.length + 1}`,
-                      height: 80 + ((previous.length * 37) % 140),
-                      background: 'var(--docs-primary-soft)',
-                  },
-              },
-          ])}>
-          Add item
-        </Button>
-        <Masonry fresh columns={{ xs: 1, md: 3 }} gutter={16} items={items()} itemRender={(item) => (<DemoCard title={item.data.title} height={item.data.height} background={item.data.background}/>)}/>
-      </Space>);
+      return (<Flex vertical gap={24}>
+        <div>
+          <Typography.Title level={4}>classNames and styles Object</Typography.Title>
+          <Masonry columns={4} gutter={16} items={items} {...sharedProps} styles={styles}/>
+        </div>
+        <Divider/>
+        <div>
+          <Typography.Title level={4}>classNames and styles Function</Typography.Title>
+          <Masonry columns={3} gutter={12} items={items.slice(0, 6)} {...sharedProps} styles={stylesFn}/>
+        </div>
+      </Flex>);
   };
 
 return Demo5
@@ -436,206 +440,85 @@ return Demo5
 ---
 
 ```tsx
-import { createSignal } from 'solid-js'
-import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+import { Card, Divider, Flex, Masonry, Typography } from '@ant-design-solid/core'
 
-const baseItems = [
-  { key: 1, data: { title: 'Mountain', height: 120, background: 'var(--docs-primary-soft)' } },
-  { key: 2, data: { title: 'Forest', height: 180, background: 'var(--docs-surface-subtle)' } },
-  {
-    key: 3,
-    data: {
-      title: 'River',
-      height: 96,
-      background: 'color-mix(in srgb, var(--docs-primary-soft) 45%, var(--docs-surface-solid))',
-    },
-  },
-  {
-    key: 4,
-    data: {
-      title: 'City',
-      height: 150,
-      background: 'color-mix(in srgb, var(--docs-border-subtle) 30%, var(--docs-surface-solid))',
-    },
-  },
-]
+const items = [120, 80, 100, 60, 140, 90, 110, 70].map((height, index) => ({
+  key: `item-${index}`,
+  data: height,
+}))
 
-function DemoCard(props) {
-  return (
-    <Card title={props.title} style={{ background: props.background }}>
-      <div style={{ height: `${props.height}px`, color: 'var(--docs-text-secondary)' }}>
-        fresh keeps item measurements current when content changes.
-      </div>
+const sharedClassNames = {
+  root: 'docs-masonry-semantic-root',
+  item: 'docs-masonry-semantic-item',
+}
+
+const styles = {
+  root: {
+    borderRadius: '12px',
+    padding: '20px',
+    height: '260px',
+    background: 'var(--docs-surface-glass)',
+  },
+  item: {
+    transform: 'scale(0.98)',
+    transition: 'transform 0.2s ease',
+    border: '1px solid var(--docs-border)',
+  },
+}
+
+const stylesFn = (info) => {
+  const { props } = info
+
+  return {
+    root: {
+      border: `2px solid ${
+        typeof props.columns === 'number' && props.columns > 2
+          ? 'var(--docs-primary-soft-strong)'
+          : 'var(--docs-border-subtle)'
+      }`,
+      padding: '20px',
+      height: '280px',
+      background: 'color-mix(in srgb, var(--docs-primary-soft) 70%, var(--docs-surface-solid))',
+    },
+    item: {
+      boxShadow: 'var(--docs-card-shadow)',
+      border: '1px solid var(--docs-primary-soft-strong)',
+    },
+  }
+}
+
+const sharedProps = {
+  classNames: sharedClassNames,
+  itemRender: ({ data, index }) => (
+    <Card size="small" style={{ height: data }}>
+      {index + 1}
     </Card>
-  )
+  ),
 }
 
 const Demo5 = function () {
-  const [items, setItems] = createSignal(baseItems)
-
   return (
-    <Space direction="vertical" style={{ width: '100%' }}>
-      <Button
-        onClick={() =>
-          setItems((previous) => [
-            ...previous,
-            {
-              key: Date.now(),
-              data: {
-                title: `New ${previous.length + 1}`,
-                height: 80 + ((previous.length * 37) % 140),
-                background: 'var(--docs-primary-soft)',
-              },
-            },
-          ])
-        }
-      >
-        Add item
-      </Button>
-      <Masonry
-        fresh
-        columns={{ xs: 1, md: 3 }}
-        gutter={16}
-        items={items()}
-        itemRender={(item) => (
-          <DemoCard
-            title={item.data.title}
-            height={item.data.height}
-            background={item.data.background}
-          />
-        )}
-      />
-    </Space>
+    <Flex vertical gap={24}>
+      <div>
+        <Typography.Title level={4}>classNames and styles Object</Typography.Title>
+        <Masonry columns={4} gutter={16} items={items} {...sharedProps} styles={styles} />
+      </div>
+      <Divider />
+      <div>
+        <Typography.Title level={4}>classNames and styles Function</Typography.Title>
+        <Masonry
+          columns={3}
+          gutter={12}
+          items={items.slice(0, 6)}
+          {...sharedProps}
+          styles={stylesFn}
+        />
+      </div>
+    </Flex>
   )
 }
 
 export default Demo5
-```
-
-:::
-
-### Semantic styles
-
-:::preview
-
-<MasonryDemo006 />
-
-export const MasonryDemo006 = (() => {
-  const items = [
-      { key: 1, data: { title: 'Semantic A', height: 100 } },
-      { key: 2, data: { title: 'Semantic B', height: 140 } },
-      { key: 3, data: { title: 'Semantic C', height: 110 } },
-  ];
-  const Demo6 = function () {
-      return (<Masonry columns={3} gutter={12} rootClass="semantic-masonry" classNames={{ root: 'semantic-root', item: 'semantic-item' }} styles={({ props }) => ({
-              root: { padding: props.columns === 3 ? '8px' : '0' },
-              item: { outline: '1px dashed var(--docs-border)' },
-          })} items={items} itemRender={(item) => (<Card title={item.data.title}>
-            <div style={{ height: `${item.data.height}px` }}>Stable semantic slots.</div>
-          </Card>)}/>);
-  };
-
-return Demo6
-})()
-
----
-
-```tsx
-import { Card, Masonry } from '@ant-design-solid/core'
-
-const items = [
-  { key: 1, data: { title: 'Semantic A', height: 100 } },
-  { key: 2, data: { title: 'Semantic B', height: 140 } },
-  { key: 3, data: { title: 'Semantic C', height: 110 } },
-]
-
-const Demo6 = function () {
-  return (
-    <Masonry
-      columns={3}
-      gutter={12}
-      rootClass="semantic-masonry"
-      classNames={{ root: 'semantic-root', item: 'semantic-item' }}
-      styles={({ props }) => ({
-        root: { padding: props.columns === 3 ? '8px' : '0' },
-        item: { outline: '1px dashed var(--docs-border)' },
-      })}
-      items={items}
-      itemRender={(item) => (
-        <Card title={item.data.title}>
-          <div style={{ height: `${item.data.height}px` }}>Stable semantic slots.</div>
-        </Card>
-      )}
-    />
-  )
-}
-
-export default Demo6
-```
-
-:::
-
-### Layout change
-
-:::preview
-
-<MasonryDemo007 />
-
-export const MasonryDemo007 = (() => {
-  const items = [
-      { key: 'a', data: { title: 'A', height: 120 } },
-      { key: 'b', data: { title: 'B', height: 170 } },
-      { key: 'c', data: { title: 'C', height: 100 } },
-  ];
-  const Demo7 = function () {
-      const [summary, setSummary] = createSignal('');
-      return (<Space direction="vertical" style={{ width: '100%' }}>
-        <Masonry columns={2} gutter={12} items={items} onLayoutChange={(layout) => setSummary(layout.map((item) => `${item.key}:${item.column + 1}`).join(', '))} itemRender={(item) => (<Card title={item.data.title}>
-              <div style={{ height: `${item.data.height}px` }}>Column {item.column + 1}</div>
-            </Card>)}/>
-        <div>{summary()}</div>
-      </Space>);
-  };
-
-return Demo7
-})()
-
----
-
-```tsx
-import { createSignal } from 'solid-js'
-import { Card, Masonry, Space } from '@ant-design-solid/core'
-
-const items = [
-  { key: 'a', data: { title: 'A', height: 120 } },
-  { key: 'b', data: { title: 'B', height: 170 } },
-  { key: 'c', data: { title: 'C', height: 100 } },
-]
-
-const Demo7 = function () {
-  const [summary, setSummary] = createSignal('')
-
-  return (
-    <Space direction="vertical" style={{ width: '100%' }}>
-      <Masonry
-        columns={2}
-        gutter={12}
-        items={items}
-        onLayoutChange={(layout) =>
-          setSummary(layout.map((item) => `${item.key}:${item.column + 1}`).join(', '))
-        }
-        itemRender={(item) => (
-          <Card title={item.data.title}>
-            <div style={{ height: `${item.data.height}px` }}>Column {item.column + 1}</div>
-          </Card>
-        )}
-      />
-      <div>{summary()}</div>
-    </Space>
-  )
-}
-
-export default Demo7
 ```
 
 :::
@@ -650,28 +533,30 @@ export default Demo7
 | `rootClass`          | Additional root class using Solid naming.                                     | `string`                                                                           | `-`     |
 | `rootClassName`      | Compatibility alias for root class. Prefer `rootClass` in Solid code.         | `string`                                                                           | `-`     |
 | `style`              | Inline root style.                                                            | `JSX.CSSProperties \| string`                                                      | `-`     |
-| `columns`            | Column count or responsive breakpoint map.                                    | `number \| Partial<Record<MasonryBreakpoint, number>>`                             | `3`     |
-| `gutter`             | Item spacing. Supports one gap or `[horizontal, vertical]`.                   | `MasonryGap \| [MasonryGap, MasonryGap]`                                           | `0`     |
-| `items`              | Data items to render.                                                         | `MasonryItem<T>[]`                                                                 | `-`     |
-| `itemRender`         | Render function for each data item.                                           | `(item: MasonryRenderItem<T>) => JSX.Element`                                      | `-`     |
+| `columns`            | Number of columns, can be a fixed value or a responsive configuration.        | `number \| Partial<Record<MasonryBreakpoint, number>>`                             | `3`     |
+| `gutter`             | Spacing, fixed, responsive, or `[horizontal, vertical]`.                      | `MasonryGap \| [MasonryGap, MasonryGap]`                                           | `0`     |
+| `items`              | Masonry items.                                                                | `MasonryItem<T>[]`                                                                 | `-`     |
+| `itemRender`         | Custom item rendering function.                                               | `(item: MasonryRenderItem<T>) => JSX.Element`                                      | `-`     |
 | `children`           | Manual masonry children used when items are not provided.                     | `JSX.Element`                                                                      | `-`     |
-| `fresh`              | Continuously monitors item size changes.                                      | `boolean`                                                                          | `false` |
+| `fresh`              | Whether to continuously monitor the size changes of child items.              | `boolean`                                                                          | `false` |
 | `classNames`         | Semantic class names for `root` and `item`. Supports object or function.      | `MasonrySemanticClassNames \| ((info: { props }) => MasonrySemanticClassNamesMap)` | `-`     |
 | `styles`             | Semantic inline styles for `root` and `item`. Supports object or function.    | `MasonrySemanticStyles \| ((info: { props }) => MasonrySemanticStylesMap)`         | `-`     |
-| `onLayoutChange`     | Called when item column order changes.                                        | `(info: Array<{ key: MasonryItemKey; column: number }>) => void`                   | `-`     |
+| `onLayoutChange`     | Callback for column sorting changes.                                          | `(info: Array<{ key: MasonryItemKey; column: number }>) => void`                   | `-`     |
 | `onLayoutInfoChange` | Called with columns, column heights, and item placement after layout changes. | `(info: MasonryLayoutInfo<T>) => void`                                             | `-`     |
 
 ### MasonryItem
 
-| Property   | Description                                        | Type               | Default |
-| ---------- | -------------------------------------------------- | ------------------ | ------- |
-| `key`      | Unique item key.                                   | `string \| number` | `-`     |
-| `data`     | Custom data passed through to `itemRender`.        | `T`                | `-`     |
-| `children` | Custom item content. Takes precedence over render. | `JSX.Element`      | `-`     |
-| `column`   | Requested zero-based column index.                 | `number`           | `-`     |
-| `height`   | Optional item height metadata.                     | `number`           | `-`     |
+| Property   | Description                                           | Type               | Default |
+| ---------- | ----------------------------------------------------- | ------------------ | ------- |
+| `key`      | Unique identifier for the item.                       | `string \| number` | `-`     |
+| `data`     | Custom data storage.                                  | `T`                | `-`     |
+| `children` | Custom display content, takes precedence over render. | `JSX.Element`      | `-`     |
+| `column`   | Specifies the column to which the item belongs.       | `number`           | `-`     |
+| `height`   | Height of the item.                                   | `number`           | `-`     |
 
 ### Gap
+
+`Gap` represents the spacing between items. It can either be a fixed value or a responsive configuration.
 
 ```ts
 type MasonryGap =
