@@ -349,7 +349,11 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Message', token).contentBg).toBe(token.colorBgElevated)
     expect(getComponentToken('Message', token).zIndexPopup).toBe(2010)
     expect(getComponentToken('Notification', token).width).toBe(420)
-    expect(getComponentToken('Notification', token).bg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Notification', token).zIndexPopup).toBe(2050)
+    expect(getComponentToken('Notification', token).notificationBg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Notification', token).notificationProgressBg).toBe(
+      `linear-gradient(90deg, ${token.colorPrimaryBorderHover}, ${token.colorPrimary})`,
+    )
     expect(getComponentToken('Modal', token).titleFontSize).toBe(18)
     expect(getComponentToken('Modal', token).maskBg).toBe('rgba(0, 0, 0, 0.45)')
     expect(getComponentToken('Drawer', token).zIndexPopup).toBe(1000)
@@ -487,5 +491,9 @@ describe('@ant-design-solid/theme', () => {
     expect(getComponentToken('Tag', token).successBg).toBe('rgba(82, 196, 26, 0.12)')
     expect(getComponentToken('Tag', token).successBorderColor).toBe('rgba(82, 196, 26, 0.35)')
     expect(getComponentToken('Tree', token).nodeSelectedBg).toBe('rgba(22, 119, 255, 0.2)')
+    expect(getComponentToken('Notification', token).notificationBg).toBe(token.colorBgElevated)
+    expect(getComponentToken('Notification', token).notificationProgressBg).toBe(
+      `linear-gradient(90deg, ${token.colorPrimaryBorderHover}, ${token.colorPrimary})`,
+    )
   })
 })

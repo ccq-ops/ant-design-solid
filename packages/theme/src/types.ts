@@ -623,7 +623,7 @@ export interface MessageComponentToken extends ComponentTokenBase {
 export interface NotificationComponentToken extends ComponentTokenBase {
   zIndexPopup: number
   width: number | string
-  progressBg: string
+  notificationProgressBg: string
   colorSuccessBg?: string
   colorErrorBg?: string
   colorInfoBg?: string

@@ -72,7 +72,7 @@ export function useNotificationStyle(prefixCls: string) {
           bottom: 0,
           height: nt.notificationProgressHeight,
           width: '100%',
-          background: nt.progressBg,
+          background: nt.notificationProgressBg,
           'transform-origin': 'left center',
           animation: `${prefixCls}-progress linear forwards`,
         },

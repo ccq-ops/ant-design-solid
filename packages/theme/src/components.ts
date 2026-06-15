@@ -366,9 +366,9 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       zIndexPopup: token.zIndexPopupBase + 1010,
     },
     Notification: {
-      zIndexPopup: token.zIndexPopupBase + 1060,
+      zIndexPopup: token.zIndexPopupBase + 1050,
       width: 384,
-      progressBg: `linear-gradient(90deg, ${token.colorPrimaryBorderHover}, ${token.colorPrimary})`,
+      notificationProgressBg: `linear-gradient(90deg, ${token.colorPrimaryBorderHover}, ${token.colorPrimary})`,
       colorSuccessBg: undefined,
       colorErrorBg: undefined,
       colorInfoBg: undefined,
