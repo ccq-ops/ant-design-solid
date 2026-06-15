@@ -25,6 +25,28 @@ function svgToDataUrl(svg: string): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
 }
 
+function normalizeHexPair(value: string): string {
+  return value.length === 1 ? `${value}${value}` : value
+}
+
+function setColorAlpha(color: string, alpha: number): string {
+  const hex = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
+  if (hex) {
+    const value = hex[1]
+    const red = normalizeHexPair(value.slice(0, value.length === 3 ? 1 : 2))
+    const green = normalizeHexPair(
+      value.slice(value.length === 3 ? 1 : 2, value.length === 3 ? 2 : 4),
+    )
+    const blue = normalizeHexPair(value.slice(value.length === 3 ? 2 : 4))
+    return `rgba(${Number.parseInt(red, 16)},${Number.parseInt(green, 16)},${Number.parseInt(blue, 16)},${alpha})`
+  }
+
+  return color.replace(/rgba?\(([^)]+)\)/, (_match, channels: string) => {
+    const [red, green, blue] = channels.split(',').map((channel) => channel.trim())
+    return `rgba(${red},${green},${blue},${alpha})`
+  })
+}
+
 function toNumber(value: number | string): number {
   if (typeof value === 'number') return value
   const parsed = Number.parseFloat(value)
@@ -87,14 +109,16 @@ export function Watermark(props: WatermarkProps) {
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-watermark`
   const [, hashId] = useWatermarkStyle(prefixCls())
+  const token = config.token
   const contentLines = () => normalizeContent(local.content)
   const rotate = () => local.rotate ?? -22
   const zIndex = () => local.zIndex ?? 999
   const gap = () => local.gap ?? [100, 100]
   const offset = () => local.offset ?? [gap()[0] / 2, gap()[1] / 2]
   const inherit = () => local.inherit ?? true
+  const defaultFontColor = () => setColorAlpha(token().colorText, 0.15)
   const font = () => ({
-    color: 'rgba(0, 0, 0, 0.15)',
+    color: defaultFontColor(),
     fontSize: 16,
     fontWeight: 'normal' as const,
     fontFamily: 'sans-serif',

@@ -10,7 +10,7 @@ import {
   useContext,
 } from 'solid-js'
 import type { Accessor, JSX } from 'solid-js'
-import { darkAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
+import { darkAlgorithm, defaultAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
 
 export type DocsThemeMode = 'light' | 'dark'
 
@@ -30,7 +30,7 @@ function getCurrentMode(): DocsThemeMode {
 }
 
 function themeConfigForMode(mode: DocsThemeMode): ThemeConfig {
-  if (mode === 'light') return {}
+  if (mode === 'light') return { algorithm: defaultAlgorithm }
 
   return {
     algorithm: darkAlgorithm,

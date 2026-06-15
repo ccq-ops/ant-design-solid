@@ -1,5 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
+import { darkAlgorithm } from '@ant-design-solid/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Watermark, useWatermarkPanelRef } from '../index'
@@ -84,6 +85,69 @@ describe('Watermark', () => {
     const background = decodeURIComponent(overlay.style.backgroundImage)
     expect(background).toContain('font-size="18px"')
     expect(background).toContain('text-anchor="start"')
+  })
+
+  it('uses a theme-aware default text color in dark theme', () => {
+    const result = render(() => (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <Watermark content="Confidential" />
+      </ConfigProvider>
+    ))
+
+    const overlay = result.container.querySelector('.ads-watermark-watermark') as HTMLElement
+    expect(decodeURIComponent(overlay.style.backgroundImage)).toContain(
+      'fill="rgba(255,255,255,0.15)"',
+    )
+  })
+
+  it('refreshes the generated text color when switching from dark theme to light theme', async () => {
+    function Demo() {
+      const [dark, setDark] = createSignal(true)
+
+      return (
+        <ConfigProvider theme={dark() ? { algorithm: darkAlgorithm } : {}}>
+          <button onClick={() => setDark(false)}>light</button>
+          <Watermark content="Confidential" />
+        </ConfigProvider>
+      )
+    }
+
+    const result = render(() => <Demo />)
+    const overlay = result.container.querySelector('.ads-watermark-watermark') as HTMLElement
+    expect(decodeURIComponent(overlay.style.backgroundImage)).toContain(
+      'fill="rgba(255,255,255,0.15)"',
+    )
+
+    result.getByText('light').click()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(decodeURIComponent(overlay.style.backgroundImage)).toContain('fill="rgba(0,0,0,0.15)"')
+  })
+
+  it('keeps custom font color when dark theme is active', () => {
+    const result = render(() => (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
+        <Watermark content="Confidential" font={{ color: 'rgba(22, 119, 255, 0.18)' }} />
+      </ConfigProvider>
+    ))
+
+    const overlay = result.container.querySelector('.ads-watermark-watermark') as HTMLElement
+    expect(decodeURIComponent(overlay.style.backgroundImage)).toContain(
+      'fill="rgba(22, 119, 255, 0.18)"',
+    )
+  })
+
+  it('keeps the default watermark opacity when the text token is a hex color', () => {
+    const result = render(() => (
+      <ConfigProvider theme={{ token: { colorText: '#123456' } }}>
+        <Watermark content="Confidential" />
+      </ConfigProvider>
+    ))
+
+    const overlay = result.container.querySelector('.ads-watermark-watermark') as HTMLElement
+    expect(decodeURIComponent(overlay.style.backgroundImage)).toContain(
+      'fill="rgba(18,52,86,0.15)"',
+    )
   })
 
   it('falls back to content when an image watermark fails to load', async () => {

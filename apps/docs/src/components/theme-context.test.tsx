@@ -68,6 +68,46 @@ describe('DocsThemeProvider', () => {
     expect(toggle).toHaveAttribute('data-elevated', '#1f1f1f')
   })
 
+  it('toggles back to light mode without inheriting the previous dark algorithm', async () => {
+    const result = render(() => (
+      <DocsThemeProvider>
+        <ThemeProbe />
+      </DocsThemeProvider>
+    ))
+    const toggle = result.getByRole('button', { name: 'Toggle' })
+
+    toggle.click()
+    await Promise.resolve()
+    toggle.click()
+    await Promise.resolve()
+
+    expect(toggle).toHaveAttribute('data-mode', 'light')
+    expect(toggle).toHaveAttribute('data-background', '#fff')
+    expect(toggle).toHaveAttribute('data-text', '#000')
+    expect(toggle).toHaveAttribute('data-container', '#ffffff')
+  })
+
+  it('syncs external SolidBase light theme changes back to light tokens', async () => {
+    document.documentElement.dataset.theme = 'dark'
+
+    const result = render(() => (
+      <DocsThemeProvider>
+        <ThemeProbe />
+      </DocsThemeProvider>
+    ))
+    const toggle = result.getByRole('button', { name: 'Toggle' })
+
+    expect(toggle).toHaveAttribute('data-mode', 'dark')
+
+    document.documentElement.dataset.theme = 'slight'
+    await Promise.resolve()
+
+    expect(toggle).toHaveAttribute('data-mode', 'light')
+    expect(toggle).toHaveAttribute('data-background', '#fff')
+    expect(toggle).toHaveAttribute('data-text', '#000')
+    expect(toggle).toHaveAttribute('data-container', '#ffffff')
+  })
+
   it('uses the SolidBase dark theme as the initial mode', () => {
     document.documentElement.dataset.theme = 'dark'
 
