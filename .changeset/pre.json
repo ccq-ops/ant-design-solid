@@ -1,0 +1,12 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@ant-design-solid/docs": "0.0.0",
+    "@ant-design-solid/core": "0.0.0",
+    "@ant-design-solid/cssinjs": "0.0.0",
+    "@ant-design-solid/icons": "0.0.0",
+    "@ant-design-solid/theme": "0.0.0"
+  },
+  "changesets": []
+}
