@@ -22,4 +22,9 @@ describe('float button docs theme colors', () => {
 
     expect(violations).toEqual([])
   })
+
+  it('keeps floating examples positioned within their demo containers', () => {
+    expect(source).toContain("floatButtonClass = 'absolute! right-6! bottom-6!'")
+    expect(source).toContain("floatButtonSecondClass = 'absolute! right-[88px]! bottom-6!'")
+  })
 })

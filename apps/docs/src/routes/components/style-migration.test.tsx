@@ -69,7 +69,7 @@ describe('component docs Tailwind migration', () => {
 
   it('uses Tailwind for float button demo boxes and static positioning', () => {
     expect(floatButtonSource).toContain('const floatButtonBoxClass')
-    expect(floatButtonSource).toContain('absolute right-6 bottom-6')
+    expect(floatButtonSource).toContain('absolute! right-6! bottom-6!')
     expect(floatButtonSource).toContain('h-[220px] overflow-auto p-4')
     expect(floatButtonSource).not.toContain('floatButtonBoxStyle')
     expect(floatButtonSource).not.toContain(
