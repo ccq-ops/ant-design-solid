@@ -200,7 +200,22 @@ describe('Timeline', () => {
     expect(styles).toContain('top:17px;')
     expect(styles).toContain('bottom:-5px;')
     expect(styles).toMatch(
+      /\.ads-timeline\.ads-timeline-horizontal \.ads-timeline-item-content\{(?=[^}]*justify-self:start;)(?=[^}]*transform:translateX\(calc\(5px - 50%\)\);)[^}]*\}/,
+    )
+    expect(styles).toMatch(
       /\.ads-timeline\.ads-timeline-horizontal \.ads-timeline-item-rail\{(?=[^}]*display:block;)(?=[^}]*position:absolute;)[^}]*\}/,
+    )
+    expect(styles).toContain(
+      '.ads-timeline.ads-timeline-horizontal:not(.ads-timeline-layout-alternate) .ads-timeline-item-placement-end',
+    )
+    expect(styles).toMatch(
+      /\.ads-timeline\.ads-timeline-layout-alternate\.ads-timeline-horizontal \.ads-timeline-item\{[^}]*min-height:70px;/,
+    )
+    expect(styles).toContain(
+      '.ads-timeline.ads-timeline-layout-alternate.ads-timeline-horizontal .ads-timeline-item-placement-start .ads-timeline-item-content',
+    )
+    expect(styles).toContain(
+      '.ads-timeline.ads-timeline-layout-alternate.ads-timeline-horizontal .ads-timeline-item-placement-end .ads-timeline-item-content',
     )
     expect(styles).toContain('.ads-timeline-layout-alternate.ads-timeline-vertical')
     expect(styles).toContain('left:50%;')

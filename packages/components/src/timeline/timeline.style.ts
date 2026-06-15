@@ -12,6 +12,8 @@ export function useTimelineStyle(prefixCls: string) {
       const iconColor = `var(--${prefixCls}-item-icon-color, ${t.colorPrimary})`
       const iconColumn = dotSize + t.marginXS
       const contentGap = t.margin
+      const textLineHeight = Math.round(t.fontSize * t.lineHeight)
+      const horizontalAlternateHeight = dotSize + (textLineHeight + t.marginXS) * 2
 
       return {
         [`.${prefixCls}`]: {
@@ -45,9 +47,16 @@ export function useTimelineStyle(prefixCls: string) {
           gap: 0,
         },
         [`.${prefixCls}.${prefixCls}-horizontal .${prefixCls}-item`]: {
+          display: 'grid',
+          'grid-template-columns': 'minmax(0, 1fr)',
+          'grid-template-rows': `${dotSize}px auto`,
           flex: '1 1 0',
           'min-width': 0,
           'padding-inline-end': `${t.padding}px`,
+        },
+        [`.${prefixCls}.${prefixCls}-horizontal .${prefixCls}-item-container`]: {
+          'grid-column': 1,
+          'grid-row': 1,
         },
         [`.${prefixCls} .${prefixCls}-item-container`]: {
           display: 'block',
@@ -169,9 +178,95 @@ export function useTimelineStyle(prefixCls: string) {
           'justify-self': 'start',
         },
         [`.${prefixCls}.${prefixCls}-horizontal .${prefixCls}-item-content`]: {
-          'grid-column': '2 / span 1',
+          'box-sizing': 'border-box',
+          'grid-column': 1,
           'grid-row': 2,
+          'justify-self': 'start',
+          width: 'max-content',
+          'max-width': '100%',
+          'padding-inline': `${contentGap / 2}px`,
+          transform: `translateX(calc(${dotSize / 2}px - 50%))`,
+          'text-align': 'center',
         },
+        [`.${prefixCls}.${prefixCls}-horizontal:not(.${prefixCls}-layout-alternate) .${prefixCls}-item-placement-end`]:
+          {
+            'grid-template-rows': `auto ${dotSize}px`,
+          },
+        [`.${prefixCls}.${prefixCls}-horizontal:not(.${prefixCls}-layout-alternate) .${prefixCls}-item-placement-end .${prefixCls}-item-rail`]:
+          {
+            top: `${textLineHeight + dotSize / 2}px`,
+          },
+        [`.${prefixCls}.${prefixCls}-horizontal:not(.${prefixCls}-layout-alternate) .${prefixCls}-item-placement-end .${prefixCls}-item-container`]:
+          {
+            'grid-row': 2,
+          },
+        [`.${prefixCls}.${prefixCls}-horizontal:not(.${prefixCls}-layout-alternate) .${prefixCls}-item-placement-end .${prefixCls}-item-title`]:
+          {
+            'grid-row': 1,
+          },
+        [`.${prefixCls}.${prefixCls}-horizontal:not(.${prefixCls}-layout-alternate) .${prefixCls}-item-placement-end .${prefixCls}-item-icon`]:
+          {
+            'grid-row': 1,
+          },
+        [`.${prefixCls}.${prefixCls}-horizontal:not(.${prefixCls}-layout-alternate) .${prefixCls}-item-placement-end .${prefixCls}-item-content`]:
+          {
+            'grid-row': 1,
+            'align-self': 'end',
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal`]: {
+          'align-items': 'stretch',
+        },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item`]:
+          {
+            'grid-template-rows': `${textLineHeight}px ${dotSize}px ${textLineHeight}px`,
+            'row-gap': `${t.marginXS}px`,
+            'min-height': `${horizontalAlternateHeight}px`,
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-container`]:
+          {
+            'grid-row': 2,
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-section`]:
+          {
+            'grid-template-rows': `${dotSize}px`,
+            'align-items': 'center',
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-title`]:
+          {
+            'grid-row': 1,
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-icon`]:
+          {
+            'grid-row': 1,
+            'align-self': 'center',
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-content`]:
+          {
+            'grid-row': 3,
+            'align-self': 'start',
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-rail`]:
+          {
+            top: `${textLineHeight + t.marginXS + dotSize / 2}px`,
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-placement-start .${prefixCls}-item-title`]:
+          {
+            'grid-row': 1,
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-placement-start .${prefixCls}-item-content`]:
+          {
+            'grid-row': 3,
+            'align-self': 'start',
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-placement-end .${prefixCls}-item-title`]:
+          {
+            'grid-row': 1,
+          },
+        [`.${prefixCls}.${prefixCls}-layout-alternate.${prefixCls}-horizontal .${prefixCls}-item-placement-end .${prefixCls}-item-content`]:
+          {
+            'grid-row': 1,
+            'align-self': 'end',
+          },
         [`.${prefixCls}.${prefixCls}-dot .${prefixCls}-item-icon`]: {
           position: 'relative',
           'z-index': 1,
