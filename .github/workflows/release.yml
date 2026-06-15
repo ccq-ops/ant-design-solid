@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - next
+      - alpha
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -11,6 +13,9 @@ permissions:
   contents: write
   pull-requests: write
   id-token: write
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
 
 jobs:
   release:
@@ -34,28 +39,44 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install --frozen-lockfile
+        run: corepack pnpm install --frozen-lockfile
 
       - name: Lint
-        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
+        run: corepack pnpm lint
 
       - name: Check formatting
-        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
+        run: corepack pnpm format:check
 
       - name: Typecheck
-        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
+        run: corepack pnpm -r typecheck
 
       - name: Test
-        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test
+        run: corepack pnpm -r test
 
       - name: Build
-        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
+        run: corepack pnpm -r build
+
+      - name: Determine release channel
+        id: release-channel
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "npm-tag=latest" >> "$GITHUB_OUTPUT"
+            echo "pr-title=Version Packages" >> "$GITHUB_OUTPUT"
+          elif [ "${GITHUB_REF_NAME}" = "alpha" ]; then
+            echo "npm-tag=alpha" >> "$GITHUB_OUTPUT"
+            echo "pr-title=Version Packages (alpha)" >> "$GITHUB_OUTPUT"
+          else
+            echo "npm-tag=next" >> "$GITHUB_OUTPUT"
+            echo "pr-title=Version Packages (next)" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Create release PR or publish
         uses: changesets/action@v1
         with:
-          version: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm version-packages
-          publish: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm release
+          branch: ${{ github.ref_name }}
+          title: ${{ steps.release-channel.outputs.pr-title }}
+          version: corepack pnpm version-packages
+          publish: corepack pnpm release --tag ${{ steps.release-channel.outputs.npm-tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
