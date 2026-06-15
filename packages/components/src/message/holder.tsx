@@ -213,24 +213,21 @@ export function mountMessageHolder(props: MessageHolderProps) {
   const container = document.createElement('div')
   const parent = props.config?.().getContainer?.() ?? document.body
   parent.appendChild(container)
-  const dispose = render(
-    () => {
-      const [globalVersion, setGlobalVersion] = createSignal(0)
-      const unsubscribe = subscribeGlobalConfig(() => setGlobalVersion((value) => value + 1))
-      onCleanup(unsubscribe)
-      const globalConfig = () => {
-        globalVersion()
-        return getGlobalConfig()
-      }
-      const holder = (
-        <ConfigProvider theme={globalConfig().theme}>
-          <MessageHolder {...props} />
-        </ConfigProvider>
-      )
-      return globalConfig().holderRender?.(holder) ?? holder
-    },
-    container,
-  )
+  const dispose = render(() => {
+    const [globalVersion, setGlobalVersion] = createSignal(0)
+    const unsubscribe = subscribeGlobalConfig(() => setGlobalVersion((value) => value + 1))
+    onCleanup(unsubscribe)
+    const globalConfig = () => {
+      globalVersion()
+      return getGlobalConfig()
+    }
+    const holder = (
+      <ConfigProvider theme={globalConfig().theme}>
+        <MessageHolder {...props} />
+      </ConfigProvider>
+    )
+    return globalConfig().holderRender?.(holder) ?? holder
+  }, container)
   return () => {
     dispose()
     container.remove()

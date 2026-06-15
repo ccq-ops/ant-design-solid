@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
+
+      - name: Check formatting
+        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
+
+      - name: Typecheck
+        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
+
+      - name: Test
+        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test
+
+      - name: Build
+        run: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
+
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          version: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm version-packages
+          publish: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

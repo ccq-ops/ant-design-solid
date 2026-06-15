@@ -1,6 +1,11 @@
 {
   "name": "@ant-design-solid/cssinjs",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccq-ops/ant-design-solid.git",
+    "directory": "packages/cssinjs"
+  },
   "files": [
     "dist"
   ],
@@ -14,6 +19,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",

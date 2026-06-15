@@ -1,6 +1,11 @@
 {
   "name": "@ant-design-solid/icons",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccq-ops/ant-design-solid.git",
+    "directory": "packages/icons"
+  },
   "files": [
     "dist"
   ],
@@ -19,6 +24,9 @@
       "import": "./dist/icons/*.js",
       "require": "./dist/icons/*.cjs"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly && node scripts/fix-declaration-extensions.mjs",

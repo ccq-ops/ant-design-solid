@@ -2,6 +2,10 @@
   "name": "ant-design-solid",
   "version": "0.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccq-ops/ant-design-solid.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @ant-design-solid/docs dev",
@@ -13,9 +17,13 @@
     "lint": "oxlint .",
     "format": "oxfmt --write .",
     "lint:fix": "oxlint . --fix",
-    "format:check": "oxfmt --check ."
+    "format:check": "oxfmt --check .",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@playwright/test": "^1.60.0",
     "@solidjs/testing-library": "latest",
     "@testing-library/jest-dom": "latest",
