@@ -139,7 +139,7 @@ describe('docs theme config', () => {
     }
   })
 
-  it('prefixes theme navigation and sidebar routes for GitHub Pages builds', async () => {
+  it('keeps theme navigation and sidebar routes router-relative for GitHub Pages builds', async () => {
     const previousGithubPages = process.env.GITHUB_PAGES
 
     process.env.GITHUB_PAGES = 'true'
@@ -149,13 +149,13 @@ describe('docs theme config', () => {
 
       expect(freshConfig.docsThemeConfig.nav).toEqual(
         expect.arrayContaining([
-          { text: 'Components', link: '/ant-design-solid/components' },
-          { text: 'Docs', link: '/ant-design-solid/docs/getting-started' },
+          { text: 'Components', link: '/components' },
+          { text: 'Docs', link: '/docs/getting-started' },
         ]),
       )
-      expect(freshConfig.docsThemeConfig.sidebar).toHaveProperty('/ant-design-solid/components')
-      expect(freshConfig.docsThemeConfig.sidebar).toHaveProperty('/ant-design-solid/docs')
-      expect(freshConfig.docsThemeConfig.sidebar?.['/ant-design-solid/components']).toEqual(
+      expect(freshConfig.docsThemeConfig.sidebar).toHaveProperty('/components')
+      expect(freshConfig.docsThemeConfig.sidebar).toHaveProperty('/docs')
+      expect(freshConfig.docsThemeConfig.sidebar?.['/components']).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             title: 'General',
@@ -163,7 +163,7 @@ describe('docs theme config', () => {
           }),
         ]),
       )
-      expect(freshConfig.docsThemeConfig.sidebar?.['/ant-design-solid/docs']).toEqual(
+      expect(freshConfig.docsThemeConfig.sidebar?.['/docs']).toEqual(
         expect.arrayContaining([{ title: 'Getting Started', link: '/getting-started' }]),
       )
     } finally {
