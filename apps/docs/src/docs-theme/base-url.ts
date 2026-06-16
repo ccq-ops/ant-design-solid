@@ -14,18 +14,33 @@ function shouldPrefixUrl(url: string, basePath: string) {
   )
 }
 
-export function withBaseUrl(url: string | undefined, baseUrl: string): string | undefined {
-  const basePath = normalizeBasePath(baseUrl)
-
-  if (!url || !shouldPrefixUrl(url, basePath)) {
+function collapseRepeatedBasePath(url: string, basePath: string) {
+  if (!basePath) {
     return url
   }
 
-  if (url === '/') {
+  const repeatedBasePath = `${basePath}${basePath}/`
+
+  if (url.startsWith(repeatedBasePath)) {
+    return `${basePath}/${url.slice(repeatedBasePath.length)}`
+  }
+
+  return url
+}
+
+export function withBaseUrl(url: string | undefined, baseUrl: string): string | undefined {
+  const basePath = normalizeBasePath(baseUrl)
+  const normalizedUrl = url ? collapseRepeatedBasePath(url, basePath) : url
+
+  if (!normalizedUrl || !shouldPrefixUrl(normalizedUrl, basePath)) {
+    return normalizedUrl
+  }
+
+  if (normalizedUrl === '/') {
     return `${basePath}/`
   }
 
-  return `${basePath}${url}`
+  return `${basePath}${normalizedUrl}`
 }
 
 export function withDocsBase(url: string | undefined): string | undefined {

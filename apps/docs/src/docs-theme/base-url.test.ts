@@ -13,6 +13,9 @@ describe('docs base URL helpers', () => {
     expect(withBaseUrl('/ant-design-solid/components', '/ant-design-solid/')).toBe(
       '/ant-design-solid/components',
     )
+    expect(withBaseUrl('/ant-design-solid/ant-design-solid/components', '/ant-design-solid/')).toBe(
+      '/ant-design-solid/components',
+    )
   })
 
   it('leaves hash, external, protocol-relative, and data URLs unchanged', () => {

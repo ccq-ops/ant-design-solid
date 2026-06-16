@@ -3,6 +3,8 @@ import { dirname, join, parse } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { DefaultThemeConfig } from '@kobalte/solidbase/default-theme'
 
+const docsBasePath = process.env.GITHUB_PAGES === 'true' ? '/ant-design-solid' : ''
+
 export const componentGroups = [
   'General',
   'Layout',
@@ -38,6 +40,18 @@ function titleFromSlug(slug: string) {
 
 function linkFromSlug(slug: string): `/${string}` {
   return `/${slug}`
+}
+
+function withDocsBasePath(path: `/${string}`): `/${string}` {
+  if (!docsBasePath) {
+    return path
+  }
+
+  if (path === '/') {
+    return `${docsBasePath}/`
+  }
+
+  return `${docsBasePath}${path}`
 }
 
 function readFrontmatter(filePath: string) {
@@ -109,12 +123,12 @@ const componentSidebar = [
 
 export const docsThemeConfig = {
   nav: [
-    { text: 'Components', link: '/components' },
-    { text: 'Docs', link: '/docs/getting-started' },
+    { text: 'Components', link: withDocsBasePath('/components') },
+    { text: 'Docs', link: withDocsBasePath('/docs/getting-started') },
   ],
   sidebar: {
-    '/components': componentSidebar,
-    '/docs': [
+    [withDocsBasePath('/components')]: componentSidebar,
+    [withDocsBasePath('/docs')]: [
       { title: 'Getting Started', link: '/getting-started' },
       { title: 'Theming', link: '/theming' },
     ],

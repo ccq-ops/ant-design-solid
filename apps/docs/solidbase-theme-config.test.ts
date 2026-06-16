@@ -110,4 +110,40 @@ describe('docs theme config', () => {
       rmSync(temporaryPage, { force: true })
     }
   })
+
+  it('prefixes theme navigation and sidebar routes for GitHub Pages builds', async () => {
+    const previousGithubPages = process.env.GITHUB_PAGES
+
+    process.env.GITHUB_PAGES = 'true'
+
+    try {
+      const freshConfig = await import('./solidbase-theme-config.ts?github-pages-test')
+
+      expect(freshConfig.docsThemeConfig.nav).toEqual(
+        expect.arrayContaining([
+          { text: 'Components', link: '/ant-design-solid/components' },
+          { text: 'Docs', link: '/ant-design-solid/docs/getting-started' },
+        ]),
+      )
+      expect(freshConfig.docsThemeConfig.sidebar).toHaveProperty('/ant-design-solid/components')
+      expect(freshConfig.docsThemeConfig.sidebar).toHaveProperty('/ant-design-solid/docs')
+      expect(freshConfig.docsThemeConfig.sidebar?.['/ant-design-solid/components']).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            title: 'General',
+            items: expect.arrayContaining([{ title: 'Button', link: '/button' }]),
+          }),
+        ]),
+      )
+      expect(freshConfig.docsThemeConfig.sidebar?.['/ant-design-solid/docs']).toEqual(
+        expect.arrayContaining([{ title: 'Getting Started', link: '/getting-started' }]),
+      )
+    } finally {
+      if (previousGithubPages === undefined) {
+        delete process.env.GITHUB_PAGES
+      } else {
+        process.env.GITHUB_PAGES = previousGithubPages
+      }
+    }
+  })
 })
