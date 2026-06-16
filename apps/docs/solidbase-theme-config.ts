@@ -111,6 +111,7 @@ export const docsThemeConfig = {
   nav: [
     { text: 'Components', link: '/components' },
     { text: 'Docs', link: '/docs/getting-started' },
+    { text: 'GitHub', link: '//github.com/ccq-ops/ant-design-solid' },
   ],
   sidebar: {
     '/components': componentSidebar,

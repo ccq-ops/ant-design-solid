@@ -4,15 +4,10 @@ import { Router } from '@solidjs/router'
 import { FileRoutes } from '@solidjs/start/router'
 import { onCleanup, onMount } from 'solid-js'
 import { DocsThemeProvider } from './components/theme-context'
-import { docsRouterBase, withDocsBase } from './docs-theme/base-url'
+import { docsRouterBase, normalizeDocsAnchorElement, withDocsBase } from './docs-theme/base-url'
 
 function normalizeAnchorHref(element: HTMLAnchorElement) {
-  const href = element.getAttribute('href')
-  const nextHref = withDocsBase(href ?? undefined)
-
-  if (nextHref && nextHref !== href) {
-    element.setAttribute('href', nextHref)
-  }
+  normalizeDocsAnchorElement(element)
 }
 
 function normalizeDocumentLinks() {

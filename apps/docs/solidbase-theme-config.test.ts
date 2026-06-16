@@ -30,7 +30,10 @@ describe('docs theme config', () => {
 
     try {
       expect(docsThemeConfig.nav).toEqual(
-        expect.arrayContaining([{ text: 'Components', link: '/components' }]),
+        expect.arrayContaining([
+          { text: 'Components', link: '/components' },
+          { text: 'GitHub', link: '//github.com/ccq-ops/ant-design-solid' },
+        ]),
       )
       expect(componentSidebar?.[0]).toEqual({
         title: 'Overview',

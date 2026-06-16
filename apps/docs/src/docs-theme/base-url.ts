@@ -28,6 +28,10 @@ function collapseRepeatedBasePath(url: string, basePath: string) {
   return url
 }
 
+function isExternalUrl(url: string) {
+  return url.includes('://') || url.startsWith('//')
+}
+
 export function withBaseUrl(url: string | undefined, baseUrl: string): string | undefined {
   const basePath = normalizeBasePath(baseUrl)
   const normalizedUrl = url ? collapseRepeatedBasePath(url, basePath) : url
@@ -45,6 +49,24 @@ export function withBaseUrl(url: string | undefined, baseUrl: string): string | 
 
 export function withDocsBase(url: string | undefined): string | undefined {
   return withBaseUrl(url, import.meta.env.BASE_URL)
+}
+
+export function normalizeAnchorElement(element: HTMLAnchorElement, baseUrl: string) {
+  const href = element.getAttribute('href')
+  const nextHref = withBaseUrl(href ?? undefined, baseUrl)
+
+  if (nextHref && nextHref !== href) {
+    element.setAttribute('href', nextHref)
+  }
+
+  if (nextHref && isExternalUrl(nextHref)) {
+    element.setAttribute('target', '_blank')
+    element.setAttribute('rel', 'noopener noreferrer')
+  }
+}
+
+export function normalizeDocsAnchorElement(element: HTMLAnchorElement) {
+  normalizeAnchorElement(element, import.meta.env.BASE_URL)
 }
 
 export function docsRouterBase(): string | undefined {

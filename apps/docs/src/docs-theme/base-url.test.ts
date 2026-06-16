@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { withBaseUrl, withDocsBase } from './base-url'
+import { normalizeAnchorElement, withBaseUrl, withDocsBase } from './base-url'
 
 describe('docs base URL helpers', () => {
   it('keeps local root-relative links unchanged by default', () => {
@@ -27,5 +27,27 @@ describe('docs base URL helpers', () => {
     expect(withBaseUrl('data:image/svg+xml,abc', '/ant-design-solid/')).toBe(
       'data:image/svg+xml,abc',
     )
+  })
+
+  it('marks external anchors to open in a new tab', () => {
+    const anchor = document.createElement('a')
+    anchor.setAttribute('href', '//github.com/ccq-ops/ant-design-solid')
+
+    normalizeAnchorElement(anchor, '/ant-design-solid/')
+
+    expect(anchor.getAttribute('href')).toBe('//github.com/ccq-ops/ant-design-solid')
+    expect(anchor.getAttribute('target')).toBe('_blank')
+    expect(anchor.getAttribute('rel')).toBe('noopener noreferrer')
+  })
+
+  it('keeps internal anchors in the current tab while prefixing the deployment base', () => {
+    const anchor = document.createElement('a')
+    anchor.setAttribute('href', '/components')
+
+    normalizeAnchorElement(anchor, '/ant-design-solid/')
+
+    expect(anchor.getAttribute('href')).toBe('/ant-design-solid/components')
+    expect(anchor.hasAttribute('target')).toBe(false)
+    expect(anchor.hasAttribute('rel')).toBe(false)
   })
 })
