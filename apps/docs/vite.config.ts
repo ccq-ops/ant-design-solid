@@ -40,6 +40,9 @@ export default defineConfig(({ command }) => {
         '@solid-ant-design/icons': fileURLToPath(
           new URL('../../packages/icons/src', import.meta.url),
         ),
+        '@kobalte/solidbase/mdx': fileURLToPath(
+          new URL('./node_modules/@kobalte/solidbase/dist/mdx.js', import.meta.url),
+        ),
         'solid-motionone': fileURLToPath(
           new URL(
             '../../packages/components/node_modules/solid-motionone/dist/index.js',

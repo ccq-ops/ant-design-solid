@@ -1,26 +1,36 @@
-import fs from 'node:fs'
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Plugin } from 'vite'
 
-const virtualModuleId = 'virtual:components-changelog'
-const resolvedVirtualModuleId = `\0${virtualModuleId}`
+export const componentsChangelogModuleId = 'virtual:components-changelog.mdx'
 
-function defaultChangelogPath() {
-  return fileURLToPath(new URL('../../../packages/components/CHANGELOG.md', import.meta.url))
+const changelogPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../packages/components/CHANGELOG.md',
+)
+const resolvedComponentsChangelogModuleId = `${changelogPath}?components-changelog.mdx`
+
+export function readComponentsChangelog() {
+  return readFileSync(changelogPath, 'utf8')
+    .replace(/^# @solid-ant-design\/core\s*/, '')
+    .trimStart()
 }
 
-export function componentsChangelogPlugin(changelogPath = defaultChangelogPath()): Plugin {
+export function componentsChangelogPlugin(): Plugin {
   return {
-    name: 'docs-components-changelog',
+    name: 'components-changelog',
     resolveId(id) {
-      if (id === virtualModuleId) {
-        return resolvedVirtualModuleId
+      if (id === componentsChangelogModuleId) {
+        return resolvedComponentsChangelogModuleId
       }
     },
     load(id) {
-      if (id !== resolvedVirtualModuleId) return
+      if (id === resolvedComponentsChangelogModuleId) {
+        this.addWatchFile(changelogPath)
 
-      return `export const componentsChangelog = ${JSON.stringify(fs.readFileSync(changelogPath, 'utf8').trim())}`
+        return readComponentsChangelog()
+      }
     },
   }
 }
