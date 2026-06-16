@@ -1,7 +1,71 @@
+---
+title: Getting Started
+---
+
 # Getting Started
 
-Install with pnpm and import components from `@solid-ant-design/core`.
+Ant Design Solid provides Ant Design-inspired components for SolidJS applications. The component package is published as `@solid-ant-design/core` and is designed for Vite, Solid's JSX transform, and token-driven styling.
 
-```tsx pure
-pnpm add @solid-ant-design/core @solid-ant-design/cssinjs solid-js
+## Before You Start
+
+This guide assumes you already have a Solid project. If you are starting from a blank application, create one with Solid's Vite template first.
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm create vite my-app --template solid-ts
+cd my-app
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install
 ```
+
+Ant Design Solid targets modern Solid and the same runtime baseline used by this repository: Node.js 22 or newer and pnpm 11 or newer.
+
+## Installation
+
+Install the component package and Solid peer dependency:
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm add @solid-ant-design/core solid-js
+```
+
+`@solid-ant-design/core` brings the theme, CSS-in-JS runtime, and icons packages with it. You can install those packages directly only when you need to use them without the component package.
+
+## First Example
+
+Import components from `@solid-ant-design/core` and render them like normal Solid components.
+
+```tsx
+import { Button, Space } from '@solid-ant-design/core'
+
+export default function App() {
+  return (
+    <Space>
+      <Button>Default Button</Button>
+      <Button type="primary">Primary Button</Button>
+    </Space>
+  )
+}
+```
+
+## Add Global Configuration
+
+Use `ConfigProvider` near the root of your app when you need shared settings such as theme tokens, component size, disabled state, or a custom class prefix.
+
+```tsx
+import { Button, ConfigProvider, Space } from '@solid-ant-design/core'
+
+export default function App() {
+  return (
+    <ConfigProvider theme={{ token: { colorPrimary: '#1677ff' } }} componentSize="middle">
+      <Space>
+        <Button type="primary">Create</Button>
+        <Button>Cancel</Button>
+      </Space>
+    </ConfigProvider>
+  )
+}
+```
+
+## Next Steps
+
+- Browse [Components](/components) to see available APIs and examples.
+- Read [Theming](/docs/theming) for token customization and dark mode.
+- Check [Changelog](/docs/changelog) before upgrading package versions.

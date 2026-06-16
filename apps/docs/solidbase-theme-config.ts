@@ -117,7 +117,9 @@ export const docsThemeConfig = {
     '/components': componentSidebar,
     '/docs': [
       { title: 'Getting Started', link: '/getting-started' },
+      { title: 'Changelog', link: '/changelog' },
       { title: 'Theming', link: '/theming' },
+      { title: 'Contributing', link: '/contributing' },
     ],
   },
 } satisfies DefaultThemeConfig

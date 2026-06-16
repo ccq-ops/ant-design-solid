@@ -1,0 +1,64 @@
+---
+title: Contributing
+---
+
+# Contributing
+
+Ant Design Solid is maintained as a pnpm workspace. Contributions should keep changes focused, preserve the existing API style, and include tests or examples when behavior changes.
+
+## Development Setup
+
+Use Node.js 22 or newer and pnpm 11 or newer.
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm dev
+```
+
+The docs app runs from the workspace root through the `dev` script. Component docs live in `apps/docs/src/routes/components`, package source lives under `packages`, and shared contribution rules are documented in the repository root.
+
+## Before Opening a Pull Request
+
+Run the same checks used by CI:
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
+```
+
+For smaller documentation-only changes, run the docs package checks while you are iterating:
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
+```
+
+## Changesets
+
+This repository uses Changesets for package versions and changelogs. Add a changeset for changes that affect published packages:
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm changeset
+```
+
+For documentation, tests, CI, or other changes that should not publish a package, add an empty changeset:
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm changeset add --empty
+```
+
+## Pull Request Guidelines
+
+- Keep the pull request scoped to one problem.
+- Add or update tests when behavior changes.
+- Add or update docs when public APIs change.
+- Follow the file naming rules in `AGENTS.md`; TypeScript files under `apps/` and `packages/` must use kebab-case file names.
+- Do not commit generated build output.
+
+## Documentation Guidelines
+
+Component pages should include a short explanation, focused demos, and an API table when the component has public props. Prefer examples that mirror Ant Design usage while staying idiomatic to Solid, including `class`, `classList`, signals, and JSX children.

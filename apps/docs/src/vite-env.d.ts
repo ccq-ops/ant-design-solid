@@ -14,3 +14,7 @@ declare module '*.mdx' {
 declare module 'virtual:docs-playground-registry' {
   export const demoSources: Array<{ id: string; source: string }>
 }
+
+declare module 'virtual:components-changelog' {
+  export const componentsChangelog: string
+}

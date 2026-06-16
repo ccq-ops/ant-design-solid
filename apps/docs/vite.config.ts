@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 import { docsTheme } from './src/docs-theme/theme'
+import { componentsChangelogPlugin } from './components-changelog-plugin'
 import { playgroundRegistryPlugin } from './playground-registry-plugin'
 import { solidbaseDefaultThemeJsx } from './solidbase-default-theme-jsx'
 import { solidbaseDefaultThemePreview } from './solidbase-default-theme-preview'
@@ -32,6 +33,7 @@ export default defineConfig(({ command }) => ({
     }),
     solidbaseDefaultThemeJsx(),
     solidbaseDefaultThemePreview(),
+    componentsChangelogPlugin(),
     playgroundRegistryPlugin(),
     solidStart(solidBase.startConfig({ ssr: docsSsr })),
     command === 'build' && nitro({ prerender: { crawlLinks: true } }),

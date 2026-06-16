@@ -1,0 +1,17 @@
+---
+title: Changelog
+---
+
+import { componentsChangelog } from './components-changelog'
+
+export const ChangelogContent = () => {
+  const source = componentsChangelog.replace(/^# @solid-ant-design\/core\s*/, '').trim()
+
+return <pre class="whitespace-pre-wrap break-words rounded-md border border-[var(--sb-decoration-color)] bg-[var(--sb-code-background-color)] p-4 text-sm leading-6">{source}</pre>
+}
+
+# Changelog
+
+The component package changelog is generated from Changesets and sourced from `packages/components/CHANGELOG.md`.
+
+<ChangelogContent />

@@ -166,9 +166,12 @@ describe('docs theme config', () => {
           }),
         ]),
       )
-      expect(freshConfig.docsThemeConfig.sidebar?.['/docs']).toEqual(
-        expect.arrayContaining([{ title: 'Getting Started', link: '/getting-started' }]),
-      )
+      expect(freshConfig.docsThemeConfig.sidebar?.['/docs']).toEqual([
+        { title: 'Getting Started', link: '/getting-started' },
+        { title: 'Changelog', link: '/changelog' },
+        { title: 'Theming', link: '/theming' },
+        { title: 'Contributing', link: '/contributing' },
+      ])
     } finally {
       if (previousGithubPages === undefined) {
         delete process.env.GITHUB_PAGES

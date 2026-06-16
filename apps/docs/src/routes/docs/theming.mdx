@@ -1,8 +1,28 @@
+---
+title: Theming
+---
+
 import { Button, ConfigProvider, Space } from '@solid-ant-design/core'
+import { darkAlgorithm } from '@solid-ant-design/theme'
 
 # Theming
 
-Use ConfigProvider to override seed tokens and component tokens.
+Ant Design Solid follows Ant Design's token customization model. Put `ConfigProvider` near the root of your app, then pass a `theme` object to adjust seed tokens, derived alias tokens, algorithms, and component tokens.
+
+## Theme Config
+
+`theme` accepts the same high-level shape throughout the component system:
+
+| Property     | Description                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `token`      | Global seed or alias token overrides, such as `colorPrimary`, `borderRadius`, or `fontSize`.                                    |
+| `algorithm`  | Token derivation algorithm. Use `darkAlgorithm` for dark theme derivation or `defaultAlgorithm` to force the default algorithm. |
+| `components` | Component-level token overrides keyed by component name, such as `Button` or `Table`.                                           |
+| `inherit`    | Controls whether a nested provider inherits the parent theme before applying its own overrides.                                 |
+
+## Global Tokens
+
+Global tokens are the fastest way to set brand-level styling. Derived colors, focus shadows, borders, and component states update from the seed token values.
 
 ### Custom primary color
 
@@ -41,3 +61,134 @@ export default Demo1
 ```
 
 :::
+
+## Dark Theme
+
+Use `darkAlgorithm` when the whole subtree should derive dark-mode alias tokens from the same seed values.
+
+:::preview
+
+<ThemingDemo002 />
+
+export const ThemingDemo002 = (() => {
+  const Demo2 = function () {
+    return (
+      <ConfigProvider theme={{ algorithm: darkAlgorithm, token: { colorPrimary: '#69b1ff' } }}>
+        <div class="rounded-md bg-[var(--sb-code-background-color)] p-4">
+          <Space>
+            <Button type="primary">Primary</Button>
+            <Button>Default</Button>
+          </Space>
+        </div>
+      </ConfigProvider>
+    )
+  }
+
+return Demo2
+})()
+
+---
+
+```tsx
+import { Button, ConfigProvider, Space } from '@solid-ant-design/core'
+import { darkAlgorithm } from '@solid-ant-design/theme'
+
+const Demo2 = function () {
+  return (
+    <ConfigProvider theme={{ algorithm: darkAlgorithm, token: { colorPrimary: '#69b1ff' } }}>
+      <Space>
+        <Button type="primary">Primary</Button>
+        <Button>Default</Button>
+      </Space>
+    </ConfigProvider>
+  )
+}
+
+export default Demo2
+```
+
+:::
+
+## Component Tokens
+
+Component tokens let you tune one component without changing the global brand system. Component names use the exported component name, for example `Button`, `Input`, `Menu`, or `Table`.
+
+:::preview
+
+<ThemingDemo003 />
+
+export const ThemingDemo003 = (() => {
+  const Demo3 = function () {
+    return (
+      <ConfigProvider
+        theme={{
+          components: {
+            Button: {
+              borderRadius: 2,
+              primaryShadow: 'none',
+            },
+          },
+        }}
+      >
+        <Space>
+          <Button type="primary">Squared primary</Button>
+          <Button>Default</Button>
+        </Space>
+      </ConfigProvider>
+    )
+  }
+
+return Demo3
+})()
+
+---
+
+```tsx
+import { Button, ConfigProvider, Space } from '@solid-ant-design/core'
+
+const Demo3 = function () {
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Button: {
+            borderRadius: 2,
+            primaryShadow: 'none',
+          },
+        },
+      }}
+    >
+      <Space>
+        <Button type="primary">Squared primary</Button>
+        <Button>Default</Button>
+      </Space>
+    </ConfigProvider>
+  )
+}
+
+export default Demo3
+```
+
+:::
+
+## Nested Themes
+
+Nested providers inherit the parent theme by default. Set `inherit: false` when a subtree should start from the default seed tokens instead.
+
+```tsx
+<ConfigProvider theme={{ token: { colorPrimary: '#722ed1' } }}>
+  <ConfigProvider theme={{ inherit: false, token: { colorPrimary: '#eb2f96' } }}>
+    <Button type="primary">Independent subtree</Button>
+  </ConfigProvider>
+</ConfigProvider>
+```
+
+## Component Defaults
+
+`ConfigProvider` also accepts component configuration props such as `button`, `form`, `modal`, and `table`. Use those for shared defaults that are not design tokens, including default variants, semantic class names, inline styles, icons, and behavior props.
+
+```tsx
+<ConfigProvider button={{ variant: 'outlined' }} form={{ requiredMark: 'optional' }}>
+  <App />
+</ConfigProvider>
+```
