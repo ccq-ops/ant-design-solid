@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
-import { SearchOutlined } from '@ant-design-solid/icons'
+import { SearchOutlined } from '@ant-design-solid/solid-icons'
 import { darkAlgorithm } from '@ant-design-solid/theme'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'

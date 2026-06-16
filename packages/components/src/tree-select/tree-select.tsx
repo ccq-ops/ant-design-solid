@@ -1,4 +1,4 @@
-import { CloseCircleFilled, CloseOutlined, DownOutlined } from '@ant-design-solid/icons'
+import { CloseCircleFilled, CloseOutlined, DownOutlined } from '@ant-design-solid/solid-icons'
 import {
   Show,
   createEffect,

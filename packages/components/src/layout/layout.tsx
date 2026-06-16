@@ -1,6 +1,6 @@
 import { createMemo, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { BarsOutlined, LeftOutlined, RightOutlined } from '@ant-design-solid/icons'
+import { BarsOutlined, LeftOutlined, RightOutlined } from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { LayoutContext, useLayoutContext } from './context'

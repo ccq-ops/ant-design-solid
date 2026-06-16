@@ -1,5 +1,5 @@
 import { Show, createEffect, createRenderEffect, createSignal, onCleanup } from 'solid-js'
-import { CloseOutlined } from '@ant-design-solid/icons'
+import { CloseOutlined } from '@ant-design-solid/solid-icons'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'

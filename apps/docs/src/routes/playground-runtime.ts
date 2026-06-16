@@ -2,7 +2,7 @@ import ts from 'typescript'
 import h from 'solid-js/h'
 import * as solidJs from 'solid-js'
 import * as core from '@ant-design-solid/core'
-import * as icons from '@ant-design-solid/icons'
+import * as icons from '@ant-design-solid/solid-icons'
 import type { Component } from 'solid-js'
 
 type CompileResult = { ok: true; component: Component } | { ok: false; error: string }
@@ -15,7 +15,7 @@ type ImportBinding = {
 
 const moduleScopes: Record<string, Record<string, unknown>> = {
   '@ant-design-solid/core': core,
-  '@ant-design-solid/icons': icons,
+  '@ant-design-solid/solid-icons': icons,
   'solid-js': solidJs,
 }
 

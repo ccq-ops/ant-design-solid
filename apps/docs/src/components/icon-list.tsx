@@ -1,8 +1,8 @@
-import * as Icons from '@ant-design-solid/icons'
+import * as Icons from '@ant-design-solid/solid-icons'
 import { Input, Segmented, useToken } from '@ant-design-solid/core'
 import { For, Show, createMemo, createSignal, type Component, type JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import { CheckOutlined, SearchOutlined, type IconProps } from '@ant-design-solid/icons'
+import { CheckOutlined, SearchOutlined, type IconProps } from '@ant-design-solid/solid-icons'
 
 export type IconCategory = 'Outlined' | 'Filled' | 'TwoTone'
 type IconTheme = IconCategory

@@ -48,7 +48,7 @@ export default defineConfig(({ command }) => ({
       '@ant-design-solid/theme': fileURLToPath(
         new URL('../../packages/theme/src', import.meta.url),
       ),
-      '@ant-design-solid/icons': fileURLToPath(
+      '@ant-design-solid/solid-icons': fileURLToPath(
         new URL('../../packages/icons/src', import.meta.url),
       ),
       'solid-motionone': fileURLToPath(

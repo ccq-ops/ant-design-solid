@@ -9,7 +9,11 @@ import {
 } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic, isServer } from 'solid-js/web'
-import { CalendarOutlined, CloseCircleFilled, SwapRightOutlined } from '@ant-design-solid/icons'
+import {
+  CalendarOutlined,
+  CloseCircleFilled,
+  SwapRightOutlined,
+} from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'

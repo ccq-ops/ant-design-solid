@@ -1,5 +1,5 @@
 import { createSignal, splitProps } from 'solid-js'
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design-solid/icons'
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design-solid/solid-icons'
 import { Input } from './input'
 import type { PasswordProps, VisibilityToggle } from './interface'
 

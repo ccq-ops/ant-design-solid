@@ -2,12 +2,12 @@
   "name": "ant-design-solid",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://ccq-ops.github.io/ant-design-solid",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ccq-ops/ant-design-solid.git"
   },
-  "homepage": "https://ccq-ops.github.io/ant-design-solid",
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @ant-design-solid/docs dev",

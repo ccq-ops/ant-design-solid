@@ -1,5 +1,5 @@
 import { For, Show, createMemo, splitProps } from 'solid-js'
-import { CheckCircleFilled, CloseCircleFilled } from '@ant-design-solid/icons'
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import type {

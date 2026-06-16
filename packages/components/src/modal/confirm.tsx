@@ -4,7 +4,7 @@ import {
   CloseCircleFilled,
   ExclamationCircleFilled,
   InfoCircleFilled,
-} from '@ant-design-solid/icons'
+} from '@ant-design-solid/solid-icons'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'

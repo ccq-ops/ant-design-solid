@@ -4,7 +4,7 @@ import {
   CloseCircleFilled,
   ExclamationCircleFilled,
   LoadingOutlined,
-} from '@ant-design-solid/icons'
+} from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { Tooltip } from '../tooltip'

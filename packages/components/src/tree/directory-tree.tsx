@@ -1,4 +1,4 @@
-import { FileOutlined, FolderOpenOutlined, FolderOutlined } from '@ant-design-solid/icons'
+import { FileOutlined, FolderOpenOutlined, FolderOutlined } from '@ant-design-solid/solid-icons'
 import { createMemo, createSignal, splitProps } from 'solid-js'
 import type { DirectoryTreeProps, TreeDataNode, TreeKey, TreeNodeRenderProps } from './interface'
 import { Tree } from './tree'

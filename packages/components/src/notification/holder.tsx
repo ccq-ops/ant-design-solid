@@ -6,7 +6,7 @@ import {
   CloseOutlined,
   ExclamationCircleFilled,
   InfoCircleFilled,
-} from '@ant-design-solid/icons'
+} from '@ant-design-solid/solid-icons'
 import { ConfigProvider, useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { InternalPortal, canUseDom } from '../shared/portal'

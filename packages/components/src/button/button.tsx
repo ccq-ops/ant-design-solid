@@ -1,5 +1,5 @@
 import { Show, createEffect, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
-import { LoadingOutlined } from '@ant-design-solid/icons'
+import { LoadingOutlined } from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useButtonStyle } from './button.style'

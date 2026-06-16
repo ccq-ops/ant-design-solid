@@ -11,4 +11,4 @@
 - Updated dependencies [8120148]
   - @ant-design-solid/theme@0.1.0
   - @ant-design-solid/cssinjs@0.1.0
-  - @ant-design-solid/icons@0.1.0
+  - @ant-design-solid/solid-icons@0.1.0

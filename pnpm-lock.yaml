@@ -56,6 +56,9 @@ importers:
       '@ant-design-solid/cssinjs':
         specifier: workspace:*
         version: link:../../packages/cssinjs
+      '@ant-design-solid/solid-icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
       '@kobalte/solidbase':
         specifier: ^0.6.3
         version: 0.6.3(@solidjs/start@2.0.0-alpha.3(@testing-library/jest-dom@6.9.1)(crossws@0.4.6(srvx@0.11.16))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.0)))(solid-js@1.9.13)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.0))
@@ -99,7 +102,7 @@ importers:
       '@ant-design-solid/cssinjs':
         specifier: workspace:*
         version: link:../cssinjs
-      '@ant-design-solid/icons':
+      '@ant-design-solid/solid-icons':
         specifier: workspace:*
         version: link:../icons
       '@ant-design-solid/theme':

@@ -23,7 +23,7 @@ import type {
   ModalStyles,
 } from './interface'
 import { useModalStyle } from './modal.style'
-import { CloseOutlined } from '@ant-design-solid/icons'
+import { CloseOutlined } from '@ant-design-solid/solid-icons'
 
 const modalStack: object[] = []
 const modalMotionDuration = 200

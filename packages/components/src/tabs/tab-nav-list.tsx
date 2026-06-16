@@ -1,4 +1,4 @@
-import { CloseOutlined, EllipsisOutlined, PlusSquareOutlined } from '@ant-design-solid/icons'
+import { CloseOutlined, EllipsisOutlined, PlusSquareOutlined } from '@ant-design-solid/solid-icons'
 import { For, Show, createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dropdown } from '../dropdown'

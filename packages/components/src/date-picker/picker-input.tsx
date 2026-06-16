@@ -1,4 +1,4 @@
-import { CalendarOutlined, CloseCircleFilled } from '@ant-design-solid/icons'
+import { CalendarOutlined, CloseCircleFilled } from '@ant-design-solid/solid-icons'
 import { Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import type { dayjs } from './date-utils'

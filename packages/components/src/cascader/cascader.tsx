@@ -9,7 +9,7 @@ import {
 } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
-import { DownOutlined } from '@ant-design-solid/icons'
+import { DownOutlined } from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'
 import { callRef } from '../radio/context'

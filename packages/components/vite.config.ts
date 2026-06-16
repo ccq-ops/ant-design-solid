@@ -8,7 +8,7 @@ export default defineConfig({
     alias: {
       '@ant-design-solid/theme': fileURLToPath(new URL('../theme/src', import.meta.url)),
       '@ant-design-solid/cssinjs': fileURLToPath(new URL('../cssinjs/src', import.meta.url)),
-      '@ant-design-solid/icons': fileURLToPath(new URL('../icons/src', import.meta.url)),
+      '@ant-design-solid/solid-icons': fileURLToPath(new URL('../icons/src', import.meta.url)),
     },
   },
   build: {
@@ -23,7 +23,7 @@ export default defineConfig({
         'solid-js/web',
         '@ant-design-solid/theme',
         '@ant-design-solid/cssinjs',
-        '@ant-design-solid/icons',
+        '@ant-design-solid/solid-icons',
       ],
     },
   },

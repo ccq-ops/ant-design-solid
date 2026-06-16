@@ -4,7 +4,7 @@ import {
   CloseOutlined,
   DownOutlined,
   LoadingOutlined,
-} from '@ant-design-solid/icons'
+} from '@ant-design-solid/solid-icons'
 import {
   For,
   Match,

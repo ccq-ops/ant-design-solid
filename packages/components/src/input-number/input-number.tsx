@@ -1,5 +1,10 @@
 import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
-import { DownOutlined, MinusOutlined, PlusOutlined, UpOutlined } from '@ant-design-solid/icons'
+import {
+  DownOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  UpOutlined,
+} from '@ant-design-solid/solid-icons'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form'

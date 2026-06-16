@@ -1,5 +1,5 @@
 import { createMemo, createSignal, Show, splitProps } from 'solid-js'
-import { CloseCircleFilled } from '@ant-design-solid/icons'
+import { CloseCircleFilled } from '@ant-design-solid/solid-icons'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form/context'
 import { classNames } from '../shared/class-names'

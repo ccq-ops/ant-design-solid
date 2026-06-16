@@ -1,4 +1,4 @@
-import { CloseCircleFilled } from '@ant-design-solid/icons'
+import { CloseCircleFilled } from '@ant-design-solid/solid-icons'
 import { For, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { classNames } from '../shared/class-names'

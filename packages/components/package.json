@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@ant-design-solid/cssinjs": "workspace:*",
-    "@ant-design-solid/icons": "workspace:*",
+    "@ant-design-solid/solid-icons": "workspace:*",
     "@ant-design-solid/theme": "workspace:*",
     "@tanstack/solid-virtual": "^3.13.28",
     "dayjs": "^1.11.13",

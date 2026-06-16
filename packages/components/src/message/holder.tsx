@@ -6,7 +6,7 @@ import {
   ExclamationCircleFilled,
   InfoCircleFilled,
   LoadingOutlined,
-} from '@ant-design-solid/icons'
+} from '@ant-design-solid/solid-icons'
 import { ConfigProvider, useConfig } from '../config-provider'
 import { getGlobalConfig, subscribeGlobalConfig } from '../config-provider/context'
 import { classNames } from '../shared/class-names'
