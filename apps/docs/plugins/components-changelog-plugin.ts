@@ -6,7 +6,7 @@ const virtualModuleId = 'virtual:components-changelog'
 const resolvedVirtualModuleId = `\0${virtualModuleId}`
 
 function defaultChangelogPath() {
-  return fileURLToPath(new URL('../../packages/components/CHANGELOG.md', import.meta.url))
+  return fileURLToPath(new URL('../../../packages/components/CHANGELOG.md', import.meta.url))
 }
 
 export function componentsChangelogPlugin(changelogPath = defaultChangelogPath()): Plugin {
