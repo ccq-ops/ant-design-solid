@@ -42,6 +42,18 @@ function linkFromSlug(slug: string): `/${string}` {
   return `/${slug}`
 }
 
+function withDeployBase(path: `/${string}`): `/${string}` {
+  if (process.env.GITHUB_PAGES !== 'true') {
+    return path
+  }
+
+  if (path === '/') {
+    return '/ant-design-solid/'
+  }
+
+  return `/ant-design-solid${path}`
+}
+
 function readFrontmatter(filePath: string) {
   const source = readFileSync(filePath, 'utf8')
   const match = source.match(/^---\n(?<frontmatter>[\s\S]*?)\n---\n/)
@@ -111,13 +123,13 @@ const componentSidebar = [
 
 export const docsThemeConfig = {
   nav: [
-    { text: 'Components', link: '/components' },
-    { text: 'Docs', link: '/docs/getting-started' },
+    { text: 'Components', link: withDeployBase('/components') },
+    { text: 'Docs', link: withDeployBase('/docs/getting-started') },
     { text: 'GitHub', link: '//github.com/ccq-ops/ant-design-solid' },
   ],
   sidebar: {
-    '/components': componentSidebar,
-    '/docs': [
+    [withDeployBase('/components')]: componentSidebar,
+    [withDeployBase('/docs')]: [
       { title: 'Getting Started', link: '/getting-started' },
       { title: 'Changelog', link: '/changelog' },
       { title: 'Theming', link: '/theming' },
