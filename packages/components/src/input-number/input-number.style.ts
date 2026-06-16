@@ -1,5 +1,5 @@
-import { getComponentToken } from '@ant-design-solid/theme'
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useInputNumberStyle(prefixCls: string) {

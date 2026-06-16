@@ -19,7 +19,7 @@
 - Test: `packages/components/src/table/__tests__/table.test.tsx`
 
 - [x] Write failing tests for group headers, `colSpan`, `rowSpan`, and leaf body rendering.
-- [x] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- table`.
+- [x] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- table`.
 - [x] Add `children?: TableColumn<T>[]` to `TableColumn<T>`.
 - [x] Add helper functions for visible column filtering, max depth, leaf columns, and header rows.
 - [x] Render generated header rows.

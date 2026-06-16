@@ -153,7 +153,7 @@ describe('Icon', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons test -- src/components/icon.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons test -- src/components/icon.test.tsx
 ```
 
 Expected: FAIL with an import/module error for `./icon`.
@@ -279,7 +279,7 @@ export function Icon(props: InternalIconProps) {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons test -- src/components/icon.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons test -- src/components/icon.test.tsx
 ```
 
 Expected: PASS.
@@ -289,7 +289,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons typecheck
 ```
 
 Expected: PASS. If TypeScript rejects `Dynamic` SVG props, replace `renderNode` with `document.createElementNS` is not acceptable; instead keep JSX rendering and narrow props with `as Record<string, unknown>` in the `Dynamic` spread.
@@ -356,7 +356,7 @@ describe('generated icon exports', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons test -- src/icons/search-outlined.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons test -- src/icons/search-outlined.test.tsx
 ```
 
 Expected: FAIL with missing exports such as `SearchOutlined` or missing generated files.
@@ -465,7 +465,7 @@ Expected: command exits with code 0 and prints nothing.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons test -- src/icons/search-outlined.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons test -- src/icons/search-outlined.test.tsx
 ```
 
 Expected: PASS.
@@ -475,7 +475,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons test -- src/components/icon.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons test -- src/components/icon.test.tsx
 ```
 
 Expected: PASS.
@@ -525,7 +525,7 @@ export default defineConfig({
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons typecheck
 ```
 
 Expected: PASS.
@@ -547,7 +547,7 @@ Then rerun typecheck and expect PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/icons build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/icons build
 ```
 
 Expected: PASS and `packages/icons/dist/index.js`, `packages/icons/dist/index.cjs`, and `packages/icons/dist/index.d.ts` exist.

@@ -1,4 +1,4 @@
-# @ant-design-solid/solid-icons
+# @solid-ant-design/icons
 
 ## 0.1.0
 

@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { ConfigProvider, message, useConfig, useToken } from '@ant-design-solid/core'
+import { ConfigProvider, message, useConfig, useToken } from '@solid-ant-design/core'
 import { DocsThemeProvider, useDocsTheme } from './theme-context'
 
 function ThemeProbe() {

@@ -6,7 +6,7 @@
 
 **Architecture:** Extend theme tokens first, then add a small shared placement helper used by portal-based overlays. Implement `Tabs` as a non-overlay controlled/uncontrolled component and `Tooltip`/`Dropdown` as lightweight wrappers that render fixed-position overlays through `InternalPortal` using existing document event helpers.
 
-**Tech Stack:** TypeScript, SolidJS JSX/signals, `@ant-design-solid/cssinjs`, `@ant-design-solid/theme`, Vitest, `@solidjs/testing-library`, pnpm 11, Vite 8, oxlint, oxfmt.
+**Tech Stack:** TypeScript, SolidJS JSX/signals, `@solid-ant-design/cssinjs`, `@solid-ant-design/theme`, Vitest, `@solidjs/testing-library`, pnpm 11, Vite 8, oxlint, oxfmt.
 
 ---
 
@@ -101,7 +101,7 @@ it('derives interaction component token defaults and applies overrides', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test -- --run src/__tests__/theme.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test -- --run src/__tests__/theme.test.ts
 ```
 
 Expected: FAIL because `Tabs`, `Tooltip`, and `Dropdown` are not valid component token keys yet.
@@ -199,7 +199,7 @@ In `packages/theme/src/components.ts`, add these entries to the `defaults` objec
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test -- --run src/__tests__/theme.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test -- --run src/__tests__/theme.test.ts
 ```
 
 Expected: PASS.
@@ -290,7 +290,7 @@ describe('placement helpers', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/shared/__tests__/placement.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/shared/__tests__/placement.test.ts
 ```
 
 Expected: FAIL because `../placement` does not exist.
@@ -368,7 +368,7 @@ export function getDropdownPosition(
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/shared/__tests__/placement.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/shared/__tests__/placement.test.ts
 ```
 
 Expected: PASS.
@@ -482,7 +482,7 @@ describe('Tabs', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/tabs/__tests__/tabs.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/tabs/__tests__/tabs.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/tabs` does not exist.
@@ -493,7 +493,7 @@ Create `packages/components/src/tabs/interface.ts`:
 
 ```ts
 import type { JSX } from 'solid-js'
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 
 export type TabsType = 'line' | 'card'
 export type TabsPosition = 'top' | 'bottom'
@@ -522,8 +522,8 @@ export interface TabsProps extends JSX.HTMLAttributes<HTMLDivElement> {
 Create `packages/components/src/tabs/tabs.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useTabsStyle(prefixCls: string) {
@@ -726,7 +726,7 @@ export * from './tabs'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/tabs/__tests__/tabs.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/tabs/__tests__/tabs.test.tsx
 ```
 
 Expected: PASS.
@@ -854,7 +854,7 @@ describe('Tooltip', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/tooltip/__tests__/tooltip.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/tooltip/__tests__/tooltip.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/tooltip` does not exist.
@@ -889,8 +889,8 @@ export interface TooltipProps extends Omit<JSX.HTMLAttributes<HTMLSpanElement>, 
 Create `packages/components/src/tooltip/tooltip.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useTooltipStyle(prefixCls: string) {
@@ -1061,7 +1061,7 @@ export * from './tooltip'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/tooltip/__tests__/tooltip.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/tooltip/__tests__/tooltip.test.tsx
 ```
 
 Expected: PASS.
@@ -1192,7 +1192,7 @@ describe('Dropdown', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/dropdown/__tests__/dropdown.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/dropdown/__tests__/dropdown.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/dropdown` does not exist.
@@ -1242,8 +1242,8 @@ export interface DropdownProps extends JSX.HTMLAttributes<HTMLSpanElement> {
 Create `packages/components/src/dropdown/dropdown.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useDropdownStyle(prefixCls: string) {
@@ -1436,7 +1436,7 @@ export * from './dropdown'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/dropdown/__tests__/dropdown.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/dropdown/__tests__/dropdown.test.tsx
 ```
 
 Expected: PASS.
@@ -1485,7 +1485,7 @@ In `apps/docs/src/site/nav.ts`, add after `Badge` and before `Alert`:
 Create `apps/docs/src/routes/components/tabs.tsx`:
 
 ```tsx
-import { Tabs } from '@ant-design-solid/core'
+import { Tabs } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 const items = [
@@ -1523,7 +1523,7 @@ export default function TabsPage() {
 Create `apps/docs/src/routes/components/tooltip.tsx`:
 
 ```tsx
-import { Button, Space, Tooltip } from '@ant-design-solid/core'
+import { Button, Space, Tooltip } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function TooltipPage() {
@@ -1580,7 +1580,7 @@ export default function TooltipPage() {
 Create `apps/docs/src/routes/components/dropdown.tsx`:
 
 ```tsx
-import { Button, Dropdown, Space } from '@ant-design-solid/core'
+import { Button, Dropdown, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 const items = [
@@ -1640,9 +1640,9 @@ export default function DropdownPage() {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

@@ -23,12 +23,12 @@ pnpm lint
 
 ## Packages
 
-- `@ant-design-solid/core`
-- `@ant-design-solid/theme`
-- `@ant-design-solid/cssinjs`
-- `@ant-design-solid/icons`
+- `@solid-ant-design/core`
+- `@solid-ant-design/theme`
+- `@solid-ant-design/cssinjs`
+- `@solid-ant-design/icons`
 
-The docs app is kept private in this monorepo as `@ant-design-solid/docs`.
+The docs app is kept private in this monorepo as `@solid-ant-design/docs`.
 
 ## Contributing
 

@@ -6,7 +6,7 @@
 
 **Architecture:** Extend the existing InputNumber interface, component, styles, tests, docs, and theme token map. Keep behavior local to `input-number.tsx`; use existing ConfigProvider token plumbing and existing Solid ref assignment patterns from Slider.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, cssinjs, @ant-design-solid/theme.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, cssinjs, @solid-ant-design/theme.
 
 ---
 

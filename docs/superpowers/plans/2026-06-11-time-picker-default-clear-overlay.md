@@ -22,7 +22,7 @@ Add tests that assert default clear, opt-out, and icon stack structure.
 
 - [ ] **Step 2: Run focused test to verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- time-picker.test.tsx`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- time-picker.test.tsx`
 
 Expected: default clear and stack structure fail before implementation.
 
@@ -58,7 +58,7 @@ Change the `allowClear` default in the TimePicker docs table from `false` to `tr
 
 - [ ] **Step 1: Run focused tests**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- time-picker.test.tsx`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- time-picker.test.tsx`
 
 - [ ] **Step 2: Run AGENTS.md verification**
 

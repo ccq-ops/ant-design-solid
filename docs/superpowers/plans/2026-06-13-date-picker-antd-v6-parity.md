@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the existing Solid-native dayjs DatePicker implementation. Update the public type layer first, then add runtime behavior, then migrate style tokens and docs so the user-facing API and examples match the new contract.
 
-**Tech Stack:** SolidJS, TypeScript, dayjs, Vitest, `@solidjs/testing-library`, `@ant-design-solid/cssinjs`, project theme tokens.
+**Tech Stack:** SolidJS, TypeScript, dayjs, Vitest, `@solidjs/testing-library`, `@solid-ant-design/cssinjs`, project theme tokens.
 
 ---
 
@@ -132,7 +132,7 @@ it('accepts v6 Solid public props and rejects removed compatibility props', () =
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/date-picker-types.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/date-picker-types.test.tsx
 ```
 
 Expected: FAIL because current types still accept removed props, reject `size="medium"`, reject formatter functions inside format arrays, and use the old `previewValue` shape.
@@ -178,7 +178,7 @@ export type SemanticStyles<Slot extends string, Props> =
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/date-picker-types.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/date-picker-types.test.tsx
 ```
 
 Expected: PASS.
@@ -283,7 +283,7 @@ it('formats with formatter functions inside format arrays', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: FAIL because function-form semantic props are not resolved, `size="medium"` has no medium class, and removed alias code still exists.
@@ -328,7 +328,7 @@ When parsing, filter arrays to string entries and object `format` values.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: PASS.
@@ -381,7 +381,7 @@ it('does not render the time panel when multiple is combined with showTime at ru
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/date-picker.test.tsx packages/components/src/date-picker/__tests__/multiple.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/date-picker.test.tsx packages/components/src/date-picker/__tests__/multiple.test.tsx
 ```
 
 Expected: FAIL because default `allowClear` is currently false and `showTime` can render for multiple.
@@ -403,7 +403,7 @@ In `date-picker.tsx`:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/date-picker.test.tsx packages/components/src/date-picker/__tests__/multiple.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/date-picker.test.tsx packages/components/src/date-picker/__tests__/multiple.test.tsx
 ```
 
 Expected: PASS.
@@ -507,7 +507,7 @@ it('passes active partial and from date to RangePicker disabledTime', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/range-picker.test.tsx packages/components/src/date-picker/__tests__/show-time.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/range-picker.test.tsx packages/components/src/date-picker/__tests__/show-time.test.tsx
 ```
 
 Expected: FAIL because object ids, full-range clear, from metadata, disabledTime metadata, default icon separator, and preview disabling are not implemented.
@@ -539,7 +539,7 @@ If `DatePanel` needs active range metadata to compute disabled cells, thread the
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/range-picker.test.tsx packages/components/src/date-picker/__tests__/show-time.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/range-picker.test.tsx packages/components/src/date-picker/__tests__/show-time.test.tsx
 ```
 
 Expected: PASS.
@@ -578,7 +578,7 @@ it('consumes DatePicker component tokens for dimensions and range colors', () =>
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: FAIL if current CSS does not contain the desired token-derived values, or PASS weakly if values are hardcoded. If it passes before implementation, continue and later verify by changing a token in the test to prove token consumption.
@@ -634,7 +634,7 @@ Then assert `width:44px` and `background:#abcdef`.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: PASS.
@@ -686,7 +686,7 @@ Update the DatePicker, RangePicker, ShowTimeOptions, DisabledTimeConfig, Locale,
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
 ```
 
 Expected: PASS.
@@ -702,7 +702,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test packages/components/src/date-picker/__tests__
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test packages/components/src/date-picker/__tests__
 ```
 
 Expected: PASS.

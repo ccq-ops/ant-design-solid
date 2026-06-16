@@ -2,7 +2,7 @@
 
 ## Goal
 
-Bring `@ant-design-solid/core` message API closer to Ant Design's public message API while preserving existing Solid-friendly usage.
+Bring `@solid-ant-design/core` message API closer to Ant Design's public message API while preserving existing Solid-friendly usage.
 
 ## Scope
 

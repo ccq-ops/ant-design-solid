@@ -1,4 +1,4 @@
-import { ClockCircleOutlined, CloseCircleFilled } from '@ant-design-solid/solid-icons'
+import { ClockCircleOutlined, CloseCircleFilled } from '@solid-ant-design/icons'
 import dayjs from 'dayjs'
 import {
   Show,

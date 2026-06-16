@@ -1,5 +1,5 @@
 import { children, For, splitProps } from 'solid-js'
-import { getComponentToken, type GlobalToken } from '@ant-design-solid/theme'
+import { getComponentToken, type GlobalToken } from '@solid-ant-design/theme'
 import { useConfig, useToken } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useSpaceStyle } from './space.style'

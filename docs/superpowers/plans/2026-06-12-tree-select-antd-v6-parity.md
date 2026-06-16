@@ -27,7 +27,7 @@
 Use these commands during implementation:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tree-select
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tree-select
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
@@ -38,7 +38,7 @@ COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
 If the filtered test command does not match the package script behavior, use:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/tree-select/__tests__/tree-select.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/tree-select/__tests__/tree-select.test.tsx
 ```
 
 ## Tasks

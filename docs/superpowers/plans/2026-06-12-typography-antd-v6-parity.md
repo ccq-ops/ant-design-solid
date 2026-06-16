@@ -17,7 +17,7 @@
 - Modify: `packages/components/src/typography/__tests__/typography.test.tsx`
 
 - [ ] Add failing tests for `Typography` root, `Link`, decoration props, copyable, editable, semantic slots, action placement, and ellipsis object behavior.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- typography` and confirm failures are due to missing API.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- typography` and confirm failures are due to missing API.
 
 ### Task 2: Interfaces
 
@@ -63,7 +63,7 @@
 
 - No source edits unless verification exposes a defect.
 
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- typography`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- typography`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`.
 - [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint`.
 - [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`.

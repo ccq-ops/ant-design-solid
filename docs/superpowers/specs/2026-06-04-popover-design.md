@@ -2,7 +2,7 @@
 
 ## Goal
 
-Implement a lightweight Ant Design-style `Popover` component for `@ant-design-solid/core`. The component should prioritize usable behavior, project consistency, and low implementation risk over full Ant Design parity.
+Implement a lightweight Ant Design-style `Popover` component for `@solid-ant-design/core`. The component should prioritize usable behavior, project consistency, and low implementation risk over full Ant Design parity.
 
 ## Scope
 

@@ -4,7 +4,7 @@
 
 **Goal:** Add richer examples and API tables for the first batch of ten under-documented component pages.
 
-**Architecture:** Add one shared docs-only `ApiTable` component and use it across updated component pages. Each page imports local components from `@ant-design-solid/core`, defines example data and API rows, renders several `DemoBlock`s, then renders one or more API tables derived from the corresponding `packages/components/src/<component>/interface.ts` contracts.
+**Architecture:** Add one shared docs-only `ApiTable` component and use it across updated component pages. Each page imports local components from `@solid-ant-design/core`, defines example data and API rows, renders several `DemoBlock`s, then renders one or more API tables derived from the corresponding `packages/components/src/<component>/interface.ts` contracts.
 
 **Tech Stack:** SolidJS, TypeScript, Vitest, `@solidjs/testing-library`, existing docs `DemoBlock`, Tailwind utility classes.
 
@@ -87,7 +87,7 @@ describe('ApiTable', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- api-table.test.tsx --runInBand
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- api-table.test.tsx --runInBand
 ```
 
 Expected: FAIL with module resolution error for `./api-table`.
@@ -152,7 +152,7 @@ export function ApiTable(props: ApiTableProps) {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- api-table.test.tsx --runInBand
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- api-table.test.tsx --runInBand
 ```
 
 Expected: PASS.
@@ -220,8 +220,8 @@ Replace `apps/docs/src/pages/components/input.tsx` with examples titled `Basic`,
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.
@@ -260,8 +260,8 @@ Replace `apps/docs/src/pages/components/space.tsx` with examples titled `Basic`,
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.
@@ -300,8 +300,8 @@ Replace `apps/docs/src/pages/components/popconfirm.tsx` with examples titled `Ba
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.
@@ -330,8 +330,8 @@ Replace `apps/docs/src/pages/components/typography.tsx` with examples titled `Ti
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

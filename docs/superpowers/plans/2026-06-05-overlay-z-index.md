@@ -78,7 +78,7 @@ it('inherits and overrides getPopupContainer', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- config-provider.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- config-provider.test.tsx
 ```
 
 Expected: FAIL because `getPopupContainer` is not on `ConfigProviderProps`/context.
@@ -113,7 +113,7 @@ describe('InternalPortal', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- portal.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- portal.test.tsx
 ```
 
 Expected: FAIL because `InternalPortalProps` does not accept `mount`.
@@ -228,7 +228,7 @@ Modify `packages/components/src/config-provider/interface.ts`:
 
 ```ts
 import type { Accessor, JSX } from 'solid-js'
-import type { AliasToken, ComponentSize, ThemeConfig } from '@ant-design-solid/theme'
+import type { AliasToken, ComponentSize, ThemeConfig } from '@solid-ant-design/theme'
 export interface ConfigProviderProps {
   prefixCls?: string
   componentSize?: ComponentSize
@@ -266,7 +266,7 @@ Modify `packages/components/src/config-provider/config-provider.tsx` so `getPopu
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- config-provider.test.tsx portal.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- config-provider.test.tsx portal.test.tsx
 ```
 
 Expected: PASS.
@@ -327,7 +327,7 @@ it('uses explicit zIndex and custom popup container', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tooltip.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tooltip.test.tsx
 ```
 
 Expected: FAIL because Tooltip props do not include `zIndex`/`getPopupContainer` and overlay does not use them.
@@ -357,7 +357,7 @@ In `packages/components/src/tooltip/tooltip.style.ts`, remove the hardcoded `'z-
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tooltip.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tooltip.test.tsx
 ```
 
 Expected: PASS.
@@ -388,7 +388,7 @@ it('uses explicit zIndex and custom popup container', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popover.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popover.test.tsx
 ```
 
 Expected: FAIL before implementation.
@@ -404,7 +404,7 @@ Remove hardcoded `'z-index': 1030` from `packages/components/src/popover/popover
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popover.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popover.test.tsx
 ```
 
 Expected: PASS.
@@ -434,7 +434,7 @@ it('uses explicit zIndex and custom popup container', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popconfirm.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popconfirm.test.tsx
 ```
 
 Expected: FAIL before implementation.
@@ -448,7 +448,7 @@ Add `zIndex` and `getPopupContainer` to `packages/components/src/popconfirm/inte
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popconfirm.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popconfirm.test.tsx
 ```
 
 Expected: PASS.
@@ -474,7 +474,7 @@ it('uses explicit zIndex and custom popup container', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL before implementation.
@@ -488,7 +488,7 @@ Add `zIndex` and `getPopupContainer` to `packages/components/src/color-picker/in
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tooltip.test.tsx popover.test.tsx popconfirm.test.tsx color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tooltip.test.tsx popover.test.tsx popconfirm.test.tsx color-picker.test.tsx
 ```
 
 Expected: PASS.
@@ -541,7 +541,7 @@ it('uses explicit zIndex and custom popup container', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- dropdown.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- dropdown.test.tsx
 ```
 
 Expected: FAIL before implementation.
@@ -555,7 +555,7 @@ Add `zIndex?: number` and `getPopupContainer?: (triggerNode?: HTMLElement) => HT
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- dropdown.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- dropdown.test.tsx
 ```
 
 Expected: PASS.
@@ -635,7 +635,7 @@ import { fireEvent, render } from '@solidjs/testing-library'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- select.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- select.test.tsx
 ```
 
 Expected: FAIL because Select dropdown is inline and props are missing.
@@ -698,7 +698,7 @@ In `select.style.ts`, change dropdown style from `position: 'absolute'`, `top`, 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- select.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- select.test.tsx
 ```
 
 Expected: PASS.
@@ -743,7 +743,7 @@ Ensure `fireEvent` is imported.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tree-select.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tree-select.test.tsx
 ```
 
 Expected: FAIL before implementation.
@@ -757,7 +757,7 @@ Mirror the Select implementation in `tree-select/interface.ts` and `tree-select.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tree-select.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tree-select.test.tsx
 ```
 
 Expected: PASS.
@@ -800,7 +800,7 @@ Ensure `fireEvent` is imported.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- time-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- time-picker.test.tsx
 ```
 
 Expected: FAIL before implementation.
@@ -814,7 +814,7 @@ Mirror the Select implementation in `time-picker/interface.ts` and `time-picker.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- select.test.tsx tree-select.test.tsx time-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- select.test.tsx tree-select.test.tsx time-picker.test.tsx
 ```
 
 Expected: PASS.
@@ -865,7 +865,7 @@ import { Select } from '../../select'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popover.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popover.test.tsx
 ```
 
 Expected: PASS if previous tasks correctly provided context through portaled content; FAIL if Select cannot consume `ZIndexContext` from Popover.
@@ -889,7 +889,7 @@ Ensure the `Select` content is created inside this provider in the rendered JSX.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popover.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popover.test.tsx
 ```
 
 Expected: PASS.

@@ -4,7 +4,7 @@ Date: 2026-06-02
 
 ## Goal
 
-Expand `@ant-design-solid/core` with the third requested batch of data-entry components:
+Expand `@solid-ant-design/core` with the third requested batch of data-entry components:
 
 1. `TimePicker`
 2. `DatePicker`
@@ -195,7 +195,7 @@ Out of scope:
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` registration pattern and tokens from `useToken()`. Use stable class names through `config.prefixCls()`:
+Use the existing `@solid-ant-design/cssinjs` registration pattern and tokens from `useToken()`. Use stable class names through `config.prefixCls()`:
 
 - `ant-time-picker`
 - `ant-date-picker`

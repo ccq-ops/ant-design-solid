@@ -4,7 +4,7 @@ Date: 2026-06-02
 
 ## Goal
 
-Expand `@ant-design-solid/core` with the second batch of common Ant Design-style components:
+Expand `@solid-ant-design/core` with the second batch of common Ant Design-style components:
 
 1. `Pagination`
 2. `Steps`
@@ -151,7 +151,7 @@ Behavior:
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` style registration pattern and theme tokens from `useToken()`. New styles should use stable `ant-` prefixed class names through `config.prefixCls()`.
+Use the existing `@solid-ant-design/cssinjs` style registration pattern and theme tokens from `useToken()`. New styles should use stable `ant-` prefixed class names through `config.prefixCls()`.
 
 CSS values that are unitless in CSS, such as opacity, flex, line-height ratios, and z-index, should be strings when needed to avoid the local serializer appending `px` unexpectedly.
 

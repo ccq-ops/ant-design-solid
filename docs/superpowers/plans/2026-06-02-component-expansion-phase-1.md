@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Phase 1 components `Divider`, `Card`, `Avatar`, `Empty`, `Breadcrumb`, and `Rate` to `@ant-design-solid/core` with docs, exports, tests, and verification.
+**Goal:** Add Phase 1 components `Divider`, `Card`, `Avatar`, `Empty`, `Breadcrumb`, and `Rate` to `@solid-ant-design/core` with docs, exports, tests, and verification.
 
 **Architecture:** Each component follows the existing package convention: `interface.ts`, `<component>.tsx`, `<component>.style.ts`, and `index.ts` under `packages/components/src/<component>/`. Components use `useConfig()`, token-aware `useStyleRegister()`, and `classNames()` like existing components. Behavior-heavy components receive Vitest tests colocated in each component folder using kebab-case `*.test.tsx` filenames.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @ant-design-solid/cssinjs, @ant-design-solid/theme, pnpm/corepack.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @solid-ant-design/cssinjs, @solid-ant-design/theme, pnpm/corepack.
 
 ---
 
@@ -66,7 +66,7 @@ apps/docs/src/site/routes.ts
 Run verification:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --runInBand
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --runInBand
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
@@ -123,7 +123,7 @@ export interface DividerProps extends JSX.HTMLAttributes<HTMLDivElement> {
 Create `packages/components/src/divider/divider.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useDividerStyle(prefixCls: string) {
@@ -261,7 +261,7 @@ export * from './interface'
 Create `apps/docs/src/routes/components/divider.tsx`:
 
 ```tsx
-import { Divider, Space } from '@ant-design-solid/core'
+import { Divider, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function DividerPage() {
@@ -328,8 +328,8 @@ Modify `apps/docs/src/site/routes.ts` by adding a lazy route entry matching exis
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: both commands exit `0`.
@@ -464,7 +464,7 @@ export * from './interface'
 
 - [ ] **Step 2: Add Card docs and exports**
 
-Create `apps/docs/src/routes/components/card.tsx` with examples for basic card, title/extra, cover/actions, hoverable, small, and borderless. Use `Button`, `Card`, and `Space` imports from `@ant-design-solid/core`.
+Create `apps/docs/src/routes/components/card.tsx` with examples for basic card, title/extra, cover/actions, hoverable, small, and borderless. Use `Button`, `Card`, and `Space` imports from `@solid-ant-design/core`.
 
 Modify component exports and docs route/nav with:
 
@@ -488,8 +488,8 @@ export * from './card'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 git add packages/components/src/card packages/components/src/index.ts apps/docs/src/routes/components/card.tsx apps/docs/src/site/nav.ts apps/docs/src/site/routes.ts
 git commit -m "feat(components): add card"
 ```
@@ -553,7 +553,7 @@ describe('Avatar', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- avatar.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- avatar.test.tsx
 ```
 
 Expected: FAIL because `./avatar` does not exist yet.
@@ -578,7 +578,7 @@ export * from './interface'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- avatar.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- avatar.test.tsx
 ```
 
 Expected: PASS.
@@ -607,8 +607,8 @@ export * from './avatar'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 git add packages/components/src/avatar packages/components/src/index.ts apps/docs/src/routes/components/avatar.tsx apps/docs/src/site/nav.ts apps/docs/src/site/routes.ts
 git commit -m "feat(components): add avatar"
 ```
@@ -680,8 +680,8 @@ export * from './empty'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 git add packages/components/src/empty packages/components/src/index.ts apps/docs/src/routes/components/empty.tsx apps/docs/src/site/nav.ts apps/docs/src/site/routes.ts
 git commit -m "feat(components): add empty"
 ```
@@ -743,7 +743,7 @@ describe('Breadcrumb', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- breadcrumb.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- breadcrumb.test.tsx
 ```
 
 Expected: FAIL because `./breadcrumb` does not exist yet.
@@ -768,7 +768,7 @@ export * from './interface'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- breadcrumb.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- breadcrumb.test.tsx
 ```
 
 Expected: PASS.
@@ -797,8 +797,8 @@ export * from './breadcrumb'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 git add packages/components/src/breadcrumb packages/components/src/index.ts apps/docs/src/routes/components/breadcrumb.tsx apps/docs/src/site/nav.ts apps/docs/src/site/routes.ts
 git commit -m "feat(components): add breadcrumb"
 ```
@@ -873,7 +873,7 @@ describe('Rate', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- rate.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- rate.test.tsx
 ```
 
 Expected: FAIL because `./rate` does not exist yet.
@@ -898,7 +898,7 @@ export * from './interface'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- rate.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- rate.test.tsx
 ```
 
 Expected: PASS.
@@ -927,9 +927,9 @@ export * from './rate'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- rate.test.tsx
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- rate.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 git add packages/components/src/rate packages/components/src/index.ts apps/docs/src/routes/components/rate.tsx apps/docs/src/site/nav.ts apps/docs/src/site/routes.ts
 git commit -m "feat(components): add rate"
 ```

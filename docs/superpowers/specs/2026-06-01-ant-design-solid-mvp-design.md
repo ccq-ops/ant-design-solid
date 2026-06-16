@@ -76,7 +76,7 @@ ant-design-solid/
 
 ### Packages
 
-#### `@ant-design-solid/core`
+#### `@solid-ant-design/core`
 
 The main user-facing component package. It exports:
 
@@ -89,21 +89,21 @@ The main user-facing component package. It exports:
 - `Col`
 - Related prop and token types
 
-It depends on `@ant-design-solid/theme` and `@ant-design-solid/cssinjs`.
+It depends on `@solid-ant-design/theme` and `@solid-ant-design/cssinjs`.
 
-#### `@ant-design-solid/cssinjs`
+#### `@solid-ant-design/cssinjs`
 
 A Solid-native CSS-in-JS runtime. It is an independent package because SSR extraction, custom caches, style ordering, and advanced theme integrations should be available to advanced users later.
 
-#### `@ant-design-solid/theme`
+#### `@solid-ant-design/theme`
 
 The token and theme algorithm package. It owns seed tokens, alias token derivation, default component token derivation, and shared token types. It should not depend on components.
 
-#### `@ant-design-solid/icons`
+#### `@solid-ant-design/icons`
 
 Reserved for icon support. MVP can keep this minimal or empty, but the package boundary should exist if icons are needed by documentation or component examples.
 
-#### `@ant-design-solid/docs`
+#### `@solid-ant-design/docs`
 
 The Vite + SolidJS documentation app. It imports packages through workspace dependencies and acts as a dogfooding app.
 
@@ -121,7 +121,7 @@ Component Token
 
 ### Theme package exports
 
-`@ant-design-solid/theme` should provide:
+`@solid-ant-design/theme` should provide:
 
 - `defaultSeedToken`
 - `defaultAlgorithm(seed)`
@@ -205,7 +205,7 @@ The component package should export:
 
 ## CSS-in-JS Runtime
 
-`@ant-design-solid/cssinjs` should be built around Solid context, memoization, and effects. It should not copy React lifecycle assumptions.
+`@solid-ant-design/cssinjs` should be built around Solid context, memoization, and effects. It should not copy React lifecycle assumptions.
 
 ### Public API
 
@@ -448,7 +448,7 @@ Root scripts:
 ```json
 {
   "scripts": {
-    "dev": "pnpm --filter @ant-design-solid/docs dev",
+    "dev": "pnpm --filter @solid-ant-design/docs dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
@@ -543,7 +543,7 @@ The MVP is accepted when:
 
 1. The monorepo installs with pnpm 11 on Node.js 22 or newer.
 2. The docs app starts with `pnpm dev`.
-3. `@ant-design-solid/core` exports all MVP components.
+3. `@solid-ant-design/core` exports all MVP components.
 4. Components use token-driven CSS-in-JS styles.
 5. Theme overrides through `ConfigProvider` affect rendered component styles.
 6. The docs site demonstrates every MVP component.

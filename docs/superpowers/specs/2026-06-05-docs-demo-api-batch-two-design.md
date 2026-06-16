@@ -30,8 +30,8 @@ For pages with only two or three demos (`checkbox`, `radio`, `mentions`), add pr
 No runtime component behavior changes are planned. Verification is docs compile/build/test oriented:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck

@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add tested and documented `InputNumber` and `Cascader` components to `@ant-design-solid/core`.
+**Goal:** Add tested and documented `InputNumber` and `Cascader` components to `@solid-ant-design/core`.
 
 **Architecture:** Implement each component as an independent Solid module following the existing component folder pattern. `InputNumber` builds on local input semantics and form integration; `Cascader` follows the existing `Select` controlled/uncontrolled open/value pattern with hierarchical columns.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, `@solidjs/testing-library`, `@ant-design-solid/cssinjs`, `@ant-design-solid/theme`, existing `ConfigProvider`, `Form.Item`, and `classNames` utilities, pnpm/corepack.
+**Tech Stack:** SolidJS, TypeScript, Vitest, `@solidjs/testing-library`, `@solid-ant-design/cssinjs`, `@solid-ant-design/theme`, existing `ConfigProvider`, `Form.Item`, and `classNames` utilities, pnpm/corepack.
 
 ---
 
@@ -239,7 +239,7 @@ describe('InputNumber', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- input-number
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- input-number
 ```
 
 Expected: FAIL because `packages/components/src/input-number` and `InputNumber` do not exist yet.
@@ -249,7 +249,7 @@ Expected: FAIL because `packages/components/src/input-number` and `InputNumber` 
 Create `packages/components/src/input-number/interface.ts`:
 
 ```ts
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 import type { JSX } from 'solid-js'
 
 export interface InputNumberProps extends Omit<
@@ -278,7 +278,7 @@ export interface InputNumberProps extends Omit<
 Create `packages/components/src/input-number/input-number.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useInputNumberStyle(prefixCls: string) {
@@ -591,7 +591,7 @@ Create `apps/docs/src/routes/components/input-number.tsx`:
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function InputNumberPage() {
@@ -671,9 +671,9 @@ Modify `apps/docs/src/site/nav.ts` and insert after the Input item:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- input-number
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- input-number
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm exec oxfmt --check packages/components/src/input-number apps/docs/src/routes/components/input-number.tsx packages/components/src/index.ts apps/docs/src/site/nav.ts
 ```
 
@@ -902,7 +902,7 @@ describe('Cascader', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because `packages/components/src/cascader` and `Cascader` do not exist yet.
@@ -946,7 +946,7 @@ export interface CascaderProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 
 Create `packages/components/src/cascader/cascader.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useCascaderStyle(prefixCls: string) {
@@ -1324,9 +1324,9 @@ export * from './cascader'
 Create `apps/docs/src/routes/components/cascader.tsx`:
 
 ```tsx
-import { Form, Cascader, Space } from '@ant-design-solid/core'
+import { Form, Cascader, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
-import type { CascaderOption } from '@ant-design-solid/core'
+import type { CascaderOption } from '@solid-ant-design/core'
 
 const options: CascaderOption[] = [
   {
@@ -1411,9 +1411,9 @@ Modify `apps/docs/src/site/nav.ts` and insert near Select:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm exec oxfmt --check packages/components/src/cascader apps/docs/src/routes/components/cascader.tsx packages/components/src/index.ts apps/docs/src/site/nav.ts
 ```
 

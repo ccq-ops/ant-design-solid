@@ -21,7 +21,7 @@
 ## Task 1: Base behavior props
 
 - [ ] Add failing tests for `keyboard={false}`, `onPressEnter`, `changeOnBlur={false}`, `readOnly`, `changeOnWheel`, and `onStep`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- input-number` and verify the new tests fail for missing behavior.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- input-number` and verify the new tests fail for missing behavior.
 - [ ] Extend `InputNumberProps` with base behavior props.
 - [ ] Implement base behavior in `input-number.tsx`.
 - [ ] Re-run the InputNumber tests and verify they pass.

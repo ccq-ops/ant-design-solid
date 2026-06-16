@@ -3,7 +3,7 @@ import {
   CaretRightOutlined,
   HolderOutlined,
   LoadingOutlined,
-} from '@ant-design-solid/solid-icons'
+} from '@solid-ant-design/icons'
 import {
   For,
   Show,

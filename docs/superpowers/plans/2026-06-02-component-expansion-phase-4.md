@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Phase 4 feedback/loading components `Spin`, `Progress`, `Skeleton`, and `Drawer` to `@ant-design-solid/core` with docs, exports, tests, reviews, and full verification.
+**Goal:** Add Phase 4 feedback/loading components `Spin`, `Progress`, `Skeleton`, and `Drawer` to `@solid-ant-design/core` with docs, exports, tests, reviews, and full verification.
 
 **Architecture:** Each component follows the existing library pattern: component folder with `interface.ts`, `<component>.tsx`, `<component>.style.ts`, `index.ts`, plus behavior tests in `__tests__`. Drawer reuses `InternalPortal`, document keydown helpers, and body scroll lock helpers from existing modal infrastructure. Display components use token-aware CSS-in-JS and keep behavior local.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @ant-design-solid/cssinjs, @ant-design-solid/theme, pnpm/corepack.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @solid-ant-design/cssinjs, @solid-ant-design/theme, pnpm/corepack.
 
 ---
 
@@ -119,7 +119,7 @@ describe('Spin', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- spin
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- spin
 ```
 
 Expected: FAIL because Spin does not exist yet.
@@ -143,9 +143,9 @@ export * from './spin'
 - [ ] **Step 4: Verify and commit Spin**
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- spin
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- spin
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm exec oxfmt --check packages/components/src/spin apps/docs/src/routes/components/spin.tsx
 ```
 
@@ -219,7 +219,7 @@ describe('Progress', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress
 ```
 
 Expected: FAIL because Progress does not exist yet.
@@ -243,9 +243,9 @@ export * from './progress'
 - [ ] **Step 4: Verify and commit Progress**
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm exec oxfmt --check packages/components/src/progress apps/docs/src/routes/components/progress.tsx
 ```
 
@@ -321,7 +321,7 @@ describe('Skeleton', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- skeleton
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- skeleton
 ```
 
 Expected: FAIL because Skeleton does not exist yet.
@@ -345,9 +345,9 @@ export * from './skeleton'
 - [ ] **Step 4: Verify and commit Skeleton**
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- skeleton
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- skeleton
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm exec oxfmt --check packages/components/src/skeleton apps/docs/src/routes/components/skeleton.tsx
 ```
 
@@ -461,7 +461,7 @@ describe('Drawer', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- drawer
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- drawer
 ```
 
 Expected: FAIL because Drawer does not exist yet.
@@ -485,9 +485,9 @@ export * from './drawer'
 - [ ] **Step 4: Verify and commit Drawer**
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- drawer
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- drawer
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm exec oxfmt --check packages/components/src/drawer apps/docs/src/routes/components/drawer.tsx
 ```
 

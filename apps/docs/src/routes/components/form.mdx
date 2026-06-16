@@ -24,7 +24,7 @@ import {
   TreeSelect,
   Typography,
   useForm,
-} from '@ant-design-solid/core'
+} from '@solid-ant-design/core'
 import { createSignal, For, Show } from 'solid-js'
 import dayjs from 'dayjs'
 
@@ -67,7 +67,7 @@ return Demo1
 ---
 
 ```tsx
-import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Checkbox, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return (
@@ -151,7 +151,7 @@ return Demo2
 ---
 
 ```tsx
-import { Button, Form, Input, Select, Space, message, useForm } from '@ant-design-solid/core'
+import { Button, Form, Input, Select, Space, message, useForm } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   const [form] = useForm()
@@ -237,8 +237,8 @@ return Demo3
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Form, Input, Radio, Space, message } from '@ant-design-solid/core'
-import type { FormLayout } from '@ant-design-solid/core'
+import { Button, Form, Input, Radio, Space, message } from '@solid-ant-design/core'
+import type { FormLayout } from '@solid-ant-design/core'
 
 const Demo3 = function () {
   const [layout, setLayout] = createSignal<FormLayout>('horizontal')
@@ -308,7 +308,7 @@ return Demo4
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo4 = function () {
   return (
@@ -369,7 +369,7 @@ return Demo5
 ---
 
 ```tsx
-import { Button, Form, Input, InputNumber, Select, Space, Switch } from '@ant-design-solid/core'
+import { Button, Form, Input, InputNumber, Select, Space, Switch } from '@solid-ant-design/core'
 
 const Demo5 = function () {
   return (
@@ -433,8 +433,8 @@ return Demo6
 
 ```tsx
 import { For } from 'solid-js'
-import { Form, Input, InputNumber, Select, Space } from '@ant-design-solid/core'
-import type { FormVariant } from '@ant-design-solid/core'
+import { Form, Input, InputNumber, Select, Space } from '@solid-ant-design/core'
+import type { FormVariant } from '@solid-ant-design/core'
 
 const variants: FormVariant[] = ['outlined', 'filled', 'borderless', 'underlined']
 
@@ -498,7 +498,7 @@ return Demo7
 ---
 
 ```tsx
-import { Form, Input, Space } from '@ant-design-solid/core'
+import { Form, Input, Space } from '@solid-ant-design/core'
 
 const Demo7 = function () {
   return (
@@ -557,8 +557,8 @@ return Demo8
 
 ```tsx
 import { For } from 'solid-js'
-import { Form, Input, Select, Space } from '@ant-design-solid/core'
-import type { ComponentSize } from '@ant-design-solid/core'
+import { Form, Input, Select, Space } from '@solid-ant-design/core'
+import type { ComponentSize } from '@solid-ant-design/core'
 
 const sizes: ComponentSize[] = ['small', 'middle', 'large']
 
@@ -609,7 +609,7 @@ return Demo9
 ---
 
 ```tsx
-import { Form, Input } from '@ant-design-solid/core'
+import { Form, Input } from '@solid-ant-design/core'
 
 const Demo9 = function () {
   return (
@@ -652,7 +652,7 @@ return Demo10
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo10 = function () {
   return (
@@ -707,7 +707,7 @@ return Demo11
 ---
 
 ```tsx
-import { Form, Input, Space, Typography, useForm } from '@ant-design-solid/core'
+import { Form, Input, Space, Typography, useForm } from '@solid-ant-design/core'
 
 function WatchPreview() {
   const name = Form.useWatch('name')
@@ -756,7 +756,7 @@ return Demo12
 ---
 
 ```tsx
-import { Form, Input, Space } from '@ant-design-solid/core'
+import { Form, Input, Space } from '@solid-ant-design/core'
 
 const Demo12 = function () {
   return (
@@ -810,7 +810,7 @@ return Demo13
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message, useForm } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message, useForm } from '@solid-ant-design/core'
 
 const Demo13 = function () {
   const [form] = useForm()
@@ -873,7 +873,7 @@ return Demo14
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo14 = function () {
   return (
@@ -935,7 +935,7 @@ return Demo15
 
 ```tsx
 import { createSignal, Show } from 'solid-js'
-import { Button, Form, Input, Space, Switch, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, Switch, message } from '@solid-ant-design/core'
 
 const Demo15 = function () {
   const [showExtra, setShowExtra] = createSignal(false)
@@ -996,7 +996,7 @@ return Demo16
 
 ```tsx
 import { For } from 'solid-js'
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo16 = function () {
   return (
@@ -1071,7 +1071,7 @@ return Demo17
 
 ```tsx
 import { For } from 'solid-js'
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo17 = function () {
   return (
@@ -1152,7 +1152,7 @@ return Demo18
 
 ```tsx
 import { For } from 'solid-js'
-import { Button, Form, Input, Select, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Select, Space, message } from '@solid-ant-design/core'
 
 const Demo18 = function () {
   return (
@@ -1227,7 +1227,7 @@ return Demo19
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo19 = function () {
   return (
@@ -1288,7 +1288,7 @@ return Demo20
 ---
 
 ```tsx
-import { Button, Form, Input, Select, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Select, Space, message } from '@solid-ant-design/core'
 
 const Demo20 = function () {
   return (
@@ -1346,7 +1346,7 @@ return Demo21
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 function PriceInput(props: { value?: number; onChange?: (value: number) => void }) {
   return (
@@ -1408,8 +1408,8 @@ return Demo22
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Form, Input, Space } from '@ant-design-solid/core'
-import type { FieldData } from '@ant-design-solid/core'
+import { Button, Form, Input, Space } from '@solid-ant-design/core'
+import type { FieldData } from '@solid-ant-design/core'
 
 const Demo22 = function () {
   const [fields, setFields] = createSignal<FieldData[]>([{ name: 'username', value: 'Ada' }])
@@ -1463,7 +1463,7 @@ return Demo23
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo23 = function () {
   return (
@@ -1526,7 +1526,7 @@ return Demo24
 ---
 
 ```tsx
-import { Button, Checkbox, Form, Input, message } from '@ant-design-solid/core'
+import { Button, Checkbox, Form, Input, message } from '@solid-ant-design/core'
 
 const Demo24 = function () {
   return (
@@ -1596,7 +1596,7 @@ return Demo25
 ---
 
 ```tsx
-import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Checkbox, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo25 = function () {
   return (
@@ -1671,7 +1671,7 @@ return Demo26
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo26 = function () {
   return (
@@ -1747,7 +1747,7 @@ return Demo27
 
 ```tsx
 import { createSignal, For } from 'solid-js'
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo27 = function () {
   const [expand, setExpand] = createSignal(false)
@@ -1823,7 +1823,7 @@ return Demo28
 
 ```tsx
 import { createSignal, Show } from 'solid-js'
-import { Button, Form, Input, Modal, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Modal, Space, message } from '@solid-ant-design/core'
 
 const Demo28 = function () {
   const [open, setOpen] = createSignal(false)
@@ -1900,7 +1900,7 @@ return Demo29
 
 ```tsx
 import dayjs from 'dayjs'
-import { DatePicker, Form, Space, TimePicker } from '@ant-design-solid/core'
+import { DatePicker, Form, Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo29 = function () {
   return (
@@ -1955,7 +1955,7 @@ return Demo30
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo30 = function () {
   const [form] = Form.useForm()
@@ -2006,7 +2006,7 @@ return Demo31
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo31 = function () {
   return (
@@ -2069,7 +2069,7 @@ return Demo32
 ---
 
 ```tsx
-import { Button, Checkbox, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Checkbox, Form, Input, Space, message } from '@solid-ant-design/core'
 
 function DynamicRuleFields() {
   const checked = Form.useWatch('required')
@@ -2141,7 +2141,7 @@ return Demo33
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo33 = function () {
   return (
@@ -2203,7 +2203,7 @@ return Demo34
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message } from '@solid-ant-design/core'
 
 const Demo34 = function () {
   return (
@@ -2269,7 +2269,7 @@ return Demo35
 ---
 
 ```tsx
-import { Button, Form, Input, Space, message, useForm } from '@ant-design-solid/core'
+import { Button, Form, Input, Space, message, useForm } from '@solid-ant-design/core'
 
 const Demo35 = function () {
   const [form] = useForm()
@@ -2377,7 +2377,7 @@ import {
   Switch,
   TreeSelect,
   message,
-} from '@ant-design-solid/core'
+} from '@solid-ant-design/core'
 
 const Demo36 = function () {
   return (
@@ -2458,7 +2458,7 @@ return Demo37
 ---
 
 ```tsx
-import { Form, Input } from '@ant-design-solid/core'
+import { Form, Input } from '@solid-ant-design/core'
 
 const Demo37 = function () {
   return (
@@ -2510,7 +2510,7 @@ return Demo38
 ---
 
 ```tsx
-import { Button, Form, Input, Space } from '@ant-design-solid/core'
+import { Button, Form, Input, Space } from '@solid-ant-design/core'
 
 const Demo38 = function () {
   return (
@@ -2560,7 +2560,7 @@ return Demo39
 ---
 
 ```tsx
-import { ConfigProvider, Form, Input } from '@ant-design-solid/core'
+import { ConfigProvider, Form, Input } from '@solid-ant-design/core'
 
 const Demo39 = function () {
   return (

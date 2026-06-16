@@ -146,7 +146,7 @@ describe('DatePicker dayjs core', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/date-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/date-picker.test.tsx
 ```
 
 Expected: FAIL because `dayjs` is not installed and the current DatePicker does not render a textbox or emit dayjs values.
@@ -157,9 +157,9 @@ In `packages/components/package.json`, add `dayjs` to `dependencies`:
 
 ```json
   "dependencies": {
-    "@ant-design-solid/cssinjs": "workspace:*",
-    "@ant-design-solid/icons": "workspace:*",
-    "@ant-design-solid/theme": "workspace:*",
+    "@solid-ant-design/cssinjs": "workspace:*",
+    "@solid-ant-design/icons": "workspace:*",
+    "@solid-ant-design/theme": "workspace:*",
     "dayjs": "^1.11.13"
   },
 ```
@@ -607,7 +607,7 @@ export function semanticStyle(
 Replace `packages/components/src/date-picker/date-picker.tsx` with a minimal implementation that passes this task and preserves portal positioning:
 
 ```tsx
-import { CloseCircleFilled } from '@ant-design-solid/icons'
+import { CloseCircleFilled } from '@solid-ant-design/icons'
 import {
   For,
   Show,
@@ -933,7 +933,7 @@ In `packages/components/src/date-picker/date-picker.style.ts`, add these rules i
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/date-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/date-picker.test.tsx
 ```
 
 Expected: PASS.
@@ -1034,7 +1034,7 @@ it('applies className alias and popup placement class', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/date-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/date-picker.test.tsx
 ```
 
 Expected: FAIL because `defaultPickerValue`, placement class, and robust controlled open handling are incomplete.
@@ -1074,7 +1074,7 @@ Update `date-picker.tsx` to:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/date-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/date-picker.test.tsx
 ```
 
 Expected: PASS.
@@ -1209,7 +1209,7 @@ describe('DatePicker picker variants', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/picker-variants.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/picker-variants.test.tsx
 ```
 
 Expected: FAIL because variant panels do not exist.
@@ -1243,7 +1243,7 @@ Use `defaultFormatForPicker` through `format-utils` for date strings. Implement 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/picker-variants.test.tsx src/date-picker/__tests__/date-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/picker-variants.test.tsx src/date-picker/__tests__/date-picker.test.tsx
 ```
 
 Expected: PASS.
@@ -1379,7 +1379,7 @@ describe('RangePicker', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/range-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/range-picker.test.tsx
 ```
 
 Expected: FAIL because RangePicker does not exist.
@@ -1433,7 +1433,7 @@ Add styles for range selector, range inputs, separator, and range cell states in
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx
 ```
 
 Expected: PASS.
@@ -1550,7 +1550,7 @@ describe('DatePicker showTime', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/show-time.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/show-time.test.tsx
 ```
 
 Expected: FAIL because time panel does not exist.
@@ -1589,7 +1589,7 @@ Update `range-picker.tsx`:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/show-time.test.tsx src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/date-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/show-time.test.tsx src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/date-picker.test.tsx
 ```
 
 Expected: PASS.
@@ -1706,7 +1706,7 @@ describe('DatePicker multiple', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/multiple.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/multiple.test.tsx
 ```
 
 Expected: FAIL because multiple mode does not exist.
@@ -1736,7 +1736,7 @@ Update `picker-input.tsx` so multiple mode renders tags before a narrow input an
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/multiple.test.tsx src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/multiple.test.tsx src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx
 ```
 
 Expected: PASS.
@@ -1884,7 +1884,7 @@ describe('DatePicker custom rendering and visual APIs', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: FAIL because custom rendering and visual APIs are incomplete.
@@ -1938,7 +1938,7 @@ Call this after input refs exist.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/show-time.test.tsx src/date-picker/__tests__/multiple.test.tsx src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/show-time.test.tsx src/date-picker/__tests__/multiple.test.tsx src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: PASS.
@@ -1969,7 +1969,7 @@ Replace `apps/docs/src/pages/components/date-picker.tsx` with examples covering 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/show-time.test.tsx src/date-picker/__tests__/multiple.test.tsx src/date-picker/__tests__/custom-render.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/date-picker/__tests__/date-picker.test.tsx src/date-picker/__tests__/picker-variants.test.tsx src/date-picker/__tests__/range-picker.test.tsx src/date-picker/__tests__/show-time.test.tsx src/date-picker/__tests__/multiple.test.tsx src/date-picker/__tests__/custom-render.test.tsx
 ```
 
 Expected: PASS.
@@ -1979,7 +1979,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS. If it fails, fix only DatePicker-related type errors and rerun until PASS.
@@ -1989,7 +1989,7 @@ Expected: PASS. If it fails, fix only DatePicker-related type errors and rerun u
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core build
 ```
 
 Expected: PASS. If it fails, fix only DatePicker-related build errors and rerun until PASS.

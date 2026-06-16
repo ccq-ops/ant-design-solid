@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
 import { createSignal } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'

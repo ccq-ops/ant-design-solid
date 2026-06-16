@@ -1,12 +1,7 @@
 import { For, Show, children, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import {
-  CheckOutlined,
-  CopyOutlined,
-  EditOutlined,
-  EnterOutlined,
-} from '@ant-design-solid/solid-icons'
+import { CheckOutlined, CopyOutlined, EditOutlined, EnterOutlined } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { Tooltip } from '../tooltip'

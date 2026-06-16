@@ -6,7 +6,7 @@
 
 **Architecture:** Each component follows the existing `packages/components/src/<component>/` convention with `interface.ts`, component `.tsx`, `.style.ts`, `index.ts`, and colocated tests. Components use `useConfig()` for the `ads-*` prefix, `useStyleRegister()` for scoped css-in-js, and `classNames()` for class merging. Docs routes are standalone pages under `apps/docs/src/routes/components/` and public exports are added to `packages/components/src/index.ts`.
 
-**Tech Stack:** SolidJS, TypeScript, @ant-design-solid/cssinjs, @solidjs/testing-library, Vitest, Vite, pnpm.
+**Tech Stack:** SolidJS, TypeScript, @solid-ant-design/cssinjs, @solidjs/testing-library, Vitest, Vite, pnpm.
 
 ---
 
@@ -117,7 +117,7 @@ describe('Statistic', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- statistic.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- statistic.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/statistic/index.ts` and `Statistic` do not exist.
@@ -145,7 +145,7 @@ export interface StatisticProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>,
 Create `packages/components/src/statistic/statistic.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useStatisticStyle(prefixCls: string) {
@@ -293,7 +293,7 @@ export * from './statistic'
 Create `apps/docs/src/routes/components/statistic.tsx`:
 
 ```tsx
-import { Card, Space, Statistic } from '@ant-design-solid/core'
+import { Card, Space, Statistic } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function StatisticPage() {
@@ -341,8 +341,8 @@ Insert in `apps/docs/src/site/nav.ts` after the Table entry:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- statistic.test.tsx
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- statistic.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS for both commands.
@@ -460,7 +460,7 @@ describe('Descriptions', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/descriptions/index.ts` and `Descriptions` do not exist.
@@ -503,7 +503,7 @@ export interface DescriptionsProps extends Omit<JSX.HTMLAttributes<HTMLDivElemen
 Create `packages/components/src/descriptions/descriptions.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useDescriptionsStyle(prefixCls: string) {
@@ -799,7 +799,7 @@ export * from './descriptions'
 Create `apps/docs/src/routes/components/descriptions.tsx`:
 
 ```tsx
-import { Descriptions } from '@ant-design-solid/core'
+import { Descriptions } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 const basicItems = [
@@ -868,8 +868,8 @@ Insert in `apps/docs/src/site/nav.ts` after the Statistic entry:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions.test.tsx
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS for both commands.
@@ -994,7 +994,7 @@ describe('List', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- list.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- list.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/list/index.ts` and `List` do not exist.
@@ -1039,7 +1039,7 @@ export interface ListItemMetaProps extends JSX.HTMLAttributes<HTMLDivElement> {
 Create `packages/components/src/list/list.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useListStyle(prefixCls: string) {
@@ -1288,7 +1288,7 @@ export * from './list'
 Create `apps/docs/src/routes/components/list.tsx`:
 
 ```tsx
-import { Avatar, Button, List, Space } from '@ant-design-solid/core'
+import { Avatar, Button, List, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 const data = [
@@ -1360,8 +1360,8 @@ Insert in `apps/docs/src/site/nav.ts` after the Descriptions entry:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- list.test.tsx
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- list.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS for both commands.

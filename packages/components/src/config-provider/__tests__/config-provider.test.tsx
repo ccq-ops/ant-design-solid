@@ -1,5 +1,5 @@
 import { render } from '@solidjs/testing-library'
-import { darkAlgorithm, defaultAlgorithm } from '@ant-design-solid/theme'
+import { darkAlgorithm, defaultAlgorithm } from '@solid-ant-design/theme'
 import { describe, expect, it } from 'vitest'
 import type { JSX } from 'solid-js'
 import { ConfigProvider, useConfig, useToken } from '../index'

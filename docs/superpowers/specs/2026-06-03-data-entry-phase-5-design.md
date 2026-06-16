@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Expand `@ant-design-solid/core` with two practical Ant Design-style data entry components:
+Expand `@solid-ant-design/core` with two practical Ant Design-style data entry components:
 
 1. `InputNumber`
 2. `Cascader`
@@ -165,7 +165,7 @@ interface CascaderOption {
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` registration pattern and tokens from `useToken()`.
+Use the existing `@solid-ant-design/cssinjs` registration pattern and tokens from `useToken()`.
 
 Class prefixes:
 
@@ -264,10 +264,10 @@ COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
 Focused commands may be used during development:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- input-number
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- input-number
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 ## Out of Scope For Phase 5

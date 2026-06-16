@@ -56,8 +56,8 @@ Edit `apps/docs/package.json` scripts and dependencies to include SolidBase/Soli
     "lint": "oxlint src"
   },
   "dependencies": {
-    "@ant-design-solid/core": "workspace:*",
-    "@ant-design-solid/cssinjs": "workspace:*",
+    "@solid-ant-design/core": "workspace:*",
+    "@solid-ant-design/cssinjs": "workspace:*",
     "@kobalte/solidbase": "^0.6.3",
     "@solidjs/router": "^0.16.1",
     "@solidjs/start": "2.0.0-alpha.3",
@@ -82,7 +82,7 @@ Run:
 
 ```bash
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected first run: install may pass, typecheck may fail because SolidStart files do not exist yet. If install fails, fix dependency versions before touching app code.
@@ -128,16 +128,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@ant-design-solid/core': fileURLToPath(
+      '@solid-ant-design/core': fileURLToPath(
         new URL('../../packages/components/src', import.meta.url),
       ),
-      '@ant-design-solid/cssinjs': fileURLToPath(
+      '@solid-ant-design/cssinjs': fileURLToPath(
         new URL('../../packages/cssinjs/src', import.meta.url),
       ),
-      '@ant-design-solid/theme': fileURLToPath(
+      '@solid-ant-design/theme': fileURLToPath(
         new URL('../../packages/theme/src', import.meta.url),
       ),
-      '@ant-design-solid/icons': fileURLToPath(
+      '@solid-ant-design/icons': fileURLToPath(
         new URL('../../packages/icons/src', import.meta.url),
       ),
       'solid-motionone': fileURLToPath(
@@ -212,7 +212,7 @@ export default createHandler(() => (
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: may fail only because `./src/solidbase-theme` does not exist. If dependency or SolidStart entry imports fail, fix before continuing.
@@ -272,7 +272,7 @@ describe('SolidBase preview components', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- --run src/solidbase-theme/components/preview.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- --run src/solidbase-theme/components/preview.test.tsx
 ```
 
 Expected: FAIL because `./preview` does not exist.
@@ -369,9 +369,9 @@ export { Preview, PreviewPanel, PreviewStage }
 Create `apps/docs/src/solidbase-theme/Layout.tsx`:
 
 ```tsx
-import { MoonOutlined, SunOutlined } from '@ant-design-solid/icons'
+import { MoonOutlined, SunOutlined } from '@solid-ant-design/icons'
 import { A, useLocation } from '@solidjs/router'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
+import { StyleProvider } from '@solid-ant-design/cssinjs'
 import { For, Show, createMemo, type JSX } from 'solid-js'
 import { DocsThemeProvider, useDocsTheme } from '../components/theme-context'
 
@@ -497,8 +497,8 @@ After Task 3 moves all routes, replace the hardcoded component sidebar with gene
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- --run src/solidbase-theme/components/preview.test.tsx
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- --run src/solidbase-theme/components/preview.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: preview test passes; typecheck may still fail because routes are not migrated.
@@ -579,8 +579,8 @@ If test files lived under `src/pages`, move them beside the new route file or in
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- --run src/solidbase-theme src/routes
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- --run src/solidbase-theme src/routes
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: tests may fail due to old demo fence syntax. Typecheck should not fail because of missing old route registry imports.
@@ -659,8 +659,8 @@ If `apps/docs/plugins/index.ts` only existed to compose old Vite plugins, delete
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- --run src/routes/components/progress-runtime.test.tsx src/routes/components/qrcode-runtime.test.tsx
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- --run src/routes/components/progress-runtime.test.tsx src/routes/components/qrcode-runtime.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 If exact runtime test files do not exist after route moves, run the closest moved runtime tests for `progress`, `form`, and `time-picker`.
@@ -721,7 +721,7 @@ Update `apps/docs/src/__tests__/main-css.test.ts` and `dark-hardcoded-colors.tes
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
 ```
 
 Expected: all docs tests pass.
@@ -744,9 +744,9 @@ git commit -m "test(docs): update tests for solidbase migration"
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: all pass. Fix failures before continuing.
@@ -770,7 +770,7 @@ Expected: all pass. If full repo build is too slow or blocked by unrelated failu
 If build passes, run a local preview/dev server long enough to inspect generated pages:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs dev -- --host 127.0.0.1
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs dev -- --host 127.0.0.1
 ```
 
 Open `/`, `/components/button`, and `/docs/getting-started` with Playwright or curl. Stop the server after inspection.

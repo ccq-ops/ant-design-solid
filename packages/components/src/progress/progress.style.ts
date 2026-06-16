@@ -1,4 +1,4 @@
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useProgressStyle(prefixCls: string) {

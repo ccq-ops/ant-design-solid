@@ -7,7 +7,7 @@
 Consumers should be able to write:
 
 ```tsx
-import { SearchOutlined, CloseCircleFilled, LoadingOutlined } from '@ant-design-solid/icons'
+import { SearchOutlined, CloseCircleFilled, LoadingOutlined } from '@solid-ant-design/icons'
 
 <SearchOutlined />
 <CloseCircleFilled class="danger" />
@@ -18,7 +18,7 @@ import { SearchOutlined, CloseCircleFilled, LoadingOutlined } from '@ant-design-
 
 This change will:
 
-- Add `@ant-design/icons-svg` as a dependency of `@ant-design-solid/icons`.
+- Add `@ant-design/icons-svg` as a dependency of `@solid-ant-design/icons`.
 - Export the full icon set from `@ant-design/icons-svg` as Solid components.
 - Use Ant Design component names such as `SearchOutlined`, `CloseCircleFilled`, and `AccountBookTwoTone`.
 - Preserve repository filename rules by generating kebab-case TypeScript files.
@@ -111,7 +111,7 @@ The generated files are committed so consumers do not need to run generation bef
 
 ## Data Flow
 
-1. A consumer imports `SearchOutlined` from `@ant-design-solid/icons`.
+1. A consumer imports `SearchOutlined` from `@solid-ant-design/icons`.
 2. `SearchOutlined` wraps the imported `SearchOutlined` icon definition from `@ant-design/icons-svg`.
 3. The generated component calls the shared `Icon` renderer.
 4. `Icon` converts the icon definition's abstract SVG tree into Solid SVG elements.

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add an Ant Design 6 compatible `Masonry` component to `@ant-design-solid/core` and document it in the local docs app.
+Add an Ant Design 6 compatible `Masonry` component to `@solid-ant-design/core` and document it in the local docs app.
 
 The component lays out variable-height cards/items in balanced columns, supports responsive column and gutter values, and exposes the API shape used by Ant Design's Masonry component.
 
@@ -10,7 +10,7 @@ The component lays out variable-height cards/items in balanced columns, supports
 
 Implement:
 
-- `Masonry` component exported from `@ant-design-solid/core`.
+- `Masonry` component exported from `@solid-ant-design/core`.
 - Kebab-case files under `packages/components/src/masonry/`.
 - Component tests for distribution, responsive values, custom render hooks, class/style slots, and dynamic updates.
 - Docs page at `apps/docs/src/routes/components/masonry.tsx`.

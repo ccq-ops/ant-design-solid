@@ -1,5 +1,5 @@
 import { render } from '@solidjs/testing-library'
-import { darkAlgorithm } from '@ant-design-solid/theme'
+import { darkAlgorithm } from '@solid-ant-design/theme'
 import { describe, expect, test } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Result } from '../index'

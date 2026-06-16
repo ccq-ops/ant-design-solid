@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js'
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 import type { AllowClear, AutoSizeConfig, CountConfig, ShowCount } from '../input'
 
 export type MentionsSize = ComponentSize

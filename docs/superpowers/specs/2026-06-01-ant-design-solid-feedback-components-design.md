@@ -21,7 +21,7 @@ The goal is a practical MVP that feels familiar to Ant Design users while stayin
 
 The repository already has:
 
-- pnpm workspace packages for `@ant-design-solid/core`, `@ant-design-solid/theme`, `@ant-design-solid/cssinjs`, `@ant-design-solid/icons`, and docs.
+- pnpm workspace packages for `@solid-ant-design/core`, `@solid-ant-design/theme`, `@solid-ant-design/cssinjs`, `@solid-ant-design/icons`, and docs.
 - Core components: `ConfigProvider`, `Button`, `Input`, `Space`, `Typography`, and `Grid`.
 - Form controls and form components: `Form`, `Select`, `Checkbox`, `Radio`, `Switch`, and `Input.TextArea`.
 - Component folder conventions:
@@ -114,7 +114,7 @@ The helpers should stay minimal and not become a full positioning library.
 
 ## Theme Tokens
 
-Extend `ComponentTokenMap` in `@ant-design-solid/theme` for:
+Extend `ComponentTokenMap` in `@solid-ant-design/theme` for:
 
 - `Alert`
 - `Message`

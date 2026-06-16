@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Expand `@ant-design-solid/core` with three practical Ant Design-style display components:
+Expand `@solid-ant-design/core` with three practical Ant Design-style display components:
 
 1. `Timeline`
 2. `Result`
@@ -128,7 +128,7 @@ interface TimelineItem {
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` registration pattern and `useToken()`.
+Use the existing `@solid-ant-design/cssinjs` registration pattern and `useToken()`.
 
 Class prefixes:
 

@@ -20,7 +20,7 @@
 - Test: `packages/components/src/table/__tests__/table.test.tsx`
 
 - [x] Write failing tests for checkbox row selection, select all, disabled row checkbox, radio selection, and selection callbacks.
-- [x] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- table`.
+- [x] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- table`.
 - [x] Add `TableRowSelection<T>` types and render an internal selection column.
 - [x] Implement controlled/uncontrolled selected keys and callback payloads.
 - [x] Re-run the targeted Table test.

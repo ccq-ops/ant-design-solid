@@ -1,4 +1,4 @@
-import { CloseOutlined } from '@ant-design-solid/solid-icons'
+import { CloseOutlined } from '@solid-ant-design/icons'
 import type { Accessor, JSX } from 'solid-js'
 import { For, Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { classNames } from '../shared/class-names'

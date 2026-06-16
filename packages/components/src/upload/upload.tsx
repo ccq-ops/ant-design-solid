@@ -4,7 +4,7 @@ import {
   EyeOutlined,
   FileOutlined,
   InboxOutlined,
-} from '@ant-design-solid/solid-icons'
+} from '@solid-ant-design/icons'
 import { For, Show, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'

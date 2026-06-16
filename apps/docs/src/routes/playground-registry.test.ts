@@ -24,7 +24,7 @@ group: Layout
 ---
 
 \`\`\`tsx
-import { Divider } from '@ant-design-solid/core'
+import { Divider } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <Divider />
@@ -44,7 +44,7 @@ export default Demo1
 ---
 
 \`\`\`tsx
-import { Divider } from '@ant-design-solid/core'
+import { Divider } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   return <Divider>Text</Divider>
@@ -62,12 +62,12 @@ describe('playground registry', () => {
       {
         id: 'components/divider/basic',
         source:
-          "import { Divider } from '@ant-design-solid/core'\n\nconst Demo1 = function () {\n  return <Divider />\n}\n\nexport default Demo1",
+          "import { Divider } from '@solid-ant-design/core'\n\nconst Demo1 = function () {\n  return <Divider />\n}\n\nexport default Demo1",
       },
       {
         id: 'components/divider/with-text',
         source:
-          "import { Divider } from '@ant-design-solid/core'\n\nconst Demo2 = function () {\n  return <Divider>Text</Divider>\n}\n\nexport default Demo2",
+          "import { Divider } from '@solid-ant-design/core'\n\nconst Demo2 = function () {\n  return <Divider>Text</Divider>\n}\n\nexport default Demo2",
       },
     ])
   })
@@ -77,7 +77,7 @@ describe('playground registry', () => {
 
     const demo = getDemoSourceById('components/divider/basic')
 
-    expect(demo?.source).toContain("import { Divider } from '@ant-design-solid/core'")
+    expect(demo?.source).toContain("import { Divider } from '@solid-ant-design/core'")
     expect(demoIdFromSource(demo?.source ?? '')).toBe('components/divider/basic')
   })
 

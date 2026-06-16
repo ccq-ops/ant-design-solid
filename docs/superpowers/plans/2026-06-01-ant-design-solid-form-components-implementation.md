@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a standard usable form system and high-frequency Ant Design-inspired form controls to `@ant-design-solid/core`.
+**Goal:** Add a standard usable form system and high-frequency Ant Design-inspired form controls to `@solid-ant-design/core`.
 
 **Architecture:** Build a Solid-native `Form` store around signals, context, field registration, and synchronous validation. New controls (`Checkbox`, `Radio`, `Switch`, `Select`, `Input.TextArea`) follow the existing component folder pattern, consume theme tokens through `useToken`, register styles through `useStyleRegister`, and integrate with `Form.Item` through `valuePropName` and `trigger` injection.
 
@@ -132,7 +132,7 @@ it('derives form component token defaults and applies overrides', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/theme test
+pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: FAIL with TypeScript/runtime errors because `Form`, `Select`, `Checkbox`, `Radio`, and `Switch` tokens do not exist in `ComponentTokenMap`.
@@ -233,7 +233,7 @@ Switch: {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/theme test
+pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: PASS.
@@ -299,7 +299,7 @@ export function normalizeOptions(options: OptionInput[] = []): LabeledOption[] {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core typecheck
+pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -415,7 +415,7 @@ describe('Form', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/form/__tests__/Form.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/form/__tests__/Form.test.tsx
 ```
 
 Expected: FAIL because `../index` and Form APIs do not exist.
@@ -696,8 +696,8 @@ export function useFormContext(): FormInstance | undefined {
 Create `packages/components/src/form/form.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useFormStyle(prefixCls: string) {
@@ -748,7 +748,7 @@ export * from './form'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/form/__tests__/Form.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/form/__tests__/Form.test.tsx
 ```
 
 Expected: PASS.
@@ -779,7 +779,7 @@ Create `packages/components/src/checkbox/__tests__/Checkbox.test.tsx` with tests
 - [ ] **Step 2: Run Checkbox tests and verify RED**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/checkbox/__tests__/Checkbox.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/checkbox/__tests__/Checkbox.test.tsx
 ```
 
 Expected: FAIL because Checkbox exports do not exist.
@@ -805,7 +805,7 @@ export * from './checkbox'
 - [ ] **Step 5: Run Checkbox tests and verify GREEN**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/checkbox/__tests__/Checkbox.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/checkbox/__tests__/Checkbox.test.tsx
 ```
 
 Expected: PASS.
@@ -836,7 +836,7 @@ Create tests for standalone Radio, Radio.Group value updates, disabled, `optionT
 - [ ] **Step 2: Run Radio tests and verify RED**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/radio/__tests__/Radio.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/radio/__tests__/Radio.test.tsx
 ```
 
 Expected: FAIL because Radio exports do not exist.
@@ -856,7 +856,7 @@ export * from './radio'
 - [ ] **Step 5: Run Radio tests and verify GREEN**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/radio/__tests__/Radio.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/radio/__tests__/Radio.test.tsx
 ```
 
 Expected: PASS.
@@ -886,7 +886,7 @@ Create tests for controlled/uncontrolled checked state, disabled/loading no-op c
 - [ ] **Step 2: Run Switch tests and verify RED**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/switch/__tests__/Switch.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/switch/__tests__/Switch.test.tsx
 ```
 
 Expected: FAIL because Switch exports do not exist.
@@ -906,7 +906,7 @@ export * from './switch'
 - [ ] **Step 5: Run Switch tests and verify GREEN**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/switch/__tests__/Switch.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/switch/__tests__/Switch.test.tsx
 ```
 
 Expected: PASS.
@@ -936,7 +936,7 @@ Create tests for placeholder rendering, open/close, option selection, allowClear
 - [ ] **Step 2: Run Select tests and verify RED**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/select/__tests__/Select.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/select/__tests__/Select.test.tsx
 ```
 
 Expected: FAIL because Select exports do not exist.
@@ -967,7 +967,7 @@ export * from './select'
 - [ ] **Step 5: Run Select tests and verify GREEN**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/select/__tests__/Select.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/select/__tests__/Select.test.tsx
 ```
 
 Expected: PASS.
@@ -996,7 +996,7 @@ Create tests for `rows`, `defaultValue`, `showCount`, `maxLength`, `disabled`, a
 - [ ] **Step 2: Run TextArea tests and verify RED**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/input/__tests__/TextArea.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/input/__tests__/TextArea.test.tsx
 ```
 
 Expected: FAIL because `Input.TextArea` does not exist.
@@ -1008,7 +1008,7 @@ Add `TextAreaProps`, create `TextArea.tsx`, and export both `TextArea` and `Inpu
 - [ ] **Step 4: Run TextArea tests and verify GREEN**
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/input/__tests__/TextArea.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/input/__tests__/TextArea.test.tsx
 ```
 
 Expected: PASS.
@@ -1062,7 +1062,7 @@ Add a `DemoBlock` using:
 - [ ] **Step 4: Typecheck docs**
 
 ```bash
-pnpm --filter @ant-design-solid/docs typecheck
+pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.

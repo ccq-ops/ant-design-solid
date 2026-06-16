@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Ant Design-style `Flex`, `Segmented`, and `QRCode` components to `@ant-design-solid/core` with tests, docs, exports, and navigation entries.
+**Goal:** Add Ant Design-style `Flex`, `Segmented`, and `QRCode` components to `@solid-ant-design/core` with tests, docs, exports, and navigation entries.
 
 **Architecture:** Each component follows the established colocated component folder pattern under `packages/components/src`, uses `ConfigProvider` prefix classes, and registers token-driven styles with `useStyleRegister`. `Flex` is a CSS utility wrapper, `Segmented` is a controlled/uncontrolled single-select control, and `QRCode` is a deterministic SVG display component with status overlays.
 
@@ -68,7 +68,7 @@ Create `packages/components/src/flex/__tests__/flex.test.tsx` with tests coverin
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_PROJECT_SPEC=0 corepack pnpm --filter @ant-design-solid/core test -- src/flex/__tests__/flex.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_PROJECT_SPEC=0 corepack pnpm --filter @solid-ant-design/core test -- src/flex/__tests__/flex.test.tsx
 ```
 
 Expected: FAIL because the `flex` module does not exist.
@@ -107,7 +107,7 @@ Create `packages/components/src/segmented/__tests__/segmented.test.tsx` with tes
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_PROJECT_SPEC=0 corepack pnpm --filter @ant-design-solid/core test -- src/segmented/__tests__/segmented.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_PROJECT_SPEC=0 corepack pnpm --filter @solid-ant-design/core test -- src/segmented/__tests__/segmented.test.tsx
 ```
 
 Expected: FAIL because the `segmented` module does not exist.
@@ -146,7 +146,7 @@ Create `packages/components/src/qrcode/__tests__/qrcode.test.tsx` with tests cov
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_PROJECT_SPEC=0 corepack pnpm --filter @ant-design-solid/core test -- src/qrcode/__tests__/qrcode.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 COREPACK_ENABLE_PROJECT_SPEC=0 corepack pnpm --filter @solid-ant-design/core test -- src/qrcode/__tests__/qrcode.test.tsx
 ```
 
 Expected: FAIL because the `qrcode` module does not exist.

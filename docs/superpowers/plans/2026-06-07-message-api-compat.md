@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Ant Design-compatible public message APIs to `@ant-design-solid/core`.
+**Goal:** Add Ant Design-compatible public message APIs to `@solid-ant-design/core`.
 
 **Architecture:** Keep `message.ts` as lifecycle/API manager and `holder.tsx` as renderer. Add a reusable runtime factory for global and local `useMessage` instances. Close notices through one path so callbacks and thenables are consistent.
 

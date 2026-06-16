@@ -89,8 +89,8 @@ Write `apps/docs/src/pages/index.test.tsx` exactly as:
 
 ```tsx
 import { fireEvent, render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
+import { ConfigProvider } from '@solid-ant-design/core'
+import { StyleProvider } from '@solid-ant-design/cssinjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Home from './index'
 
@@ -201,7 +201,7 @@ Write `apps/docs/src/pages/index.tsx` exactly as:
 
 ```tsx
 import { useNavigate } from '@solidjs/router'
-import { Badge, Button, Card, Space, Tabs, Tag } from '@ant-design-solid/core'
+import { Badge, Button, Card, Space, Tabs, Tag } from '@solid-ant-design/core'
 import heroBanner from '../assets/hero-banner.png'
 
 const features = [

@@ -60,7 +60,7 @@ it('renders compound Menu children through the same item model', () => {
 
 - [ ] **Step 2: Run the test and verify it fails**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: FAIL because `Menu.Item`, `Menu.SubMenu`, `Menu.ItemGroup`, or `Menu.Divider` do not exist.
 
@@ -300,7 +300,7 @@ Menu.ItemGroup = createCompoundComponent<MenuItemGroupComponentProps>('group')
 
 - [ ] **Step 6: Run the test and verify it passes**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS for the compound rendering test and existing Menu tests.
 
@@ -373,7 +373,7 @@ it('supports multiple selection and deselection', async () => {
 
 - [ ] **Step 2: Run and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: FAIL because `selectable`, `multiple`, and `onDeselect` behavior is not implemented.
 
@@ -411,7 +411,7 @@ const selectItem = (item: MenuItemType, keyPath: MenuKey[], event: MouseEvent | 
 
 - [ ] **Step 4: Run and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS.
 
@@ -482,7 +482,7 @@ it('opens and closes submenu on hover with configured delays', async () => {
 
 - [ ] **Step 2: Run and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: FAIL because hover delays and title callback are missing.
 
@@ -519,7 +519,7 @@ Use hover handlers only when `triggerSubMenuAction() === 'hover'`; use click han
 
 - [ ] **Step 4: Run and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS.
 
@@ -601,7 +601,7 @@ it('supports forceSubMenuRender, popupOffset, popupClass, and popupRender', asyn
 
 - [ ] **Step 2: Run and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: FAIL because these render props/classes are missing.
 
@@ -664,7 +664,7 @@ Add classes in `menu.style.ts` for:
 
 - [ ] **Step 5: Run and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS.
 
@@ -717,7 +717,7 @@ it('applies semantic classNames and styles to menu structures', () => {
 
 - [ ] **Step 2: Run and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: FAIL because semantic props are not used.
 
@@ -740,7 +740,7 @@ Merge `semanticClass(name)` and `semanticStyle(name)` into each named target.
 
 - [ ] **Step 4: Run and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS.
 
@@ -782,7 +782,7 @@ it('applies menu and submenu themes and renders horizontal overflow indicator ho
 
 - [ ] **Step 2: Run and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: FAIL because theme classes and overflow indicator are not rendered.
 
@@ -800,7 +800,7 @@ Add root class `${prefixCls()}-${local.theme ?? 'light'}`. Add submenu class whe
 
 - [ ] **Step 4: Run and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS.
 
@@ -850,7 +850,7 @@ Expected: PASS, or report pre-existing unrelated formatting failures.
 
 - [ ] **Step 1: Run focused tests**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- menu`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- menu`
 
 Expected: PASS.
 

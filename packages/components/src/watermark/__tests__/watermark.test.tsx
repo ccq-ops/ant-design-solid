@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
-import { darkAlgorithm } from '@ant-design-solid/theme'
+import { darkAlgorithm } from '@solid-ant-design/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Watermark, useWatermarkPanelRef } from '../index'

@@ -100,7 +100,7 @@ Update `apps/docs/src/pages/components/timeline.mdx` to show only v6 Timeline AP
 Run targeted tests while implementing:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/steps/__tests__/steps.test.tsx src/timeline/__tests__/timeline.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/steps/__tests__/steps.test.tsx src/timeline/__tests__/timeline.test.tsx
 ```
 
 After the feature is complete, run:

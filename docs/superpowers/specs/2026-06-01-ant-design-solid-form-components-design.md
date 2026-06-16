@@ -24,7 +24,7 @@ The target is a standard form implementation: field registration, form state, sy
 
 The repository already has:
 
-- pnpm workspace packages for `@ant-design-solid/core`, `@ant-design-solid/theme`, `@ant-design-solid/cssinjs`, `@ant-design-solid/icons`, and docs.
+- pnpm workspace packages for `@solid-ant-design/core`, `@solid-ant-design/theme`, `@solid-ant-design/cssinjs`, `@solid-ant-design/icons`, and docs.
 - Core components: `ConfigProvider`, `Button`, `Input`, `Space`, `Typography`, and `Grid`.
 - Component patterns based on:
   - `interface.ts`
@@ -62,7 +62,7 @@ This milestone does not include:
 
 ### Public API
 
-`@ant-design-solid/core` should export:
+`@solid-ant-design/core` should export:
 
 - `Form`
 - `Form.Item`
@@ -291,7 +291,7 @@ Extend the existing `Input` export with:
 
 ## Theme and Styling
 
-Extend `@ant-design-solid/theme` component tokens for:
+Extend `@solid-ant-design/theme` component tokens for:
 
 - `Form`
 - `Select`
@@ -300,7 +300,7 @@ Extend `@ant-design-solid/theme` component tokens for:
 - `Switch`
 - `TextArea` where needed, or reuse `Input` tokens if sufficient
 
-Styles must use the existing `@ant-design-solid/cssinjs` runtime and ConfigProvider token context.
+Styles must use the existing `@solid-ant-design/cssinjs` runtime and ConfigProvider token context.
 
 Each component should expose Ant Design-like classes using the configured prefix:
 

@@ -16,7 +16,7 @@ This batch focuses on common business UI needs after the existing foundation, fo
 
 The repository already includes:
 
-- A pnpm monorepo with packages for `@ant-design-solid/core`, `@ant-design-solid/theme`, `@ant-design-solid/cssinjs`, and `@ant-design-solid/icons`.
+- A pnpm monorepo with packages for `@solid-ant-design/core`, `@solid-ant-design/theme`, `@solid-ant-design/cssinjs`, and `@solid-ant-design/icons`.
 - A SolidJS docs app under `apps/docs` using file routes.
 - Existing component batches:
   - Foundation/layout/display: `ConfigProvider`, `Button`, `Input`, `Space`, `Typography`, `Grid`.
@@ -161,7 +161,7 @@ Token defaults should derive from existing global tokens where possible and supp
 
 ### Public API
 
-`@ant-design-solid/core` exports:
+`@solid-ant-design/core` exports:
 
 - `Table`
 - `TableProps`
@@ -220,7 +220,7 @@ Token defaults should derive from existing global tokens where possible and supp
 
 ### Public API
 
-`@ant-design-solid/core` exports:
+`@solid-ant-design/core` exports:
 
 - `Tag`
 - `TagProps`
@@ -250,7 +250,7 @@ Token defaults should derive from existing global tokens where possible and supp
 
 ### Public API
 
-`@ant-design-solid/core` exports:
+`@solid-ant-design/core` exports:
 
 - `Badge`
 - `BadgeProps`

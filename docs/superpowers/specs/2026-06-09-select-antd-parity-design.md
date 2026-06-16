@@ -2,7 +2,7 @@
 
 ## Goal
 
-Bring `@ant-design-solid/core` Select close to Ant Design's public Select API while preserving the existing Solid implementation, existing single-select behavior, Form integration, and project conventions.
+Bring `@solid-ant-design/core` Select close to Ant Design's public Select API while preserving the existing Solid implementation, existing single-select behavior, Form integration, and project conventions.
 
 ## Scope
 

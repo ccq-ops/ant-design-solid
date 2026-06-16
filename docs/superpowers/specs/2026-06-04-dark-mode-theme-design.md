@@ -10,7 +10,7 @@ This design implements the selected scope: **theme algorithm-level adaptation pl
 
 Included:
 
-- Add a dark theme algorithm to `@ant-design-solid/theme`.
+- Add a dark theme algorithm to `@solid-ant-design/theme`.
 - Extend `ThemeConfig` to accept an Ant Design-style `algorithm` field.
 - Preserve current light-theme behavior when no algorithm is supplied.
 - Make nested `ConfigProvider` theme merging preserve and override algorithms predictably.
@@ -32,7 +32,7 @@ The theme package remains the single source of design tokens. Components continu
 The public API adds an algorithm field matching the Ant Design v5 mental model:
 
 ```ts
-import { darkAlgorithm } from '@ant-design-solid/theme'
+import { darkAlgorithm } from '@solid-ant-design/theme'
 
 <ConfigProvider theme={{ algorithm: darkAlgorithm }}>
   <App />
@@ -147,7 +147,7 @@ No TypeScript file renames are planned. If a rename becomes necessary, it must f
 
 ## Acceptance Criteria
 
-- Consumers can import `darkAlgorithm` from `@ant-design-solid/theme`.
+- Consumers can import `darkAlgorithm` from `@solid-ant-design/theme`.
 - Consumers can pass `theme={{ algorithm: darkAlgorithm }}` to `ConfigProvider`.
 - Existing light-theme behavior remains unchanged without an algorithm.
 - Nested providers preserve dark mode when children only override token values.

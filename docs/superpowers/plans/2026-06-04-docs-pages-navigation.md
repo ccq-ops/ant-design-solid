@@ -20,7 +20,7 @@
 - [ ] Assert `./pages/index.tsx` maps to `/`.
 - [ ] Assert grouped pages create `topNavItems` for every first-level directory.
 - [ ] Assert each group has its own `sideNavGroups` items.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes.test.ts` and verify it fails before implementation because `src/routes.ts` does not exist or lacks the new API.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes.test.ts` and verify it fails before implementation because `src/routes.ts` does not exist or lacks the new API.
 
 ### Task 2: Move files and implement route grouping
 
@@ -70,7 +70,7 @@
 
 - No code files expected.
 
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs lint`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs lint`.
 - [ ] Run repository verification commands as time permits: lint, format:check, recursive typecheck/test/build.

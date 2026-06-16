@@ -15,7 +15,7 @@
 - Modify `apps/docs/package.json`: add `shiki` dependency for the docs app only.
 - Modify `apps/docs/src/site/demo-block.tsx`: add a `HighlightedCode` helper using Shiki and update `DemoBlock` to render highlighted HTML.
 - Modify `apps/docs/src/site/demo-block.test.tsx`: add tests for default TSX language, custom language, and fallback behavior.
-- Modify `pnpm-lock.yaml`: update via `corepack pnpm install --filter @ant-design-solid/docs`.
+- Modify `pnpm-lock.yaml`: update via `corepack pnpm install --filter @solid-ant-design/docs`.
 
 ## Implementation Tasks
 
@@ -113,7 +113,7 @@ describe('DemoBlock', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/demo-block.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/demo-block.test.tsx
 ```
 
 Expected: FAIL because `DemoBlock` does not accept `language`, does not produce Shiki `shiki` class/`data-language`, and has no fallback highlighter path.
@@ -130,7 +130,7 @@ Expected: FAIL because `DemoBlock` does not accept `language`, does not produce 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs add shiki
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs add shiki
 ```
 
 Expected: `apps/docs/package.json` includes `"shiki"` under `dependencies`, and `pnpm-lock.yaml` is updated.
@@ -227,7 +227,7 @@ export function DemoBlock(props: DemoBlockProps) {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/demo-block.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/demo-block.test.tsx
 ```
 
 Expected: PASS. If the test fails due to exact Shiki HTML structure, inspect the rendered DOM and adjust assertions or wrapper markup without changing the user-visible API.
@@ -255,7 +255,7 @@ return html.replace(
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/demo-block.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/demo-block.test.tsx
 ```
 
 Expected: PASS.

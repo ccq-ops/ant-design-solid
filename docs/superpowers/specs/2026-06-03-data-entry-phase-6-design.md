@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Expand `@ant-design-solid/core` with three practical Ant Design-style data entry components:
+Expand `@solid-ant-design/core` with three practical Ant Design-style data entry components:
 
 1. `AutoComplete`
 2. `TreeSelect`
@@ -181,7 +181,7 @@ type TransferDirection = 'left' | 'right'
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` registration pattern and `useToken()`.
+Use the existing `@solid-ant-design/cssinjs` registration pattern and `useToken()`.
 
 Class prefixes:
 

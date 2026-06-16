@@ -19,7 +19,7 @@
 - Test: `packages/components/src/table/__tests__/table.test.tsx`
 
 - [x] Write failing tests for `title`, `footer`, explicit `tableLayout`, and ellipsis-derived fixed layout.
-- [x] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- table`.
+- [x] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- table`.
 - [x] Add `title`, `footer`, `tableLayout`, and column `ellipsis` types.
 - [x] Render title/footer around the scroll container and compute table layout style.
 - [x] Re-run targeted Table tests.

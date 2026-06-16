@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Ant Design-style `Timeline`, `Result`, and `Image` components to `@ant-design-solid/core` with tests, docs, exports, and navigation entries.
+**Goal:** Add Ant Design-style `Timeline`, `Result`, and `Image` components to `@solid-ant-design/core` with tests, docs, exports, and navigation entries.
 
 **Architecture:** Each component follows the established colocated component folder pattern under `packages/components/src`, uses `ConfigProvider` prefix classes, and registers token-driven styles with `useStyleRegister`. `Image` uses the existing portal helper for preview overlays; `Timeline` and `Result` are static display components with controlled rendering through props.
 
@@ -68,7 +68,7 @@ Create `packages/components/src/timeline/__tests__/timeline.test.tsx` with tests
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/timeline/__tests__/timeline.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/timeline/__tests__/timeline.test.tsx
 ```
 
 Expected: FAIL because the `timeline` module does not exist.
@@ -107,7 +107,7 @@ Create `packages/components/src/result/__tests__/result.test.tsx` with tests cov
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/result/__tests__/result.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/result/__tests__/result.test.tsx
 ```
 
 Expected: FAIL because the `result` module does not exist.
@@ -146,7 +146,7 @@ Create `packages/components/src/image/__tests__/image.test.tsx` with tests cover
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/image/__tests__/image.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/image/__tests__/image.test.tsx
 ```
 
 Expected: FAIL because the `image` module does not exist.

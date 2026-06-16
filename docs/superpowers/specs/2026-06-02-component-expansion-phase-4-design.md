@@ -4,7 +4,7 @@ Date: 2026-06-02
 
 ## Goal
 
-Expand `@ant-design-solid/core` with feedback and loading components:
+Expand `@solid-ant-design/core` with feedback and loading components:
 
 1. `Spin`
 2. `Progress`
@@ -175,7 +175,7 @@ Behavior:
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` registration pattern and tokens from `useToken()`. Use stable class names through `config.prefixCls()`:
+Use the existing `@solid-ant-design/cssinjs` registration pattern and tokens from `useToken()`. Use stable class names through `config.prefixCls()`:
 
 - `ant-spin`
 - `ant-progress`

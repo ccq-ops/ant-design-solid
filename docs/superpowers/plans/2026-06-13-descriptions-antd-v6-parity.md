@@ -4,7 +4,7 @@
 
 **Goal:** Implement Ant Design v6 Descriptions API behavior in Solid style and refresh docs.
 
-**Architecture:** Extend the existing Descriptions component in place. Reuse shared responsive utilities for breakpoint maps, add focused row/span helpers inside `descriptions.tsx`, and add dedicated component tokens in `@ant-design-solid/theme`.
+**Architecture:** Extend the existing Descriptions component in place. Reuse shared responsive utilities for breakpoint maps, add focused row/span helpers inside `descriptions.tsx`, and add dedicated component tokens in `@solid-ant-design/theme`.
 
 **Tech Stack:** SolidJS, Vitest, @solidjs/testing-library, local cssinjs style registration, theme component tokens.
 
@@ -22,7 +22,7 @@ Add cases for `colon={false}`, semantic `classNames/styles`, responsive `column`
 
 - [ ] **Step 2: Run tests to verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions`
 
 Expected: FAIL because the props and behavior are not implemented yet.
 
@@ -44,7 +44,7 @@ Add `DescriptionsComponentToken` with label background, title margin, item paddi
 
 - [ ] **Step 3: Run type-focused test command**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions`
 
 Expected: still FAIL until implementation is complete.
 
@@ -72,7 +72,7 @@ Default `colon` to true and suppress it for `colon={false}`, bordered, and verti
 
 - [ ] **Step 5: Run targeted tests**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions`
 
 Expected: PASS.
 
@@ -92,7 +92,7 @@ Default large has no special root class; medium and small get size-specific padd
 
 - [ ] **Step 3: Run targeted tests**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions`
 
 Expected: PASS.
 
@@ -124,7 +124,7 @@ Expected: PASS or report formatting deltas to fix.
 
 - [ ] **Step 1: Run targeted test**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- descriptions`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- descriptions`
 
 Expected: PASS.
 

@@ -35,7 +35,7 @@ Deprecated antd props remain accepted when practical and map to the current API:
 
 ## Dependencies
 
-Add `dayjs` as a runtime dependency of `@ant-design-solid/core`.
+Add `dayjs` as a runtime dependency of `@solid-ant-design/core`.
 
 The implementation may use dayjs plugins needed for parity, including week, locale, custom parse format, quarter, advanced format, and localized format. Plugins must be registered from a focused date utility module instead of scattered across component files.
 
@@ -396,7 +396,7 @@ Mitigation: expose focus/blur in the idiomatic way used by this project while te
 
 ## Acceptance criteria
 
-- `@ant-design-solid/core` depends on dayjs.
+- `@solid-ant-design/core` depends on dayjs.
 - DatePicker public values and callbacks use dayjs-compatible types.
 - Single DatePicker supports common antd APIs and DatePicker-specific APIs listed in this document.
 - DatePicker supports date, week, month, quarter, and year picker modes.

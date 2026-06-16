@@ -6,7 +6,7 @@ Implement a first-pass Ant Design compatible Carousel for Solid. This version su
 
 ## API
 
-`Carousel` lives in `packages/components/src/carousel` and is exported from `@ant-design-solid/core`. Props include `autoplay`, `autoplaySpeed`, `dots`, `dotPosition`, `arrows`, `effect`, `fade`, `infinite`, `initialSlide`, `speed`, `easing`, `beforeChange`, `afterChange`, `prefixCls`, `class`, `style`, and `ref` for `{ goTo, next, prev }`.
+`Carousel` lives in `packages/components/src/carousel` and is exported from `@solid-ant-design/core`. Props include `autoplay`, `autoplaySpeed`, `dots`, `dotPosition`, `arrows`, `effect`, `fade`, `infinite`, `initialSlide`, `speed`, `easing`, `beforeChange`, `afterChange`, `prefixCls`, `class`, `style`, and `ref` for `{ goTo, next, prev }`.
 
 ## Behavior
 

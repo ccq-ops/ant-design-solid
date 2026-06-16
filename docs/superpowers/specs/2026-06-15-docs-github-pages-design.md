@@ -6,7 +6,7 @@ Add an automated GitHub Pages deployment for the docs app without coupling it to
 
 ## Scope
 
-The docs app is `@ant-design-solid/docs` under `apps/docs`. It builds static output into `apps/docs/.output/public`. The npm release workflow remains focused on package releases and is not responsible for publishing docs.
+The docs app is `@solid-ant-design/docs` under `apps/docs`. It builds static output into `apps/docs/.output/public`. The npm release workflow remains focused on package releases and is not responsible for publishing docs.
 
 ## Approach
 
@@ -43,9 +43,9 @@ The workflow uses GitHub Environment `github-pages`.
 
 Local verification should run:
 
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck`
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test`
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`
 
 The implementation should also structurally verify the workflow contains the expected Pages actions and uploads the correct output directory.

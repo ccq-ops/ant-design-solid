@@ -21,7 +21,7 @@
 
 - [ ] Add failing tests for field name normalization, grouped options, label-in-value conversion, and multiple value conversion.
 - [ ] Implement the new public interfaces and utility functions.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/select/__tests__/select.test.tsx`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/select/__tests__/select.test.tsx`.
 
 ### Task 2: Single Select Search And Rendering
 

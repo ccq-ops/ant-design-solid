@@ -60,7 +60,7 @@ it('applies size status and variant modifier classes', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "applies size status and variant modifier classes"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "applies size status and variant modifier classes"
 ```
 
 Expected: FAIL because `size`, `status`, and `variant` props are not typed and/or classes are missing.
@@ -213,7 +213,7 @@ it('supports object allowClear with custom icon and onClear callback', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "supports object allowClear"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "supports object allowClear"
 ```
 
 Expected: FAIL because object `allowClear` is truthy but custom `clearIcon` and `onClear` are not implemented.
@@ -273,7 +273,7 @@ Run the same focused test command. Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "supports filterOption=false"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "supports filterOption=false"
 ```
 
 Expected: PASS, confirming boolean `allowClear` still works.
@@ -335,7 +335,7 @@ it('uses showSearch.filterOption before legacy filterOption', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "showSearch"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "showSearch"
 ```
 
 Expected: FAIL because `onSearch` is not called and `showSearch.filterOption` is not used.
@@ -464,7 +464,7 @@ it('supports popupMatchSelectWidth options', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "notFoundContent|popupRender|popupMatchSelectWidth"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "notFoundContent|popupRender|popupMatchSelectWidth"
 ```
 
 Expected: FAIL because these popup APIs are not implemented.
@@ -576,7 +576,7 @@ Run the same focused test command. Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "renders dropdown in a portal"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "renders dropdown in a portal"
 ```
 
 Expected: PASS.
@@ -670,7 +670,7 @@ it('calls onInputKeyDown before internal keyboard handling', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "navigates enabled options|backfill|defaultActiveFirstOption|onInputKeyDown"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "navigates enabled options|backfill|defaultActiveFirstOption|onInputKeyDown"
 ```
 
 Expected: FAIL because active option navigation, backfill, and `onInputKeyDown` are not fully implemented.
@@ -801,7 +801,7 @@ Run the same focused test command. Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx -t "supports filterOption=false"
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx -t "supports filterOption=false"
 ```
 
 Expected: PASS.
@@ -822,7 +822,7 @@ git commit -m "feat: add auto complete keyboard navigation"
 - [ ] **Step 1: Run auto-complete test file**
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx
 ```
 
 Expected: PASS.

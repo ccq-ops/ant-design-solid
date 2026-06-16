@@ -19,7 +19,7 @@
 - Test: `packages/components/src/table/__tests__/table.test.tsx`
 
 - [ ] Write failing tests for `dataIndex` path arrays, `className`, `locale.emptyText`, object-form `loading`, row/header/cell prop hooks.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- table`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- table`.
 - [ ] Add table, column, loading, locale, sorter, filter, and pagination compatibility types.
 - [ ] Implement value path lookup and prop hook application.
 - [ ] Re-run the targeted Table test.
@@ -57,7 +57,7 @@
 - Modify: `apps/docs/src/pages/components/table.mdx`
 
 - [ ] Update the Table API docs for the implemented compatibility slice.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- table`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core lint`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- table`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core lint`.
 - [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`.

@@ -6,7 +6,7 @@ describe('convertMdxDemoFences', () => {
     const input = `# Button
 
 \`\`\`tsx
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Button>Click</Button>
@@ -19,7 +19,7 @@ export default Demo
     const result = convertMdxDemoFences(input, 'apps/docs/src/routes/components/button.mdx')
 
     expect(result.convertedCount).toBe(1)
-    expect(result.output).toContain("import { Button } from '@ant-design-solid/core'\n\n# Button")
+    expect(result.output).toContain("import { Button } from '@solid-ant-design/core'\n\n# Button")
     expect(result.output).toContain(':::preview')
     expect(result.output).toContain('<ButtonDemo001 />')
     expect(result.output).toContain('---\n\n```tsx')
@@ -53,7 +53,7 @@ const helper = <span>Only source</span>
     const input = `# Avatar
 
 \`\`\`tsx
-import { Avatar } from '@ant-design-solid/core'
+import { Avatar } from '@solid-ant-design/core'
 
 const helper = 'A'
 const Demo = function () {
@@ -64,7 +64,7 @@ export default Demo
 \`\`\`
 
 \`\`\`tsx
-import { Avatar } from '@ant-design-solid/core'
+import { Avatar } from '@solid-ant-design/core'
 
 const helper = 'B'
 const Demo = function () {
@@ -80,7 +80,7 @@ export default Demo
     expect(result.convertedCount).toBe(2)
     const modulePreamble = result.output.slice(0, result.output.indexOf('# Avatar'))
     expect(
-      modulePreamble.match(/import \{ Avatar \} from '@ant-design-solid\/core'/g),
+      modulePreamble.match(/import \{ Avatar \} from '@solid-ant-design\/core'/g),
     ).toHaveLength(1)
     expect(result.output).toContain('export const AvatarDemo001 = (() => {')
     expect(result.output).toContain('export const AvatarDemo002 = (() => {')
@@ -92,7 +92,7 @@ export default Demo
     const input = `# Conflict
 
 \`\`\`tsx
-import { Button as Control } from '@ant-design-solid/core'
+import { Button as Control } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Control />
@@ -102,7 +102,7 @@ export default Demo
 \`\`\`
 
 \`\`\`tsx
-import { Input as Control } from '@ant-design-solid/core'
+import { Input as Control } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Control />
@@ -121,7 +121,7 @@ export default Demo
     const input = `# Modal
 
 \`\`\`tsx
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return (
@@ -148,7 +148,7 @@ export default Demo
   })
 
   it('preserves an already converted preview block when rerun', () => {
-    const input = `import { Button } from '@ant-design-solid/core'
+    const input = `import { Button } from '@solid-ant-design/core'
 
 # Button
 
@@ -167,7 +167,7 @@ export const ButtonDemo001 = (() => {
 ---
 
 \`\`\`tsx
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Button>Click</Button>
@@ -190,7 +190,7 @@ export default Demo
 
 \`\`\`tsx
 import { createSignal, JSX } from 'solid-js'
-import { Flex, type FlexProps } from '@ant-design-solid/core'
+import { Flex, type FlexProps } from '@solid-ant-design/core'
 
 const Demo = function () {
   const [gap] = createSignal<FlexProps['gap']>('small')
@@ -208,10 +208,10 @@ export default Demo
 
     expect(result.convertedCount).toBe(1)
     expect(modulePreamble).toContain("import { createSignal } from 'solid-js'")
-    expect(modulePreamble).toContain("import { Flex } from '@ant-design-solid/core'")
+    expect(modulePreamble).toContain("import { Flex } from '@solid-ant-design/core'")
     expect(modulePreamble).not.toContain('JSX')
     expect(modulePreamble).not.toContain('FlexProps')
     expect(result.output).toContain("import { createSignal, JSX } from 'solid-js'")
-    expect(result.output).toContain("import { Flex, type FlexProps } from '@ant-design-solid/core'")
+    expect(result.output).toContain("import { Flex, type FlexProps } from '@solid-ant-design/core'")
   })
 })

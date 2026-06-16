@@ -4,7 +4,7 @@ Date: 2026-06-02
 
 ## Goal
 
-Expand `@ant-design-solid/core` with the first batch of common Ant Design-style components while preserving the repository's existing component structure, styling approach, documentation pattern, and kebab-case file naming rules.
+Expand `@solid-ant-design/core` with the first batch of common Ant Design-style components while preserving the repository's existing component structure, styling approach, documentation pattern, and kebab-case file naming rules.
 
 This phase implements six relatively low-to-medium complexity components:
 

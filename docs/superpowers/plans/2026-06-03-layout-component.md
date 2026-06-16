@@ -6,7 +6,7 @@
 
 **Architecture:** Implement Layout as a small component module following existing component patterns: typed interface file, style hook file, component file, barrel export, root package export, tests, and docs route. Layout is a flex container; nested Sider presence is represented by `ads-layout-has-sider`, and Sider supports width, collapsedWidth, collapsed, and theme classes via inline CSS custom properties.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @ant-design-solid/cssinjs, existing ConfigProvider/theme tokens.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @solid-ant-design/cssinjs, existing ConfigProvider/theme tokens.
 
 ---
 
@@ -36,7 +36,7 @@
   - `hasSider` adds `ads-layout-has-sider`.
   - custom prefix from `ConfigProvider` is respected.
 
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/layout/__tests__/layout.test.tsx` and verify it fails because `../index` does not exist yet.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/layout/__tests__/layout.test.tsx` and verify it fails because `../index` does not exist yet.
 
 ### Task 2: Implement Layout module
 

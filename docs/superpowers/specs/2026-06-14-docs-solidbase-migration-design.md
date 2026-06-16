@@ -60,7 +60,7 @@ The theme should provide:
 - A layout component equivalent to the current header/sidebar/main structure.
 - A component mapping for MDX tables and preview components.
 - Preview components styled to fit the current docs visual language.
-- A way to wrap page content in `StyleProvider` from `@ant-design-solid/cssinjs`.
+- A way to wrap page content in `StyleProvider` from `@solid-ant-design/cssinjs`.
 - A docs theme provider or equivalent dark/light mode integration.
 
 The migration should avoid broad visual redesign. Styling changes should be limited to what is needed for SolidBase/SolidStart integration and the preview directive.
@@ -72,7 +72,7 @@ The custom `demoBlockMdxPlugin` will be removed.
 Demo examples should use SolidBase-style preview directives. The executable demo code should live in MDX ESM scope, and the directive panel should show the same source code for readers:
 
 ````mdx
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 function Demo1() {
 return <Button type="primary">Primary</Button>
@@ -87,7 +87,7 @@ return <Button type="primary">Primary</Button>
 ---
 
 ```tsx
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 function Demo1() {
   return <Button type="primary">Primary</Button>

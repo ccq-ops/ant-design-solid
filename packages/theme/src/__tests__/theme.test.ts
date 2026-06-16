@@ -16,7 +16,7 @@ function expectTokenEntries(token: unknown, expected: Record<string, unknown>) {
   }
 }
 
-describe('@ant-design-solid/theme', () => {
+describe('@solid-ant-design/theme', () => {
   it('matches antd 6.4.4 default global token values', () => {
     const token = mergeTheme()
 

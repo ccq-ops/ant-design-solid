@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'

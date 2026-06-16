@@ -117,7 +117,7 @@ it('uses Tailwind for simple static example wrappers', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/components/style-migration.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/components/style-migration.test.tsx
 ```
 
 Expected: FAIL because the new Tailwind strings are not present yet.
@@ -187,7 +187,7 @@ Keep inline styles only where they represent component behavior or dynamic sizin
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/components/style-migration.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/components/style-migration.test.tsx
 ```
 
 Expected: Layout assertions pass; later page assertions may still fail.
@@ -248,7 +248,7 @@ Remove `useToken` from imports if no remaining example in the file uses it after
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/components/style-migration.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/components/style-migration.test.tsx
 ```
 
 Expected: FloatButton assertions pass; remaining page assertions may still fail.
@@ -371,7 +371,7 @@ Use `class="w-full"` on `Space` instead of `style={{ width: '100%' }}` if the co
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/components/style-migration.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/components/style-migration.test.tsx
 ```
 
 Expected: all style migration tests pass.
@@ -403,7 +403,7 @@ Then inspect `git diff` to ensure no unrelated user files were reformatted. If u
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.
@@ -413,7 +413,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
 ```
 
 Expected: PASS.
@@ -423,7 +423,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

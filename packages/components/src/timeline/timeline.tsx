@@ -1,6 +1,6 @@
 import { splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { LoadingOutlined } from '@ant-design-solid/solid-icons'
+import { LoadingOutlined } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { Steps } from '../steps'

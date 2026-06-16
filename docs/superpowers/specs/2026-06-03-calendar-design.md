@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Add an Ant Design-style `Calendar` component to `@ant-design-solid/core` with the common display, selection, customization, documentation, and test coverage expected by the existing component library.
+Add an Ant Design-style `Calendar` component to `@solid-ant-design/core` with the common display, selection, customization, documentation, and test coverage expected by the existing component library.
 
 The implementation should follow repository conventions:
 
@@ -13,7 +13,7 @@ The implementation should follow repository conventions:
 - Root exports are updated in `packages/components/src/index.ts`.
 - Docs navigation is updated in `apps/docs/src/site/nav.ts`.
 - All TypeScript filenames use lowercase kebab-case.
-- Styling uses `@ant-design-solid/cssinjs` and theme tokens via `useToken()`.
+- Styling uses `@solid-ant-design/cssinjs` and theme tokens via `useToken()`.
 
 ## Existing Patterns To Follow
 

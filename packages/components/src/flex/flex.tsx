@@ -1,6 +1,6 @@
 import { splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import { getComponentToken, type GlobalToken } from '@ant-design-solid/theme'
+import { getComponentToken, type GlobalToken } from '@solid-ant-design/theme'
 import { useConfig, useToken } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useFlexStyle } from './flex.style'

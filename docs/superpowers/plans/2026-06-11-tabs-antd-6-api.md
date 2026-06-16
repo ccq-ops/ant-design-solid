@@ -6,7 +6,7 @@
 
 **Architecture:** Keep a native Solid implementation and split Tabs into focused nav, panel, utility, and style modules. Add behavior through TDD batches that preserve current tests while expanding API parity for lifecycle, placement, editable cards, customization, semantic slots, overflow, docs, and verification.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, existing `@ant-design-solid/icons`, existing `Dropdown`, existing css-in-js style registration.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, existing `@solid-ant-design/icons`, existing `Dropdown`, existing css-in-js style registration.
 
 ---
 
@@ -50,7 +50,7 @@ it('accepts antd 6 props and solid class naming', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: FAIL because new props/types are not implemented.
@@ -175,7 +175,7 @@ Export new public types from `packages/components/src/tabs/index.ts`.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: existing tests pass except behavior still missing for later tasks if those tests have already been added.
@@ -232,7 +232,7 @@ it('supports destroyOnHidden globally and per item', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: FAIL because current inactive panes render immediately and item-level lifecycle does not exist.
@@ -267,7 +267,7 @@ Keep controlled/uncontrolled active key in `tabs.tsx`, pass callbacks to childre
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS for existing tests and new lifecycle tests.
@@ -364,7 +364,7 @@ Resolve `classNames` and `styles` once in `tabs.tsx`, pass to nav and panel modu
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS.
@@ -427,7 +427,7 @@ Run targeted Tabs tests and confirm editable-card tests fail.
 
 - [ ] **Step 3: Implement add button**
 
-Import `PlusOutlined` from `@ant-design-solid/icons`. Render add button for `type="editable-card"` when `hideAdd` is not true. Call `onEdit(event, 'add')`.
+Import `PlusOutlined` from `@solid-ant-design/icons`. Render add button for `type="editable-card"` when `hideAdd` is not true. Call `onEdit(event, 'add')`.
 
 - [ ] **Step 4: Implement remove buttons**
 
@@ -442,7 +442,7 @@ Add stable dimensions, hover/focus states, and card layout adjustments in `tabs.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS.
@@ -508,7 +508,7 @@ Render a semantic indicator element. Compute inline size from `indicator.size` w
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS.
@@ -559,7 +559,7 @@ In `tabs.tsx`, create `defaultTabBarProps`. Render `local.renderTabBar(defaultTa
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS.
@@ -663,7 +663,7 @@ Track previous `scrollLeft` and `scrollTop` values on the nav list and call `onT
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS.
@@ -701,7 +701,7 @@ Run:
 
 ```bash
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- tabs
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- tabs
 ```
 
 Expected: PASS.

@@ -1,4 +1,4 @@
-import * as Icons from '@ant-design-solid/solid-icons'
+import * as Icons from '@solid-ant-design/icons'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fireEvent, render, waitFor } from '@solidjs/testing-library'

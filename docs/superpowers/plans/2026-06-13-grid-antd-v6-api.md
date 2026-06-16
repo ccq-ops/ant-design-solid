@@ -17,7 +17,7 @@
 - Modify: `packages/components/src/grid/__tests__/grid.test.tsx`
 
 - [ ] Add tests for responsive Row/Col APIs, Grid.useBreakpoint, flex, prefixCls, RTL, and gutter propagation.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- grid` and confirm new tests fail before implementation.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- grid` and confirm new tests fail before implementation.
 
 ### Task 2: Responsive Utilities
 
@@ -57,5 +57,5 @@
 ### Task 5: Verification
 
 - [ ] Run focused Grid tests.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`.
 - [ ] Run repository verification commands if time permits.

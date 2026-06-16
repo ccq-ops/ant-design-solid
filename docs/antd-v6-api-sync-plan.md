@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Align every public `@ant-design-solid/core` component API with `antd@6.4.4`, excluding APIs marked deprecated in antd v6 and translating React naming to Solid naming.
+**Goal:** Align every public `@solid-ant-design/core` component API with `antd@6.4.4`, excluding APIs marked deprecated in antd v6 and translating React naming to Solid naming.
 
 **Architecture:** Treat `packages/components/src/*/interface.ts` plus each component implementation, docs MDX, and tests as the source of truth. For every component task, first remove or replace local deprecated/React-style compatibility props, then add missing non-deprecated antd v6 APIs with Solid equivalents, tests, and docs.
 
@@ -152,7 +152,7 @@ No public API delta found after excluding JSX native attributes.
 ### ConfigProvider
 
 - [ ] Add `list` to `ConfigProviderProps` and component config plumbing.
-- [ ] Ensure `ThemeConfig` exported from `@ant-design-solid/theme` exposes v6 fields: `algorithm`, `components`, `cssVar`, `hashed`, `inherit`, `token`, `zeroRuntime`.
+- [ ] Ensure `ThemeConfig` exported from `@solid-ant-design/theme` exposes v6 fields: `algorithm`, `components`, `cssVar`, `hashed`, `inherit`, `token`, `zeroRuntime`.
 - [ ] Export/align `ComponentsConfig`; include component configs for all public components, including List when implemented.
 - [ ] Rename all component-config `classNames` fields to `classes` after component-level rename tasks.
 - [ ] Remove deprecated config fields if present: `autoInsertSpaceInButton`, `dropdownMatchSelectWidth`.

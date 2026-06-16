@@ -86,8 +86,8 @@
 
 **Commands:**
 
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- input`
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- input`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck`

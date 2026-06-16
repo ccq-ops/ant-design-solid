@@ -2,7 +2,7 @@
 
 ## Goal
 
-Expand the Form documentation page with Ant Design-inspired examples that demonstrate the common Form APIs already supported by `@ant-design-solid/core`.
+Expand the Form documentation page with Ant Design-inspired examples that demonstrate the common Form APIs already supported by `@solid-ant-design/core`.
 
 ## Scope
 

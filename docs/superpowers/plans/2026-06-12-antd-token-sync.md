@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bring `@ant-design-solid/theme` global tokens into parity with Ant Design `6.4.4`.
+**Goal:** Bring `@solid-ant-design/theme` global tokens into parity with Ant Design `6.4.4`.
 
 **Architecture:** Expand seed/map/alias token derivation in the theme package while keeping the public API stable. Use `@ant-design/colors` and `@ant-design/fast-color` for Ant Design-compatible color math, and keep component token defaults in the existing `components.ts` boundary.
 
@@ -17,7 +17,7 @@
 - Modify: `packages/theme/src/__tests__/theme.test.ts`
 
 - [ ] Add tests asserting representative Ant Design `6.4.4` seed, map, alias, dark, and override tokens.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test` and confirm the new tests fail on missing/mismatched token fields.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test` and confirm the new tests fail on missing/mismatched token fields.
 
 ### Task 2: Global Token Implementation
 
@@ -54,7 +54,7 @@
 
 - All touched files.
 
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme typecheck`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme typecheck`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test`.
 - [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint`.
 - [ ] Run broader checks if time permits or if scoped checks expose cross-package impact.

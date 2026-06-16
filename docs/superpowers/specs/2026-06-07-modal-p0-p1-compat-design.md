@@ -211,7 +211,7 @@ All implementation changes will be test-first. Tests will be added to `packages/
 After implementation, run at minimum:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- modal
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- modal
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck

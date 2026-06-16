@@ -3,9 +3,9 @@ title: Input Number
 group: Data Entry
 ---
 
-import { ConfigProvider, Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
+import { ConfigProvider, Form, InputNumber, Space, useToken } from '@solid-ant-design/core'
 import { createSignal } from 'solid-js'
-import { MinusOutlined, PlusOutlined } from '@ant-design-solid/solid-icons'
+import { MinusOutlined, PlusOutlined } from '@solid-ant-design/icons'
 
 # InputNumber
 
@@ -32,7 +32,7 @@ return Demo1
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <InputNumber defaultValue={3} />
@@ -61,7 +61,7 @@ return Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   return <InputNumber min={0} max={10} step={0.5} defaultValue={2} />
@@ -94,7 +94,7 @@ return Demo3
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo3 = function () {
   const [value, setValue] = createSignal(3)
@@ -130,7 +130,7 @@ return Demo4
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo4 = function () {
   return <InputNumber precision={2} defaultValue={1.236} />
@@ -162,7 +162,7 @@ return Demo5
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo5 = function () {
   return (
@@ -206,7 +206,7 @@ return Demo6
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo6 = function () {
   return (
@@ -244,7 +244,7 @@ return Demo7
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo7 = function () {
   return (
@@ -290,8 +290,8 @@ return Demo8
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { MinusOutlined, PlusOutlined } from '@ant-design-solid/solid-icons'
-import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
+import { MinusOutlined, PlusOutlined } from '@solid-ant-design/icons'
+import { Form, InputNumber, Space, useToken } from '@solid-ant-design/core'
 
 const Demo8 = function () {
   const token = useToken()
@@ -359,7 +359,7 @@ return Demo9
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
+import { Form, InputNumber, Space, useToken } from '@solid-ant-design/core'
 
 const Demo9 = function () {
   const token = useToken()
@@ -408,7 +408,7 @@ return Demo10
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo10 = function () {
   const [stepInfo, setStepInfo] = createSignal('No step yet')
@@ -456,7 +456,7 @@ return Demo11
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo11 = function () {
   const [liveValue, setLiveValue] = createSignal()
@@ -497,7 +497,7 @@ return Demo12
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo12 = function () {
   const [stringValue, setStringValue] = createSignal('0.000000000000000001')
@@ -540,7 +540,7 @@ return Demo13
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
+import { Form, InputNumber, Space, useToken } from '@solid-ant-design/core'
 
 const Demo13 = function () {
   const token = useToken()
@@ -582,7 +582,7 @@ return Demo14
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo14 = function () {
   return (
@@ -625,7 +625,7 @@ return Demo15
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo15 = function () {
   return (
@@ -667,9 +667,9 @@ return Demo16
 ---
 
 ```tsx
-import type { InputNumberRef } from '@ant-design-solid/core'
+import type { InputNumberRef } from '@solid-ant-design/core'
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo16 = function () {
   let inputNumberRef: InputNumberRef | undefined
@@ -724,7 +724,7 @@ return Demo17
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { ConfigProvider, Form, InputNumber, Space, useToken } from '@ant-design-solid/core'
+import { ConfigProvider, Form, InputNumber, Space, useToken } from '@solid-ant-design/core'
 
 const TokenInputNumber = function () {
   const token = useToken()
@@ -778,7 +778,7 @@ return Demo18
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Form, InputNumber, Space } from '@ant-design-solid/core'
+import { Form, InputNumber, Space } from '@solid-ant-design/core'
 
 const Demo18 = function () {
   return (

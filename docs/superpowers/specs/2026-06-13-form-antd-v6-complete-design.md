@@ -4,7 +4,7 @@ Date: 2026-06-13
 
 ## Summary
 
-Upgrade `@ant-design-solid/core` Form from its current common Ant Design subset to a Solid-native implementation of the remaining Ant Design v6 Form API surface. This spec supersedes the earlier Form parity specs that explicitly deferred `fields`, `Form.Provider`, `feedbackIcons`, semantic `classNames/styles`, and full docs parity.
+Upgrade `@solid-ant-design/core` Form from its current common Ant Design subset to a Solid-native implementation of the remaining Ant Design v6 Form API surface. This spec supersedes the earlier Form parity specs that explicitly deferred `fields`, `Form.Provider`, `feedbackIcons`, semantic `classNames/styles`, and full docs parity.
 
 The implementation should preserve the existing self-contained Solid form store. It should not introduce `rc-field-form` or a React compatibility layer. Public APIs should match Ant Design v6 concepts while using Solid conventions such as `class`, `JSX.Element`, signals, accessors, context, and render functions.
 
@@ -144,7 +144,7 @@ export interface FormTooltipProps {
 export type FormTooltip = JSX.Element | FormTooltipProps
 ```
 
-If the tooltip value is an object, render `icon` when provided. Otherwise render a default help indicator using existing icon assets if one exists in `@ant-design-solid/icons`; if no suitable icon exists, render the title directly in the tooltip slot without inventing a new SVG.
+If the tooltip value is an object, render `icon` when provided. Otherwise render a default help indicator using existing icon assets if one exists in `@solid-ant-design/icons`; if no suitable icon exists, render the title directly in the tooltip slot without inventing a new SVG.
 
 ### Feedback Icons
 

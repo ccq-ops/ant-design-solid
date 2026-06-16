@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { CloseCircleFilled } from '@ant-design-solid/solid-icons'
+import { CloseCircleFilled } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { useFormItemControl } from '../form/context'
 import { classNames } from '../shared/class-names'

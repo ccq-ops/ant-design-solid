@@ -1,4 +1,4 @@
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 import type { JSX } from 'solid-js'
 
 export type InputNumberValue = number | string

@@ -4,9 +4,9 @@
 
 **Goal:** Add MVP `Table`, `Tag`, and `Badge` components with token-driven styles, tests, exports, and docs.
 
-**Architecture:** Extend `@ant-design-solid/theme` component tokens first, then implement each component in its own `packages/components/src/<component>/` folder following existing `interface.ts`, implementation, style, `index.ts`, and colocated test conventions. Update root exports and docs routes after component tests pass.
+**Architecture:** Extend `@solid-ant-design/theme` component tokens first, then implement each component in its own `packages/components/src/<component>/` folder following existing `interface.ts`, implementation, style, `index.ts`, and colocated test conventions. Update root exports and docs routes after component tests pass.
 
-**Tech Stack:** TypeScript, SolidJS JSX, `@ant-design-solid/cssinjs`, `@ant-design-solid/theme`, Vitest, `@solidjs/testing-library`, pnpm 11, Vite 8, oxlint, oxfmt.
+**Tech Stack:** TypeScript, SolidJS JSX, `@solid-ant-design/cssinjs`, `@solid-ant-design/theme`, Vitest, `@solidjs/testing-library`, pnpm 11, Vite 8, oxlint, oxfmt.
 
 ---
 
@@ -96,7 +96,7 @@ it('derives data display component token defaults and applies overrides', () => 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test -- --run src/__tests__/theme.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test -- --run src/__tests__/theme.test.ts
 ```
 
 Expected: TypeScript/test failure because `Table`, `Tag`, and `Badge` are not keys in `ComponentTokenMap`.
@@ -192,7 +192,7 @@ In `packages/theme/src/components.ts`, add these entries to the `defaults` objec
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test -- --run src/__tests__/theme.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test -- --run src/__tests__/theme.test.ts
 ```
 
 Expected: PASS.
@@ -278,7 +278,7 @@ describe('Tag', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/tag/__tests__/tag.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/tag/__tests__/tag.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/tag` does not exist.
@@ -303,8 +303,8 @@ export interface TagProps extends JSX.HTMLAttributes<HTMLSpanElement> {
 Create `packages/components/src/tag/tag.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useTagStyle(prefixCls: string) {
@@ -449,7 +449,7 @@ export * from './tag'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/tag/__tests__/tag.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/tag/__tests__/tag.test.tsx
 ```
 
 Expected: PASS.
@@ -542,7 +542,7 @@ describe('Badge', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/badge/__tests__/badge.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/badge/__tests__/badge.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/badge` does not exist.
@@ -571,8 +571,8 @@ export interface BadgeProps extends JSX.HTMLAttributes<HTMLSpanElement> {
 Create `packages/components/src/badge/badge.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useBadgeStyle(prefixCls: string) {
@@ -733,7 +733,7 @@ export * from './badge'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/badge/__tests__/badge.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/badge/__tests__/badge.test.tsx
 ```
 
 Expected: PASS.
@@ -867,7 +867,7 @@ describe('Table', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/table/__tests__/table.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/table/__tests__/table.test.tsx
 ```
 
 Expected: FAIL because `packages/components/src/table` does not exist.
@@ -878,7 +878,7 @@ Create `packages/components/src/table/interface.ts`:
 
 ```ts
 import type { JSX } from 'solid-js'
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 
 export interface TableColumn<T extends Record<string, unknown> = Record<string, unknown>> {
   title?: JSX.Element
@@ -913,8 +913,8 @@ Create `packages/components/src/table/table.style.ts` with root wrapper, table, 
 Use this complete implementation:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useTableStyle(prefixCls: string) {
@@ -1136,7 +1136,7 @@ export * from './table'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- --run src/table/__tests__/table.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- --run src/table/__tests__/table.test.tsx
 ```
 
 Expected: PASS.
@@ -1182,12 +1182,12 @@ In `apps/docs/src/site/nav.ts`, add these entries after Switch and before Alert:
 
 - [ ] **Step 3: Add Table docs page**
 
-Create `apps/docs/src/routes/components/table.tsx` with imports from `@ant-design-solid/core`, demo records, columns, and demos for basic table, bordered/small table, custom render using `Tag` and `Badge`, and empty/loading states.
+Create `apps/docs/src/routes/components/table.tsx` with imports from `@solid-ant-design/core`, demo records, columns, and demos for basic table, bordered/small table, custom render using `Tag` and `Badge`, and empty/loading states.
 
 Use this implementation:
 
 ```tsx
-import { Badge, Table, Tag } from '@ant-design-solid/core'
+import { Badge, Table, Tag } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 interface UserRecord {
@@ -1246,7 +1246,7 @@ export default function TablePage() {
 Create `apps/docs/src/routes/components/tag.tsx`:
 
 ```tsx
-import { Tag, Space } from '@ant-design-solid/core'
+import { Tag, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function TagPage() {
@@ -1283,7 +1283,7 @@ export default function TagPage() {
 Create `apps/docs/src/routes/components/badge.tsx`:
 
 ```tsx
-import { Badge, Button, Space } from '@ant-design-solid/core'
+import { Badge, Button, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function BadgePage() {
@@ -1327,9 +1327,9 @@ export default function BadgePage() {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

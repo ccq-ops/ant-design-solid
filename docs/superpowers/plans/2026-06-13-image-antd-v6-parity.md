@@ -6,7 +6,7 @@
 
 **Architecture:** Split the current single Image implementation into focused modules for types, image rendering, preview overlay, preview group context, transform helpers, progress placeholder, and styles. Keep implementation Solid-native and portal-backed, with controlled/uncontrolled helpers in component code rather than external dependencies.
 
-**Tech Stack:** SolidJS, Vitest, `@solidjs/testing-library`, existing `@ant-design-solid/cssinjs`, existing config provider tokens and z-index helpers.
+**Tech Stack:** SolidJS, Vitest, `@solidjs/testing-library`, existing `@solid-ant-design/cssinjs`, existing config provider tokens and z-index helpers.
 
 ---
 
@@ -39,7 +39,7 @@ Add tests showing `loading`, `srcSet`, `crossOrigin`, `class`, `rootClass`, `cla
 
 - [ ] **Step 2: Run focused Image tests and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: FAIL because semantic props and img attribute passthrough are missing.
 
@@ -49,7 +49,7 @@ Change `ImageProps` to omit image event conflicts from `JSX.ImgHTMLAttributes<HT
 
 - [ ] **Step 4: Run focused Image tests and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: PASS.
 
@@ -68,7 +68,7 @@ Add tests for `preview={{ open, src, alt, zIndex, getContainer, onOpenChange }}`
 
 - [ ] **Step 2: Run focused Image tests and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: FAIL because `preview` only accepts boolean and overlay is not controlled.
 
@@ -78,7 +78,7 @@ Move overlay rendering to `preview.tsx`. Normalize `preview` into config, suppor
 
 - [ ] **Step 4: Run focused Image tests and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: PASS.
 
@@ -97,7 +97,7 @@ Add tests that click toolbar buttons for zoom in, zoom out, rotate left, rotate 
 
 - [ ] **Step 2: Run focused Image tests and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: FAIL because toolbar buttons and transform state are missing.
 
@@ -107,7 +107,7 @@ Add transform state with `x`, `y`, `rotate`, `scale`, `flipX`, and `flipY`. Impl
 
 - [ ] **Step 4: Run focused Image tests and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: PASS.
 
@@ -127,7 +127,7 @@ Add tests for `placeholder={{ progress: { percent } }}`, custom progress render,
 
 - [ ] **Step 2: Run focused Image tests and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: FAIL because these customization hooks are missing.
 
@@ -137,7 +137,7 @@ Add progress placeholder rendering with ARIA attributes, cover rendering over th
 
 - [ ] **Step 4: Run focused Image tests and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: PASS.
 
@@ -157,7 +157,7 @@ Add tests for `Image.PreviewGroup` child registration, opening the clicked image
 
 - [ ] **Step 2: Run focused Image tests and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: FAIL because `Image.PreviewGroup` does not exist.
 
@@ -167,7 +167,7 @@ Create group context that registers image metadata, opens shared preview by id, 
 
 - [ ] **Step 4: Run focused Image tests and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: PASS.
 
@@ -184,7 +184,7 @@ Add tests asserting classes for `ads-image-cover`, `ads-image-preview-mask`, `ad
 
 - [ ] **Step 2: Run focused Image tests and verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: FAIL because class structure and progress classes are not complete.
 
@@ -194,7 +194,7 @@ Implement image, cover, progress, preview, switch, footer, actions, movable, mov
 
 - [ ] **Step 4: Run focused Image tests and verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- image`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- image`
 
 Expected: PASS.
 
@@ -212,11 +212,11 @@ Rewrite the Image docs with antd-aligned examples in Solid syntax and API tables
 
 - [ ] **Step 2: Run docs and core typechecks**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`
 
 Expected: PASS.
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck`
 
 Expected: PASS.
 

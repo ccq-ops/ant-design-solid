@@ -1,5 +1,5 @@
 import { Show, splitProps } from 'solid-js'
-import { SearchOutlined } from '@ant-design-solid/solid-icons'
+import { SearchOutlined } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { Button } from '../button'
 import { classNames } from '../shared/class-names'

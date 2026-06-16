@@ -50,13 +50,13 @@ importers:
 
   apps/docs:
     dependencies:
-      '@ant-design-solid/core':
+      '@solid-ant-design/core':
         specifier: workspace:*
         version: link:../../packages/components
-      '@ant-design-solid/cssinjs':
+      '@solid-ant-design/cssinjs':
         specifier: workspace:*
         version: link:../../packages/cssinjs
-      '@ant-design-solid/solid-icons':
+      '@solid-ant-design/icons':
         specifier: workspace:*
         version: link:../../packages/icons
       '@kobalte/solidbase':
@@ -99,13 +99,13 @@ importers:
 
   packages/components:
     dependencies:
-      '@ant-design-solid/cssinjs':
+      '@solid-ant-design/cssinjs':
         specifier: workspace:*
         version: link:../cssinjs
-      '@ant-design-solid/solid-icons':
+      '@solid-ant-design/icons':
         specifier: workspace:*
         version: link:../icons
-      '@ant-design-solid/theme':
+      '@solid-ant-design/theme':
         specifier: workspace:*
         version: link:../theme
       '@tanstack/solid-virtual':

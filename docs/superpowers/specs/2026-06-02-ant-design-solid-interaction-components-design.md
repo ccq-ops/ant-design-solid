@@ -16,7 +16,7 @@ This batch adds common navigation and lightweight overlay interactions. It shoul
 
 The repository already includes:
 
-- Core package `@ant-design-solid/core` with foundation, form, feedback, and data display components.
+- Core package `@solid-ant-design/core` with foundation, form, feedback, and data display components.
 - Existing overlay infrastructure under `packages/components/src/shared/`:
   - `portal.tsx`
   - `overlay.ts`
@@ -169,7 +169,7 @@ Token defaults should derive from existing global tokens where possible and supp
 
 ### Public API
 
-`@ant-design-solid/core` exports:
+`@solid-ant-design/core` exports:
 
 - `Tabs`
 - `TabsProps`
@@ -216,7 +216,7 @@ Token defaults should derive from existing global tokens where possible and supp
 
 ### Public API
 
-`@ant-design-solid/core` exports:
+`@solid-ant-design/core` exports:
 
 - `Tooltip`
 - `TooltipProps`
@@ -256,7 +256,7 @@ Token defaults should derive from existing global tokens where possible and supp
 
 ### Public API
 
-`@ant-design-solid/core` exports:
+`@solid-ant-design/core` exports:
 
 - `Dropdown`
 - `DropdownProps`

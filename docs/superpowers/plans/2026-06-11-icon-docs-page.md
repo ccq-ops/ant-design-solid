@@ -2,18 +2,18 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a `/components/icon` docs page that shows usage examples and a full categorized grid of every generated `@ant-design-solid/icons` component.
+**Goal:** Add a `/components/icon` docs page that shows usage examples and a full categorized grid of every generated `@solid-ant-design/icons` component.
 
 **Architecture:** Keep the generated icon package unchanged. Add docs-local metadata/rendering helpers beside the MDX page, and test that metadata stays complete against the package root exports. Let the existing MDX route glob discover the new page automatically.
 
-**Tech Stack:** SolidJS, MDX docs pages, Vitest, `@solidjs/testing-library`, `@ant-design-solid/icons`.
+**Tech Stack:** SolidJS, MDX docs pages, Vitest, `@solidjs/testing-library`, `@solid-ant-design/icons`.
 
 ---
 
 ## File Structure
 
 - Create: `apps/docs/src/pages/components/icon-list.tsx`
-  - Imports all generated icon exports from `@ant-design-solid/icons`.
+  - Imports all generated icon exports from `@solid-ant-design/icons`.
   - Builds `allIcons`, `outlinedIcons`, `filledIcons`, and `twoToneIcons`.
   - Exports `IconGrid` and `IconSample` rendering helpers for the MDX page.
 - Create: `apps/docs/src/pages/components/icon-list.test.tsx`
@@ -48,7 +48,7 @@ it('discovers the migrated docs site from MDX page files without legacy TSX page
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/index.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/index.test.ts
 ```
 
 Expected: FAIL because `/components/icon` is not discovered yet.
@@ -71,7 +71,7 @@ git commit -m "test(docs): expect icon docs route"
 Create `apps/docs/src/pages/components/icon-list.test.tsx` with this content:
 
 ```tsx
-import * as Icons from '@ant-design-solid/icons'
+import * as Icons from '@solid-ant-design/icons'
 import { render } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
 import { IconGrid, allIcons, filledIcons, outlinedIcons, twoToneIcons } from './icon-list'
@@ -116,7 +116,7 @@ describe('icon docs metadata', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/pages/components/icon-list.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/pages/components/icon-list.test.tsx
 ```
 
 Expected: FAIL because `./icon-list` does not exist.
@@ -139,10 +139,10 @@ git commit -m "test(docs): cover icon docs metadata"
 Create `apps/docs/src/pages/components/icon-list.tsx` with this content:
 
 ```tsx
-import * as Icons from '@ant-design-solid/icons'
+import * as Icons from '@solid-ant-design/icons'
 import { For, type Component, type JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import type { IconProps } from '@ant-design-solid/icons'
+import type { IconProps } from '@solid-ant-design/icons'
 
 export type IconCategory = 'Outlined' | 'Filled' | 'TwoTone'
 
@@ -211,7 +211,7 @@ export function IconGrid(props: { title: string; icons: IconMeta[] }) {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/pages/components/icon-list.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/pages/components/icon-list.test.tsx
 ```
 
 Expected: PASS.
@@ -221,7 +221,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.
@@ -248,23 +248,23 @@ import { IconGrid, filledIcons, outlinedIcons, twoToneIcons } from './icon-list'
 
 # Icon
 
-Semantic vector graphics from `@ant-design-solid/icons`.
+Semantic vector graphics from `@solid-ant-design/icons`.
 
 ```tsx pure
-import { SearchOutlined } from '@ant-design-solid/icons'
+import { SearchOutlined } from '@solid-ant-design/icons'
 ```
 
 ### Basic usage
 
 ```tsx
-import { Space } from '@ant-design-solid/core'
+import { Space } from '@solid-ant-design/core'
 import {
   AccountBookTwoTone,
   CheckCircleFilled,
   HomeOutlined,
   SettingFilled,
   SmileOutlined,
-} from '@ant-design-solid/icons'
+} from '@solid-ant-design/icons'
 import { IconSample } from './icon-list'
 
 const Demo1 = function () {
@@ -295,8 +295,8 @@ export default Demo1
 ### Spin and rotate
 
 ```tsx
-import { Space } from '@ant-design-solid/core'
-import { LoadingOutlined, SmileOutlined, SyncOutlined } from '@ant-design-solid/icons'
+import { Space } from '@solid-ant-design/core'
+import { LoadingOutlined, SmileOutlined, SyncOutlined } from '@solid-ant-design/icons'
 import { IconSample } from './icon-list'
 
 const Demo2 = function () {
@@ -321,8 +321,8 @@ export default Demo2
 ### Two tone color
 
 ```tsx
-import { Space } from '@ant-design-solid/core'
-import { AccountBookTwoTone, HeartTwoTone } from '@ant-design-solid/icons'
+import { Space } from '@solid-ant-design/core'
+import { AccountBookTwoTone, HeartTwoTone } from '@solid-ant-design/icons'
 import { IconSample } from './icon-list'
 
 const Demo3 = function () {
@@ -369,7 +369,7 @@ Decorative icons are rendered with `aria-hidden="true"` by default. Provide `ari
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/index.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/index.test.ts
 ```
 
 Expected: PASS.
@@ -379,7 +379,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
 ```
 
 Expected: PASS.
@@ -389,7 +389,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.

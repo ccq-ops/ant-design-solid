@@ -46,14 +46,14 @@ describe('Playground page', () => {
     ))
     const editor = result.getByLabelText('Playground source') as HTMLTextAreaElement
 
-    expect(editor.value).toContain("import { Divider } from '@ant-design-solid/core'")
+    expect(editor.value).toContain("import { Divider } from '@solid-ant-design/core'")
     expect(editor.value).toContain('export default Demo1')
     expect(result.queryByRole('alert')).toBeNull()
   })
 
   it('loads the code query param into an editable playground', () => {
     const source = `
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Button>Loaded from source</Button>
@@ -83,7 +83,7 @@ export default Demo
     fireEvent.input(editor, {
       target: {
         value: `
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Button>Edited source</Button>
@@ -100,7 +100,7 @@ export default Demo
   it('updates source when a client navigation changes the code query param', async () => {
     const history = createMemoryHistory()
     const source = `
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <Button>Loaded after navigation</Button>

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extend `@ant-design-solid/core` Button to cover the requested antd Button APIs except semantic `classNames` / `styles`.
+**Goal:** Extend `@solid-ant-design/core` Button to cover the requested antd Button APIs except semantic `classNames` / `styles`.
 
 **Architecture:** Keep the public Button API in `packages/components/src/button/interface.ts` and behavior in `button.tsx`. Add an internal normalized state for `type`/`color`/`variant`, link-vs-button rendering, icon placement, loading object support, and simple Chinese auto-space handling; keep styling class-driven in `button.style.ts`.
 
@@ -127,7 +127,7 @@ it('adds normalized color and variant classes and lets explicit props override t
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: FAIL with TypeScript/runtime expectations because props/classes/anchor/loading object behavior are not implemented.
@@ -211,7 +211,7 @@ export type {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: still FAIL because implementation/classes are missing.
@@ -275,7 +275,7 @@ Return `<a>` when `href` exists, otherwise `<button>`. Preserve children and ico
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: tests should pass or fail only for class/style names not yet added.
@@ -344,7 +344,7 @@ Add transparent background and inverted-ish border/text behavior:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: PASS.

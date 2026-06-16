@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Complete the remaining Ant Design v6 Form API surface in `@ant-design-solid/core` while preserving Solid-native APIs and examples.
+**Goal:** Complete the remaining Ant Design v6 Form API surface in `@solid-ant-design/core` while preserving Solid-native APIs and examples.
 
 **Architecture:** Extend the existing Solid Form store and contexts in place. Add missing root APIs, item APIs, provider linkage, controlled fields, advanced `getFieldsValue`, validation message templating, Form-level control defaults, token alignment, and docs examples in small tested slices.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, cssinjs, `@ant-design-solid/theme`, `@ant-design-solid/icons`.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, cssinjs, `@solid-ant-design/theme`, `@solid-ant-design/icons`.
 
 ---
 
@@ -203,7 +203,7 @@ describe('Form.Provider', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-root-api form-provider
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-root-api form-provider
 ```
 
 Expected: FAIL because `classNames`, `styles`, `component`, `clearOnDestroy`, `Form.Provider`, and `scrollToFirstError` are not implemented.
@@ -294,7 +294,7 @@ Update `index.ts` so `Form.Provider` exists and `FormProvider`/new types are exp
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-root-api form-provider
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-root-api form-provider
 ```
 
 Expected: PASS.
@@ -461,7 +461,7 @@ it('Form.useWatch ignores unregistered values by default and observes them with 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-controlled-fields form-instance-advanced form-hooks
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-controlled-fields form-instance-advanced form-hooks
 ```
 
 Expected: new tests FAIL because controlled fields, advanced `getFieldsValue`, and `useWatch` preserve semantics are incomplete.
@@ -501,7 +501,7 @@ Change `use-watch.ts` so name-path watches use `form.getFieldsValue()` by defaul
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-controlled-fields form-instance-advanced form-hooks
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-controlled-fields form-instance-advanced form-hooks
 ```
 
 Expected: PASS.
@@ -644,7 +644,7 @@ it('uses validate message templates with custom variables and escaped placeholde
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-item-api validation
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-item-api validation
 ```
 
 Expected: FAIL because item v6 APIs and validation message templating are incomplete.
@@ -700,7 +700,7 @@ Add styles for:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-item-api validation form-layout form-item-advanced
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-item-api validation form-layout form-item-advanced
 ```
 
 Expected: PASS.
@@ -779,7 +779,7 @@ describe('Form control defaults', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-control-context
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-control-context
 ```
 
 Expected: FAIL because Form-level control defaults are not propagated.
@@ -840,7 +840,7 @@ Only add `variant` when the control already supports a compatible variant prop.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-control-context checkbox radio switch input input-number select auto-complete cascader tree-select mentions
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-control-context checkbox radio switch input input-number select auto-complete cascader tree-select mentions
 ```
 
 Expected: PASS or any unrelated existing failures documented with exact failing test names.
@@ -873,7 +873,7 @@ expect(getComponentToken('Form', token).feedbackIconMarginInlineStart).toBe(toke
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: FAIL because the new Form tokens are not in the token type/default map.
@@ -914,8 +914,8 @@ Update `form.style.ts` to use:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form-layout form-item-api
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form-layout form-item-api
 ```
 
 Expected: PASS.
@@ -966,7 +966,7 @@ Update tables for:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
 ```
 
@@ -985,7 +985,7 @@ Expected: PASS. If `format:check` fails only because new docs need formatting, r
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- form
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- form
 ```
 
 Expected: PASS.

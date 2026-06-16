@@ -4,7 +4,7 @@
 
 **Goal:** Build the first working `ant-design-solid` monorepo with SolidJS components, a Solid-native CSS-in-JS runtime, theme tokens, tests, and a Vite docs site.
 
-**Architecture:** The repository is a pnpm workspace with separate packages for theme tokens, CSS-in-JS, components, icons, and docs. Components consume token data from `@ant-design-solid/theme` and register styles through `@ant-design-solid/cssinjs`, while the docs app dogfoods `@ant-design-solid/core`.
+**Architecture:** The repository is a pnpm workspace with separate packages for theme tokens, CSS-in-JS, components, icons, and docs. Components consume token data from `@solid-ant-design/theme` and register styles through `@solid-ant-design/cssinjs`, while the docs app dogfoods `@solid-ant-design/core`.
 
 **Tech Stack:** TypeScript, SolidJS, Vite 8, pnpm 11, Vitest, jsdom, @solidjs/testing-library, oxlint, oxfmt.
 
@@ -100,7 +100,7 @@ Create `package.json`:
 
 ```json
 {
-  "name": "ant-design-solid",
+  "name": "solid-ant-design",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -110,7 +110,7 @@ Create `package.json`:
     "pnpm": ">=11"
   },
   "scripts": {
-    "dev": "pnpm --filter @ant-design-solid/docs dev",
+    "dev": "pnpm --filter @solid-ant-design/docs dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
@@ -179,10 +179,10 @@ Create `tsconfig.base.json`:
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": ".",
     "paths": {
-      "@ant-design-solid/theme": ["packages/theme/src"],
-      "@ant-design-solid/cssinjs": ["packages/cssinjs/src"],
-      "@ant-design-solid/icons": ["packages/icons/src"],
-      "@ant-design-solid/core": ["packages/components/src"]
+      "@solid-ant-design/theme": ["packages/theme/src"],
+      "@solid-ant-design/cssinjs": ["packages/cssinjs/src"],
+      "@solid-ant-design/icons": ["packages/icons/src"],
+      "@solid-ant-design/core": ["packages/components/src"]
     }
   }
 }
@@ -280,7 +280,7 @@ Create `packages/theme/package.json`:
 
 ```json
 {
-  "name": "@ant-design-solid/theme",
+  "name": "@solid-ant-design/theme",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -354,7 +354,7 @@ import {
   type ThemeConfig,
 } from '../index'
 
-describe('@ant-design-solid/theme', () => {
+describe('@solid-ant-design/theme', () => {
   it('derives alias tokens from seed tokens', () => {
     const token = defaultAlgorithm({ ...defaultSeedToken, colorPrimary: '#1677ff' })
 
@@ -388,7 +388,7 @@ describe('@ant-design-solid/theme', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/theme test
+pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: FAIL because `../index` exports do not exist yet.
@@ -654,7 +654,7 @@ export function mergeTheme(config: ThemeConfig = {}) {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/theme test
+pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: PASS.
@@ -691,7 +691,7 @@ Create `packages/cssinjs/package.json`:
 
 ```json
 {
-  "name": "@ant-design-solid/cssinjs",
+  "name": "@solid-ant-design/cssinjs",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -858,7 +858,7 @@ describe('useStyleRegister', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/cssinjs test
+pnpm --filter @solid-ant-design/cssinjs test
 ```
 
 Expected: FAIL because exports do not exist yet.
@@ -1100,7 +1100,7 @@ export type * from './types'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/cssinjs test
+pnpm --filter @solid-ant-design/cssinjs test
 ```
 
 Expected: PASS.
@@ -1127,7 +1127,7 @@ Create `packages/icons/package.json`:
 
 ```json
 {
-  "name": "@ant-design-solid/icons",
+  "name": "@solid-ant-design/icons",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -1242,7 +1242,7 @@ export function CloseCircleIcon(props: IconProps) {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/icons typecheck
+pnpm --filter @solid-ant-design/icons typecheck
 ```
 
 Expected: PASS.
@@ -1275,7 +1275,7 @@ Create `packages/components/package.json`:
 
 ```json
 {
-  "name": "@ant-design-solid/core",
+  "name": "@solid-ant-design/core",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -1293,9 +1293,9 @@ Create `packages/components/package.json`:
     "solid-js": ">=1.9.0"
   },
   "dependencies": {
-    "@ant-design-solid/cssinjs": "workspace:*",
-    "@ant-design-solid/icons": "workspace:*",
-    "@ant-design-solid/theme": "workspace:*"
+    "@solid-ant-design/cssinjs": "workspace:*",
+    "@solid-ant-design/icons": "workspace:*",
+    "@solid-ant-design/theme": "workspace:*"
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly",
@@ -1341,9 +1341,9 @@ export default defineConfig({
       external: [
         'solid-js',
         'solid-js/web',
-        '@ant-design-solid/theme',
-        '@ant-design-solid/cssinjs',
-        '@ant-design-solid/icons',
+        '@solid-ant-design/theme',
+        '@solid-ant-design/cssinjs',
+        '@solid-ant-design/icons',
       ],
     },
   },
@@ -1405,7 +1405,7 @@ describe('ConfigProvider', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/config-provider/__tests__/ConfigProvider.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/config-provider/__tests__/ConfigProvider.test.tsx
 ```
 
 Expected: FAIL because ConfigProvider files do not exist.
@@ -1426,7 +1426,7 @@ Create `packages/components/src/config-provider/interface.ts`:
 
 ```ts
 import type { Accessor, JSX } from 'solid-js'
-import type { AliasToken, ComponentSize, ThemeConfig } from '@ant-design-solid/theme'
+import type { AliasToken, ComponentSize, ThemeConfig } from '@solid-ant-design/theme'
 
 export interface ConfigProviderProps {
   prefixCls?: string
@@ -1449,7 +1449,7 @@ Create `packages/components/src/config-provider/context.tsx`:
 
 ```tsx
 import { createContext, createMemo, useContext } from 'solid-js'
-import { mergeTheme, type ComponentSize, type ThemeConfig } from '@ant-design-solid/theme'
+import { mergeTheme, type ComponentSize, type ThemeConfig } from '@solid-ant-design/theme'
 import type { ConfigContextValue } from './interface'
 
 const emptyTheme: ThemeConfig = {}
@@ -1533,7 +1533,7 @@ export * from './config-provider'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/config-provider/__tests__/ConfigProvider.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/config-provider/__tests__/ConfigProvider.test.tsx
 ```
 
 Expected: PASS.
@@ -1622,7 +1622,7 @@ describe('Button', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/button/__tests__/Button.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/button/__tests__/Button.test.tsx
 ```
 
 Expected: FAIL because Button exports do not exist.
@@ -1633,7 +1633,7 @@ Create `packages/components/src/button/interface.ts`:
 
 ```ts
 import type { JSX } from 'solid-js'
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 
 export type ButtonType = 'default' | 'primary' | 'dashed' | 'text' | 'link'
 export type ButtonHTMLType = 'button' | 'submit' | 'reset'
@@ -1651,8 +1651,8 @@ export interface ButtonProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonEle
 Create `packages/components/src/button/button.style.ts`:
 
 ```ts
-import { getComponentToken } from '@ant-design-solid/theme'
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useButtonStyle(prefixCls: string) {
@@ -1723,7 +1723,7 @@ Create `packages/components/src/button/Button.tsx`:
 
 ```tsx
 import { Show, splitProps } from 'solid-js'
-import { LoadingIcon } from '@ant-design-solid/icons'
+import { LoadingIcon } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/classNames'
 import { useButtonStyle } from './button.style'
@@ -1799,7 +1799,7 @@ export * from './button'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/button/__tests__/Button.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/button/__tests__/Button.test.tsx
 ```
 
 Expected: PASS.
@@ -1871,7 +1871,7 @@ describe('Input', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/input/__tests__/Input.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/input/__tests__/Input.test.tsx
 ```
 
 Expected: FAIL because Input exports do not exist.
@@ -1882,7 +1882,7 @@ Create `packages/components/src/input/interface.ts`:
 
 ```ts
 import type { JSX } from 'solid-js'
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 
 export interface InputProps extends Omit<
   JSX.InputHTMLAttributes<HTMLInputElement>,
@@ -1899,8 +1899,8 @@ export interface InputProps extends Omit<
 Create `packages/components/src/input/input.style.ts`:
 
 ```ts
-import { getComponentToken } from '@ant-design-solid/theme'
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useInputStyle(prefixCls: string) {
@@ -1962,7 +1962,7 @@ Create `packages/components/src/input/Input.tsx`:
 
 ```tsx
 import { createSignal, Show, splitProps } from 'solid-js'
-import { CloseCircleIcon } from '@ant-design-solid/icons'
+import { CloseCircleIcon } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/classNames'
 import { useInputStyle } from './input.style'
@@ -2063,7 +2063,7 @@ export * from './input'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/input/__tests__/Input.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/input/__tests__/Input.test.tsx
 ```
 
 Expected: PASS.
@@ -2130,7 +2130,7 @@ describe('Space', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/space/__tests__/Space.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/space/__tests__/Space.test.tsx
 ```
 
 Expected: FAIL because Space exports do not exist.
@@ -2156,8 +2156,8 @@ export interface SpaceProps extends JSX.HTMLAttributes<HTMLDivElement> {
 Create `packages/components/src/space/space.style.ts`:
 
 ```ts
-import { getComponentToken } from '@ant-design-solid/theme'
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useSpaceStyle(prefixCls: string) {
@@ -2186,7 +2186,7 @@ Create `packages/components/src/space/Space.tsx`:
 
 ```tsx
 import { children, For, splitProps } from 'solid-js'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useConfig, useToken } from '../config-provider'
 import { classNames } from '../shared/classNames'
 import { useSpaceStyle } from './space.style'
@@ -2275,7 +2275,7 @@ export * from './space'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/space/__tests__/Space.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/space/__tests__/Space.test.tsx
 ```
 
 Expected: PASS.
@@ -2335,7 +2335,7 @@ describe('Typography', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/typography/__tests__/Typography.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/typography/__tests__/Typography.test.tsx
 ```
 
 Expected: FAIL because Typography exports do not exist.
@@ -2363,8 +2363,8 @@ export interface TitleProps extends TypographyBaseProps {
 Create `packages/components/src/typography/typography.style.ts`:
 
 ```ts
-import { getComponentToken } from '@ant-design-solid/theme'
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useTypographyStyle(prefixCls: string) {
@@ -2507,7 +2507,7 @@ export * from './typography'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/typography/__tests__/Typography.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/typography/__tests__/Typography.test.tsx
 ```
 
 Expected: PASS.
@@ -2567,7 +2567,7 @@ describe('Grid', () => {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/grid/__tests__/Grid.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/grid/__tests__/Grid.test.tsx
 ```
 
 Expected: FAIL because Grid exports do not exist.
@@ -2600,7 +2600,7 @@ export interface ColProps extends JSX.HTMLAttributes<HTMLDivElement> {
 Create `packages/components/src/grid/grid.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useGridStyle(rowPrefixCls: string, colPrefixCls: string) {
@@ -2777,7 +2777,7 @@ export * from './grid'
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/core test -- src/grid/__tests__/Grid.test.tsx
+pnpm --filter @solid-ant-design/core test -- src/grid/__tests__/Grid.test.tsx
 ```
 
 Expected: PASS.
@@ -2819,7 +2819,7 @@ Create `apps/docs/package.json`:
 
 ```json
 {
-  "name": "@ant-design-solid/docs",
+  "name": "@solid-ant-design/docs",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -2832,8 +2832,8 @@ Create `apps/docs/package.json`:
     "lint:fix": "oxlint --fix src"
   },
   "dependencies": {
-    "@ant-design-solid/core": "workspace:*",
-    "@ant-design-solid/cssinjs": "workspace:*",
+    "@solid-ant-design/core": "workspace:*",
+    "@solid-ant-design/cssinjs": "workspace:*",
     "solid-js": "latest"
   },
   "devDependencies": {}
@@ -2889,8 +2889,8 @@ Create `apps/docs/src/main.tsx`:
 
 ```tsx
 import { render } from 'solid-js/web'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
+import { ConfigProvider } from '@solid-ant-design/core'
+import { StyleProvider } from '@solid-ant-design/cssinjs'
 import { App } from './App'
 import './app.css'
 
@@ -3128,7 +3128,7 @@ a {
 Create `apps/docs/src/pages/Home.tsx`:
 
 ```tsx
-import { Button, Space } from '@ant-design-solid/core'
+import { Button, Space } from '@solid-ant-design/core'
 
 export function Home() {
   return (
@@ -3157,10 +3157,10 @@ export function GettingStarted() {
     <>
       <h1>Getting Started</h1>
       <p>
-        Install with pnpm and import components from <code>@ant-design-solid/core</code>.
+        Install with pnpm and import components from <code>@solid-ant-design/core</code>.
       </p>
       <pre>
-        <code>{`pnpm add @ant-design-solid/core @ant-design-solid/cssinjs solid-js`}</code>
+        <code>{`pnpm add @solid-ant-design/core @solid-ant-design/cssinjs solid-js`}</code>
       </pre>
     </>
   )
@@ -3170,7 +3170,7 @@ export function GettingStarted() {
 Create `apps/docs/src/pages/Theming.tsx`:
 
 ```tsx
-import { Button, ConfigProvider, Space } from '@ant-design-solid/core'
+import { Button, ConfigProvider, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function Theming() {
@@ -3196,7 +3196,7 @@ export function Theming() {
 Create `apps/docs/src/pages/ButtonPage.tsx`:
 
 ```tsx
-import { Button, Space } from '@ant-design-solid/core'
+import { Button, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function ButtonPage() {
@@ -3222,7 +3222,7 @@ export function ButtonPage() {
 Create `apps/docs/src/pages/InputPage.tsx`:
 
 ```tsx
-import { Input, Space } from '@ant-design-solid/core'
+import { Input, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function InputPage() {
@@ -3243,7 +3243,7 @@ export function InputPage() {
 Create `apps/docs/src/pages/SpacePage.tsx`:
 
 ```tsx
-import { Button, Space } from '@ant-design-solid/core'
+import { Button, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function SpacePage() {
@@ -3265,7 +3265,7 @@ export function SpacePage() {
 Create `apps/docs/src/pages/TypographyPage.tsx`:
 
 ```tsx
-import { Typography } from '@ant-design-solid/core'
+import { Typography } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function TypographyPage() {
@@ -3287,7 +3287,7 @@ export function TypographyPage() {
 Create `apps/docs/src/pages/GridPage.tsx`:
 
 ```tsx
-import { Col, Row } from '@ant-design-solid/core'
+import { Col, Row } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function GridPage() {
@@ -3315,7 +3315,7 @@ export function GridPage() {
 Create `apps/docs/src/pages/ConfigProviderPage.tsx`:
 
 ```tsx
-import { Button, ConfigProvider } from '@ant-design-solid/core'
+import { Button, ConfigProvider } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/DemoBlock'
 
 export function ConfigProviderPage() {
@@ -3340,7 +3340,7 @@ export function ConfigProviderPage() {
 Run:
 
 ```bash
-pnpm --filter @ant-design-solid/docs typecheck
+pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.
@@ -3391,11 +3391,11 @@ pnpm lint
 
 ## Packages
 
-- `@ant-design-solid/core`
-- `@ant-design-solid/theme`
-- `@ant-design-solid/cssinjs`
-- `@ant-design-solid/icons`
-- `@ant-design-solid/docs`
+- `@solid-ant-design/core`
+- `@solid-ant-design/theme`
+- `@solid-ant-design/cssinjs`
+- `@solid-ant-design/icons`
+- `@solid-ant-design/docs`
 
 ````
 

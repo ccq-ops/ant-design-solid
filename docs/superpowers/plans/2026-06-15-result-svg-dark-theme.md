@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the existing Result API and SVG components. Move neutral SVG colors from fixed light hex attributes to semantic classes styled by `result.style.ts` with current theme tokens, while retaining status accent colors.
 
-**Tech Stack:** SolidJS components, `@ant-design-solid/cssinjs`, Vitest with Testing Library.
+**Tech Stack:** SolidJS components, `@solid-ant-design/cssinjs`, Vitest with Testing Library.
 
 ---
 
@@ -48,7 +48,7 @@ test('uses semantic classes for exception image neutral colors', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/result/__tests__/result.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/result/__tests__/result.test.tsx
 ```
 
 Expected: FAIL because `.ads-result-image-bg`, `.ads-result-image-surface`, and `.ads-result-image-muted` are not present, or because fixed light colors are still in the SVG.
@@ -139,7 +139,7 @@ In `packages/components/src/result/result.style.ts`, extend the `.${prefixCls}-i
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/result/__tests__/result.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/result/__tests__/result.test.tsx
 ```
 
 Expected: PASS for all Result tests.
@@ -149,8 +149,8 @@ Expected: PASS for all Result tests.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test
 ```
 
 Expected: both commands pass.

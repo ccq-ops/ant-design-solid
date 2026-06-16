@@ -32,7 +32,7 @@ Use tests that render the real `Breadcrumb` component and assert DOM behavior. K
 
 - [ ] **Step 2: Run the Breadcrumb test file and verify failures are due to missing features.**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- breadcrumb`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- breadcrumb`
 
 Expected: FAIL with missing prop behavior, missing separator export, or missing dropdown/menu rendering.
 
@@ -53,7 +53,7 @@ Add the static member in `index.ts`.
 
 - [ ] **Step 3: Run typecheck for the package or the focused test build.**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`
 
 Expected: PASS after implementation task, or type errors only from not-yet-implemented render code before Task 3.
 
@@ -89,7 +89,7 @@ Merge root/item/separator semantic classes and styles without dropping existing 
 
 - [ ] **Step 7: Run the Breadcrumb tests and make them pass.**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- breadcrumb`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- breadcrumb`
 
 Expected: PASS.
 
@@ -110,7 +110,7 @@ Keep focus behavior and current-item behavior.
 
 - [ ] **Step 3: Run focused tests.**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- breadcrumb`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- breadcrumb`
 
 Expected: PASS.
 
@@ -145,8 +145,8 @@ Expected: PASS, or report unrelated existing formatting failures if present.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- breadcrumb
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- breadcrumb
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.

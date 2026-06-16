@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Implement an Ant Design-inspired `ColorPicker` component for `@ant-design-solid/core`. The component should provide a custom Solid implementation rather than a native color input wrapper, cover common Ant Design ColorPicker APIs, and fit the repository's existing component, style, docs, and test patterns.
+Implement an Ant Design-inspired `ColorPicker` component for `@solid-ant-design/core`. The component should provide a custom Solid implementation rather than a native color input wrapper, cover common Ant Design ColorPicker APIs, and fit the repository's existing component, style, docs, and test patterns.
 
 ## Scope
 

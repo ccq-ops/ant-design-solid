@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Expand `@ant-design-solid/core` with a focused Navigation/Overlay batch:
+Expand `@solid-ant-design/core` with a focused Navigation/Overlay batch:
 
 1. `Affix`
 2. `Anchor`
@@ -153,7 +153,7 @@ Out of scope:
 
 ## Styling Approach
 
-Use `@ant-design-solid/cssinjs` style registration and `useToken()`. Class names come from `config.prefixCls()` and follow existing stable `ant-`/custom-prefix patterns:
+Use `@solid-ant-design/cssinjs` style registration and `useToken()`. Class names come from `config.prefixCls()` and follow existing stable `ant-`/custom-prefix patterns:
 
 - `${prefix}-affix`
 - `${prefix}-anchor`

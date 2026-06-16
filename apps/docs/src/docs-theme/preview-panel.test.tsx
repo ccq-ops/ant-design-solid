@@ -55,7 +55,7 @@ describe('Docs PreviewPanel', () => {
     const result = render(() => (
       <PreviewPanel>
         <pre>
-          <code>{'import { Button } from "@ant-design-solid/core"\n\nexport default Demo'}</code>
+          <code>{'import { Button } from "@solid-ant-design/core"\n\nexport default Demo'}</code>
         </pre>
       </PreviewPanel>
     ))
@@ -66,7 +66,7 @@ describe('Docs PreviewPanel', () => {
 
     expect(href.startsWith('/playground?')).toBe(true)
     expect(params.get('code')).toBe(
-      'import { Button } from "@ant-design-solid/core"\n\nexport default Demo',
+      'import { Button } from "@solid-ant-design/core"\n\nexport default Demo',
     )
   })
 

@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add an Ant Design compatible `Masonry` component to `@ant-design-solid/core` with docs examples.
+**Goal:** Add an Ant Design compatible `Masonry` component to `@solid-ant-design/core` with docs examples.
 
 **Architecture:** The component normalizes items/children, resolves responsive column and gutter values, then assigns items into balanced columns using measured DOM heights when available and deterministic round-robin fallback before measurement. Styling follows existing `useStyleRegister` component patterns with `ads-masonry` class names and CSS variables for gutter.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @ant-design-solid/cssinjs, local docs app routes.
+**Tech Stack:** SolidJS, TypeScript, Vitest, @solidjs/testing-library, @solid-ant-design/cssinjs, local docs app routes.
 
 ---
 
@@ -81,7 +81,7 @@ describe('Masonry', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- masonry
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- masonry
 ```
 
 Expected: FAIL because `../index` and `Masonry` do not exist.
@@ -265,7 +265,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- masonry
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- masonry
 ```
 
 Expected: PASS.
@@ -370,7 +370,7 @@ it('calls onLayoutChange with column and item layout information', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- masonry
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- masonry
 ```
 
 Expected: FAIL because item wrappers, children mode, and callback behavior are incomplete.
@@ -599,7 +599,7 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
 Create `packages/components/src/masonry/masonry.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useMasonryStyle(prefixCls: string) {
@@ -646,7 +646,7 @@ style={mergeStyle(
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- masonry
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- masonry
 ```
 
 Expected: PASS.
@@ -671,7 +671,7 @@ git commit -m "feat: implement masonry layout"
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected after creating docs import first: FAIL if `Masonry` is not exported from core.
@@ -690,7 +690,7 @@ Create `apps/docs/src/routes/components/masonry.tsx`:
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Card, Masonry, Space } from '@ant-design-solid/core'
+import { Button, Card, Masonry, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 const baseItems = [
@@ -843,7 +843,7 @@ Insert this item in `apps/docs/src/site/nav.ts` near `List`/`Card` data-display 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.

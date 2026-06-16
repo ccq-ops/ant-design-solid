@@ -92,7 +92,7 @@ it('normalizes gradient percents and keeps first color methods compatible', () =
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 ```
 
 Expected: FAIL with missing `isGradient`, `getColors`, `toCssString`, or gradient parse support.
@@ -213,7 +213,7 @@ Update `colorToCss` to return `parsed?.toCssString() ?? 'transparent'`.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 ```
 
 Expected: PASS for color utility tests and existing ColorPicker tests.
@@ -286,7 +286,7 @@ describe('ColorPicker v6 API compatibility', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 ```
 
 Expected: FAIL because `children`, `onFormatChange`, `disabledFormat`, or `onClear` behavior is missing.
@@ -372,8 +372,8 @@ In `color-picker.tsx`:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -451,7 +451,7 @@ it('renders a centered popup arrow when requested', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 ```
 
 Expected: FAIL because semantic slots and arrow are missing or placement is too narrow.
@@ -524,8 +524,8 @@ In `color-picker.style.ts`, add arrow styles using existing Tooltip/Popover arro
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -636,7 +636,7 @@ describe('ColorPicker gradient mode', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 ```
 
 Expected: FAIL because gradient mode UI is missing.
@@ -849,8 +849,8 @@ In `color-picker.tsx`:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -916,7 +916,7 @@ it('supports preset defaultOpen and gradient preset values', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 ```
 
 Expected: FAIL because presets do not collapse or accept gradient values.
@@ -1024,8 +1024,8 @@ Update `selectPreset(value: ColorPickerValue)` to parse gradients and switch mod
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -1071,7 +1071,7 @@ expect(colorPicker.colorPickerInsetShadow).toBe(`inset 0 0 1px 0 ${token.colorTe
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: FAIL because `ColorPicker` token is currently `ComponentTokenBase | undefined`.
@@ -1123,8 +1123,8 @@ In `color-picker.style.ts`, import `getComponentToken` and use the component tok
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
 ```
 
@@ -1157,7 +1157,7 @@ Provide color selection with presets, alpha, formats, controlled state, and grad
 ### Basic
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <ColorPicker defaultValue="#1677ff" />
@@ -1169,7 +1169,7 @@ export default Demo1
 ### Size
 
 ```tsx
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   return (
@@ -1188,7 +1188,7 @@ export default Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo3 = function () {
   const [value, setValue] = createSignal('#1677ff')
@@ -1207,7 +1207,7 @@ export default Demo3
 ### Gradient
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo4 = function () {
   return (
@@ -1228,7 +1228,7 @@ export default Demo4
 ### Custom Trigger
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo5 = function () {
   return (
@@ -1248,7 +1248,7 @@ Use these exact section titles and snippets for the remaining examples:
 ### Disabled
 
 ```tsx
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo6 = function () {
   return (
@@ -1265,7 +1265,7 @@ export default Demo6
 ### Trigger
 
 ```tsx
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo7 = function () {
   return (
@@ -1282,7 +1282,7 @@ export default Demo7
 ### Disabled Alpha
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo8 = function () {
   return <ColorPicker disabledAlpha defaultValue="rgba(22, 119, 255, 0.6)" />
@@ -1294,7 +1294,7 @@ export default Demo8
 ### Clear
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo9 = function () {
   return <ColorPicker allowClear defaultValue="#1677ff" showText />
@@ -1306,7 +1306,7 @@ export default Demo9
 ### Format
 
 ```tsx
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo10 = function () {
   return (
@@ -1324,7 +1324,7 @@ export default Demo10
 ### Disabled Format
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo11 = function () {
   return <ColorPicker defaultValue="#1677ff" defaultFormat="rgb" disabledFormat />
@@ -1336,7 +1336,7 @@ export default Demo11
 ### Presets
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo12 = function () {
   return (
@@ -1366,7 +1366,7 @@ export default Demo12
 ### Show Text
 
 ```tsx
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo13 = function () {
   return (
@@ -1383,7 +1383,7 @@ export default Demo13
 ### Custom Panel
 
 ```tsx
-import { ColorPicker } from '@ant-design-solid/core'
+import { ColorPicker } from '@solid-ant-design/core'
 
 const Demo14 = function () {
   return (
@@ -1404,7 +1404,7 @@ export default Demo14
 ### Placement
 
 ```tsx
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 
 const Demo15 = function () {
   return (
@@ -1467,8 +1467,8 @@ Document `ColorPickerPreset`, gradient value shape, and `Color` methods.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

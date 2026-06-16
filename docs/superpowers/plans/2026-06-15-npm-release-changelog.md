@@ -67,7 +67,7 @@ Create `.changeset/config.json`:
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@ant-design-solid/docs"]
+  "ignore": ["@solid-ant-design/docs"]
 }
 ```
 

@@ -1,5 +1,5 @@
 import { Show, createEffect, createSignal, onCleanup, splitProps, type JSX } from 'solid-js'
-import { ExclamationCircleFilled } from '@ant-design-solid/solid-icons'
+import { ExclamationCircleFilled } from '@solid-ant-design/icons'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { Popover, type PopoverSemanticClassNames, type PopoverSemanticStyles } from '../popover'

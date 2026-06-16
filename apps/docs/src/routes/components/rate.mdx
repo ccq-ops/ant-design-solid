@@ -3,7 +3,7 @@ title: Rate
 group: Data Entry
 ---
 
-import { Button, Rate, Space } from '@ant-design-solid/core'
+import { Button, Rate, Space } from '@solid-ant-design/core'
 import { createSignal } from 'solid-js'
 
 # Rate
@@ -26,7 +26,7 @@ return Demo1
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <Rate defaultValue={3} />
@@ -55,7 +55,7 @@ return Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   return <Rate allowHalf defaultValue={2.5} />
@@ -84,7 +84,7 @@ return Demo3
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo3 = function () {
   return <Rate defaultValue={3} allowClear={false} />
@@ -117,7 +117,7 @@ return Demo4
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo4 = function () {
   const [value, setValue] = createSignal(3)
@@ -155,7 +155,7 @@ return Demo5
 ---
 
 ```tsx
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo5 = function () {
   return (
@@ -194,7 +194,7 @@ return Demo6
 ---
 
 ```tsx
-import { Rate } from '@ant-design-solid/core'
+import { Rate } from '@solid-ant-design/core'
 
 const Demo6 = function () {
   return (
@@ -236,7 +236,7 @@ return Demo7
 ---
 
 ```tsx
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo7 = function () {
   return (
@@ -276,7 +276,7 @@ return Demo8
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Rate, Space } from '@ant-design-solid/core'
+import { Rate, Space } from '@solid-ant-design/core'
 
 const Demo8 = function () {
   const [value, setValue] = createSignal(3)
@@ -317,8 +317,8 @@ return Demo9
 ---
 
 ```tsx
-import { Rate, Space, Button } from '@ant-design-solid/core'
-import type { RateRef } from '@ant-design-solid/core'
+import { Rate, Space, Button } from '@solid-ant-design/core'
+import type { RateRef } from '@solid-ant-design/core'
 
 const Demo9 = function () {
   const rateRef: { current?: RateRef } = {}
@@ -354,7 +354,7 @@ return Demo10
 ---
 
 ```tsx
-import { Rate } from '@ant-design-solid/core'
+import { Rate } from '@solid-ant-design/core'
 
 const Demo10 = function () {
   return <Rate disabled defaultValue={3} />

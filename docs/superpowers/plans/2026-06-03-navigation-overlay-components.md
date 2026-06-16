@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add tested and documented `Affix`, `Anchor`, and `FloatButton` components to `@ant-design-solid/core`.
+**Goal:** Add tested and documented `Affix`, `Anchor`, and `FloatButton` components to `@solid-ant-design/core`.
 
 **Architecture:** Implement each component as an independent Solid module following existing component folder patterns. `Anchor` reuses `Affix` when `affix=true`; `FloatButton` owns `Group` and `BackTop` static subcomponents. Scroll utilities stay local to components to avoid premature shared abstraction.
 
-**Tech Stack:** SolidJS, TypeScript, Vitest, `@solidjs/testing-library`, `@ant-design-solid/cssinjs`, existing config-provider/class-name utilities, pnpm/corepack.
+**Tech Stack:** SolidJS, TypeScript, Vitest, `@solidjs/testing-library`, `@solid-ant-design/cssinjs`, existing config-provider/class-name utilities, pnpm/corepack.
 
 ---
 
@@ -61,7 +61,7 @@ apps/docs/src/site/nav.ts
 - Modify: `apps/docs/src/site/nav.ts`
 
 - [ ] Write failing Affix tests for render, top affix threshold, bottom threshold, transition-only `onChange`, and custom prefix.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- affix` and verify failure because Affix is not implemented.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- affix` and verify failure because Affix is not implemented.
 - [ ] Implement Affix types, style registration, component behavior, and exports.
 - [ ] Add Affix docs route and nav/root export.
 - [ ] Run focused Affix tests and typecheck.
@@ -80,7 +80,7 @@ apps/docs/src/site/nav.ts
 - Modify: `apps/docs/src/site/nav.ts`
 
 - [ ] Write failing Anchor tests for nested items, click/scroll behavior, active updates, `affix={false}`, and custom prefix.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- anchor` and verify failure because Anchor is not implemented.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- anchor` and verify failure because Anchor is not implemented.
 - [ ] Implement Anchor types, style registration, item rendering, scroll active tracking, Affix integration, and exports.
 - [ ] Add Anchor docs route and nav/root export.
 - [ ] Run focused Anchor tests and typecheck.
@@ -99,7 +99,7 @@ apps/docs/src/site/nav.ts
 - Modify: `apps/docs/src/site/nav.ts`
 
 - [ ] Write failing FloatButton tests for button mode, link mode, group rendering, click callback, BackTop visibility/scroll behavior, and custom prefix.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- float-button` and verify failure because FloatButton is not implemented.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- float-button` and verify failure because FloatButton is not implemented.
 - [ ] Implement FloatButton types, style registration, base component, Group, BackTop, and exports.
 - [ ] Add FloatButton docs route and nav/root export.
 - [ ] Run focused FloatButton tests and typecheck.

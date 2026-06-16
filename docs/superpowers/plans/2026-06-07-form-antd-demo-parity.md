@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the docs implementation localized to `apps/docs/src/pages/components/form.tsx`. Add small helper components near the existing `WatchedUsername` helper for hook-based examples, then add focused `DemoBlock` sections before the API tables. Only touch component source/tests if a docs example exposes a real compile/runtime gap.
 
-**Tech Stack:** SolidJS, TypeScript, `@ant-design-solid/core`, existing docs `DemoBlock` and `ApiTable` components, pnpm workspace scripts.
+**Tech Stack:** SolidJS, TypeScript, `@solid-ant-design/core`, existing docs `DemoBlock` and `ApiTable` components, pnpm workspace scripts.
 
 ---
 

@@ -2,13 +2,13 @@
 
 ## Goal
 
-Align `Button` icon support with Ant Design by accepting icons from `@ant-design-solid/icons` through the `icon` prop and supporting `iconPosition`.
+Align `Button` icon support with Ant Design by accepting icons from `@solid-ant-design/icons` through the `icon` prop and supporting `iconPosition`.
 
 ## Scope
 
 - Add `icon?: JSX.Element` to `ButtonProps`.
 - Add `iconPosition?: 'start' | 'end'` to `ButtonProps`, defaulting to `'start'`.
-- Continue using `LoadingOutlined` from `@ant-design-solid/icons` for loading state.
+- Continue using `LoadingOutlined` from `@solid-ant-design/icons` for loading state.
 - When `loading` is true, the loading icon replaces the custom icon.
 - Render the icon before children for `start`, after children for `end`.
 - Preserve disabled-on-loading behavior and existing button classes.
@@ -23,6 +23,6 @@ Align `Button` icon support with Ant Design by accepting icons from `@ant-design
 
 Update `packages/components/src/button/__tests__/button.test.tsx` to cover:
 
-- Rendering a `SearchOutlined` icon from `@ant-design-solid/icons` using the `icon` prop.
+- Rendering a `SearchOutlined` icon from `@solid-ant-design/icons` using the `icon` prop.
 - Rendering the icon after children when `iconPosition="end"`.
 - Showing `LoadingOutlined` instead of the custom icon when `loading` is true.

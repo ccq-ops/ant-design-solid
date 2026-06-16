@@ -17,7 +17,7 @@
 - Modify: `packages/components/src/alert/__tests__/alert.test.tsx`
 
 - [ ] Add tests covering `title`, `closable` object callbacks/icon/aria, custom `icon`, and `banner` defaults.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/alert/__tests__/alert.test.tsx` and verify the new tests fail because the API is missing.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/alert/__tests__/alert.test.tsx` and verify the new tests fail because the API is missing.
 
 ### Task 2: Extend Alert props and implementation
 

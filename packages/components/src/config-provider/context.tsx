@@ -1,5 +1,5 @@
 import { createContext, createMemo, useContext } from 'solid-js'
-import { mergeTheme, type ComponentSize, type ThemeConfig } from '@ant-design-solid/theme'
+import { mergeTheme, type ComponentSize, type ThemeConfig } from '@solid-ant-design/theme'
 import type {
   ConfigComponentProps,
   ConfigContextValue,

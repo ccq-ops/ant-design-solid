@@ -1,4 +1,4 @@
-import { ConfigProvider } from '@ant-design-solid/core'
+import { ConfigProvider } from '@solid-ant-design/core'
 import { setTheme } from '@kobalte/solidbase/client'
 import {
   createContext,
@@ -10,7 +10,7 @@ import {
   useContext,
 } from 'solid-js'
 import type { Accessor, JSX } from 'solid-js'
-import { darkAlgorithm, defaultAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
+import { darkAlgorithm, defaultAlgorithm, type ThemeConfig } from '@solid-ant-design/theme'
 
 export type DocsThemeMode = 'light' | 'dark'
 

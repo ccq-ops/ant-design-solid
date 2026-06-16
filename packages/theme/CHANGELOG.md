@@ -1,4 +1,4 @@
-# @ant-design-solid/theme
+# @solid-ant-design/theme
 
 ## 0.1.0
 

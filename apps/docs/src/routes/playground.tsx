@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, onMount } from 'solid-js'
 import { useLocation } from '@solidjs/router'
-import { Input } from '@ant-design-solid/core'
+import { Input } from '@solid-ant-design/core'
 import { getDemoSource } from './playground-registry'
 import { compilePlaygroundSource } from './playground-runtime'
 import './playground.css'

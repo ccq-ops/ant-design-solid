@@ -2,7 +2,7 @@
 
 ## Goal
 
-Synchronize the local `@ant-design-solid/theme` token system with Ant Design `6.4.4` so local components can consume the same seed, map, and alias token names and defaults.
+Synchronize the local `@solid-ant-design/theme` token system with Ant Design `6.4.4` so local components can consume the same seed, map, and alias token names and defaults.
 
 ## Scope
 

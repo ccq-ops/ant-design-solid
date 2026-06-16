@@ -1,8 +1,4 @@
-import {
-  CloseOutlined,
-  FileTextOutlined,
-  VerticalAlignTopOutlined,
-} from '@ant-design-solid/solid-icons'
+import { CloseOutlined, FileTextOutlined, VerticalAlignTopOutlined } from '@solid-ant-design/icons'
 import {
   Show,
   createContext,

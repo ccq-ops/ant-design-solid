@@ -1,4 +1,4 @@
-# @ant-design-solid/cssinjs
+# @solid-ant-design/cssinjs
 
 ## 0.1.0
 

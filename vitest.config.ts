@@ -6,12 +6,12 @@ export default defineConfig({
   plugins: [solid()],
   resolve: {
     alias: {
-      '@ant-design-solid/theme': fileURLToPath(new URL('./packages/theme/src', import.meta.url)),
-      '@ant-design-solid/cssinjs': fileURLToPath(
+      '@solid-ant-design/theme': fileURLToPath(new URL('./packages/theme/src', import.meta.url)),
+      '@solid-ant-design/cssinjs': fileURLToPath(
         new URL('./packages/cssinjs/src', import.meta.url),
       ),
-      '@ant-design-solid/icons': fileURLToPath(new URL('./packages/icons/src', import.meta.url)),
-      '@ant-design-solid/core': fileURLToPath(
+      '@solid-ant-design/icons': fileURLToPath(new URL('./packages/icons/src', import.meta.url)),
+      '@solid-ant-design/core': fileURLToPath(
         new URL('./packages/components/src', import.meta.url),
       ),
       'solid-motionone': fileURLToPath(

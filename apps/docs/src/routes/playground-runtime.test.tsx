@@ -5,7 +5,7 @@ import { compilePlaygroundSource } from './playground-runtime'
 describe('compilePlaygroundSource', () => {
   it('compiles a docs TSX demo into a renderable Solid component', () => {
     const result = compilePlaygroundSource(`
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Button>Run me</Button>
@@ -26,7 +26,7 @@ export default Demo
   it('supports aliased named imports and Solid utilities', () => {
     const result = compilePlaygroundSource(`
 import { createSignal } from 'solid-js'
-import { Button as AntButton } from '@ant-design-solid/core'
+import { Button as AntButton } from '@solid-ant-design/core'
 
 const Demo = function () {
   const [count] = createSignal(2)
@@ -48,7 +48,7 @@ export default Demo
 
   it('supports fragments and ignores type-only imports', () => {
     const result = compilePlaygroundSource(`
-import { Button, type ButtonProps } from '@ant-design-solid/core'
+import { Button, type ButtonProps } from '@solid-ant-design/core'
 
 const buttonType: ButtonProps['type'] = 'primary'
 
@@ -85,7 +85,7 @@ export default Demo
 
   it('wraps a JSX snippet into a renderable component', () => {
     const result = compilePlaygroundSource(`
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 <Button>Snippet</Button>
 `)
@@ -101,7 +101,7 @@ import { Button } from '@ant-design-solid/core'
 
   it('uses a Demo declaration when the source omits a default export', () => {
     const result = compilePlaygroundSource(`
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo = function () {
   return <Button>Implicit demo</Button>
@@ -119,7 +119,7 @@ const Demo = function () {
 
   it('uses a numbered Demo declaration when the source omits a default export', () => {
     const result = compilePlaygroundSource(`
-import { Button } from '@ant-design-solid/core'
+import { Button } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <Button>Numbered demo</Button>

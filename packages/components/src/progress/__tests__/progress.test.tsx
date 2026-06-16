@@ -1,4 +1,4 @@
-import { createCache, StyleProvider } from '@ant-design-solid/cssinjs'
+import { createCache, StyleProvider } from '@solid-ant-design/cssinjs'
 import { cleanup, render, screen } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it } from 'vitest'

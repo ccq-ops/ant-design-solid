@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@solidjs/testing-library'
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
-import { darkAlgorithm } from '@ant-design-solid/theme'
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
+import { darkAlgorithm } from '@solid-ant-design/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createSignal } from 'solid-js'
 import { ConfigProvider } from '../../config-provider'

@@ -1,5 +1,5 @@
 {
-  "name": "@ant-design-solid/docs",
+  "name": "@solid-ant-design/docs",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,10 @@
     "lint": "oxlint src"
   },
   "dependencies": {
-    "@ant-design-solid/core": "workspace:*",
-    "@ant-design-solid/cssinjs": "workspace:*",
-    "@ant-design-solid/solid-icons": "workspace:*",
     "@kobalte/solidbase": "^0.6.3",
+    "@solid-ant-design/core": "workspace:*",
+    "@solid-ant-design/cssinjs": "workspace:*",
+    "@solid-ant-design/icons": "workspace:*",
     "@solidjs/router": "^0.15.4",
     "@solidjs/start": "2.0.0-alpha.3",
     "dayjs": "^1.11.13",

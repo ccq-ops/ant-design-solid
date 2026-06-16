@@ -1,4 +1,4 @@
-import type { StyleObject } from '@ant-design-solid/cssinjs'
+import type { StyleObject } from '@solid-ant-design/cssinjs'
 
 export const loadingIconRotateKeyframes: StyleObject = {
   '@keyframes adsIconRotate': {

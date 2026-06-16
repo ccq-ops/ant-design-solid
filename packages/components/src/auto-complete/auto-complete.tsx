@@ -1,4 +1,4 @@
-import { CloseCircleFilled } from '@ant-design-solid/solid-icons'
+import { CloseCircleFilled } from '@solid-ant-design/icons'
 import {
   For,
   Show,

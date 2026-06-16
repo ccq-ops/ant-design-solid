@@ -22,7 +22,7 @@ Add tests that verify the indicator is stable, moves through inline transform st
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- tabs`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- tabs`
 
 Expected: FAIL because the current indicator is recreated inside each active tab and no no-motion class exists.
 
@@ -53,7 +53,7 @@ Add transition styles to `.ads-tabs-indicator`, plus `.ads-tabs-indicator-no-mot
 
 - [ ] **Step 5: Run tabs tests**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components test -- tabs`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components test -- tabs`
 
 Expected: PASS.
 
@@ -65,7 +65,7 @@ Expected: PASS.
 
 - [ ] **Step 1: Run lint/typecheck for affected package**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/components typecheck`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/components typecheck`
 
 Expected: PASS.
 

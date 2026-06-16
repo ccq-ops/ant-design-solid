@@ -7,7 +7,7 @@ import {
   splitProps,
   useContext,
 } from 'solid-js'
-import { DownOutlined } from '@ant-design-solid/solid-icons'
+import { DownOutlined } from '@solid-ant-design/icons'
 import { Dropdown } from '../dropdown'
 import type { DropdownMenuProps } from '../dropdown'
 import { useConfig } from '../config-provider'

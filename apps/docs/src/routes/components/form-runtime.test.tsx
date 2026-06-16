@@ -1,4 +1,4 @@
-import { createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { createCache, extractStyle } from '@solid-ant-design/cssinjs'
 import { describe, expect, it } from 'vitest'
 import { renderDocsPage } from '../../test-utils/render-docs-page'
 import FormPage from './form.mdx'

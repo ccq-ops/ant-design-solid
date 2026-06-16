@@ -1,5 +1,5 @@
 import type { Component, JSX } from 'solid-js'
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 export type SpaceSingleSize = 'small' | 'middle' | 'large' | number
 export type SpaceSize = SpaceSingleSize | [SpaceSingleSize, SpaceSingleSize]
 export type SpaceOrientation = 'horizontal' | 'vertical'

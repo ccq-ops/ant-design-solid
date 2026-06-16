@@ -1,6 +1,6 @@
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { getComponentToken } from '@solid-ant-design/theme'
 
 export function useAutoCompleteStyle(prefixCls: string) {
   const token = useToken()

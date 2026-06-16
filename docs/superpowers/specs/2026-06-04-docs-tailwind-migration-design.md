@@ -8,7 +8,7 @@ Migrate the docs app styling foundation to Tailwind CSS while keeping the first 
 
 In scope:
 
-- Add Tailwind CSS support for `@ant-design-solid/docs`.
+- Add Tailwind CSS support for `@solid-ant-design/docs`.
 - Configure Tailwind content scanning for docs HTML and Solid TypeScript files.
 - Convert shared docs layout styling in `apps/docs/src/site/layout.tsx`.
 - Convert demo block styling in `apps/docs/src/site/demo-block.tsx`.
@@ -55,9 +55,9 @@ Component demo files contain inline styles for sample widths, dynamic heights, b
 After implementation, run docs-focused verification first:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Also run formatting and lint checks when feasible:

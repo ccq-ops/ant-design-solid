@@ -2,7 +2,7 @@
 
 ## Goal
 
-Bring `@ant-design-solid/core` Grid to parity with antd v6 Grid while keeping Solid conventions: `class` instead of `className`, Solid signals/effects for responsive state, and existing config/style registration patterns.
+Bring `@solid-ant-design/core` Grid to parity with antd v6 Grid while keeping Solid conventions: `class` instead of `className`, Solid signals/effects for responsive state, and existing config/style registration patterns.
 
 ## Scope
 

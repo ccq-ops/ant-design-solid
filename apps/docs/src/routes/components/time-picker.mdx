@@ -3,10 +3,10 @@ title: Time Picker
 group: Data Entry
 ---
 
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 import { createSignal } from 'solid-js'
 import dayjs from 'dayjs'
-import { ClockCircleOutlined, CloseCircleOutlined } from '@ant-design-solid/solid-icons'
+import { ClockCircleOutlined, CloseCircleOutlined } from '@solid-ant-design/icons'
 
 # TimePicker
 
@@ -30,7 +30,7 @@ return Demo1
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   return <TimePicker />
@@ -59,7 +59,7 @@ return Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   return <TimePicker format="HH:mm" minuteStep={15} />
@@ -94,7 +94,7 @@ return Demo3
 ```tsx
 import { createSignal } from 'solid-js'
 import dayjs from 'dayjs'
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo3 = function () {
   const [value, setValue] = createSignal(dayjs('2026-06-11 09:30:00'))
@@ -135,7 +135,7 @@ return Demo4
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo4 = function () {
   return (
@@ -172,7 +172,7 @@ return Demo5
 ```tsx
 import { createSignal } from 'solid-js'
 import dayjs from 'dayjs'
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo5 = function () {
   return <TimePicker allowClear defaultValue={dayjs('2026-06-11 12:00:00')} />
@@ -202,7 +202,7 @@ return Demo6
 ```tsx
 import { createSignal } from 'solid-js'
 import dayjs from 'dayjs'
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo6 = function () {
   return <TimePicker disabled defaultValue={dayjs('2026-06-11 08:30:00')} />
@@ -231,7 +231,7 @@ return Demo7
 
 ```tsx
 import dayjs from 'dayjs'
-import { TimePicker } from '@ant-design-solid/core'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo7 = function () {
   return (
@@ -266,7 +266,7 @@ return Demo8
 ---
 
 ```tsx
-import { TimePicker } from '@ant-design-solid/core'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo8 = function () {
   return (
@@ -306,7 +306,7 @@ return Demo9
 
 ```tsx
 import dayjs from 'dayjs'
-import { TimePicker } from '@ant-design-solid/core'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo9 = function () {
   return <TimePicker use12Hours defaultValue={dayjs('2026-06-11 13:30:00')} format="h:mm:ss a" />
@@ -334,7 +334,7 @@ return Demo10
 ---
 
 ```tsx
-import { TimePicker } from '@ant-design-solid/core'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo10 = function () {
   return (
@@ -369,8 +369,8 @@ return Demo11
 ---
 
 ```tsx
-import { ClockCircleOutlined, CloseCircleOutlined } from '@ant-design-solid/solid-icons'
-import { TimePicker } from '@ant-design-solid/core'
+import { ClockCircleOutlined, CloseCircleOutlined } from '@solid-ant-design/icons'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo11 = function () {
   return (
@@ -426,7 +426,7 @@ return Demo12
 ---
 
 ```tsx
-import { Space, TimePicker } from '@ant-design-solid/core'
+import { Space, TimePicker } from '@solid-ant-design/core'
 
 const Demo12 = function () {
   return (
@@ -476,7 +476,7 @@ return Demo13
 ---
 
 ```tsx
-import { TimePicker } from '@ant-design-solid/core'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo13 = function () {
   return (
@@ -517,7 +517,7 @@ return Demo14
 ---
 
 ```tsx
-import { TimePicker } from '@ant-design-solid/core'
+import { TimePicker } from '@solid-ant-design/core'
 
 const Demo14 = function () {
   return (

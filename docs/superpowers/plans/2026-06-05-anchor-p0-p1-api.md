@@ -24,7 +24,7 @@
 - Modify: `packages/components/src/anchor/__tests__/anchor.test.tsx`
 
 - [ ] Add tests asserting: `targetOffset` defaults to `offsetTop`; click uses `history.pushState`; component/item `replace` uses `history.replaceState`; item `targetOffset` overrides component offset; `target` attribute is rendered; `direction="horizontal"` applies class; `getCurrentAnchor` controls active link.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- anchor` and verify the new tests fail because behavior/types are missing.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- anchor` and verify the new tests fail because behavior/types are missing.
 
 ## Task 2: Implement Types and Behavior
 
@@ -54,7 +54,7 @@
 
 **Commands:**
 
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- anchor`
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- anchor`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`

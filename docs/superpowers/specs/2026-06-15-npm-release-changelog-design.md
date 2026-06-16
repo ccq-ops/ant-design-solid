@@ -8,10 +8,10 @@ Add a reliable npm release flow for this pnpm monorepo that supports independent
 
 The repository contains one private docs app and four publishable packages:
 
-- `@ant-design-solid/core`
-- `@ant-design-solid/cssinjs`
-- `@ant-design-solid/icons`
-- `@ant-design-solid/theme`
+- `@solid-ant-design/core`
+- `@solid-ant-design/cssinjs`
+- `@solid-ant-design/icons`
+- `@solid-ant-design/theme`
 
 Only the publishable packages participate in npm releases. The docs app remains private and is not published.
 

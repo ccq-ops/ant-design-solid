@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the existing self-contained AutoComplete implementation and add a compatibility layer around props normalization, semantic class/style resolution, option normalization, custom input rendering, and ref methods. Add AutoComplete component tokens by composing Input-like control tokens and Select-like option tokens.
 
-**Tech Stack:** SolidJS, Vitest, @solidjs/testing-library, local @ant-design-solid theme/cssinjs utilities, MDX docs.
+**Tech Stack:** SolidJS, Vitest, @solidjs/testing-library, local @solid-ant-design theme/cssinjs utilities, MDX docs.
 
 ---
 
@@ -18,7 +18,7 @@
 - Modify: `packages/components/src/auto-complete/__tests__/auto-complete.test.tsx`
 
 - [ ] Add failing tests covering `ref`, semantic `classNames/styles`, Solid alias props, React alias props, `dataSource`, custom option classes/styles/titles, and custom input children.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- auto-complete.test.tsx`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- auto-complete.test.tsx`.
 - [ ] Expected: new tests fail because the props are not implemented yet.
 
 ### Task 2: Implement Prop Normalization and Ref/Custom Input Support

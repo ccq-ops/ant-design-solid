@@ -1,4 +1,4 @@
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 import type { Accessor, JSX } from 'solid-js'
 import type { TooltipProps } from '../tooltip'
 

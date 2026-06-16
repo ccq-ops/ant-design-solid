@@ -6,7 +6,7 @@
 
 **Architecture:** The component normalizes all values through a focused `color.ts` utility module using an HSB + alpha internal model. `color-picker.tsx` owns controlled/uncontrolled value and popup state, composes small internal panel controls, and uses existing portal/placement/overlay helpers. Styling follows existing `useStyleRegister` patterns and docs integrate with the existing route/nav system.
 
-**Tech Stack:** SolidJS, TypeScript, `@solidjs/testing-library`, Vitest, existing `@ant-design-solid/cssinjs`, `@ant-design-solid/theme`, and local overlay helpers.
+**Tech Stack:** SolidJS, TypeScript, `@solidjs/testing-library`, Vitest, existing `@solid-ant-design/cssinjs`, `@solid-ant-design/theme`, and local overlay helpers.
 
 ---
 
@@ -93,7 +93,7 @@ describe('Color utilities', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL because `../color` does not exist.
@@ -336,7 +336,7 @@ export function colorToCss(value: Color | undefined): string {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: PASS for the color utility tests.
@@ -413,7 +413,7 @@ describe('ColorPicker trigger', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL because `../index` and `ColorPicker` do not exist.
@@ -423,7 +423,7 @@ Expected: FAIL because `../index` and `ColorPicker` do not exist.
 Create `packages/components/src/color-picker/interface.ts`:
 
 ```ts
-import type { ComponentSize } from '@ant-design-solid/theme'
+import type { ComponentSize } from '@solid-ant-design/theme'
 import type { JSX } from 'solid-js'
 import type { DropdownPlacement } from '../shared/placement'
 import type { Color, ColorPickerValue } from './color'
@@ -472,7 +472,7 @@ export interface ColorPickerProps extends Omit<
 Create `packages/components/src/color-picker/color-picker.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 export function useColorPickerStyle(prefixCls: string) {
@@ -664,7 +664,7 @@ Place it after `export * from './calendar'` or near `date-picker` if preserving 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: PASS for utility and trigger tests.
@@ -748,7 +748,7 @@ describe('ColorPicker popup', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL because no popup dialog renders.
@@ -926,7 +926,7 @@ Remove the earlier duplicate `setOpen` function from Task 2 when adding the vers
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: PASS through popup tests.
@@ -1027,7 +1027,7 @@ describe('ColorPicker picking interactions', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL because the picker controls do not exist.
@@ -1256,7 +1256,7 @@ const panel = () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: PASS through picking interaction tests.
@@ -1330,7 +1330,7 @@ describe('ColorPicker format inputs', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL because format inputs do not exist.
@@ -1512,7 +1512,7 @@ Inside `panel`, add this block before the preview block:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: PASS through format input tests.
@@ -1606,7 +1606,7 @@ describe('ColorPicker presets and clear', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: FAIL because presets, clear, and hover trigger are not implemented.
@@ -1734,7 +1734,7 @@ Place them alongside the existing `onClick` on the trigger button.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- color-picker.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- color-picker.test.tsx
 ```
 
 Expected: PASS all `color-picker.test.tsx` tests.
@@ -1761,7 +1761,7 @@ Create `apps/docs/src/routes/components/color-picker.tsx`:
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { ColorPicker, Space } from '@ant-design-solid/core'
+import { ColorPicker, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../../site/demo-block'
 
 export default function ColorPickerPage() {
@@ -1846,8 +1846,8 @@ Modify `apps/docs/src/site/nav.ts` to add ColorPicker near data-entry components
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.

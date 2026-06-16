@@ -60,7 +60,7 @@ test('parses pnpm pack JSON output', () => {
 })
 
 test('creates changesets-compatible package tags', () => {
-  assert.equal(createGitTagName('@ant-design-solid/core', '0.1.0'), '@ant-design-solid/core@0.1.0')
+  assert.equal(createGitTagName('@solid-ant-design/core', '0.1.0'), '@solid-ant-design/core@0.1.0')
 })
 
 test('parses changesets action tag arguments', () => {
@@ -71,19 +71,19 @@ test('sorts internal dependencies before dependents', () => {
   const sorted = sortPackagesForPublish([
     {
       packageJson: {
-        name: '@ant-design-solid/core',
+        name: '@solid-ant-design/core',
         dependencies: {
-          '@ant-design-solid/cssinjs': '0.1.0',
-          '@ant-design-solid/theme': '0.1.0',
+          '@solid-ant-design/cssinjs': '0.1.0',
+          '@solid-ant-design/theme': '0.1.0',
         },
       },
     },
-    { packageJson: { name: '@ant-design-solid/theme' } },
-    { packageJson: { name: '@ant-design-solid/cssinjs' } },
+    { packageJson: { name: '@solid-ant-design/theme' } },
+    { packageJson: { name: '@solid-ant-design/cssinjs' } },
   ])
 
   assert.deepEqual(
     sorted.map((pkg) => pkg.packageJson.name),
-    ['@ant-design-solid/cssinjs', '@ant-design-solid/theme', '@ant-design-solid/core'],
+    ['@solid-ant-design/cssinjs', '@solid-ant-design/theme', '@solid-ant-design/core'],
   )
 })

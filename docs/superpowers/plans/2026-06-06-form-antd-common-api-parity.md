@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Upgrade `@ant-design-solid/core` Form from a flat synchronous MVP into a Solid-native implementation covering common Ant Design Form APIs: `NamePath`, nested values, field state APIs, async validation, enhanced `Form.Item`, hooks, `Form.List`, `Form.ErrorList`, and common layout props.
+**Goal:** Upgrade `@solid-ant-design/core` Form from a flat synchronous MVP into a Solid-native implementation covering common Ant Design Form APIs: `NamePath`, nested values, field state APIs, async validation, enhanced `Form.Item`, hooks, `Form.List`, `Form.ErrorList`, and common layout props.
 
 **Architecture:** Refactor Form into focused modules: `name-path.ts` and `value-util.ts` for path/value mechanics, `field-store.ts` and `store.ts` for state and public `FormInstance`, `validation.ts` for async rule evaluation, and component files for `Form`, `Form.Item`, `Form.List`, `Form.ErrorList`, and hooks. Preserve existing render-prop and context-based Solid binding while aligning public APIs with Ant Design where practical.
 
@@ -49,8 +49,8 @@
 - Use targeted commands during development:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/name-path.test.ts
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/name-path.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 - Run full verification at the end:
@@ -125,7 +125,7 @@ describe('form name-path utilities', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/name-path.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/name-path.test.ts
 ```
 
 Expected: FAIL because `../name-path` does not exist.
@@ -185,7 +185,7 @@ export function composeNamePath(prefix: NamePath | undefined, name: NamePath): I
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/name-path.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/name-path.test.ts
 ```
 
 Expected: PASS.
@@ -195,7 +195,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS. If TypeScript reports existing `FieldName` string-only assumptions, leave them for Task 3 unless this task introduced the error.
@@ -290,7 +290,7 @@ describe('form value utilities', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/value-util.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/value-util.test.ts
 ```
 
 Expected: FAIL because `../value-util` does not exist.
@@ -426,7 +426,7 @@ export function pickValues(values: FormValues, names: NamePath[]): FormValues {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/value-util.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/value-util.test.ts
 ```
 
 Expected: PASS.
@@ -436,7 +436,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/name-path.test.ts packages/components/src/form/__tests__/value-util.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/name-path.test.ts packages/components/src/form/__tests__/value-util.test.ts
 ```
 
 Expected: PASS.
@@ -588,7 +588,7 @@ describe('FormInstance core parity APIs', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-instance.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-instance.test.tsx
 ```
 
 Expected: FAIL because `FormInstance` does not support nested values, `setFields`, or field state methods.
@@ -1104,7 +1104,7 @@ There should be no remaining `getFieldError(... )()` calls after this step.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-instance.test.tsx packages/components/src/form/__tests__/form.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-instance.test.tsx packages/components/src/form/__tests__/form.test.tsx
 ```
 
 Expected: PASS.
@@ -1114,7 +1114,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -1208,7 +1208,7 @@ describe('form validation v2', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/validation.test.ts
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/validation.test.ts
 ```
 
 Expected: FAIL because `validateValue` still returns `string[]` synchronously.
@@ -1439,7 +1439,7 @@ async function validateFieldNames(
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/validation.test.ts packages/components/src/form/__tests__/form.test.tsx packages/components/src/form/__tests__/form-instance.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/validation.test.ts packages/components/src/form/__tests__/form.test.tsx packages/components/src/form/__tests__/form-instance.test.tsx
 ```
 
 Expected: PASS.
@@ -1449,7 +1449,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -1576,7 +1576,7 @@ describe('Form.Item advanced APIs', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-item-advanced.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-item-advanced.test.tsx
 ```
 
 Expected: FAIL because advanced props and `Form.Item.useStatus` are not implemented.
@@ -1747,7 +1747,7 @@ export { useFormItemControl, useFormItemStatus } from './context'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-item-advanced.test.tsx packages/components/src/form/__tests__/form.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-item-advanced.test.tsx packages/components/src/form/__tests__/form.test.tsx
 ```
 
 Expected: PASS.
@@ -1757,7 +1757,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -1866,7 +1866,7 @@ describe('Form hooks', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-hooks.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-hooks.test.tsx
 ```
 
 Expected: FAIL because the static hooks are not implemented.
@@ -1985,7 +1985,7 @@ export { useWatch }
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-hooks.test.tsx packages/components/src/form/__tests__/form.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-hooks.test.tsx packages/components/src/form/__tests__/form.test.tsx
 ```
 
 Expected: PASS.
@@ -1995,7 +1995,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -2105,7 +2105,7 @@ describe('Form.List', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-list.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-list.test.tsx
 ```
 
 Expected: FAIL because `Form.List` and `Form.ErrorList` are not implemented.
@@ -2317,7 +2317,7 @@ Add `FormListField`, `FormListOperation`, `FormListProps`, `FormErrorListProps`,
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-list.test.tsx packages/components/src/form/__tests__/form.test.tsx packages/components/src/form/__tests__/form-instance.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-list.test.tsx packages/components/src/form/__tests__/form.test.tsx packages/components/src/form/__tests__/form-instance.test.tsx
 ```
 
 Expected: PASS.
@@ -2327,7 +2327,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -2411,7 +2411,7 @@ describe('Form layout props', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-layout.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-layout.test.tsx
 ```
 
 Expected: FAIL because layout props and required mark context are not implemented.
@@ -2566,7 +2566,7 @@ In `packages/components/src/form/form.style.ts`, add style entries inside the re
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- packages/components/src/form/__tests__/form-layout.test.tsx packages/components/src/form/__tests__/form.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- packages/components/src/form/__tests__/form-layout.test.tsx packages/components/src/form/__tests__/form.test.tsx
 ```
 
 Expected: PASS.
@@ -2576,7 +2576,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck
 ```
 
 Expected: PASS.
@@ -2775,8 +2775,8 @@ function WatchedUsername() {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

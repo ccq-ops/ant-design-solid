@@ -29,7 +29,7 @@
 Use these commands during implementation:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck
@@ -127,7 +127,7 @@ describe('cascader path utils', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because `path-utils` and exported constants do not exist.
@@ -405,7 +405,7 @@ export function filterDisplayedPaths(
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: newly added path utility tests pass. Existing Cascader tests may fail at typecheck later only if imports conflict; fix import conflicts immediately.
@@ -496,7 +496,7 @@ it('supports controlled searchValue and onSearch', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because textbox/search result UI is not implemented.
@@ -611,7 +611,7 @@ In `cascader.tsx`, compute normalized search config, search state, and search re
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: all existing and new search tests pass.
@@ -671,7 +671,7 @@ it('calls loadData for non-leaf lazy options and shows loading icon while pendin
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because `loadData` behavior is absent.
@@ -697,7 +697,7 @@ In `cascader-dropdown.tsx`, show loading icon when path is loading or option.loa
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: lazy loading test and existing tests pass.
@@ -779,7 +779,7 @@ it('marks parent indeterminate when only some descendants are selected', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because multiple mode is absent.
@@ -897,7 +897,7 @@ In `cascader-dropdown.tsx`:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: multiple core tests pass with existing tests.
@@ -996,7 +996,7 @@ it('uses showCheckedStrategy to display parent or child tags', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because tags and strategy display are not implemented.
@@ -1022,7 +1022,7 @@ In `cascader-selector.tsx`:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: tag tests pass.
@@ -1083,7 +1083,7 @@ it('supports multiple changeOnSelect for intermediate paths', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL if auto-clear or changeOnSelect intermediate behavior is incomplete.
@@ -1103,7 +1103,7 @@ In `selection-utils.ts`, ensure `togglePathInMultipleValue` uses `[optionPath]` 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: tests pass.
@@ -1155,7 +1155,7 @@ it('supports size status variant and prefix visual props', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: FAIL because classes/prefix are absent.
@@ -1184,7 +1184,7 @@ In styles, add selectors for sizes, status border colors, and variants.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: visual test passes.
@@ -1235,7 +1235,7 @@ Add demos for searchable, lazy, multiple, and visual props.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- cascader
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- cascader
 ```
 
 Expected: PASS.

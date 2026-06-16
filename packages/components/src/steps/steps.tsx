@@ -1,7 +1,7 @@
 import { createEffect, createSignal, For, onCleanup, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import { CheckOutlined, CloseOutlined } from '@ant-design-solid/solid-icons'
+import { CheckOutlined, CloseOutlined } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useStepsStyle } from './steps.style'

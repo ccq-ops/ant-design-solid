@@ -13,7 +13,7 @@ export default defineConfig({
   },
   webServer: {
     command:
-      'COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs dev --host 127.0.0.1',
+      'COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs dev --host 127.0.0.1',
     url: 'http://127.0.0.1:5173',
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',

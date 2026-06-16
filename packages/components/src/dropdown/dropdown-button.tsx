@@ -1,4 +1,4 @@
-import { EllipsisOutlined } from '@ant-design-solid/solid-icons'
+import { EllipsisOutlined } from '@solid-ant-design/icons'
 import { Button } from '../button'
 import { useConfig } from '../config-provider'
 import { Space } from '../space'

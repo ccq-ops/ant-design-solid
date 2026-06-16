@@ -1,4 +1,4 @@
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
 import { fireEvent, render, screen, waitFor } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'

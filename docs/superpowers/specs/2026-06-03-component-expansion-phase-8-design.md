@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Goal
 
-Expand `@ant-design-solid/core` with three additional Ant Design-style components that are useful, self-contained, and low-risk:
+Expand `@solid-ant-design/core` with three additional Ant Design-style components that are useful, self-contained, and low-risk:
 
 1. `Flex`
 2. `Segmented`
@@ -140,7 +140,7 @@ export type SegmentedOption =
 
 ## Styling Approach
 
-Use the existing `@ant-design-solid/cssinjs` registration pattern and `useToken()`.
+Use the existing `@solid-ant-design/cssinjs` registration pattern and `useToken()`.
 
 Class prefixes:
 

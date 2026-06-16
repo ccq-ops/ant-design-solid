@@ -14,7 +14,7 @@ import {
   CloseOutlined,
   ExclamationCircleFilled,
   InfoCircleFilled,
-} from '@ant-design-solid/solid-icons'
+} from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useAlertStyle } from './alert.style'

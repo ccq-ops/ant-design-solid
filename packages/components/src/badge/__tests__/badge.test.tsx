@@ -1,5 +1,5 @@
 import { render } from '@solidjs/testing-library'
-import { ClockCircleOutlined } from '@ant-design-solid/solid-icons'
+import { ClockCircleOutlined } from '@solid-ant-design/icons'
 import { describe, expect, it } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { Badge } from '../index'

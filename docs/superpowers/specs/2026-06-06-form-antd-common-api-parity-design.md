@@ -4,7 +4,7 @@ Date: 2026-06-06
 
 ## Summary
 
-Upgrade the current lightweight `Form` implementation in `@ant-design-solid/core` to cover the common Ant Design Form API surface used in real business forms. The design keeps the public API close to Ant Design while using a Solid-native signal/store implementation internally.
+Upgrade the current lightweight `Form` implementation in `@solid-ant-design/core` to cover the common Ant Design Form API surface used in real business forms. The design keeps the public API close to Ant Design while using a Solid-native signal/store implementation internally.
 
 The recommended implementation route is a staged rewrite of the Form core into focused modules, rather than continuing to grow the current single `store.ts` implementation. This makes nested `NamePath`, async validation, dependencies, `Form.List`, and field status APIs easier to reason about and test.
 

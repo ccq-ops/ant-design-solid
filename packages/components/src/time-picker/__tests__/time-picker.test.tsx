@@ -1,4 +1,4 @@
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
 import { cleanup, fireEvent, render, screen } from '@solidjs/testing-library'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'

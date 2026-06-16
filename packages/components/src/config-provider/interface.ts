@@ -3,7 +3,7 @@ import type {
   AliasToken,
   ComponentSize,
   ThemeConfig as AntDesignSolidThemeConfig,
-} from '@ant-design-solid/theme'
+} from '@solid-ant-design/theme'
 import type { AlertProps } from '../alert/interface'
 import type { AnchorProps } from '../anchor/interface'
 import type { BadgeProps, RibbonProps } from '../badge/interface'

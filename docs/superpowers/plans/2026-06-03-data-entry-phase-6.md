@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Ant Design-style `AutoComplete`, `TreeSelect`, and `Transfer` components to `@ant-design-solid/core` with tests and docs.
+**Goal:** Add Ant Design-style `AutoComplete`, `TreeSelect`, and `Transfer` components to `@solid-ant-design/core` with tests and docs.
 
 **Architecture:** Each component follows the existing colocated folder pattern in `packages/components/src`, uses `ConfigProvider` prefix classes, registers token-driven styles with `useStyleRegister`, and exposes public exports from the package root. `AutoComplete` and `TreeSelect` integrate with `Form.Item` using the existing form control context; `Transfer` remains a standalone list-transfer control.
 
@@ -68,7 +68,7 @@ Create `packages/components/src/auto-complete/__tests__/auto-complete.test.tsx` 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/auto-complete/__tests__/auto-complete.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/auto-complete/__tests__/auto-complete.test.tsx
 ```
 
 Expected: FAIL because the `auto-complete` module does not exist.
@@ -107,7 +107,7 @@ Create `packages/components/src/tree-select/__tests__/tree-select.test.tsx` with
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/tree-select/__tests__/tree-select.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/tree-select/__tests__/tree-select.test.tsx
 ```
 
 Expected: FAIL because the `tree-select` module does not exist.
@@ -146,7 +146,7 @@ Create `packages/components/src/transfer/__tests__/transfer.test.tsx` with tests
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/transfer/__tests__/transfer.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/transfer/__tests__/transfer.test.tsx
 ```
 
 Expected: FAIL because the `transfer` module does not exist.

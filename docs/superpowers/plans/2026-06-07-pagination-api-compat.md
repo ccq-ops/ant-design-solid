@@ -33,7 +33,7 @@
 - [ ] **Step 2: Verify red** with:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- pagination
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- pagination
 ```
 
 Expected: tests fail because props and behaviors do not exist yet.
@@ -46,7 +46,7 @@ Expected: tests fail because props and behaviors do not exist yet.
 - [ ] **Step 4: Verify green** with:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- pagination
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- pagination
 ```
 
 Expected: all pagination tests pass.

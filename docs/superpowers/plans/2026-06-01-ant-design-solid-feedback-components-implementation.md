@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Ant Design-inspired `Alert`, `Message`, `Notification`, `Modal`, `Modal.confirm`, and `Popconfirm` components to `@ant-design-solid/core`.
+**Goal:** Add Ant Design-inspired `Alert`, `Message`, `Notification`, `Modal`, `Modal.confirm`, and `Popconfirm` components to `@solid-ant-design/core`.
 
-**Architecture:** Add component token defaults in `@ant-design-solid/theme`, then build a small shared overlay foundation for portals, z-index allocation, document listeners, and body scroll locking. Each feedback component follows the existing folder pattern in `packages/components/src`, uses `ConfigProvider` prefix classes, registers token-driven styles with `useStyleRegister`, and includes docs and tests.
+**Architecture:** Add component token defaults in `@solid-ant-design/theme`, then build a small shared overlay foundation for portals, z-index allocation, document listeners, and body scroll locking. Each feedback component follows the existing folder pattern in `packages/components/src`, uses `ConfigProvider` prefix classes, registers token-driven styles with `useStyleRegister`, and includes docs and tests.
 
 **Tech Stack:** TypeScript, SolidJS, Solid portals, Vite 8, pnpm 11, Vitest, jsdom, @solidjs/testing-library, oxlint, oxfmt.
 
@@ -126,7 +126,7 @@ it('derives feedback component token defaults and applies overrides', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: FAIL because the new component token names are not in `ComponentTokenMap`.
@@ -234,7 +234,7 @@ In `packages/theme/src/components.ts`, add these entries to the `defaults` objec
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: PASS.
@@ -332,7 +332,7 @@ describe('shared overlay helpers', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- shared/__tests__/overlay.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- shared/__tests__/overlay.test.tsx
 ```
 
 Expected: FAIL because `portal.tsx`, `z-index.ts`, and `overlay.ts` do not exist.
@@ -421,7 +421,7 @@ export function unlockBodyScroll() {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- shared/__tests__/overlay.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- shared/__tests__/overlay.test.tsx
 ```
 
 Expected: PASS.
@@ -503,7 +503,7 @@ describe('Alert', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- alert/__tests__/alert.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- alert/__tests__/alert.test.tsx
 ```
 
 Expected: FAIL because `Alert` does not exist.
@@ -537,8 +537,8 @@ export interface AlertProps {
 Create `packages/components/src/alert/alert.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useAlertStyle(prefixCls: string) {
@@ -686,7 +686,7 @@ export * from './alert'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- alert/__tests__/alert.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- alert/__tests__/alert.test.tsx
 ```
 
 Expected: PASS.
@@ -778,7 +778,7 @@ describe('message', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- message/__tests__/message.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- message/__tests__/message.test.tsx
 ```
 
 Expected: FAIL because `message` does not exist.
@@ -825,8 +825,8 @@ export interface MessageInstance {
 Create `packages/components/src/message/message.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useMessageStyle(prefixCls: string) {
@@ -1064,7 +1064,7 @@ export * from './message'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- message/__tests__/message.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- message/__tests__/message.test.tsx
 ```
 
 Expected: PASS.
@@ -1151,7 +1151,7 @@ describe('notification', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- notification/__tests__/notification.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- notification/__tests__/notification.test.tsx
 ```
 
 Expected: FAIL because `notification` does not exist.
@@ -1201,8 +1201,8 @@ export interface NotificationInstance {
 Create `packages/components/src/notification/notification.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useNotificationStyle(prefixCls: string) {
@@ -1451,7 +1451,7 @@ export * from './notification'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- notification/__tests__/notification.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- notification/__tests__/notification.test.tsx
 ```
 
 Expected: PASS.
@@ -1584,7 +1584,7 @@ describe('Modal', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- modal/__tests__/modal.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- modal/__tests__/modal.test.tsx
 ```
 
 Expected: FAIL because `Modal` does not exist.
@@ -1657,8 +1657,8 @@ export type ModalComponent = ((props: ModalProps) => JSX.Element) & ModalStaticM
 Create `packages/components/src/modal/modal.style.ts` with mask, wrap, content, header, body, footer, close, and confirm status styles:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function useModalStyle(prefixCls: string) {
@@ -2000,7 +2000,7 @@ export * from './modal'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- modal/__tests__/modal.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- modal/__tests__/modal.test.tsx
 ```
 
 Expected: PASS.
@@ -2119,7 +2119,7 @@ describe('Popconfirm', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popconfirm/__tests__/popconfirm.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popconfirm/__tests__/popconfirm.test.tsx
 ```
 
 Expected: FAIL because `Popconfirm` does not exist.
@@ -2152,8 +2152,8 @@ export interface PopconfirmProps {
 Create `packages/components/src/popconfirm/popconfirm.style.ts`:
 
 ```ts
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
-import { getComponentToken } from '@ant-design-solid/theme'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
+import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export function usePopconfirmStyle(prefixCls: string) {
@@ -2287,7 +2287,7 @@ export * from './popconfirm'
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- popconfirm/__tests__/popconfirm.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- popconfirm/__tests__/popconfirm.test.tsx
 ```
 
 Expected: PASS.
@@ -2316,7 +2316,7 @@ git commit -m "feat: add popconfirm component"
 Create `apps/docs/src/pages/alert-page.tsx`:
 
 ```tsx
-import { Alert, Space } from '@ant-design-solid/core'
+import { Alert, Space } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/demo-block'
 
 export function AlertPage() {
@@ -2345,7 +2345,7 @@ export function AlertPage() {
 Create `apps/docs/src/pages/message-page.tsx`:
 
 ```tsx
-import { Button, Space, message } from '@ant-design-solid/core'
+import { Button, Space, message } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/demo-block'
 
 export function MessagePage() {
@@ -2367,7 +2367,7 @@ export function MessagePage() {
 Create `apps/docs/src/pages/notification-page.tsx`:
 
 ```tsx
-import { Button, Space, notification } from '@ant-design-solid/core'
+import { Button, Space, notification } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/demo-block'
 
 export function NotificationPage() {
@@ -2399,7 +2399,7 @@ export function NotificationPage() {
 Create `apps/docs/src/pages/modal-page.tsx`:
 
 ```tsx
-import { Button, Modal, Space } from '@ant-design-solid/core'
+import { Button, Modal, Space } from '@solid-ant-design/core'
 import { createSignal } from 'solid-js'
 import { DemoBlock } from '../site/demo-block'
 
@@ -2434,7 +2434,7 @@ export function ModalPage() {
 Create `apps/docs/src/pages/popconfirm-page.tsx`:
 
 ```tsx
-import { Button, Popconfirm, message } from '@ant-design-solid/core'
+import { Button, Popconfirm, message } from '@solid-ant-design/core'
 import { DemoBlock } from '../site/demo-block'
 
 export function PopconfirmPage() {
@@ -2495,8 +2495,8 @@ Add route entries:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

@@ -4,7 +4,7 @@ group: Layout
 ---
 
 import { createSignal } from 'solid-js'
-import { Button, Card, Flex, Radio, Segmented, Slider, Typography } from '@ant-design-solid/core'
+import { Button, Card, Flex, Radio, Segmented, Slider, Typography } from '@solid-ant-design/core'
 
 # Flex
 
@@ -37,7 +37,7 @@ return Demo1
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Flex, Radio } from '@ant-design-solid/core'
+import { Flex, Radio } from '@solid-ant-design/core'
 
 const Demo1 = function () {
   const [orientation, setOrientation] = createSignal<'horizontal' | 'vertical'>('horizontal')
@@ -98,8 +98,8 @@ return Demo2
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Flex, Radio, Slider } from '@ant-design-solid/core'
-import type { FlexProps } from '@ant-design-solid/core'
+import { Button, Flex, Radio, Slider } from '@solid-ant-design/core'
+import type { FlexProps } from '@solid-ant-design/core'
 
 const Demo2 = function () {
   const [gapSize, setGapSize] = createSignal<FlexProps['gap']>('small')
@@ -173,8 +173,8 @@ return Demo3
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Flex, Segmented } from '@ant-design-solid/core'
-import type { FlexProps } from '@ant-design-solid/core'
+import { Button, Flex, Segmented } from '@solid-ant-design/core'
+import type { FlexProps } from '@solid-ant-design/core'
 
 const justifyOptions = [
   'flex-start',
@@ -243,7 +243,7 @@ return Demo4
 ---
 
 ```tsx
-import { Button, Flex } from '@ant-design-solid/core'
+import { Button, Flex } from '@solid-ant-design/core'
 
 const Demo4 = function () {
   return (
@@ -289,7 +289,7 @@ return Demo5
 ---
 
 ```tsx
-import { Button, Card, Flex, Typography } from '@ant-design-solid/core'
+import { Button, Card, Flex, Typography } from '@solid-ant-design/core'
 
 const Demo5 = function () {
   return (
@@ -343,7 +343,7 @@ return Demo6
 
 ```tsx
 import type { JSX } from 'solid-js'
-import { Button, Flex } from '@ant-design-solid/core'
+import { Button, Flex } from '@solid-ant-design/core'
 
 function Article(props: JSX.HTMLAttributes<HTMLElement>) {
   return <article {...props} />

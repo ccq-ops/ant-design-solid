@@ -73,7 +73,7 @@ describe('createRoutesFromModules', () => {
 
 - [ ] **Step 2: Run the docs test and verify RED**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/routes.test.ts`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/routes.test.ts`
 
 Expected: FAIL because `./routes` cannot be resolved from the test.
 
@@ -119,7 +119,7 @@ export const routes = createRoutesFromModules(import.meta.glob<RouteModule>('../
 
 - [ ] **Step 2: Run the focused test and verify GREEN**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/routes.test.ts`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/routes.test.ts`
 
 Expected: PASS for route generation tests.
 
@@ -132,7 +132,7 @@ Expected: PASS for route generation tests.
 
 - [ ] **Step 1: Install dependency**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs add @solidjs/router`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs add @solidjs/router`
 
 Expected: package manifest and lockfile updated.
 
@@ -188,7 +188,7 @@ export function Layout(props: { children?: JSX.Element }) {
 
 - [ ] **Step 3: Run typecheck for expected route-file failures**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck`
 
 Expected: FAIL until `apps/docs/src/routes` files exist and dependency install has completed.
 

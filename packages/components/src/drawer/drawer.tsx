@@ -1,4 +1,4 @@
-import { CloseOutlined } from '@ant-design-solid/solid-icons'
+import { CloseOutlined } from '@solid-ant-design/icons'
 import type { JSX } from 'solid-js'
 import {
   Show,

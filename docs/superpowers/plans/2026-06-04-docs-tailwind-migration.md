@@ -117,8 +117,8 @@ Create `apps/docs/src/routes/index.test.tsx` with:
 
 ```tsx
 import { render } from '@solidjs/testing-library'
-import { ConfigProvider } from '@ant-design-solid/core'
-import { StyleProvider } from '@ant-design-solid/cssinjs'
+import { ConfigProvider } from '@solid-ant-design/core'
+import { StyleProvider } from '@solid-ant-design/cssinjs'
 import { describe, expect, it } from 'vitest'
 import Home from './index'
 
@@ -154,7 +154,7 @@ describe('Home', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
 ```
 
 Expected: FAIL. The layout test should fail because `Layout` still uses `site-sidebar-link-selected`, the demo block test should fail because `DemoBlock` still uses `demo-block`/`demo-preview`, and the home test should fail because `Home` still uses `hero`.
@@ -182,7 +182,7 @@ git commit -m "test(docs): cover tailwind docs shell styling"
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs add -D tailwindcss @tailwindcss/vite
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs add -D tailwindcss @tailwindcss/vite
 ```
 
 Expected: `apps/docs/package.json` contains `tailwindcss` and `@tailwindcss/vite` under `devDependencies`, and `pnpm-lock.yaml` is updated.
@@ -201,16 +201,16 @@ export default defineConfig({
   plugins: [solid(), tailwindcss()],
   resolve: {
     alias: {
-      '@ant-design-solid/core': fileURLToPath(
+      '@solid-ant-design/core': fileURLToPath(
         new URL('../../packages/components/src', import.meta.url),
       ),
-      '@ant-design-solid/cssinjs': fileURLToPath(
+      '@solid-ant-design/cssinjs': fileURLToPath(
         new URL('../../packages/cssinjs/src', import.meta.url),
       ),
-      '@ant-design-solid/theme': fileURLToPath(
+      '@solid-ant-design/theme': fileURLToPath(
         new URL('../../packages/theme/src', import.meta.url),
       ),
-      '@ant-design-solid/icons': fileURLToPath(
+      '@solid-ant-design/icons': fileURLToPath(
         new URL('../../packages/icons/src', import.meta.url),
       ),
     },
@@ -244,7 +244,7 @@ a {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS. Vite should compile CSS through the Tailwind plugin and produce `apps/docs/dist` assets.
@@ -322,7 +322,7 @@ export function Layout(props: { children?: JSX.Element }) {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/layout.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/layout.test.tsx
 ```
 
 Expected: PASS. The clicked `Menu` sidebar link has `aria-current="page"`, `bg-blue-50`, `text-blue-600`, and `font-medium`.
@@ -332,7 +332,7 @@ Expected: PASS. The clicked `Menu` sidebar link has `aria-current="page"`, `bg-b
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.
@@ -381,7 +381,7 @@ export function DemoBlock(props: { title: string; code: string; children: JSX.El
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/site/demo-block.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/site/demo-block.test.tsx
 ```
 
 Expected: PASS. The region, heading, preview content, code, and expected Tailwind classes are present.
@@ -407,7 +407,7 @@ git commit -m "refactor(docs): migrate demo block styling to tailwind"
 Replace the full contents of `apps/docs/src/routes/index.tsx` with:
 
 ```tsx
-import { Button, Space } from '@ant-design-solid/core'
+import { Button, Space } from '@solid-ant-design/core'
 
 export default function Home() {
   return (
@@ -431,7 +431,7 @@ export default function Home() {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- src/routes/index.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- src/routes/index.test.tsx
 ```
 
 Expected: PASS. The hero has `rounded-3xl`, `bg-gradient-to-br`, and `p-14`; the heading has `text-5xl`.
@@ -471,7 +471,7 @@ Expected: no matches for old shared docs style selectors. If this finds only tes
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs typecheck
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs typecheck
 ```
 
 Expected: PASS.
@@ -481,7 +481,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test
 ```
 
 Expected: PASS.
@@ -491,7 +491,7 @@ Expected: PASS.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs build
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs build
 ```
 
 Expected: PASS.

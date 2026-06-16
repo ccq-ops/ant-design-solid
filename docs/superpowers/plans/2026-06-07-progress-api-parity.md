@@ -33,7 +33,7 @@ Add tests for `railColor`, `success`, `format(percent, successPercent)`, `stroke
 
 - [ ] **Step 2: Run tests to verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress`
 Expected: new tests fail because props/DOM behavior are missing.
 
 - [ ] **Step 3: Implement minimal common props**
@@ -42,7 +42,7 @@ Update interface and component so line/circle support `railColor`, `success`, `s
 
 - [ ] **Step 4: Run tests to verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress`
 Expected: Progress tests pass.
 
 ## Task 2: Dashboard and medium-priority props
@@ -60,7 +60,7 @@ Add tests for `type="dashboard"`, `gapDegree`, `gapPlacement`, line `steps`, cir
 
 - [ ] **Step 2: Run tests to verify failure**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress`
 Expected: new tests fail because behavior is missing.
 
 - [ ] **Step 3: Implement dashboard and medium props**
@@ -69,7 +69,7 @@ Extend rendering for dashboard geometry, step segments, percent info placement, 
 
 - [ ] **Step 4: Run tests to verify pass**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress`
 Expected: Progress tests pass.
 
 ## Task 3: Docs and repository verification
@@ -84,7 +84,7 @@ Document the newly implemented API in the docs page with concise demo coverage.
 
 - [ ] **Step 2: Run focused tests**
 
-Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- progress`
+Run: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- progress`
 Expected: Progress tests pass.
 
 - [ ] **Step 3: Run required verification**

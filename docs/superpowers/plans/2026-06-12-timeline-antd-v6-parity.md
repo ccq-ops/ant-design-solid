@@ -6,7 +6,7 @@
 
 **Architecture:** Extend Steps with reusable dot, semantic slot, item styling, variant, and internal semantic element support. Replace Timeline's custom list renderer with a Steps-backed normalization layer that maps Timeline v6 items into Steps items and applies Timeline-specific styling.
 
-**Tech Stack:** SolidJS, TypeScript, `@solidjs/testing-library`, Vitest, local cssinjs style registration, `@ant-design-solid/icons`.
+**Tech Stack:** SolidJS, TypeScript, `@solidjs/testing-library`, Vitest, local cssinjs style registration, `@solid-ant-design/icons`.
 
 ---
 
@@ -114,7 +114,7 @@ it('can render ordered-list semantics for internal consumers', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/steps/__tests__/steps.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/steps/__tests__/steps.test.tsx
 ```
 
 Expected: FAIL because `type="dot"`, `orientation`, semantic props, item class/style props, and internal semantic element props are not implemented.
@@ -229,7 +229,7 @@ Keep existing class names such as `ads-steps-item-tail` compatible by either pre
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/steps/__tests__/steps.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/steps/__tests__/steps.test.tsx
 ```
 
 Expected: PASS.
@@ -421,7 +421,7 @@ describe('Timeline', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/timeline/__tests__/timeline.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/timeline/__tests__/timeline.test.tsx
 ```
 
 Expected: FAIL because Timeline still exposes and renders the old API shape.
@@ -535,7 +535,7 @@ In `packages/components/src/timeline/timeline.style.ts`, rewrite styles for the 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/steps/__tests__/steps.test.tsx src/timeline/__tests__/timeline.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/steps/__tests__/steps.test.tsx src/timeline/__tests__/timeline.test.tsx
 ```
 
 Expected: PASS.
@@ -614,7 +614,7 @@ Expected: no matches for removed API names except incidental words that are not 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/steps/__tests__/steps.test.tsx src/timeline/__tests__/timeline.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/steps/__tests__/steps.test.tsx src/timeline/__tests__/timeline.test.tsx
 ```
 
 Expected: PASS.

@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js'
 import type { Accessor } from 'solid-js'
-import type { AliasToken } from '@ant-design-solid/theme'
+import type { AliasToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 
 export const responsiveArray = ['xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs'] as const

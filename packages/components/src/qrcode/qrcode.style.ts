@@ -1,4 +1,4 @@
-import { useStyleRegister } from '@ant-design-solid/cssinjs'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { useToken } from '../config-provider'
 
 function toThemeMaskBackground(color: string, alpha = 0.88) {

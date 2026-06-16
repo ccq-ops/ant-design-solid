@@ -3,8 +3,8 @@ title: Masonry
 group: Layout
 ---
 
-import { Button, Card, Divider, Flex, Masonry, Typography, useToken } from '@ant-design-solid/core'
-import { CloseOutlined } from '@ant-design-solid/solid-icons'
+import { Button, Card, Divider, Flex, Masonry, Typography, useToken } from '@solid-ant-design/core'
+import { CloseOutlined } from '@solid-ant-design/icons'
 import { createSignal } from 'solid-js'
 
 # Masonry
@@ -44,7 +44,7 @@ return Demo1
 ---
 
 ```tsx
-import { Card, Masonry } from '@ant-design-solid/core'
+import { Card, Masonry } from '@solid-ant-design/core'
 
 const heights = [150, 50, 90, 70, 110, 150, 130, 80, 50, 90, 100, 150, 60, 50, 80].map(
   (height, index) => {
@@ -118,7 +118,7 @@ return Demo2
 ---
 
 ```tsx
-import { Card, Masonry } from '@ant-design-solid/core'
+import { Card, Masonry } from '@solid-ant-design/core'
 
 const heights = [120, 55, 85, 160, 95, 140, 75, 110, 65, 130, 90, 145, 55, 100, 80]
 
@@ -186,7 +186,7 @@ return Demo3
 ---
 
 ```tsx
-import { Masonry } from '@ant-design-solid/core'
+import { Masonry } from '@solid-ant-design/core'
 
 const imageList = [
   'https://images.unsplash.com/photo-1510001618818-4b4e3d86bf0f',
@@ -292,8 +292,8 @@ return Demo4
 
 ```tsx
 import { createSignal } from 'solid-js'
-import { Button, Card, Flex, Masonry, useToken } from '@ant-design-solid/core'
-import { CloseOutlined } from '@ant-design-solid/solid-icons'
+import { Button, Card, Flex, Masonry, useToken } from '@solid-ant-design/core'
+import { CloseOutlined } from '@solid-ant-design/icons'
 
 const heights = [150, 50, 90, 70, 110, 150, 130, 80, 50, 90, 100, 150, 70, 50, 80]
 
@@ -440,7 +440,7 @@ return Demo5
 ---
 
 ```tsx
-import { Card, Divider, Flex, Masonry, Typography } from '@ant-design-solid/core'
+import { Card, Divider, Flex, Masonry, Typography } from '@solid-ant-design/core'
 
 const items = [120, 80, 100, 60, 140, 90, 110, 70].map((height, index) => ({
   key: `item-${index}`,

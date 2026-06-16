@@ -44,8 +44,8 @@
 
 - No source edits expected unless verification finds issues.
 
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core exec vitest run src/menu/__tests__/menu.test.tsx`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core typecheck`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core exec vitest run src/menu/__tests__/menu.test.tsx`.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core typecheck`.
 - [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint`.
 - [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`.
 - [ ] Run broader checks if time allows: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test` and `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build`.

@@ -1,5 +1,5 @@
 {
-  "name": "@ant-design-solid/core",
+  "name": "@solid-ant-design/core",
   "version": "0.1.0",
   "license": "MIT",
   "repository": {
@@ -31,9 +31,9 @@
     "lint": "oxlint src"
   },
   "dependencies": {
-    "@ant-design-solid/cssinjs": "workspace:*",
-    "@ant-design-solid/solid-icons": "workspace:*",
-    "@ant-design-solid/theme": "workspace:*",
+    "@solid-ant-design/cssinjs": "workspace:*",
+    "@solid-ant-design/icons": "workspace:*",
+    "@solid-ant-design/theme": "workspace:*",
     "@tanstack/solid-virtual": "^3.13.28",
     "dayjs": "^1.11.13",
     "qrcode-generator": "^2.0.4",

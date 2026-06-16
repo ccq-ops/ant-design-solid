@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library'
-import { StyleProvider, createCache, extractStyle } from '@ant-design-solid/cssinjs'
-import { darkAlgorithm } from '@ant-design-solid/theme'
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
+import { darkAlgorithm } from '@solid-ant-design/theme'
 import { describe, expect, it, vi } from 'vitest'
 import { ConfigProvider } from '../../config-provider'
 import { QRCode } from '../index'

@@ -6,7 +6,7 @@
 
 **Architecture:** Extend the existing `list` files in place, reusing local `Spin` and `Pagination`. Add small helpers for loading normalization, pagination state, responsive grid columns, semantic class/style resolution, and row key extraction.
 
-**Tech Stack:** SolidJS, Vitest, @solidjs/testing-library, local `@ant-design-solid/core` components.
+**Tech Stack:** SolidJS, Vitest, @solidjs/testing-library, local `@solid-ant-design/core` components.
 
 ---
 
@@ -17,7 +17,7 @@
 - Modify: `packages/components/src/list/__tests__/list.test.tsx`
 
 - [ ] Add failing tests for `loading` object config, `locale.emptyText`, `loadMore`, `pagination`, `rowKey`, `grid`, `itemLayout`, semantic `classNames/styles`, `prefixCls`, and `rootClass`.
-- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/list/__tests__/list.test.tsx` and verify the new tests fail on missing behavior.
+- [ ] Run `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/list/__tests__/list.test.tsx` and verify the new tests fail on missing behavior.
 
 ### Task 2: Types
 
@@ -56,7 +56,7 @@
 
 **Commands:**
 
-- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- src/list/__tests__/list.test.tsx`
+- `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- src/list/__tests__/list.test.tsx`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm lint`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm format:check`
 - `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r typecheck`

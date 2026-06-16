@@ -4,9 +4,9 @@
 
 **Goal:** Add Ant Design-style dark mode support through `theme.algorithm`, including `darkAlgorithm`, ConfigProvider inheritance, and cleanup of obvious hardcoded light component surfaces.
 
-**Architecture:** `@ant-design-solid/theme` remains the source of truth for seed, alias, and component tokens. `ConfigProvider` merges `algorithm`, `token`, and `components`, and components continue consuming tokens via existing style hooks. Component cleanup moves light-only status/selection colors behind theme/component tokens instead of adding global dark CSS.
+**Architecture:** `@solid-ant-design/theme` remains the source of truth for seed, alias, and component tokens. `ConfigProvider` merges `algorithm`, `token`, and `components`, and components continue consuming tokens via existing style hooks. Component cleanup moves light-only status/selection colors behind theme/component tokens instead of adding global dark CSS.
 
-**Tech Stack:** TypeScript, SolidJS, Vitest, pnpm workspaces, @ant-design-solid/theme, @ant-design-solid/core, @ant-design-solid/cssinjs.
+**Tech Stack:** TypeScript, SolidJS, Vitest, pnpm workspaces, @solid-ant-design/theme, @solid-ant-design/core, @solid-ant-design/cssinjs.
 
 ---
 
@@ -157,7 +157,7 @@ it('derives dark-compatible component token defaults', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: FAIL because `darkAlgorithm`, `algorithm` config, and new component token fields do not exist yet.
@@ -281,7 +281,7 @@ No other local import change is needed.
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: still FAIL because component token fields from Task 1 do not exist yet.
@@ -442,7 +442,7 @@ Tree: {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/theme test
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/theme test
 ```
 
 Expected: PASS.
@@ -471,10 +471,10 @@ Open the file and keep its existing render/import pattern. Add new tests using t
 Use:
 
 ```ts
-import { darkAlgorithm, defaultAlgorithm } from '@ant-design-solid/theme'
+import { darkAlgorithm, defaultAlgorithm } from '@solid-ant-design/theme'
 ```
 
-If `@ant-design-solid/theme` is already imported, merge these names into the existing import.
+If `@solid-ant-design/theme` is already imported, merge these names into the existing import.
 
 - [ ] **Step 3: Add failing test for inheritance**
 
@@ -536,7 +536,7 @@ it('allows child theme algorithm to override parent algorithm', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- config-provider
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- config-provider
 ```
 
 Expected: FAIL because `mergeThemeConfig` does not merge algorithm yet.
@@ -575,7 +575,7 @@ export function mergeThemeConfig(parent: ThemeConfig, child: ThemeConfig): Theme
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- config-provider
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- config-provider
 ```
 
 Expected: PASS.
@@ -669,7 +669,7 @@ with:
 In `packages/components/src/tree/tree.style.ts`, import `getComponentToken` if not already imported:
 
 ```ts
-import { getComponentToken } from '@ant-design-solid/theme'
+import { getComponentToken } from '@solid-ant-design/theme'
 ```
 
 Inside the style callback, create:
@@ -711,7 +711,7 @@ If a file does not expose `t` in that scope, skip it and document the skip in th
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- alert tag tree select
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- alert tag tree select
 ```
 
 Expected: PASS.
@@ -762,14 +762,14 @@ it('uses the dark theme algorithm in dark mode', () => {
 })
 ```
 
-Make sure `useConfig` is imported from `@ant-design-solid/core` if needed.
+Make sure `useConfig` is imported from `@solid-ant-design/core` if needed.
 
 - [ ] **Step 2: Run docs test to verify RED**
 
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- theme-context
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- theme-context
 ```
 
 Expected: FAIL because docs still manually overrides only seed values.
@@ -779,7 +779,7 @@ Expected: FAIL because docs still manually overrides only seed values.
 In `apps/docs/src/components/theme-context.tsx`, update imports:
 
 ```ts
-import { darkAlgorithm, type ThemeConfig } from '@ant-design-solid/theme'
+import { darkAlgorithm, type ThemeConfig } from '@solid-ant-design/theme'
 ```
 
 Replace `themeConfigForMode` dark branch with:
@@ -795,7 +795,7 @@ return {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/docs test -- theme-context
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/docs test -- theme-context
 ```
 
 Expected: PASS.

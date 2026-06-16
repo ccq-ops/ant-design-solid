@@ -4,7 +4,7 @@ import {
   CloseCircleFilled,
   ExclamationCircleFilled,
   InfoCircleFilled,
-} from '@ant-design-solid/solid-icons'
+} from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { PresentedImage403, PresentedImage404, PresentedImage500 } from './exception-images'

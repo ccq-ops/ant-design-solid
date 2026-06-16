@@ -1,5 +1,5 @@
 {
-  "name": "ant-design-solid",
+  "name": "solid-ant-design",
   "version": "0.0.0",
   "private": true,
   "homepage": "https://ccq-ops.github.io/ant-design-solid",
@@ -10,7 +10,7 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @ant-design-solid/docs dev",
+    "dev": "pnpm --filter @solid-ant-design/docs dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "test:e2e": "playwright test",

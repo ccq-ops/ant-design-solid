@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add Ant Design-aligned `icon` and `iconPosition` support to the Solid Button component using `@ant-design-solid/icons`.
+**Goal:** Add Ant Design-aligned `icon` and `iconPosition` support to the Solid Button component using `@solid-ant-design/icons`.
 
 **Architecture:** Button will derive one rendered icon from `loading` or `icon`, with loading taking precedence, and place it before or after children based on `iconPosition`. Button styles will add directional icon spacing while preserving the existing `.ads-btn-icon` wrapper.
 
-**Tech Stack:** SolidJS, TypeScript, `@solidjs/testing-library`, Vitest, `@ant-design-solid/icons`, cssinjs style objects.
+**Tech Stack:** SolidJS, TypeScript, `@solidjs/testing-library`, Vitest, `@solid-ant-design/icons`, cssinjs style objects.
 
 ---
 
@@ -28,7 +28,7 @@
 Add this import near the top of the test file:
 
 ```ts
-import { SearchOutlined } from '@ant-design-solid/icons'
+import { SearchOutlined } from '@solid-ant-design/icons'
 ```
 
 - [ ] **Step 2: Add tests for icon API behavior**
@@ -83,7 +83,7 @@ it('uses the loading icon instead of a custom icon while loading', () => {
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: FAIL because `icon` and `iconPosition` are not implemented, so `.ads-btn-icon` is absent for non-loading icon tests and the custom icon still is not part of the API.
@@ -167,7 +167,7 @@ With:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: PASS for the Button test file.
@@ -199,7 +199,7 @@ With:
 Run:
 
 ```bash
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @ant-design-solid/core test -- button.test.tsx
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm --filter @solid-ant-design/core test -- button.test.tsx
 ```
 
 Expected: PASS for the Button test file.

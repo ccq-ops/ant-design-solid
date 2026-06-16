@@ -3,7 +3,7 @@
 ## Goal
 
 Add a dedicated Icon documentation page to the docs app so every generated icon from
-`@ant-design-solid/icons` appears in examples. The page should follow the shape of Ant Design's
+`@solid-ant-design/icons` appears in examples. The page should follow the shape of Ant Design's
 official Icon page while using Solid and the local package names.
 
 The new page route will be `/components/icon`, backed by
@@ -33,11 +33,11 @@ This change will not:
 `apps/docs/src/pages/components/icon.mdx` will contain:
 
 1. `# Icon`
-   - Brief description of `@ant-design-solid/icons`.
+   - Brief description of `@solid-ant-design/icons`.
    - Import example using the Solid package:
 
    ```tsx pure
-   import { SearchOutlined } from '@ant-design-solid/icons'
+   import { SearchOutlined } from '@solid-ant-design/icons'
    ```
 
 2. `### Basic usage`
@@ -75,7 +75,7 @@ To keep the MDX page maintainable, add a docs-local module:
 
 The module will:
 
-- Import all generated icon components from `@ant-design-solid/icons`.
+- Import all generated icon components from `@solid-ant-design/icons`.
 - Export typed metadata for each generated icon:
 
   ```ts
@@ -119,7 +119,7 @@ Add failing tests before implementation:
 
 2. Icon metadata completeness:
    - Add a docs test for `icon-list.tsx`.
-   - Compare metadata names against generated icon exports from `@ant-design-solid/icons`.
+   - Compare metadata names against generated icon exports from `@solid-ant-design/icons`.
    - Exclude non-generated exports such as `Icon`, `IconProps`, and `TwoToneColor`.
    - Assert that all entries are categorized by suffix and that all three categories are non-empty.
 
