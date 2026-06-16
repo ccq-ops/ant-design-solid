@@ -21,7 +21,7 @@
     "format:check": "oxfmt --check .",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "changeset publish"
+    "release": "node scripts/publish-packages.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
