@@ -7,6 +7,7 @@ const pluginFileNames = [
   'playground-registry-plugin.ts',
   'solidbase-default-theme-jsx.ts',
   'solidbase-default-theme-preview.ts',
+  'solidbase-theme-plugin.ts',
 ]
 
 describe('docs plugins location', () => {

@@ -1,31 +1,16 @@
 import { fileURLToPath, URL } from 'node:url'
-import { createSolidBase } from '@kobalte/solidbase/config'
 import { defineConfig } from 'vitest/config'
 import solid from 'vite-plugin-solid'
-import { docsTheme } from './src/docs-theme/theme'
 import { componentsChangelogPlugin } from './plugins/components-changelog-plugin'
 import { playgroundRegistryPlugin } from './plugins/playground-registry-plugin'
 import { solidbaseDefaultThemeJsx } from './plugins/solidbase-default-theme-jsx'
 import { solidbaseDefaultThemePreview } from './plugins/solidbase-default-theme-preview'
-import { docsThemeConfig } from './solidbase-theme-config'
-
-const solidBase = createSolidBase(docsTheme)
+import { solidbaseThemePlugin } from './plugins/solidbase-theme-plugin'
 
 export default defineConfig({
   oxc: { jsx: 'preserve' },
   plugins: [
-    solidBase.plugin({
-      title: 'Ant Design Solid',
-      description: 'SolidJS implementation of Ant Design components.',
-      lang: 'en',
-      lastUpdated: { dateStyle: 'short', timeStyle: 'short' },
-      markdown: {
-        expressiveCode: {
-          languageSwitcher: false,
-        },
-      },
-      themeConfig: docsThemeConfig,
-    }),
+    solidbaseThemePlugin,
     solidbaseDefaultThemeJsx(),
     solidbaseDefaultThemePreview(),
     componentsChangelogPlugin(),

@@ -1,7 +1,9 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join, parse } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createSolidBase } from '@kobalte/solidbase/config'
 import type { DefaultThemeConfig } from '@kobalte/solidbase/default-theme'
+import { docsTheme } from '../src/docs-theme/theme'
 
 export const componentGroups = [
   'General',
@@ -65,7 +67,7 @@ function readFrontmatter(filePath: string) {
 }
 
 function readComponentDocs(): ComponentDocMeta[] {
-  const componentsDir = join(dirname(fileURLToPath(import.meta.url)), 'src/routes/components')
+  const componentsDir = join(dirname(fileURLToPath(import.meta.url)), '../src/routes/components')
 
   return readdirSync(componentsDir)
     .filter((fileName) => fileName.endsWith('.mdx') && fileName !== 'index.mdx')
@@ -123,3 +125,20 @@ export const docsThemeConfig = {
     ],
   },
 } satisfies DefaultThemeConfig
+
+export const solidbasePluginConfig = {
+  title: 'Ant Design Solid',
+  description: 'SolidJS implementation of Ant Design components.',
+  lang: 'en',
+  lastUpdated: { dateStyle: 'short', timeStyle: 'short' },
+  markdown: {
+    expressiveCode: {
+      languageSwitcher: false,
+    },
+  },
+  themeConfig: docsThemeConfig,
+} as const
+
+export const solidBase = createSolidBase(docsTheme)
+
+export const solidbaseThemePlugin = solidBase.plugin(solidbasePluginConfig)

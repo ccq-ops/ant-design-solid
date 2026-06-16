@@ -1,20 +1,41 @@
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { frontmatter as buttonFrontmatter } from './src/routes/components/button.mdx'
-import { frontmatter as alertFrontmatter } from './src/routes/components/alert.mdx'
-import { frontmatter as configProviderFrontmatter } from './src/routes/components/config-provider.mdx'
 
-async function importThemeConfig(cacheKey: string) {
+function readFrontmatter(filePath: string) {
+  const source = readFileSync(filePath, 'utf8')
+  const match = source.match(/^---\n(?<frontmatter>[\s\S]*?)\n---\n/)
+  const frontmatter = match?.groups?.frontmatter ?? ''
+  const data: Record<string, string> = {}
+
+  for (const line of frontmatter.split('\n')) {
+    const separatorIndex = line.indexOf(':')
+
+    if (separatorIndex === -1) {
+      continue
+    }
+
+    const key = line.slice(0, separatorIndex).trim()
+    const value = line.slice(separatorIndex + 1).trim()
+
+    if (key) {
+      data[key] = value
+    }
+  }
+
+  return data
+}
+
+async function importThemePluginModule(cacheKey: string) {
   switch (cacheKey) {
     case 'component-groups-test':
-      return import('./solidbase-theme-config.ts?component-groups-test')
+      return import('./solidbase-theme-plugin.ts?component-groups-test')
     case 'frontmatter-test':
-      return import('./solidbase-theme-config.ts?frontmatter-test')
+      return import('./solidbase-theme-plugin.ts?frontmatter-test')
     case 'auto-discovery-test':
-      return import('./solidbase-theme-config.ts?auto-discovery-test')
+      return import('./solidbase-theme-plugin.ts?auto-discovery-test')
     case 'github-pages-test':
-      return import('./solidbase-theme-config.ts?github-pages-test')
+      return import('./solidbase-theme-plugin.ts?github-pages-test')
     default:
       throw new Error(`Unknown solidbase theme config import cache key: ${cacheKey}`)
   }
@@ -25,7 +46,7 @@ describe('docs theme config', () => {
     const previousGithubPages = process.env.GITHUB_PAGES
 
     delete process.env.GITHUB_PAGES
-    const { docsThemeConfig } = await importThemeConfig('component-groups-test')
+    const { docsThemeConfig } = await importThemePluginModule('component-groups-test')
     const componentSidebar = docsThemeConfig.sidebar?.['/components']
 
     try {
@@ -90,7 +111,14 @@ describe('docs theme config', () => {
   })
 
   it('keeps component page frontmatter aligned with sidebar metadata', async () => {
-    const { componentDocs } = await importThemeConfig('frontmatter-test')
+    const { componentDocs } = await importThemePluginModule('frontmatter-test')
+    const buttonFrontmatter = readFrontmatter(
+      join(process.cwd(), 'src/routes/components/button.mdx'),
+    )
+    const alertFrontmatter = readFrontmatter(join(process.cwd(), 'src/routes/components/alert.mdx'))
+    const configProviderFrontmatter = readFrontmatter(
+      join(process.cwd(), 'src/routes/components/config-provider.mdx'),
+    )
 
     expect(buttonFrontmatter).toMatchObject({ title: 'Button', group: 'General' })
     expect(alertFrontmatter).toMatchObject({ title: 'Alert', group: 'Feedback' })
@@ -126,7 +154,7 @@ describe('docs theme config', () => {
         ].join('\n'),
       )
 
-      const freshConfig = await importThemeConfig('auto-discovery-test')
+      const freshConfig = await importThemePluginModule('auto-discovery-test')
 
       expect(freshConfig.componentDocs).toEqual(
         expect.arrayContaining([
@@ -148,7 +176,7 @@ describe('docs theme config', () => {
     process.env.GITHUB_PAGES = 'true'
 
     try {
-      const freshConfig = await importThemeConfig('github-pages-test')
+      const freshConfig = await importThemePluginModule('github-pages-test')
 
       expect(freshConfig.docsThemeConfig.nav).toEqual(
         expect.arrayContaining([
