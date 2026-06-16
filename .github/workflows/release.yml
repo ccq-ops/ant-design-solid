@@ -38,6 +38,9 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      - name: Setup npm
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: corepack pnpm install --frozen-lockfile
 
