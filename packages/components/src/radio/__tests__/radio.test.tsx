@@ -449,6 +449,9 @@ describe('Radio.Group', () => {
       '.ads-radio-group-button-compact .ads-radio-button-wrapper + .ads-radio-button-wrapper{margin-inline-start:-1px;}',
     )
     expect(styles).toContain(
+      '.ads-radio-group-button-compact .ads-radio-button-wrapper + .ads-radio-button-wrapper:not(.ads-radio-button-wrapper-checked){border-inline-start-width:1px;}',
+    )
+    expect(styles).toContain(
       '.ads-radio-button-wrapper input[type="radio"]{height:0;opacity:0;pointer-events:none;width:0;}',
     )
   })

@@ -39,6 +39,10 @@ export function useRadioStyle(prefixCls: string) {
         {
           'margin-inline-start': `-${t.lineWidth}px`,
         },
+      [`.${prefixCls}-group-button-compact .${prefixCls}-button-wrapper + .${prefixCls}-button-wrapper:not(.${prefixCls}-button-wrapper-checked)`]:
+        {
+          'border-inline-start-width': `${t.lineWidth}px`,
+        },
       [`.${prefixCls}-group-button.${prefixCls}-group-block .${prefixCls}-button-wrapper`]: {
         flex: 1,
         'justify-content': 'center',
