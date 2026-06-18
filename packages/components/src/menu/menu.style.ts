@@ -85,6 +85,11 @@ export function useMenuStyle(prefixCls: string) {
         background: menu.itemSelectedBg,
         'font-weight': 500,
       },
+      [`.${prefixCls}-item-selected:hover`]: {
+        color: menu.itemSelectedColor,
+        background: menu.itemSelectedBg,
+        'font-weight': 500,
+      },
       [`.${prefixCls}-inline .${prefixCls}-item-selected::after, .${prefixCls}-vertical .${prefixCls}-item-selected::after`]:
         {
           position: 'absolute',
@@ -121,6 +126,10 @@ export function useMenuStyle(prefixCls: string) {
         background: t.colorErrorBg,
       },
       [`.${prefixCls}-item-danger.${prefixCls}-item-selected`]: {
+        color: t.colorError,
+        background: t.colorErrorBg,
+      },
+      [`.${prefixCls}-item-danger.${prefixCls}-item-selected:hover`]: {
         color: t.colorError,
         background: t.colorErrorBg,
       },
@@ -255,6 +264,10 @@ export function useMenuStyle(prefixCls: string) {
           background: 'transparent',
         },
       [`.${prefixCls}-dark .${prefixCls}-item-selected`]: {
+        color: menu.darkItemSelectedColor,
+        background: menu.darkItemSelectedBg,
+      },
+      [`.${prefixCls}-dark .${prefixCls}-item-selected:hover`]: {
         color: menu.darkItemSelectedColor,
         background: menu.darkItemSelectedBg,
       },

@@ -8,6 +8,30 @@ describe('serializeCSS', () => {
     expect(css).toContain('.ads-btn:hover{color:blue;}')
   })
 
+  it('keeps nested interaction selector order so active can override hover', () => {
+    const css = serializeCSS({
+      '.ads-btn': {
+        '&:hover': { color: 'blue' },
+        '&:active': { color: 'red' },
+      },
+    })
+
+    expect(css.indexOf('.ads-btn:hover{color:blue;}')).toBeLessThan(
+      css.indexOf('.ads-btn:active{color:red;}'),
+    )
+  })
+
+  it('keeps top-level interaction selector order so active classes can override hover', () => {
+    const css = serializeCSS({
+      '.ads-calendar-button:hover': { color: 'blue' },
+      '.ads-calendar-button-active': { color: 'red' },
+    })
+
+    expect(css.indexOf('.ads-calendar-button:hover{color:blue;}')).toBeLessThan(
+      css.indexOf('.ads-calendar-button-active{color:red;}'),
+    )
+  })
+
   it('serializes keyframes at-rules without nesting step selectors', () => {
     const css = serializeCSS({
       '@keyframes adsSpinRotate': {

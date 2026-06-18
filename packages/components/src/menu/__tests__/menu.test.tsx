@@ -244,6 +244,38 @@ describe('Menu', () => {
     vi.useRealTimers()
   })
 
+  it('keeps hover popup open while the pointer moves from submenu title into the popup', () => {
+    vi.useFakeTimers()
+    const result = render(() => (
+      <Menu
+        subMenuCloseDelay={0.1}
+        items={[
+          {
+            key: 'settings',
+            label: 'Settings',
+            children: [{ key: 'profile', label: 'Profile' }],
+          },
+        ]}
+      />
+    ))
+    const submenu = result.getByText('Settings').closest('.ads-menu-submenu')!
+
+    fireEvent.mouseEnter(submenu)
+    vi.advanceTimersByTime(0)
+    const popup = document.body.querySelector('.ads-menu-submenu-popup')!
+    expect(popup).toHaveTextContent('Profile')
+
+    fireEvent.mouseLeave(submenu)
+    fireEvent.mouseEnter(popup)
+    vi.advanceTimersByTime(100)
+    expect(document.body.querySelector('.ads-menu-submenu-popup')).toHaveTextContent('Profile')
+
+    fireEvent.mouseLeave(popup)
+    vi.advanceTimersByTime(100)
+    expect(document.body.querySelector('.ads-menu-submenu-popup')).toBeFalsy()
+    vi.useRealTimers()
+  })
+
   it('closes horizontal submenu popup on outside pointer down', () => {
     const onOpenChange = vi.fn()
     const result = render(() => (
@@ -513,5 +545,20 @@ describe('Menu', () => {
     expect(styles).toContain('.ads-menu-submenu-popup{')
     expect(styles).toContain('min-width:160px;')
     expect(styles).toContain('box-shadow:')
+  })
+
+  it('keeps selected item colors and backgrounds while selected items are hovered', () => {
+    render(() => <Menu theme="dark" defaultSelectedKeys={['mail']} items={items} />)
+
+    const styles = menuStyleText()
+    expect(styles).toContain(
+      '.ads-menu-item-selected:hover{background:#e6f4ff;color:#1677ff;font-weight:500;',
+    )
+    expect(styles).toContain(
+      '.ads-menu-item-danger.ads-menu-item-selected:hover{background:#fff2f0;color:#ff4d4f;',
+    )
+    expect(styles).toContain(
+      '.ads-menu-dark .ads-menu-item-selected:hover{background:#1677ff;color:#fff;',
+    )
   })
 })

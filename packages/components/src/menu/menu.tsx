@@ -381,6 +381,12 @@ function MenuRoot(props: MenuProps) {
               })
             : undefined,
         )}
+        onMouseEnter={() => {
+          if (usesPopupSubMenu() && triggerSubMenuAction() === 'hover') clearSubMenuTimer(item.key)
+        }}
+        onMouseLeave={() => {
+          if (usesPopupSubMenu() && triggerSubMenuAction() === 'hover') scheduleSubMenuClose(item)
+        }}
       >
         {renderChildren(item.children, keyPath, depth)}
       </ul>

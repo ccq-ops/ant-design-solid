@@ -62,7 +62,6 @@ function serializeDeclarations(object: CSSObject): string {
 }
 function serializeAtRule(selector: string, object: CSSObject): string {
   const body = Object.keys(object)
-    .sort()
     .map((key) => {
       const value = object[key]
       if (value === undefined || value === null) return ''
@@ -80,9 +79,9 @@ function serializeAtRule(selector: string, object: CSSObject): string {
 function serializeRule(selector: string, object: CSSObject): string {
   if (isAtRule(selector)) return serializeAtRule(selector, object)
 
-  const declarations: string[] = []
+  const declarations: Array<[string, CSSValue]> = []
   const nested: string[] = []
-  for (const key of Object.keys(object).sort()) {
+  for (const key of Object.keys(object)) {
     const value = object[key]
     if (value === undefined || value === null) continue
     if (typeof value === 'object') {
@@ -95,15 +94,20 @@ function serializeRule(selector: string, object: CSSObject): string {
         nested.push(serializeRule(nestedSelector, value as CSSObject))
       }
     } else {
-      declarations.push(`${toKebabCase(key)}:${formatValue(key, value)};`)
+      declarations.push([key, value])
     }
   }
-  const current = declarations.length > 0 ? `${selector}{${declarations.join('')}}` : ''
+  const current =
+    declarations.length > 0
+      ? `${selector}{${declarations
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([key, value]) => `${toKebabCase(key)}:${formatValue(key, value)};`)
+          .join('')}}`
+      : ''
   return [current, ...nested].filter(Boolean).join('\n')
 }
 export function serializeCSS(style: StyleObject): string {
   return Object.keys(style)
-    .sort()
     .map((selector) => serializeRule(selector, style[selector]))
     .join('\n')
 }
