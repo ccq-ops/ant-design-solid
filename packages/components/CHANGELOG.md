@@ -1,5 +1,11 @@
 # @solid-ant-design/core
 
+## 0.2.1
+
+### Patch Changes
+
+- e98e066: Restore the separator between adjacent unchecked Radio.Button items.
+
 ## 0.2.0
 
 ### Minor Changes
