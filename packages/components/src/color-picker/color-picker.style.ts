@@ -9,6 +9,17 @@ export function useColorPickerStyle(prefixCls: string) {
     () => {
       const t = token()
       const colorPickerToken = getComponentToken('ColorPicker', t)
+      const transparentBlockBg = {
+        'background-image': `conic-gradient(${t.colorFillSecondary} 25%, transparent 25% 50%, ${t.colorFillSecondary} 50% 75%, transparent 75% 100%)`,
+        'background-size': '50% 50%',
+      }
+      const colorBlockInnerStyle = {
+        display: 'block',
+        width: '100%',
+        height: '100%',
+        'border-radius': 'inherit',
+        'box-shadow': `inset 0 0 0 ${t.lineWidth}px ${t.colorFillSecondary}`,
+      }
       return {
         [`.${prefixCls}`]: {
           display: 'inline-flex',
@@ -43,21 +54,16 @@ export function useColorPickerStyle(prefixCls: string) {
           '&:hover': { 'border-color': t.colorBorder },
         },
         [`.${prefixCls}-color-block`]: {
+          position: 'relative',
+          flex: 'none',
           width: '20px',
           height: '20px',
-          padding: '2px',
-          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
           'border-radius': `${t.borderRadius / 2}px`,
-          background:
-            'linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%)',
-          'background-size': '8px 8px',
-          'background-position': '0 0, 0 4px, 4px -4px, -4px 0px',
+          'box-shadow': colorPickerToken.colorPickerInsetShadow,
+          ...transparentBlockBg,
         },
         [`.${prefixCls}-color-block-inner`]: {
-          display: 'block',
-          width: '100%',
-          height: '100%',
-          'border-radius': `${Math.max(1, t.borderRadius / 2 - 1)}px`,
+          ...colorBlockInnerStyle,
         },
         [`.${prefixCls}-text`]: {
           'line-height': 1,
@@ -312,13 +318,9 @@ export function useColorPickerStyle(prefixCls: string) {
         [`.${prefixCls}-preset-color`]: {
           width: `${colorPickerToken.colorPickerPresetColorSize}px`,
           height: `${colorPickerToken.colorPickerPresetColorSize}px`,
-          padding: '2px',
-          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
           'border-radius': `${t.borderRadius / 2}px`,
-          background:
-            'linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%)',
-          'background-size': '8px 8px',
-          'background-position': '0 0, 0 4px, 4px -4px, -4px 0px',
+          'box-shadow': colorPickerToken.colorPickerInsetShadow,
+          ...transparentBlockBg,
           cursor: 'pointer',
           '&:disabled': {
             cursor: 'not-allowed',
@@ -326,10 +328,7 @@ export function useColorPickerStyle(prefixCls: string) {
           },
         },
         [`.${prefixCls}-preset-color-inner`]: {
-          display: 'block',
-          width: '100%',
-          height: '100%',
-          'border-radius': `${Math.max(1, t.borderRadius / 2 - 1)}px`,
+          ...colorBlockInnerStyle,
         },
         [`.${prefixCls}-actions`]: {
           display: 'flex',
@@ -363,19 +362,12 @@ export function useColorPickerStyle(prefixCls: string) {
         [`.${prefixCls}-preview-color`]: {
           width: `${colorPickerToken.colorPickerPreviewSize}px`,
           height: `${colorPickerToken.colorPickerPreviewSize}px`,
-          padding: '2px',
-          border: `${t.lineWidth}px solid ${t.colorBorderSecondary}`,
           'border-radius': `${t.borderRadius}px`,
-          background:
-            'linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(-45deg, #ddd 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(-45deg, transparent 75%, #ddd 75%)',
-          'background-size': '8px 8px',
-          'background-position': '0 0, 0 4px, 4px -4px, -4px 0px',
+          'box-shadow': colorPickerToken.colorPickerInsetShadow,
+          ...transparentBlockBg,
         },
         [`.${prefixCls}-preview-color-inner`]: {
-          display: 'block',
-          width: '100%',
-          height: '100%',
-          'border-radius': `${Math.max(1, t.borderRadius - 2)}px`,
+          ...colorBlockInnerStyle,
         },
         [`.${prefixCls}-preview-text`]: {
           'white-space': 'nowrap',

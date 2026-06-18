@@ -1,3 +1,4 @@
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
 import { cleanup, fireEvent, render, screen, within } from '@solidjs/testing-library'
 import { Show, createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -231,6 +232,23 @@ describe('ColorPicker trigger', () => {
     expect(result.getByText('#1677ff')).toBeInTheDocument()
     expect(result.container.querySelector('.ads-color-picker-color-block-inner')).toHaveStyle(
       'background: rgb(22, 119, 255)',
+    )
+  })
+
+  it('uses the antd v6 checkerboard background for transparent color blocks', () => {
+    const cache = createCache()
+    render(() => (
+      <StyleProvider cache={cache}>
+        <ColorPicker defaultValue="rgba(22, 119, 255, 0.5)" />
+      </StyleProvider>
+    ))
+
+    const css = extractStyle(cache)
+    expect(css).toContain(
+      '.ads-color-picker-color-block{background-image:conic-gradient(rgba(0,0,0,0.06) 25%, transparent 25% 50%, rgba(0,0,0,0.06) 50% 75%, transparent 75% 100%);background-size:50% 50%;',
+    )
+    expect(css).toContain(
+      '.ads-color-picker-color-block-inner{border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06);',
     )
   })
 
