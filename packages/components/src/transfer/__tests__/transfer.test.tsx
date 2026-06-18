@@ -167,6 +167,16 @@ describe('Transfer', () => {
     expect(onScroll).toHaveBeenCalledWith('left', expect.any(Event))
   })
 
+  it('keeps search input focused after typing', () => {
+    const result = render(() => <Transfer showSearch dataSource={dataSource} />)
+    const sourceSearch = result.getByPlaceholderText('Search source')
+
+    sourceSearch.focus()
+    fireEvent.input(sourceSearch, { target: { value: 'a' } })
+
+    expect(document.activeElement).toBe(sourceSearch)
+  })
+
   it('supports footer and children custom list body render props', () => {
     const result = render(() => (
       <Transfer dataSource={dataSource} footer={(_, info) => <span>{info?.direction} footer</span>}>

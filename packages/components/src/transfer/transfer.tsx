@@ -339,10 +339,13 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
 
   function renderSelectAll(
     direction: TransferDirection,
-    items: RecordType[],
-    pageItems: RecordType[],
+    items: () => RecordType[],
+    pageItems: () => RecordType[],
   ) {
-    const keys = () => pageItems.filter((item) => !item.disabled).map((item) => itemKey(item))
+    const keys = () =>
+      pageItems()
+        .filter((item) => !item.disabled)
+        .map((item) => itemKey(item))
     const selectedCount = () => keys().filter((key) => includesKey(selectedKeys(), key)).length
     const allSelected = () => keys().length > 0 && selectedCount() === keys().length
     const label = () => {
@@ -366,8 +369,8 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
           )}
           <span>{label()}</span>
           <span class={`${prefixCls()}-select-all-total`}>
-            {items.length}{' '}
-            {items.length === 1
+            {items().length}{' '}
+            {items().length === 1
               ? (local.locale?.itemUnit ?? 'item')
               : (local.locale?.itemsUnit ?? 'items')}
           </span>
@@ -376,7 +379,8 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
     )
   }
 
-  function renderPanel(direction: TransferDirection) {
+  function TransferPanel(props: { direction: TransferDirection }) {
+    const direction = props.direction
     const isSource = direction === 'left'
     const allItems = () => (isSource ? filteredSourceItems() : filteredTargetItems())
     const pageSize = () => getPaginationPageSize(local.pagination)
@@ -391,27 +395,55 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
       else setTargetSearch(value)
       local.onSearch?.(direction, value)
     }
-    const listStyle =
+    const listStyle = () =>
       typeof local.listStyle === 'function' ? local.listStyle({ direction }) : local.listStyle
-    const panelProps: TransferListProps<RecordType> = {
-      direction,
-      items: isSource ? sourceItems() : targetItems(),
-      filteredItems: items(),
-      selectedKeys: selectedKeys(),
-      disabled: disabled(),
-      prefixCls: prefixCls(),
-      classNames: local.classNames,
-      styles: local.styles,
-      render: local.render,
+    const listProps: TransferListProps<RecordType> = {
+      get direction() {
+        return direction
+      },
+      get items() {
+        return isSource ? sourceItems() : targetItems()
+      },
+      get filteredItems() {
+        return items()
+      },
+      get selectedKeys() {
+        return selectedKeys()
+      },
+      get disabled() {
+        return disabled()
+      },
+      get prefixCls() {
+        return prefixCls()
+      },
+      get classNames() {
+        return local.classNames
+      },
+      get styles() {
+        return local.styles
+      },
+      get render() {
+        return local.render
+      },
       onItemSelect: selectKey,
       onScroll: (event) => local.onScroll?.(direction, event),
     }
     const customListProps: TransferCustomListBodyProps<RecordType> = {
-      direction,
-      items: isSource ? sourceItems() : targetItems(),
-      filteredItems: items(),
-      selectedKeys: selectedKeys(),
-      disabled: disabled(),
+      get direction() {
+        return direction
+      },
+      get items() {
+        return isSource ? sourceItems() : targetItems()
+      },
+      get filteredItems() {
+        return items()
+      },
+      get selectedKeys() {
+        return selectedKeys()
+      },
+      get disabled() {
+        return disabled()
+      },
       onItemSelect: selectKey,
       onItemSelectAll: selectAll,
     }
@@ -423,7 +455,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
           sectionClass(local.classNames, direction, 'section'),
         )}
         data-direction={direction}
-        style={mergeStyles(sectionStyle(local.styles, direction, 'section'), listStyle)}
+        style={mergeStyles(sectionStyle(local.styles, direction, 'section'), listStyle())}
       >
         <div
           class={classNames(
@@ -458,8 +490,24 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
             onChange={setSearch}
           />
         )}
-        {renderSelectAll(direction, allItems(), items())}
-        {local.children ? local.children(customListProps) : <TransferList {...panelProps} />}
+        {renderSelectAll(direction, allItems, items)}
+        {local.children ? (
+          local.children(customListProps)
+        ) : (
+          <TransferList
+            direction={direction}
+            items={isSource ? sourceItems() : targetItems()}
+            filteredItems={items()}
+            selectedKeys={selectedKeys()}
+            disabled={disabled()}
+            prefixCls={prefixCls()}
+            classNames={local.classNames}
+            styles={local.styles}
+            render={local.render}
+            onItemSelect={selectKey}
+            onScroll={(event) => local.onScroll?.(direction, event)}
+          />
+        )}
         <Show when={!items().length}>
           <div class={`${prefixCls()}-empty`}>
             {Array.isArray(local.locale?.notFoundContent)
@@ -475,7 +523,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
             )}
             style={sectionStyle(local.styles, direction, 'footer')}
           >
-            {local.footer(panelProps, { direction })}
+            {local.footer(listProps, { direction })}
           </div>
         )}
       </div>
@@ -495,7 +543,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
       )}
       style={mergeStyles(local.styles?.root, local.style)}
     >
-      {renderPanel('left')}
+      <TransferPanel direction="left" />
       <div
         class={classNames(`${prefixCls()}-operations`, local.classNames?.actions)}
         style={mergeStyles(local.styles?.actions, local.operationStyle)}
@@ -523,7 +571,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
           </TransferOperation>
         </Show>
       </div>
-      {renderPanel('right')}
+      <TransferPanel direction="right" />
     </div>
   )
 }
