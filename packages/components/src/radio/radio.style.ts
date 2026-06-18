@@ -41,7 +41,7 @@ export function useRadioStyle(prefixCls: string) {
         },
       [`.${prefixCls}-group-button-compact .${prefixCls}-button-wrapper + .${prefixCls}-button-wrapper:not(.${prefixCls}-button-wrapper-checked)`]:
         {
-          'border-inline-start-width': `${t.lineWidth}px`,
+          'box-shadow': `inset ${t.lineWidth}px 0 0 ${t.colorBorder}`,
         },
       [`.${prefixCls}-group-button.${prefixCls}-group-block .${prefixCls}-button-wrapper`]: {
         flex: 1,
