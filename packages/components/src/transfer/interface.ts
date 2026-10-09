@@ -116,9 +116,13 @@ export interface TransferOperationProps extends JSX.ButtonHTMLAttributes<HTMLBut
   direction?: TransferDirection
 }
 
+export interface TransferRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface TransferProps<RecordType extends TransferItem = TransferItem> extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onScroll' | 'children'
+  'onChange' | 'onScroll' | 'children' | 'ref'
 > {
   dataSource?: RecordType[]
   targetKeys?: TransferKey[]
@@ -159,4 +163,5 @@ export interface TransferProps<RecordType extends TransferItem = TransferItem> e
   onSelectChange?: (sourceSelectedKeys: TransferKey[], targetSelectedKeys: TransferKey[]) => void
   onSearch?: (direction: TransferDirection, value: string) => void
   onScroll?: (direction: TransferDirection, e: Event) => void
+  ref?: TransferRef | { current?: TransferRef } | ((ref: TransferRef) => void)
 }

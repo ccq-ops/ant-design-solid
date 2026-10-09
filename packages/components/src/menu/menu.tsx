@@ -11,6 +11,7 @@ import {
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
 import { useZIndex } from '../shared/z-index'
@@ -164,8 +165,23 @@ function MenuRoot(props: MenuProps) {
     'onDeselect',
     'onOpenChange',
     'class',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLUListElement | undefined
+  const menuRef = {
+    get menu() {
+      return rootRef
+    },
+    focus(options?: FocusOptions) {
+      rootRef
+        ?.querySelector<HTMLElement>(
+          '[role="menuitem"]:not([aria-disabled="true"]), [role="menuitemcheckbox"]:not([aria-disabled="true"])',
+        )
+        ?.focus(options)
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, menuRef))
   const prefixCls = () => `${config.prefixCls()}-menu`
   const [, hashId] = useMenuStyle(prefixCls())
   const [popupZIndex] = useZIndex('Menu', local.zIndex)
@@ -597,6 +613,9 @@ function MenuRoot(props: MenuProps) {
   return (
     <ul
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       role={rest.role ?? 'menu'}
       class={classNames(
         prefixCls(),

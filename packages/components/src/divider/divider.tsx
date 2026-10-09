@@ -1,7 +1,8 @@
-import { Show, createMemo, splitProps } from 'solid-js'
+import { Show, createEffect, createMemo, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useDividerStyle } from './divider.style'
 import type {
   DividerProps,
@@ -41,8 +42,16 @@ export function Divider(props: DividerProps) {
     'children',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const dividerRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, dividerRef))
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-divider`
   const [, hashId] = useDividerStyle(prefixCls())
   const orientation = () => local.orientation ?? (local.vertical ? 'vertical' : 'horizontal')
@@ -89,6 +98,9 @@ export function Divider(props: DividerProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       role="separator"
       class={classNames(
         prefixCls(),

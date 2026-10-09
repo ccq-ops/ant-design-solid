@@ -104,6 +104,9 @@ export interface CascaderPanelProps extends Pick<
   | 'onChange'
 > {}
 
+export type CascaderAutoProps = CascaderProps
+export type CascaderPanelAutoProps = CascaderPanelProps
+
 type SemanticClasses = Partial<Record<CascaderSemanticSlot, string>>
 type SemanticStyles = Partial<Record<CascaderSemanticSlot, JSX.CSSProperties>>
 
@@ -678,6 +681,11 @@ const CascaderBase = (props: CascaderProps) => {
         selectorRef={(element) => {
           selectorRef = element
         }}
+        id={rest.id ?? formItem?.controlId()}
+        ariaLabelledBy={rest['aria-labelledby'] ?? formItem?.labelId()}
+        ariaLabel={
+          rest['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
+        }
         onToggleOpen={() => setOpen(!open())}
         onClear={clearValue}
         onSearchInput={updateSearchValue}

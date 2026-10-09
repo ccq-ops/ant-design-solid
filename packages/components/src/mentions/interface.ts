@@ -20,6 +20,7 @@ export interface MentionsOption {
 export interface MentionsOptionProps extends MentionsOption {
   children?: JSX.Element
 }
+export type MentionProps = MentionsProps
 
 export interface MentionsSemanticClassNames {
   root?: string
@@ -91,6 +92,7 @@ export interface MentionsProps extends Omit<
   placement?: MentionsPlacement
   rootClass?: string
   popupClass?: string
+  popupRender?: (originNode: JSX.Element) => JSX.Element
   showCount?: ShowCount
   count?: CountConfig
   autoSize?: boolean | AutoSizeConfig

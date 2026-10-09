@@ -3,6 +3,7 @@ import {
   Match,
   Show,
   Switch,
+  createEffect,
   createMemo,
   createSignal,
   splitProps,
@@ -17,6 +18,7 @@ import {
 } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useAlertStyle } from './alert.style'
 import type {
   AlertClosableConfig,
@@ -129,11 +131,19 @@ function InternalAlert(props: AlertProps) {
     'styles',
     'afterClose',
     'onClose',
+    'ref',
     'class',
     'classList',
     'style',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const alertRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, alertRef))
   const alertConfig = () => config.alert()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-alert`
   const [, hashId] = useAlertStyle(prefixCls())
@@ -219,6 +229,9 @@ function InternalAlert(props: AlertProps) {
     <Show when={!closed()}>
       <div
         {...rest}
+        ref={(element) => {
+          rootRef = element
+        }}
         role={rest.role ?? 'alert'}
         data-show={!closed()}
         class={classNames(

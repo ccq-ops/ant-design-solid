@@ -80,3 +80,27 @@ export interface SliderProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'o
   /** @deprecated Please use `onChangeComplete` instead. */
   onAfterChange?: (value: SliderValue) => void
 }
+
+export interface SliderSingleProps extends Omit<
+  SliderProps,
+  'range' | 'value' | 'defaultValue' | 'onChange' | 'onChangeComplete' | 'onAfterChange'
+> {
+  range?: false
+  value?: number
+  defaultValue?: number
+  onChange?: (value: number) => void
+  onChangeComplete?: (value: number) => void
+  onAfterChange?: (value: number) => void
+}
+
+export interface SliderRangeProps extends Omit<
+  SliderProps,
+  'range' | 'value' | 'defaultValue' | 'onChange' | 'onChangeComplete' | 'onAfterChange'
+> {
+  range: true | SliderRangeConfig
+  value?: number[]
+  defaultValue?: number[]
+  onChange?: (value: number[]) => void
+  onChangeComplete?: (value: number[]) => void
+  onAfterChange?: (value: number[]) => void
+}

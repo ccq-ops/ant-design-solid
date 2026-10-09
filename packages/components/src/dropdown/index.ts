@@ -21,3 +21,5 @@ export type {
   DropdownTrigger,
   DropdownTriggerInput,
 } from './interface'
+/** @deprecated Use `DropdownProps` instead. */
+export type { DropdownProps as DropDownProps } from './interface'

@@ -181,6 +181,9 @@ export interface FormInstance {
 
 export interface FormItemControl {
   name: FieldName
+  controlId: Accessor<string>
+  labelId: Accessor<string | undefined>
+  accessibleName: Accessor<string | undefined>
   value: Accessor<FieldValue>
   valueProps: Accessor<Record<string, unknown>>
   valuePropName: Accessor<string>
@@ -201,6 +204,8 @@ export interface FormListField {
   name: number
   fieldKey: number
 }
+export type FormListFieldData = FormListField
+export type FormRule = Rule
 
 export interface FormListOperation {
   add: (defaultValue?: FieldValue, insertIndex?: number) => void

@@ -1,6 +1,16 @@
-import { For, Show, children, createContext, createMemo, splitProps, useContext } from 'solid-js'
+import {
+  For,
+  Show,
+  children,
+  createContext,
+  createEffect,
+  createMemo,
+  splitProps,
+  useContext,
+} from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { resolveResponsiveValue, useBreakpoint } from '../shared/responsive-observer'
 import type {
   DescriptionsCellClassNames,
@@ -185,8 +195,16 @@ export function DescriptionsRoot(props: DescriptionsProps) {
     'class',
     'classList',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const descriptionsRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, descriptionsRef))
   const prefixCls = () => `${config.prefixCls()}-descriptions`
   const [, hashId] = useDescriptionsStyle(prefixCls())
   const screens = useBreakpoint()
@@ -272,6 +290,9 @@ export function DescriptionsRoot(props: DescriptionsProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         local.bordered && `${prefixCls()}-bordered`,

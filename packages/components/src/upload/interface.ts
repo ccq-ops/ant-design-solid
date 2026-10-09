@@ -75,9 +75,26 @@ export interface UploadProgressProps {
   strokeColor?: string
 }
 
+export interface UploadLocale {
+  previewFile?: string
+  downloadFile?: string
+  removeFile?: string
+  uploadError?: string
+}
+
+export interface UploadRef<T = unknown> {
+  onBatchStart: (files: File[]) => void
+  onSuccess: (response: T, file: UploadFile<T>, xhr?: XMLHttpRequest) => void
+  onProgress: (event: { percent: number }, file: UploadFile<T>) => void
+  onError: (error: Error, response: T | undefined, file: UploadFile<T>) => void
+  readonly fileList: Array<UploadFile<T>>
+  readonly upload?: HTMLInputElement
+  readonly nativeElement?: HTMLDivElement
+}
+
 export interface UploadProps<T = unknown> extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'children' | 'onDrop' | 'onPaste'
+  'onChange' | 'children' | 'onDrop' | 'onPaste' | 'ref'
 > {
   type?: UploadType
   name?: string
@@ -110,6 +127,9 @@ export interface UploadProps<T = unknown> extends Omit<
   openFileDialogOnClick?: boolean
   pastable?: boolean
   capture?: boolean | 'user' | 'environment'
+  hasControlInside?: boolean
+  supportServerRender?: boolean
+  locale?: UploadLocale
   previewFile?: (file: File | Blob) => PromiseLike<string>
   iconRender?: (file: UploadFile<T>, listType?: UploadListType) => JSX.Element
   isImageUrl?: (file: UploadFile<T>) => boolean
@@ -124,10 +144,15 @@ export interface UploadProps<T = unknown> extends Omit<
   styles?: UploadSemanticStyles
   children?: JSX.Element
   prefixCls?: string
+  ref?: UploadRef<T> | { current?: UploadRef<T> } | ((ref: UploadRef<T>) => void)
+}
+
+export interface DraggerProps<T = unknown> extends UploadProps<T> {
+  height?: number
 }
 
 export interface UploadComponent {
   <T = unknown>(props: UploadProps<T>): JSX.Element
-  Dragger: <T = unknown>(props: UploadProps<T>) => JSX.Element
+  Dragger: <T = unknown>(props: DraggerProps<T>) => JSX.Element
   LIST_IGNORE: string
 }

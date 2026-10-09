@@ -48,6 +48,14 @@ export interface CollapseItem {
   style?: JSX.CSSProperties
 }
 
+export interface CollapsePanelProps extends Omit<
+  CollapseItem,
+  'label' | 'children' | 'classNames' | 'styles'
+> {
+  header: JSX.Element
+  children?: JSX.Element
+}
+
 export interface CollapseProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   items: CollapseItem[]
   activeKey?: CollapseActiveKey

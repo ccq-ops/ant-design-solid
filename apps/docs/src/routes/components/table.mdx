@@ -1656,19 +1656,20 @@ export default Demo22
 
 ### TableExpandableConfig
 
-| Property                 | Description                             | Type                                                                           | Default |
-| ------------------------ | --------------------------------------- | ------------------------------------------------------------------------------ | ------- |
-| `columnTitle`            | Expand column title.                    | `JSX.Element`                                                                  | `-`     |
-| `columnWidth`            | Expand column width.                    | `string \| number`                                                             | `48`    |
-| `defaultExpandAllRows`   | Expands all rows initially.             | `boolean`                                                                      | `false` |
-| `defaultExpandedRowKeys` | Initial expanded row keys.              | `(string \| number)[]`                                                         | `[]`    |
-| `expandedRowKeys`        | Controlled expanded row keys.           | `(string \| number)[]`                                                         | `-`     |
-| `expandedRowRender`      | Expanded content renderer.              | `(record: T, index: number, indent: number, expanded: boolean) => JSX.Element` | `-`     |
-| `expandedRowClassName`   | Expanded row class name.                | `string \| ((record: T, index: number, indent: number) => string)`             | `-`     |
-| `expandRowByClick`       | Expands rows by clicking the data row.  | `boolean`                                                                      | `false` |
-| `rowExpandable`          | Whether a record can be expanded.       | `(record: T) => boolean`                                                       | `-`     |
-| `onExpand`               | Called when a row expands or collapses. | `(expanded: boolean, record: T) => void`                                       | `-`     |
-| `onExpandedRowsChange`   | Called when expanded row keys change.   | `(expandedRows: (string \| number)[]) => void`                                 | `-`     |
+| Property                 | Description                                            | Type                                                                           | Default |
+| ------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------ | ------- |
+| `columnTitle`            | Expand column title.                                   | `JSX.Element`                                                                  | `-`     |
+| `columnWidth`            | Expand column width.                                   | `string \| number`                                                             | `48`    |
+| `defaultExpandAllRows`   | Expands all rows initially.                            | `boolean`                                                                      | `false` |
+| `defaultExpandedRowKeys` | Initial expanded row keys.                             | `(string \| number)[]`                                                         | `[]`    |
+| `expandedRowKeys`        | Controlled expanded row keys.                          | `(string \| number)[]`                                                         | `-`     |
+| `expandedRowRender`      | Expanded content renderer.                             | `(record: T, index: number, indent: number, expanded: boolean) => JSX.Element` | `-`     |
+| `forceRender`            | Pre-renders expanded content before the row is opened. | `boolean`                                                                      | `false` |
+| `expandedRowClassName`   | Expanded row class name.                               | `string \| ((record: T, index: number, indent: number) => string)`             | `-`     |
+| `expandRowByClick`       | Expands rows by clicking the data row.                 | `boolean`                                                                      | `false` |
+| `rowExpandable`          | Whether a record can be expanded.                      | `(record: T) => boolean`                                                       | `-`     |
+| `onExpand`               | Called when a row expands or collapses.                | `(expanded: boolean, record: T) => void`                                       | `-`     |
+| `onExpandedRowsChange`   | Called when expanded row keys change.                  | `(expandedRows: (string \| number)[]) => void`                                 | `-`     |
 
 ### TablePaginationConfig
 

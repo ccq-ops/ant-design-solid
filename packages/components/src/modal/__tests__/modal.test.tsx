@@ -215,6 +215,26 @@ describe('Modal', () => {
     expect(document.body.style.overflow).toBe('')
   })
 
+  it('allows body scroll locking to be disabled and changed while open', () => {
+    const [scrollLock, setScrollLock] = createSignal(false)
+    const result = render(() => (
+      <Modal open scrollLock={scrollLock()} title="Scroll">
+        Body
+      </Modal>
+    ))
+
+    expect(document.body.style.overflow).toBe('')
+
+    setScrollLock(true)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    setScrollLock(false)
+    expect(document.body.style.overflow).toBe('')
+
+    result.unmount()
+    expect(document.body.style.overflow).toBe('')
+  })
+
   it('applies antd-style zoom and fade motion classes while opening and closing', async () => {
     vi.useFakeTimers()
     try {

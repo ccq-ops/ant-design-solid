@@ -36,6 +36,9 @@ export interface CascaderSelectorProps {
   searchEnabled: boolean
   searchValue: string
   selectorRef: (element: HTMLDivElement) => void
+  id?: string
+  ariaLabelledBy?: string
+  ariaLabel?: string
   onToggleOpen: () => void
   onClear: (event: MouseEvent) => void
   onSearchInput: (value: string) => void
@@ -63,6 +66,9 @@ export function CascaderSelector(props: CascaderSelectorProps) {
   return (
     <div
       role="combobox"
+      id={props.id}
+      aria-labelledby={props.ariaLabelledBy}
+      aria-label={props.ariaLabel}
       tabindex={props.disabled ? undefined : 0}
       aria-expanded={props.open}
       aria-disabled={props.disabled}

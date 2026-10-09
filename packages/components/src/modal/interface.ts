@@ -47,6 +47,12 @@ export interface ModalFocusableConfig {
   autoFocusButton?: null | 'ok' | 'cancel'
 }
 
+export interface ModalLocale {
+  okText: string
+  cancelText: string
+  justOkText: string
+}
+
 export type ModalGetContainer = HTMLElement | (() => HTMLElement | undefined) | string | false
 
 export interface ModalFooterRenderExtra {
@@ -84,6 +90,7 @@ export interface ModalProps {
   cancelButtonProps?: ButtonProps
   destroyOnHidden?: boolean
   forceRender?: boolean
+  scrollLock?: boolean
   getContainer?: ModalGetContainer
   modalRender?: (node: JSX.Element) => JSX.Element
   afterOpenChange?: (open: boolean) => void
@@ -150,6 +157,7 @@ export interface ModalFuncProps {
   modalRender?: (node: JSX.Element) => JSX.Element
   destroyOnHidden?: boolean
   forceRender?: boolean
+  scrollLock?: boolean
   okCancel?: boolean
   prefixCls?: string
   direction?: 'ltr' | 'rtl'

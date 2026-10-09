@@ -1,7 +1,8 @@
-import { For, Show, createMemo, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   SkeletonAvatarProps,
   SkeletonAvatarSize,
@@ -142,8 +143,16 @@ function SkeletonRoot(props: SkeletonProps) {
     'class',
     'classList',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const skeletonRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, skeletonRef))
   const prefixCls = () => resolvePrefixCls(local.prefixCls, config.prefixCls())
   const [, hashId] = useSkeletonStyle(prefixCls())
 
@@ -187,6 +196,9 @@ function SkeletonRoot(props: SkeletonProps) {
     <Show when={loading()} fallback={local.children}>
       <div
         {...rest}
+        ref={(element) => {
+          rootRef = element
+        }}
         class={classNames(
           prefixCls(),
           hasAvatar() && `${prefixCls()}-with-avatar`,

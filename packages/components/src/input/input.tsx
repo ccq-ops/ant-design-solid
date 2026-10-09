@@ -188,6 +188,11 @@ export function Input(props: InputProps) {
       </Show>
       <input
         {...rest}
+        id={rest.id ?? formItem?.controlId()}
+        aria-labelledby={rest['aria-labelledby'] ?? formItem?.labelId()}
+        aria-label={
+          rest['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
+        }
         ref={(el) => {
           inputRef = el
         }}

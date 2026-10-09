@@ -185,6 +185,11 @@ export function TextArea(props: TextAreaProps) {
     >
       <textarea
         {...rest}
+        id={rest.id ?? formItem?.controlId()}
+        aria-labelledby={rest['aria-labelledby'] ?? formItem?.labelId()}
+        aria-label={
+          rest['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
+        }
         ref={(el) => {
           textAreaRef = el
         }}

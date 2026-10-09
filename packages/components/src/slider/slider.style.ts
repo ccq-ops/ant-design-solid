@@ -110,7 +110,8 @@ export function useSliderStyle(prefixCls: string) {
         'border-color': t.colorPrimaryHover,
       },
       [`.${prefixCls}-handle:focus-visible`]: {
-        'box-shadow': `0 0 0 3px ${t.colorPrimaryHover}`,
+        'box-shadow':
+          t.lineWidthFocus > 0 ? `0 0 0 ${t.lineWidthFocus}px ${t.colorPrimaryHover}` : 'none',
       },
       [`.${prefixCls}-handle-dragging`]: {
         cursor: 'grabbing',

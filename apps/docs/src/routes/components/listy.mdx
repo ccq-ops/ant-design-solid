@@ -1,0 +1,267 @@
+---
+title: Listy
+group: Data Display
+---
+
+import { Button, Flex, Listy } from '@solid-ant-design/core'
+
+# Listy
+
+High-performance lists with virtualization, grouping, sticky headers, and imperative scrolling.
+
+Use Listy for large or grouped data sets. Unlike the legacy List API, Listy requires a stable
+`rowKey` and an `itemRender` function.
+
+### Basic
+
+:::preview
+
+<ListyBasicDemo />
+
+export const ListyBasicDemo = (() => {
+  const items = [
+    { id: 1, title: 'Ant Design Solid' },
+    { id: 2, title: 'Semantic customization' },
+    { id: 3, title: 'Token-driven theming' },
+  ]
+
+return function ListyBasicDemoComponent() {
+return (
+
+<Listy
+items={items}
+rowKey="id"
+virtual={false}
+itemRender={(item) => item.title}
+/>
+)
+}
+})()
+
+---
+
+```tsx
+import { Listy } from '@solid-ant-design/core'
+
+const items = [
+  { id: 1, title: 'Ant Design Solid' },
+  { id: 2, title: 'Semantic customization' },
+  { id: 3, title: 'Token-driven theming' },
+]
+
+export default function Demo() {
+  return <Listy items={items} rowKey="id" virtual={false} itemRender={(item) => item.title} />
+}
+```
+
+:::
+
+### Virtual list
+
+:::preview
+
+<ListyVirtualDemo />
+
+export const ListyVirtualDemo = (() => {
+  const items = Array.from({ length: 1000 }, (_, index) => ({
+    id: index,
+    title: `Item ${index + 1}`,
+  }))
+
+return function ListyVirtualDemoComponent() {
+return (
+
+<Listy
+items={items}
+rowKey="id"
+height={280}
+itemRender={(item) => item.title}
+/>
+)
+}
+})()
+
+---
+
+```tsx
+import { Listy } from '@solid-ant-design/core'
+
+const items = Array.from({ length: 1000 }, (_, index) => ({
+  id: index,
+  title: `Item ${index + 1}`,
+}))
+
+export default function Demo() {
+  return <Listy items={items} rowKey="id" height={280} itemRender={(item) => item.title} />
+}
+```
+
+:::
+
+### Grouping and sticky headers
+
+:::preview
+
+<ListyGroupDemo />
+
+export const ListyGroupDemo = (() => {
+  const items = Array.from({ length: 80 }, (_, index) => ({
+    id: index,
+    group: String.fromCharCode(65 + Math.floor(index / 10)),
+    title: `Record ${index + 1}`,
+  }))
+
+return function ListyGroupDemoComponent() {
+return (
+
+<Listy
+items={items}
+rowKey="id"
+height={300}
+sticky
+group={{
+          key: (item) => item.group,
+          title: (groupKey, groupItems) => `${groupKey} · ${groupItems.length} records`,
+        }}
+itemRender={(item) => item.title}
+/>
+)
+}
+})()
+
+---
+
+```tsx
+import { Listy } from '@solid-ant-design/core'
+
+const items = Array.from({ length: 80 }, (_, index) => ({
+  id: index,
+  group: String.fromCharCode(65 + Math.floor(index / 10)),
+  title: `Record ${index + 1}`,
+}))
+
+export default function Demo() {
+  return (
+    <Listy
+      items={items}
+      rowKey="id"
+      height={300}
+      sticky
+      group={{
+        key: (item) => item.group,
+        title: (groupKey, groupItems) => `${groupKey} · ${groupItems.length} records`,
+      }}
+      itemRender={(item) => item.title}
+    />
+  )
+}
+```
+
+:::
+
+### Imperative scrolling
+
+:::preview
+
+<ListyScrollDemo />
+
+export const ListyScrollDemo = (() => {
+  const items = Array.from({ length: 200 }, (_, index) => ({
+    id: index,
+    title: `Item ${index + 1}`,
+  }))
+
+return function ListyScrollDemoComponent() {
+let listRef
+
+    return (
+      <Flex vertical gap="small">
+        <Flex gap="small" wrap>
+          <Button onClick={() => listRef?.scrollTo(0)}>Top</Button>
+          <Button onClick={() => listRef?.scrollTo({ key: 99, align: 'top' })}>
+            Item 100
+          </Button>
+          <Button onClick={() => listRef?.scrollTo({ key: 199, align: 'bottom' })}>
+            Last item
+          </Button>
+        </Flex>
+        <Listy
+          ref={(ref) => {
+            listRef = ref
+          }}
+          items={items}
+          rowKey="id"
+          height={260}
+          itemRender={(item) => item.title}
+        />
+      </Flex>
+    )
+
+}
+})()
+
+---
+
+```tsx
+import { Button, Flex, Listy } from '@solid-ant-design/core'
+import type { ListyRef } from '@solid-ant-design/core'
+
+const items = Array.from({ length: 200 }, (_, index) => ({
+  id: index,
+  title: `Item ${index + 1}`,
+}))
+
+export default function Demo() {
+  let listRef: ListyRef | undefined
+
+  return (
+    <Flex vertical gap="small">
+      <Flex gap="small">
+        <Button onClick={() => listRef?.scrollTo(0)}>Top</Button>
+        <Button onClick={() => listRef?.scrollTo({ key: 99, align: 'top' })}>Item 100</Button>
+      </Flex>
+      <Listy
+        ref={(ref) => {
+          listRef = ref
+        }}
+        items={items}
+        rowKey="id"
+        height={260}
+        itemRender={(item) => item.title}
+      />
+    </Flex>
+  )
+}
+```
+
+:::
+
+## API
+
+### Listy
+
+| Property   | Description                                | Type                                       | Default                  |
+| ---------- | ------------------------------------------ | ------------------------------------------ | ------------------------ |
+| items      | Data records                               | `T[]`                                      | `[]`                     |
+| rowKey     | Stable item key                            | `keyof T \| (item: T) => string \| number` | required                 |
+| itemRender | Render an item                             | `(item: T, index: number) => JSX.Element`  | required                 |
+| height     | Maximum scroll viewport height             | `number`                                   | -                        |
+| virtual    | Enable virtualization when `height` is set | `boolean`                                  | ConfigProvider `virtual` |
+| group      | Group key and header renderer              | `ListyGroup<T, K>`                         | -                        |
+| sticky     | Keep the active group header visible       | `boolean`                                  | `false`                  |
+| classNames | Semantic slot classes                      | `ListySemanticClassNames<T, K>`            | -                        |
+| styles     | Semantic slot styles                       | `ListySemanticStyles<T, K>`                | -                        |
+| tabIndex   | Root keyboard tab order                    | `number`                                   | `0` when scrollable      |
+| onScroll   | Scroll callback                            | `JSX.EventHandler<HTMLDivElement, Event>`  | -                        |
+| ref        | Imperative scrolling API                   | `ListyRef`                                 | -                        |
+
+Semantic slots: `root`, `item`, and `groupHeader`.
+
+### ListyRef
+
+| Method                                  | Description                           |
+| --------------------------------------- | ------------------------------------- |
+| `scrollTo(number)`                      | Scroll to an absolute vertical offset |
+| `scrollTo({ key, align, offset })`      | Scroll to an item key                 |
+| `scrollTo({ groupKey, align, offset })` | Scroll to a group header              |
+| `scrollTo({ top, left })`               | Scroll to an absolute position        |

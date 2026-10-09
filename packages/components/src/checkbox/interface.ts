@@ -17,6 +17,25 @@ export interface CheckboxRef {
   nativeElement?: HTMLInputElement
 }
 
+export interface CheckboxChangeEventTarget extends CheckboxProps {
+  checked: boolean
+}
+
+export interface CheckboxChangeEvent {
+  target: CheckboxChangeEventTarget
+  stopPropagation: () => void
+  preventDefault: () => void
+  nativeEvent: MouseEvent
+}
+
+export interface CheckboxOptionType<T = OptionValue> {
+  label: JSX.Element
+  value: T
+  style?: JSX.CSSProperties
+  class?: string
+  disabled?: boolean
+}
+
 export interface CheckboxProps extends Omit<
   JSX.InputHTMLAttributes<HTMLInputElement>,
   'type' | 'checked' | 'defaultChecked' | 'disabled' | 'value' | 'style' | 'ref' | 'onChange'

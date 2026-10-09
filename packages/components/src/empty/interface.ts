@@ -11,13 +11,17 @@ export type EmptySemanticStylesConfig =
   | EmptySemanticStyles
   | ((info: EmptySemanticInfo) => EmptySemanticStyles)
 
+export interface EmptyRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface EmptyComponent {
   (props: EmptyProps): JSX.Element
   PRESENTED_IMAGE_DEFAULT: Component
   PRESENTED_IMAGE_SIMPLE: Component
 }
 
-export interface EmptyProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface EmptyProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   prefixCls?: string
   rootClassName?: string
   image?: JSX.Element | Component
@@ -25,4 +29,5 @@ export interface EmptyProps extends JSX.HTMLAttributes<HTMLDivElement> {
   classNames?: EmptySemanticClassNamesConfig
   styles?: EmptySemanticStylesConfig
   children?: JSX.Element
+  ref?: EmptyRef | { current?: EmptyRef } | ((ref: EmptyRef) => void)
 }

@@ -102,6 +102,7 @@ export function ModalBase(props: ModalProps) {
     'cancelButtonProps',
     'destroyOnHidden',
     'forceRender',
+    'scrollLock',
     'getContainer',
     'modalRender',
     'afterOpenChange',
@@ -143,7 +144,8 @@ export function ModalBase(props: ModalProps) {
   const [motionStatus, setMotionStatus] = createSignal<MotionStatus>(
     local.open ? 'enter' : 'stable',
   )
-  let locked = false
+  let bodyLocked = false
+  let stacked = false
   let wasOpen = false
   let closeNotified = !local.open
   let motionTimer: ReturnType<typeof setTimeout> | undefined
@@ -266,15 +268,21 @@ export function ModalBase(props: ModalProps) {
     }
     if (local.open || local.forceRender) setHasRendered(true)
     if (local.open) setVisible(true)
-    if (local.open && !locked) {
-      lockBodyScroll()
+    if (local.open && !stacked) {
       modalStack.push(stackItem)
-      locked = true
+      stacked = true
     }
-    if (!local.open && locked) {
-      unlockBodyScroll()
+    if (!local.open && stacked) {
       removeFromStack(stackItem)
-      locked = false
+      stacked = false
+    }
+    if (local.open && local.scrollLock !== false && !bodyLocked) {
+      lockBodyScroll()
+      bodyLocked = true
+    }
+    if ((!local.open || local.scrollLock === false) && bodyLocked) {
+      unlockBodyScroll()
+      bodyLocked = false
     }
     if (local.open && !wasOpen) {
       closeNotified = false
@@ -342,8 +350,8 @@ export function ModalBase(props: ModalProps) {
   onCleanup(() => {
     if (motionTimer) clearTimeout(motionTimer)
     cleanupKeydown()
-    if (locked) {
-      unlockBodyScroll()
+    if (bodyLocked) unlockBodyScroll()
+    if (stacked) {
       removeFromStack(stackItem)
     }
   })

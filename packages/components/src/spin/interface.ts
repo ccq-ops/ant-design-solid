@@ -20,12 +20,16 @@ export type SpinSemanticStylesConfig =
   | SpinSemanticStyles
   | ((info: SpinSemanticInfo) => SpinSemanticStyles)
 
+export interface SpinRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface SpinComponent {
   (props: SpinProps): JSX.Element
   setDefaultIndicator: (indicator: JSX.Element | undefined) => void
 }
 
-export interface SpinProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface SpinProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   spinning?: boolean
   size?: SpinSize
   tip?: JSX.Element
@@ -38,4 +42,5 @@ export interface SpinProps extends JSX.HTMLAttributes<HTMLDivElement> {
   classNames?: SpinSemanticClassNamesConfig
   styles?: SpinSemanticStylesConfig
   children?: JSX.Element
+  ref?: SpinRef | { current?: SpinRef } | ((ref: SpinRef) => void)
 }

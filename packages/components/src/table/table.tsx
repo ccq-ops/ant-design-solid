@@ -3,6 +3,7 @@ import { For, Show, createEffect, createMemo, createSignal, splitProps } from 's
 import { useConfig } from '../config-provider'
 import { Pagination } from '../pagination'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useTableStyle } from './table.style'
 import type { JSX } from 'solid-js'
 import type { VirtualItem } from '@tanstack/solid-virtual'
@@ -16,6 +17,7 @@ import type {
   TableProps,
   TableRenderCellOutput,
   TableRenderCellProps,
+  TableRef,
   TableRowSelectionChangeType,
   TableRowSelectionPreset,
   TableRowSelectionSelection,
@@ -212,11 +214,13 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     'onHeaderRow',
     'onChange',
     'class',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-table`
   const [, hashId] = useTableStyle(prefixCls())
   let scrollBodyRef: HTMLDivElement | undefined
+  let rootRef: HTMLDivElement | undefined
   const columns = () => getVisibleColumns(local.columns ?? [])
   const leafColumns = () => getLeafColumns(columns())
   const headerDepth = () => getColumnDepth(columns())
@@ -314,6 +318,44 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     local.virtual === true &&
     typeof local.scroll?.x === 'number' &&
     typeof local.scroll.y === 'number'
+  const tableRef: TableRef = {
+    get nativeElement() {
+      return rootRef
+    },
+    scrollTo: ({ index, key, top, offset = 0, align = 'nearest' }) => {
+      const scrollElement = scrollBodyRef ?? rootRef
+      if (!scrollElement) return
+      if (top !== undefined) {
+        scrollElement.scrollTop = top
+        return
+      }
+
+      const targetIndex =
+        index ??
+        (key === undefined
+          ? -1
+          : pageData().findIndex(
+              (record, recordIndex) => getRecordKey(record, recordIndex) === key,
+            ))
+      if (targetIndex < 0) return
+      if (virtualEnabled()) {
+        const virtualAlign = align === 'start' ? 'start' : align === 'end' ? 'end' : 'auto'
+        virtualizer.scrollToIndex(targetIndex, { align: virtualAlign })
+        if (offset) queueMicrotask(() => scrollBodyRef && (scrollBodyRef.scrollTop += offset))
+        return
+      }
+
+      const record = pageData()[targetIndex]
+      const recordKey = record ? getRecordKey(record, targetIndex) : undefined
+      const target =
+        recordKey === undefined
+          ? undefined
+          : rootRef?.querySelector<HTMLElement>(`[data-row-key="${String(recordKey)}"]`)
+      target?.scrollIntoView({ block: align })
+      if (offset) scrollElement.scrollTop += offset
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, tableRef))
   const fixedHeaderEnabled = () => local.scroll?.y !== undefined || virtualEnabled()
   const virtualizer = createVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     get count() {
@@ -1029,15 +1071,22 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                       }}
                     </For>
                   </tr>
-                  <Show when={expanded()}>
+                  <Show when={expanded() || local.expandable?.forceRender}>
                     <tr
                       class={classNames(
                         `${prefixCls()}-expanded-row`,
                         expandedRowClass(row.record, row.index),
                       )}
+                      style={expanded() ? undefined : { display: 'none' }}
+                      aria-hidden={expanded() ? undefined : 'true'}
                     >
                       <td colspan={Math.max(renderColumnCount(), 1)}>
-                        {local.expandable?.expandedRowRender?.(row.record, row.index, 0, true)}
+                        {local.expandable?.expandedRowRender?.(
+                          row.record,
+                          row.index,
+                          0,
+                          expanded(),
+                        )}
                       </td>
                     </tr>
                   </Show>
@@ -1065,6 +1114,9 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         `${prefixCls()}-wrapper`,
         `${prefixCls()}-${size()}`,

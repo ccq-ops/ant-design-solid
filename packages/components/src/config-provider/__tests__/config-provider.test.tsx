@@ -1,4 +1,5 @@
 import { render } from '@solidjs/testing-library'
+import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { darkAlgorithm, defaultAlgorithm } from '@solid-ant-design/theme'
 import { describe, expect, it } from 'vitest'
 import type { JSX } from 'solid-js'
@@ -20,6 +21,13 @@ function Probe() {
   )
 }
 
+function StyleProbe() {
+  useStyleRegister({ path: ['ConfigProviderCspProbe'], token: {}, theme: 'default' }, () => ({
+    '.config-provider-csp-probe': { color: 'red' },
+  }))
+  return <div class="config-provider-csp-probe" />
+}
+
 describe('ConfigProvider', () => {
   it('provides default config values', () => {
     const result = render(() => <Probe />)
@@ -30,6 +38,49 @@ describe('ConfigProvider', () => {
     expect(probe.dataset.disabled).toBe('false')
     expect(probe.dataset.primary).toBe('#1677ff')
   })
+
+  it('passes the configured CSP nonce to generated style elements', () => {
+    document.head.innerHTML = ''
+    render(() => (
+      <ConfigProvider csp={{ nonce: 'config-provider-nonce' }}>
+        <StyleProbe />
+      </ConfigProvider>
+    ))
+
+    expect(document.head.querySelector('style[data-ant-design-solid]')).toHaveAttribute(
+      'nonce',
+      'config-provider-nonce',
+    )
+  })
+
+  it('disables generated hash classes when theme.hashed is false', () => {
+    document.head.innerHTML = ''
+    const result = render(() => (
+      <ConfigProvider theme={{ hashed: false }}>
+        <StyleProbe />
+      </ConfigProvider>
+    ))
+
+    expect(result.container.querySelector('.config-provider-csp-probe')?.className).not.toMatch(
+      /css-[a-z0-9]+/,
+    )
+    expect(document.head.querySelectorAll('style[data-ant-design-solid]')).toHaveLength(1)
+  })
+
+  it('disables runtime styles when theme.zeroRuntime is true', () => {
+    document.head.innerHTML = ''
+    const result = render(() => (
+      <ConfigProvider theme={{ zeroRuntime: true }}>
+        <StyleProbe />
+      </ConfigProvider>
+    ))
+
+    expect(result.container.querySelector('.config-provider-csp-probe')?.className).not.toMatch(
+      /css-[a-z0-9]+/,
+    )
+    expect(document.head.querySelectorAll('style[data-ant-design-solid]')).toHaveLength(0)
+  })
+
   it('merges nested providers', () => {
     const result = render(() => (
       <ConfigProvider prefixCls="outer" theme={{ token: { colorPrimary: '#722ed1' } }}>

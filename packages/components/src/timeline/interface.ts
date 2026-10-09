@@ -33,6 +33,7 @@ export interface TimelineItem {
   classNames?: Omit<TimelineSemanticClassNames, 'root' | 'list'>
   styles?: Omit<TimelineSemanticStyles, 'root' | 'list'>
 }
+export type TimelineItemProps = TimelineItem
 
 export interface TimelineProps extends Omit<
   JSX.OlHTMLAttributes<HTMLOListElement>,

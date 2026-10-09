@@ -7,5 +7,6 @@ export type {
   TransferListProps,
   TransferOperationProps,
   TransferProps,
+  TransferRef,
   TransferSearchProps,
 } from './interface'

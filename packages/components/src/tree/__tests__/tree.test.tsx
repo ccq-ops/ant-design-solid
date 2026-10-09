@@ -368,6 +368,65 @@ describe('Tree', () => {
     expect(root.scrollTop).toBe(12)
   })
 
+  it('auto expands the target path before scrolling', async () => {
+    let treeRef: TreeRef | undefined
+    const onExpand = vi.fn()
+    const scrollIntoView = vi.fn()
+    const previousScrollIntoView = HTMLElement.prototype.scrollIntoView
+    HTMLElement.prototype.scrollIntoView = scrollIntoView
+
+    try {
+      const result = render(() => (
+        <Tree
+          ref={(ref) => {
+            treeRef = ref
+          }}
+          treeData={treeData}
+          onExpand={onExpand}
+        />
+      ))
+
+      expect(result.queryByRole('treeitem', { name: /China/ })).toBeNull()
+      treeRef?.scrollTo({ key: 'china', align: 'top', autoExpand: true })
+
+      await waitFor(() => {
+        expect(result.getByRole('treeitem', { name: /China/ })).toBeInTheDocument()
+      })
+      expect(onExpand).toHaveBeenCalledWith(
+        expect.arrayContaining(['asia', 'china']),
+        expect.objectContaining({
+          expanded: true,
+          node: expect.objectContaining({ key: 'china' }),
+        }),
+      )
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start' })
+    } finally {
+      HTMLElement.prototype.scrollIntoView = previousScrollIntoView
+    }
+  })
+
+  it('exposes Tree.useTree path lookup with custom field names', () => {
+    let path: string[] = []
+    const customData = [
+      {
+        id: 'root',
+        label: 'Root',
+        nodes: [{ id: 'child', label: 'Child' }],
+      },
+    ]
+
+    function Probe() {
+      const instance = Tree.useTree(customData, {
+        fieldNames: { key: 'id', title: 'label', children: 'nodes' },
+      })
+      path = instance.getPath('child').map((entity) => String(entity.key))
+      return null
+    }
+
+    render(() => <Probe />)
+    expect(path).toEqual(['root', 'child'])
+  })
+
   it('virtualizes visible nodes when height is set and virtual is enabled', () => {
     const result = render(() => <Tree height={120} treeData={largeTreeData(100)} />)
     const root = result.getByRole('tree')

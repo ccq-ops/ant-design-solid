@@ -45,6 +45,23 @@ describe('Mentions', () => {
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
+  it('customizes suggestion content with popupRender', () => {
+    const result = render(() => (
+      <Mentions
+        options={options}
+        popupRender={(origin) => <section data-testid="mentions-popup-wrapper">{origin}</section>}
+      />
+    ))
+    const textarea = result.getByRole('textbox') as HTMLTextAreaElement
+
+    fireEvent.input(textarea, { target: { value: '@a' } })
+
+    expect(screen.getByTestId('mentions-popup-wrapper')).toContainElement(
+      screen.getByRole('listbox'),
+    )
+    expect(screen.getByRole('option', { name: 'Alice' })).toBeInTheDocument()
+  })
+
   it('closes suggestions on outside pointer down', () => {
     const onOpenChange = vi.fn()
     const result = render(() => (

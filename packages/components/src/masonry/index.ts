@@ -8,6 +8,7 @@ export type {
   MasonryLayoutInfo,
   MasonryLayoutItem,
   MasonryProps,
+  MasonryRef,
   MasonryRenderItem,
   MasonryResponsiveValue,
   MasonrySemanticClassNames,

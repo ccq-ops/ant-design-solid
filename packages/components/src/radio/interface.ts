@@ -31,6 +31,17 @@ export interface RadioRef {
   nativeElement?: HTMLInputElement
 }
 
+export interface RadioChangeEventTarget extends RadioProps {
+  checked: boolean
+}
+
+export interface RadioChangeEvent {
+  target: RadioChangeEventTarget
+  stopPropagation: () => void
+  preventDefault: () => void
+  nativeEvent: MouseEvent
+}
+
 export interface RadioProps extends Omit<
   JSX.InputHTMLAttributes<HTMLInputElement>,
   'type' | 'checked' | 'defaultChecked' | 'disabled' | 'value' | 'onChange' | 'style' | 'ref'

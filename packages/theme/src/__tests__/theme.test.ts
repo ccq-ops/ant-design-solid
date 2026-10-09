@@ -178,6 +178,12 @@ describe('@solid-ant-design/theme', () => {
     expect(token.controlHeight).toBe(32)
   })
 
+  it('uses focusOutline to control the shared focus line width', () => {
+    expect(mergeTheme().focusOutline).toBe(true)
+    expect(mergeTheme().lineWidthFocus).toBe(3)
+    expect(mergeTheme({ token: { focusOutline: false } }).lineWidthFocus).toBe(0)
+  })
+
   it('derives dark alias tokens from seed tokens', () => {
     const token = darkAlgorithm({ ...defaultSeedToken, colorPrimary: '#1677ff' })
 

@@ -23,7 +23,11 @@ export interface AvatarProps extends JSX.HTMLAttributes<HTMLSpanElement> {
   children?: JSX.Element
 }
 
-export interface AvatarGroupProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface AvatarGroupRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface AvatarGroupProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   prefixCls?: string
   rootClass?: string
   maxCount?: number
@@ -38,4 +42,5 @@ export interface AvatarGroupProps extends JSX.HTMLAttributes<HTMLDivElement> {
   size?: AvatarSize | AvatarResponsiveSize
   shape?: AvatarShape
   children?: JSX.Element
+  ref?: AvatarGroupRef | { current?: AvatarGroupRef } | ((ref: AvatarGroupRef) => void)
 }

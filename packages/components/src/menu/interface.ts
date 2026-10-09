@@ -95,9 +95,14 @@ export type MenuExpandIcon =
   | ((props: SubMenuType & { isSubMenu: boolean; open: boolean }) => JSX.Element)
 export type MenuTooltip = false | { title?: JSX.Element; class?: string; style?: JSX.CSSProperties }
 
+export interface MenuRef {
+  menu?: HTMLUListElement
+  focus: (options?: FocusOptions) => void
+}
+
 export interface MenuProps extends Omit<
   JSX.HTMLAttributes<HTMLUListElement>,
-  'onClick' | 'onSelect' | 'children'
+  'onClick' | 'onSelect' | 'children' | 'ref'
 > {
   items?: MenuItem[]
   children?: JSX.Element
@@ -127,6 +132,7 @@ export interface MenuProps extends Omit<
   onSelect?: (info: MenuSelectInfo) => void
   onDeselect?: (info: MenuSelectInfo) => void
   onOpenChange?: (openKeys: MenuKey[]) => void
+  ref?: MenuRef | { current?: MenuRef } | ((ref: MenuRef) => void)
 }
 
 export interface MenuItemComponentProps extends Omit<
@@ -157,6 +163,8 @@ export interface SubMenuComponentProps extends Omit<
   popupRender?: MenuPopupRender
   children?: JSX.Element
 }
+export type SubMenuProps = SubMenuComponentProps
+export type MenuItemProps = MenuItemComponentProps
 
 export interface MenuItemGroupComponentProps extends Omit<
   JSX.LiHTMLAttributes<HTMLLIElement>,

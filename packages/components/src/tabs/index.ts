@@ -1,5 +1,6 @@
 export { Tabs } from './tabs'
 export type {
+  TabPaneProps,
   TabsAnimatedConfig,
   TabsDefaultTabBarProps,
   TabsIndicatorConfig,
@@ -8,6 +9,7 @@ export type {
   TabsPlacement,
   TabsPosition,
   TabsProps,
+  TabsRef,
   TabsRenderTabBar,
   TabsScrollDirection,
   TabsSemanticClassNames,

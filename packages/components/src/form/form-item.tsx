@@ -1,4 +1,14 @@
-import { createEffect, createMemo, createSignal, For, on, onCleanup, Show, untrack } from 'solid-js'
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  createUniqueId,
+  For,
+  on,
+  onCleanup,
+  Show,
+  untrack,
+} from 'solid-js'
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -123,6 +133,7 @@ function resolveFeedbackIcons(
 }
 
 export function FormItem(props: FormItemProps) {
+  const itemId = createUniqueId()
   const form = useFormContext()
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-form`
@@ -131,6 +142,18 @@ export function FormItem(props: FormItemProps) {
   const listPrefix = useFormListPrefix()
   const fieldName = (): FieldName | undefined =>
     props.name === undefined ? undefined : composeNamePath(listPrefix, props.name)
+  const controlId = () => props.htmlFor ?? `ads-form-item-${itemId}-control`
+  const hasLabel = () => props.label !== undefined && props.label !== null
+  const labelId = () => (hasLabel() ? `ads-form-item-${itemId}-label` : undefined)
+  const accessibleName = () => {
+    if (typeof props.label === 'string' || typeof props.label === 'number') {
+      return String(props.label)
+    }
+    const name = fieldName()
+    if (typeof name === 'string' || typeof name === 'number') return String(name)
+    if (Array.isArray(name)) return name.map(String).join(' ')
+    return undefined
+  }
   const trigger = () => props.trigger ?? 'onChange'
   const validateTrigger = () => props.validateTrigger ?? layout.validateTrigger() ?? trigger()
   const rules = () =>
@@ -296,6 +319,9 @@ export function FormItem(props: FormItemProps) {
     if (name === undefined || !form) return undefined
     return {
       name,
+      controlId,
+      labelId,
+      accessibleName,
       value: () => form.getFieldValue(name),
       valueProps,
       valuePropName,
@@ -379,7 +405,8 @@ export function FormItem(props: FormItemProps) {
     >
       <Show when={props.label || props.label === null}>
         <label
-          for={props.htmlFor}
+          id={labelId()}
+          for={controlId()}
           data-label-col={labelCol()}
           class={classNames(
             `${prefixCls()}-item-label`,

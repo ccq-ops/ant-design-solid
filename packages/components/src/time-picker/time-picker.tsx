@@ -12,6 +12,7 @@ import {
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
 import { useConfig } from '../config-provider'
+import { useFormItemControl } from '../form'
 import { classNames } from '../shared/class-names'
 import { addDocumentPointerDown, addPositionUpdateListeners } from '../shared/overlay'
 import { InternalPortal, canUseDom } from '../shared/portal'
@@ -167,8 +168,12 @@ export function TimePickerBase(props: TimePickerProps) {
     'ref',
     'zIndex',
     'getPopupContainer',
+    'id',
+    'aria-label',
+    'aria-labelledby',
   ])
   const config = useConfig()
+  const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-time-picker`
   const [, hashId] = useTimePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
@@ -369,7 +374,15 @@ export function TimePickerBase(props: TimePickerProps) {
       />
       <div
         role="combobox"
+        id={local.id ?? formItem?.controlId()}
         tabindex={disabled() ? undefined : 0}
+        aria-label={
+          local['aria-label'] ??
+          (formItem?.labelId()
+            ? undefined
+            : (formItem?.accessibleName() ?? local.placeholder ?? 'Select time'))
+        }
+        aria-labelledby={local['aria-labelledby'] ?? formItem?.labelId()}
         aria-expanded={open()}
         aria-disabled={disabled()}
         ref={(element) => {
@@ -565,8 +578,12 @@ function TimeRangePicker(props: TimeRangePickerProps) {
     'ref',
     'zIndex',
     'getPopupContainer',
+    'id',
+    'aria-label',
+    'aria-labelledby',
   ])
   const config = useConfig()
+  const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-time-picker`
   const [, hashId] = useTimePickerStyle(prefixCls())
   const [dropdownZIndex] = useZIndex('SelectLike', local.zIndex)
@@ -755,7 +772,15 @@ function TimeRangePicker(props: TimeRangePickerProps) {
       />
       <div
         role="combobox"
+        id={local.id ?? formItem?.controlId()}
         tabindex={local.disabled ? undefined : 0}
+        aria-label={
+          local['aria-label'] ??
+          (formItem?.labelId()
+            ? undefined
+            : (formItem?.accessibleName() ?? local.placeholder?.join(' to ') ?? 'Time range'))
+        }
+        aria-labelledby={local['aria-labelledby'] ?? formItem?.labelId()}
         aria-expanded={open()}
         aria-disabled={Boolean(local.disabled)}
         ref={(element) => {

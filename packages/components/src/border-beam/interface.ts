@@ -10,5 +10,9 @@ export interface BorderBeamProps {
   style?: JSX.CSSProperties | string
   children?: JSX.Element
   color?: BorderBeamColor
+  count?: number
+  duration?: number
+  lineWidth?: number | string
   outset?: number | string
+  size?: number | string
 }

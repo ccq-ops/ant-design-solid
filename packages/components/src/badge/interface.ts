@@ -46,7 +46,11 @@ export interface BadgeProps extends JSX.HTMLAttributes<HTMLSpanElement> {
   styles?: BadgeSemanticStylesConfig
 }
 
-export interface RibbonProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface RibbonRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface RibbonProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   prefixCls?: string
   rootClassName?: string
   rootClass?: string
@@ -55,6 +59,7 @@ export interface RibbonProps extends JSX.HTMLAttributes<HTMLDivElement> {
   placement?: RibbonPlacement
   classNames?: RibbonSemanticClassNamesConfig
   styles?: RibbonSemanticStylesConfig
+  ref?: RibbonRef | { current?: RibbonRef } | ((ref: RibbonRef) => void)
 }
 
 export interface BadgeComponent {

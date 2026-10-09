@@ -22,7 +22,15 @@ Ant Design Solid follows Ant Design's token customization model. Put `ConfigProv
 
 ## Global Tokens
 
-Global tokens are the fastest way to set brand-level styling. Derived colors, focus shadows, borders, and component states update from the seed token values.
+Global tokens are the fastest way to set brand-level styling. Derived colors, focus shadows, borders, and component states update from the seed token values. Ant Design 6.6 also exposes
+`focusOutline`; set it to `false` only when the application supplies an equivalent accessible focus
+indicator.
+
+```tsx
+<ConfigProvider theme={{ token: { focusOutline: false } }}>
+  <App />
+</ConfigProvider>
+```
 
 ### Custom primary color
 

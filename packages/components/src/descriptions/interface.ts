@@ -61,7 +61,14 @@ export interface DescriptionsItemType {
 
 export interface DescriptionsItemProps extends DescriptionsItemType {}
 
-export interface DescriptionsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface DescriptionsRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface DescriptionsProps extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'title' | 'ref'
+> {
   title?: JSX.Element
   extra?: JSX.Element
   bordered?: boolean
@@ -73,6 +80,7 @@ export interface DescriptionsProps extends Omit<JSX.HTMLAttributes<HTMLDivElemen
   styles?: DescriptionsStylesConfig
   items?: DescriptionsItemType[]
   children?: JSX.Element
+  ref?: DescriptionsRef | { current?: DescriptionsRef } | ((ref: DescriptionsRef) => void)
 }
 
 export type { Breakpoint }

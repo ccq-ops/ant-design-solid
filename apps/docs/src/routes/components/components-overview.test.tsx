@@ -30,6 +30,7 @@ describe('ComponentOverview', () => {
       '/components/button',
     )
     expect(result.getByRole('link', { name: 'Input' })).toHaveAttribute('href', '/components/input')
+    expect(result.getByRole('link', { name: 'Listy' })).toHaveAttribute('href', '/components/listy')
   })
 
   it('filters component cards by name and shows an empty state', () => {

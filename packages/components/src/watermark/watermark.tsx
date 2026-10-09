@@ -1,6 +1,7 @@
 import { createEffect, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { canUseDom } from '../shared/portal'
 import { WatermarkContext } from './context'
 import { useWatermarkStyle } from './watermark.style'
@@ -105,6 +106,7 @@ export function Watermark(props: WatermarkProps) {
     'className',
     'style',
     'children',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-watermark`
@@ -164,6 +166,12 @@ export function Watermark(props: WatermarkProps) {
     return svgToDataUrl(svg)
   })
   let containerRef: HTMLDivElement | undefined
+  const watermarkRef = {
+    get nativeElement() {
+      return containerRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, watermarkRef))
   const panelElements = new Set<HTMLElement>()
   const observers = new Map<HTMLElement, MutationObserver>()
 

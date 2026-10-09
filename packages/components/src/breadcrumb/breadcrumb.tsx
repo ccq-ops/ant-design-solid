@@ -12,6 +12,7 @@ import { Dropdown } from '../dropdown'
 import type { DropdownMenuProps } from '../dropdown'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useBreadcrumbStyle } from './breadcrumb.style'
 import type {
   BreadcrumbItemProps,
@@ -170,6 +171,7 @@ function InternalBreadcrumbItem(props: InternalBreadcrumbItemProps) {
     'children',
     'class',
     'style',
+    'ref',
     'itemClass',
     'itemStyle',
     'linkClass',
@@ -338,11 +340,19 @@ export function Breadcrumb(props: BreadcrumbProps) {
     'children',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-breadcrumb`
   const [, hashId] = useBreadcrumbStyle(prefixCls())
   let listRef: HTMLOListElement | undefined
+  let rootRef: HTMLElement | undefined
+  const breadcrumbRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, breadcrumbRef))
   const separator = () => local.separator ?? DEFAULT_SEPARATOR
   const dropdownIcon = () => local.dropdownIcon ?? DEFAULT_DROPDOWN_ICON
   const params = () => local.params ?? {}
@@ -436,6 +446,9 @@ export function Breadcrumb(props: BreadcrumbProps) {
   return (
     <nav
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       aria-label={rest['aria-label'] ?? 'breadcrumb'}
       class={classNames(
         prefixCls(),

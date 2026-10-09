@@ -12,11 +12,9 @@ const componentGroups = [
 
 type ComponentGroup = (typeof componentGroups)[number]
 
-interface ComponentDocModule {
-  frontmatter?: {
-    title?: string
-    group?: ComponentGroup
-  }
+interface ComponentFrontmatter {
+  title?: string
+  group?: ComponentGroup
 }
 
 interface ComponentCard {
@@ -25,7 +23,10 @@ interface ComponentCard {
   href: string
 }
 
-const componentModules = import.meta.glob<ComponentDocModule>('./*.mdx', { eager: true })
+const componentFrontmatters = import.meta.glob<ComponentFrontmatter>('./*.mdx', {
+  eager: true,
+  import: 'frontmatter',
+})
 
 function isComponentGroup(value: unknown): value is ComponentGroup {
   return typeof value === 'string' && componentGroups.includes(value as ComponentGroup)
@@ -42,19 +43,21 @@ function titleFromSlug(slug: string) {
     .join(' ')
 }
 
-function componentsFromModules(modules: Record<string, ComponentDocModule>): ComponentCard[] {
-  return Object.entries(modules)
-    .filter(([path]) => path !== './index.mdx')
-    .map(([path, module]) => {
-      const slug = path.replace(/^\.\//, '').replace(/\.mdx$/, '')
-      const group = module.frontmatter?.group
+function componentsFromFrontmatters(
+  frontmatters: Record<string, ComponentFrontmatter>,
+): ComponentCard[] {
+  return Object.entries(frontmatters)
+    .filter(([modulePath]) => modulePath !== './index.mdx')
+    .map(([modulePath, frontmatter]) => {
+      const slug = modulePath.replace(/^\.\//, '').replace(/\.mdx$/, '')
+      const group = frontmatter.group
 
       if (!isComponentGroup(group)) {
         return undefined
       }
 
       return {
-        title: module.frontmatter?.title || titleFromSlug(slug),
+        title: frontmatter.title || titleFromSlug(slug),
         group,
         href: `/components/${slug}`,
       }
@@ -71,7 +74,7 @@ function componentsFromModules(modules: Record<string, ComponentDocModule>): Com
     })
 }
 
-const componentCards = componentsFromModules(componentModules)
+const componentCards = componentsFromFrontmatters(componentFrontmatters)
 
 export function ComponentOverview() {
   const [query, setQuery] = createSignal('')

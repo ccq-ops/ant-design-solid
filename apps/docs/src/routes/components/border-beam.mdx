@@ -478,11 +478,15 @@ Common props ref: Common props. Solid uses `class` and `classList` instead of Re
 The child must resolve to a single `HTMLElement`; text and SVG children are rendered without the beam.
 The resolved host element should provide a positioning context, for example `position: relative`.
 
-| Property   | Description                                                                                                        | Type                                             | Default | Version |
-| ---------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ | ------- | ------- |
-| `children` | Decorated content.                                                                                                 | `JSX.Element`                                    | `-`     | `6.4.0` |
-| `color`    | Beam color configuration. `percent` uses the `0 ~ 100` input range and BorderBeam reserves transparent tail space. | `string \| { color: string; percent: number }[]` | `-`     | `6.4.0` |
-| `outset`   | Outset distance of the beam layer from the container edge. Set to `0` for clipped containers.                      | `number \| string`                               | `-`     | `6.4.0` |
+| Property    | Description                                                                                                        | Type                                             | Default | Version |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ | ------- | ------- |
+| `children`  | Decorated content.                                                                                                 | `JSX.Element`                                    | `-`     | `6.4.0` |
+| `color`     | Beam color configuration. `percent` uses the `0 ~ 100` input range and BorderBeam reserves transparent tail space. | `string \| { color: string; percent: number }[]` | `-`     | `6.4.0` |
+| `count`     | Number of evenly distributed beams.                                                                                | `number`                                         | `1`     | `6.6.0` |
+| `duration`  | Duration of one beam loop in seconds.                                                                              | `number`                                         | `6`     | `6.5.0` |
+| `lineWidth` | Beam line width.                                                                                                   | `number \| string`                               | token   | `6.5.0` |
+| `outset`    | Outset distance of the beam layer from the container edge. Set to `0` for clipped containers.                      | `number \| string`                               | `-`     | `6.4.0` |
+| `size`      | Beam gradient size.                                                                                                | `number \| string`                               | `100`   | `6.5.0` |
 
 ## Solid Common Props
 

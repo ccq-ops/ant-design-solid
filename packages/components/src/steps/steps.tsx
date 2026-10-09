@@ -1,7 +1,7 @@
 import { createEffect, createSignal, For, onCleanup, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import { CheckOutlined, CloseOutlined } from '@solid-ant-design/icons'
+import { CheckOutlined, CloseOutlined, EllipsisOutlined } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useStepsStyle } from './steps.style'
@@ -18,6 +18,11 @@ const DEFAULT_CURRENT = 0
 const DEFAULT_INITIAL = 0
 const DEFAULT_STATUS: StepsStatus = 'process'
 const RESPONSIVE_BREAKPOINT = 532
+
+interface DisplayStep {
+  item: StepItem
+  originIndex: number
+}
 
 function normalizeCurrent(current: number | undefined, length: number): number {
   if (length <= 0) return -1
@@ -36,6 +41,62 @@ function clampPercent(percent: number | undefined): number | undefined {
   const numeric = Number(percent)
   if (!Number.isFinite(numeric)) return undefined
   return Math.min(100, Math.max(0, numeric))
+}
+
+function collapsedIndexes(total: number, currentIndex: number, maxCount: number) {
+  const safeCurrent = Math.min(Math.max(currentIndex, 0), total - 1)
+  const targetCount = Math.min(maxCount, total)
+  const indexes = new Set([0, safeCurrent, total - 1])
+
+  for (let distance = 1; indexes.size < targetCount && distance < total; distance += 1) {
+    const candidates = [
+      safeCurrent - distance,
+      safeCurrent + distance,
+      distance,
+      total - 1 - distance,
+    ]
+    for (const index of candidates) {
+      if (indexes.size >= targetCount) break
+      if (index >= 0 && index < total) indexes.add(index)
+    }
+  }
+
+  return Array.from(indexes)
+    .sort((left, right) => left - right)
+    .flatMap<number | null>((index, order, sorted) =>
+      order > 0 && index - sorted[order - 1] > 1 ? [null, index] : [index],
+    )
+}
+
+function displaySteps(
+  items: StepItem[],
+  current: number,
+  maxCount: number | undefined,
+  prefixCls: string,
+): DisplayStep[] {
+  if (maxCount === undefined || maxCount < 3 || items.length <= maxCount) {
+    return items.map((item, originIndex) => ({ item, originIndex }))
+  }
+
+  const indexes = collapsedIndexes(items.length, current, maxCount)
+  return indexes.map((index, collapsedIndex) => {
+    if (index !== null) return { item: items[index], originIndex: index }
+    const previousIndex = indexes[collapsedIndex - 1] as number
+    const nextIndex = indexes[collapsedIndex + 1] as number
+    const hasError = items
+      .slice(previousIndex + 1, nextIndex)
+      .some((item) => item.status === 'error')
+    return {
+      item: {
+        title: '',
+        icon: <EllipsisOutlined />,
+        status: hasError ? 'error' : nextIndex - 1 < current ? 'finish' : 'wait',
+        disabled: true,
+        class: `${prefixCls}-item-ellipsis`,
+      },
+      originIndex: -1,
+    }
+  })
 }
 
 function getItemStatus(
@@ -119,6 +180,7 @@ export function Steps(props: StepsProps) {
     'progressDot',
     'responsive',
     'ellipsis',
+    'maxCount',
     'offset',
     'prefixCls',
     'className',
@@ -183,6 +245,9 @@ export function Steps(props: StepsProps) {
   const variant = () => local.variant ?? 'filled'
   const percent = () => (type() === 'inline' ? undefined : clampPercent(local.percent))
   const currentStatus = () => local.status ?? DEFAULT_STATUS
+  const maxCountApplied = () =>
+    local.maxCount !== undefined && local.maxCount >= 3 && items().length > local.maxCount
+  const displayedSteps = () => displaySteps(items(), current(), local.maxCount, prefixCls())
   const RootComponent = () => local.rootComponent ?? 'div'
   const listComponent = () => (RootComponent() === 'ol' ? 'div' : 'ol')
   const itemComponent = () => local.itemComponent ?? 'li'
@@ -212,6 +277,7 @@ export function Steps(props: StepsProps) {
       type() !== 'default' && `${prefixCls()}-${type()}`,
       isDot() && `${prefixCls()}-dot`,
       local.ellipsis && `${prefixCls()}-ellipsis`,
+      maxCountApplied() && `${prefixCls()}-max-count`,
       percent() !== undefined && type() === 'default' && `${prefixCls()}-with-progress`,
       hashId(),
       local.class,
@@ -247,10 +313,13 @@ export function Steps(props: StepsProps) {
   }
 
   const renderItems = () => (
-    <For each={items()}>
-      {(item, index) => {
-        const status = () => getItemStatus(item, index(), current(), currentStatus())
-        const isCurrent = () => index() === current()
+    <For each={displayedSteps()}>
+      {(displayStep, displayIndex) => {
+        const item = displayStep.item
+        const originIndex = () =>
+          displayStep.originIndex >= 0 ? displayStep.originIndex : displayIndex()
+        const status = () => getItemStatus(item, originIndex(), current(), currentStatus())
+        const isCurrent = () => displayStep.originIndex === current()
         const clickable = () => Boolean(local.onChange || item.onClick) && !item.disabled
         const itemContentValue = () => item.content ?? item.description
         const baseIconContent = () =>
@@ -261,7 +330,7 @@ export function Steps(props: StepsProps) {
             defaultIcon(
               prefixCls(),
               status(),
-              index(),
+              originIndex(),
               initial(),
               type() === 'default' && isCurrent() ? percent() : undefined,
             )
@@ -270,14 +339,17 @@ export function Steps(props: StepsProps) {
           const origin = baseIconContent()
           if (isDot() && typeof local.progressDot === 'function') {
             return local.progressDot(origin, {
-              index: index(),
+              index: originIndex(),
               status: status(),
               title: item.title,
               description: item.description,
               content: itemContentValue(),
             })
           }
-          return local.iconRender?.(origin, { index: index(), active: isCurrent(), item }) ?? origin
+          return (
+            local.iconRender?.(origin, { index: originIndex(), active: isCurrent(), item }) ??
+            origin
+          )
         }
         const renderItemContent = () => (
           <Show when={itemContentValue()}>
@@ -389,9 +461,9 @@ export function Steps(props: StepsProps) {
               <button
                 type="button"
                 class={`${prefixCls()}-item-container`}
-                aria-label={itemLabel(index(), item)}
+                aria-label={itemLabel(originIndex(), item)}
                 aria-current={isCurrent() ? 'step' : undefined}
-                onClick={() => handleChange(index(), item)}
+                onClick={() => handleChange(displayStep.originIndex, item)}
               >
                 {content(direction() === 'vertical')}
               </button>

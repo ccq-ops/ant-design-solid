@@ -111,6 +111,7 @@ export type DirectoryTreeExpandAction = false | 'click' | 'doubleClick'
 
 export interface TreeScrollToOptions {
   align?: 'top' | 'bottom' | 'auto'
+  autoExpand?: boolean
   key: TreeKey
   offset?: number
 }

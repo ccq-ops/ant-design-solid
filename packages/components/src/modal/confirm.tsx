@@ -133,6 +133,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
       modalRender={props.config.modalRender}
       destroyOnHidden={props.config.destroyOnHidden}
       forceRender={props.config.forceRender}
+      scrollLock={props.config.scrollLock}
       prefixCls={props.config.prefixCls}
       focusTriggerAfterClose={props.config.focusTriggerAfterClose}
       focusable={{

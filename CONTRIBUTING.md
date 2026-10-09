@@ -21,6 +21,14 @@ COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r test
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm -r build
 ```
 
+When public component exports change, refresh and review the pinned Ant Design API baseline:
+
+```bash
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm api:audit:refresh
+```
+
+CI runs `pnpm api:audit` to prevent unreviewed public API drift.
+
 ## Changesets
 
 This repository uses Changesets for package versions and changelogs.

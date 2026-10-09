@@ -1,4 +1,4 @@
-import type { JSX } from 'solid-js'
+import type { Component, JSX } from 'solid-js'
 import type { SelectProps } from '../select'
 
 export type PaginationPageSizeOption = string | number
@@ -96,6 +96,17 @@ export interface PaginationSizeChangerRenderInfo {
   onSizeChange: (size: PaginationPageSizeOption) => void
 }
 
+export interface PaginationSizeChangerComponentProps {
+  value: number
+  onChange: (value: number) => void
+  disabled: boolean
+  class?: string
+}
+
+export interface PaginationComponents {
+  sizeChanger?: Component<PaginationSizeChangerComponentProps>
+}
+
 export interface PaginationProps extends Omit<JSX.HTMLAttributes<HTMLElement>, 'onChange'> {
   prefixCls?: string
   selectPrefixCls?: string
@@ -125,6 +136,7 @@ export interface PaginationProps extends Omit<JSX.HTMLAttributes<HTMLElement>, '
   jumpPrevIcon?: JSX.Element
   jumpNextIcon?: JSX.Element
   sizeChangerRender?: (info: PaginationSizeChangerRenderInfo) => JSX.Element
+  components?: PaginationComponents
   itemRender?: (page: number, type: PaginationItemType, originalElement: JSX.Element) => JSX.Element
   classNames?: PaginationSemanticClassNamesConfig
   styles?: PaginationSemanticStylesConfig

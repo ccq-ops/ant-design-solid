@@ -56,18 +56,28 @@ export interface CardProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'tit
   children?: JSX.Element
 }
 
-export interface CardGridProps extends JSX.HTMLAttributes<HTMLDivElement> {
-  prefixCls?: string
-  hoverable?: boolean
+export interface CardGridRef {
+  nativeElement?: HTMLDivElement
 }
 
-export interface CardMetaProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface CardGridProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
+  prefixCls?: string
+  hoverable?: boolean
+  ref?: CardGridRef | { current?: CardGridRef } | ((ref: CardGridRef) => void)
+}
+
+export interface CardMetaRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface CardMetaProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title' | 'ref'> {
   prefixCls?: string
   avatar?: JSX.Element
   title?: JSX.Element
   description?: JSX.Element
   classNames?: CardMetaSemanticClassNames
   styles?: CardMetaSemanticStyles
+  ref?: CardMetaRef | { current?: CardMetaRef } | ((ref: CardMetaRef) => void)
 }
 
 export interface CardComponent {

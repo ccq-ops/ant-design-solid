@@ -6,7 +6,9 @@ import type { CardComponent } from './interface'
 export type {
   CardComponent,
   CardGridProps,
+  CardGridRef,
   CardMetaProps,
+  CardMetaRef,
   CardProps,
   CardSemanticClassNames,
   CardSemanticClassNamesMap,

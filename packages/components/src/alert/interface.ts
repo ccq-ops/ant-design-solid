@@ -21,6 +21,10 @@ export type AlertSemanticStyles =
   | AlertSemanticStylesMap
   | ((info: AlertSemanticInfo) => AlertSemanticStylesMap)
 
+export interface AlertRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface AlertClosableConfig extends Omit<
   JSX.ButtonHTMLAttributes<HTMLButtonElement>,
   'onClick' | 'onClose'
@@ -30,7 +34,10 @@ export interface AlertClosableConfig extends Omit<
   onClose?: (event: MouseEvent) => void
 }
 
-export interface AlertProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onClose' | 'title'> {
+export interface AlertProps extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'onClose' | 'title' | 'ref'
+> {
   prefixCls?: string
   rootClass?: string
   type?: AlertType
@@ -49,6 +56,7 @@ export interface AlertProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'on
   styles?: AlertSemanticStyles
   afterClose?: () => void
   onClose?: (event: MouseEvent) => void
+  ref?: AlertRef | { current?: AlertRef } | ((ref: AlertRef) => void)
 }
 
 export interface AlertErrorBoundaryProps {
@@ -57,6 +65,7 @@ export interface AlertErrorBoundaryProps {
   description?: JSX.Element
   children?: JSX.Element
 }
+export type ErrorBoundaryProps = AlertErrorBoundaryProps
 
 export interface AlertComponent {
   (props: AlertProps): JSX.Element

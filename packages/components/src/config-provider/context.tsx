@@ -66,6 +66,7 @@ const componentConfigKeys = [
   'inputNumber',
   'textArea',
   'layout',
+  'listy',
   'masonry',
   'mentions',
   'menu',

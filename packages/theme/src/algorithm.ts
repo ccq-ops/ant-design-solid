@@ -444,7 +444,7 @@ function formatToken(derivativeToken: AliasToken, override: Partial<AliasToken> 
     colorErrorAffix: mergedToken.colorError,
     colorWarningAffix: mergedToken.colorWarning,
     fontSizeIcon: mergedToken.fontSizeSM,
-    lineWidthFocus: mergedToken.lineWidth * 3,
+    lineWidthFocus: mergedToken.focusOutline === false ? 0 : mergedToken.lineWidth * 3,
     lineWidth: mergedToken.lineWidth,
     controlOutlineWidth: mergedToken.lineWidth * 2,
     controlInteractiveSize: mergedToken.controlHeight / 2,

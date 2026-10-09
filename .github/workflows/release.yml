@@ -56,8 +56,23 @@ jobs:
       - name: Test
         run: corepack pnpm -r test
 
+      - name: Audit public API baseline
+        run: corepack pnpm api:audit
+
       - name: Build
         run: corepack pnpm -r build
+
+      - name: Test package exports
+        run: corepack pnpm test:package
+
+      - name: Lint published packages
+        run: corepack pnpm package:lint
+
+      - name: Install Playwright browsers
+        run: corepack pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: End-to-end test
+        run: corepack pnpm test:e2e
 
       - name: Determine release channel
         id: release-channel

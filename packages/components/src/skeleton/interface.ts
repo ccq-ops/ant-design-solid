@@ -21,6 +21,10 @@ export type SkeletonElementSemanticStyles = Partial<
   Record<SkeletonElementSemanticSlot, JSX.CSSProperties>
 >
 
+export interface SkeletonRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface SkeletonAvatarProps {
   size?: SkeletonAvatarSize
   shape?: SkeletonAvatarShape
@@ -35,7 +39,7 @@ export interface SkeletonParagraphProps {
   width?: SkeletonWidth | SkeletonWidth[]
 }
 
-export interface SkeletonProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface SkeletonProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title' | 'ref'> {
   active?: boolean
   loading?: boolean
   prefixCls?: string
@@ -47,6 +51,7 @@ export interface SkeletonProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 
   classNames?: SkeletonSemanticClassNames
   styles?: SkeletonSemanticStyles
   children?: JSX.Element
+  ref?: SkeletonRef | { current?: SkeletonRef } | ((ref: SkeletonRef) => void)
 }
 
 export interface SkeletonElementProps extends JSX.HTMLAttributes<HTMLDivElement> {

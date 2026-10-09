@@ -45,7 +45,14 @@ export interface SplitterPanelProps extends JSX.HTMLAttributes<HTMLDivElement> {
   destroyOnHidden?: boolean
 }
 
-export interface SplitterProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onResize'> {
+export interface SplitterRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface SplitterProps extends Omit<
+  JSX.HTMLAttributes<HTMLDivElement>,
+  'onResize' | 'ref'
+> {
   layout?: SplitterLayout
   orientation?: SplitterLayout
   vertical?: boolean
@@ -61,6 +68,7 @@ export interface SplitterProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 
   onResize?: (sizes: number[]) => void
   onResizeEnd?: (sizes: number[]) => void
   onCollapse?: (collapsed: boolean[], sizes: number[]) => void
+  ref?: SplitterRef | { current?: SplitterRef } | ((ref: SplitterRef) => void)
 }
 
 export type SplitterPanelElement = {

@@ -1,0 +1,29 @@
+{
+  "version": "6.6.5",
+  "classifications": {
+    "List": {
+      "status": "deprecated-compat",
+      "reason": "Ant Design 6.6 deprecates List in favor of Listy; see ADR 0002."
+    },
+    "ListItemMetaRef": {
+      "status": "deprecated-compat",
+      "reason": "Belongs to the deprecated List compatibility surface."
+    },
+    "ListProps": {
+      "status": "deprecated-compat",
+      "reason": "Belongs to the deprecated List compatibility surface."
+    },
+    "theme": {
+      "status": "rename",
+      "reason": "Theme runtime APIs are published from @solid-ant-design/theme and useToken is exported from core."
+    },
+    "unstableSetRender": {
+      "status": "react-only",
+      "reason": "React 19 render adapter hook has no SolidJS equivalent."
+    },
+    "version": {
+      "status": "intentionally-unsupported",
+      "reason": "Avoid a source-level version constant that can drift from Changesets-managed package metadata."
+    }
+  }
+}

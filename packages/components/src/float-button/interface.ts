@@ -21,6 +21,14 @@ export type FloatButtonSemanticStylesConfig =
 export type FloatButtonTooltip = JSX.Element | Omit<TooltipProps, 'children'>
 export type FloatButtonBadgeProps = Omit<BadgeProps, 'status' | 'text' | 'title' | 'children'>
 
+export interface FloatButtonRef {
+  nativeElement?: HTMLButtonElement | HTMLAnchorElement
+}
+
+export interface FloatButtonGroupRef {
+  nativeElement?: HTMLDivElement
+}
+
 export type FloatButtonGroupSemanticDOM =
   | 'root'
   | 'list'
@@ -46,7 +54,7 @@ export type FloatButtonGroupSemanticStylesConfig =
 
 export interface FloatButtonProps extends Omit<
   JSX.ButtonHTMLAttributes<HTMLButtonElement>,
-  'children' | 'target' | 'type'
+  'children' | 'target' | 'type' | 'ref'
 > {
   type?: FloatButtonType
   shape?: FloatButtonShape
@@ -62,11 +70,12 @@ export interface FloatButtonProps extends Omit<
   htmlType?: ButtonHTMLType
   classNames?: FloatButtonSemanticClassNamesConfig
   styles?: FloatButtonSemanticStylesConfig
+  ref?: FloatButtonRef | { current?: FloatButtonRef } | ((ref: FloatButtonRef) => void)
 }
 
 export interface FloatButtonGroupProps extends Omit<
   FloatButtonProps,
-  'classNames' | 'styles' | 'href' | 'target'
+  'classNames' | 'styles' | 'href' | 'target' | 'ref'
 > {
   shape?: FloatButtonShape
   trigger?: FloatButtonGroupTrigger
@@ -77,6 +86,10 @@ export interface FloatButtonGroupProps extends Omit<
   classNames?: FloatButtonGroupSemanticClassNamesConfig
   styles?: FloatButtonGroupSemanticStylesConfig
   children?: JSX.Element
+  ref?:
+    | FloatButtonGroupRef
+    | { current?: FloatButtonGroupRef }
+    | ((ref: FloatButtonGroupRef) => void)
 }
 
 export interface FloatButtonBackTopProps extends Omit<
@@ -86,6 +99,7 @@ export interface FloatButtonBackTopProps extends Omit<
   visibilityHeight?: number
   target?: () => AffixTarget | undefined | null
   duration?: number
+  showProgress?: boolean
   children?: JSX.Element
 }
 

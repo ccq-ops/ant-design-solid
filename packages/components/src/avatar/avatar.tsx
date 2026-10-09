@@ -12,6 +12,7 @@ import {
 import { useConfig } from '../config-provider'
 import { Popover } from '../popover'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import {
   isResponsiveObject,
   resolveResponsiveValue,
@@ -271,14 +272,25 @@ function AvatarGroup(props: AvatarGroupProps) {
     'children',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const groupRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, groupRef))
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-avatar`
   const [, hashId] = useAvatarStyle(prefixCls())
 
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         `${prefixCls()}-group`,
         config.direction() === 'rtl' && `${prefixCls()}-group-rtl`,

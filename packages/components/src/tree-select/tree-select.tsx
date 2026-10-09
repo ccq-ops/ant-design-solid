@@ -540,9 +540,14 @@ export function TreeSelect(props: TreeSelectProps) {
     >
       <div
         role="combobox"
+        id={rest.id ?? formItem?.controlId()}
         tabindex={disabled() ? undefined : 0}
         aria-expanded={open()}
         aria-disabled={disabled()}
+        aria-labelledby={rest['aria-labelledby'] ?? formItem?.labelId()}
+        aria-label={
+          rest['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
+        }
         ref={(element) => {
           selectorRef = element
         }}

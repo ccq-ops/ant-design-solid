@@ -5,16 +5,19 @@ import {
   FileOutlined,
   InboxOutlined,
 } from '@solid-ant-design/icons'
-import { For, Show, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
+  DraggerProps,
   ShowUploadListConfig,
   UploadChangeInfo,
   UploadComponent,
   UploadFile,
   UploadProps,
+  UploadRef,
   UploadRequestOptions,
 } from './interface'
 import { useUploadStyle } from './upload.style'
@@ -205,6 +208,9 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     'openFileDialogOnClick',
     'pastable',
     'capture',
+    'hasControlInside',
+    'supportServerRender',
+    'locale',
     'previewFile',
     'iconRender',
     'isImageUrl',
@@ -216,6 +222,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     'prefixCls',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-upload`
@@ -227,6 +234,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
   const activeUids = new Set<string>()
   const terminalUids = new Set<string>()
   let inputRef: HTMLInputElement | undefined
+  let rootRef: HTMLDivElement | undefined
 
   const disabled = () => Boolean(local.disabled)
   const listType = () => local.listType ?? 'text'
@@ -238,6 +246,12 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
       : {}
   const isControlled = () => 'fileList' in props
   const mergedFileList = () => (isControlled() ? (local.fileList ?? []) : innerFileList())
+
+  function resolveRefFile(file: UploadFile<T>): UploadFile<T> | undefined {
+    return mergedFileList().find(
+      (item) => item.uid === file.uid || (item.name === file.name && item.size === file.size),
+    )
+  }
 
   function markInactive(uid: string): void {
     activeUids.delete(uid)
@@ -455,6 +469,51 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     void handleFiles(files)
   }
 
+  const uploadRef: UploadRef<T> = {
+    onBatchStart: (files) => {
+      void handleFiles(files)
+    },
+    onSuccess: (response, file, xhr) => {
+      const current = resolveRefFile(file)
+      if (!current) return
+      activeUids.add(current.uid)
+      terminalUids.delete(current.uid)
+      updateActiveFile(
+        current.uid,
+        (item) => ({ ...item, status: 'done', percent: 100, response, xhr }),
+        { terminal: true },
+      )
+    },
+    onProgress: (event, file) => {
+      const current = resolveRefFile(file)
+      if (!current) return
+      activeUids.add(current.uid)
+      const percent = clampPercent(event.percent)
+      updateActiveFile(current.uid, (item) => ({ ...item, status: 'uploading', percent }), {
+        event: { percent },
+      })
+    },
+    onError: (error, response, file) => {
+      const current = resolveRefFile(file)
+      if (!current) return
+      activeUids.add(current.uid)
+      terminalUids.delete(current.uid)
+      updateActiveFile(current.uid, (item) => ({ ...item, status: 'error', error, response }), {
+        terminal: true,
+      })
+    },
+    get fileList() {
+      return mergedFileList()
+    },
+    get upload() {
+      return inputRef
+    },
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, uploadRef))
+
   function renderIcon(file: UploadFile<T>) {
     const custom = local.iconRender?.(file, listType())
     if (custom) return custom
@@ -536,7 +595,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
             <button
               type="button"
               class={`${prefixCls()}-preview`}
-              aria-label={`Preview ${file.name}`}
+              aria-label={`${local.locale?.previewFile ?? 'Preview'} ${file.name}`}
               onClick={() => previewFile(file)}
             >
               {resolveNode(config.previewIcon, file) ?? <EyeOutlined />}
@@ -546,7 +605,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
             <button
               type="button"
               class={`${prefixCls()}-download`}
-              aria-label={`Download ${file.name}`}
+              aria-label={`${local.locale?.downloadFile ?? 'Download'} ${file.name}`}
               onClick={() => downloadFile(file)}
             >
               {resolveNode(config.downloadIcon, file) ?? <DownloadOutlined />}
@@ -556,7 +615,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
             <button
               type="button"
               class={`${prefixCls()}-remove`}
-              aria-label={`Remove ${file.name}`}
+              aria-label={`${local.locale?.removeFile ?? 'Remove'} ${file.name}`}
               disabled={disabled()}
               onClick={() => void removeFile(file)}
             >
@@ -596,6 +655,9 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         `${prefixCls()}-${uploadType()}`,
@@ -663,6 +725,16 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
 export const Upload = InternalUpload as UploadComponent
 
 Upload.LIST_IGNORE = LIST_IGNORE
-Upload.Dragger = function Dragger<T = unknown>(props: UploadProps<T>) {
-  return <InternalUpload {...props} type="drag" />
+Upload.Dragger = function Dragger<T = unknown>(props: DraggerProps<T>) {
+  const [local, rest] = splitProps(props, ['height', 'style'])
+  return (
+    <InternalUpload
+      {...rest}
+      type="drag"
+      style={{
+        ...(typeof local.style === 'object' ? local.style : {}),
+        ...(local.height === undefined ? {} : { height: `${local.height}px` }),
+      }}
+    />
+  )
 }

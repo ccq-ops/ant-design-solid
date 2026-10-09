@@ -14,12 +14,18 @@ export interface StyleCache {
 }
 export interface StyleProviderProps {
   cache?: StyleCache
+  hashed?: boolean
   hashPriority?: 'low' | 'high'
+  nonce?: string
+  zeroRuntime?: boolean
   children?: JSX.Element
 }
 export interface StyleContextValue {
   cache: StyleCache
+  hashed: Accessor<boolean>
   hashPriority: Accessor<'low' | 'high'>
+  nonce: Accessor<string | undefined>
+  zeroRuntime: Accessor<boolean>
 }
 export interface StyleRegisterInfo {
   theme: unknown

@@ -78,6 +78,7 @@ export interface StepsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'on
   progressDot?: boolean | StepsProgressDotRender
   responsive?: boolean
   ellipsis?: boolean
+  maxCount?: number
   offset?: number
   prefixCls?: string
   className?: string

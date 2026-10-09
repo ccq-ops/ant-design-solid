@@ -1,8 +1,9 @@
 import { LeftOutlined, RightOutlined } from '@solid-ant-design/icons'
-import { For, Show, createMemo, createSignal, splitProps } from 'solid-js'
+import { For, Show, createEffect, createMemo, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   TransferCustomListBodyProps,
   TransferDirection,
@@ -236,8 +237,16 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
     'onSelectChange',
     'onSearch',
     'onScroll',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const transferRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, transferRef))
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-transfer`
   const [, hashId] = useTransferStyle(prefixCls())
   const [innerTargetKeys, setInnerTargetKeys] = createSignal<TransferKey[]>(
@@ -533,6 +542,9 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         disabled() && `${prefixCls()}-disabled`,

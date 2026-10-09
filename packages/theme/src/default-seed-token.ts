@@ -55,5 +55,6 @@ export const defaultSeedToken: SeedToken = {
   zIndexPopupBase: 1000,
   opacityImage: 1,
   wireframe: false,
+  focusOutline: true,
   motion: true,
 }

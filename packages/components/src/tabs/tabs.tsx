@@ -2,6 +2,7 @@ import { Show, createEffect, createMemo, createSignal, splitProps } from 'solid-
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type { TabNavListProps } from './tab-nav-list'
 import { TabNavList } from './tab-nav-list'
 import { TabPanelList } from './tab-panel-list'
@@ -73,8 +74,16 @@ export function Tabs(props: TabsProps) {
     'styles',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const tabsRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, tabsRef))
   const prefixCls = () => `${config.prefixCls()}-tabs`
   const [, hashId] = useTabsStyle(prefixCls())
   const [innerActiveKey, setInnerActiveKey] = createSignal(
@@ -230,6 +239,9 @@ export function Tabs(props: TabsProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         `${prefixCls()}-${tabPosition()}`,

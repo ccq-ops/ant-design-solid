@@ -48,9 +48,13 @@ export interface CalendarHeaderRenderConfig {
   onTypeChange: (type: CalendarMode) => void
 }
 
+export interface CalendarRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface CalendarProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'onChange' | 'onSelect' | 'className'
+  'onChange' | 'onSelect' | 'className' | 'ref'
 > {
   value?: CalendarValue
   defaultValue?: CalendarValue
@@ -75,4 +79,5 @@ export interface CalendarProps extends Omit<
   rootClassName?: string
   classNames?: CalendarSemanticClassNamesConfig
   styles?: CalendarSemanticStylesConfig
+  ref?: CalendarRef | { current?: CalendarRef } | ((ref: CalendarRef) => void)
 }

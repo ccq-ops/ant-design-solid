@@ -109,7 +109,7 @@ export function Search(props: SearchProps) {
         local.class,
         semanticClassNames().root,
       )}
-      style={{ ...(semanticStyles().root ?? {}), ...(local.style as JSX.CSSProperties) }}
+      style={{ ...semanticStyles().root, ...(local.style as JSX.CSSProperties) }}
     >
       <Input
         {...rest}

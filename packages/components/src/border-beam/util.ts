@@ -7,6 +7,7 @@ export type BorderBeamGradient = BorderBeamGradientItem[]
 export type BorderBeamColor = string | BorderBeamGradient
 
 export const MAX_BEAM_COLOR_STOP_PERCENT = 70
+export const DEFAULT_BORDER_BEAM_DURATION = 6
 
 function isString(value: unknown): value is string {
   return typeof value === 'string'

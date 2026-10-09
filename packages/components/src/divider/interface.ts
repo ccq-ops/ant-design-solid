@@ -17,7 +17,11 @@ export type DividerSemanticStylesConfig =
   | DividerSemanticStyles
   | ((info: DividerSemanticInfo) => DividerSemanticStyles)
 
-export interface DividerProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface DividerRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface DividerProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   prefixCls?: string
   orientation?: DividerOrientation
   vertical?: boolean
@@ -31,4 +35,5 @@ export interface DividerProps extends JSX.HTMLAttributes<HTMLDivElement> {
   classNames?: DividerSemanticClassNamesConfig
   styles?: DividerSemanticStylesConfig
   children?: JSX.Element
+  ref?: DividerRef | { current?: DividerRef } | ((ref: DividerRef) => void)
 }

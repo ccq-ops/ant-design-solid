@@ -26,11 +26,13 @@ export function useRateStyle(prefixCls: string) {
       },
       [`.${prefixCls}:focus-visible`]: {
         'border-radius': t.borderRadius,
-        'box-shadow': `0 0 0 2px ${t.colorPrimaryHover}`,
+        'box-shadow':
+          t.lineWidthFocus > 0 ? `0 0 0 ${t.lineWidthFocus}px ${t.colorPrimaryHover}` : 'none',
       },
       [`.${prefixCls}-item:focus-visible`]: {
         'border-radius': t.borderRadius,
-        'box-shadow': `0 0 0 2px ${t.colorPrimaryHover}`,
+        'box-shadow':
+          t.lineWidthFocus > 0 ? `0 0 0 ${t.lineWidthFocus}px ${t.colorPrimaryHover}` : 'none',
         outline: 'none',
       },
       [`.${prefixCls}-disabled`]: {

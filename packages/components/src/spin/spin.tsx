@@ -13,6 +13,7 @@ import {
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   SpinComponent,
   SpinProps,
@@ -116,9 +117,17 @@ const SpinRoot = (props: SpinProps) => {
     'class',
     'classList',
     'style',
+    'ref',
   ])
   const initialDefaultIndicator = defaultIndicator
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const spinRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, spinRef))
   const prefixCls = () => `${config.prefixCls()}-spin`
   const [, hashId] = useSpinStyle(prefixCls())
   const child = resolveChildren(() => local.children)
@@ -221,6 +230,9 @@ const SpinRoot = (props: SpinProps) => {
   }) => (
     <div
       {...rest}
+      ref={(element) => {
+        if (options?.applyRootSlot !== false) rootRef = element
+      }}
       role="status"
       aria-live="polite"
       aria-busy={shouldSpin() ? 'true' : 'false'}
@@ -291,6 +303,9 @@ const SpinRoot = (props: SpinProps) => {
       </Match>
       <Match when={hasChildren()}>
         <div
+          ref={(element) => {
+            rootRef = element
+          }}
           class={classNames(
             `${prefixCls()}-nested-loading`,
             hashId(),

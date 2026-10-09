@@ -27,6 +27,7 @@ export interface TabsIndicatorConfig {
 export interface TabsMoreConfig {
   icon?: JSX.Element
   trigger?: 'hover' | 'click'
+  popupRender?: (originNode: JSX.Element) => JSX.Element
 }
 
 export interface TabsSemanticClassNamesMap {
@@ -61,6 +62,10 @@ export type TabsSemanticStyles =
   | TabsSemanticStylesMap
   | ((info: { props: TabsProps }) => TabsSemanticStylesMap)
 
+export interface TabsRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface TabsItem {
   key: string
   label: JSX.Element
@@ -73,6 +78,9 @@ export interface TabsItem {
   closeIcon?: JSX.Element | false | null
   class?: string
   style?: JSX.CSSProperties
+}
+export type TabPaneProps = Omit<TabsItem, 'key' | 'label'> & {
+  tab?: JSX.Element
 }
 
 export interface TabsDefaultTabBarProps {
@@ -106,7 +114,7 @@ export type TabsRenderTabBar = (
   DefaultTabBar: (props: TabsDefaultTabBarProps) => JSX.Element,
 ) => JSX.Element
 
-export interface TabsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface TabsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange' | 'ref'> {
   items: TabsItem[]
   activeKey?: string
   defaultActiveKey?: string
@@ -133,4 +141,5 @@ export interface TabsProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onC
   hideAdd?: boolean
   classNames?: TabsSemanticClassNames
   styles?: TabsSemanticStyles
+  ref?: TabsRef | { current?: TabsRef } | ((ref: TabsRef) => void)
 }

@@ -254,6 +254,7 @@ function MentionsRoot(props: MentionsProps) {
     'placement',
     'rootClass',
     'popupClass',
+    'popupRender',
     'showCount',
     'count',
     'autoSize',
@@ -562,6 +563,53 @@ function MentionsRoot(props: MentionsProps) {
     onCleanup(() => observer.disconnect())
   })
 
+  const popupNode = () => (
+    <div
+      role="listbox"
+      ref={(element) => {
+        dropdownRef = element
+      }}
+      class={classNames(`${prefixCls()}-dropdown`, local.popupClass, local.classNames?.popup)}
+      style={mergeStyle(dropdownPosition(), local.styles?.popup)}
+      onScroll={(event) => local.onPopupScroll?.(event as unknown as UIEvent)}
+    >
+      <Show
+        when={filteredOptions().length > 0}
+        fallback={
+          <div
+            class={classNames(`${prefixCls()}-empty`, local.classNames?.notFound)}
+            style={local.styles?.notFound}
+          >
+            {local.notFoundContent ?? <Empty />}
+          </div>
+        }
+      >
+        <For each={filteredOptions()}>
+          {(option) => (
+            <div
+              role="option"
+              aria-disabled={Boolean(option.disabled)}
+              aria-selected={option.value === activeValue()}
+              class={classNames(
+                `${prefixCls()}-item`,
+                option.disabled && `${prefixCls()}-item-disabled`,
+                option.value === activeValue() && `${prefixCls()}-item-active`,
+                local.classNames?.option,
+                option.class,
+              )}
+              style={mergeStyle(local.styles?.option, option.style)}
+              title={option.title}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => selectOption(option)}
+            >
+              {option.label ?? option.value}
+            </div>
+          )}
+        </For>
+      </Show>
+    </div>
+  )
+
   return (
     <div
       ref={(element) => {
@@ -586,6 +634,11 @@ function MentionsRoot(props: MentionsProps) {
     >
       <textarea
         {...rest}
+        id={rest.id ?? formItem?.controlId()}
+        aria-labelledby={rest['aria-labelledby'] ?? formItem?.labelId()}
+        aria-label={
+          rest['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
+        }
         ref={(el) => {
           textareaRef = el
         }}
@@ -686,50 +739,7 @@ function MentionsRoot(props: MentionsProps) {
             local.getPopupContainer?.(textareaRef) ?? config.getPopupContainer?.(textareaRef)
           }
         >
-          <div
-            role="listbox"
-            ref={(element) => {
-              dropdownRef = element
-            }}
-            class={classNames(`${prefixCls()}-dropdown`, local.popupClass, local.classNames?.popup)}
-            style={mergeStyle(dropdownPosition(), local.styles?.popup)}
-            onScroll={(event) => local.onPopupScroll?.(event as unknown as UIEvent)}
-          >
-            <Show
-              when={filteredOptions().length > 0}
-              fallback={
-                <div
-                  class={classNames(`${prefixCls()}-empty`, local.classNames?.notFound)}
-                  style={local.styles?.notFound}
-                >
-                  {local.notFoundContent ?? <Empty />}
-                </div>
-              }
-            >
-              <For each={filteredOptions()}>
-                {(option) => (
-                  <div
-                    role="option"
-                    aria-disabled={Boolean(option.disabled)}
-                    aria-selected={option.value === activeValue()}
-                    class={classNames(
-                      `${prefixCls()}-item`,
-                      option.disabled && `${prefixCls()}-item-disabled`,
-                      option.value === activeValue() && `${prefixCls()}-item-active`,
-                      local.classNames?.option,
-                      option.class,
-                    )}
-                    style={mergeStyle(local.styles?.option, option.style)}
-                    title={option.title}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => selectOption(option)}
-                  >
-                    {option.label ?? option.value}
-                  </div>
-                )}
-              </For>
-            </Show>
-          </div>
+          {local.popupRender ? local.popupRender(popupNode()) : popupNode()}
         </InternalPortal>
       </Show>
     </div>

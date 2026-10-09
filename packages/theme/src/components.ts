@@ -601,6 +601,10 @@ export function getComponentToken<K extends keyof ComponentTokenMap>(
       zeroTriggerWidth: 40,
       zeroTriggerHeight: 40,
     },
+    Listy: {
+      itemPaddingBlock: token.paddingSM,
+      itemPaddingInline: token.padding,
+    },
   }
   const overrides = overrideStore.get(token)?.[componentName] ?? {}
   return { ...defaults[componentName], ...overrides } as NonNullable<ComponentTokenMap[K]>

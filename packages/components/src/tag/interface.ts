@@ -71,3 +71,4 @@ export interface CheckableTagGroupMultipleProps extends CheckableTagGroupBasePro
 }
 
 export type CheckableTagGroupProps = CheckableTagGroupSingleProps | CheckableTagGroupMultipleProps
+export type TagType = (props: TagProps) => JSX.Element

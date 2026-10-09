@@ -1,6 +1,7 @@
 import { For, Show, createEffect, createMemo, createSignal, splitProps, type JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   CalendarCellRenderInfo,
   CalendarCellType,
@@ -157,8 +158,16 @@ export function Calendar(props: CalendarProps) {
     'class',
     'classList',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const calendarRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, calendarRef))
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-calendar`
   const [, hashId] = useCalendarStyle(prefixCls())
   const defaultSelectedDate = parseDate(local.defaultValue)
@@ -362,6 +371,9 @@ export function Calendar(props: CalendarProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         fullscreen() ? `${prefixCls()}-fullscreen` : `${prefixCls()}-mini`,

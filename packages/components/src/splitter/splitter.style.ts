@@ -64,6 +64,10 @@ export function useSplitterStyle(prefixCls: string) {
         [`.${prefixCls}-bar:hover`]: {
           color: t.colorPrimary,
         },
+        [`.${prefixCls}-bar:focus-visible`]: {
+          outline: t.lineWidthFocus > 0 ? `${t.lineWidthFocus}px solid ${t.colorPrimary}` : 'none',
+          'outline-offset': `${t.lineWidth}px`,
+        },
         [`.${prefixCls}-bar-icon`]: {
           position: 'absolute',
           display: 'inline-flex',

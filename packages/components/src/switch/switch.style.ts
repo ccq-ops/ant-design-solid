@@ -35,7 +35,8 @@ export function useSwitchStyle(prefixCls: string) {
         'vertical-align': 'middle',
         transition: `all ${t.motionDurationMid} ${t.motionEaseInOut}`,
         '&:focus-visible': {
-          'box-shadow': `0 0 0 2px ${t.colorPrimaryHover}`,
+          'box-shadow':
+            t.lineWidthFocus > 0 ? `0 0 0 ${t.lineWidthFocus}px ${t.colorPrimaryHover}` : 'none',
         },
       },
       [`.${prefixCls}-checked`]: {

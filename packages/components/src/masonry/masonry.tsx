@@ -10,6 +10,7 @@ import {
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   MasonryItem,
   MasonryItemKey,
@@ -174,8 +175,16 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
     'styles',
     'onLayoutChange',
     'onLayoutInfoChange',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const masonryRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, masonryRef))
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-masonry`
   const [, hashId] = useMasonryStyle(prefixCls())
   const resolvedChildren = children(() => local.children)
@@ -375,6 +384,9 @@ export function Masonry<T extends MasonryItem = MasonryItem>(props: MasonryProps
 
   return (
     <div
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         hashId(),

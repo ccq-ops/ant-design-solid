@@ -171,6 +171,53 @@ describe('Upload', () => {
     )
   })
 
+  it('exposes upload state and lifecycle methods through ref', async () => {
+    let uploadRef: import('../interface').UploadRef | undefined
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Upload
+        ref={(ref) => {
+          uploadRef = ref
+        }}
+        customRequest={() => undefined}
+        onChange={onChange}
+      >
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    const nativeFile = file('ref.txt')
+    uploadRef?.onBatchStart([nativeFile])
+
+    await waitFor(() => expect(screen.getByText('ref.txt')).toBeInTheDocument())
+    expect(uploadRef?.nativeElement).toBe(result.container.querySelector('.ads-upload'))
+    expect(uploadRef?.upload).toBe(input(result.container))
+    expect(uploadRef?.fileList).toHaveLength(1)
+
+    const uploadFile = uploadRef!.fileList[0]
+    uploadRef?.onProgress({ percent: 45 }, uploadFile)
+    expect(uploadRef?.fileList[0].status).toBe('uploading')
+    expect(uploadRef?.fileList[0].percent).toBe(45)
+
+    uploadRef?.onSuccess({ ok: true }, uploadFile)
+    expect(uploadRef?.fileList[0].status).toBe('done')
+    expect(uploadRef?.fileList[0].response).toEqual({ ok: true })
+  })
+
+  it('supports Dragger height and localized action labels', () => {
+    const result = render(() => (
+      <Upload.Dragger
+        height={180}
+        defaultFileList={[{ uid: 'one', name: 'one.txt', status: 'done', url: '/one.txt' }]}
+        locale={{ downloadFile: 'Descargar', removeFile: 'Eliminar' }}
+      />
+    ))
+
+    expect(result.container.querySelector('.ads-upload-drag')).toHaveStyle({ height: '180px' })
+    expect(screen.getByRole('button', { name: 'Descargar one.txt' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Eliminar one.txt' })).toBeInTheDocument()
+  })
+
   it('skips files when beforeUpload returns Upload.LIST_IGNORE', async () => {
     const onChange = vi.fn()
     const result = render(() => (

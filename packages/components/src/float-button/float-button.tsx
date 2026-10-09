@@ -2,6 +2,7 @@ import { CloseOutlined, FileTextOutlined, VerticalAlignTopOutlined } from '@soli
 import {
   Show,
   createContext,
+  createEffect,
   createMemo,
   createSignal,
   onCleanup,
@@ -14,6 +15,7 @@ import { useConfig } from '../config-provider'
 import { Badge } from '../badge'
 import { Tooltip } from '../tooltip'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type { AffixTarget } from '../affix'
 import type {
   FloatButtonBackTopProps,
@@ -112,7 +114,9 @@ function scrollElementTo(target: AffixTarget, top: number) {
 
 function scrollToTop(target: AffixTarget, duration = 450) {
   const startTop = getScrollTop(target)
-  if (duration <= 0 || startTop <= 0 || typeof window === 'undefined') {
+  const reduceMotion =
+    typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  if (duration <= 0 || startTop <= 0 || typeof window === 'undefined' || reduceMotion) {
     scrollElementTo(target, 0)
     return
   }
@@ -181,6 +185,13 @@ const BaseFloatButton = (props: FloatButtonProps) => {
   ])
   const groupContext = useContext(GroupContext)
   const config = useConfig()
+  let rootRef: HTMLButtonElement | HTMLAnchorElement | undefined
+  const floatButtonRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, floatButtonRef))
   const prefixCls = () => `${config.prefixCls()}-float-button`
   const [, hashId] = useFloatButtonStyle(prefixCls())
   const mergedContent = () => local.content ?? local.description
@@ -250,7 +261,9 @@ const BaseFloatButton = (props: FloatButtonProps) => {
       fallback={
         <button
           {...rest}
-          ref={local.ref as HTMLButtonElement | undefined}
+          ref={(element) => {
+            rootRef = element
+          }}
           type={local.htmlType ?? 'button'}
           disabled={local.disabled}
           title={typeof local.tooltip === 'string' ? local.tooltip : undefined}
@@ -267,7 +280,9 @@ const BaseFloatButton = (props: FloatButtonProps) => {
       {(href) => (
         <a
           {...(rest as unknown as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
-          ref={local.ref as HTMLAnchorElement | undefined}
+          ref={(element) => {
+            rootRef = element
+          }}
           href={href()}
           target={local.target}
           title={typeof local.tooltip === 'string' ? local.tooltip : undefined}
@@ -317,6 +332,7 @@ function FloatButtonGroup(props: FloatButtonGroupProps) {
     'disabled',
     'htmlType',
     'onClick',
+    'ref',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-float-button`
@@ -357,6 +373,12 @@ function FloatButtonGroup(props: FloatButtonGroupProps) {
     setOpen(false)
   }
   let rootRef: HTMLDivElement | undefined
+  const groupRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, groupRef))
 
   onMount(() => {
     document.addEventListener('click', onDocumentClick, { capture: true })
@@ -448,22 +470,32 @@ function BackTop(props: FloatButtonBackTopProps) {
     'visibilityHeight',
     'target',
     'duration',
+    'showProgress',
     'onClick',
     'children',
     'icon',
     'content',
     'class',
     'classList',
+    'style',
     'aria-label',
   ])
   const config = useConfig()
   const prefixCls = () => `${config.prefixCls()}-float-button`
   const [visible, setVisible] = createSignal(false)
+  const [scrollProgress, setScrollProgress] = createSignal(0)
 
   const updateVisible = () => {
     const target = getTarget(local.target)
     if (!target) return
-    setVisible(getScrollTop(target) >= (local.visibilityHeight ?? 400))
+    const scrollTop = getScrollTop(target)
+    setVisible(scrollTop >= (local.visibilityHeight ?? 400))
+    if (!local.showProgress) return
+    const scrollHeight = isWindow(target)
+      ? Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) -
+        window.innerHeight
+      : target.scrollHeight - target.clientHeight
+    setScrollProgress(scrollHeight > 0 ? Math.min(1, Math.max(0, scrollTop / scrollHeight)) : 0)
   }
 
   onMount(() => {
@@ -484,8 +516,18 @@ function BackTop(props: FloatButtonBackTopProps) {
     <Show when={visible()}>
       <BaseFloatButton
         {...rest}
-        class={classNames(`${prefixCls()}-back-top`, local.class)}
+        class={classNames(
+          `${prefixCls()}-back-top`,
+          local.showProgress && `${prefixCls()}-progress`,
+          local.class,
+        )}
         classList={local.classList}
+        style={{
+          ...(typeof local.style === 'object' ? local.style : {}),
+          ...(local.showProgress
+            ? { '--ads-float-button-progress': `${scrollProgress()}turn` }
+            : {}),
+        }}
         icon={local.icon ?? local.children ?? <VerticalAlignTopOutlined />}
         content={local.content}
         aria-label={local['aria-label'] ?? (local.content ? undefined : 'Back to top')}

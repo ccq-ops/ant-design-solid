@@ -7,5 +7,6 @@ export type {
   DescriptionsItemType,
   DescriptionsLayout,
   DescriptionsProps,
+  DescriptionsRef,
   DescriptionsSize,
 } from './interface'

@@ -117,6 +117,24 @@ describe('BorderBeam', () => {
     })
   })
 
+  it('supports multiple beams with custom duration, line width, and size', async () => {
+    const result = render(() => (
+      <BorderBeam count={3} duration={9} lineWidth={2} size="48px">
+        <div>content</div>
+      </BorderBeam>
+    ))
+
+    await waitFor(() => {
+      const beams = Array.from(result.container.querySelectorAll<HTMLElement>(beamSelector))
+      expect(beams).toHaveLength(3)
+      expect(beams[0].style.getPropertyValue('--ads-border-beam-duration')).toBe('9s')
+      expect(beams[0].style.getPropertyValue('--ads-border-beam-line-width')).toBe('2px')
+      expect(beams[0].style.getPropertyValue('--ads-border-beam-size')).toBe('48px')
+      expect(beams[1].style.getPropertyValue('--ads-border-beam-delay')).toBe('-3s')
+      expect(beams[2].style.getPropertyValue('--ads-border-beam-delay')).toBe('-6s')
+    })
+  })
+
   it('merges ConfigProvider borderBeam class and style before local props', async () => {
     const result = render(() => (
       <ConfigProvider
@@ -157,7 +175,7 @@ describe('BorderBeam', () => {
         .map((style) => style.textContent ?? '')
         .join('\n')
 
-      expect(styles).toContain('padding:3px')
+      expect(styles).toContain('padding:var(--ads-border-beam-line-width, 3px)')
     })
   })
 

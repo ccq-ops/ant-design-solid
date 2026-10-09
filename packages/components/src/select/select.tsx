@@ -605,9 +605,12 @@ function SelectBase(props: SelectProps) {
     >
       <div
         role="combobox"
+        id={rest.id ?? formItem?.controlId()}
         tabindex={disabled() ? undefined : 0}
-        aria-label={local['aria-label']}
-        aria-labelledby={local['aria-labelledby']}
+        aria-label={
+          local['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
+        }
+        aria-labelledby={local['aria-labelledby'] ?? formItem?.labelId()}
         aria-expanded={open()}
         aria-disabled={disabled()}
         ref={(element) => {

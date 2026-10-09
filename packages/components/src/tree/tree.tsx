@@ -31,6 +31,7 @@ import type {
   TreeNodeRenderProps,
   TreeProps,
   TreeRef,
+  TreeScrollToOptions,
 } from './interface'
 import { useTreeStyle } from './tree.style'
 
@@ -391,6 +392,7 @@ export function Tree(props: TreeProps) {
   const [innerExpandedKeys, setInnerExpandedKeys] = createSignal<TreeKey[]>(
     initialExpandedKeys(treeData(), treeNames(), props),
   )
+  const [imperativeExpandedKeys, setImperativeExpandedKeys] = createSignal<TreeKey[]>([])
   const [innerSelectedKeys, setInnerSelectedKeys] = createSignal<TreeKey[]>(
     local.defaultSelectedKeys ?? [],
   )
@@ -402,10 +404,17 @@ export function Tree(props: TreeProps) {
   const [dragNode, setDragNode] = createSignal<TreeDataNode>()
 
   const expandedKeys = () => {
-    const keys = local.expandedKeys ?? innerExpandedKeys()
+    const keys = uniqueKeys([
+      ...(local.expandedKeys ?? innerExpandedKeys()),
+      ...imperativeExpandedKeys(),
+    ])
     if (local.autoExpandParent) return withParentKeys(keys, entityInfo().entities)
     return keys
   }
+  createEffect(() => {
+    void local.expandedKeys
+    setImperativeExpandedKeys([])
+  })
   const selectedKeys = () => local.selectedKeys ?? innerSelectedKeys()
   const loadedKeys = () => local.loadedKeys ?? innerLoadedKeys()
   const checkedState = () => {
@@ -467,21 +476,39 @@ export function Tree(props: TreeProps) {
     ...local.rootStyle,
     ...(typeof rest.style === 'object' ? rest.style : {}),
   })
+  const scrollToTarget = ({ align = 'auto', key, offset = 0 }: TreeScrollToOptions) => {
+    const target = rootRef?.querySelector<HTMLElement>(`[data-tree-key="${String(key)}"]`)
+    if (!target && virtualEnabled()) {
+      const index = visibleNodes().findIndex((item) => item.key === key)
+      if (index === -1) return
+      const virtualAlign = align === 'top' ? 'start' : align === 'bottom' ? 'end' : 'auto'
+      virtualizer.scrollToIndex(index, { align: virtualAlign })
+      if (rootRef && offset) rootRef.scrollTop += offset
+      return
+    }
+    if (!target) return
+    const block = align === 'top' ? 'start' : align === 'bottom' ? 'end' : 'nearest'
+    target.scrollIntoView({ block })
+    if (rootRef && offset) rootRef.scrollTop += offset
+  }
   const api: TreeRef = {
-    scrollTo: ({ align = 'auto', key, offset = 0 }) => {
-      const target = rootRef?.querySelector<HTMLElement>(`[data-tree-key="${String(key)}"]`)
-      if (!target && virtualEnabled()) {
-        const index = visibleNodes().findIndex((item) => item.key === key)
-        if (index === -1) return
-        const virtualAlign = align === 'top' ? 'start' : align === 'bottom' ? 'end' : 'auto'
-        virtualizer.scrollToIndex(index, { align: virtualAlign })
-        if (rootRef && offset) rootRef.scrollTop += offset
+    scrollTo: (options) => {
+      if (!options.autoExpand) {
+        scrollToTarget(options)
         return
       }
-      if (!target) return
-      const block = align === 'top' ? 'start' : align === 'bottom' ? 'end' : 'nearest'
-      target.scrollIntoView({ block })
-      if (rootRef && offset) rootRef.scrollTop += offset
+
+      const entity = entityInfo().entities.get(options.key)
+      if (!entity) return
+      const keysToExpand = [options.key, ...collectAncestorKeys(options.key, entityInfo().entities)]
+      const nextKeys = uniqueKeys([...expandedKeys(), ...keysToExpand])
+      const changed = nextKeys.some((key) => !includesKey(expandedKeys(), key))
+      if (changed) {
+        if ('expandedKeys' in props) setImperativeExpandedKeys(keysToExpand)
+        else setInnerExpandedKeys(nextKeys)
+        local.onExpand?.(nextKeys, { expanded: true, node: entity.node })
+      }
+      queueMicrotask(() => scrollToTarget(options))
     },
   }
 
@@ -497,6 +524,7 @@ export function Tree(props: TreeProps) {
     expanded: boolean,
     event: MouseEvent,
   ): void {
+    setImperativeExpandedKeys([])
     if (!('expandedKeys' in props)) setInnerExpandedKeys(nextKeys)
     local.onExpand?.(nextKeys, { event, expanded, node })
   }

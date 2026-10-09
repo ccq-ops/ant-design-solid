@@ -787,3 +787,16 @@ TreeNode is available for JSX children usage.
 | Method     | Description             | Type                                     |
 | ---------- | ----------------------- | ---------------------------------------- |
 | `scrollTo` | Scrolls to a tree node. | `(options: TreeScrollToOptions) => void` |
+
+`TreeScrollToOptions` supports `key`, `align`, `offset`, and `autoExpand`. When `autoExpand` is true,
+the target node and its ancestor path are expanded before scrolling.
+
+### Tree.useTree
+
+`Tree.useTree(treeData, { fieldNames })` returns a `TreeInstance` with:
+
+| Method    | Description                              | Type                                 |
+| --------- | ---------------------------------------- | ------------------------------------ |
+| `getPath` | Returns root-to-target data entity path. | `(key: TreeKey) => TreeDataEntity[]` |
+
+Each entity includes `node`, `nodes`, `key`, `index`, `pos`, `level`, `parent`, and `children`.

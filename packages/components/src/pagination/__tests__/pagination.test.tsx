@@ -414,6 +414,36 @@ describe('Pagination', () => {
     expect(onShowSizeChange).toHaveBeenLastCalledWith(1, 25)
   })
 
+  it('supports components.sizeChanger with the latest page size state', () => {
+    const onChange = vi.fn()
+    render(() => (
+      <Pagination
+        total={100}
+        showSizeChanger
+        onChange={onChange}
+        components={{
+          sizeChanger: (props) => (
+            <button
+              type="button"
+              class={props.class}
+              disabled={props.disabled}
+              onClick={() => props.onChange(20)}
+            >
+              Custom {props.value}
+            </button>
+          ),
+        }}
+      />
+    ))
+
+    const sizeChanger = screen.getByRole('button', { name: 'Custom 10' })
+    expect(sizeChanger).toHaveClass('ads-pagination-select')
+    fireEvent.click(sizeChanger)
+
+    expect(screen.getByRole('button', { name: 'Custom 20' })).toBeInTheDocument()
+    expect(onChange).toHaveBeenCalledWith(1, 20)
+  })
+
   it('uses small size responsively below the xs breakpoint when size is not set', () => {
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: query.includes('max-width: 575'),

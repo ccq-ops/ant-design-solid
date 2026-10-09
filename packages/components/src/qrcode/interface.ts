@@ -19,7 +19,14 @@ export type QRCodeStatusRenderInfo = {
   onRefresh?: () => void
 }
 
-export interface QRCodeProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface QRCodeRef {
+  nativeElement?: HTMLDivElement
+}
+
+export type QRPropsCanvas = QRCodeProps & JSX.CanvasHTMLAttributes<HTMLCanvasElement>
+export type QRPropsSvg = QRCodeProps & JSX.SvgSVGAttributes<SVGSVGElement>
+
+export interface QRCodeProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   value: string | string[]
   size?: number
   color?: string
@@ -39,4 +46,5 @@ export interface QRCodeProps extends JSX.HTMLAttributes<HTMLDivElement> {
   classes?: QRCodeSemanticClassNames
   styles?: QRCodeSemanticStyles
   prefixCls?: string
+  ref?: QRCodeRef | { current?: QRCodeRef } | ((ref: QRCodeRef) => void)
 }

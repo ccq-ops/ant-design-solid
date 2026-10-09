@@ -77,6 +77,13 @@ export function useFloatButtonStyle(prefixCls: string) {
         [`.${prefixCls}-square`]: {
           'border-radius': `${t.borderRadius}px`,
         },
+        [`.${prefixCls}-progress`]: {
+          'border-width': `${t.lineWidthBold}px`,
+          'border-color': 'transparent',
+          'background-image': `linear-gradient(${t.colorBgElevated}, ${t.colorBgElevated}), conic-gradient(${t.colorPrimary} var(--ads-float-button-progress, 0turn), ${t.colorBorderSecondary} 0)`,
+          'background-origin': 'border-box',
+          'background-clip': 'padding-box, border-box',
+        },
         [`.${prefixCls}:not(.${prefixCls}-individual)`]: {
           position: 'relative',
           right: 'auto',

@@ -2,6 +2,7 @@ import { useStyleRegister } from '@solid-ant-design/cssinjs'
 import { getComponentToken } from '@solid-ant-design/theme'
 import { useToken } from '../config-provider'
 import { MAX_BEAM_COLOR_STOP_PERCENT } from './util'
+import { DEFAULT_BORDER_BEAM_DURATION } from './util'
 
 export function useBorderBeamStyle(prefixCls: string) {
   const token = useToken()
@@ -29,7 +30,7 @@ export function useBorderBeamStyle(prefixCls: string) {
           'z-index': 1,
           overflow: 'hidden',
           'pointer-events': 'none',
-          padding: `${borderBeam.lineWidth ?? t.lineWidth}px`,
+          padding: `var(--ads-border-beam-line-width, ${borderBeam.lineWidth ?? t.lineWidth}px)`,
         },
         [`@supports ((mask-composite: exclude) or (-webkit-mask-composite: xor))`]: {
           [`.${prefixCls}`]: {
@@ -48,15 +49,15 @@ export function useBorderBeamStyle(prefixCls: string) {
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '100px',
+            width: 'var(--ads-border-beam-size, 100px)',
             'aspect-ratio': '1 / 1',
             opacity: 0.95,
             'background-image': `var(--ads-border-beam-beam-gradient, ${defaultBeamGradient})`,
             'offset-anchor': '90% 50%',
             'offset-distance': '0%',
-            'offset-path': 'rect(0 auto auto 0 round 100px)',
+            'offset-path': 'rect(0 auto auto 0 round var(--ads-border-beam-size, 100px))',
             'offset-rotate': 'auto',
-            animation: 'adsBorderBeamMove 6s linear infinite',
+            animation: `adsBorderBeamMove var(--ads-border-beam-duration, ${DEFAULT_BORDER_BEAM_DURATION}s) linear var(--ads-border-beam-delay, 0s) infinite`,
             'will-change': 'offset-distance',
           },
         },

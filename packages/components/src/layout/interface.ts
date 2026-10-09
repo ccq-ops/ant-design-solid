@@ -36,3 +36,4 @@ export interface LayoutSiderProps extends JSX.HTMLAttributes<HTMLElement> {
   onCollapse?: (collapsed: boolean, type: LayoutSiderCollapseType) => void
   children?: JSX.Element
 }
+export type SiderProps = LayoutSiderProps

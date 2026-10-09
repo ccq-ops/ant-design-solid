@@ -217,6 +217,43 @@ describe('FloatButton', () => {
     expect(target.scrollTop).toBe(0)
   })
 
+  it('shows BackTop scroll progress and respects reduced motion', () => {
+    const target = document.createElement('div')
+    Object.defineProperties(target, {
+      scrollTop: { configurable: true, writable: true, value: 500 },
+      scrollHeight: { configurable: true, value: 1200 },
+      clientHeight: { configurable: true, value: 200 },
+    })
+    target.scrollTo = vi.fn()
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: true,
+      media: '(prefers-reduced-motion: reduce)',
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      onchange: null,
+    })
+
+    const result = render(() => (
+      <FloatButton.BackTop
+        visibilityHeight={100}
+        duration={450}
+        showProgress
+        target={() => target}
+      />
+    ))
+    target.dispatchEvent(new Event('scroll'))
+
+    const button = result.getByRole('button', { name: 'Back to top' })
+    expect(button).toHaveClass('ads-float-button-progress')
+    expect(button.style.getPropertyValue('--ads-float-button-progress')).toBe('0.5turn')
+
+    fireEvent.click(button)
+    expect(target.scrollTop).toBe(0)
+  })
+
   it('applies custom prefix from ConfigProvider', () => {
     const result = render(() => (
       <ConfigProvider prefixCls="custom">

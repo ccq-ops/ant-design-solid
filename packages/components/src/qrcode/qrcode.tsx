@@ -3,6 +3,7 @@ import { For, Match, Show, Switch, createEffect, createMemo, splitProps } from '
 import type { JSX } from 'solid-js'
 import { useConfig, useToken } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   QRCodeErrorLevel,
   QRCodeIconSize,
@@ -172,8 +173,16 @@ export function QRCode(props: QRCodeProps) {
     'prefixCls',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const qrcodeRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, qrcodeRef))
   const token = useToken()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-qrcode`
   const [, hashId] = useQRCodeStyle(prefixCls())
@@ -215,6 +224,9 @@ export function QRCode(props: QRCodeProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         local.bordered !== false && `${prefixCls()}-bordered`,

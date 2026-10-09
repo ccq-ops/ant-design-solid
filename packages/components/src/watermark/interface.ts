@@ -8,21 +8,32 @@ export type WatermarkTextAlign = 'left' | 'right' | 'center' | 'start' | 'end'
 export type WatermarkFontWeight = 'normal' | 'lighter' | 'bold' | 'bolder' | number
 export type WatermarkFontStyle = 'none' | 'normal' | 'italic' | 'oblique'
 
-export interface WatermarkProps extends JSX.HTMLAttributes<HTMLDivElement> {
+export interface WatermarkFont {
+  color?: string
+  fontSize?: WatermarkFontSize
+  fontWeight?: WatermarkFontWeight
+  fontFamily?: string
+  fontStyle?: WatermarkFontStyle
+  textAlign?: WatermarkTextAlign
+}
+
+export interface WatermarkText {
+  text: string
+  font?: WatermarkFont
+}
+
+export interface WatermarkRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface WatermarkProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'ref'> {
   width?: number
   height?: number
   rotate?: number
   zIndex?: number
   image?: string
   content?: WatermarkContent
-  font?: {
-    color?: string
-    fontSize?: WatermarkFontSize
-    fontWeight?: WatermarkFontWeight
-    fontFamily?: string
-    fontStyle?: WatermarkFontStyle
-    textAlign?: WatermarkTextAlign
-  }
+  font?: WatermarkFont
   gap?: WatermarkGap
   offset?: WatermarkOffset
   inherit?: boolean
@@ -31,4 +42,5 @@ export interface WatermarkProps extends JSX.HTMLAttributes<HTMLDivElement> {
   rootClassName?: string
   className?: string
   children?: JSX.Element
+  ref?: WatermarkRef | { current?: WatermarkRef } | ((ref: WatermarkRef) => void)
 }

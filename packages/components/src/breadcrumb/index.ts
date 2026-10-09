@@ -4,6 +4,7 @@ export type {
   BreadcrumbItemRender,
   BreadcrumbItemType,
   BreadcrumbProps,
+  BreadcrumbRef,
   BreadcrumbRouteType,
   BreadcrumbSeparatorProps,
   BreadcrumbSeparatorType,

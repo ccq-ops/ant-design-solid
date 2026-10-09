@@ -1,4 +1,4 @@
-import { createMemo, onMount, splitProps } from 'solid-js'
+import { For, createMemo, onMount, splitProps } from 'solid-js'
 import { render } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
@@ -6,6 +6,7 @@ import { canUseDom } from '../shared/portal'
 import { useBorderBeamStyle } from './border-beam.style'
 import type { BorderBeamProps } from './interface'
 import { getBorderBeamGradient } from './util'
+import { DEFAULT_BORDER_BEAM_DURATION } from './util'
 import type { JSX } from 'solid-js'
 
 function getInset(width: number | string) {
@@ -14,6 +15,10 @@ function getInset(width: number | string) {
   const numericPx = width.match(/^(\d+(?:\.\d+)?)px$/)
   if (numericPx) return `-${numericPx[1]}px`
   return `calc(-1 * ${width})`
+}
+
+function unit(value: number | string) {
+  return typeof value === 'number' ? `${value}px` : value
 }
 
 function getBorderWidths(host: HTMLElement): string[] {
@@ -64,7 +69,11 @@ export function BorderBeam(props: BorderBeamProps) {
     'style',
     'children',
     'color',
+    'count',
+    'duration',
+    'lineWidth',
     'outset',
+    'size',
   ])
   const config = useConfig()
   const componentConfig = () => config.borderBeam()
@@ -81,13 +90,31 @@ export function BorderBeam(props: BorderBeamProps) {
     return borderWidths.map(getInset).join(' ')
   }
   const beamGradient = () => getBorderBeamGradient(local.color)
-  const beamStyle = () => {
+  const beamCount = () =>
+    typeof local.count === 'number' && Number.isFinite(local.count) && local.count >= 1
+      ? Math.floor(local.count)
+      : 1
+  const beamDuration = () =>
+    typeof local.duration === 'number' && local.duration > 0
+      ? local.duration
+      : DEFAULT_BORDER_BEAM_DURATION
+  const beamStyle = (index: number) => {
     const cssVars: JSX.CSSProperties = {
       '--ads-border-beam-inset-offset': insetOffset(),
       '--ads-border-beam-border-radius': borderRadius,
     }
     const gradient = beamGradient()
     if (gradient) cssVars['--ads-border-beam-beam-gradient'] = gradient
+    if (typeof local.duration === 'number' && local.duration > 0) {
+      cssVars['--ads-border-beam-duration'] = `${local.duration}s`
+    }
+    if (local.lineWidth !== undefined) {
+      cssVars['--ads-border-beam-line-width'] = unit(local.lineWidth)
+    }
+    if (local.size !== undefined) cssVars['--ads-border-beam-size'] = unit(local.size)
+    if (index > 0) {
+      cssVars['--ads-border-beam-delay'] = `${(-beamDuration() * index) / beamCount()}s`
+    }
     return mergeStyle(cssVars, componentConfig().style, local.style)
   }
 
@@ -110,32 +137,36 @@ export function BorderBeam(props: BorderBeamProps) {
     candidate.appendChild(mount)
     const dispose = render(
       () => (
-        <div
-          aria-hidden="true"
-          class={classNames(prefixCls(), hashId(), componentConfig().class, local.class)}
-          classList={local.classList}
-          style={beamStyle()}
-        />
+        <For each={Array.from({ length: beamCount() }, (_, index) => index)}>
+          {(index) => (
+            <div
+              aria-hidden="true"
+              class={classNames(prefixCls(), hashId(), componentConfig().class, local.class)}
+              classList={local.classList}
+              style={beamStyle(index)}
+            />
+          )}
+        </For>
       ),
       mount,
     )
-    const beam = mount.firstElementChild
-    if (beam) candidate.insertBefore(beam, mount)
+    while (mount.firstChild) candidate.insertBefore(mount.firstChild, mount)
     mount.remove()
 
     const updateMetrics = () => {
       if (!hostRef) return
       borderWidths = getBorderWidths(hostRef)
       borderRadius = getBorderRadius(hostRef)
-      const beamElement = hostRef.querySelector<HTMLElement>(`.${prefixCls()}`)
-      if (!beamElement) return
-      const style = beamStyle()
-      beamElement.style.cssText = ''
-      if (typeof style === 'string') beamElement.setAttribute('style', style)
-      else
-        Object.entries(style).forEach(([name, value]) =>
-          beamElement.style.setProperty(name, String(value)),
-        )
+      const beamElements = hostRef.querySelectorAll<HTMLElement>(`.${prefixCls()}`)
+      beamElements.forEach((beamElement, index) => {
+        const style = beamStyle(index)
+        beamElement.style.cssText = ''
+        if (typeof style === 'string') beamElement.setAttribute('style', style)
+        else
+          Object.entries(style).forEach(([name, value]) =>
+            beamElement.style.setProperty(name, String(value)),
+          )
+      })
     }
 
     let observer: ResizeObserver | undefined

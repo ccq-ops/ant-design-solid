@@ -52,6 +52,19 @@ export interface TableScrollConfig {
   scrollToFirstRowOnChange?: boolean
 }
 
+export interface TableScrollToConfig {
+  index?: number
+  key?: TableKey
+  top?: number
+  offset?: number
+  align?: ScrollLogicalPosition
+}
+
+export interface TableRef {
+  nativeElement?: HTMLDivElement
+  scrollTo: (config: TableScrollToConfig) => void
+}
+
 export interface TableChangePagination {
   current: number
   pageSize: number
@@ -113,6 +126,7 @@ export interface TableExpandableConfig<T extends object = object> {
   defaultExpandedRowKeys?: TableKey[]
   expandedRowKeys?: TableKey[]
   expandedRowRender?: (record: T, index: number, indent: number, expanded: boolean) => JSX.Element
+  forceRender?: boolean
   expandedRowClassName?: string | ((record: T, index: number, indent: number) => string)
   expandRowByClick?: boolean
   rowExpandable?: (record: T) => boolean
@@ -167,10 +181,16 @@ export interface TableColumn<T extends object = object> {
   onCell?: (record: T, rowIndex: number) => JSX.HTMLAttributes<HTMLTableCellElement>
   onHeaderCell?: (column: TableColumn<T>) => JSX.HTMLAttributes<HTMLTableCellElement>
 }
+export type TableColumnType<T extends object = object> = TableColumn<T>
+export type TableColumnGroupType<T extends object = object> = TableColumn<T> & {
+  children: Array<TableColumn<T>>
+}
+export type TableColumnsType<T extends object = object> = Array<TableColumn<T>>
+export type TableColumnProps<T extends object = object> = TableColumn<T>
 
 export interface TableProps<T extends object = object> extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'children' | 'onChange' | 'title'
+  'children' | 'onChange' | 'title' | 'ref'
 > {
   columns?: TableColumn<T>[]
   dataSource?: T[]
@@ -203,4 +223,5 @@ export interface TableProps<T extends object = object> extends Omit<
     sorter: TableSorterResult<T>,
     extra: TableCurrentDataSource<T>,
   ) => void
+  ref?: TableRef | { current?: TableRef } | ((ref: TableRef) => void)
 }

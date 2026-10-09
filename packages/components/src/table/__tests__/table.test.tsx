@@ -500,6 +500,36 @@ describe('Table', () => {
     expect(result.getByText('active panel')).toBeInTheDocument()
   })
 
+  it('pre-renders hidden expanded row content with expandable.forceRender', () => {
+    const expandedRowRender = vi.fn(
+      (record: (typeof data)[number], _index: number, _indent: number, expanded: boolean) => (
+        <span>
+          {record.name} force content {String(expanded)}
+        </span>
+      ),
+    )
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        expandable={{ forceRender: true, expandedRowRender }}
+      />
+    ))
+
+    const hiddenContent = result.getByText('Ada force content false')
+    expect(hiddenContent.closest('tr')).toHaveStyle({ display: 'none' })
+    expect(hiddenContent.closest('tr')).toHaveAttribute('aria-hidden', 'true')
+
+    fireEvent.click(result.getByRole('button', { name: 'Expand row a' }))
+
+    expect(result.getByText('Ada force content true').closest('tr')).not.toHaveStyle({
+      display: 'none',
+    })
+    expect(expandedRowRender).toHaveBeenCalledWith(data[0], 0, 0, false)
+    expect(expandedRowRender).toHaveBeenCalledWith(data[0], 0, 0, true)
+  })
+
   it('respects controlled expanded row keys', () => {
     const onExpandedRowsChange = vi.fn()
     const result = render(() => (

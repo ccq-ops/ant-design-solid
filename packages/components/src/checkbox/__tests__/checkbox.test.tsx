@@ -216,7 +216,7 @@ describe('Checkbox', () => {
     expect(css).toContain('border:1px solid #d9d9d9;')
     expect(css).toContain('background:#1677ff;')
     expect(css).toContain('.ads-checkbox-indeterminate .ads-checkbox-input::after')
-    expect(css).toContain('outline:2px solid rgba(5,145,255,0.1);')
+    expect(css).toContain('outline:3px solid rgba(5,145,255,0.1);')
   })
 })
 

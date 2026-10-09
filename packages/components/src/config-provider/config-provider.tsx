@@ -1,9 +1,20 @@
+import { StyleProvider } from '@solid-ant-design/cssinjs'
 import { ConfigContext, createConfigValue, setGlobalConfig, useConfig } from './context'
 import type { ConfigProviderProps, GlobalConfigProps } from './interface'
 
 function ConfigProviderComponent(props: ConfigProviderProps) {
   const value = createConfigValue(useConfig(), props)
-  return <ConfigContext.Provider value={value}>{props.children}</ConfigContext.Provider>
+  return (
+    <ConfigContext.Provider value={value}>
+      <StyleProvider
+        hashed={value.theme().hashed}
+        nonce={value.csp().nonce}
+        zeroRuntime={value.theme().zeroRuntime}
+      >
+        {props.children}
+      </StyleProvider>
+    </ConfigContext.Provider>
+  )
 }
 
 export const ConfigProvider = Object.assign(ConfigProviderComponent, {

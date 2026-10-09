@@ -275,6 +275,29 @@ describe('Steps', () => {
     expect(onChange).toHaveBeenLastCalledWith(1)
   })
 
+  it('collapses dense steps with maxCount and preserves original change indexes', () => {
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Steps
+        current={5}
+        maxCount={4}
+        onChange={onChange}
+        items={Array.from({ length: 10 }, (_, index) => ({ title: `Step ${index + 1}` }))}
+      />
+    ))
+
+    const root = result.container.querySelector('.ads-steps')!
+    expect(root).toHaveClass('ads-steps-max-count')
+    expect(result.getByText('Step 1')).toBeInTheDocument()
+    expect(result.getByText('Step 6')).toBeInTheDocument()
+    expect(result.getByText('Step 10')).toBeInTheDocument()
+    expect(result.queryByText('Step 2')).toBeNull()
+    expect(result.container.querySelectorAll('.ads-steps-item-ellipsis')).toHaveLength(2)
+
+    fireEvent.click(result.getByRole('button', { name: 'Go to step 5: Step 5' }))
+    expect(onChange).toHaveBeenCalledWith(4)
+  })
+
   it('uses initial offset for default step numbers', () => {
     const result = render(() => (
       <Steps initial={2} items={[{ title: 'Three' }, { title: 'Four' }]} />

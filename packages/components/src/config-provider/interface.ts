@@ -27,6 +27,7 @@ import type { ImageProps } from '../image/interface'
 import type { InputNumberProps } from '../input-number/interface'
 import type { InputProps, OTPProps, PasswordProps, SearchProps, TextAreaProps } from '../input'
 import type { MasonryProps } from '../masonry/interface'
+import type { ListyProps } from '../listy/interface'
 import type { MentionsProps } from '../mentions/interface'
 import type { MenuProps } from '../menu/interface'
 import type { MessageConfigOptions } from '../message/interface'
@@ -196,6 +197,8 @@ export type OTPConfig = ComponentStyleConfig & PickProps<OTPProps, 'classNames' 
 export type InputNumberConfig = ComponentStyleConfig &
   PickProps<InputNumberProps, 'variant' | 'classNames' | 'styles'>
 export type MasonryConfig = ComponentStyleConfig & PickProps<MasonryProps, 'classNames' | 'styles'>
+export type ListyConfig = ComponentStyleConfig &
+  PickProps<ListyProps<Record<string, unknown>>, 'classNames' | 'styles'>
 export type MentionsProviderConfig = ComponentStyleConfig &
   PickProps<MentionsProps, 'variant' | 'classNames' | 'styles' | 'allowClear'>
 export type MenuConfig = ComponentStyleConfig &
@@ -344,6 +347,7 @@ export interface ConfigComponentProps {
   textArea?: TextAreaConfig
   layout?: ComponentStyleConfig
   masonry?: MasonryConfig
+  listy?: ListyConfig
   mentions?: MentionsProviderConfig
   menu?: MenuConfig
   message?: MessageConfig

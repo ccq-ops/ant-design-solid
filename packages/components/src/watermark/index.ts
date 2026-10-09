@@ -5,8 +5,11 @@ export type {
   WatermarkFontSize,
   WatermarkFontStyle,
   WatermarkFontWeight,
+  WatermarkFont,
   WatermarkGap,
   WatermarkOffset,
   WatermarkProps,
+  WatermarkRef,
   WatermarkTextAlign,
+  WatermarkText,
 } from './interface'

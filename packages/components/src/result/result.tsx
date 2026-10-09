@@ -1,4 +1,4 @@
-import { Match, Show, Switch, createMemo, splitProps, type JSX } from 'solid-js'
+import { Match, Show, Switch, createEffect, createMemo, splitProps, type JSX } from 'solid-js'
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -7,6 +7,7 @@ import {
 } from '@solid-ant-design/icons'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { PresentedImage403, PresentedImage404, PresentedImage500 } from './exception-images'
 import type {
   ResultComponent,
@@ -101,8 +102,16 @@ function ResultRoot(props: ResultProps) {
     'class',
     'classList',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const resultRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, resultRef))
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-result`
   const [, hashId] = useResultStyle(prefixCls())
   const status = () => normalizeStatus(local.status)
@@ -117,6 +126,9 @@ function ResultRoot(props: ResultProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         `${prefixCls()}-${status()}`,

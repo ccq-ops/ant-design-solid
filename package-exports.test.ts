@@ -54,16 +54,53 @@ describe('package export configuration', () => {
       const packageJson = readJson(path.join(packageDir, 'package.json'))
       const expectedTypes = declarationOutputPath(packageDir, packageJson.scripts?.build ?? '')
       const actualTypes = packageJson.types
-      const actualExportTypes = packageJson.exports?.['.']?.types
+      const actualImportTypes = packageJson.exports?.['.']?.import?.types
+      const actualRequireTypes = packageJson.exports?.['.']?.require?.types
+      const expectedRequireTypes = expectedTypes.replace(/\.d\.ts$/, '.d.cts')
       const packageName = path.basename(packageDir)
 
       return [
         actualTypes === expectedTypes
           ? undefined
           : `${packageName}: types is ${actualTypes}, declaration output is ${expectedTypes}`,
-        actualExportTypes === expectedTypes
+        actualImportTypes === expectedTypes
           ? undefined
-          : `${packageName}: exports["."].types is ${actualExportTypes}, declaration output is ${expectedTypes}`,
+          : `${packageName}: exports["."].import.types is ${actualImportTypes}, declaration output is ${expectedTypes}`,
+        actualRequireTypes === expectedRequireTypes
+          ? undefined
+          : `${packageName}: exports["."].require.types is ${actualRequireTypes}, CommonJS declaration output is ${expectedRequireTypes}`,
+      ].filter(Boolean)
+    })
+
+    expect(mismatches).toEqual([])
+  })
+
+  it('exposes component-level core imports with matching module formats', () => {
+    const packageJson = readJson(path.join(packageRoot, 'packages/components/package.json'))
+
+    expect(packageJson.sideEffects).toBe(false)
+    expect(packageJson.exports?.['./*']).toEqual({
+      import: {
+        types: './dist/*/index.d.ts',
+        default: './dist/*/index.js',
+      },
+      require: {
+        types: './dist/*/index.d.cts',
+        default: './dist/*/index.cjs',
+      },
+    })
+  })
+
+  it('declares package runtime support and tree-shaking metadata', () => {
+    const mismatches = packageDirs.flatMap((packageDir) => {
+      const packageJson = readJson(path.join(packageDir, 'package.json'))
+      const packageName = path.basename(packageDir)
+
+      return [
+        packageJson.engines?.node === '>=20'
+          ? undefined
+          : `${packageName}: engines.node must be >=20`,
+        packageJson.sideEffects === false ? undefined : `${packageName}: sideEffects must be false`,
       ].filter(Boolean)
     })
 

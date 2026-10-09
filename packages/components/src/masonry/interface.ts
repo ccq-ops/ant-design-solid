@@ -42,6 +42,10 @@ export interface MasonryLayoutInfo<T extends MasonryItem = MasonryItem> {
   items: MasonryLayoutItem<T>[]
 }
 
+export interface MasonryRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface MasonryProps<T extends MasonryItem = MasonryItem> {
   prefixCls?: string
   class?: string
@@ -60,4 +64,5 @@ export interface MasonryProps<T extends MasonryItem = MasonryItem> {
   styles?: MasonrySemanticStyles<T>
   onLayoutChange?: (info: Array<{ key: MasonryItemKey; column: number }>) => void
   onLayoutInfoChange?: (info: MasonryLayoutInfo<T>) => void
+  ref?: MasonryRef | { current?: MasonryRef } | ((ref: MasonryRef) => void)
 }

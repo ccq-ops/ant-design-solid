@@ -45,7 +45,8 @@ export function useCheckboxStyle(prefixCls: string) {
           'border-color': t.colorPrimary,
         },
         [`.${prefixCls}-input:focus-visible`]: {
-          outline: `${t.controlOutlineWidth}px solid ${t.controlOutline}`,
+          outline:
+            t.lineWidthFocus > 0 ? `${t.lineWidthFocus}px solid ${t.controlOutline}` : 'none',
           'outline-offset': `${t.lineWidth}px`,
         },
         [`.${prefixCls}-input::after`]: {

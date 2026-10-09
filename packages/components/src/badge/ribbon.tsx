@@ -1,7 +1,8 @@
-import { Show, children as resolveChildren, createMemo, splitProps } from 'solid-js'
+import { Show, children as resolveChildren, createEffect, createMemo, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useRibbonStyle } from './badge.style'
 import type { RibbonProps, RibbonSemanticSlot } from './interface'
 import {
@@ -25,8 +26,16 @@ export function Ribbon(props: RibbonProps) {
     'children',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const ribbonRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, ribbonRef))
   const componentConfig = () => config.ribbon()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-ribbon`
   const wrapperCls = () => `${prefixCls()}-wrapper`
@@ -64,6 +73,9 @@ export function Ribbon(props: RibbonProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         wrapperCls(),
         hashId(),

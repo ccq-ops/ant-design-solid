@@ -1,8 +1,9 @@
-import { Show, createMemo, splitProps } from 'solid-js'
+import { Show, createEffect, createMemo, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useEmptyStyle } from './empty.style'
 import type {
   EmptyComponent,
@@ -125,8 +126,16 @@ const EmptyRoot = (props: EmptyProps) => {
     'styles',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const emptyRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, emptyRef))
   const emptyConfig = () => config.empty()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-empty`
   const [, hashId] = useEmptyStyle(prefixCls())
@@ -154,6 +163,9 @@ const EmptyRoot = (props: EmptyProps) => {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         isSimpleImage() && `${prefixCls()}-normal`,

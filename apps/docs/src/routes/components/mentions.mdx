@@ -583,6 +583,7 @@ export default Demo11
 | `placement`         | Popup placement.                                                | `'top' \| 'bottom'`                                                        | `'bottom'`   |
 | `rootClass`         | Extra class on the root element.                                | `string`                                                                   | `-`          |
 | `popupClass`        | Extra class on the popup element.                               | `string`                                                                   | `-`          |
+| `popupRender`       | Wraps or replaces the suggestion popup content.                 | `(originNode: JSX.Element) => JSX.Element`                                 | `-`          |
 | `showCount`         | Shows textarea character count.                                 | `boolean \| { formatter?: (info: CountFormatterInfo) => JSX.Element }`     | `false`      |
 | `count`             | Character count configuration.                                  | `CountConfig`                                                              | `-`          |
 | `autoSize`          | Auto size rows configuration.                                   | `boolean \| { minRows?: number; maxRows?: number }`                        | `false`      |

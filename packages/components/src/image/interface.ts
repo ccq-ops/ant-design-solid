@@ -152,6 +152,7 @@ export interface ImageProgressConfig {
 }
 
 export type ImagePlaceholder = JSX.Element | boolean | { progress?: boolean | ImageProgressConfig }
+export type PlaceholderType = ImagePlaceholder
 
 export interface ImageProps extends Omit<
   JSX.ImgHTMLAttributes<HTMLImageElement>,

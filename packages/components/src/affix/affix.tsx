@@ -167,9 +167,9 @@ export function Affix(props: AffixProps) {
   })
 
   createEffect(() => {
-    local.offsetTop
-    local.offsetBottom
-    local.target
+    void local.offsetTop
+    void local.offsetBottom
+    void local.target
     updatePosition()
   })
 

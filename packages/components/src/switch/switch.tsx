@@ -91,6 +91,12 @@ export function Switch(props: SwitchProps) {
   return (
     <button
       {...rest}
+      id={rest.id ?? formItem?.controlId()}
+      aria-labelledby={rest['aria-labelledby'] ?? formItem?.labelId()}
+      aria-label={
+        rest['aria-label'] ??
+        (formItem?.labelId() ? undefined : (formItem?.accessibleName() ?? 'Switch'))
+      }
       ref={(element) => {
         buttonRef = element
       }}

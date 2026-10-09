@@ -1,7 +1,8 @@
-import { Show, createMemo, splitProps } from 'solid-js'
+import { Show, createEffect, createMemo, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type {
   CardMetaProps,
   CardMetaSemanticClassNames,
@@ -46,8 +47,16 @@ export function CardMeta(props: CardMetaProps) {
     'styles',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const metaRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, metaRef))
   const prefixCls = () => resolvePrefixCls(local.prefixCls, config.prefixCls())
   const metaPrefixCls = () => `${prefixCls()}-meta`
   const semanticClassNames = createMemo(() => resolveSemanticClassNames(local.classNames, props))
@@ -56,6 +65,9 @@ export function CardMeta(props: CardMetaProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(metaPrefixCls(), semanticClassNames().root, local.class)}
       style={mergeStyle(semanticStyles().root, local.style)}
     >

@@ -13,7 +13,11 @@ export type ResultSemanticStylesConfig =
   | ResultSemanticStyles
   | ((info: ResultSemanticInfo) => ResultSemanticStyles)
 
-export interface ResultProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface ResultRef {
+  nativeElement?: HTMLDivElement
+}
+
+export interface ResultProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'title' | 'ref'> {
   status?: ResultStatus
   title?: JSX.Element
   subTitle?: JSX.Element
@@ -22,6 +26,7 @@ export interface ResultProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 't
   prefixCls?: string
   classNames?: ResultSemanticClassNamesConfig
   styles?: ResultSemanticStylesConfig
+  ref?: ResultRef | { current?: ResultRef } | ((ref: ResultRef) => void)
 }
 
 export type ResultComponent = Component<ResultProps> & {

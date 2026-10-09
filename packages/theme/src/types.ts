@@ -55,6 +55,7 @@ export interface SeedToken extends PresetColorToken, TokenRecord {
   zIndexPopupBase: number
   opacityImage: number
   wireframe: boolean
+  focusOutline: boolean
   motion: boolean
 }
 
@@ -265,6 +266,7 @@ export interface AliasToken extends SeedToken {
 }
 
 export type GlobalToken = AliasToken
+export type MappingAlgorithm = ThemeAlgorithm
 
 export type ThemeAlgorithm = (seed: SeedToken, mapToken?: AliasToken) => AliasToken
 
@@ -878,6 +880,11 @@ export interface MenuComponentToken extends ComponentTokenBase {
   darkItemDividerBg: string
 }
 
+export interface ListyComponentToken extends ComponentTokenBase {
+  itemPaddingBlock: number
+  itemPaddingInline: number
+}
+
 export interface ComponentTokenMap {
   Affix: AffixComponentToken
   Addon?: ComponentTokenBase
@@ -911,6 +918,7 @@ export interface ComponentTokenMap {
   Input: InputComponentToken
   InputNumber: InputNumberComponentToken
   Layout: LayoutComponentToken
+  Listy: ListyComponentToken
   Masonry?: ComponentTokenBase
   Mentions?: ComponentTokenBase
   Menu: MenuComponentToken

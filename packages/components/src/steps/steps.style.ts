@@ -107,7 +107,7 @@ export function useStepsStyle(prefixCls: string) {
         cursor: 'not-allowed',
       },
       [`.${prefixCls}-navigation .${prefixCls}-item-container:focus-visible`]: {
-        outline: `${t.lineWidth}px solid ${t.colorPrimary}`,
+        outline: t.lineWidthFocus > 0 ? `${t.lineWidthFocus}px solid ${t.colorPrimary}` : 'none',
         'outline-offset': '2px',
         'border-radius': `${t.borderRadius}px`,
       },

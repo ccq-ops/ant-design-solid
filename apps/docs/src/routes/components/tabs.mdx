@@ -651,33 +651,33 @@ Solid uses `class` for root and item-level custom classes instead of React's `cl
 
 ### Tabs
 
-| Property             | Description                                                         | Type                                                                                      | Default             |
-| -------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------- |
-| `items`              | Tab items rendered as tabs and panes.                               | `TabsItem[]`                                                                              | `-`                 |
-| `activeKey`          | Controlled active tab key.                                          | `string`                                                                                  | `-`                 |
-| `addIcon`            | Custom add icon for `editable-card`.                                | `JSX.Element`                                                                             | `<PlusOutlined />`  |
-| `animated`           | Configures tab animation.                                           | `boolean \| { inkBar?: boolean; tabPane?: boolean }`                                      | `-`                 |
-| `centered`           | Centers tabs in the tab bar.                                        | `boolean`                                                                                 | `false`             |
-| `class`              | Root element class.                                                 | `string`                                                                                  | `-`                 |
-| `classNames`         | Semantic class names for slots.                                     | `TabsSemanticClassNames`                                                                  | `-`                 |
-| `defaultActiveKey`   | Initial active tab key for uncontrolled usage.                      | `string`                                                                                  | First enabled tab   |
-| `destroyOnHidden`    | Unmounts inactive tab pane content.                                 | `boolean`                                                                                 | `false`             |
-| `hideAdd`            | Hides the add button for `editable-card`.                           | `boolean`                                                                                 | `false`             |
-| `indicator`          | Customizes the active indicator size and alignment.                 | `{ size?: number \| ((origin: number) => number); align?: 'start' \| 'center' \| 'end' }` | `-`                 |
-| `more`               | Configures the overflow more menu.                                  | `{ icon?: JSX.Element; trigger?: 'hover' \| 'click' }`                                    | `-`                 |
-| `onChange`           | Called when the active tab changes.                                 | `(activeKey: string) => void`                                                             | `-`                 |
-| `onEdit`             | Called when adding or removing editable-card tabs.                  | `(targetKey: string \| MouseEvent, action: 'add' \| 'remove') => void`                    | `-`                 |
-| `onTabClick`         | Called when an enabled tab is clicked or activated by keyboard.     | `(activeKey: string, event: MouseEvent \| KeyboardEvent) => void`                         | `-`                 |
-| `onTabScroll`        | Called when the tab bar scrolls.                                    | `({ direction }) => void`                                                                 | `-`                 |
-| `removeIcon`         | Custom remove icon for `editable-card`.                             | `JSX.Element`                                                                             | `<CloseOutlined />` |
-| `renderTabBar`       | Replaces the tab bar while receiving the default tab bar component. | `(props, DefaultTabBar) => JSX.Element`                                                   | `-`                 |
-| `size`               | Tab size from the theme component size scale.                       | `ComponentSize`                                                                           | `middle`            |
-| `styles`             | Semantic styles for slots.                                          | `TabsSemanticStyles`                                                                      | `-`                 |
-| `tabBarExtraContent` | Extra content on the left and/or right side of the tab bar.         | `JSX.Element \| { left?: JSX.Element; right?: JSX.Element }`                              | `-`                 |
-| `tabBarGutter`       | Gap between tabs.                                                   | `number`                                                                                  | `0`                 |
-| `tabBarStyle`        | Style applied to the tab bar wrapper.                               | `JSX.CSSProperties`                                                                       | `-`                 |
-| `tabPlacement`       | Tab bar placement.                                                  | `'top' \| 'bottom' \| 'start' \| 'end'`                                                   | `'top'`             |
-| `type`               | Tab visual style.                                                   | `'line' \| 'card' \| 'editable-card'`                                                     | `'line'`            |
+| Property             | Description                                                         | Type                                                                                              | Default             |
+| -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------- |
+| `items`              | Tab items rendered as tabs and panes.                               | `TabsItem[]`                                                                                      | `-`                 |
+| `activeKey`          | Controlled active tab key.                                          | `string`                                                                                          | `-`                 |
+| `addIcon`            | Custom add icon for `editable-card`.                                | `JSX.Element`                                                                                     | `<PlusOutlined />`  |
+| `animated`           | Configures tab animation.                                           | `boolean \| { inkBar?: boolean; tabPane?: boolean }`                                              | `-`                 |
+| `centered`           | Centers tabs in the tab bar.                                        | `boolean`                                                                                         | `false`             |
+| `class`              | Root element class.                                                 | `string`                                                                                          | `-`                 |
+| `classNames`         | Semantic class names for slots.                                     | `TabsSemanticClassNames`                                                                          | `-`                 |
+| `defaultActiveKey`   | Initial active tab key for uncontrolled usage.                      | `string`                                                                                          | First enabled tab   |
+| `destroyOnHidden`    | Unmounts inactive tab pane content.                                 | `boolean`                                                                                         | `false`             |
+| `hideAdd`            | Hides the add button for `editable-card`.                           | `boolean`                                                                                         | `false`             |
+| `indicator`          | Customizes the active indicator size and alignment.                 | `{ size?: number \| ((origin: number) => number); align?: 'start' \| 'center' \| 'end' }`         | `-`                 |
+| `more`               | Configures the overflow more menu.                                  | `{ icon?: JSX.Element; trigger?: 'hover' \| 'click'; popupRender?: (originNode) => JSX.Element }` | `-`                 |
+| `onChange`           | Called when the active tab changes.                                 | `(activeKey: string) => void`                                                                     | `-`                 |
+| `onEdit`             | Called when adding or removing editable-card tabs.                  | `(targetKey: string \| MouseEvent, action: 'add' \| 'remove') => void`                            | `-`                 |
+| `onTabClick`         | Called when an enabled tab is clicked or activated by keyboard.     | `(activeKey: string, event: MouseEvent \| KeyboardEvent) => void`                                 | `-`                 |
+| `onTabScroll`        | Called when the tab bar scrolls.                                    | `({ direction }) => void`                                                                         | `-`                 |
+| `removeIcon`         | Custom remove icon for `editable-card`.                             | `JSX.Element`                                                                                     | `<CloseOutlined />` |
+| `renderTabBar`       | Replaces the tab bar while receiving the default tab bar component. | `(props, DefaultTabBar) => JSX.Element`                                                           | `-`                 |
+| `size`               | Tab size from the theme component size scale.                       | `ComponentSize`                                                                                   | `middle`            |
+| `styles`             | Semantic styles for slots.                                          | `TabsSemanticStyles`                                                                              | `-`                 |
+| `tabBarExtraContent` | Extra content on the left and/or right side of the tab bar.         | `JSX.Element \| { left?: JSX.Element; right?: JSX.Element }`                                      | `-`                 |
+| `tabBarGutter`       | Gap between tabs.                                                   | `number`                                                                                          | `0`                 |
+| `tabBarStyle`        | Style applied to the tab bar wrapper.                               | `JSX.CSSProperties`                                                                               | `-`                 |
+| `tabPlacement`       | Tab bar placement.                                                  | `'top' \| 'bottom' \| 'start' \| 'end'`                                                           | `'top'`             |
+| `type`               | Tab visual style.                                                   | `'line' \| 'card' \| 'editable-card'`                                                             | `'line'`            |
 
 ### TabsAnimatedConfig
 
@@ -695,10 +695,11 @@ Solid uses `class` for root and item-level custom classes instead of React's `cl
 
 ### TabsMoreConfig
 
-| Property  | Description                     | Type                 | Default                |
-| --------- | ------------------------------- | -------------------- | ---------------------- |
-| `icon`    | More menu trigger icon/content. | `JSX.Element`        | `<EllipsisOutlined />` |
-| `trigger` | More menu trigger action.       | `'hover' \| 'click'` | `'hover'`              |
+| Property      | Description                               | Type                                       | Default                |
+| ------------- | ----------------------------------------- | ------------------------------------------ | ---------------------- |
+| `icon`        | More menu trigger icon/content.           | `JSX.Element`                              | `<EllipsisOutlined />` |
+| `trigger`     | More menu trigger action.                 | `'hover' \| 'click'`                       | `'hover'`              |
+| `popupRender` | Wraps or replaces overflow popup content. | `(originNode: JSX.Element) => JSX.Element` | `-`                    |
 
 ### TabsItem
 

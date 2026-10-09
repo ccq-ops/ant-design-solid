@@ -33,9 +33,13 @@ export interface StatisticFormatConfig {
   format?: string
 }
 
+export interface StatisticRef {
+  nativeElement?: HTMLDivElement
+}
+
 export interface StatisticProps extends Omit<
   JSX.HTMLAttributes<HTMLDivElement>,
-  'title' | 'prefix'
+  'title' | 'prefix' | 'ref'
 > {
   title?: JSX.Element
   value?: StatisticValue
@@ -50,6 +54,7 @@ export interface StatisticProps extends Omit<
   styles?: StatisticSemanticStyles
   /** @deprecated Please use `styles.content` instead. */
   valueStyle?: JSX.CSSProperties | string
+  ref?: StatisticRef | { current?: StatisticRef } | ((ref: StatisticRef) => void)
 }
 
 export interface StatisticTimerProps extends Omit<StatisticProps, 'formatter' | 'onChange'> {
@@ -60,3 +65,4 @@ export interface StatisticTimerProps extends Omit<StatisticProps, 'formatter' | 
 }
 
 export interface StatisticCountdownProps extends Omit<StatisticTimerProps, 'type'> {}
+export type CountdownProps = StatisticCountdownProps

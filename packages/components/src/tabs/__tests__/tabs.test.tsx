@@ -474,7 +474,11 @@ describe('Tabs', () => {
     try {
       const result = render(() => (
         <Tabs
-          more={{ icon: <span>More tabs</span>, trigger: 'click' }}
+          more={{
+            icon: <span>More tabs</span>,
+            trigger: 'click',
+            popupRender: (origin) => <div data-testid="tabs-more-popup">{origin}</div>,
+          }}
           classNames={{ popup: { root: 'tabs-popup' } }}
           styles={{ popup: { root: { width: '240px' } } }}
           items={[
@@ -491,6 +495,7 @@ describe('Tabs', () => {
       fireEvent.click(result.getByRole('button', { name: /more tabs/i }))
 
       const menuItem = await screen.findByRole('menuitem', { name: 'Three' })
+      expect(screen.getByTestId('tabs-more-popup')).toContainElement(menuItem)
       expect(document.body.querySelector('.tabs-popup')).toHaveStyle({ width: '240px' })
 
       fireEvent.click(menuItem)

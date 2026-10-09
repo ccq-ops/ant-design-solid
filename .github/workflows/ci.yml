@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: corepack pnpm lint
+
+      - name: Check formatting
+        run: corepack pnpm format:check
+
+      - name: Audit public API baseline
+        run: corepack pnpm api:audit
+
+      - name: Typecheck
+        run: corepack pnpm -r typecheck
+
+      - name: Test
+        run: corepack pnpm test
+
+      - name: Build
+        run: corepack pnpm -r build
+
+      - name: Test package exports
+        run: corepack pnpm test:package
+
+      - name: Lint published packages
+        run: corepack pnpm package:lint
+
+  e2e:
+    name: End-to-end
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: corepack pnpm exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run end-to-end tests
+        run: corepack pnpm test:e2e

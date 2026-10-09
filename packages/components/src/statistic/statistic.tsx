@@ -1,7 +1,8 @@
-import { Show, splitProps } from 'solid-js'
+import { Show, createEffect, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import type { StatisticProps } from './interface'
 import {
   formatStatisticValue,
@@ -27,8 +28,16 @@ export function Statistic(props: StatisticProps) {
     'class',
     'classList',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const statisticRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, statisticRef))
   const prefixCls = () => `${config.prefixCls()}-statistic`
   const [, hashId] = useStatisticStyle(prefixCls())
   const mergedProps = () => ({
@@ -61,6 +70,9 @@ export function Statistic(props: StatisticProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(prefixCls(), hashId(), semanticClassNames().root, local.class)}
       classList={local.classList}
       style={rootStyle()}

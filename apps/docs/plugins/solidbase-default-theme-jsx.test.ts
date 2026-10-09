@@ -3,11 +3,9 @@ import { normalizeDefaultThemeLayoutSidebarPrefix } from './solidbase-default-th
 
 describe('solidbase default theme JSX transforms', () => {
   it('normalizes sidebar prefixes before default theme navigation renders links', () => {
-    const source = [
-      'function Layout() {',
-      '  return <Navigation sidebar={sidebar()}/>;',
-      '}',
-    ].join('\n')
+    const source = ['function Layout() {', '  return <Navigation sidebar={sidebar()}/>;', '}'].join(
+      '\n',
+    )
 
     const result = normalizeDefaultThemeLayoutSidebarPrefix(
       source,

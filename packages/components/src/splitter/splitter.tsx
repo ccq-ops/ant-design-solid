@@ -10,6 +10,7 @@ import {
 } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
+import { setComponentRef } from '../shared/component-ref'
 import { useSplitterStyle } from './splitter.style'
 import type { JSX } from 'solid-js'
 import type {
@@ -170,8 +171,16 @@ export function SplitterRoot(props: SplitterProps) {
     'children',
     'class',
     'style',
+    'ref',
   ])
   const config = useConfig()
+  let rootRef: HTMLDivElement | undefined
+  const splitterRef = {
+    get nativeElement() {
+      return rootRef
+    },
+  }
+  createEffect(() => setComponentRef(local.ref, splitterRef))
   const prefixCls = () => `${config.prefixCls()}-splitter`
   const [, hashId] = useSplitterStyle(prefixCls())
   const resolvedChildren = children(() => local.children)
@@ -333,6 +342,9 @@ export function SplitterRoot(props: SplitterProps) {
   return (
     <div
       {...rest}
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
         `${prefixCls()}-${layout()}`,

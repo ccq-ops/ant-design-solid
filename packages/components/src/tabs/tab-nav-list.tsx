@@ -352,6 +352,7 @@ export function TabNavList(props: TabNavListProps) {
           trigger={moreTrigger() === 'click' ? ['click'] : [moreTrigger()]}
           overlayClass={props.classNames.popup?.root}
           overlayStyle={props.styles.popup?.root}
+          popupRender={props.more?.popupRender}
           menu={{
             items: hiddenItems().map((item) => ({
               key: item.key,

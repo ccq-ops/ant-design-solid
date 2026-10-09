@@ -1,6 +1,7 @@
 import { For, Show, createEffect, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { isServer } from 'solid-js/web'
+import { Dynamic } from 'solid-js/web'
 import { useConfig } from '../config-provider'
 import { Select } from '../select'
 import { classNames } from '../shared/class-names'
@@ -139,6 +140,7 @@ export function Pagination(props: PaginationProps) {
     'jumpPrevIcon',
     'jumpNextIcon',
     'sizeChangerRender',
+    'components',
     'itemRender',
     'classNames',
     'styles',
@@ -290,47 +292,59 @@ export function Pagination(props: PaginationProps) {
 
   function renderPageSizeSelect() {
     const selectConfig = showSizeChangerConfig()
+    const componentClass = () => classNames(`${prefixCls()}-select`, semanticClassNames().select)
     return (
       <Show when={shouldShowSizeChanger()}>
         <Show
-          when={local.sizeChangerRender}
+          when={local.components?.sizeChanger}
           fallback={
-            <Select
-              {...selectConfig}
-              prefixCls={local.selectPrefixCls ?? selectConfig?.prefixCls}
-              class={classNames(
-                `${prefixCls()}-select`,
-                selectConfig?.class,
-                semanticClassNames().select,
-              )}
-              style={{
-                ...(selectConfig?.style as JSX.CSSProperties | undefined),
-                ...semanticStyles().select,
-              }}
-              aria-label={selectConfig?.['aria-label'] ?? locale().page_size}
-              value={String(mergedPageSize())}
-              disabled={disabled() || Boolean(selectConfig?.disabled)}
-              options={sizeChangerOptions().map((option) => ({
-                value: String(option.value),
-                label: option.label,
-              }))}
-              onChange={(value, option) => {
-                selectConfig?.onChange?.(value, option)
-                changePageSize(Number(value))
-              }}
-            />
+            <Show
+              when={local.sizeChangerRender}
+              fallback={
+                <Select
+                  {...selectConfig}
+                  prefixCls={local.selectPrefixCls ?? selectConfig?.prefixCls}
+                  class={classNames(componentClass(), selectConfig?.class)}
+                  style={{
+                    ...(selectConfig?.style as JSX.CSSProperties | undefined),
+                    ...semanticStyles().select,
+                  }}
+                  aria-label={selectConfig?.['aria-label'] ?? locale().page_size}
+                  value={String(mergedPageSize())}
+                  disabled={disabled() || Boolean(selectConfig?.disabled)}
+                  options={sizeChangerOptions().map((option) => ({
+                    value: String(option.value),
+                    label: option.label,
+                  }))}
+                  onChange={(value, option) => {
+                    selectConfig?.onChange?.(value, option)
+                    changePageSize(Number(value))
+                  }}
+                />
+              }
+            >
+              {(render) =>
+                render()({
+                  disabled: disabled(),
+                  pageSize: mergedPageSize(),
+                  options: sizeChangerOptions(),
+                  class: componentClass(),
+                  'aria-label': locale().page_size,
+                  onSizeChange: (nextSize) => changePageSize(Number(nextSize)),
+                })
+              }
+            </Show>
           }
         >
-          {(render) =>
-            render()({
-              disabled: disabled(),
-              pageSize: mergedPageSize(),
-              options: sizeChangerOptions(),
-              class: classNames(`${prefixCls()}-select`, semanticClassNames().select),
-              'aria-label': locale().page_size,
-              onSizeChange: (nextSize) => changePageSize(Number(nextSize)),
-            })
-          }
+          {(SizeChanger) => (
+            <Dynamic
+              component={SizeChanger()}
+              value={mergedPageSize()}
+              disabled={disabled()}
+              class={componentClass()}
+              onChange={changePageSize}
+            />
+          )}
         </Show>
       </Show>
     )

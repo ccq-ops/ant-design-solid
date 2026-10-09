@@ -1,5 +1,14 @@
-export { DirectoryTree } from './directory-tree'
-export { Tree, TreeNode } from './tree'
+import { DirectoryTree } from './directory-tree'
+import { Tree as InternalTree, TreeNode } from './tree'
+import { useTree } from './use-tree'
+
+export const Tree = Object.assign(InternalTree, {
+  DirectoryTree,
+  TreeNode,
+  useTree,
+})
+
+export { DirectoryTree, TreeNode, useTree }
 export type {
   DirectoryTreeExpandAction,
   DirectoryTreeProps,
@@ -26,3 +35,4 @@ export type {
   TreeSemanticStyles,
   TreeShowLine,
 } from './interface'
+export type { TreeDataEntity, TreeInstance, TreeUseTreeConfig } from './use-tree'

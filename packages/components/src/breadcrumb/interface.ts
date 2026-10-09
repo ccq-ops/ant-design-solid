@@ -51,7 +51,11 @@ export type BreadcrumbItemRender = (
   paths: string[],
 ) => JSX.Element
 
-export interface BreadcrumbProps extends Omit<JSX.HTMLAttributes<HTMLElement>, 'children'> {
+export interface BreadcrumbRef {
+  nativeElement?: HTMLElement
+}
+
+export interface BreadcrumbProps extends Omit<JSX.HTMLAttributes<HTMLElement>, 'children' | 'ref'> {
   prefixCls?: string
   rootClass?: string
   params?: BreadcrumbParams
@@ -63,6 +67,7 @@ export interface BreadcrumbProps extends Omit<JSX.HTMLAttributes<HTMLElement>, '
   classNames?: BreadcrumbSemanticClassNames
   styles?: BreadcrumbSemanticStyles
   children?: JSX.Element
+  ref?: BreadcrumbRef | { current?: BreadcrumbRef } | ((ref: BreadcrumbRef) => void)
 }
 
 export interface BreadcrumbItemProps extends JSX.LiHTMLAttributes<HTMLLIElement> {
