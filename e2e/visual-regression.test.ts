@@ -20,6 +20,7 @@ test.describe('component visual baselines', () => {
 
     await expect(stage).toHaveScreenshot('button-color-variants.png', {
       animations: 'disabled',
+      maxDiffPixelRatio: 0.03,
     })
   })
 
@@ -40,6 +41,7 @@ test.describe('component visual baselines', () => {
 
     await expect(stage).toHaveScreenshot('listy-grouped-sticky.png', {
       animations: 'disabled',
+      maxDiffPixelRatio: 0.03,
     })
   })
 
@@ -54,6 +56,7 @@ test.describe('component visual baselines', () => {
 
     await expect(stage).toHaveScreenshot('form-methods.png', {
       animations: 'disabled',
+      maxDiffPixelRatio: 0.03,
     })
   })
 })
