@@ -46,6 +46,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     css: false,
+    testTimeout: process.env.CI ? 30_000 : 5_000,
     setupFiles: ['./src/test-utils/setup-dom.ts'],
     server: {
       deps: {
