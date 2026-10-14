@@ -9,6 +9,16 @@ export type TimePickerSize = 'large' | 'medium' | 'small'
 export type TimePickerStatus = 'error' | 'warning' | 'success' | 'validating'
 export type TimePickerVariant = 'outlined' | 'borderless' | 'filled' | 'underlined'
 export type TimePickerAllowClear = boolean | { clearIcon?: JSX.Element }
+export interface TimePickerLocale {
+  placeholder?: string
+  rangePlaceholder?: [string, string]
+  now?: string
+  ok?: string
+  clear?: string
+  hour?: string
+  minute?: string
+  second?: string
+}
 export type TimePickerSemanticSlot =
   | 'root'
   | 'selector'
@@ -55,6 +65,7 @@ export interface TimePickerProps extends Omit<
   value?: TimePickerValue
   defaultValue?: TimePickerValue
   format?: TimePickerFormat
+  locale?: TimePickerLocale
   placeholder?: string
   disabled?: boolean
   allowClear?: TimePickerAllowClear

@@ -4,6 +4,7 @@ import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import { createSignal } from 'solid-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { ConfigProvider } from '../../config-provider'
 import type { TimePickerRef } from '../interface'
 import { TimePicker } from '../time-picker'
 
@@ -18,6 +19,30 @@ describe('TimePicker', () => {
 
     expect(screen.getByRole('button', { name: 'Now' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'OK' })).toBeInTheDocument()
+  })
+
+  it('uses ConfigProvider TimePicker locale for single and range pickers', () => {
+    render(() => (
+      <ConfigProvider
+        locale={{
+          TimePicker: {
+            placeholder: '选择时间',
+            rangePlaceholder: ['开始时间', '结束时间'],
+            now: '此刻',
+            ok: '确定',
+          },
+        }}
+      >
+        <TimePicker defaultOpen aria-label="localized time" />
+        <TimePicker.RangePicker aria-label="localized range" />
+      </ConfigProvider>
+    ))
+
+    expect(screen.getByRole('combobox', { name: 'localized time' })).toHaveTextContent('选择时间')
+    expect(screen.getByRole('combobox', { name: 'localized range' })).toHaveTextContent('开始时间')
+    expect(screen.getByRole('combobox', { name: 'localized range' })).toHaveTextContent('结束时间')
+    expect(screen.getByRole('button', { name: '此刻' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '确定' })).toBeInTheDocument()
   })
 
   it('commits draft selection only after OK by default', () => {

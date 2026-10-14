@@ -123,7 +123,20 @@ function DatePickerBase(props: DatePickerProps) {
   const showTimeEnabled = () => !multiple() && Boolean(local.showTime)
   const effectiveFormat = () =>
     local.format ?? (showTimeEnabled() ? 'YYYY-MM-DD HH:mm:ss' : undefined)
-  const locale = createMemo(() => mergeDatePickerLocale(local.locale))
+  const locale = createMemo(() =>
+    mergeDatePickerLocale({
+      ...config.locale()?.DatePicker,
+      ...local.locale,
+      lang: {
+        ...config.locale()?.DatePicker?.lang,
+        ...local.locale?.lang,
+      },
+      timePickerLocale: {
+        ...config.locale()?.DatePicker?.timePickerLocale,
+        ...local.locale?.timePickerLocale,
+      },
+    }),
+  )
   const defaultSelectedDate = Array.isArray(local.defaultValue)
     ? null
     : normalizeDateValue(local.defaultValue)
@@ -551,7 +564,9 @@ function DatePickerBase(props: DatePickerProps) {
           autoFocus={local.autoFocus}
           allowClear={local.allowClear !== false}
           clearIcon={typeof local.allowClear === 'object' ? local.allowClear.clearIcon : undefined}
-          clearAriaLabel={local.locale?.lang?.clear ?? 'Clear date'}
+          clearAriaLabel={
+            local.locale?.lang?.clear ?? config.locale()?.DatePicker?.lang?.clear ?? 'Clear date'
+          }
           prefix={local.prefix}
           suffixIcon={local.suffixIcon}
           ariaLabel={ariaLabel()}

@@ -13,3 +13,6 @@ vertical carousels, remove the ignored `verticalSwiping` prop, and expose the na
 
 Fix Table tree-data selection actions, preserved row callbacks, filter popup rendering, and
 ConfigProvider scroll defaults. Fix Transfer numeric select-all labels and filtered Shift ranges.
+
+Merge ConfigProvider DatePicker and TimePicker locales into single and range picker placeholders
+and panel actions.

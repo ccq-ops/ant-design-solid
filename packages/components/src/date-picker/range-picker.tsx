@@ -151,7 +151,20 @@ export function RangePicker(props: RangePickerProps) {
   const showTimeEnabled = () => Boolean(local.showTime)
   const effectiveFormat = () =>
     local.format ?? (showTimeEnabled() ? 'YYYY-MM-DD HH:mm:ss' : undefined)
-  const locale = createMemo(() => mergeDatePickerLocale(local.locale))
+  const locale = createMemo(() =>
+    mergeDatePickerLocale({
+      ...config.locale()?.DatePicker,
+      ...local.locale,
+      lang: {
+        ...config.locale()?.DatePicker?.lang,
+        ...local.locale?.lang,
+      },
+      timePickerLocale: {
+        ...config.locale()?.DatePicker?.timePickerLocale,
+        ...local.locale?.timePickerLocale,
+      },
+    }),
+  )
   const defaultSelectedRange = normalizeRangeValue(local.defaultValue)
   const defaultPickerDate = normalizePickerValue(local.defaultPickerValue)
   const initialViewDate =
@@ -204,7 +217,7 @@ export function RangePicker(props: RangePickerProps) {
     () => local.placeholder ?? locale().lang?.rangePlaceholder ?? ['Start date', 'End date'],
   )
   const clearAriaLabel = (side: RangeSide): string => {
-    const lang = local.locale?.lang
+    const lang = locale().lang
     if (side === 'start') {
       return lang?.clearStart ?? (lang?.clear ? `${lang.clear} start date` : 'Clear start date')
     }
@@ -667,7 +680,11 @@ export function RangePicker(props: RangePickerProps) {
               `${prefixCls()}-clear-overlay`,
             )}
             style={semanticStyle('clear', resolvedStyles())}
-            aria-label={local.locale?.lang?.clear ?? 'Clear date range'}
+            aria-label={
+              local.locale?.lang?.clear ??
+              config.locale()?.DatePicker?.lang?.clear ??
+              'Clear date range'
+            }
             onClick={clearRange}
           >
             {typeof local.allowClear === 'object' ? (

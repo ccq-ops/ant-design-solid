@@ -528,6 +528,31 @@ describe('DatePicker custom rendering and visual APIs', () => {
     expect(screen.getByRole('button', { name: '下一年' })).toBeInTheDocument()
   })
 
+  it('merges ConfigProvider DatePicker locale into DatePicker and RangePicker', () => {
+    render(() => (
+      <ConfigProvider
+        locale={{
+          DatePicker: {
+            lang: {
+              placeholder: '选择日期',
+              rangePlaceholder: ['开始日期', '结束日期'],
+            },
+          },
+        }}
+      >
+        <DatePicker aria-label="localized date" />
+        <RangePicker />
+      </ConfigProvider>
+    ))
+
+    expect(screen.getByRole('textbox', { name: 'localized date' })).toHaveAttribute(
+      'placeholder',
+      '选择日期',
+    )
+    expect(screen.getByPlaceholderText('开始日期')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('结束日期')).toBeInTheDocument()
+  })
+
   it('localizes DatePicker clear button accessible label', () => {
     render(() => (
       <DatePicker

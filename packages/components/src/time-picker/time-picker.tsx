@@ -128,6 +128,7 @@ export function TimePickerBase(props: TimePickerProps) {
     'value',
     'defaultValue',
     'format',
+    'locale',
     'placeholder',
     'disabled',
     'allowClear',
@@ -173,6 +174,7 @@ export function TimePickerBase(props: TimePickerProps) {
     'aria-labelledby',
   ])
   const config = useConfig()
+  const locale = () => ({ ...config.locale()?.TimePicker, ...local.locale })
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-time-picker`
   const [, hashId] = useTimePickerStyle(prefixCls())
@@ -380,7 +382,10 @@ export function TimePickerBase(props: TimePickerProps) {
           local['aria-label'] ??
           (formItem?.labelId()
             ? undefined
-            : (formItem?.accessibleName() ?? local.placeholder ?? 'Select time'))
+            : (formItem?.accessibleName() ??
+              local.placeholder ??
+              locale().placeholder ??
+              'Select time'))
         }
         aria-labelledby={local['aria-labelledby'] ?? formItem?.labelId()}
         aria-expanded={open()}
@@ -402,7 +407,7 @@ export function TimePickerBase(props: TimePickerProps) {
         <span
           class={displayValue() ? `${prefixCls()}-selection-item` : `${prefixCls()}-placeholder`}
         >
-          {displayValue() || local.placeholder || 'Select time'}
+          {displayValue() || local.placeholder || locale().placeholder || 'Select time'}
         </span>
         <span
           class={classNames(
@@ -416,7 +421,7 @@ export function TimePickerBase(props: TimePickerProps) {
           <Show when={showClear()}>
             <button
               type="button"
-              aria-label="Clear time"
+              aria-label={locale().clear ?? 'Clear time'}
               class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
               style={semanticStyle('clear', local.styles)}
               onClick={clearValue}
@@ -477,12 +482,12 @@ export function TimePickerBase(props: TimePickerProps) {
             >
               <Show when={local.showNow !== false}>
                 <button type="button" class={`${prefixCls()}-now-btn`} onClick={selectNow}>
-                  Now
+                  {locale().now ?? 'Now'}
                 </button>
               </Show>
               {local.renderExtraFooter?.()}
               <button type="button" class={`${prefixCls()}-ok-btn`} onClick={confirmValue}>
-                OK
+                {locale().ok ?? 'OK'}
               </button>
             </div>
           </div>
@@ -540,6 +545,7 @@ function TimeRangePicker(props: TimeRangePickerProps) {
     'value',
     'defaultValue',
     'format',
+    'locale',
     'placeholder',
     'disabled',
     'allowClear',
@@ -583,6 +589,7 @@ function TimeRangePicker(props: TimeRangePickerProps) {
     'aria-labelledby',
   ])
   const config = useConfig()
+  const locale = () => ({ ...config.locale()?.TimePicker, ...local.locale })
   const formItem = useFormItemControl()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-time-picker`
   const [, hashId] = useTimePickerStyle(prefixCls())
@@ -744,8 +751,10 @@ function TimeRangePicker(props: TimeRangePickerProps) {
     changeRange([undefined, undefined])
   }
 
-  const startPlaceholder = () => local.placeholder?.[0] ?? 'Start time'
-  const endPlaceholder = () => local.placeholder?.[1] ?? 'End time'
+  const startPlaceholder = () =>
+    local.placeholder?.[0] ?? locale().rangePlaceholder?.[0] ?? 'Start time'
+  const endPlaceholder = () =>
+    local.placeholder?.[1] ?? locale().rangePlaceholder?.[1] ?? 'End time'
 
   return (
     <div
@@ -778,7 +787,10 @@ function TimeRangePicker(props: TimeRangePickerProps) {
           local['aria-label'] ??
           (formItem?.labelId()
             ? undefined
-            : (formItem?.accessibleName() ?? local.placeholder?.join(' to ') ?? 'Time range'))
+            : (formItem?.accessibleName() ??
+              local.placeholder?.join(' to ') ??
+              locale().rangePlaceholder?.join(' to ') ??
+              'Time range'))
         }
         aria-labelledby={local['aria-labelledby'] ?? formItem?.labelId()}
         aria-expanded={open()}
@@ -821,7 +833,7 @@ function TimeRangePicker(props: TimeRangePickerProps) {
           <Show when={showClear()}>
             <button
               type="button"
-              aria-label="Clear time"
+              aria-label={locale().clear ?? 'Clear time'}
               class={semanticClass('clear', local.classNames, `${prefixCls()}-clear`)}
               style={semanticStyle('clear', local.styles)}
               onClick={clearValue}
@@ -896,12 +908,12 @@ function TimeRangePicker(props: TimeRangePickerProps) {
             >
               <Show when={local.showNow !== false}>
                 <button type="button" class={`${prefixCls()}-now-btn`} onClick={selectNow}>
-                  Now
+                  {locale().now ?? 'Now'}
                 </button>
               </Show>
               {local.renderExtraFooter?.()}
               <button type="button" class={`${prefixCls()}-ok-btn`} onClick={confirmValue}>
-                OK
+                {locale().ok ?? 'OK'}
               </button>
             </div>
           </div>

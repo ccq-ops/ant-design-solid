@@ -14,7 +14,7 @@ import type { CascaderProps } from '../cascader/interface'
 import type { CheckboxProps } from '../checkbox/interface'
 import type { CollapseProps } from '../collapse/interface'
 import type { ColorPickerProps } from '../color-picker/interface'
-import type { DatePickerProps, RangePickerProps } from '../date-picker/interface'
+import type { DatePickerLocale, DatePickerProps, RangePickerProps } from '../date-picker/interface'
 import type { DescriptionsProps } from '../descriptions/interface'
 import type { DividerProps } from '../divider/interface'
 import type { DrawerProps } from '../drawer/interface'
@@ -52,7 +52,7 @@ import type { SwitchProps } from '../switch/interface'
 import type { TableProps } from '../table/interface'
 import type { TabsProps } from '../tabs/interface'
 import type { TagProps } from '../tag/interface'
-import type { TimePickerProps } from '../time-picker/interface'
+import type { TimePickerLocale, TimePickerProps } from '../time-picker/interface'
 import type { TimelineProps } from '../timeline/interface'
 import type { TooltipProps } from '../tooltip/interface'
 import type { TourProps } from '../tour/interface'
@@ -74,6 +74,8 @@ export interface CSPConfig {
 
 export interface Locale {
   locale?: string
+  DatePicker?: DatePickerLocale
+  TimePicker?: TimePickerLocale
   [key: string]: unknown
 }
 
