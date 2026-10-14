@@ -149,7 +149,7 @@ describe('Carousel', () => {
 
     expect(root.className).toContain('custom-carousel')
     expect(root.className).toContain('custom-carousel-dot-start')
-    expect(root.className).not.toContain('custom-carousel-vertical')
+    expect(root.className).toContain('custom-carousel-vertical')
     expect(result.container.querySelector('.custom-carousel-slider')).toHaveClass('extra-carousel')
     expect(root).toHaveStyle('width: 240px')
     expect(result.container.querySelector('.extra-dots')).toBeInTheDocument()
@@ -173,21 +173,28 @@ describe('Carousel', () => {
     expect(result.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('positions dots at start/end without changing the carousel axis', () => {
+  it('uses a vertical carousel axis for start/end dots unless vertical is explicitly false', () => {
     const start = render(() => <Carousel dotPlacement="start">{slides()}</Carousel>)
     const startRoot = start.container.firstElementChild as HTMLElement
     const startTrack = start.container.querySelector('.ads-carousel-track') as HTMLElement
 
     expect(startRoot.className).toContain('ads-carousel-dot-start')
-    expect(startRoot.className).not.toContain('ads-carousel-vertical')
+    expect(startRoot.className).toContain('ads-carousel-vertical')
     fireEvent.click(start.getByRole('tab', { name: 'Go to slide 2' }))
-    expect(startTrack.style.transform).toBe('translate3d(-100%, 0, 0)')
+    expect(startTrack.style.transform).toBe('translate3d(0, -100%, 0)')
 
-    const end = render(() => <Carousel dotPlacement="end">{slides()}</Carousel>)
-    const endRoot = end.container.firstElementChild as HTMLElement
+    const horizontal = render(() => (
+      <Carousel dotPlacement="end" vertical={false}>
+        {slides()}
+      </Carousel>
+    ))
+    const horizontalRoot = horizontal.container.firstElementChild as HTMLElement
+    const horizontalTrack = horizontal.container.querySelector('.ads-carousel-track') as HTMLElement
 
-    expect(endRoot.className).toContain('ads-carousel-dot-end')
-    expect(endRoot.className).not.toContain('ads-carousel-vertical')
+    expect(horizontalRoot.className).toContain('ads-carousel-dot-end')
+    expect(horizontalRoot.className).not.toContain('ads-carousel-vertical')
+    fireEvent.click(horizontal.getByRole('tab', { name: 'Go to slide 2' }))
+    expect(horizontalTrack.style.transform).toBe('translate3d(-100%, 0, 0)')
   })
 
   it('registers vertical dot sizing for start/end placements independently of vertical slides', () => {
@@ -213,13 +220,13 @@ describe('Carousel', () => {
     const leftRoot = legacyLeft.container.firstElementChild as HTMLElement
 
     expect(leftRoot.className).toContain('ads-carousel-dot-start')
-    expect(leftRoot.className).not.toContain('ads-carousel-vertical')
+    expect(leftRoot.className).toContain('ads-carousel-vertical')
 
     const legacyRight = render(() => <Carousel dotPosition="right">{slides()}</Carousel>)
     const rightRoot = legacyRight.container.firstElementChild as HTMLElement
 
     expect(rightRoot.className).toContain('ads-carousel-dot-end')
-    expect(rightRoot.className).not.toContain('ads-carousel-vertical')
+    expect(rightRoot.className).toContain('ads-carousel-vertical')
   })
 
   it('supports Solid class names for root, dots, and custom paging', () => {
@@ -330,13 +337,37 @@ describe('Carousel', () => {
     const viewport = result.container.querySelector('.ads-carousel-viewport') as HTMLElement
     const firstSlide = result.container.querySelector('.ads-carousel-slide') as HTMLElement
 
-    expect(root.className).toContain('ads-carousel-rtl')
+    expect(root.className).not.toContain('ads-carousel-rtl')
     expect(root.className).toContain('ads-carousel-vertical')
     expect(firstSlide.style.flexBasis).toBe('50%')
 
     fireEvent.click(result.getByRole('button', { name: 'prev' }))
-    expect(activeSlide(result.container)).toHaveTextContent('Slide three')
-    expect(viewport.style.height).toBe('70px')
+    expect(activeSlide(result.container)).toHaveTextContent('Slide two')
+    expect(viewport.style.height).toBe('60px')
+  })
+
+  it('does not reverse a vertical carousel when direction is rtl', () => {
+    const result = render(() => (
+      <ConfigProvider direction="rtl">
+        <Carousel arrows dotPlacement="start" initialSlide={1}>
+          {slides()}
+        </Carousel>
+      </ConfigProvider>
+    ))
+    const root = result.container.firstElementChild as HTMLElement
+
+    expect(root).toHaveClass('ads-carousel-vertical')
+    expect(root).not.toHaveClass('ads-carousel-rtl')
+    expect(activeSlide(result.container)).toHaveTextContent('Slide two')
+    expect(result.getByRole('button', { name: 'prev' })).toBeInTheDocument()
+    expect(result.getByRole('button', { name: 'next' })).toBeInTheDocument()
+  })
+
+  it('exposes the native root through the carousel ref', () => {
+    let carouselRef: import('../interface').CarouselRef | undefined
+    const result = render(() => <Carousel ref={(ref) => (carouselRef = ref)}>{slides()}</Carousel>)
+
+    expect(carouselRef?.nativeElement).toBe(result.container.firstElementChild)
   })
 
   it('applies responsive settings from matching breakpoints', () => {

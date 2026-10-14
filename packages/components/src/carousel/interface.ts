@@ -10,6 +10,7 @@ export interface CarouselRef {
   next: () => void
   prev: () => void
   autoPlay: (playType?: 'update' | 'leave' | 'blur') => void
+  nativeElement?: HTMLDivElement
   innerSlider: {
     currentSlide: number
     slideCount: number
@@ -68,7 +69,6 @@ export interface CarouselSettings {
   touchThreshold?: number
   variableWidth?: boolean
   vertical?: boolean
-  verticalSwiping?: boolean
   waitForAnimate?: boolean
 }
 

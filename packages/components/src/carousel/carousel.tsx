@@ -93,7 +93,6 @@ export function Carousel(props: CarouselProps) {
     'touchThreshold',
     'variableWidth',
     'vertical',
-    'verticalSwiping',
     'waitForAnimate',
     'beforeChange',
     'afterChange',
@@ -120,12 +119,15 @@ export function Carousel(props: CarouselProps) {
   const [animate, setAnimate] = createSignal(true)
   const [paused, setPaused] = createSignal(false)
   const [dragStart, setDragStart] = createSignal<{ x: number; y: number } | null>(null)
+  let rootRef: HTMLDivElement | undefined
 
   const slideCount = () => slides().length
   const infinite = () => settings().infinite ?? true
   const dots = () => settings().dots ?? true
   const dotPlacement = () => normalizeDotPlacement(settings().dotPlacement, local.dotPosition)
-  const isVertical = () => !!settings().vertical
+  const isVertical = () =>
+    settings().vertical ?? (dotPlacement() === 'start' || dotPlacement() === 'end')
+  const isRtl = () => Boolean((settings().rtl ?? config.direction() === 'rtl') && !isVertical())
   const effect = () => (settings().fade ? 'fade' : (settings().effect ?? 'scrollx'))
   const speed = () => settings().speed ?? 500
   const easing = () => settings().easing ?? 'linear'
@@ -166,6 +168,9 @@ export function Carousel(props: CarouselProps) {
     next: () => goTo(activeIndex() + slidesToScroll()),
     prev: () => goTo(activeIndex() - slidesToScroll()),
     autoPlay: () => setPaused(false),
+    get nativeElement() {
+      return rootRef
+    },
     get innerSlider() {
       return {
         currentSlide: activeIndex(),
@@ -234,7 +239,7 @@ export function Carousel(props: CarouselProps) {
   const previousDisabled = () => !infinite() && activeIndex() <= 0
   const nextDisabled = () => !infinite() && activeIndex() >= slideCount() - 1
   const arrowLabel = (type: 'prev' | 'next') =>
-    settings().rtl ? (type === 'prev' ? 'next' : 'prev') : type
+    isRtl() ? (type === 'prev' ? 'next' : 'prev') : type
   const dragEnabled = () => settings().draggable || settings().swipe || settings().touchMove
 
   function dragPoint(event: PointerEvent): { x: number; y: number } {
@@ -293,9 +298,12 @@ export function Carousel(props: CarouselProps) {
 
   return (
     <div
+      ref={(element) => {
+        rootRef = element
+      }}
       class={classNames(
         prefixCls(),
-        settings().rtl && `${prefixCls()}-rtl`,
+        isRtl() && `${prefixCls()}-rtl`,
         effect() === 'fade' && `${prefixCls()}-fade`,
         isVertical() && `${prefixCls()}-vertical`,
         `${prefixCls()}-dot-${dotPlacement()}`,
