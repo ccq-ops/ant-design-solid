@@ -169,9 +169,9 @@ function TransferList<RecordType extends TransferItem>(props: TransferListProps<
                 sectionClass(props.classNames, props.direction, 'item'),
               )}
               style={sectionStyle(props.styles, props.direction, 'item')}
-              onClick={() => {
+              onClick={(event) => {
                 if (itemDisabled()) return
-                props.onItemSelect(key(), !selected())
+                props.onItemSelect(key(), !selected(), event, items())
               }}
             >
               <span
@@ -258,6 +258,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
   const searchConfig = () => (typeof local.showSearch === 'object' ? local.showSearch : undefined)
   const [sourceSearch, setSourceSearch] = createSignal(searchConfig()?.defaultValue ?? '')
   const [targetSearch, setTargetSearch] = createSignal(searchConfig()?.defaultValue ?? '')
+  const lastSelected = new Map<TransferDirection, { key: TransferKey; itemKeys: TransferKey[] }>()
 
   const disabled = () => Boolean(local.disabled)
   const dataSource = () => local.dataSource ?? []
@@ -310,14 +311,40 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
     local.onSelectChange?.(source, target)
   }
 
-  function selectKey(key: TransferKey, selected: boolean): void {
+  function selectKey(
+    key: TransferKey,
+    selected: boolean,
+    event?: MouseEvent,
+    filteredItems?: RecordType[],
+  ): void {
     if (disabled()) return
     const current = selectedKeys()
+    const direction: TransferDirection = sourceItems().some((item) => itemKey(item) === key)
+      ? 'left'
+      : 'right'
+    const items = filteredItems ?? (direction === 'left' ? sourceItems() : targetItems())
+    const itemKeys = items.filter((item) => !item.disabled).map((item) => itemKey(item))
+    const previous = lastSelected.get(direction)
+    const sameItems =
+      previous?.itemKeys.length === itemKeys.length &&
+      previous.itemKeys.every((itemKeyValue, index) => itemKeyValue === itemKeys[index])
+    let changedKeys = [key]
+
+    if (event?.shiftKey && previous && sameItems) {
+      const previousIndex = itemKeys.indexOf(previous.key)
+      const currentIndex = itemKeys.indexOf(key)
+      if (previousIndex >= 0 && currentIndex >= 0) {
+        changedKeys = itemKeys.slice(
+          Math.min(previousIndex, currentIndex),
+          Math.max(previousIndex, currentIndex) + 1,
+        )
+      }
+    }
+
     const next = selected
-      ? includesKey(current, key)
-        ? current
-        : [...current, key]
-      : current.filter((selectedKey) => selectedKey !== key)
+      ? [...current, ...changedKeys.filter((item) => !includesKey(current, item))]
+      : current.filter((selectedKey) => !includesKey(changedKeys, selectedKey))
+    lastSelected.set(direction, { key, itemKeys })
     setSelectedKeys(next)
   }
 
@@ -400,6 +427,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
       (isSource ? 'Source' : 'Target')
     const search = () => (isSource ? sourceSearch() : targetSearch())
     const setSearch = (value: string) => {
+      lastSelected.delete(direction)
       if (isSource) setSourceSearch(value)
       else setTargetSearch(value)
       local.onSearch?.(direction, value)

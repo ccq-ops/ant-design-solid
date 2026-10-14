@@ -4,18 +4,18 @@
 >
 > Upstream baseline: `antd@6.6.6`
 >
-> Generated at: 2026-10-14T08:38:27.649Z
+> Generated at: 2026-10-14T09:04:34.343Z
 
 ## Summary
 
 | Metric                            | Count |
 | --------------------------------- | ----: |
 | Upstream root exports             |   252 |
-| Local root exports                |  1224 |
+| Local root exports                |  1225 |
 | Upstream exports missing locally  |     6 |
 | Classified missing exports        |     6 |
 | Unclassified missing exports      |     0 |
-| Solid-specific/local-only exports |   978 |
+| Solid-specific/local-only exports |   979 |
 
 The lists below are an inventory, not an instruction to copy React-only APIs. Every missing export
 must be classified as `implement`, `rename`, `deprecated-compat`, `React-only`, or
@@ -833,6 +833,7 @@ must be classified as `implement`, `rename`, `deprecated-compat`, `React-only`, 
 - `TableCurrentDataSource`
 - `TableDataIndex`
 - `TableExpandableConfig`
+- `TableFilterDropdownProps`
 - `TableFilterValue`
 - `TableKey`
 - `TableLayout`

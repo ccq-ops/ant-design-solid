@@ -21,6 +21,12 @@ export interface TableColumnFilterItem {
   children?: TableColumnFilterItem[]
 }
 
+export interface TableFilterDropdownProps {
+  popupRender?: (originNode: JSX.Element) => JSX.Element
+  /** @deprecated Use popupRender instead. */
+  dropdownRender?: (originNode: JSX.Element) => JSX.Element
+}
+
 export interface TableColumnSorter<T extends object = object> {
   compare?: TableCompareFn<T>
   multiple?: number
@@ -177,6 +183,7 @@ export interface TableColumn<T extends object = object> {
   defaultFilteredValue?: TableFilterValue | null
   filterMultiple?: boolean
   filterIcon?: JSX.Element | ((filtered: boolean) => JSX.Element)
+  filterDropdownProps?: TableFilterDropdownProps
   onFilter?: (value: TableKey | boolean, record: T) => boolean
   onCell?: (record: T, rowIndex: number) => JSX.HTMLAttributes<HTMLTableCellElement>
   onHeaderCell?: (column: TableColumn<T>) => JSX.HTMLAttributes<HTMLTableCellElement>

@@ -10,3 +10,6 @@ selection across disabled or non-selectable nodes.
 
 Align Carousel start/end dot placement with its vertical axis behavior, avoid RTL reversal for
 vertical carousels, remove the ignored `verticalSwiping` prop, and expose the native root ref.
+
+Fix Table tree-data selection actions, preserved row callbacks, filter popup rendering, and
+ConfigProvider scroll defaults. Fix Transfer numeric select-all labels and filtered Shift ranges.

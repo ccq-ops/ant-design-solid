@@ -1,6 +1,6 @@
 {
   "version": "6.6.6",
-  "generatedAt": "2026-10-14T08:38:27.649Z",
+  "generatedAt": "2026-10-14T09:04:34.343Z",
   "upstreamExports": [
     "Affix",
     "AffixProps",
@@ -1243,6 +1243,7 @@
     "TableCurrentDataSource",
     "TableDataIndex",
     "TableExpandableConfig",
+    "TableFilterDropdownProps",
     "TableFilterValue",
     "TableKey",
     "TableLayout",
@@ -2305,6 +2306,7 @@
     "TableCurrentDataSource",
     "TableDataIndex",
     "TableExpandableConfig",
+    "TableFilterDropdownProps",
     "TableFilterValue",
     "TableKey",
     "TableLayout",

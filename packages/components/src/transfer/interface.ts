@@ -91,7 +91,12 @@ export interface TransferListProps<RecordType extends TransferItem = TransferIte
   classNames?: TransferSemanticClassNames
   styles?: TransferSemanticStyles
   render?: (item: RecordType) => TransferRenderResult
-  onItemSelect: (key: TransferKey, selected: boolean) => void
+  onItemSelect: (
+    key: TransferKey,
+    selected: boolean,
+    event?: MouseEvent,
+    filteredItems?: RecordType[],
+  ) => void
   onScroll?: JSX.EventHandler<HTMLUListElement, Event>
 }
 
@@ -101,7 +106,12 @@ export interface TransferCustomListBodyProps<RecordType extends TransferItem = T
   filteredItems: RecordType[]
   selectedKeys: TransferKey[]
   disabled: boolean
-  onItemSelect: (key: TransferKey, selected: boolean) => void
+  onItemSelect: (
+    key: TransferKey,
+    selected: boolean,
+    event?: MouseEvent,
+    filteredItems?: RecordType[],
+  ) => void
   onItemSelectAll: (keys: TransferKey[], selected: boolean) => void
 }
 

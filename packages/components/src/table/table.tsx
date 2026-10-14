@@ -152,6 +152,13 @@ function getLeafCount<T extends object>(column: TableColumn<T>) {
   return column.children?.length ? getLeafColumns(column.children).length : 1
 }
 
+function flattenRecords<T extends object>(records: T[]): T[] {
+  return records.flatMap((record) => {
+    const children = (record as { children?: T[] }).children
+    return children?.length ? [record, ...flattenRecords(children)] : [record]
+  })
+}
+
 function getHeaderRows<T extends object>(
   columns: TableColumn<T>[],
   depth: number,
@@ -217,6 +224,10 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     'ref',
   ])
   const config = useConfig()
+  const tableConfig = () =>
+    config.table() as {
+      scroll?: TableProps<T>['scroll']
+    }
   const prefixCls = () => `${config.prefixCls()}-table`
   const [, hashId] = useTableStyle(prefixCls())
   let scrollBodyRef: HTMLDivElement | undefined
@@ -226,6 +237,8 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const headerDepth = () => getColumnDepth(columns())
   const headerRows = () => getHeaderRows(columns(), headerDepth())
   const data = () => local.dataSource ?? []
+  const flatData = createMemo(() => flattenRecords(data()))
+  const scroll = () => local.scroll ?? tableConfig().scroll
   const size = () => local.size ?? 'middle'
   const initialPagination = local.pagination === false ? undefined : local.pagination
   const initialSelectedKeys =
@@ -315,9 +328,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
   const getRecordKey = (record: T, index: number) =>
     getRowKey(record, getRecordIndex(record, index), local.rowKey)
   const virtualEnabled = () =>
-    local.virtual === true &&
-    typeof local.scroll?.x === 'number' &&
-    typeof local.scroll.y === 'number'
+    local.virtual === true && typeof scroll()?.x === 'number' && typeof scroll()?.y === 'number'
   const tableRef: TableRef = {
     get nativeElement() {
       return rootRef
@@ -356,7 +367,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     },
   }
   createEffect(() => setComponentRef(local.ref, tableRef))
-  const fixedHeaderEnabled = () => local.scroll?.y !== undefined || virtualEnabled()
+  const fixedHeaderEnabled = () => scroll()?.y !== undefined || virtualEnabled()
   const virtualizer = createVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     get count() {
       return pageData().length
@@ -371,7 +382,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     },
     initialRect: {
       width: 0,
-      height: typeof local.scroll?.y === 'number' ? local.scroll.y : 0,
+      height: typeof scroll()?.y === 'number' ? (scroll()?.y as number) : 0,
     },
   })
   createEffect(() => {
@@ -387,7 +398,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     const measuredItems = virtualizer.getVirtualItems().filter((item) => item.index < rowCount)
     if (measuredItems.length) return measuredItems
 
-    const height = typeof local.scroll?.y === 'number' ? local.scroll.y : 0
+    const height = typeof scroll()?.y === 'number' ? (scroll()?.y as number) : 0
     const fallbackCount = Math.min(rowCount, Math.ceil(height / DEFAULT_VIRTUAL_ROW_HEIGHT) + 12)
     return Array.from(
       { length: fallbackCount },
@@ -422,15 +433,28 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     leafColumns().length + (local.rowSelection ? 1 : 0) + (local.expandable ? 1 : 0)
   const selectedKeys = () => local.rowSelection?.selectedRowKeys ?? innerSelectedKeys()
   const selectedKeySet = () => new Set(selectedKeys())
-  const allRecordKeys = () => data().map((record, index) => getRowKey(record, index, local.rowKey))
+  const allRecordKeys = () =>
+    flatData().map((record, index) => getRowKey(record, index, local.rowKey))
   const allRecordKeySet = () => new Set(allRecordKeys())
+  const preservedRecords = new Map<TableKey, T>()
+  createEffect(() => {
+    flatData().forEach((record, index) => {
+      const key = getRowKey(record, index, local.rowKey)
+      if (selectedKeySet().has(key)) preservedRecords.set(key, record)
+    })
+  })
   const selectablePageRecords = () =>
     pageData().filter((record) => !local.rowSelection?.getCheckboxProps?.(record)?.disabled)
   const selectablePageKeys = () =>
     selectablePageRecords().map((record, index) => getRecordKey(record, index))
   const selectedRows = (keys = selectedKeys()) => {
-    const keySet = new Set(keys)
-    return data().filter((record, index) => keySet.has(getRowKey(record, index, local.rowKey)))
+    const records = new Map<TableKey, T>()
+    flatData().forEach((record, index) =>
+      records.set(getRowKey(record, index, local.rowKey), record),
+    )
+    return keys
+      .map((key) => records.get(key) ?? preservedRecords.get(key))
+      .filter((record): record is T => record !== undefined)
   }
   const allPageSelected = () => {
     const keys = selectablePageKeys()
@@ -455,17 +479,18 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     }
   }
   const scrollContainerStyle = (): JSX.CSSProperties | undefined => {
-    if (!local.scroll) return undefined
+    const mergedScroll = scroll()
+    if (!mergedScroll) return undefined
     return {
-      'overflow-x': local.scroll.x ? 'auto' : undefined,
-      'overflow-y': fixedHeaderEnabled() ? undefined : local.scroll.y ? 'auto' : undefined,
+      'overflow-x': mergedScroll.x ? 'auto' : undefined,
+      'overflow-y': fixedHeaderEnabled() ? undefined : mergedScroll.y ? 'auto' : undefined,
       'max-height': fixedHeaderEnabled()
         ? undefined
-        : typeof local.scroll.y === 'number'
-          ? `${local.scroll.y}px`
-          : local.scroll.y == null
+        : typeof mergedScroll.y === 'number'
+          ? `${mergedScroll.y}px`
+          : mergedScroll.y == null
             ? undefined
-            : String(local.scroll.y),
+            : String(mergedScroll.y),
     }
   }
   const scrollBodyStyle = (): JSX.CSSProperties | undefined => {
@@ -474,11 +499,11 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       'overflow-y': 'auto',
       'overflow-x': 'hidden',
       'max-height':
-        typeof local.scroll?.y === 'number'
-          ? `${local.scroll.y}px`
-          : local.scroll?.y == null
+        typeof scroll()?.y === 'number'
+          ? `${scroll()?.y}px`
+          : scroll()?.y == null
             ? undefined
-            : String(local.scroll.y),
+            : String(scroll()?.y),
     }
   }
   const tableStyle = (): JSX.CSSProperties | undefined => {
@@ -487,16 +512,16 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       (fixedHeaderEnabled() || leafColumns().some((column) => column.ellipsis)
         ? 'fixed'
         : undefined)
-    if (!local.scroll?.x && !layout) return undefined
+    if (!scroll()?.x && !layout) return undefined
     return {
       'min-width':
-        typeof local.scroll?.x === 'number'
-          ? `${local.scroll.x}px`
-          : local.scroll?.x === true
+        typeof scroll()?.x === 'number'
+          ? `${scroll()?.x}px`
+          : scroll()?.x === true
             ? 'max-content'
-            : local.scroll?.x == null
+            : scroll()?.x == null
               ? undefined
-              : String(local.scroll.x),
+              : String(scroll()?.x),
       'table-layout': layout,
     }
   }
@@ -508,11 +533,18 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     })
   }
 
+  function scrollToFirstRow(): void {
+    if (scroll()?.scrollToFirstRowOnChange === false) return
+    const scrollElement = scrollBodyRef ?? rootRef
+    if (scrollElement) scrollElement.scrollTop = 0
+  }
+
   function changePage(page: number, pageSize: number) {
     const pagination = { current: page, pageSize, total: paginationState().total }
     if (!paginationConfig()?.current) setInnerCurrent(page)
     if (!paginationConfig()?.pageSize) setInnerPageSize(pageSize)
     paginationConfig()?.onChange?.(page, pageSize)
+    scrollToFirstRow()
     emitChange('paginate', pagination)
   }
 
@@ -530,6 +562,15 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       : current.filter((key) => !pageKeySet.has(key))
     setSelectedKeys(nextKeys, checked ? 'all' : 'none')
     local.rowSelection?.onSelectAll?.(checked, selectedRows(nextKeys), selectablePageRecords())
+  }
+
+  function selectAllData() {
+    const records = flatData().filter(
+      (record) => !local.rowSelection?.getCheckboxProps?.(record)?.disabled,
+    )
+    const keys = records.map((record, index) => getRowKey(record, index, local.rowKey))
+    setSelectedKeys(keys, 'all')
+    local.rowSelection?.onSelectAll?.(true, records, records)
   }
 
   function toggleSelectAll(event: Event) {
@@ -592,7 +633,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
       setSelectionMenuOpen(false)
       return
     }
-    if (item === 'all') updateSelectAll(true)
+    if (item === 'all') selectAllData()
     if (item === 'invert') invertSelection()
     if (item === 'none') clearSelection()
     setSelectionMenuOpen(false)
@@ -627,6 +668,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
     )
     setInnerSorter(order ? { column, order, field: column.dataIndex, columnKey: key } : {})
     setInnerCurrent(1)
+    scrollToFirstRow()
     emitChange('sort', { ...paginationState(), current: 1 })
   }
 
@@ -648,6 +690,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
           : currentValues.filter((item) => item !== value)
     setInnerFilters({ ...innerFilters(), [key]: nextValues.length > 0 ? nextValues : null })
     setInnerCurrent(1)
+    scrollToFirstRow()
     emitChange('filter', { ...paginationState(), current: 1 })
   }
 
@@ -776,6 +819,40 @@ export function Table<T extends object = object>(props: TableProps<T>) {
 
   function renderHeaderCell(cell: TableHeaderCell<T>) {
     const column = cell.column
+    const filterDropdown = (
+      <div class={`${prefixCls()}-filter-dropdown`}>
+        <For each={column.filters}>
+          {(filter) => {
+            const key = getColumnKey(column, cell.columnIndex)
+            const checked = () => Boolean(filteredValues()[key]?.includes(filter.value))
+            return (
+              <label>
+                <input
+                  type={column.filterMultiple === false ? 'radio' : 'checkbox'}
+                  name={`${prefixCls()}-${key}-filter`}
+                  checked={checked()}
+                  aria-label={String(filter.text)}
+                  onChange={(event) =>
+                    updateFilter(
+                      column,
+                      cell.columnIndex,
+                      filter.value,
+                      event.currentTarget.checked,
+                    )
+                  }
+                />
+                {filter.text}
+              </label>
+            )
+          }}
+        </For>
+      </div>
+    )
+    const renderFilterDropdown = () => {
+      const popupRender =
+        column.filterDropdownProps?.popupRender ?? column.filterDropdownProps?.dropdownRender
+      return popupRender ? popupRender(filterDropdown) : filterDropdown
+    }
     return (
       <th
         {...(column.onHeaderCell?.(column) ?? {})}
@@ -857,33 +934,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
                 : 'Filter'}
             </button>
             <Show when={openFilterKey() === getColumnKey(column, cell.columnIndex)}>
-              <div class={`${prefixCls()}-filter-dropdown`}>
-                <For each={column.filters}>
-                  {(filter) => {
-                    const key = getColumnKey(column, cell.columnIndex)
-                    const checked = () => Boolean(filteredValues()[key]?.includes(filter.value))
-                    return (
-                      <label>
-                        <input
-                          type={column.filterMultiple === false ? 'radio' : 'checkbox'}
-                          name={`${prefixCls()}-${key}-filter`}
-                          checked={checked()}
-                          aria-label={String(filter.text)}
-                          onChange={(event) =>
-                            updateFilter(
-                              column,
-                              cell.columnIndex,
-                              filter.value,
-                              event.currentTarget.checked,
-                            )
-                          }
-                        />
-                        {filter.text}
-                      </label>
-                    )
-                  }}
-                </For>
-              </div>
+              {renderFilterDropdown()}
             </Show>
           </Show>
         </span>

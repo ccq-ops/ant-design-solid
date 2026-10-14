@@ -366,6 +366,119 @@ describe('Table', () => {
     expect(custom).toHaveBeenLastCalledWith(['a', 'b', 'c'])
   })
 
+  it('selects descendant rows from tree data with the select-all-data action', () => {
+    const child = { key: 'child', name: 'Child', age: 8, status: 'active' }
+    const parent = {
+      key: 'parent',
+      name: 'Parent',
+      age: 40,
+      status: 'active',
+      children: [child],
+    }
+    const onChange = vi.fn()
+    const result = render(() => (
+      <Table
+        columns={columns}
+        dataSource={[parent]}
+        pagination={false}
+        rowSelection={{ selections: ['all'], onChange }}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Selection actions' }))
+    fireEvent.click(result.getByRole('button', { name: 'Select all' }))
+
+    expect(onChange).toHaveBeenLastCalledWith(['parent', 'child'], [parent, child], {
+      type: 'all',
+    })
+  })
+
+  it('keeps preserved records in row-selection callbacks after data removal', () => {
+    const onSelect = vi.fn()
+    const Demo = () => {
+      const [records, setRecords] = createSignal(data)
+      return (
+        <>
+          <button type="button" onClick={() => setRecords([data[1]])}>
+            Remove Ada
+          </button>
+          <Table
+            columns={columns}
+            dataSource={records()}
+            pagination={false}
+            rowSelection={{
+              preserveSelectedRowKeys: true,
+              defaultSelectedRowKeys: ['a'],
+              onSelect,
+            }}
+          />
+        </>
+      )
+    }
+    const result = render(() => <Demo />)
+
+    fireEvent.click(result.getByRole('button', { name: 'Remove Ada' }))
+    fireEvent.click(result.getByRole('checkbox', { name: 'Select row b' }))
+
+    expect(onSelect).toHaveBeenLastCalledWith(data[1], true, [data[0], data[1]], expect.any(Event))
+  })
+
+  it('supports filterDropdownProps.popupRender', () => {
+    const popupRender = vi.fn((origin: unknown) => (
+      <div data-testid="custom-filter-popup">{origin as any}</div>
+    ))
+    const result = render(() => (
+      <Table
+        columns={[
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            filters: [{ text: 'Active', value: 'active' }],
+            filterDropdownProps: { popupRender },
+          },
+        ]}
+        dataSource={data}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('button', { name: 'Filter Status' }))
+
+    expect(result.getByTestId('custom-filter-popup')).toBeInTheDocument()
+    expect(popupRender).toHaveBeenCalledTimes(1)
+  })
+
+  it('uses ConfigProvider table scroll defaults', () => {
+    const result = render(() => (
+      <ConfigProvider table={{ scroll: { y: 120 } }}>
+        <Table columns={columns} dataSource={data} pagination={false} />
+      </ConfigProvider>
+    ))
+
+    expect(result.container.querySelector('.ads-table-body')).toHaveStyle({
+      'max-height': '120px',
+    })
+  })
+
+  it('scrolls to the first row after pagination when scroll comes from ConfigProvider', () => {
+    const records = Array.from({ length: 12 }, (_, index) => ({
+      key: String(index),
+      name: `User ${index}`,
+      age: index,
+      status: 'active',
+    }))
+    const result = render(() => (
+      <ConfigProvider table={{ scroll: { y: 120 } }}>
+        <Table columns={columns} dataSource={records} pagination={{ defaultPageSize: 5 }} />
+      </ConfigProvider>
+    ))
+    const body = result.container.querySelector<HTMLElement>('.ads-table-body')!
+    body.scrollTop = 80
+
+    fireEvent.click(result.getByRole('button', { name: 'Page 2' }))
+
+    expect(body.scrollTop).toBe(0)
+  })
+
   it('drops removed uncontrolled selected keys unless preserveSelectedRowKeys is set', () => {
     const WithoutPreserve = () => {
       const [records, setRecords] = createSignal(data)

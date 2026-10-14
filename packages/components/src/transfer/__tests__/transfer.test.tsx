@@ -256,6 +256,40 @@ describe('Transfer', () => {
     })
   })
 
+  it('renders numeric zero select-all labels instead of falling back to counts', () => {
+    const result = render(() => <Transfer dataSource={dataSource} selectAllLabels={[0, 0]} />)
+
+    const labels = result.container.querySelectorAll(
+      '.ads-transfer-select-all > span:first-of-type',
+    )
+    expect(labels).toHaveLength(2)
+    expect(labels[0]).toHaveTextContent('0')
+    expect(labels[1]).toHaveTextContent('0')
+  })
+
+  it('limits shift selection to the current filtered result set', () => {
+    const onSelectChange = vi.fn()
+    const result = render(() => (
+      <Transfer
+        showSearch
+        dataSource={[
+          { key: '1', title: 'Alpha' },
+          { key: '2', title: 'Beta' },
+          { key: '3', title: 'Alpine' },
+          { key: '4', title: 'Albatross' },
+        ]}
+        onSelectChange={onSelectChange}
+      />
+    ))
+
+    fireEvent.input(result.getByPlaceholderText('Search source'), { target: { value: 'al' } })
+    fireEvent.click(result.getByRole('option', { name: 'Alpha' }))
+    fireEvent.click(result.getByRole('option', { name: 'Albatross' }), { shiftKey: true })
+
+    expect(onSelectChange).toHaveBeenLastCalledWith(['1', '3', '4'], [])
+    expect(result.queryByRole('option', { name: 'Beta' })).toBeNull()
+  })
+
   it('exports Transfer.List, Transfer.Search, and Transfer.Operation helpers', () => {
     const result = render(() => (
       <>

@@ -652,9 +652,11 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
       `scrollTo({ autoExpand: true })`、Steps `maxCount`、Pagination `components.sizeChanger` 和
       Table `expandable.forceRender`，并已增加共享 `focusOutline` token。6.6.6 patch 同步已完成
       Alert 禁用关闭、Card tab 默认项、Drawer 数值 `0` 内容、Upload 文件链接回调与请求
-      `abort` 句柄，以及 DirectoryTree 数字 key 和禁用节点的 Shift 范围选择；Table、
-      Transfer、Picker 等复杂行为仍需继续补齐。Carousel 已同步 start/end dots 自动纵向、
-      纵向 RTL 不反转、移除无效 `verticalSwiping` 类型和 nativeElement ref。
+      `abort` 句柄，以及 DirectoryTree 数字 key 和禁用节点的 Shift 范围选择。Table 已同步
+      树数据“全选所有数据”、保留行回调、`filterDropdownProps.popupRender` 和 ConfigProvider
+      scroll；Transfer 已同步数值 `0` 标签与过滤结果 Shift 范围。Picker 等复杂行为仍需继续
+      补齐。Carousel 已同步 start/end dots 自动纵向、纵向 RTL 不反转、移除无效
+      `verticalSwiping` 类型和 nativeElement ref。
 - [ ] 补齐 nativeElement/ref 导出；已补 Alert、Breadcrumb、Calendar、Divider、Empty、
       QRCode、Result、Skeleton、Spin、Splitter、Transfer、Watermark，剩余复合组件与复杂组件
       Ref 继续处理。
