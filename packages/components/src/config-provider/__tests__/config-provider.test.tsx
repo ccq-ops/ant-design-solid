@@ -21,11 +21,14 @@ function Probe() {
   )
 }
 
-function StyleProbe() {
-  useStyleRegister({ path: ['ConfigProviderCspProbe'], token: {}, theme: 'default' }, () => ({
-    '.config-provider-csp-probe': { color: 'red' },
-  }))
-  return <div class="config-provider-csp-probe" />
+function StyleProbe(props: { token?: Record<string, unknown> } = {}) {
+  const [, hashId] = useStyleRegister(
+    { path: ['ConfigProviderCspProbe'], token: props.token ?? {}, theme: 'default' },
+    () => ({
+      '.config-provider-csp-probe': { color: 'red' },
+    }),
+  )
+  return <div class={`config-provider-csp-probe ${hashId()}`} />
 }
 
 describe('ConfigProvider', () => {
@@ -79,6 +82,39 @@ describe('ConfigProvider', () => {
       /css-[a-z0-9]+/,
     )
     expect(document.head.querySelectorAll('style[data-ant-design-solid]')).toHaveLength(0)
+  })
+
+  it('enables CSS variables with configured key and prefix', () => {
+    document.head.innerHTML = ''
+    const result = render(() => (
+      <ConfigProvider
+        theme={{
+          cssVar: { key: 'css-var-enterprise', prefix: 'enterprise' },
+          token: { colorPrimary: '#722ed1' },
+        }}
+      >
+        <StyleProbe token={{ colorPrimary: '#722ed1' }} />
+      </ConfigProvider>
+    ))
+
+    expect(result.container.querySelector('.config-provider-csp-probe')).toHaveClass(
+      'css-var-enterprise',
+    )
+    expect(document.head.textContent).toContain('--enterprise-color-primary:#722ed1;')
+  })
+
+  it('generates a stable css-var key when theme.cssVar is true', () => {
+    document.head.innerHTML = ''
+    const result = render(() => (
+      <ConfigProvider theme={{ cssVar: true }}>
+        <StyleProbe token={{ colorPrimary: '#1677ff' }} />
+      </ConfigProvider>
+    ))
+
+    expect(result.container.querySelector('.config-provider-csp-probe')?.className).toMatch(
+      /css-var-[a-z0-9]+/,
+    )
+    expect(document.head.textContent).toContain('--ads-color-primary:#1677ff;')
   })
 
   it('merges nested providers', () => {

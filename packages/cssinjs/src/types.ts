@@ -5,6 +5,10 @@ export interface CSSObject {
   [propertyOrSelector: string]: CSSValue | CSSObject
 }
 export type StyleObject = Record<string, CSSObject>
+export interface CSSVarConfig {
+  key: string
+  prefix?: string
+}
 export interface StyleCache {
   register: (key: string, css: string) => boolean
   has: (key: string) => boolean
@@ -17,6 +21,7 @@ export interface StyleProviderProps {
   hashed?: boolean
   hashPriority?: 'low' | 'high'
   nonce?: string
+  cssVar?: CSSVarConfig
   zeroRuntime?: boolean
   children?: JSX.Element
 }
@@ -25,6 +30,7 @@ export interface StyleContextValue {
   hashed: Accessor<boolean>
   hashPriority: Accessor<'low' | 'high'>
   nonce: Accessor<string | undefined>
+  cssVar: Accessor<CSSVarConfig | undefined>
   zeroRuntime: Accessor<boolean>
 }
 export interface StyleRegisterInfo {

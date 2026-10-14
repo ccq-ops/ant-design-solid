@@ -13,12 +13,15 @@ Ant Design Solid follows Ant Design's token customization model. Put `ConfigProv
 
 `theme` accepts the same high-level shape throughout the component system:
 
-| Property     | Description                                                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `token`      | Global seed or alias token overrides, such as `colorPrimary`, `borderRadius`, or `fontSize`.                                    |
-| `algorithm`  | Token derivation algorithm. Use `darkAlgorithm` for dark theme derivation or `defaultAlgorithm` to force the default algorithm. |
-| `components` | Component-level token overrides keyed by component name, such as `Button` or `Table`.                                           |
-| `inherit`    | Controls whether a nested provider inherits the parent theme before applying its own overrides.                                 |
+| Property      | Description                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `token`       | Global seed or alias token overrides, such as `colorPrimary`, `borderRadius`, or `fontSize`.                                    |
+| `algorithm`   | Token derivation algorithm. Use `darkAlgorithm` for dark theme derivation or `defaultAlgorithm` to force the default algorithm. |
+| `components`  | Component-level token overrides keyed by component name, such as `Button` or `Table`.                                           |
+| `inherit`     | Controls whether a nested provider inherits the parent theme before applying its own overrides.                                 |
+| `cssVar`      | Enables runtime CSS variables. Pass `true`, or provide a stable `key` and custom variable `prefix`.                             |
+| `hashed`      | Controls generated style hash classes.                                                                                          |
+| `zeroRuntime` | Disables runtime style generation when the application imports a prebuilt static stylesheet.                                    |
 
 ## Global Tokens
 
@@ -178,6 +181,43 @@ export default Demo3
 ```
 
 :::
+
+## CSS Variables
+
+Enable CSS-variable mode to emit theme tokens as custom properties and make component declarations
+reference those variables:
+
+```tsx
+<ConfigProvider
+  theme={{
+    cssVar: {
+      key: 'css-var-enterprise',
+      prefix: 'enterprise',
+    },
+    token: {
+      colorPrimary: '#722ed1',
+    },
+  }}
+>
+  <Button type="primary">CSS variable theme</Button>
+</ConfigProvider>
+```
+
+This produces variables such as `--enterprise-color-primary` scoped by the configured theme key.
+Nested providers inherit the CSS-variable configuration unless they provide their own key or prefix.
+Using `cssVar: true` generates a provider-local key automatically.
+
+Use an explicit `key` for SSR or any environment where server and client output must remain
+byte-for-byte stable:
+
+```tsx
+<ConfigProvider theme={{ cssVar: { key: 'app-theme' } }}>
+  <App />
+</ConfigProvider>
+```
+
+`zeroRuntime: true` takes precedence over CSS-variable mode and skips both component rules and token
+variable registration. It is intended for applications that import a pre-generated stylesheet.
 
 ## Nested Themes
 

@@ -8,6 +8,7 @@ const StyleContext = createContext<StyleContextValue>({
   hashed: () => true,
   hashPriority: () => 'low' as const,
   nonce: () => undefined,
+  cssVar: () => undefined,
   zeroRuntime: () => false,
 })
 
@@ -17,8 +18,9 @@ export function StyleProvider(props: StyleProviderProps) {
   const hashed = createMemo(() => props.hashed ?? parent?.hashed() ?? true)
   const hashPriority = createMemo(() => props.hashPriority ?? parent?.hashPriority() ?? 'low')
   const nonce = createMemo(() => props.nonce ?? parent?.nonce())
+  const cssVar = createMemo(() => props.cssVar ?? parent?.cssVar())
   const zeroRuntime = createMemo(() => props.zeroRuntime ?? parent?.zeroRuntime() ?? false)
-  const value: StyleContextValue = { cache, hashed, hashPriority, nonce, zeroRuntime }
+  const value: StyleContextValue = { cache, hashed, hashPriority, nonce, cssVar, zeroRuntime }
   return <StyleContext.Provider value={value}>{props.children}</StyleContext.Provider>
 }
 export function useStyleContext(): StyleContextValue {
@@ -28,6 +30,7 @@ export function useStyleContext(): StyleContextValue {
       hashed: () => true,
       hashPriority: () => 'low' as const,
       nonce: () => undefined,
+      cssVar: () => undefined,
       zeroRuntime: () => false,
     }
   )

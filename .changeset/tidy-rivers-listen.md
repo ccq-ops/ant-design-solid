@@ -1,5 +1,6 @@
 ---
 '@solid-ant-design/core': patch
+'@solid-ant-design/cssinjs': patch
 ---
 
 Align the reviewed API baseline with Ant Design 6.6.6.
@@ -16,3 +17,6 @@ ConfigProvider scroll defaults. Fix Transfer numeric select-all labels and filte
 
 Merge ConfigProvider DatePicker and TimePicker locales into single and range picker placeholders
 and panel actions.
+
+Implement runtime CSS-variable themes with inherited key and prefix configuration, token variable
+registration, component declaration rewriting, and isolated nested theme caches.

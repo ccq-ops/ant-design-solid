@@ -631,8 +631,9 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
       已于 2026-10-14 升级到 `antd@6.6.6`，当前仍为 0 个未分类缺失；Props、Ref 和
       deprecated 深层 diff 仍需继续扩展。
 - [x] 实现 Listy；ADR 0002 明确新应用使用 Listy，deprecated List 暂不作为 core 新增 API。
-- [ ] 修复 `cssVar` / `zeroRuntime` / `hashed` 类型与运行时不一致；其中 `hashed` 已完成
-      ConfigProvider 到 CSS-in-JS 的运行时贯通。
+- [x] 修复 `cssVar` / `zeroRuntime` / `hashed` 类型与运行时不一致：ConfigProvider 已贯通
+      CSS-in-JS，支持变量 key/prefix、嵌套继承、自动 key、token 变量注册和组件声明替换；
+      `zeroRuntime` 会跳过组件样式与变量注册。
 - [x] CSP nonce 从 ConfigProvider 贯通到 style 标签，并补充嵌套 StyleProvider cache/nonce
       继承与 style 恢复测试。
 - [x] 增加 Chromium 视觉回归基础设施，首批覆盖 Button variants、Listy sticky group 和
