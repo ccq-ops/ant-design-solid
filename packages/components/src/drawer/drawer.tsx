@@ -51,6 +51,10 @@ function removeFromStack(item: object) {
   if (index !== -1) drawerStack.splice(index, 1)
 }
 
+function isPresent(value: unknown): boolean {
+  return value !== undefined && value !== null && value !== false
+}
+
 function toCssLength(value: number | string | undefined, fallback: number): string {
   if (value === undefined) return `${fallback}px`
   return typeof value === 'number' ? `${value}px` : value
@@ -471,7 +475,7 @@ export function Drawer(props: DrawerProps) {
         ...semanticStyles().section,
       }}
     >
-      <Show when={local.title || local.extra || closableConfig()}>
+      <Show when={isPresent(local.title) || isPresent(local.extra) || closableConfig()}>
         <div
           class={classNames(`${prefixCls()}-header`, semanticClassNames().header)}
           style={{
@@ -495,7 +499,7 @@ export function Drawer(props: DrawerProps) {
               {local.title}
             </div>
           </div>
-          <Show when={local.extra}>
+          <Show when={isPresent(local.extra)}>
             <div
               class={classNames(`${prefixCls()}-extra`, semanticClassNames().extra)}
               style={semanticStyles().extra}
@@ -526,7 +530,7 @@ export function Drawer(props: DrawerProps) {
           </div>
         </Show>
       </div>
-      <Show when={local.footer}>
+      <Show when={isPresent(local.footer)}>
         <div
           class={classNames(`${prefixCls()}-footer`, semanticClassNames().footer)}
           style={{

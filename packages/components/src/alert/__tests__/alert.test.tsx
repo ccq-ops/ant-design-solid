@@ -116,6 +116,24 @@ describe('Alert', () => {
     expect(afterClose).toHaveBeenCalledTimes(1)
   })
 
+  it('keeps a disabled closable button visible but non-interactive', () => {
+    const onClose = vi.fn()
+    const result = render(() => (
+      <Alert
+        message="Disabled close"
+        closable={{ disabled: true, onClose, 'aria-label': 'disabled close' }}
+      />
+    ))
+
+    const closeButton = result.getByRole('button', { name: 'disabled close' })
+    expect(closeButton).toBeDisabled()
+
+    fireEvent.click(closeButton)
+
+    expect(result.getByText('Disabled close')).toBeInTheDocument()
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
   it('renders a custom icon when showIcon is enabled', () => {
     const result = render(() => (
       <Alert showIcon message="Custom icon" icon={<span data-testid="custom-icon">!</span>} />

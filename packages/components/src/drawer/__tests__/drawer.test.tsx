@@ -32,6 +32,22 @@ describe('Drawer', () => {
     expect(screen.getByText('Body')).toBeInTheDocument()
   })
 
+  it('renders numeric zero title, body, extra, and footer content', () => {
+    render(
+      () => (
+        <Drawer open title={0} extra={0} footer={0}>
+          {0}
+        </Drawer>
+      ),
+      { baseElement: document.body },
+    )
+
+    expect(document.body.querySelector('.ads-drawer-title')).toHaveTextContent('0')
+    expect(document.body.querySelector('.ads-drawer-extra')).toHaveTextContent('0')
+    expect(document.body.querySelector('.ads-drawer-body')).toHaveTextContent('0')
+    expect(document.body.querySelector('.ads-drawer-footer')).toHaveTextContent('0')
+  })
+
   it('calls onClose from close button, mask, and Escape', () => {
     const onClose = vi.fn()
     render(() => (

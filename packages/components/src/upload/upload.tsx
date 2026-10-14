@@ -19,6 +19,7 @@ import type {
   UploadProps,
   UploadRef,
   UploadRequestOptions,
+  UploadRequestResult,
 } from './interface'
 import { useUploadStyle } from './upload.style'
 
@@ -121,10 +122,10 @@ function filePassesAccept(file: File, accept: UploadProps['accept']): boolean {
   return accept.filter(file)
 }
 
-function defaultRequest<T>(options: UploadRequestOptions<T>): void {
+function defaultRequest<T>(options: UploadRequestOptions<T>): UploadRequestResult | undefined {
   if (!options.action) {
     options.onSuccess(undefined, undefined)
-    return
+    return undefined
   }
 
   const xhr = new XMLHttpRequest()
@@ -158,6 +159,9 @@ function defaultRequest<T>(options: UploadRequestOptions<T>): void {
     xhr.setRequestHeader(key, value)
   }
   xhr.send(formData)
+  return {
+    abort: () => xhr.abort(),
+  }
 }
 
 async function resolveRequestOptions<T>(
@@ -233,6 +237,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
   const [dragState, setDragState] = createSignal<'drop' | 'dragover'>('drop')
   const activeUids = new Set<string>()
   const terminalUids = new Set<string>()
+  const requestResults = new Map<string, UploadRequestResult>()
   let inputRef: HTMLInputElement | undefined
   let rootRef: HTMLDivElement | undefined
 
@@ -256,6 +261,12 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
   function markInactive(uid: string): void {
     activeUids.delete(uid)
     terminalUids.add(uid)
+    requestResults.delete(uid)
+  }
+
+  function abortRequest(uid: string): void {
+    requestResults.get(uid)?.abort?.()
+    requestResults.delete(uid)
   }
 
   function updateFileList(
@@ -268,7 +279,10 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     const limitedUids = new Set(limitedList.map((file) => file.uid))
 
     for (const uid of nextUids) {
-      if (!limitedUids.has(uid)) markInactive(uid)
+      if (!limitedUids.has(uid)) {
+        abortRequest(uid)
+        markInactive(uid)
+      }
     }
 
     if (!isControlled()) setInnerFileList(limitedList)
@@ -360,9 +374,15 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
       const requestOptions = await resolveRequestOptions(local, file, requestFile, callbacks)
       if (!activeUids.has(file.uid) || terminalUids.has(file.uid)) return
       if (local.customRequest) {
-        local.customRequest(requestOptions, { defaultRequest })
+        const requestResult = local.customRequest(requestOptions, { defaultRequest })
+        if (requestResult && activeUids.has(file.uid) && !terminalUids.has(file.uid)) {
+          requestResults.set(file.uid, requestResult)
+        }
       } else {
-        defaultRequest(requestOptions)
+        const requestResult = defaultRequest(requestOptions)
+        if (requestResult && activeUids.has(file.uid) && !terminalUids.has(file.uid)) {
+          requestResults.set(file.uid, requestResult)
+        }
       }
     } catch (error) {
       updateActiveFile(file.uid, (current) => ({ ...current, status: 'error', error }), {
@@ -427,6 +447,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     }
 
     if (result === false) return
+    abortRequest(file.uid)
     markInactive(file.uid)
     const removedFile: UploadFile<T> = { ...file, status: 'removed' }
     updateFileList(
@@ -541,6 +562,8 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     )
     const canRemove = resolveBoolean(config.showRemoveIcon, file, true)
     const itemStyle = mergeStyle(local.styles?.item)
+    const linkProps = typeof file.linkProps === 'object' ? file.linkProps : undefined
+    const linkOnClick = linkProps?.onClick
     const originNode = (
       <li
         class={classNames(
@@ -557,11 +580,15 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
         <span class={`${prefixCls()}-file-name`}>
           <Show when={file.url} fallback={file.name}>
             <a
+              {...linkProps}
               class={`${prefixCls()}-file-link`}
               href={file.url}
-              target="_blank"
-              rel="noreferrer"
+              target={linkProps?.target ?? '_blank'}
+              rel={linkProps?.rel ?? 'noreferrer'}
               onClick={(event) => {
+                if (typeof linkOnClick === 'function') {
+                  linkOnClick(event)
+                }
                 if (local.onPreview) {
                   event.preventDefault()
                   previewFile(file)

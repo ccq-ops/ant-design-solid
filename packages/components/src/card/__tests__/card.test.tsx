@@ -159,6 +159,23 @@ describe('Card', () => {
     expect(result.getByText('Current tab')).toBeInTheDocument()
   })
 
+  it('uses tabProps.defaultActiveKey when defaultActiveTabKey is not provided', () => {
+    const result = render(() => (
+      <Card
+        title="Tabbed card"
+        tabProps={{ defaultActiveKey: 'activity' }}
+        tabList={[
+          { key: 'overview', label: 'Overview' },
+          { key: 'activity', label: 'Activity' },
+        ]}
+      >
+        Current tab
+      </Card>
+    ))
+
+    expect(result.getByRole('tab', { name: 'Activity' })).toHaveAttribute('aria-selected', 'true')
+  })
+
   it('supports Card.Grid and Card.Meta sub components', () => {
     const result = render(() => (
       <Card>

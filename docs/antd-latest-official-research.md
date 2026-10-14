@@ -1,14 +1,15 @@
-# Ant Design 最新官方基线研究（截至 2026-10-09）
+# Ant Design 最新官方基线研究（截至 2026-10-14）
 
 > 研究范围：只核对 Ant Design 官方站点、`ant-design/ant-design` 官方 GitHub 仓库及 `antd` 官方 npm 包元数据；不审计本仓库实现，也不对 React API 机械映射到 SolidJS。
 >
-> 访问日期：**2026-10-09（Asia/Shanghai）**
+> 访问日期：**2026-10-14（Asia/Shanghai）**
 
 ## 1. 结论摘要
 
-截至 2026-10-08：
+截至 2026-10-14：
 
-- npm `latest` 指向 **`antd@6.6.5`**，发布时间为 **2026-09-20T09:10:07.567Z**；官方 GitHub Release `6.6.5` 的发布时间为 **2026-09-20T09:04:11Z**。
+- npm `latest` 指向 **`antd@6.6.6`**，发布时间为 **2026-10-12T06:47:33.903Z**；
+  官方 tag `6.6.6` 对应提交为 `c1a538ba5b7aaab6c086db0ca5d6cfcaab970752`。
 - v6 的最低 React peer dependency 是 **React / React DOM >= 18**，并原生支持 React 19；不再需要 `@ant-design/v5-patch-for-react-19`。
 - 官方组件文档中共有 **71 个组件页面**。v6 时代最重要的新组件是：
   - `Masonry`：v6.0.0；
@@ -28,25 +29,36 @@
 
 ## 2. 最新版本核实
 
-| 项目                    | 官方结果                                   |
-| ----------------------- | ------------------------------------------ |
-| npm dist-tag `latest`   | `6.6.5`                                    |
-| npm 发布时间            | 2026-09-20T09:10:07.567Z                   |
-| GitHub Release          | `6.6.5`                                    |
-| GitHub Release 发布时间 | 2026-09-20T09:04:11Z                       |
-| Git tag commit          | `4a39f54842eade4e565ab336ef6097cd7e723cdd` |
-| React peer dependency   | `react >=18.0.0`、`react-dom >=18.0.0`     |
-| 官方最新版 v5 dist-tag  | `latest-5: 5.29.3`                         |
+| 项目                   | 官方结果                                   |
+| ---------------------- | ------------------------------------------ |
+| npm dist-tag `latest`  | `6.6.6`                                    |
+| npm 发布时间           | 2026-10-12T06:47:33.903Z                   |
+| Git tag                | `6.6.6`                                    |
+| Git tag commit         | `c1a538ba5b7aaab6c086db0ca5d6cfcaab970752` |
+| React peer dependency  | `react >=18.0.0`、`react-dom >=18.0.0`     |
+| 官方最新版 v5 dist-tag | `latest-5: 5.29.3`                         |
 
 核实来源：
 
-- [npm：antd 6.6.5](https://www.npmjs.com/package/antd/v/6.6.5)
+- [npm：antd 6.6.6](https://www.npmjs.com/package/antd/v/6.6.6)
 - [npm Registry：antd 完整元数据](https://registry.npmjs.org/antd)
-- [GitHub Release：6.6.5](https://github.com/ant-design/ant-design/releases/tag/6.6.5)
-- [6.6.5 package.json](https://github.com/ant-design/ant-design/blob/6.6.5/package.json)
-- [6.6.5 英文 Changelog](https://github.com/ant-design/ant-design/blob/6.6.5/CHANGELOG.en-US.md)
+- [GitHub Release：6.6.6](https://github.com/ant-design/ant-design/releases/tag/6.6.6)
+- [6.6.6 package.json](https://github.com/ant-design/ant-design/blob/6.6.6/package.json)
+- [6.6.6 英文 Changelog](https://github.com/ant-design/ant-design/blob/6.6.6/CHANGELOG.en-US.md)
 
-### 2.1 发布节奏
+### 2.1 6.6.6 增量
+
+6.6.6 是修复版本，根导出相对 6.6.5 没有变化。对 Solid 实现有直接影响的行为包括：
+
+- Alert `closable.disabled` 必须真正禁用关闭按钮。
+- Card 在没有 `defaultActiveTabKey` 时必须保留 `tabProps.defaultActiveKey`。
+- Drawer、Divider 等组件必须正确渲染数值 `0`。
+- Upload 文件链接必须执行 `linkProps.onClick`，自定义请求类型与运行时应保留 `abort` 句柄。
+- Tour 前后按钮的 `onClick` 必须接收鼠标事件。
+- Transfer 需要保留数值 `0` 的 `selectAllLabels`，并正确约束过滤后的 Shift 范围选择。
+- Table、Tree、Carousel、Notification、Picker 等还有多项行为修复，需要继续纳入回归矩阵。
+
+### 2.2 发布节奏
 
 官方 Changelog 声明：
 

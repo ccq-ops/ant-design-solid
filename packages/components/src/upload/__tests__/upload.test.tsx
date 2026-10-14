@@ -171,6 +171,47 @@ describe('Upload', () => {
     )
   })
 
+  it('aborts the active custom request when removing a file', async () => {
+    const abort = vi.fn()
+    const result = render(() => (
+      <Upload customRequest={() => ({ abort })}>
+        <button>Upload</button>
+      </Upload>
+    ))
+
+    fireEvent.change(input(result.container), { target: { files: [file('abort.txt')] } })
+    await waitFor(() => expect(screen.getByText('abort.txt')).toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove abort.txt' }))
+    await waitFor(() => expect(screen.queryByText('abort.txt')).not.toBeInTheDocument())
+
+    expect(abort).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls file linkProps onClick before the preview handler', () => {
+    const linkClick = vi.fn()
+    const onPreview = vi.fn()
+    render(() => (
+      <Upload
+        defaultFileList={[
+          {
+            uid: 'linked',
+            name: 'linked.txt',
+            status: 'done',
+            url: '/linked.txt',
+            linkProps: { onClick: linkClick, 'aria-label': 'linked file' },
+          },
+        ]}
+        onPreview={onPreview}
+      />
+    ))
+
+    fireEvent.click(screen.getByRole('link', { name: 'linked file' }))
+
+    expect(linkClick).toHaveBeenCalledTimes(1)
+    expect(onPreview).toHaveBeenCalledWith(expect.objectContaining({ uid: 'linked' }))
+  })
+
   it('exposes upload state and lifecycle methods through ref', async () => {
     let uploadRef: import('../interface').UploadRef | undefined
     const onChange = vi.fn()

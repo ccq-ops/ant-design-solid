@@ -1,8 +1,9 @@
-# Ant Design Solid 对齐 Ant Design 6.6.5 差距分析
+# Ant Design Solid 对齐 Ant Design 6.6.6 差距分析
 
-> 审计日期：2026-10-09
-> 上游基线：`antd@6.6.5`，发布于 2026-09-20  
-> 本仓库版本：`@solid-ant-design/core@0.2.1`，其余公开包为 `0.2.0`
+> 初始审计日期：2026-10-09；基线复核日期：2026-10-14
+> 上游基线：`antd@6.6.6`，发布于 2026-10-12
+> 本仓库版本：`@solid-ant-design/core@0.3.0`、`cssinjs@0.2.1`、`theme@0.2.1`、
+> `icons@0.2.0`
 
 ## 1. 结论摘要
 
@@ -18,7 +19,8 @@ SolidJS Ant Design 实现：
 但如果把标准提高到“可以长期对齐 Ant Design 最新稳定版，并作为生产级设计系统基础设施”
 的水平，当前最大的缺口不是继续机械补几个属性，而是以下六个系统性问题：
 
-1. **对齐基线已经落后**：现有计划固定在 `antd@6.4.4`，最新稳定版已经是 `6.6.5`。
+1. **持续对齐机制必须保持运行**：初始计划固定在 `antd@6.4.4`，当前稳定版已更新到
+   `6.6.6`；根导出审计已完成升级，但 patch 行为修复仍需持续同步。
 2. **最新组件路线发生变化**：上游新增了 `Listy`，并开始引导旧 `List` 迁移到 `Listy`；
    本仓库的 `list/` 目录为空，`List` 和 `Listy` 均未公开。
 3. **公开 API 仍处于混合状态**：大量组件仍暴露 React 风格或 v6 已废弃 API，
@@ -32,7 +34,7 @@ SolidJS Ant Design 实现：
 
 因此，不建议把下一阶段目标定义为“继续照着旧清单逐项补 API”。建议改成：
 
-> **先建设持续对齐基础设施，再完成 6.6.5 API/行为补齐，最后建立视觉、可访问性、性能和发布质量门禁。**
+> **先建设持续对齐基础设施，再完成 6.6.x API/行为补齐，最后建立视觉、可访问性、性能和发布质量门禁。**
 
 ## 2. 当前成熟度评分
 
@@ -51,7 +53,7 @@ SolidJS Ant Design 实现：
 
 综合判断：**功能型 Beta，尚未达到高标准生产级设计系统的工程成熟度。**
 
-## 3. 与最新 antd 6.6.5 的直接差距
+## 3. 与最新 antd 6.6.6 的直接差距
 
 ### 3.1 现有对齐计划已过期
 
@@ -64,10 +66,10 @@ antd@6.4.4，审计日期 2026-06-15
 截至本次审计，npm `latest` 已是：
 
 ```text
-antd@6.6.5，发布于 2026-09-20
+antd@6.6.6，发布于 2026-10-12
 ```
 
-这意味着旧计划至少遗漏了 `6.5.0` 到 `6.6.5` 的新增能力、类型导出、行为修复和弃用变化。
+这意味着旧计划至少遗漏了 `6.5.0` 到 `6.6.6` 的新增能力、类型导出、行为修复和弃用变化。
 旧计划可以作为 6.4.4 的历史输入，但不应该继续作为执行基线。
 
 ### 3.2 组件覆盖缺口
@@ -626,7 +628,8 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
 ### P0
 
 - [x] 新建 `antd@6.6.5` 根导出自动 API diff；Props、Ref 和 deprecated 深层 diff
-      仍需继续扩展。
+      已于 2026-10-14 升级到 `antd@6.6.6`，当前仍为 0 个未分类缺失；Props、Ref 和
+      deprecated 深层 diff 仍需继续扩展。
 - [x] 实现 Listy；ADR 0002 明确新应用使用 Listy，deprecated List 暂不作为 core 新增 API。
 - [ ] 修复 `cssVar` / `zeroRuntime` / `hashed` 类型与运行时不一致；其中 `hashed` 已完成
       ConfigProvider 到 CSS-in-JS 的运行时贯通。
@@ -647,7 +650,10 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
 - [ ] 补齐 6.5/6.6 新增 API；已完成 Listy、BorderBeam `count/duration/lineWidth/size`、
       Mentions `popupRender`、Tabs `more.popupRender`、Modal `scrollLock`、Tree `useTree` 和
       `scrollTo({ autoExpand: true })`、Steps `maxCount`、Pagination `components.sizeChanger` 和
-      Table `expandable.forceRender`，并已增加共享 `focusOutline` token。
+      Table `expandable.forceRender`，并已增加共享 `focusOutline` token。6.6.6 patch 同步已完成
+      Alert 禁用关闭、Card tab 默认项、Drawer 数值 `0` 内容、Upload 文件链接回调与请求
+      `abort` 句柄，以及 DirectoryTree 数字 key 和禁用节点的 Shift 范围选择；Table、
+      Transfer、Carousel、Picker 等复杂行为仍需继续补齐。
 - [ ] 补齐 nativeElement/ref 导出；已补 Alert、Breadcrumb、Calendar、Divider、Empty、
       QRCode、Result、Skeleton、Spin、Splitter、Transfer、Watermark，剩余复合组件与复杂组件
       Ref 继续处理。

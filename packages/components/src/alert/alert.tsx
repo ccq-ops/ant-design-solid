@@ -157,7 +157,7 @@ function InternalAlert(props: AlertProps) {
   })
   const isClosable = () => {
     const closable = mergedClosable()
-    if (isClosableConfig(closable) && closable.closeIcon !== undefined) return true
+    if (isClosableConfig(closable)) return true
     if (typeof closable === 'boolean') return closable
     if (local.closeText !== undefined) return true
     return local.closeIcon !== false && local.closeIcon !== null && local.closeIcon !== undefined
@@ -219,6 +219,7 @@ function InternalAlert(props: AlertProps) {
   }
 
   const close = (event: MouseEvent) => {
+    if (closableConfig()?.disabled) return
     const localClose = closableConfig()?.onClose
     ;(localClose ?? local.onClose)?.(event)
     setClosed(true)

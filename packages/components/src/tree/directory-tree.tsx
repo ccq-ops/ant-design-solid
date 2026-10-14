@@ -51,6 +51,7 @@ export function DirectoryTree(props: DirectoryTreeProps) {
     const to = Math.max(startIndex, endIndex)
     return nodes
       .slice(from, to + 1)
+      .filter((node) => !node.disabled && node.selectable !== false)
       .map((node) => node.key)
       .filter((key): key is TreeKey => key !== undefined)
   }

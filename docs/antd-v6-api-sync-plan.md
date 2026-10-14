@@ -2,8 +2,8 @@
 
 > [!IMPORTANT]
 > This checklist was produced against `antd@6.4.4` and is retained as a historical component-level
-> inventory. The active upstream baseline is now `antd@6.6.5`. Before executing an item, reconcile
-> it with `docs/antd-v6.6.5-gap-analysis.md`,
+> inventory. The active upstream baseline is now `antd@6.6.6`. Before executing an item, reconcile
+> it with `docs/antd-v6.6.6-gap-analysis.md`,
 > `docs/antd-latest-official-research.md`, and the generated
 > `docs/generated/antd-api-audit.md`.
 >

@@ -1,6 +1,6 @@
 {
-  "version": "6.6.5",
-  "generatedAt": "2026-10-09T03:53:55.215Z",
+  "version": "6.6.6",
+  "generatedAt": "2026-10-14T08:38:27.649Z",
   "upstreamExports": [
     "Affix",
     "AffixProps",
@@ -1429,6 +1429,7 @@
     "UploadProps",
     "UploadRef",
     "UploadRequestOptions",
+    "UploadRequestResult",
     "UploadSemanticClassNames",
     "UploadSemanticSlot",
     "UploadSemanticStyles",
@@ -2451,6 +2452,7 @@
     "UploadMethod",
     "UploadProgressProps",
     "UploadRequestOptions",
+    "UploadRequestResult",
     "UploadSemanticClassNames",
     "UploadSemanticSlot",
     "UploadSemanticStyles",

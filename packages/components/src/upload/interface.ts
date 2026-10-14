@@ -47,6 +47,10 @@ export interface UploadRequestOptions<T = unknown> {
   onError: (event: unknown, body?: unknown) => void
 }
 
+export interface UploadRequestResult {
+  abort?: () => void
+}
+
 export interface UploadChangeInfo<T = unknown> {
   file: UploadFile<T>
   fileList: Array<UploadFile<T>>
@@ -115,8 +119,10 @@ export interface UploadProps<T = unknown> extends Omit<
   beforeUpload?: (file: File, fileList: File[]) => UploadBeforeValue | Promise<UploadBeforeValue>
   customRequest?: (
     options: UploadRequestOptions<T>,
-    info: { defaultRequest: (options: UploadRequestOptions<T>) => void },
-  ) => void
+    info: {
+      defaultRequest: (options: UploadRequestOptions<T>) => UploadRequestResult | undefined
+    },
+  ) => UploadRequestResult | void
   onChange?: (info: UploadChangeInfo<T>) => void
   onRemove?: (file: UploadFile<T>) => void | boolean | Promise<void | boolean>
   onPreview?: (file: UploadFile<T>) => void

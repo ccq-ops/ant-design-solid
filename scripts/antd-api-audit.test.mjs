@@ -8,7 +8,7 @@ test('pins the reviewed Ant Design API baseline', async () => {
     await readFile(new URL('./antd-api-audit.config.json', import.meta.url), 'utf8'),
   )
 
-  assert.equal(config.version, '6.6.5')
+  assert.equal(config.version, '6.6.6')
 })
 
 test('keeps the generated baseline machine readable', async () => {
@@ -16,7 +16,7 @@ test('keeps the generated baseline machine readable', async () => {
     await readFile(new URL('./antd-api-baseline.json', import.meta.url), 'utf8'),
   )
 
-  assert.equal(baseline.version, '6.6.5')
+  assert.equal(baseline.version, '6.6.6')
   assert.ok(baseline.upstreamExports.includes('Listy'))
   assert.ok(baseline.localExports.includes('Listy'))
   assert.ok(!baseline.missingFromLocal.includes('Listy'))

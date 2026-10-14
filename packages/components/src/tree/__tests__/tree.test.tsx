@@ -663,8 +663,42 @@ describe('Tree', () => {
     fireEvent.click(result.getByRole('treeitem', { name: /Asia/ }))
     fireEvent.click(result.getByRole('treeitem', { name: /Europe/ }), { shiftKey: true })
     expect(onSelect).toHaveBeenLastCalledWith(
-      ['asia', 'china', 'japan', 'europe'],
+      ['asia', 'china', 'europe'],
       expect.objectContaining({ selected: true }),
+    )
+  })
+
+  it('skips disabled and non-selectable nodes in DirectoryTree shift ranges with numeric keys', () => {
+    const onSelect = vi.fn()
+    const result = render(() => (
+      <DirectoryTree
+        multiple
+        defaultExpandAll
+        treeData={[
+          {
+            title: 'Root',
+            key: 0,
+            children: [
+              { title: 'First', key: 1 },
+              { title: 'Disabled', key: 2, disabled: true },
+              { title: 'Non selectable', key: 3, selectable: false },
+              { title: 'Last', key: 4 },
+            ],
+          },
+        ]}
+        onSelect={onSelect}
+      />
+    ))
+
+    fireEvent.click(result.getByRole('treeitem', { name: /First/ }))
+    fireEvent.click(result.getByRole('treeitem', { name: /Last/ }), { shiftKey: true })
+
+    expect(onSelect).toHaveBeenLastCalledWith(
+      [1, 4],
+      expect.objectContaining({
+        selected: true,
+        selectedNodes: [expect.objectContaining({ key: 1 }), expect.objectContaining({ key: 4 })],
+      }),
     )
   })
 })

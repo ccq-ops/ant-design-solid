@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-10-08
-- Baseline: Ant Design 6.6.5
+- Baseline: Ant Design 6.6.6
 
 ## Context
 

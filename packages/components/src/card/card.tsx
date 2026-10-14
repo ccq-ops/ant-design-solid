@@ -172,7 +172,7 @@ export function Card(props: CardProps) {
               items={tabItems()}
               size={size() === 'small' ? 'small' : 'large'}
               activeKey={local.activeTabKey}
-              defaultActiveKey={local.defaultActiveTabKey}
+              defaultActiveKey={local.defaultActiveTabKey ?? local.tabProps?.defaultActiveKey}
               tabBarExtraContent={local.tabBarExtraContent}
               onChange={local.onTabChange}
             />
