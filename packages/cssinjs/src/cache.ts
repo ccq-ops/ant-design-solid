@@ -1,4 +1,5 @@
-import type { StyleCache } from './types'
+import { hashString } from './hash'
+import type { ExtractStyleOptions, StyleCache } from './types'
 
 export function createCache(): StyleCache {
   const styles = new Map<string, string>()
@@ -23,11 +24,30 @@ export function createCache(): StyleCache {
     },
   }
 }
-export function extractStyle(cache?: StyleCache): string {
-  return cache
-    ? cache
-        .entries()
-        .map(([, css]) => css)
-        .join('\n')
-    : ''
+function escapeAttribute(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+}
+
+function escapeStyleContent(css: string): string {
+  return css.replace(/<\/style/giu, '<\\/style')
+}
+
+export function extractStyle(cache?: StyleCache, options: ExtractStyleOptions = {}): string {
+  if (!cache) return ''
+  const entries = cache.entries()
+  if (options.format !== 'style-tag') {
+    return entries.map(([, css]) => css).join('\n')
+  }
+
+  const nonce = options.nonce ? ` nonce="${escapeAttribute(options.nonce)}"` : ''
+  return entries
+    .map(
+      ([key, css]) =>
+        `<style data-ant-design-solid="${hashString(key)}"${nonce}>${escapeStyleContent(css)}</style>`,
+    )
+    .join('')
 }

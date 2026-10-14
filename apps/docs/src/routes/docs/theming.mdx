@@ -219,6 +219,37 @@ byte-for-byte stable:
 `zeroRuntime: true` takes precedence over CSS-variable mode and skips both component rules and token
 variable registration. It is intended for applications that import a pre-generated stylesheet.
 
+## SSR Style Extraction
+
+Create a new style cache for every server request, render the application through `StyleProvider`,
+then extract hydratable style tags:
+
+```tsx
+import { StyleProvider, createCache, extractStyle } from '@solid-ant-design/cssinjs'
+import { renderToString } from 'solid-js/web'
+
+const cache = createCache()
+const app = renderToString(() => (
+  <StyleProvider cache={cache}>
+    <App />
+  </StyleProvider>
+))
+const styles = extractStyle(cache, {
+  format: 'style-tag',
+  nonce: requestNonce,
+})
+
+const html = `<!doctype html><html><head>${styles}</head><body>${app}</body></html>`
+```
+
+The generated `<style>` elements contain deterministic `data-ant-design-solid` identifiers. During
+client hydration, the runtime reuses those elements rather than inserting duplicates. A client CSP
+nonce supplied to `StyleProvider` replaces the extracted server nonce when the rule is registered.
+
+Do not share a mutable cache between requests. A request-local cache prevents one user's theme or
+critical CSS from leaking into another response. For CSS-variable themes, provide an explicit
+`theme.cssVar.key` so server and client class names remain deterministic.
+
 ## Nested Themes
 
 Nested providers inherit the parent theme by default. Set `inherit: false` when a subtree should start from the default seed tokens instead.

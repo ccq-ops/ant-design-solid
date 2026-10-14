@@ -1,6 +1,6 @@
 import { render } from '@solidjs/testing-library'
 import { describe, expect, it } from 'vitest'
-import { StyleProvider, createCache, useStyleRegister } from '../index'
+import { StyleProvider, createCache, extractStyle, useStyleRegister } from '../index'
 
 function Demo() {
   const [, hashId] = useStyleRegister(
@@ -77,6 +77,34 @@ describe('useStyleRegister', () => {
     ))
 
     expect(document.head.querySelectorAll('style[data-ant-design-solid]')).toHaveLength(1)
+  })
+
+  it('rehydrates an extracted server style without inserting a duplicate', () => {
+    document.head.innerHTML = ''
+    const serverCache = createCache()
+    const serverRender = render(() => (
+      <StyleProvider cache={serverCache}>
+        <Demo />
+      </StyleProvider>
+    ))
+    serverRender.unmount()
+    const serverStyles = extractStyle(serverCache, {
+      format: 'style-tag',
+      nonce: 'server-nonce',
+    })
+    document.head.innerHTML = serverStyles
+
+    const clientCache = createCache()
+    render(() => (
+      <StyleProvider cache={clientCache} nonce="client-nonce">
+        <Demo />
+      </StyleProvider>
+    ))
+
+    const styles = document.head.querySelectorAll('style[data-ant-design-solid]')
+    expect(styles).toHaveLength(1)
+    expect(styles[0]).toHaveAttribute('nonce', 'client-nonce')
+    expect(clientCache.size()).toBe(1)
   })
 
   it('supports disabling hashed class names without disabling style injection', () => {

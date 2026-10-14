@@ -20,3 +20,6 @@ and panel actions.
 
 Implement runtime CSS-variable themes with inherited key and prefix configuration, token variable
 registration, component declaration rewriting, and isolated nested theme caches.
+
+Add SSR style-tag extraction metadata, CSP nonce support, request-cache isolation coverage, and
+client rehydration that reuses server-rendered style elements.

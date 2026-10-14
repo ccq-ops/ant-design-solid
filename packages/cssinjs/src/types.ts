@@ -16,6 +16,10 @@ export interface StyleCache {
   entries: () => Array<[string, string]>
   size: () => number
 }
+export interface ExtractStyleOptions {
+  format?: 'css' | 'style-tag'
+  nonce?: string
+}
 export interface StyleProviderProps {
   cache?: StyleCache
   hashed?: boolean

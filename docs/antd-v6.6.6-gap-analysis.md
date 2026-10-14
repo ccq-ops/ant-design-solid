@@ -300,21 +300,20 @@ interface CSPConfig {
 
 ### 5.3 SSR 能力只完成了原型
 
-当前具备：
+当前已具备：
 
 - `createCache`
 - `extractStyle`
 - 服务端不直接访问 document
+- `extractStyle(cache, { format: 'style-tag', nonce })` 输出可 hydration 的 style metadata
+- 客户端按确定性 `data-ant-design-solid` 标识复用服务端 style，避免重复插入
+- 请求级 cache 隔离、nonce 更新和 CSS 变量模式已有自动测试
 
-但仍缺：
+仍缺：
 
-- 请求级 cache 隔离的标准用法。
-- `wrapSSR` 实际注入能力。
-- 服务端 style tag metadata。
-- 客户端 rehydration。
-- 已存在 style 的复用和去重。
 - streaming SSR 场景。
-- nonce、layer、container。
+- CSS layer 和 Shadow DOM/container 高级场景。
+- SolidStart 真实应用级 hydration fixture。
 
 建议提供官方 SSR 文档和集成测试，至少覆盖 SolidStart：
 
@@ -665,7 +664,8 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
 - [ ] 完成 semantic classes 命名迁移策略。
 - [ ] 清理 v6 deprecated API。
 - [ ] 增加 locale 包。
-- [ ] 完成 SSR/hydration 集成测试。
+- [ ] 完成 SSR/hydration 集成测试；CSS-in-JS 包已覆盖 style-tag metadata、nonce、请求 cache
+      隔离及客户端 style 去重，仍待 SolidStart 真实应用 fixture 和 streaming SSR。
 - [ ] 拆分 docs 超大 chunk；组件总览的全量 MDX eager import 已消除，Form、Table 和
       Playground 仍待拆分。
 - [ ] 加入 publint、attw、size-limit 和 pack consumer tests；其中 publint、attw、
