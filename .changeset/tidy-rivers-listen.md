@@ -1,6 +1,7 @@
 ---
 '@solid-ant-design/core': patch
 '@solid-ant-design/cssinjs': patch
+'@solid-ant-design/icons': patch
 ---
 
 Align the reviewed API baseline with Ant Design 6.6.6.
@@ -23,3 +24,6 @@ registration, component declaration rewriting, and isolated nested theme caches.
 
 Add SSR style-tag extraction metadata, CSP nonce support, request-cache isolation coverage, and
 client rehydration that reuses server-rendered style elements.
+
+Publish Node-conditioned SSR builds for core and icons and verify server rendering through package
+exports.

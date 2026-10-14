@@ -665,7 +665,9 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
 - [ ] 清理 v6 deprecated API。
 - [ ] 增加 locale 包。
 - [ ] 完成 SSR/hydration 集成测试；CSS-in-JS 包已覆盖 style-tag metadata、nonce、请求 cache
-      隔离及客户端 style 去重，仍待 SolidStart 真实应用 fixture 和 streaming SSR。
+      隔离及客户端 style 去重；core/icons 已发布 Node 条件 SSR 构建，并用真实 Button + Icon
+      package smoke test 验证服务端渲染和样式提取。仍待 SolidStart 真实应用 fixture 和
+      streaming SSR。
 - [ ] 拆分 docs 超大 chunk；组件总览的全量 MDX eager import 已消除，Form、Table 和
       Playground 仍待拆分。
 - [ ] 加入 publint、attw、size-limit 和 pack consumer tests；其中 publint、attw、

@@ -22,7 +22,7 @@
     "format:check": "oxfmt --check .",
     "api:audit": "node scripts/antd-api-audit.mjs --check",
     "api:audit:refresh": "node scripts/antd-api-audit.mjs --refresh",
-    "test:package": "node --conditions=browser scripts/package-exports-smoke.mjs",
+    "test:package": "node --conditions=browser scripts/package-exports-smoke.mjs && node scripts/package-ssr-smoke.mjs",
     "package:lint": "node scripts/package-lint.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",

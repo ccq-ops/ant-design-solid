@@ -246,6 +246,10 @@ The generated `<style>` elements contain deterministic `data-ant-design-solid` i
 client hydration, the runtime reuses those elements rather than inserting duplicates. A client CSP
 nonce supplied to `StyleProvider` replaces the extracted server nonce when the rule is registered.
 
+The core and icon packages expose SSR-compiled JavaScript through the Node package condition, so
+Node-based SSR bundlers resolve server-safe JSX output while browser bundlers continue to use the
+DOM build.
+
 Do not share a mutable cache between requests. A request-local cache prevents one user's theme or
 critical CSS from leaking into another response. For CSS-variable themes, provide an explicit
 `theme.cssVar.key` so server and client class names remain deterministic.

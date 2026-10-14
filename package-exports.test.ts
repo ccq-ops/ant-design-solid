@@ -80,6 +80,20 @@ describe('package export configuration', () => {
 
     expect(packageJson.sideEffects).toBe(false)
     expect(packageJson.exports?.['./*']).toEqual({
+      browser: {
+        types: './dist/*/index.d.ts',
+        default: './dist/*/index.js',
+      },
+      node: {
+        import: {
+          types: './dist/*/index.d.ts',
+          default: './dist/ssr/*/index.js',
+        },
+        require: {
+          types: './dist/*/index.d.cts',
+          default: './dist/ssr/*/index.cjs',
+        },
+      },
       import: {
         types: './dist/*/index.d.ts',
         default: './dist/*/index.js',
@@ -89,6 +103,39 @@ describe('package export configuration', () => {
         default: './dist/*/index.cjs',
       },
     })
+  })
+
+  it('routes core and icons to SSR-compiled JavaScript under the node condition', () => {
+    const core = readJson(path.join(packageRoot, 'packages/components/package.json'))
+    const icons = readJson(path.join(packageRoot, 'packages/icons/package.json'))
+
+    expect(core.exports['.'].node.import.default).toBe('./dist/ssr/index.js')
+    expect(core.exports['.'].node.require.default).toBe('./dist/ssr/index.cjs')
+    expect(core.exports['./*'].node.import.default).toBe('./dist/ssr/*/index.js')
+    expect(icons.exports['.'].node.import.default).toBe('./dist/ssr/index.js')
+    expect(icons.exports['./icons/*'].node.import.default).toBe('./dist/ssr/icons/*.js')
+  })
+
+  it('emits every configured core and icons SSR entrypoint', () => {
+    const core = readJson(path.join(packageRoot, 'packages/components/package.json'))
+    const icons = readJson(path.join(packageRoot, 'packages/icons/package.json'))
+    const expectedFiles: Array<[string, string]> = [
+      ['components', core.exports['.'].node.import.default],
+      ['components', core.exports['.'].node.require.default],
+      ['components', core.exports['./*'].node.import.default.replace('*', 'button')],
+      ['components', core.exports['./*'].node.require.default.replace('*', 'button')],
+      ['icons', icons.exports['.'].node.import.default],
+      ['icons', icons.exports['.'].node.require.default],
+      ['icons', icons.exports['./icons/*'].node.import.default.replace('*', 'search-outlined')],
+      ['icons', icons.exports['./icons/*'].node.require.default.replace('*', 'search-outlined')],
+    ]
+
+    for (const [packageName, relativeFile] of expectedFiles) {
+      expect(
+        fs.existsSync(path.join(packageRoot, 'packages', packageName, relativeFile)),
+        `${packageName}: missing ${relativeFile}`,
+      ).toBe(true)
+    }
   })
 
   it('declares package runtime support and tree-shaking metadata', () => {

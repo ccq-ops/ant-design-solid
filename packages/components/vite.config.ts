@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
+const isSsrBuild = process.env.BUILD_SSR === '1'
 const sourceRoot = fileURLToPath(new URL('./src', import.meta.url))
 const componentEntries = Object.fromEntries(
   readdirSync(sourceRoot, { withFileTypes: true })
@@ -34,7 +35,7 @@ function addDayjsPluginExtension(code: string) {
 
 export default defineConfig({
   plugins: [
-    solid(),
+    solid({ ssr: isSsrBuild }),
     {
       name: 'add-dayjs-plugin-extension',
       renderChunk: addDayjsPluginExtension,
@@ -48,6 +49,9 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: isSsrBuild ? 'dist/ssr' : 'dist',
+    ssr: isSsrBuild,
+    emptyOutDir: !isSsrBuild,
     lib: {
       entry: {
         index: path.join(sourceRoot, 'index.ts'),

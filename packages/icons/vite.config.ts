@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
+const isSsrBuild = process.env.BUILD_SSR === '1'
+
 const external = (id: string) =>
   id === 'solid-js' || id === 'solid-js/web' || id.startsWith('@ant-design/icons-svg/')
 
@@ -14,13 +16,16 @@ function addIconsSvgExtension(code: string) {
 
 export default defineConfig({
   plugins: [
-    solid(),
+    solid({ ssr: isSsrBuild }),
     {
       name: 'add-icons-svg-extension',
       renderChunk: addIconsSvgExtension,
     },
   ],
   build: {
+    outDir: isSsrBuild ? 'dist/ssr' : 'dist',
+    ssr: isSsrBuild,
+    emptyOutDir: !isSsrBuild,
     lib: {
       entry: 'src/index.tsx',
       formats: ['es', 'cjs'],
