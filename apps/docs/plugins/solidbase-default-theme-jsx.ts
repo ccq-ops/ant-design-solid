@@ -29,6 +29,32 @@ export function normalizeDefaultThemeLayoutSidebarPrefix(code: string, id: strin
   )}`
 }
 
+export function ownDefaultThemeGlobalMount(code: string, id: string): string {
+  const filePath = id.split('?')[0]
+
+  if (!filePath.endsWith('/@kobalte/solidbase/dist/default-theme/globals.js')) {
+    return code
+  }
+
+  const mountStart = code.indexOf('onMount(() => {')
+  const exportStart = code.indexOf('export const mobileLayout')
+  const mountEnd = code.lastIndexOf('});', exportStart)
+
+  if (mountStart === -1 || exportStart === -1 || mountEnd < mountStart) {
+    return code
+  }
+
+  const mountBlock = code
+    .slice(mountStart, mountEnd + 3)
+    .split('\n')
+    .map((line) => `  ${line}`)
+    .join('\n')
+
+  return `${code.slice(0, mountStart)}createRoot(() => {\n${mountBlock}\n});${code.slice(
+    mountEnd + 3,
+  )}`
+}
+
 export function solidbaseDefaultThemeJsx(): Plugin {
   return {
     name: 'solidbase-default-theme-jsx',
@@ -53,7 +79,10 @@ export function solidbaseDefaultThemeJsx(): Plugin {
       }
     },
     transform(code, id) {
-      const result = normalizeDefaultThemeLayoutSidebarPrefix(code, id)
+      const result = ownDefaultThemeGlobalMount(
+        normalizeDefaultThemeLayoutSidebarPrefix(code, id),
+        id,
+      )
 
       if (result !== code) {
         return result

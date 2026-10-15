@@ -26,7 +26,10 @@ import type {
 import type { JSX } from 'solid-js'
 
 const DEFAULT_SEPARATOR = '/'
-const DEFAULT_DROPDOWN_ICON = <DownOutlined />
+
+function DefaultDropdownIcon() {
+  return <DownOutlined />
+}
 
 type NormalizedItem = BreadcrumbRouteType & {
   key: string | number
@@ -290,7 +293,7 @@ export function BreadcrumbItem(props: BreadcrumbItemProps) {
       {...props}
       prefixCls={prefixCls()}
       separator={props.separator ?? context?.separator ?? DEFAULT_SEPARATOR}
-      dropdownIcon={props.dropdownIcon ?? context?.dropdownIcon ?? DEFAULT_DROPDOWN_ICON}
+      dropdownIcon={props.dropdownIcon ?? context?.dropdownIcon ?? <DefaultDropdownIcon />}
       showSeparator={Boolean(context)}
       semanticClass={context?.classNames?.item}
       semanticStyle={context?.styles?.item}
@@ -354,7 +357,7 @@ export function Breadcrumb(props: BreadcrumbProps) {
   }
   createEffect(() => setComponentRef(local.ref, breadcrumbRef))
   const separator = () => local.separator ?? DEFAULT_SEPARATOR
-  const dropdownIcon = () => local.dropdownIcon ?? DEFAULT_DROPDOWN_ICON
+  const dropdownIcon = () => local.dropdownIcon ?? <DefaultDropdownIcon />
   const params = () => local.params ?? {}
   const sourceItems = () => local.items ?? local.routes ?? []
   const items = createMemo<NormalizedItem[]>(() =>
