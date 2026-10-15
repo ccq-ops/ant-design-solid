@@ -28,9 +28,24 @@ function extraContent(content: TabNavListProps['tabBarExtraContent']) {
   return { right: content as JSX.Element | undefined }
 }
 
+function sameNumberRecord(left: Record<string, number>, right: Record<string, number>): boolean {
+  const leftEntries = Object.entries(left)
+  const rightKeys = Object.keys(right)
+  return (
+    leftEntries.length === rightKeys.length &&
+    leftEntries.every(([key, value]) => right[key] === value)
+  )
+}
+
+function sameStringSet(left: Set<string>, right: Set<string>): boolean {
+  return left.size === right.size && [...left].every((value) => right.has(value))
+}
+
 export function TabNavList(props: TabNavListProps) {
   let navListElement: HTMLDivElement | undefined
   let moreElement: HTMLButtonElement | undefined
+  let overflowFrame: number | undefined
+  let indicatorFrame: number | undefined
   let previousScrollLeft = 0
   let previousScrollTop = 0
   const [tabElements, setTabElements] = createSignal<Record<string, HTMLButtonElement | undefined>>(
@@ -65,12 +80,41 @@ export function TabNavList(props: TabNavListProps) {
         ? undefined
         : ({ '--ads-tabs-tab-gutter': `${props.tabBarGutter}px` } as JSX.CSSProperties),
     )
+  const scheduleLayout = (callback: () => void, currentFrame: () => number | undefined) => {
+    const pendingFrame = currentFrame()
+    if (pendingFrame !== undefined && typeof cancelAnimationFrame === 'function') {
+      cancelAnimationFrame(pendingFrame)
+    }
+    if (typeof requestAnimationFrame !== 'function') {
+      queueMicrotask(callback)
+      return undefined
+    }
+    return requestAnimationFrame(callback)
+  }
+  const scheduleOverflow = () => {
+    overflowFrame = scheduleLayout(
+      () => {
+        overflowFrame = undefined
+        updateOverflow()
+      },
+      () => overflowFrame,
+    )
+  }
+  const scheduleIndicator = (tab: HTMLButtonElement) => {
+    indicatorFrame = scheduleLayout(
+      () => {
+        indicatorFrame = undefined
+        updateIndicatorStyle(tab)
+      },
+      () => indicatorFrame,
+    )
+  }
   const updateOverflow = () => {
     if (!navListElement) return
     const containerRect = navListElement.getBoundingClientRect()
     const containerSize = vertical() ? containerRect.height : containerRect.width
     if (!Number.isFinite(containerSize) || containerSize <= 0) {
-      setHiddenKeys(new Set<string>())
+      setHiddenKeys((current) => (current.size > 0 ? new Set<string>() : current))
       return
     }
 
@@ -85,11 +129,11 @@ export function TabNavList(props: TabNavListProps) {
         nextSizes[item.key] = size
       }
     }
-    setTabSizes(nextSizes)
+    setTabSizes((current) => (sameNumberRecord(current, nextSizes) ? current : nextSizes))
 
     const totalSize = props.items.reduce((sum, item) => sum + (nextSizes[item.key] ?? 0), 0)
     if (totalSize <= containerSize) {
-      setHiddenKeys(new Set<string>())
+      setHiddenKeys((current) => (current.size > 0 ? new Set<string>() : current))
       return
     }
 
@@ -112,7 +156,7 @@ export function TabNavList(props: TabNavListProps) {
       }
     }
 
-    setHiddenKeys(nextHiddenKeys)
+    setHiddenKeys((current) => (sameStringSet(current, nextHiddenKeys) ? current : nextHiddenKeys))
   }
   const updateIndicatorStyle = (tab: HTMLButtonElement) => {
     if (!navListElement) return
@@ -173,7 +217,7 @@ export function TabNavList(props: TabNavListProps) {
     void tabPlacement
     queueMicrotask(updateOverflow)
     if (typeof ResizeObserver === 'undefined' || !navListElement) return
-    const resizeObserver = new ResizeObserver(updateOverflow)
+    const resizeObserver = new ResizeObserver(scheduleOverflow)
     resizeObserver.observe(navListElement)
     if (moreElement) resizeObserver.observe(moreElement)
     for (const element of Object.values(tabElements())) {
@@ -181,6 +225,10 @@ export function TabNavList(props: TabNavListProps) {
     }
     onCleanup(() => {
       resizeObserver.disconnect()
+      if (overflowFrame !== undefined && typeof cancelAnimationFrame === 'function') {
+        cancelAnimationFrame(overflowFrame)
+        overflowFrame = undefined
+      }
     })
   })
   createEffect(() => {
@@ -196,13 +244,15 @@ export function TabNavList(props: TabNavListProps) {
     }
     updateIndicatorStyle(tab)
     if (typeof ResizeObserver === 'undefined') return
-    const resizeObserver = new ResizeObserver(() => {
-      updateIndicatorStyle(tab)
-    })
+    const resizeObserver = new ResizeObserver(() => scheduleIndicator(tab))
     resizeObserver.observe(tab)
     if (navListElement) resizeObserver.observe(navListElement)
     onCleanup(() => {
       resizeObserver.disconnect()
+      if (indicatorFrame !== undefined && typeof cancelAnimationFrame === 'function') {
+        cancelAnimationFrame(indicatorFrame)
+        indicatorFrame = undefined
+      }
     })
   })
   const handleAdd = (event: MouseEvent) => {

@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 const ownerlessComputationWarning =
   'computations created outside a `createRoot` or `render` will never be disposed'
+const resizeObserverLoopError = 'ResizeObserver loop completed with undelivered notifications'
 
 const routes = [
   '/',
@@ -25,6 +26,7 @@ for (const route of routes) {
       location: { columnNumber: number; lineNumber: number; url: string }
       text: string
     }> = []
+    const pageErrors: string[] = []
 
     await page.addInitScript((warning) => {
       const originalWarn = console.warn
@@ -52,6 +54,9 @@ for (const route of routes) {
         })
       }
     })
+    page.on('pageerror', (error) => {
+      if (error.message.includes(resizeObserverLoopError)) pageErrors.push(error.message)
+    })
 
     await page.goto(route)
     await page.locator('html[data-docs-hydrated="true"]').waitFor()
@@ -62,8 +67,9 @@ for (const route of routes) {
           .__ownerlessSolidWarningStacks ?? [],
     )
 
-    expect({ ownerlessWarnings, warningStacks }).toEqual({
+    expect({ ownerlessWarnings, pageErrors, warningStacks }).toEqual({
       ownerlessWarnings: [],
+      pageErrors: [],
       warningStacks: [],
     })
   })

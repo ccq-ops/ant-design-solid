@@ -261,7 +261,7 @@ describe('Tabs', () => {
     }
   })
 
-  it('updates indicator size when ResizeObserver reports active tab layout changes', () => {
+  it('updates indicator size after ResizeObserver reports active tab layout changes', async () => {
     let observerCallback: ResizeObserverCallback | undefined
     const observe = vi.fn()
     const disconnect = vi.fn()
@@ -308,6 +308,7 @@ describe('Tabs', () => {
 
       activeWidth = 120
       observerCallback?.([], {} as ResizeObserver)
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
       expect(indicatorSize).toHaveBeenLastCalledWith(120)
       expect(indicator).toHaveStyle({ '--ads-tabs-indicator-size': '60px' })

@@ -39,5 +39,8 @@ Associate Form.Item validation messages with Input, TextArea, and InputNumber th
 `aria-describedby`, expose invalid state with `aria-invalid`, announce errors, and verify first-error
 focus in a real browser.
 
+Defer Tabs overflow and indicator measurements from ResizeObserver callbacks to animation frames so
+layout writes no longer trigger observer-loop browser errors.
+
 Avoid ownerless Solid computations during docs bootstrap by lazily creating Breadcrumb's default
 dropdown icon and containing SolidBase's default-theme global mount in an explicit root.
