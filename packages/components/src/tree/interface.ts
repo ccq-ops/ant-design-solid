@@ -48,14 +48,14 @@ export type TreeSemanticStyles =
 export interface TreeExpandInfo {
   expanded: boolean
   node: TreeDataNode
-  event?: MouseEvent
+  event?: MouseEvent | KeyboardEvent
 }
 
 export interface TreeSelectInfo {
   selected: boolean
   selectedNodes: TreeDataNode[]
   node: TreeDataNode
-  event?: MouseEvent
+  event?: MouseEvent | KeyboardEvent
 }
 
 export interface TreeCheckInfo {
@@ -67,7 +67,7 @@ export interface TreeCheckInfo {
 }
 
 export interface TreeLoadInfo {
-  event?: MouseEvent
+  event?: MouseEvent | KeyboardEvent
   node: TreeDataNode
 }
 

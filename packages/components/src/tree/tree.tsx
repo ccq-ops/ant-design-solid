@@ -402,6 +402,7 @@ export function Tree(props: TreeProps) {
   const [innerLoadedKeys, setInnerLoadedKeys] = createSignal<TreeKey[]>([])
   const [loadingKeys, setLoadingKeys] = createSignal<TreeKey[]>([])
   const [dragNode, setDragNode] = createSignal<TreeDataNode>()
+  const [focusedKey, setFocusedKey] = createSignal<TreeKey>()
 
   const expandedKeys = () => {
     const keys = uniqueKeys([
@@ -522,14 +523,14 @@ export function Tree(props: TreeProps) {
     nextKeys: TreeKey[],
     node: TreeDataNode,
     expanded: boolean,
-    event: MouseEvent,
+    event: MouseEvent | KeyboardEvent,
   ): void {
     setImperativeExpandedKeys([])
     if (!('expandedKeys' in props)) setInnerExpandedKeys(nextKeys)
     local.onExpand?.(nextKeys, { event, expanded, node })
   }
 
-  function toggleExpand(event: MouseEvent, node: TreeDataNode): void {
+  function toggleExpand(event: MouseEvent | KeyboardEvent, node: TreeDataNode): void {
     event.stopPropagation()
     if (disabled() || node.disabled) return
     const key = keyOf(node, treeNames())
@@ -541,7 +542,7 @@ export function Tree(props: TreeProps) {
     if (expanded) void loadNode(node, event)
   }
 
-  function selectNode(event: MouseEvent, node: TreeDataNode): void {
+  function selectNode(event: MouseEvent | KeyboardEvent, node: TreeDataNode): void {
     if (disabled() || node.disabled || !selectable() || node.selectable === false) return
     const key = keyOf(node, treeNames())
     const selected = !includesKey(selectedKeys(), key)
@@ -569,6 +570,59 @@ export function Tree(props: TreeProps) {
   function clickNode(event: MouseEvent, node: TreeDataNode): void {
     selectNode(event, node)
     if (shouldExpandByClick(event, node)) toggleExpand(event, node)
+  }
+
+  function focusTreeNode(key: TreeKey): void {
+    setFocusedKey(key)
+    queueMicrotask(() =>
+      rootRef?.querySelector<HTMLElement>(`[data-tree-key="${String(key)}"]`)?.focus(),
+    )
+  }
+
+  function handleTreeKeyDown(event: KeyboardEvent, node: TreeDataNode): void {
+    if (disabled() || node.disabled) return
+    const key = keyOf(node, treeNames())
+    const items = visibleNodes().filter((item) => !item.node.disabled)
+    const index = items.findIndex((item) => item.key === key)
+    const entity = entityInfo().entities.get(key)
+    const expandable = isExpandable(node)
+    const expanded = includesKey(expandedKeys(), key)
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault()
+      const delta = event.key === 'ArrowDown' ? 1 : -1
+      const next = items[index + delta]
+      if (next) focusTreeNode(next.key)
+      return
+    }
+    if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault()
+      const next = event.key === 'Home' ? items[0] : items[items.length - 1]
+      if (next) focusTreeNode(next.key)
+      return
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      if (expandable && !expanded) {
+        toggleExpand(event, node)
+      } else if (expanded && entity?.children[0] !== undefined) {
+        focusTreeNode(entity.children[0])
+      }
+      return
+    }
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      if (expandable && expanded) {
+        toggleExpand(event, node)
+      } else if (entity?.parent !== undefined) {
+        focusTreeNode(entity.parent)
+      }
+      return
+    }
+    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+      event.preventDefault()
+      selectNode(event, node)
+    }
   }
 
   function checkNode(event: MouseEvent, node: TreeDataNode): void {
@@ -654,7 +708,7 @@ export function Tree(props: TreeProps) {
     return includesKey(loadingKeys(), key)
   }
 
-  async function loadNode(node: TreeDataNode, event?: MouseEvent): Promise<void> {
+  async function loadNode(node: TreeDataNode, event?: MouseEvent | KeyboardEvent): Promise<void> {
     if (!local.loadData) return
     const key = keyOf(node, treeNames())
     if (includesKey(loadedKeys(), key) || includesKey(loadingKeys(), key)) return
@@ -747,6 +801,15 @@ export function Tree(props: TreeProps) {
         aria-expanded={isExpandable(node) ? expanded() : undefined}
         aria-selected={selectable() ? selected() : undefined}
         aria-disabled={nodeDisabled()}
+        tabindex={
+          nodeDisabled()
+            ? undefined
+            : focusedKey() === key() ||
+                (focusedKey() === undefined &&
+                  visibleNodes().find((item) => !item.node.disabled)?.key === key())
+              ? 0
+              : -1
+        }
         draggable={draggable(node)}
         class={classNames(
           `${prefixCls()}-node`,
@@ -758,6 +821,8 @@ export function Tree(props: TreeProps) {
         )}
         style={itemStyle()}
         onClick={(event) => clickNode(event, node)}
+        onFocus={() => setFocusedKey(key())}
+        onKeyDown={(event) => handleTreeKeyDown(event, node)}
         onDblClick={(event) => {
           local.onDoubleClick?.(event, node)
           if (local.expandAction === 'doubleClick') toggleExpand(event, node)

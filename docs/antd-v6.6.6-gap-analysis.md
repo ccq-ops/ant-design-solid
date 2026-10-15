@@ -638,9 +638,9 @@ ESM/CJS/types 入口；四个发布包均声明 `sideEffects: false` 和 Node.js
 - [x] 增加 Chromium 视觉回归基础设施，首批覆盖 Button variants、Listy sticky group 和
       Form methods；功能 E2E 已扩展到 Chromium、Firefox、WebKit，可访问性和视觉基线由
       Chromium 单独维护，完整主题/状态矩阵仍待扩展。
-- [ ] 增加 axe 和键盘 E2E；首页和 Button 文档页的非颜色 WCAG A/AA axe 门禁已接入。
-      颜色对比度与 Form 可访问名称债务记录在 `docs/accessibility-baseline.md`，复杂组件键盘流程
-      仍需扩展。
+- [ ] 增加 axe 和键盘 E2E；首页、Button、Form、Listy 的非颜色 WCAG A/AA 门禁已接入，
+      Menu、Tree、Select、Modal、DatePicker 已有键盘流程。颜色对比度与剩余复杂组件键盘债务
+      记录在 `docs/accessibility-baseline.md`。
 - [x] Release/PR CI 安装 Chromium 并执行现有 E2E。
 - [x] core 改为 preserve-modules 组件级构建和 exports，并增加 ESM/CJS 根入口与组件入口
       smoke test。

@@ -65,6 +65,34 @@ describe('Tree', () => {
     expect(onSelect).toHaveBeenCalledTimes(1)
   })
 
+  it('supports roving keyboard focus, expansion, and selection', async () => {
+    const onSelect = vi.fn()
+    const result = render(() => <Tree treeData={treeData} onSelect={onSelect} />)
+    const asia = result.getByRole('treeitem', { name: /Asia/ })
+
+    asia.focus()
+    fireEvent.keyDown(asia, { key: 'ArrowRight' })
+    expect(result.getByRole('treeitem', { name: /China/ })).toBeInTheDocument()
+
+    fireEvent.keyDown(asia, { key: 'ArrowRight' })
+    await Promise.resolve()
+    expect(result.getByRole('treeitem', { name: /China/ })).toHaveFocus()
+
+    fireEvent.keyDown(result.getByRole('treeitem', { name: /China/ }), { key: 'ArrowDown' })
+    await Promise.resolve()
+    expect(result.getByRole('treeitem', { name: /Europe/ })).toHaveFocus()
+
+    fireEvent.keyDown(result.getByRole('treeitem', { name: /Europe/ }), { key: 'Home' })
+    await Promise.resolve()
+    expect(asia).toHaveFocus()
+
+    fireEvent.keyDown(asia, { key: 'Enter' })
+    expect(onSelect).toHaveBeenLastCalledWith(['asia'], expect.objectContaining({ selected: true }))
+
+    fireEvent.keyDown(asia, { key: 'ArrowLeft' })
+    expect(result.queryByRole('treeitem', { name: /China/ })).toBeNull()
+  })
+
   it('supports checkable trees and checkedKeys', () => {
     const onCheck = vi.fn()
     const result = render(() => (

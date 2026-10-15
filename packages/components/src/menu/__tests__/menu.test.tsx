@@ -358,6 +358,33 @@ describe('Menu', () => {
     expect(submenu).toHaveAttribute('aria-expanded', 'true')
   })
 
+  it('moves focus with arrow, Home, and End keys while skipping disabled items', () => {
+    const result = render(() => (
+      <Menu
+        items={[
+          { key: 'first', label: 'First' },
+          { key: 'disabled', label: 'Disabled', disabled: true },
+          { key: 'last', label: 'Last' },
+        ]}
+      />
+    ))
+    const first = result.getByRole('menuitem', { name: 'First' })
+    const last = result.getByRole('menuitem', { name: 'Last' })
+
+    first.focus()
+    fireEvent.keyDown(first, { key: 'ArrowDown' })
+    expect(last).toHaveFocus()
+
+    fireEvent.keyDown(last, { key: 'Home' })
+    expect(first).toHaveFocus()
+
+    fireEvent.keyDown(first, { key: 'End' })
+    expect(last).toHaveFocus()
+
+    fireEvent.keyDown(last, { key: 'ArrowUp' })
+    expect(first).toHaveFocus()
+  })
+
   it('applies modes, inlineCollapsed, custom prefix, and extra class', () => {
     const result = render(() => (
       <ConfigProvider prefixCls="custom">

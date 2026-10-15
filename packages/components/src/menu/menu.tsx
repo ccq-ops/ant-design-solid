@@ -351,6 +351,41 @@ function MenuRoot(props: MenuProps) {
     return typeof item.label === 'string' ? item.label : undefined
   }
 
+  function handleMenuNavigation(event: KeyboardEvent): boolean {
+    const navigationKeys = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Home', 'End']
+    if (!navigationKeys.includes(event.key)) return false
+
+    const current = event.currentTarget as HTMLElement
+    const menu =
+      current.closest<HTMLElement>('[role="menu"]') ??
+      current.parentElement?.closest<HTMLElement>('[role="menu"]')
+    if (!menu) return false
+
+    const items = Array.from(
+      menu.querySelectorAll<HTMLElement>(
+        ':scope > [role="menuitem"]:not([aria-disabled="true"]), :scope > [role="menuitemcheckbox"]:not([aria-disabled="true"]), :scope > li > [role="menuitem"]:not([aria-disabled="true"])',
+      ),
+    )
+    if (!items.length) return false
+
+    const index = items.indexOf(current)
+    const forward =
+      event.key === 'ArrowDown' || (mode() === 'horizontal' && event.key === 'ArrowRight')
+    const backward =
+      event.key === 'ArrowUp' || (mode() === 'horizontal' && event.key === 'ArrowLeft')
+    let next: HTMLElement | undefined
+
+    if (event.key === 'Home') next = items[0]
+    else if (event.key === 'End') next = items[items.length - 1]
+    else if (forward) next = items[(Math.max(index, -1) + 1) % items.length]
+    else if (backward) next = items[(index <= 0 ? items.length : index) - 1]
+    else return false
+
+    event.preventDefault()
+    next?.focus()
+    return true
+  }
+
   const renderChildren = (
     children: MenuItem[] | undefined,
     parentKeyPath: MenuKey[],
@@ -521,6 +556,7 @@ function MenuRoot(props: MenuProps) {
             style={semanticStyle('submenuTitle')}
             onClick={handleTitleClick}
             onKeyDown={(event) => {
+              if (handleMenuNavigation(event)) return
               if (!isActivationKey(event)) return
               event.preventDefault()
               handleTitleClick(event)
@@ -579,6 +615,7 @@ function MenuRoot(props: MenuProps) {
         style={mergeStyle(semanticStyle('item'), itemIndentStyle(depth), menuItem.style)}
         onClick={handleActivate}
         onKeyDown={(event) => {
+          if (handleMenuNavigation(event)) return
           if (!isActivationKey(event)) return
           event.preventDefault()
           handleActivate(event)

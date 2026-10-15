@@ -1,9 +1,9 @@
 # Accessibility Baseline
 
-> Baseline date: 2026-10-08
+> Baseline date: 2026-10-14
 
-The Playwright suite runs axe WCAG A/AA checks against the documentation home page, Button page,
-and Listy page. All non-color rules are blocking.
+The Playwright suite runs axe WCAG A/AA checks against the documentation home page, Button, Form,
+and Listy pages. All non-color rules are blocking.
 
 ## Known debt
 
@@ -22,15 +22,14 @@ Contrast must not be fixed with isolated demo overrides. The remediation needs t
 - component tokens and global aliases;
 - compatibility with the intended Ant Design visual baseline.
 
-### Form demo accessible names
+### Keyboard flows
 
-The complete Form documentation page currently contains demo inputs, selects, spin buttons, and
-switches without accessible names. The initial gate therefore does not scan the whole Form page.
-Form, Select, InputNumber, and Switch need component and demo-level accessible-name audits before
-that route can be added to the blocking suite.
+Blocking Playwright keyboard flows now cover Menu roving focus, Tree expansion/navigation,
+Select choice, Modal focus restoration, and DatePicker popup dismissal. Remaining composite
+controls should be added incrementally as their keyboard contracts stabilize.
 
 ## Exit criteria
 
 - Re-enable axe `color-contrast`.
-- Add the Form documentation route to the blocking scan.
-- Add keyboard-flow tests for overlays, menus, trees, forms, and composite inputs.
+- Expand keyboard-flow coverage to Tabs, Cascader, TreeSelect, Transfer, Slider, ColorPicker, and
+  complex Form submission/error navigation.

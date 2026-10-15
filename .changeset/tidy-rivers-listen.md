@@ -27,3 +27,6 @@ client rehydration that reuses server-rendered style elements.
 
 Publish Node-conditioned SSR builds for core and icons and verify server rendering through package
 exports.
+
+Add roving keyboard focus for Menu and Tree and blocking browser keyboard flows for Menu, Tree,
+Select, Modal, and DatePicker.

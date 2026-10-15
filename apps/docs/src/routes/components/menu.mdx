@@ -751,6 +751,8 @@ export default Demo10
 
 export const MenuDemo011 = (() => {
   function currentTheme() {
+      if (typeof document === 'undefined')
+          return 'light';
       const theme = document.documentElement.dataset.theme;
       return theme === 'dark' || theme === 'sdark' ? 'dark' : 'light';
   }
@@ -789,6 +791,8 @@ import { Menu } from '@solid-ant-design/core'
 import { createSignal, onCleanup, onMount } from 'solid-js'
 
 function currentTheme() {
+  if (typeof document === 'undefined') return 'light'
+
   const theme = document.documentElement.dataset.theme
   return theme === 'dark' || theme === 'sdark' ? 'dark' : 'light'
 }

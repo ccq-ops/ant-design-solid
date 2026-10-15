@@ -644,7 +644,15 @@ function SelectBase(props: SelectProps) {
         onKeyDown={(event) => {
           ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(event)
           if (event.key === 'Escape') setOpen(false)
-          if (event.key === 'Enter' && open()) selectFirstEnabled()
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            if (open()) selectFirstEnabled()
+            else setOpen(true)
+          }
+          if (event.key === 'ArrowDown' && !open()) {
+            event.preventDefault()
+            setOpen(true)
+          }
         }}
       >
         <Show when={local.prefix}>
