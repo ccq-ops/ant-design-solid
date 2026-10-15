@@ -31,5 +31,8 @@ exports.
 Add roving keyboard focus for Menu and Tree and blocking browser keyboard flows for Menu, Tree,
 Select, Modal, and DatePicker.
 
+Open Cascader and TreeSelect with Enter, Space, or ArrowDown, and extend blocking keyboard browser
+flows to Tabs, Slider, Cascader, and TreeSelect.
+
 Avoid ownerless Solid computations during docs bootstrap by lazily creating Breadcrumb's default
 dropdown icon and containing SolidBase's default-theme global mount in an explicit root.

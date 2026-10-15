@@ -1,5 +1,5 @@
-import { For, Show, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
+import { For, Index, Show, createMemo, createSignal, onCleanup, splitProps } from 'solid-js'
+import type { Accessor, JSX } from 'solid-js'
 import { useConfig } from '../config-provider'
 import { classNames } from '../shared/class-names'
 import { useSliderStyle } from './slider.style'
@@ -424,7 +424,7 @@ export function Slider(props: SliderProps) {
       : { left: `${low}%`, width: `${high - low}%` }
   }
 
-  function renderHandle(value: number, index: number) {
+  function renderHandle(value: Accessor<number>, index: number) {
     const dragging = () => {
       const state = dragState()
       return state?.type === 'handle' && state.index === index
@@ -449,7 +449,7 @@ export function Slider(props: SliderProps) {
         aria-label={label()}
         aria-valuemin={min()}
         aria-valuemax={max()}
-        aria-valuenow={value}
+        aria-valuenow={value()}
         aria-orientation={orientation()}
         aria-disabled={disabled() ? 'true' : 'false'}
         disabled={disabled()}
@@ -459,12 +459,12 @@ export function Slider(props: SliderProps) {
           dragging() && `${prefixCls()}-handle-dragging`,
           semanticClassNames().handle,
         )}
-        style={mergeStyles(handleStyle(value), semanticStyles().handle)}
+        style={mergeStyles(handleStyle(value()), semanticStyles().handle)}
         onPointerDown={(event) => handleHandlePointerDown(index, event)}
         onDblClick={() => handleHandleDoubleClick(index)}
         onKeyDown={(event) => handleKeyDown(index, event)}
       >
-        {renderTooltip(value)}
+        {renderTooltip(value())}
       </button>
     )
   }
@@ -542,9 +542,7 @@ export function Slider(props: SliderProps) {
           </For>
         </div>
       </Show>
-      <For each={values().map((value, index) => ({ value, index }))}>
-        {({ value, index }) => renderHandle(value, index)}
-      </For>
+      <Index each={values()}>{(value, index) => renderHandle(value, index)}</Index>
       <Show when={markPoints().length > 0}>
         <div
           class={classNames(`${prefixCls()}-marks`, semanticClassNames().mark)}

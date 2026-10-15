@@ -703,9 +703,22 @@ const CascaderBase = (props: CascaderProps) => {
         onKeyDown={(event) => {
           ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(event)
           if (event.defaultPrevented) return
-          if (event.key === 'Escape') setOpen(false)
-          if (event.key === 'Enter' && open() && !searchActive())
+          if (event.key === 'Escape') {
+            setOpen(false)
+            return
+          }
+          if (
+            !open() &&
+            (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown')
+          ) {
+            event.preventDefault()
+            setOpen(true)
+            return
+          }
+          if (event.key === 'Enter' && !searchActive()) {
+            event.preventDefault()
             selectFirstEnabledInCurrentColumn()
+          }
         }}
       />
       <Show when={open()}>

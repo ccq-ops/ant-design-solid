@@ -556,8 +556,23 @@ export function TreeSelect(props: TreeSelectProps) {
         onClick={() => setOpen(!open())}
         onKeyDown={(event) => {
           ;(local.onKeyDown as JSX.EventHandler<HTMLDivElement, KeyboardEvent> | undefined)?.(event)
-          if (event.key === 'Escape') setOpen(false)
-          if (event.key === 'Enter' && open()) selectFirstEnabled()
+          if (event.defaultPrevented) return
+          if (event.key === 'Escape') {
+            setOpen(false)
+            return
+          }
+          if (
+            !open() &&
+            (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown')
+          ) {
+            event.preventDefault()
+            setOpen(true)
+            return
+          }
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            selectFirstEnabled()
+          }
         }}
       >
         <Show when={local.prefix}>

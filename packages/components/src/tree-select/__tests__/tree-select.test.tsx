@@ -547,6 +547,16 @@ describe('TreeSelect', () => {
     expect(screen.queryByRole('tree')).toBeNull()
   })
 
+  it.each(['Enter', ' ', 'ArrowDown'])('opens with the %s key', (key) => {
+    const result = render(() => <TreeSelect treeData={treeData} />)
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.keyDown(combobox, { key })
+
+    expect(combobox).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('tree')).toBeTruthy()
+  })
+
   it('supports custom prefixCls from props and ConfigProvider', () => {
     const withProp = render(() => <TreeSelect prefixCls="custom-tree" treeData={treeData} />)
     expect(withProp.container.querySelector('.custom-tree')).toBeTruthy()

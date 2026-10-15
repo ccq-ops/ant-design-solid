@@ -110,6 +110,23 @@ describe('Slider', () => {
     expect(slider).toHaveAttribute('aria-valuenow', '30')
   })
 
+  it('preserves handle focus across consecutive keyboard changes', () => {
+    const result = render(() => <Slider defaultValue={30} />)
+    const slider = result.getByRole('slider')
+
+    slider.focus()
+    fireEvent.keyDown(slider, { key: 'ArrowRight' })
+
+    expect(result.getByRole('slider')).toBe(slider)
+    expect(slider).toHaveFocus()
+    expect(slider).toHaveAttribute('aria-valuenow', '31')
+
+    fireEvent.keyDown(slider, { key: 'PageUp' })
+
+    expect(slider).toHaveFocus()
+    expect(slider).toHaveAttribute('aria-valuenow', '41')
+  })
+
   it('supports keyboard changes and commits after change', () => {
     const onChange = vi.fn()
     const onAfterChange = vi.fn()

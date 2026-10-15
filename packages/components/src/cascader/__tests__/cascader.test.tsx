@@ -532,6 +532,16 @@ describe('Cascader', () => {
     expect(screen.queryByRole('menu')).toBeNull()
   })
 
+  it.each(['Enter', ' ', 'ArrowDown'])('opens with the %s key', (key) => {
+    const result = render(() => <Cascader options={options} />)
+    const combobox = result.getByRole('combobox')
+
+    fireEvent.keyDown(combobox, { key })
+
+    expect(combobox).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('menuitem', { name: 'Zhejiang' })).toBeTruthy()
+  })
+
   it('selects the first enabled option in the current column with Enter', () => {
     const onChange = vi.fn()
     const result = render(() => (

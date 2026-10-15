@@ -133,17 +133,17 @@ export default Demo3
 <TabsDemo004 />
 
 export const TabsDemo004 = (() => {
-  const items = [
-      { key: 'profile', icon: <UserOutlined />, label: 'Profile', children: <p>Profile content</p> },
-      { key: 'files', icon: <FileOutlined />, label: 'Files', children: <p>Files content</p> },
-      {
-          key: 'settings',
-          icon: <SettingOutlined />,
-          label: 'Settings',
-          children: <p>Settings content</p>,
-      },
-  ];
   const Demo4 = function () {
+      const items = [
+          { key: 'profile', icon: <UserOutlined />, label: 'Profile', children: <p>Profile content</p> },
+          { key: 'files', icon: <FileOutlined />, label: 'Files', children: <p>Files content</p> },
+          {
+              key: 'settings',
+              icon: <SettingOutlined />,
+              label: 'Settings',
+              children: <p>Settings content</p>,
+          },
+      ];
       return <Tabs items={items}/>;
   };
 
@@ -156,18 +156,18 @@ return Demo4
 import { FileOutlined, SettingOutlined, UserOutlined } from '@solid-ant-design/icons'
 import { Tabs } from '@solid-ant-design/core'
 
-const items = [
-  { key: 'profile', icon: <UserOutlined />, label: 'Profile', children: <p>Profile content</p> },
-  { key: 'files', icon: <FileOutlined />, label: 'Files', children: <p>Files content</p> },
-  {
-    key: 'settings',
-    icon: <SettingOutlined />,
-    label: 'Settings',
-    children: <p>Settings content</p>,
-  },
-]
-
 const Demo4 = function () {
+  const items = [
+    { key: 'profile', icon: <UserOutlined />, label: 'Profile', children: <p>Profile content</p> },
+    { key: 'files', icon: <FileOutlined />, label: 'Files', children: <p>Files content</p> },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: 'Settings',
+      children: <p>Settings content</p>,
+    },
+  ]
+
   return <Tabs items={items} />
 }
 

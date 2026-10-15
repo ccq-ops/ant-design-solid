@@ -87,4 +87,72 @@ test.describe('keyboard accessibility flows', () => {
     await expect(picker).toHaveAttribute('aria-expanded', 'false')
     await expect(input).toBeFocused()
   })
+
+  test('Tabs moves focus and selection while skipping disabled tabs', async ({ page }) => {
+    await page.goto('/components/tabs')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const preview = previewAfterHeading(page, 'Basic')
+    const overview = preview.getByRole('tab', { name: 'Overview' })
+    const usage = preview.getByRole('tab', { name: 'Usage' })
+
+    await overview.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(usage).toBeFocused()
+    await expect(usage).toHaveAttribute('aria-selected', 'true')
+    await expect(preview.getByRole('tabpanel')).toContainText('Usage content')
+
+    await page.keyboard.press('ArrowRight')
+    await expect(overview).toBeFocused()
+    await expect(overview).toHaveAttribute('aria-selected', 'true')
+  })
+
+  test('Slider exposes keyboard value changes through ARIA', async ({ page }) => {
+    await page.goto('/components/slider')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const slider = previewAfterHeading(page, 'Basic').getByRole('slider')
+
+    await slider.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(slider).toHaveAttribute('aria-valuenow', '31')
+    await page.keyboard.press('PageUp')
+    await expect(slider).toHaveAttribute('aria-valuenow', '41')
+    await page.keyboard.press('End')
+    await expect(slider).toHaveAttribute('aria-valuenow', '100')
+  })
+
+  test('Cascader opens and selects a nested path from the keyboard', async ({ page }) => {
+    await page.goto('/components/cascader')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const combobox = previewAfterHeading(page, 'Basic').getByRole('combobox')
+
+    await combobox.focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(combobox).toHaveAttribute('aria-expanded', 'true')
+    await page.keyboard.press('Enter')
+    await expect(page.getByRole('menuitem', { name: 'Hangzhou' })).toBeVisible()
+    await page.keyboard.press('Enter')
+    await expect(page.getByRole('menuitem', { name: 'West Lake' })).toBeVisible()
+    await page.keyboard.press('Enter')
+    await expect(combobox).toContainText('Zhejiang / Hangzhou / West Lake')
+    await expect(combobox).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('TreeSelect opens and selects the first enabled node from the keyboard', async ({
+    page,
+  }) => {
+    await page.goto('/components/tree-select')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const combobox = previewAfterHeading(page, 'Basic').getByRole('combobox')
+
+    await combobox.focus()
+    await page.keyboard.press('Enter')
+    await expect(combobox).toHaveAttribute('aria-expanded', 'true')
+    await page.keyboard.press('Enter')
+    await expect(combobox).toContainText('Asia')
+    await expect(combobox).toHaveAttribute('aria-expanded', 'false')
+  })
 })
