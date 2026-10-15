@@ -155,4 +155,43 @@ test.describe('keyboard accessibility flows', () => {
     await expect(combobox).toContainText('Asia')
     await expect(combobox).toHaveAttribute('aria-expanded', 'false')
   })
+
+  test('Transfer selects and moves an item from the keyboard', async ({ page }) => {
+    await page.goto('/components/transfer')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const preview = previewAfterHeading(page, 'Basic')
+    const alpha = preview.getByRole('option', { name: /Alpha/ })
+    const beta = preview.getByRole('option', { name: /Beta/ })
+
+    await alpha.focus()
+    await page.keyboard.press('ArrowDown')
+    await expect(beta).toBeFocused()
+    await page.keyboard.press('Home')
+    await expect(alpha).toBeFocused()
+    await page.keyboard.press('Space')
+    await expect(alpha).toHaveAttribute('aria-selected', 'true')
+
+    const moveRight = preview.getByRole('button', { name: 'move selected right' })
+    await moveRight.focus()
+    await page.keyboard.press('Enter')
+    await expect(alpha).toHaveAttribute('data-direction', 'right')
+  })
+
+  test('ColorPicker opens from the keyboard and closes with Escape', async ({ page }) => {
+    await page.goto('/components/color-picker')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const trigger = previewAfterHeading(page, 'Basic').getByRole('button', {
+      name: 'Color Picker',
+    })
+
+    await trigger.focus()
+    await page.keyboard.press('Enter')
+    const dialog = page.getByRole('dialog', { name: 'Color Picker Panel' })
+    await expect(dialog).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+    await expect(trigger).toBeFocused()
+  })
 })

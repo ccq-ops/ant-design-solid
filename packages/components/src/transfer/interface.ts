@@ -94,7 +94,7 @@ export interface TransferListProps<RecordType extends TransferItem = TransferIte
   onItemSelect: (
     key: TransferKey,
     selected: boolean,
-    event?: MouseEvent,
+    event?: MouseEvent | KeyboardEvent,
     filteredItems?: RecordType[],
   ) => void
   onScroll?: JSX.EventHandler<HTMLUListElement, Event>
@@ -109,7 +109,7 @@ export interface TransferCustomListBodyProps<RecordType extends TransferItem = T
   onItemSelect: (
     key: TransferKey,
     selected: boolean,
-    event?: MouseEvent,
+    event?: MouseEvent | KeyboardEvent,
     filteredItems?: RecordType[],
   ) => void
   onItemSelectAll: (keys: TransferKey[], selected: boolean) => void

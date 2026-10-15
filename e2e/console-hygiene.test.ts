@@ -6,6 +6,7 @@ const ownerlessComputationWarning =
 const routes = [
   '/',
   '/components/cascader',
+  '/components/color-picker',
   '/components/date-picker',
   '/components/menu',
   '/components/modal',
@@ -14,6 +15,7 @@ const routes = [
   '/components/tabs',
   '/components/tree',
   '/components/tree-select',
+  '/components/transfer',
 ] as const
 
 for (const route of routes) {

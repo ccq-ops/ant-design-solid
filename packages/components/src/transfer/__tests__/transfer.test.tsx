@@ -40,6 +40,31 @@ describe('Transfer', () => {
     expect(result.getByRole('option', { name: /Alpha/ })).toHaveAttribute('data-direction', 'right')
   })
 
+  it('supports roving keyboard focus and selection', async () => {
+    const result = render(() => <Transfer dataSource={dataSource} />)
+    const alpha = result.getByRole('option', { name: /Alpha/ })
+    const beta = result.getByRole('option', { name: /Beta/ })
+    const gamma = result.getByRole('option', { name: /Gamma/ })
+
+    expect(alpha).toHaveAttribute('tabindex', '0')
+    expect(beta).toHaveAttribute('tabindex', '-1')
+
+    alpha.focus()
+    fireEvent.keyDown(alpha, { key: 'ArrowDown' })
+    await Promise.resolve()
+    expect(beta).toHaveFocus()
+    expect(beta).toHaveAttribute('tabindex', '0')
+
+    fireEvent.keyDown(beta, { key: 'ArrowDown' })
+    await Promise.resolve()
+    expect(alpha).toHaveFocus()
+    expect(gamma).toHaveAttribute('tabindex', '-1')
+
+    fireEvent.keyDown(alpha, { key: ' ' })
+    expect(alpha).toHaveAttribute('aria-selected', 'true')
+    expect(alpha).toHaveFocus()
+  })
+
   it('selects target items and moves them left', () => {
     const onChange = vi.fn()
     const result = render(() => (

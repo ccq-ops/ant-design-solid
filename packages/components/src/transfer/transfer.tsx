@@ -137,6 +137,54 @@ function TransferOperation(props: TransferOperationProps) {
 function TransferList<RecordType extends TransferItem>(props: TransferListProps<RecordType>) {
   const prefixCls = () => props.prefixCls ?? 'ant-transfer'
   const items = () => props.filteredItems ?? props.items
+  const enabledItems = () => items().filter((item) => !props.disabled && !item.disabled)
+  const [focusKey, setFocusKey] = createSignal<TransferKey>()
+  const optionRefs = new Map<TransferKey, HTMLLIElement>()
+
+  createEffect(() => {
+    const enabled = enabledItems()
+    const current = focusKey()
+    if (current !== undefined && enabled.some((item) => resolveItemKey(item) === current)) return
+
+    const selected = enabled.find((item) => includesKey(props.selectedKeys, resolveItemKey(item)))
+    setFocusKey(selected ? resolveItemKey(selected) : resolveItemKey(enabled[0] ?? {}))
+  })
+
+  function focusOption(nextKey: TransferKey): void {
+    setFocusKey(nextKey)
+    queueMicrotask(() => optionRefs.get(nextKey)?.focus())
+  }
+
+  function handleOptionKeyDown(event: KeyboardEvent, key: TransferKey, selected: boolean): void {
+    const enabledKeys = enabledItems().map((item) => resolveItemKey(item))
+    const currentIndex = enabledKeys.indexOf(key)
+    if (currentIndex < 0) return
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault()
+      focusOption(enabledKeys[(currentIndex + 1) % enabledKeys.length])
+      return
+    }
+    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault()
+      focusOption(enabledKeys[(currentIndex - 1 + enabledKeys.length) % enabledKeys.length])
+      return
+    }
+    if (event.key === 'Home') {
+      event.preventDefault()
+      focusOption(enabledKeys[0])
+      return
+    }
+    if (event.key === 'End') {
+      event.preventDefault()
+      focusOption(enabledKeys[enabledKeys.length - 1])
+      return
+    }
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      props.onItemSelect(key, !selected, event, items())
+    }
+  }
 
   return (
     <ul
@@ -158,8 +206,10 @@ function TransferList<RecordType extends TransferItem>(props: TransferListProps<
 
           return (
             <li
+              ref={(element) => optionRefs.set(key(), element)}
               role="option"
               data-direction={props.direction}
+              tabIndex={!itemDisabled() && focusKey() === key() ? 0 : -1}
               aria-selected={selected()}
               aria-disabled={itemDisabled()}
               class={classNames(
@@ -171,7 +221,12 @@ function TransferList<RecordType extends TransferItem>(props: TransferListProps<
               style={sectionStyle(props.styles, props.direction, 'item')}
               onClick={(event) => {
                 if (itemDisabled()) return
+                setFocusKey(key())
                 props.onItemSelect(key(), !selected(), event, items())
+              }}
+              onKeyDown={(event) => {
+                if (itemDisabled()) return
+                handleOptionKeyDown(event, key(), selected())
               }}
             >
               <span
@@ -314,7 +369,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
   function selectKey(
     key: TransferKey,
     selected: boolean,
-    event?: MouseEvent,
+    event?: MouseEvent | KeyboardEvent,
     filteredItems?: RecordType[],
   ): void {
     if (disabled()) return
