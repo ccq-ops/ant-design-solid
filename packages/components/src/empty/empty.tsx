@@ -139,7 +139,10 @@ const EmptyRoot = (props: EmptyProps) => {
   const emptyConfig = () => config.empty()
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-empty`
   const [, hashId] = useEmptyStyle(prefixCls())
-  const description = () => (local.description === undefined ? 'No Data' : local.description)
+  const description = () =>
+    local.description === undefined
+      ? (config.locale()?.Empty?.description ?? 'No Data')
+      : local.description
   const image = () => local.image ?? emptyConfig().image ?? <DefaultEmptyImage />
   const isSimpleImage = () => image() === SimpleEmptyImage
   const semanticClassNames = createMemo(() =>

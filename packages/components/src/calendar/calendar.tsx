@@ -161,6 +161,14 @@ export function Calendar(props: CalendarProps) {
     'ref',
   ])
   const config = useConfig()
+  const locale = () => ({
+    ...config.locale()?.Calendar,
+    ...local.locale,
+    lang: {
+      ...config.locale()?.Calendar?.lang,
+      ...local.locale?.lang,
+    },
+  })
   let rootRef: HTMLDivElement | undefined
   const calendarRef = {
     get nativeElement() {
@@ -259,7 +267,7 @@ export function Calendar(props: CalendarProps) {
       originNode,
       today: today(),
       type,
-      locale: local.locale,
+      locale: locale(),
     }
   }
 
@@ -451,7 +459,7 @@ export function Calendar(props: CalendarProps) {
             >
               <Show when={local.showWeek}>
                 <div class={classNames(`${prefixCls()}-weekday`, `${prefixCls()}-week-label`)}>
-                  {local.locale?.lang?.week ?? 'Week'}
+                  {locale().lang?.week ?? 'Week'}
                 </div>
               </Show>
               <For each={WEEKDAYS}>

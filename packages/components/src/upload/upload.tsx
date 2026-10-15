@@ -229,6 +229,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
     'ref',
   ])
   const config = useConfig()
+  const locale = () => ({ ...config.locale()?.Upload, ...local.locale })
   const prefixCls = () => local.prefixCls ?? `${config.prefixCls()}-upload`
   const [, hashId] = useUploadStyle(prefixCls())
   const [innerFileList, setInnerFileList] = createSignal<Array<UploadFile<T>>>(
@@ -622,7 +623,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
             <button
               type="button"
               class={`${prefixCls()}-preview`}
-              aria-label={`${local.locale?.previewFile ?? 'Preview'} ${file.name}`}
+              aria-label={`${locale().previewFile ?? 'Preview'} ${file.name}`}
               onClick={() => previewFile(file)}
             >
               {resolveNode(config.previewIcon, file) ?? <EyeOutlined />}
@@ -632,7 +633,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
             <button
               type="button"
               class={`${prefixCls()}-download`}
-              aria-label={`${local.locale?.downloadFile ?? 'Download'} ${file.name}`}
+              aria-label={`${locale().downloadFile ?? 'Download'} ${file.name}`}
               onClick={() => downloadFile(file)}
             >
               {resolveNode(config.downloadIcon, file) ?? <DownloadOutlined />}
@@ -642,7 +643,7 @@ function InternalUpload<T = unknown>(props: UploadProps<T>) {
             <button
               type="button"
               class={`${prefixCls()}-remove`}
-              aria-label={`${local.locale?.removeFile ?? 'Remove'} ${file.name}`}
+              aria-label={`${locale().removeFile ?? 'Remove'} ${file.name}`}
               disabled={disabled()}
               onClick={() => void removeFile(file)}
             >

@@ -80,8 +80,11 @@ function getLoadingTip(loading: TableProps['loading']) {
   return undefined
 }
 
-function getEmptyText<T extends object>(props: Pick<TableProps<T>, 'emptyText' | 'locale'>) {
-  const localeEmptyText = props.locale?.emptyText
+function getEmptyText<T extends object>(
+  props: Pick<TableProps<T>, 'emptyText' | 'locale'>,
+  providerLocale?: TableProps<T>['locale'],
+) {
+  const localeEmptyText = props.locale?.emptyText ?? providerLocale?.emptyText
   if (typeof localeEmptyText === 'function') return localeEmptyText()
   return props.emptyText ?? localeEmptyText ?? 'No data'
 }
@@ -1030,7 +1033,7 @@ export function Table<T extends object = object>(props: TableProps<T>) {
           fallback={
             <tr>
               <td class={`${prefixCls()}-empty`} colspan={Math.max(renderColumnCount(), 1)}>
-                {getEmptyText(local)}
+                {getEmptyText(local, config.locale()?.Table)}
               </td>
             </tr>
           }
@@ -1233,6 +1236,10 @@ export function Table<T extends object = object>(props: TableProps<T>) {
           <Pagination
             {...paginationConfig()}
             {...controlledPaginationProps()}
+            locale={{
+              ...config.locale()?.Pagination,
+              ...paginationConfig()?.locale,
+            }}
             total={paginationState().total}
             onChange={changePage}
           />

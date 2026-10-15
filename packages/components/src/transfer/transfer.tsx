@@ -295,6 +295,12 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
     'ref',
   ])
   const config = useConfig()
+  const locale = () => ({ ...config.locale()?.Transfer, ...local.locale })
+  const notFoundContent = (direction: TransferDirection): JSX.Element => {
+    const content = locale().notFoundContent
+    if (Array.isArray(content)) return content[direction === 'left' ? 0 : 1]
+    return content ?? 'Not Found'
+  }
   let rootRef: HTMLDivElement | undefined
   const transferRef = {
     get nativeElement() {
@@ -461,9 +467,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
           <span>{label()}</span>
           <span class={`${prefixCls()}-select-all-total`}>
             {items().length}{' '}
-            {items().length === 1
-              ? (local.locale?.itemUnit ?? 'item')
-              : (local.locale?.itemsUnit ?? 'items')}
+            {items().length === 1 ? (locale().itemUnit ?? 'item') : (locale().itemsUnit ?? 'items')}
           </span>
         </label>
       </Show>
@@ -478,7 +482,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
     const items = () => allItems().slice(0, pageSize())
     const title = () =>
       local.titles?.[isSource ? 0 : 1] ??
-      local.locale?.titles?.[isSource ? 0 : 1] ??
+      locale().titles?.[isSource ? 0 : 1] ??
       (isSource ? 'Source' : 'Target')
     const search = () => (isSource ? sourceSearch() : targetSearch())
     const setSearch = (value: string) => {
@@ -574,7 +578,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
             )}
             placeholder={
               searchConfig()?.placeholder ??
-              local.locale?.searchPlaceholder ??
+              locale().searchPlaceholder ??
               `Search ${isSource ? 'source' : 'target'}`
             }
             disabled={disabled()}
@@ -601,11 +605,7 @@ function TransferRoot<RecordType extends TransferItem = TransferItem>(
           />
         )}
         <Show when={!items().length}>
-          <div class={`${prefixCls()}-empty`}>
-            {Array.isArray(local.locale?.notFoundContent)
-              ? local.locale?.notFoundContent[isSource ? 0 : 1]
-              : (local.locale?.notFoundContent ?? 'Not Found')}
-          </div>
+          <div class={`${prefixCls()}-empty`}>{notFoundContent(direction)}</div>
         </Show>
         {local.footer && (
           <div

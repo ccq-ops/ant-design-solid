@@ -230,6 +230,27 @@ ConfigProvider.config({
 })
 ```
 
+### Locale
+
+Locale modules follow the Ant Design import convention and can be applied to a whole subtree:
+
+```tsx
+import { ConfigProvider } from '@solid-ant-design/core'
+import zhCN from '@solid-ant-design/core/locale/zh_CN'
+
+export default function App() {
+  return <ConfigProvider locale={zhCN}>{/* application */}</ConfigProvider>
+}
+```
+
+Published locale subpaths:
+
+- `@solid-ant-design/core/locale/en_US`
+- `@solid-ant-design/core/locale/zh_CN`
+- `@solid-ant-design/core/locale/zh_TW`
+- `@solid-ant-design/core/locale/ja_JP`
+- `@solid-ant-design/core/locale/ko_KR`
+
 ### Hook
 
 :::preview

@@ -42,5 +42,9 @@ focus in a real browser.
 Defer Tabs overflow and indicator measurements from ResizeObserver callbacks to animation frames so
 layout writes no longer trigger observer-loop browser errors.
 
+Publish `en_US`, `zh_CN`, `zh_TW`, `ja_JP`, and `ko_KR` locale subpaths and apply ConfigProvider
+locale defaults across date/time pickers, calendar, pagination, table, modal, popconfirm, transfer,
+upload, empty state, QRCode, and form validation.
+
 Avoid ownerless Solid computations during docs bootstrap by lazily creating Breadcrumb's default
 dropdown icon and containing SolidBase's default-theme global mount in an explicit root.

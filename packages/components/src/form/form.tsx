@@ -98,7 +98,10 @@ export function FormRoot(props: FormProps) {
   const feedbackIcons = () => local.feedbackIcons
   const labelWrap = () => local.labelWrap
   const tooltip = () => local.tooltip
-  const validateMessages = () => local.validateMessages
+  const validateMessages = () => ({
+    ...config.locale()?.Form?.defaultValidateMessages,
+    ...local.validateMessages,
+  })
   const disabled = () => local.disabled ?? config.form().disabled ?? config.componentDisabled()
   const size = () => local.size ?? config.form().size ?? config.componentSize()
   const variant = () => local.variant ?? config.form().variant ?? config.variant()

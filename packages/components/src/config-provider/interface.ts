@@ -9,6 +9,7 @@ import type { AnchorProps } from '../anchor/interface'
 import type { BadgeProps, RibbonProps } from '../badge/interface'
 import type { BreadcrumbProps } from '../breadcrumb/interface'
 import type { ButtonProps } from '../button/interface'
+import type { CalendarLocale } from '../calendar/interface'
 import type { CardMetaProps, CardProps } from '../card/interface'
 import type { CascaderProps } from '../cascader/interface'
 import type { CheckboxProps } from '../checkbox/interface'
@@ -22,7 +23,7 @@ import type { DropdownProps } from '../dropdown/interface'
 import type { EmptyProps } from '../empty/interface'
 import type { FlexProps } from '../flex/interface'
 import type { FloatButtonGroupProps, FloatButtonProps } from '../float-button/interface'
-import type { FormProps } from '../form/interface'
+import type { FormProps, ValidateMessages } from '../form/interface'
 import type { ImageProps } from '../image/interface'
 import type { InputNumberProps } from '../input-number/interface'
 import type { InputProps, OTPProps, PasswordProps, SearchProps, TextAreaProps } from '../input'
@@ -31,12 +32,12 @@ import type { ListyProps } from '../listy/interface'
 import type { MentionsProps } from '../mentions/interface'
 import type { MenuProps } from '../menu/interface'
 import type { MessageConfigOptions } from '../message/interface'
-import type { ModalProps } from '../modal/interface'
+import type { ModalLocale, ModalProps } from '../modal/interface'
 import type { NotificationConfig } from '../notification/interface'
-import type { PaginationProps } from '../pagination/interface'
+import type { PaginationLocale, PaginationProps } from '../pagination/interface'
 import type { PopconfirmProps } from '../popconfirm/interface'
 import type { PopoverProps } from '../popover/interface'
-import type { QRCodeProps } from '../qrcode/interface'
+import type { QRCodeLocale, QRCodeProps } from '../qrcode/interface'
 import type { RadioProps } from '../radio/interface'
 import type { ResultProps } from '../result/interface'
 import type { SegmentedProps } from '../segmented/interface'
@@ -49,18 +50,18 @@ import type { SplitterProps } from '../splitter/interface'
 import type { StatisticProps } from '../statistic/interface'
 import type { StepsProps } from '../steps/interface'
 import type { SwitchProps } from '../switch/interface'
-import type { TableProps } from '../table/interface'
+import type { TableLocale, TableProps } from '../table/interface'
 import type { TabsProps } from '../tabs/interface'
 import type { TagProps } from '../tag/interface'
 import type { TimePickerLocale, TimePickerProps } from '../time-picker/interface'
 import type { TimelineProps } from '../timeline/interface'
 import type { TooltipProps } from '../tooltip/interface'
 import type { TourProps } from '../tour/interface'
-import type { TransferProps } from '../transfer/interface'
+import type { TransferLocale, TransferProps } from '../transfer/interface'
 import type { TreeProps } from '../tree/interface'
 import type { TreeSelectProps } from '../tree-select/interface'
 import type { TypographyProps } from '../typography/interface'
-import type { UploadProps } from '../upload/interface'
+import type { UploadLocale, UploadProps } from '../upload/interface'
 
 export type DirectionType = 'ltr' | 'rtl'
 export type PopupOverflow = 'viewport' | 'scroll'
@@ -76,6 +77,23 @@ export interface Locale {
   locale?: string
   DatePicker?: DatePickerLocale
   TimePicker?: TimePickerLocale
+  Calendar?: CalendarLocale
+  Pagination?: PaginationLocale
+  Table?: TableLocale
+  Modal?: ModalLocale
+  Popconfirm?: Pick<ModalLocale, 'okText' | 'cancelText'>
+  Transfer?: Partial<TransferLocale>
+  Upload?: UploadLocale
+  Empty?: { description?: JSX.Element }
+  QRCode?: Partial<QRCodeLocale>
+  Form?: {
+    optional?: string
+    defaultValidateMessages?: ValidateMessages
+  }
+  global?: {
+    placeholder?: string
+    close?: string
+  }
   [key: string]: unknown
 }
 

@@ -63,6 +63,30 @@
         "types": "./dist/*/index.d.cts",
         "default": "./dist/*/index.cjs"
       }
+    },
+    "./locale/*": {
+      "browser": {
+        "types": "./dist/locale/*/index.d.ts",
+        "default": "./dist/locale/*/index.js"
+      },
+      "node": {
+        "import": {
+          "types": "./dist/locale/*/index.d.ts",
+          "default": "./dist/ssr/locale/*/index.js"
+        },
+        "require": {
+          "types": "./dist/locale/*/index.d.cts",
+          "default": "./dist/ssr/locale/*/index.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/locale/*/index.d.ts",
+        "default": "./dist/locale/*/index.js"
+      },
+      "require": {
+        "types": "./dist/locale/*/index.d.cts",
+        "default": "./dist/locale/*/index.cjs"
+      }
     }
   },
   "publishConfig": {

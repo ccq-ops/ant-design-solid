@@ -137,6 +137,7 @@ export function ModalBase(props: ModalProps) {
   const [, hashId] = useModalStyle(prefixCls())
   const [zIndex, contextZIndex] = useZIndex('Modal', local.zIndex)
   const componentConfig = () => config.modal()
+  const locale = () => config.locale()?.Modal
   const titleId = createUniqueId()
   const stackItem = {}
   const [hasRendered, setHasRendered] = createSignal(Boolean(local.open || local.forceRender))
@@ -403,7 +404,7 @@ export function ModalBase(props: ModalProps) {
       {...mergedCancelButtonProps()}
       onClick={(event) => handleCancel(event as unknown as MouseEvent)}
     >
-      {local.cancelText ?? 'Cancel'}
+      {local.cancelText ?? locale()?.cancelText ?? 'Cancel'}
     </Button>
   )
   const OkBtn = () => (
@@ -413,7 +414,7 @@ export function ModalBase(props: ModalProps) {
       loading={local.confirmLoading || mergedOkButtonProps().loading}
       onClick={(event) => handleOk(event as unknown as MouseEvent)}
     >
-      {local.okText ?? 'OK'}
+      {local.okText ?? locale()?.okText ?? 'OK'}
     </Button>
   )
   const defaultFooter = () => (

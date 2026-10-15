@@ -158,7 +158,11 @@ export function Pagination(props: PaginationProps) {
   const [simpleInput, setSimpleInput] = createSignal('')
   const [quickInput, setQuickInput] = createSignal('')
 
-  const locale = (): Required<PaginationLocale> => ({ ...DEFAULT_LOCALE, ...local.locale })
+  const locale = (): Required<PaginationLocale> => ({
+    ...DEFAULT_LOCALE,
+    ...config.locale()?.Pagination,
+    ...local.locale,
+  })
   const total = () => Math.max(0, Math.floor(Number(local.total) || 0))
   const mergedPageSize = () =>
     toPositiveInteger(local.pageSize ?? innerPageSize(), DEFAULT_PAGE_SIZE)
@@ -525,7 +529,9 @@ export function Pagination(props: PaginationProps) {
             <input
               class={classNames(`${prefixCls()}-input`, semanticClassNames().input)}
               style={semanticStyles().input}
-              aria-label={local.locale?.page ?? 'Quick jump to page'}
+              aria-label={
+                local.locale?.page ?? config.locale()?.Pagination?.page ?? 'Quick jump to page'
+              }
               inputMode="numeric"
               value={quickInput()}
               disabled={disabled()}

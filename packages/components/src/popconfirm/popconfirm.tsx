@@ -54,6 +54,7 @@ export function Popconfirm(props: PopconfirmProps) {
     'onClick',
   ])
   const config = useConfig()
+  const locale = () => config.locale()?.Popconfirm
   const prefixCls = () => `${config.prefixCls()}-popconfirm`
   const [, hashId] = usePopconfirmStyle(prefixCls())
   const [innerOpen, setInnerOpen] = createSignal(rest.defaultOpen ?? false)
@@ -197,7 +198,7 @@ export function Popconfirm(props: PopconfirmProps) {
         >
           <Show when={local.showCancel ?? true}>
             <Button size="small" {...local.cancelButtonProps} on:click={cancel}>
-              {local.cancelText ?? 'Cancel'}
+              {local.cancelText ?? locale()?.cancelText ?? 'Cancel'}
             </Button>
           </Show>
           <Button
@@ -206,7 +207,7 @@ export function Popconfirm(props: PopconfirmProps) {
             {...local.okButtonProps}
             on:click={confirm}
           >
-            {local.okText ?? 'OK'}
+            {local.okText ?? locale()?.okText ?? 'OK'}
           </Button>
         </div>
       </div>

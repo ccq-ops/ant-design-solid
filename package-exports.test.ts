@@ -103,6 +103,30 @@ describe('package export configuration', () => {
         default: './dist/*/index.cjs',
       },
     })
+    expect(packageJson.exports?.['./locale/*']).toEqual({
+      browser: {
+        types: './dist/locale/*/index.d.ts',
+        default: './dist/locale/*/index.js',
+      },
+      node: {
+        import: {
+          types: './dist/locale/*/index.d.ts',
+          default: './dist/ssr/locale/*/index.js',
+        },
+        require: {
+          types: './dist/locale/*/index.d.cts',
+          default: './dist/ssr/locale/*/index.cjs',
+        },
+      },
+      import: {
+        types: './dist/locale/*/index.d.ts',
+        default: './dist/locale/*/index.js',
+      },
+      require: {
+        types: './dist/locale/*/index.d.cts',
+        default: './dist/locale/*/index.cjs',
+      },
+    })
   })
 
   it('routes core and icons to SSR-compiled JavaScript under the node condition', () => {
@@ -124,6 +148,8 @@ describe('package export configuration', () => {
       ['components', core.exports['.'].node.require.default],
       ['components', core.exports['./*'].node.import.default.replace('*', 'button')],
       ['components', core.exports['./*'].node.require.default.replace('*', 'button')],
+      ['components', core.exports['./locale/*'].node.import.default.replace('*', 'zh_CN')],
+      ['components', core.exports['./locale/*'].node.require.default.replace('*', 'zh_CN')],
       ['icons', icons.exports['.'].node.import.default],
       ['icons', icons.exports['.'].node.require.default],
       ['icons', icons.exports['./icons/*'].node.import.default.replace('*', 'search-outlined')],

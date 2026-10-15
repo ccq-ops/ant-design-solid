@@ -194,7 +194,11 @@ export function QRCode(props: QRCodeProps) {
   const errorLevel = () => local.errorLevel ?? 'M'
   const boostLevel = () => local.boostLevel ?? true
   const marginSize = () => local.marginSize ?? 0
-  const mergedLocale = (): QRCodeLocale => ({ ...defaultLocale, ...local.locale })
+  const mergedLocale = (): QRCodeLocale => ({
+    ...defaultLocale,
+    ...config.locale()?.QRCode,
+    ...local.locale,
+  })
   const semanticClassNames = () => ({ ...local.classNames, ...local.classes })
   const semanticStyles = () => local.styles ?? {}
   const matrix = createMemo(() => createQRCode(local.value, errorLevel(), boostLevel()))

@@ -13,6 +13,20 @@ const componentEntries = Object.fromEntries(
     )
     .map((entry) => [`${entry.name}/index`, path.join(sourceRoot, entry.name, 'index.ts')]),
 )
+const localeRoot = path.join(sourceRoot, 'locale')
+const localeEntries = existsSync(localeRoot)
+  ? Object.fromEntries(
+      readdirSync(localeRoot, { withFileTypes: true })
+        .filter(
+          (entry) =>
+            entry.isDirectory() && existsSync(path.join(localeRoot, entry.name, 'index.ts')),
+        )
+        .map((entry) => [
+          `locale/${entry.name}/index`,
+          path.join(localeRoot, entry.name, 'index.ts'),
+        ]),
+    )
+  : {}
 
 const externalPackages = [
   'solid-js',
@@ -56,6 +70,7 @@ export default defineConfig({
       entry: {
         index: path.join(sourceRoot, 'index.ts'),
         ...componentEntries,
+        ...localeEntries,
       },
       formats: ['es', 'cjs'],
       fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,

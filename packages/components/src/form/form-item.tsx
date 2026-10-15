@@ -432,7 +432,9 @@ export function FormItem(props: FormItemProps) {
             <span class={`${prefixCls()}-item-tooltip`}>{renderTooltip(mergedTooltip())}</span>
           </Show>
           <Show when={showOptionalMark()}>
-            <span class={`${prefixCls()}-item-optional`}>(optional)</span>
+            <span class={`${prefixCls()}-item-optional`}>
+              {config.locale()?.Form?.optional ?? '(optional)'}
+            </span>
           </Show>
         </label>
       </Show>

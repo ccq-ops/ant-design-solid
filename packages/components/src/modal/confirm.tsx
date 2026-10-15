@@ -19,6 +19,7 @@ export interface ConfirmDialogProps {
 export function ConfirmDialog(props: ConfirmDialogProps) {
   const [loading, setLoading] = createSignal(false)
   const config = useConfig()
+  const locale = () => config.locale()?.Modal
   const prefixCls = () => `${config.prefixCls()}-modal`
   const type = () => (props.config.type === 'warn' ? 'warning' : (props.config.type ?? 'confirm'))
   const isConfirm = () => type() === 'confirm'
@@ -83,7 +84,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
     <>
       {isConfirm() && (
         <Button {...props.config.cancelButtonProps} onClick={handleCancel}>
-          {props.config.cancelText ?? 'Cancel'}
+          {props.config.cancelText ?? locale()?.cancelText ?? 'Cancel'}
         </Button>
       )}
       <Button
@@ -92,7 +93,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         loading={loading() || props.config.okButtonProps?.loading}
         onClick={handleOk}
       >
-        {props.config.okText ?? 'OK'}
+        {props.config.okText ?? (isConfirm() ? locale()?.okText : locale()?.justOkText) ?? 'OK'}
       </Button>
     </>
   )
