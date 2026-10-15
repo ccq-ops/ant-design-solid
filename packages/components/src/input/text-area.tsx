@@ -187,6 +187,8 @@ export function TextArea(props: TextAreaProps) {
         {...rest}
         id={rest.id ?? formItem?.controlId()}
         aria-labelledby={rest['aria-labelledby'] ?? formItem?.labelId()}
+        aria-describedby={rest['aria-describedby'] ?? formItem?.descriptionId()}
+        aria-invalid={rest['aria-invalid'] ?? formItem?.invalid()}
         aria-label={
           rest['aria-label'] ?? (formItem?.labelId() ? undefined : formItem?.accessibleName())
         }

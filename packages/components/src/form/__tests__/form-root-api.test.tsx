@@ -79,6 +79,11 @@ describe('Form root v6 APIs', () => {
       await waitFor(() => expect(result.getByText('Required')).toBeInTheDocument())
       expect(scrollIntoView).toHaveBeenCalled()
       expect(focus).toHaveBeenCalled()
+      expect(input).toHaveAttribute('aria-invalid', 'true')
+      const descriptionId = input.getAttribute('aria-describedby')
+      expect(descriptionId).toBeTruthy()
+      expect(document.getElementById(descriptionId!)).toHaveTextContent('Required')
+      expect(document.getElementById(descriptionId!)).toHaveAttribute('role', 'alert')
     } finally {
       fieldElement!.scrollIntoView = originalScrollIntoView ?? Element.prototype.scrollIntoView
       input.focus = originalFocus

@@ -183,6 +183,7 @@ export interface FormItemControl {
   name: FieldName
   controlId: Accessor<string>
   labelId: Accessor<string | undefined>
+  descriptionId: Accessor<string | undefined>
   accessibleName: Accessor<string | undefined>
   value: Accessor<FieldValue>
   valueProps: Accessor<Record<string, unknown>>
@@ -194,6 +195,7 @@ export interface FormItemControl {
   validate: (sourceTrigger?: string) => void
   errors: Accessor<string[]>
   status: Accessor<ValidateStatus | undefined>
+  invalid: Accessor<boolean>
   disabled: Accessor<boolean | undefined>
   size: Accessor<ComponentSize | undefined>
   variant: Accessor<FormVariant | undefined>

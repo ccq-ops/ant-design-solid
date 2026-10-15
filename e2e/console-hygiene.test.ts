@@ -8,6 +8,7 @@ const routes = [
   '/components/cascader',
   '/components/color-picker',
   '/components/date-picker',
+  '/components/form',
   '/components/menu',
   '/components/modal',
   '/components/select',

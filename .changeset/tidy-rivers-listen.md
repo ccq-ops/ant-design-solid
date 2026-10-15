@@ -35,5 +35,9 @@ Open Cascader and TreeSelect with Enter, Space, or ArrowDown, and extend blockin
 flows to Tabs, Slider, Cascader, TreeSelect, Transfer, and ColorPicker. Add roving focus and keyboard
 selection to Transfer listbox options, and preserve Slider handle focus across value updates.
 
+Associate Form.Item validation messages with Input, TextArea, and InputNumber through
+`aria-describedby`, expose invalid state with `aria-invalid`, announce errors, and verify first-error
+focus in a real browser.
+
 Avoid ownerless Solid computations during docs bootstrap by lazily creating Breadcrumb's default
 dropdown icon and containing SolidBase's default-theme global mount in an explicit root.

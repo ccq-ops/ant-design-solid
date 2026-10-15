@@ -194,4 +194,23 @@ test.describe('keyboard accessibility flows', () => {
     await expect(dialog).toBeHidden()
     await expect(trigger).toBeFocused()
   })
+
+  test('Form focuses and describes the first invalid field after submit', async ({ page }) => {
+    await page.goto('/components/form')
+    await page.locator('html[data-docs-hydrated="true"]').waitFor()
+
+    const preview = previewAfterHeading(page, 'Slide to error field')
+    const submit = preview.getByRole('button', { name: 'Submit' })
+    await submit.focus()
+    await page.keyboard.press('Enter')
+
+    const nameInput = preview.getByRole('textbox', { name: 'Name' })
+    await expect(nameInput).toBeFocused()
+    await expect(nameInput).toHaveAttribute('aria-invalid', 'true')
+
+    const descriptionId = await nameInput.getAttribute('aria-describedby')
+    expect(descriptionId).toBeTruthy()
+    await expect(page.locator(`#${descriptionId}`)).toContainText('Name is required')
+    await expect(page.locator(`#${descriptionId}`)).toHaveAttribute('role', 'alert')
+  })
 })

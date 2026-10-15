@@ -145,6 +145,7 @@ export function FormItem(props: FormItemProps) {
   const controlId = () => props.htmlFor ?? `ads-form-item-${itemId}-control`
   const hasLabel = () => props.label !== undefined && props.label !== null
   const labelId = () => (hasLabel() ? `ads-form-item-${itemId}-label` : undefined)
+  const explainId = () => `ads-form-item-${itemId}-explain`
   const accessibleName = () => {
     if (typeof props.label === 'string' || typeof props.label === 'number') {
       return String(props.label)
@@ -321,6 +322,10 @@ export function FormItem(props: FormItemProps) {
       name,
       controlId,
       labelId,
+      descriptionId: () =>
+        props.help !== undefined || errors().length > 0 || warnings().length > 0
+          ? explainId()
+          : undefined,
       accessibleName,
       value: () => form.getFieldValue(name),
       valueProps,
@@ -332,6 +337,7 @@ export function FormItem(props: FormItemProps) {
       validate,
       errors,
       status: mergedStatus,
+      invalid: () => mergedStatus() === 'error',
       disabled: () => layout.disabled(),
       size: () => layout.size(),
       variant: () => layout.variant(),
@@ -452,6 +458,8 @@ export function FormItem(props: FormItemProps) {
         </div>
         <Show when={props.help ?? errors()[0] ?? warnings()[0]}>
           <div
+            id={explainId()}
+            role={mergedStatus() === 'error' ? 'alert' : undefined}
             class={classNames(
               `${prefixCls()}-item-explain`,
               mergedStatus() === 'error' && `${prefixCls()}-item-explain-error`,
